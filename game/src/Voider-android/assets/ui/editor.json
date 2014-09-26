@@ -618,5 +618,31 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: color_disabled
 	},
 	
+	movement_ai: {
+		imageUp: movement_ai,
+		imageOver: movement_ai_over,
+		imageDown: movement_ai_down,
+		imageChecked: movement_ai_checked,
+		imageCheckedOver: movement_ai_checked_over,
+		imageDisabled: movement_ai_disabled
+	},
+	
+	movement_path: {
+		imageUp: movement_path,
+		imageOver: movement_path_over,
+		imageDown: movement_path_down,
+		imageChecked: movement_path_checked,
+		imageCheckedOver: movement_path_checked_over,
+		imageDisabled: movement_path_disabled
+	},
+	
+	movement_stationary: {
+		imageUp: movement_stationary,
+		imageOver: movement_stationary_over,
+		imageDown: movement_stationary_down,
+		imageChecked: movement_stationary_checked,
+		imageCheckedOver: movement_stationary_checked_over,
+		imageDisabled: movement_stationary_disabled
+	},
 }
 }

@@ -206,57 +206,45 @@ public abstract class ActorGui extends EditorGui {
 
 		// Different shape tabs
 		// Circle
-		TabImageWrapper circleTab = mUiFactory.createTabImageWrapper();
-		circleTab.imageName = SkinNames.EditorIcons.CIRCLE_SHAPE;
-		circleTab.hider = new HideListener(true) {
+		TabImageWrapper circleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.CIRCLE_SHAPE);
+		circleTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
-				if (mActorEditor.getShapeType() != ActorShapeTypes.CIRCLE) {
-					mActorEditor.setShapeType(ActorShapeTypes.CIRCLE);
-					mActorEditor.resetCenterOffset();
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.setShapeType(ActorShapeTypes.CIRCLE);
+				mActorEditor.resetCenterOffset();
 			}
-		};
+		});
 
 		// Rectangle
-		TabImageWrapper rectangleTab = mUiFactory.createTabImageWrapper();
-		rectangleTab.imageName = SkinNames.EditorIcons.RECTANGLE_SHAPE;
-		rectangleTab.hider = new HideListener(true) {
+		TabImageWrapper rectangleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.RECTANGLE_SHAPE);
+		rectangleTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
-				if (mActorEditor.getShapeType() != ActorShapeTypes.RECTANGLE) {
-					mActorEditor.setShapeType(ActorShapeTypes.RECTANGLE);
-					mActorEditor.resetCenterOffset();
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.setShapeType(ActorShapeTypes.RECTANGLE);
+				mActorEditor.resetCenterOffset();
 			}
-		};
+		});
 
 		// Triangle
-		TabImageWrapper triangleTab = mUiFactory.createTabImageWrapper();
-		triangleTab.imageName = SkinNames.EditorIcons.TRIANGLE_SHAPE;
-		triangleTab.hider = new HideListener(true) {
+		TabImageWrapper triangleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.TRIANGLE_SHAPE);
+		triangleTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
-				if (mActorEditor.getShapeType() != ActorShapeTypes.TRIANGLE) {
-					mActorEditor.setShapeType(ActorShapeTypes.TRIANGLE);
-					mActorEditor.resetCenterOffset();
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.setShapeType(ActorShapeTypes.TRIANGLE);
+				mActorEditor.resetCenterOffset();
 			}
-		};
+		});
 
 		// Custom (draw)
-		TabImageWrapper customTab = mUiFactory.createTabImageWrapper();
-		customTab.imageName = SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE;
-		customTab.hider = new HideListener(true) {
+		TabImageWrapper customTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE);
+		customTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
-				if (mActorEditor.getShapeType() != ActorShapeTypes.CUSTOM) {
-					mActorEditor.setShapeType(ActorShapeTypes.CUSTOM);
-					mActorEditor.resetCenterOffset();
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.setShapeType(ActorShapeTypes.CUSTOM);
+				mActorEditor.resetCenterOffset();
 			}
-		};
-		mDrawToolHider = customTab.hider;
+		});
+		mDrawToolHider = customTab.getHider();
 
 		// Create tabs
 		@SuppressWarnings("unchecked")
@@ -270,13 +258,13 @@ public abstract class ActorGui extends EditorGui {
 		tabs = null;
 
 		// Set buttons
-		mWidgets.visual.shapeCircle = circleTab.button;
-		mWidgets.visual.shapeRectangle = rectangleTab.button;
-		mWidgets.visual.shapeTriangle = triangleTab.button;
-		mWidgets.visual.shapeCustom = customTab.button;
+		mWidgets.visual.shapeCircle = circleTab.getButton();
+		mWidgets.visual.shapeRectangle = rectangleTab.getButton();
+		mWidgets.visual.shapeTriangle = triangleTab.getButton();
+		mWidgets.visual.shapeCustom = customTab.getButton();
 
 		// Set tooltip
-		mTooltip.add(customTab.button, Messages.EditorTooltips.VISUAL_CUSTOM);
+		mTooltip.add(customTab.getButton(), Messages.EditorTooltips.VISUAL_CUSTOM);
 
 
 		// Circle
@@ -288,7 +276,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider("Radius", Enemy.Visual.RADIUS_MIN, Enemy.Visual.RADIUS_MAX,
-				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, circleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, circleTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 
 		// Rectangle
@@ -301,7 +289,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 		// Height
 		sliderListener = new SliderListener() {
@@ -312,7 +300,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 
 		// Triangle
@@ -325,7 +313,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE,
-				sliderListener, table, triangleTab.hider, mDisabledWhenPublished, mInvoker);
+				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 		// Height
 		sliderListener = new SliderListener() {
@@ -336,7 +324,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, triangleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished, mInvoker);
 	}
 
 	/**

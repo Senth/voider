@@ -1081,20 +1081,22 @@ public class UiFactory {
 
 		for (TabWrapper tab : tabs) {
 			tab.createButton();
-			Cell cell = table.add(tab.button);
-			buttonGroup.add(tab.button);
-			parentHider.addToggleActor(tab.button);
-			if (tab.hider != null) {
-				tab.hider.setButton(tab.button);
-				parentHider.addChild(tab.hider);
+			Cell cell = table.add(tab.mButton);
+			buttonGroup.add(tab.mButton);
+			parentHider.addToggleActor(tab.mButton);
+			tab.mHider.setButton(tab.mButton);
+			parentHider.addChild(tab.mHider);
+
+			if (tab.mButtonListener != null) {
+				tab.mButton.addListener(tab.mButtonListener);
 			}
 
 			if (checkCommandCreator != null) {
-				tab.button.addListener(checkCommandCreator);
+				tab.mButton.addListener(checkCommandCreator);
 			}
 
 			if (createdActors != null) {
-				createdActors.add(tab.button);
+				createdActors.add(tab.mButton);
 			}
 
 
@@ -1452,17 +1454,21 @@ public class UiFactory {
 	}
 
 	/**
+	 * Creates a radio tab button
+	 * @param text text to display on the radio button
 	 * @return a new radio tab wrapper instance
 	 */
-	public TabRadioWrapper createTabRadioWrapper() {
-		return new TabRadioWrapper();
+	public TabRadioWrapper createTabRadioWrapper(String text) {
+		return new TabRadioWrapper(text);
 	}
 
 	/**
+	 * Creates a tab button with an image
+	 * @param imageName name of the button image
 	 * @return a new image tab wrapper instance
 	 */
-	public TabImageWrapper createTabImageWrapper() {
-		return new TabImageWrapper();
+	public TabImageWrapper createTabImageWrapper(ISkinNames imageName) {
+		return new TabImageWrapper(imageName);
 	}
 
 	/**
@@ -1504,36 +1510,85 @@ public class UiFactory {
 		 */
 		abstract void createButton();
 
+		/**
+		 * @return tab button
+		 */
+		public Button getButton() {
+			return mButton;
+		}
+
+		/**
+		 * @return hider
+		 */
+		public HideListener getHider() {
+			return mHider;
+		}
+
+		/**
+		 * Set the hide listener. Useful when you want to use something else than the
+		 * default hider
+		 * @param hider
+		 */
+		public void setHider(HideListener hider) {
+			mHider = hider;
+		}
+
+		/**
+		 * Sets a button listener
+		 * @param buttonListener listens to the button
+		 */
+		public void setListener(ButtonListener buttonListener) {
+			mButtonListener = buttonListener;
+		}
+
+		/** Optional button listener */
+		private ButtonListener mButtonListener = null;
 		/** Tab button */
-		public Button button = null;
-		/** Optional Hider for the tab */
-		public HideListener hider = null;
+		protected Button mButton = null;
+		/** Hider for the tab */
+		private HideListener mHider = new HideListener(true);
 	}
 
 	/**
 	 * Tab information wrapper
 	 */
 	public class TabImageWrapper extends TabWrapper {
+		/**
+		 * Sets the image for the tab
+		 * @param imageName name of the image
+		 */
+		private TabImageWrapper(ISkinNames imageName) {
+			mImageName = imageName;
+		}
+
 		@Override
 		public void createButton() {
-			button = new ImageButton((ImageButtonStyle) SkinNames.getResource(imageName));
+			mButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(mImageName));
 		}
 
 		/** Image name */
-		public ISkinNames imageName = null;
+		private ISkinNames mImageName = null;
 	}
 
 	/**
 	 * Radio button information wrapper
 	 */
 	public class TabRadioWrapper extends TabWrapper {
+		/**
+		 * Sets the text for the radio button
+		 * @param text text to display
+		 */
+		private TabRadioWrapper(String text) {
+			mText = text;
+		}
+
 		@Override
 		public void createButton() {
-			button = new CheckBox(text, CheckBoxStyles.RADIO.getStyle());
+			mButton = new CheckBox(mText, CheckBoxStyles.RADIO.getStyle());
 		}
 
 		/** Button text */
-		public String text = null;
+		private String mText = null;
 	}
 
 	/**

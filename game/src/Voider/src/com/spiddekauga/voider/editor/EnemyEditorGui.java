@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -21,7 +20,6 @@ import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.utils.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabImageWrapper;
-import com.spiddekauga.utils.scene.ui.UiFactory.TabRadioWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
@@ -94,17 +92,13 @@ public class EnemyEditorGui extends ActorGui {
 
 		case AI:
 			mWidgets.movement.aiBox.setChecked(true);
-			if (mEnemyEditor.isTurning()) {
-				mWidgets.movement.aiTurnSpeedOn.setChecked(true);
-			} else {
-				mWidgets.movement.aiTurnSpeedOff.setChecked(true);
-			}
-			if (mEnemyEditor.isMovingRandomly()) {
-				mWidgets.movement.aiRandomMovementOn.setChecked(true);
-			} else {
-				mWidgets.movement.aiRandomMovementOff.setChecked(true);
-			}
 			break;
+		}
+
+		if (mEnemyEditor.isMovingRandomly()) {
+			mWidgets.movement.aiRandomMovementOn.setChecked(true);
+		} else {
+			mWidgets.movement.aiRandomMovementOff.setChecked(true);
 		}
 
 		if (mEnemyEditor.isTurning()) {
@@ -307,36 +301,21 @@ public class EnemyEditorGui extends ActorGui {
 
 		// ON/OFF tabs
 		// ON
-		TabImageWrapper onTab = mUiFactory.createTabImageWrapper();
-		onTab.imageName = SkinNames.EditorIcons.ON;
-		onTab.hider = new HideListener(true) {
+		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+		onTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
-				onChecked(true);
-			}
-
-			@Override
-			protected void onHide() {
-				onChecked(false);
-			}
-
-			/**
-			 * Called when either checked or unchecked
-			 * @param checked if the button is checked
-			 */
-			private void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				mEnemyEditor.setMoveRandomly(checked);
 
 				// Send command for undo
-				if (mButton.getName() == null || !mButton.getName().equals(Config.Gui.GUI_INVOKER_TEMP_NAME)) {
-					mInvoker.execute(new CGuiCheck(mButton, checked));
+				if (button.getName() == null || !button.getName().equals(Config.Gui.GUI_INVOKER_TEMP_NAME)) {
+					mInvoker.execute(new CGuiCheck(button, checked));
 				}
 			}
-		};
+		});
 
 		// OFF
-		TabImageWrapper offTab = mUiFactory.createTabImageWrapper();
-		offTab.imageName = SkinNames.EditorIcons.OFF;
+		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
 		@SuppressWarnings("unchecked")
@@ -348,8 +327,9 @@ public class EnemyEditorGui extends ActorGui {
 		tabs = null;
 
 		// Set buttons
-		mWidgets.movement.aiRandomMovementOn = onTab.button;
-		mWidgets.movement.aiRandomMovementOff = offTab.button;
+		mWidgets.movement.aiRandomMovementOn = onTab.getButton();
+		mWidgets.movement.aiRandomMovementOff = offTab.getButton();
+
 
 		// Sliders
 		@SuppressWarnings("unchecked")
@@ -366,8 +346,10 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setRandomTimeMax(newValue);
 			}
 		};
-		sliders = mUiFactory.addSliderMinMax(null, Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX,
-				Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.hider, createdActors, mInvoker);
+		sliders = mUiFactory
+				.addSliderMinMax(null, Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX,
+						Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.getHider(), createdActors,
+						mInvoker);
 		mTooltip.add(createdActors, Messages.EditorTooltips.MOVEMENT_AI_RANDOM_COOLDOWN);
 		mDisabledWhenPublished.addAll(createdActors);
 
@@ -415,37 +397,10 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Create ON/OFF tabs
 		// ON
-		TabImageWrapper onTab = mUiFactory.createTabImageWrapper();
-		onTab.imageName = SkinNames.EditorIcons.ON;
-		onTab.hider = new HideListener(true) {
-			@Override
-			protected void onShow() {
-				onChecked(true);
-			}
-
-			@Override
-			protected void onHide() {
-				onChecked(false);
-			}
-
-			/**
-			 * Sets the correct state for the button
-			 * @param checked true if ON is checked
-			 */
-			private void onChecked(boolean checked) {
-				mEnemyEditor.setTurning(checked);
-
-				// Send command for undo
-				if (mButton.getName() == null || !mButton.getName().equals(Config.Gui.GUI_INVOKER_TEMP_NAME)) {
-					mInvoker.execute(new CGuiCheck(mButton, checked));
-				}
-			}
-		};
-		onTab.hider.setName("on");
+		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
 
 		// OFF
-		TabImageWrapper offTab = mUiFactory.createTabImageWrapper();
-		offTab.imageName = SkinNames.EditorIcons.OFF;
+		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
 		@SuppressWarnings("unchecked")
@@ -458,12 +413,37 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Set buttons
 		if (movementType == MovementTypes.PATH) {
-			mWidgets.movement.pathTurnSpeedOn = onTab.button;
-			mWidgets.movement.pathTurnSpeedOff = offTab.button;
+			mWidgets.movement.pathTurnSpeedOn = onTab.getButton();
+			mWidgets.movement.pathTurnSpeedOff = offTab.getButton();
 		} else if (movementType == MovementTypes.AI) {
-			mWidgets.movement.aiTurnSpeedOn = onTab.button;
-			mWidgets.movement.aiTurnSpeedOff = offTab.button;
+			mWidgets.movement.aiTurnSpeedOn = onTab.getButton();
+			mWidgets.movement.aiTurnSpeedOff = offTab.getButton();
 		}
+		new ButtonListener(onTab.getButton()) {
+			/**
+			 * Sets the correct state for the button
+			 * @param checked true if ON is checked
+			 */
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				if (mEnemyEditor.isTurning() != checked) {
+					mEnemyEditor.setTurning(checked);
+
+					// Send command for undo
+					if (button.getName() == null || !button.getName().equals(Config.Gui.GUI_INVOKER_TEMP_NAME)) {
+						mInvoker.execute(new CGuiCheck(button, checked));
+					}
+
+					if (checked) {
+						mWidgets.movement.pathTurnSpeedOn.setChecked(true);
+						mWidgets.movement.aiTurnSpeedOn.setChecked(true);
+					} else {
+						mWidgets.movement.pathTurnSpeedOff.setChecked(true);
+						mWidgets.movement.aiTurnSpeedOff.setChecked(true);
+					}
+				}
+			}
+		};
 
 		// Slider
 		sliderListener = new SliderListener() {
@@ -475,7 +455,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		slider = mUiFactory.addSlider(null, Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Movement.TURN_SPEED_STEP_SIZE, sliderListener, table,
-				onTab.hider, mDisabledWhenPublished, mInvoker);
+				onTab.getHider(), mDisabledWhenPublished, mInvoker);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathTurnSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -487,57 +467,41 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the movement GUI part
 	 */
 	private void initMovementMenu() {
+		// Movement type label
+		mUiFactory.addPanelSection("Movement Type", mMovementTable, mMovementHider);
+
 		// Create radio tabs
 		// Path
-		TabRadioWrapper pathTab = mUiFactory.createTabRadioWrapper();
-		pathTab.text = "Path";
-		pathTab.hider = new HideListener(true) {
+		TabImageWrapper pathTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_PATH);
+		pathTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.setMovementType(MovementTypes.PATH);
-
-				// if (mWidgets.movement.pathTurnSpeedOn != null &&
-				// mWidgets.movement.pathTurnSpeedOff != null) {
-				// if (mEnemyEditor.isTurning()) {
-				// mWidgets.movement.pathTurnSpeedOn.setChecked(true);
-				// } else {
-				// mWidgets.movement.pathTurnSpeedOff.setChecked(true);
-				// }
-				// }
 			}
-		};
-		mPathHider = pathTab.hider;
+		});
+		mPathHider = pathTab.getHider();
 		mPathHider.addToggleActor(mPathLabels);
 
 		// Stationary
-		TabRadioWrapper stationaryTab = mUiFactory.createTabRadioWrapper();
-		stationaryTab.text = "Stationary";
-		stationaryTab.hider = new HideListener(true) {
+		TabImageWrapper stationaryTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_STATIONARY);
+		stationaryTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
-				mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
+			protected void onPressed(Button button) {
+				if (mEnemyEditor.getMovementType() != MovementTypes.STATIONARY) {
+					mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
+				}
 			}
-		};
+		});
 
 		// AI
-		TabRadioWrapper aiTab = mUiFactory.createTabRadioWrapper();
-		aiTab.text = "AI";
-		aiTab.hider = new HideListener(true) {
+		TabImageWrapper aiTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_AI);
+		aiTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.setMovementType(MovementTypes.AI);
-
-				// if (mWidgets.movement.aiTurnSpeedOn != null &&
-				// mWidgets.movement.aiTurnSpeedOff != null) {
-				// if (mEnemyEditor.isTurning()) {
-				// mWidgets.movement.aiTurnSpeedOn.setChecked(true);
-				// } else {
-				// mWidgets.movement.aiTurnSpeedOff.setChecked(true);
-				// }
-				// }
 			}
-		};
-		mAiHider = aiTab.hider;
+		});
+		mAiHider = aiTab.getHider();
 
 
 		// Create buttons
@@ -551,14 +515,14 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Set buttons
-		mWidgets.movement.pathBox = (CheckBox) pathTab.button;
-		mWidgets.movement.stationaryBox = (CheckBox) stationaryTab.button;
-		mWidgets.movement.aiBox = (CheckBox) aiTab.button;
+		mWidgets.movement.pathBox = pathTab.getButton();
+		mWidgets.movement.stationaryBox = stationaryTab.getButton();
+		mWidgets.movement.aiBox = aiTab.getButton();
 
 		// Set tooltips
-		mTooltip.add(pathTab.button, Messages.EditorTooltips.MOVEMENT_PATH);
-		mTooltip.add(aiTab.button, Messages.EditorTooltips.MOVEMENT_AI);
-		mTooltip.add(stationaryTab.button, Messages.EditorTooltips.MOVEMENT_STATIONARY);
+		mTooltip.add(pathTab.getButton(), Messages.EditorTooltips.MOVEMENT_PATH);
+		mTooltip.add(aiTab.getButton(), Messages.EditorTooltips.MOVEMENT_AI);
+		mTooltip.add(stationaryTab.getButton(), Messages.EditorTooltips.MOVEMENT_STATIONARY);
 	}
 
 	/**
@@ -572,23 +536,16 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Toggle weapon ON/OFF
 		// ON
-		TabImageWrapper onTab = mUiFactory.createTabImageWrapper();
-		onTab.imageName = SkinNames.EditorIcons.ON;
-		onTab.hider = new HideListener(true) {
+		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+		onTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
-				mEnemyEditor.setUseWeapon(true);
-			}
-
-			@Override
-			protected void onHide() {
-				mEnemyEditor.setUseWeapon(false);
-			}
-		};
+			protected void onChecked(Button button, boolean checked) {
+				mEnemyEditor.setUseWeapon(checked);
+			};
+		});
 
 		// OFF
-		TabImageWrapper offTab = mUiFactory.createTabImageWrapper();
-		offTab.imageName = SkinNames.EditorIcons.OFF;
+		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
 		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
@@ -599,16 +556,16 @@ public class EnemyEditorGui extends ActorGui {
 		tabs = null;
 
 		// Set buttons
-		mWidgets.weapon.on = onTab.button;
-		mWidgets.weapon.off = offTab.button;
+		mWidgets.weapon.on = onTab.getButton();
+		mWidgets.weapon.off = offTab.getButton();
 
 
 		// Select bullet type
-		mUiFactory.addPanelSection("Select Bullet Type", table, onTab.hider);
+		mUiFactory.addPanelSection("Select Bullet Type", table, onTab.getHider());
 
 		// Bullet image
 		table.row();
-		ImageButton imageButton = mUiFactory.addImageButton(SkinNames.EditorIcons.BULLET_SELECT, table, onTab.hider, mDisabledWhenPublished);
+		ImageButton imageButton = mUiFactory.addImageButton(SkinNames.EditorIcons.BULLET_SELECT, table, onTab.getHider(), mDisabledWhenPublished);
 		new ButtonListener(imageButton) {
 			@Override
 			protected void onPressed(Button button) {
@@ -618,7 +575,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Bullet settings
-		mUiFactory.addPanelSection("Bullet Settings", table, onTab.hider);
+		mUiFactory.addPanelSection("Bullet Settings", table, onTab.getHider());
 
 		// Speed
 		SliderListener sliderListener = new SliderListener() {
@@ -628,7 +585,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE,
-				sliderListener, table, onTab.hider, mDisabledWhenPublished, mInvoker);
+				sliderListener, table, onTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 		// Damage
 		sliderListener = new SliderListener() {
@@ -638,7 +595,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.damage = mUiFactory.addSlider("Damage", Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE, sliderListener, table,
-				onTab.hider, mDisabledWhenPublished, mInvoker);
+				onTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 
 		// Cooldown
@@ -655,7 +612,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Weapon Cooldown Time", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
-				Weapon.COOLDOWN_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.hider, mDisabledWhenPublished, mInvoker);
+				Weapon.COOLDOWN_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 		// Set sliders
 		mWidgets.weapon.cooldownMin = sliders.min;
@@ -664,54 +621,49 @@ public class EnemyEditorGui extends ActorGui {
 
 		// -- Aim Tabs --
 		// On Player
-		TabImageWrapper onPlayerTab = mUiFactory.createTabImageWrapper();
-		onPlayerTab.imageName = SkinNames.EditorIcons.AIM_ON_PLAYER;
-		onPlayerTab.hider = new HideListener(true) {
+		TabImageWrapper onPlayerTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_ON_PLAYER);
+		onPlayerTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.setAimType(AimTypes.ON_PLAYER);
 			}
-		};
+		});
 
 		// In front of player
-		TabImageWrapper inFrontPlayerTab = mUiFactory.createTabImageWrapper();
-		inFrontPlayerTab.imageName = SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER;
-		inFrontPlayerTab.hider = new HideListener(true) {
+		TabImageWrapper inFrontPlayerTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER);
+		inFrontPlayerTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.setAimType(AimTypes.IN_FRONT_OF_PLAYER);
 			}
-		};
+		});
 
 		// Movement direction
-		TabImageWrapper moveDirTab = mUiFactory.createTabImageWrapper();
-		moveDirTab.imageName = SkinNames.EditorIcons.AIM_MOVEMENT;
-		moveDirTab.hider = new HideListener(true) {
+		TabImageWrapper moveDirTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_MOVEMENT);
+		moveDirTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.setAimType(AimTypes.MOVE_DIRECTION);
 			}
-		};
+		});
 
 		// Direction
-		TabImageWrapper directionTab = mUiFactory.createTabImageWrapper();
-		directionTab.imageName = SkinNames.EditorIcons.AIM_DIRECTION;
-		directionTab.hider = new HideListener(true) {
+		TabImageWrapper directionTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_DIRECTION);
+		directionTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.setAimType(AimTypes.DIRECTION);
 			}
-		};
+		});
 
 		// Rotate
-		TabImageWrapper rotateTab = mUiFactory.createTabImageWrapper();
-		rotateTab.imageName = SkinNames.EditorIcons.AIM_ROTATE;
-		rotateTab.hider = new HideListener(true) {
+		TabImageWrapper rotateTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_ROTATE);
+		rotateTab.setListener(new ButtonListener() {
 			@Override
-			protected void onShow() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.setAimType(AimTypes.ROTATE);
 			}
-		};
+		});
 
 		// Create tabs
 		tabs = Pools.arrayList.obtain();
@@ -720,22 +672,22 @@ public class EnemyEditorGui extends ActorGui {
 		tabs.add(moveDirTab);
 		tabs.add(directionTab);
 		tabs.add(rotateTab);
-		mUiFactory.addTabs(table, onTab.hider, tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.addTabs(table, onTab.getHider(), tabs, mDisabledWhenPublished, mInvoker);
 		Pools.arrayList.free(tabs);
 
 		// Set buttons
-		mWidgets.weapon.aimOnPlayer = onPlayerTab.button;
-		mWidgets.weapon.aimInFrontOfPlayer = inFrontPlayerTab.button;
-		mWidgets.weapon.aimMoveDirection = moveDirTab.button;
-		mWidgets.weapon.aimDirection = directionTab.button;
-		mWidgets.weapon.aimRotate = rotateTab.button;
+		mWidgets.weapon.aimOnPlayer = onPlayerTab.getButton();
+		mWidgets.weapon.aimInFrontOfPlayer = inFrontPlayerTab.getButton();
+		mWidgets.weapon.aimMoveDirection = moveDirTab.getButton();
+		mWidgets.weapon.aimDirection = directionTab.getButton();
+		mWidgets.weapon.aimRotate = rotateTab.getButton();
 
 		// Set tooltips
-		mTooltip.add(onPlayerTab.button, Messages.EditorTooltips.AIM_ON_PLAYER);
-		mTooltip.add(inFrontPlayerTab.button, Messages.EditorTooltips.AIM_IN_FRONT_OF_PLAYER);
-		mTooltip.add(moveDirTab.button, Messages.EditorTooltips.AIM_MOVEMENT_DIRECTION);
-		mTooltip.add(directionTab.button, Messages.EditorTooltips.AIM_DIRECTION);
-		mTooltip.add(rotateTab.button, Messages.EditorTooltips.AIM_ROTATE);
+		mTooltip.add(onPlayerTab.getButton(), Messages.EditorTooltips.AIM_ON_PLAYER);
+		mTooltip.add(inFrontPlayerTab.getButton(), Messages.EditorTooltips.AIM_IN_FRONT_OF_PLAYER);
+		mTooltip.add(moveDirTab.getButton(), Messages.EditorTooltips.AIM_MOVEMENT_DIRECTION);
+		mTooltip.add(directionTab.getButton(), Messages.EditorTooltips.AIM_DIRECTION);
+		mTooltip.add(rotateTab.getButton(), Messages.EditorTooltips.AIM_ROTATE);
 
 		// // Labels
 		// // On Player
@@ -766,7 +718,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.aimDirectionAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, directionTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, directionTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 		// Rotate options
 		// Angle
@@ -778,7 +730,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, rotateTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished, mInvoker);
 
 		// Rotation speed
 		sliderListener = new SliderListener() {
@@ -788,7 +740,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", Enemy.Weapon.ROTATE_SPEED_MIN, Enemy.Weapon.ROTATE_SPEED_MAX,
-				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, sliderListener, table, rotateTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished, mInvoker);
 	}
 
 	@Override
@@ -844,9 +796,9 @@ public class EnemyEditorGui extends ActorGui {
 
 		static class MovementWidgets {
 			// Movement type
-			CheckBox pathBox = null;
-			CheckBox stationaryBox = null;
-			CheckBox aiBox = null;
+			Button pathBox = null;
+			Button stationaryBox = null;
+			Button aiBox = null;
 
 			// Generic movement variables
 			Slider pathSpeedSlider = null;
