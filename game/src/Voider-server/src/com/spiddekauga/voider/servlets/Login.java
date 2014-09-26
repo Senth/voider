@@ -11,7 +11,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
-import com.spiddekauga.voider.ClientVersion;
+import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.user.LoginMethod;
@@ -55,16 +55,16 @@ public class Login extends VoiderServlet {
 	 * @param method
 	 */
 	private void checkClientVersion(LoginMethod method) {
-		boolean updateAvailable = !ClientVersion.isLatestVersion(method.clientVersion);
+		boolean updateAvailable = !ClientVersions.isLatestVersion(method.clientVersion);
 
 		// Check client needs to be updated
 		if (updateAvailable) {
-			if (ClientVersion.isUpdateNeeded(method.clientVersion)) {
+			if (ClientVersions.isUpdateNeeded(method.clientVersion)) {
 				mResponse.clientVersionStatus = ClientVersionStatuses.UPDATE_REQUIRED;
 			} else {
 				mResponse.clientVersionStatus = ClientVersionStatuses.NEW_VERSION_AVAILABLE;
 			}
-			mResponse.changeLogMessage = ClientVersion.getChangeLogs(method.clientVersion);
+			mResponse.changeLogMessage = ClientVersions.getChangeLogs(method.clientVersion);
 		} else {
 			mResponse.clientVersionStatus = ClientVersionStatuses.UP_TO_DATE;
 		}

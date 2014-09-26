@@ -2,7 +2,7 @@ package com.spiddekauga.voider.network.entities.user;
 
 import java.util.UUID;
 
-import com.spiddekauga.voider.ClientVersion;
+import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 
@@ -26,5 +26,5 @@ public class LoginMethod implements IMethodEntity {
 	/** Private key, alternative login method */
 	public UUID privateKey = null;
 	/** Client version */
-	public int clientVersion = ClientVersion.V0_4_0.ordinal();
+	public int clientVersion = ClientVersions.getLatest().ordinal();
 }

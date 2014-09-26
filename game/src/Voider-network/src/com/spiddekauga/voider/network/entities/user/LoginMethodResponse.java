@@ -2,7 +2,7 @@ package com.spiddekauga.voider.network.entities.user;
 
 import java.util.UUID;
 
-import com.spiddekauga.voider.ClientVersion;
+import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
@@ -26,7 +26,7 @@ public class LoginMethodResponse implements IEntity, ISuccessStatuses {
 	/** Client version status */
 	public ClientVersionStatuses clientVersionStatus = ClientVersionStatuses.UNKNOWN;
 	/** Latest client version */
-	public String latestClientVersion = ClientVersion.getLatest().toString();
+	public String latestClientVersion = ClientVersions.getLatest().toString();
 	/** Change-log for new versions that are available */
 	public String changeLogMessage = null;
 

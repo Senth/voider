@@ -6,11 +6,9 @@ package com.spiddekauga.voider;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("javadoc")
-public enum ClientVersion {
+public enum ClientVersions {
 	// @formatter:off
 	V0_4_0("Initial version."),
-	V0_5_0_TEST(true, new String [] {"This is a very very very very ver long message with no absolute information whatsoever but it is a good way to test if wrapping works OK",
-	"Another point"}),
 
 	;
 	// @formatter:on
@@ -20,7 +18,7 @@ public enum ClientVersion {
 	 * @param updateNeeded
 	 * @param changeLogPoints all changes made in this version
 	 */
-	private ClientVersion(boolean updatedNeeded, String... changeLogPoints) {
+	private ClientVersions(boolean updatedNeeded, String... changeLogPoints) {
 		mUpdatedNeeeded = updatedNeeded;
 
 		StringBuilder stringBuilder = new StringBuilder();
@@ -41,7 +39,7 @@ public enum ClientVersion {
 	 * No update is needed for this version
 	 * @param changeLogPoints all changes made in this version
 	 */
-	private ClientVersion(String... changeLogPoints) {
+	private ClientVersions(String... changeLogPoints) {
 		this(false, changeLogPoints);
 	}
 
@@ -60,7 +58,7 @@ public enum ClientVersion {
 		}
 
 		for (int i = version + 1; i < values().length; ++i) {
-			ClientVersion clientVersion = values()[i];
+			ClientVersions clientVersion = values()[i];
 
 			if (clientVersion.mUpdatedNeeeded) {
 				return true;
@@ -113,7 +111,7 @@ public enum ClientVersion {
 				changeLogs.append("\n\n");
 			}
 
-			ClientVersion clientVersion = values()[i];
+			ClientVersions clientVersion = values()[i];
 
 			changeLogs.append(clientVersion.getChangeLog());
 		}
@@ -124,9 +122,9 @@ public enum ClientVersion {
 	/**
 	 * @return latest version
 	 */
-	public static ClientVersion getLatest() {
-		int lastIndex = ClientVersion.values().length - 1;
-		return ClientVersion.values()[lastIndex];
+	public static ClientVersions getLatest() {
+		int lastIndex = ClientVersions.values().length - 1;
+		return ClientVersions.values()[lastIndex];
 	}
 
 	@Override
