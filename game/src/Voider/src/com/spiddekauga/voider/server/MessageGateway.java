@@ -19,7 +19,6 @@ import edu.gvsu.cis.masl.channelAPI.ChannelService;
 
 /**
  * Gateway for all channel messages to and from the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MessageGateway implements ChannelService, Observer {
@@ -42,8 +41,8 @@ public class MessageGateway implements ChannelService, Observer {
 
 	/**
 	 * @return instance of this class.
-	 * @note this instance could still be invalid to use. Check
-	 * {@link #isConnected()} to see if the instance is valid to use.
+	 * @note this instance could still be invalid to use. Check {@link #isConnected()} to
+	 *       see if the instance is valid to use.
 	 */
 	public static MessageGateway getInstance() {
 		if (mInstance == null) {
@@ -87,14 +86,22 @@ public class MessageGateway implements ChannelService, Observer {
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
 			if (arg instanceof UserEvents) {
-				switch ((UserEvents)arg) {
+				switch ((UserEvents) arg) {
 				case LOGIN:
 					connect();
 					break;
 
-				case LOGOUT:
-					disconnect();
+				case LOGOUT: {
+					// Disconnect in main thread
+					Gdx.app.postRunnable(new Runnable() {
+						@Override
+						public void run() {
+							disconnect();
+						}
+					});
+
 					break;
+				}
 				}
 			}
 		}

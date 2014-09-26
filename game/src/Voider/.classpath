@@ -14,7 +14,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/httpclient-cache-4.3.2.jar" sourcepath="libs/httpclient-cache-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="libs/httpcore-4.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="libs/jacc.jar" sourcepath="libs/jacc-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="libs/jacc.jar" sourcepath="libs/jacc-src.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.json.jar" sourcepath="libs/org.json.zip"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar" sourcepath="libs/commons-io-2.4-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang-2.6.jar" sourcepath="libs/commons-lang-2.6-sources.jar"/>
