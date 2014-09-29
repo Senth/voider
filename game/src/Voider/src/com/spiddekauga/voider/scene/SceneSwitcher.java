@@ -620,6 +620,7 @@ public class SceneSwitcher {
 		Scene poppedScene = mScenes.pop();
 		Outcomes outcome = poppedScene.getOutcome();
 		Object outcomeMessage = poppedScene.getOutcomeMessage();
+		Outcomes loadingOutcome = Outcomes.NOT_APPLICAPLE;
 
 		poppedScene.onDispose();
 		Gdx.input.setInputProcessor(null);
@@ -657,9 +658,13 @@ public class SceneSwitcher {
 					outcomeMessage = mOutcomeMessage;
 					mOutcome = null;
 					mOutcomeMessage = null;
+				} else if (poppedScene instanceof LoadingScene) {
+					loadingOutcome = poppedScene.getOutcome();
+					outcome = Outcomes.NOT_APPLICAPLE;
+					outcomeMessage = null;
 				}
 				previousScene.reloadResourcesOnActivate(outcome, outcomeMessage);
-				activateCurrentScene(outcome, outcomeMessage);
+				activateCurrentScene(outcome, outcomeMessage, loadingOutcome);
 				Gdx.input.setInputProcessor(previousScene.getInputMultiplexer());
 			}
 		}
@@ -679,17 +684,16 @@ public class SceneSwitcher {
 	private static void loadActiveSceneResources(LoadingScene forceLoadingScene) {
 		Scene currentScene = mScenes.peek();
 
+		currentScene.loadResources();
+
 		if (forceLoadingScene != null) {
-			forceLoadingScene.setSceneToload(currentScene);
 			switchTo(forceLoadingScene);
 		} else {
 			LoadingScene loadingScene = currentScene.getLoadingScene();
 
 			if (loadingScene != null) {
-				loadingScene.setSceneToload(currentScene);
 				switchTo(loadingScene);
 			} else {
-				currentScene.loadResources();
 				currentScene.setLoading(true);
 			}
 		}

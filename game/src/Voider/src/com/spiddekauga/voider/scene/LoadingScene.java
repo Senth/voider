@@ -18,17 +18,6 @@ public abstract class LoadingScene extends Scene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-		super.onActivate(outcome, message, loadingOutcome);
-
-		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
-			if (mSceneToLoad != null) {
-				mSceneToLoad.loadResources();
-			}
-		}
-	}
-
-	@Override
 	protected void update(float deltaTime) {
 		try {
 			ResourceCacheFacade.update();
@@ -38,15 +27,4 @@ public abstract class LoadingScene extends Scene {
 			setOutcome(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
 		}
 	}
-
-	/**
-	 * Sets the scene to load
-	 * @param sceneToLoad the scene to load
-	 */
-	public void setSceneToload(Scene sceneToLoad) {
-		mSceneToLoad = sceneToLoad;
-	}
-
-	/** The scene to load */
-	public Scene mSceneToLoad = null;
 }

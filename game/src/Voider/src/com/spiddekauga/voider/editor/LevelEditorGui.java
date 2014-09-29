@@ -801,7 +801,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY);
 
 		// Path settings
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.PATH_ADD);
+		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.PATH_TAB);
 		button = mSettingTabs.addTab(buttonStyle, mWidgets.path.table, mWidgets.path.hiderTable);
 		mWidgets.path.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_PATH);

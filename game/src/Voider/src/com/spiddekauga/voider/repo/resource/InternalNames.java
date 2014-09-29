@@ -55,6 +55,8 @@ public enum InternalNames {
 	IMAGE_SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
 	/** Game icon 256x256 */
 	ICON_256("icon-256.png", Texture.class),
+	/** Game icon 128x128 */
+	ICON_128("icon-128.png", Texture.class),
 	/** Game icon 64x64 */
 	ICON_64("icon-64.png", Texture.class),
 	/** game icon 32x32 */

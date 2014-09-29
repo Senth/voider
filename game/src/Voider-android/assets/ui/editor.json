@@ -644,5 +644,15 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageCheckedOver: movement_stationary_checked_over,
 		imageDisabled: movement_stationary_disabled
 	},
+	
+	
+	/** Misc */
+	
+	youtube: {
+		imageUp: youtube,
+		imageOver: youtube_over,
+		imageDown: youtube_down,
+		imageDisabled: youtube_disabled
+	},
 }
 }
