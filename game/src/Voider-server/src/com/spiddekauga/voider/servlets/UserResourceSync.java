@@ -213,6 +213,7 @@ public class UserResourceSync extends VoiderServlet {
 		// Things to remove
 		ArrayList<BlobKey> blobsToRemove = new ArrayList<>();
 		ArrayList<Key> entitiesToRemove = new ArrayList<>();
+		ArrayList<Entity> entitiesToAdd = new ArrayList<>();
 
 
 		// Find all revisions of the resources and delete them
@@ -235,11 +236,12 @@ public class UserResourceSync extends VoiderServlet {
 				entity = new Entity(DatastoreTables.USER_RESOURCES_DELETED, mUser.getKey());
 				DatastoreUtils.setProperty(entity, CUserResourcesDeleted.RESOURCE_ID, removeId);
 				DatastoreUtils.setProperty(entity, CUserResourcesDeleted.DATE, mResponse.syncTime);
-				DatastoreUtils.put(entity);
+				entitiesToAdd.add(entity);
 			}
 		}
 
-		// Delete entities and blobs
+		// Flush entities
+		DatastoreUtils.put(entitiesToAdd);
 		DatastoreUtils.delete(entitiesToRemove);
 		BlobUtils.delete(blobsToRemove);
 	}

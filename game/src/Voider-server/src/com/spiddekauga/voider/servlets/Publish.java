@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Document.Builder;
 import com.google.appengine.api.search.Field;
+import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
@@ -35,6 +37,12 @@ import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CDependency;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CSyncPublished;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResourcesDeleted;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -48,88 +56,163 @@ public class Publish extends VoiderServlet {
 	@Override
 	protected void onInit() {
 		mSearchDocumentsToAdd.clear();
+		mMethod = null;
+		mResponse = new PublishMethodResponse();
+		mResponse.status = Statuses.FAILED_SERVER_ERROR;
+		mDatastoreKeys.clear();
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		PublishMethodResponse methodResponse = new PublishMethodResponse();
-		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
-
 		if (!mUser.isLoggedIn()) {
-			methodResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
-			return methodResponse;
+			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			return mResponse;
 		}
 
-		boolean success = false;
-
 		if (methodEntity instanceof PublishMethod) {
-			Map<UUID, BlobKey> blobKeys = getUploadedBlobs();
-			Map<UUID, Key> datastoreKeys = new HashMap<>();
+			mMethod = (PublishMethod) methodEntity;
+			mBlobKeys = getUploadedBlobs();
+
+			// Check if any of the resources have been
+			boolean alreadyPublished = hasBeenPublishedAlready();
+			boolean success = !alreadyPublished;
 
 			// Add entities to datastore and search
-			mLogger.fine("Add entities to datastore");
-			success = true;
-			for (DefEntity defEntity : ((PublishMethod) methodEntity).defs) {
-				Key datastoreKey = addEntityToDatastore(defEntity, blobKeys, datastoreKeys);
-
-				if (datastoreKey != null) {
-					if (defEntity instanceof LevelDefEntity) {
-						success = createEmptyLevelStatistics(datastoreKey);
-					}
-
-					setSyncDownloadDate(datastoreKey);
-
-					mLogger.fine("Create search document");
-					createSearchDocument(defEntity, datastoreKey);
-				} else {
-					success = false;
-					mLogger.severe("Failed to add all entities to the datastore, removing all");
-					break;
-				}
+			if (success) {
+				success = addEntitiesToDatastore();
 			}
 
 			// Add dependencies
+			boolean addedDependencies = false;
 			if (success) {
-				mLogger.fine("Adding resource dependencies");
-				for (DefEntity defEntity : ((PublishMethod) methodEntity).defs) {
-					success = addDependencies(defEntity, datastoreKeys, blobKeys);
-
-					if (!success) {
-						methodResponse.status = Statuses.FAILED_SERVER_ERROR;
-						mLogger.severe("Failed to add all dependencies");
-						break;
-					}
-				}
+				success = addDependencies();
+				addedDependencies = true;
 			}
 
 			// Add search documents
+			boolean addedSearch = false;
 			if (success) {
-				mLogger.fine("Adding search documents");
 				success = addSearchDocuments();
+				addedSearch = true;
 			}
 
-			// TODO remove all user resources (and blobs)
+
+			// SUCCESS -> Send sync messages and removed user resources
 			if (success) {
-
+				mResponse.status = Statuses.SUCCESS;
+				removeUserResourcesThatWasPublished();
+				sendSyncMessages();
 			}
-			// FAILED - TODO remove all resources from published, dependencies, and search
+			// FAILED - Remove all resources from published, dependencies, and search
 			else {
+				undoPublishedAndStats();
 
-			}
+				if (addedDependencies) {
+					undoDependencies();
+				}
 
-			// Set method response status and send sync message
-			if (success) {
-				methodResponse.status = Statuses.SUCCESS;
-				mLogger.fine("Successfully published resource");
-
-				sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
-				sendMessage(new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId()));
-			} else {
-				mLogger.severe("Failed to publish resource");
+				if (addedSearch) {
+					undoSearchDocuments();
+				}
 			}
 		}
 
-		return methodResponse;
+		return mResponse;
+	}
+
+	/**
+	 * Remove all user resources that was published
+	 */
+	private void removeUserResourcesThatWasPublished() {
+		// Things to remove
+		ArrayList<BlobKey> blobsToRemove = new ArrayList<>();
+		ArrayList<Key> entitiesToRemove = new ArrayList<>();
+		ArrayList<Entity> entitiesToAdd = new ArrayList<>();
+
+		Date date = new Date();
+
+		// Find all revisions of the resources and delete them
+		for (DefEntity def : mMethod.defs) {
+			UUID removeId = def.resourceId;
+
+			// Revisions to delete
+			FilterWrapper idProperty = new FilterWrapper(CUserResources.RESOURCE_ID, removeId);
+			List<Key> keys = DatastoreUtils.getKeys(DatastoreTables.USER_RESOURCES, mUser.getKey(), idProperty);
+			entitiesToRemove.addAll(keys);
+
+			// Blobs to delete
+			for (Key key : keys) {
+				Entity entity = DatastoreUtils.getEntity(key);
+				BlobKey blobKey = (BlobKey) entity.getProperty(CUserResources.BLOB_KEY);
+				blobsToRemove.add(blobKey);
+			}
+
+			// Add the resource to the deleted table
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.USER_RESOURCES_DELETED, mUser.getKey(), idProperty);
+			if (entity == null) {
+				entity = new Entity(DatastoreTables.USER_RESOURCES_DELETED, mUser.getKey());
+				DatastoreUtils.setProperty(entity, CUserResourcesDeleted.RESOURCE_ID, removeId);
+				DatastoreUtils.setProperty(entity, CUserResourcesDeleted.DATE, date);
+				entitiesToAdd.add(entity);
+			}
+		}
+
+		// Flush entities
+		DatastoreUtils.put(entitiesToAdd);
+		DatastoreUtils.delete(entitiesToRemove);
+		BlobUtils.delete(blobsToRemove);
+	}
+
+	/**
+	 * Undo added published resources and level statistics
+	 */
+	private void undoPublishedAndStats() {
+		ArrayList<Key> keysToDelete = new ArrayList<>();
+		for (DefEntity def : mMethod.defs) {
+			Key defKey = mDatastoreKeys.get(def.resourceId);
+
+			if (defKey != null) {
+				keysToDelete.add(defKey);
+
+				// Remove level statistics
+				if (def instanceof LevelDefEntity) {
+					Key statKey = DatastoreUtils.getSingleKey(DatastoreTables.LEVEL_STAT, defKey);
+					if (statKey != null) {
+						keysToDelete.add(statKey);
+					}
+				}
+			}
+		}
+
+		DatastoreUtils.delete(keysToDelete);
+	}
+
+	/**
+	 * Send sync messages
+	 */
+	private void sendSyncMessages() {
+		sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD));
+		sendMessage(new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES));
+	}
+
+	/**
+	 * Check if any of the resources have been published already
+	 * @return true if any of the resources have been published already
+	 */
+	private boolean hasBeenPublishedAlready() {
+		boolean alreadyPublished = false;
+		for (DefEntity def : mMethod.defs) {
+			if (DatastoreUtils.exists(DatastoreTables.PUBLISHED, new FilterWrapper(CPublished.RESOURCE_ID, def.resourceId))) {
+				mResponse.alreadyPublished.add(def.resourceId);
+				alreadyPublished = true;
+			}
+		}
+
+		if (alreadyPublished) {
+			mResponse.status = Statuses.FAILED_ALREADY_PUBLISHED;
+		}
+
+		return alreadyPublished;
 	}
 
 	/**
@@ -137,30 +220,46 @@ public class Publish extends VoiderServlet {
 	 * @param publishKey key of the published resource
 	 */
 	private void setSyncDownloadDate(Key publishKey) {
-		Entity entity = new Entity("sync_publish", mUser.getKey());
-		entity.setProperty("published_key", publishKey);
-		entity.setProperty("download_date", new Date());
+		Entity entity = new Entity(DatastoreTables.SYNC_PUBLISHED, mUser.getKey());
+		entity.setProperty(CSyncPublished.PUBLISHED_KEY, publishKey);
+		entity.setProperty(CSyncPublished.DOWNLOAD_DATE, new Date());
 
 		DatastoreUtils.put(entity);
 	}
 
 	/**
-	 * Add all dependencies for the specified resource
-	 * @param defEntity the definition to add dependencies for
-	 * @param datastoreKeys all datastore keys
-	 * @param blobKeys all blob keys (dependencies)
+	 * Add all dependencies for all resources
 	 * @return true if successful
 	 */
-	private boolean addDependencies(DefEntity defEntity, Map<UUID, Key> datastoreKeys, Map<UUID, BlobKey> blobKeys) {
+	private boolean addDependencies() {
+		mLogger.fine("Adding resource dependencies");
+		for (DefEntity defEntity : mMethod.defs) {
+			boolean success = addDependencies(defEntity);
+
+			if (!success) {
+				mLogger.severe("Failed to add all dependencies");
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Add all dependencies for the specified resource
+	 * @param defEntity the definition to add dependencies for
+	 * @return true if successful
+	 */
+	private boolean addDependencies(DefEntity defEntity) {
 		if (!defEntity.dependencies.isEmpty()) {
-			Key datastoreKey = datastoreKeys.get(defEntity.resourceId);
+			Key datastoreKey = mDatastoreKeys.get(defEntity.resourceId);
 
 			for (UUID dependency : defEntity.dependencies) {
-				Key dependencyKey = getResourceKey(dependency, datastoreKeys);
+				Key dependencyKey = getResourceKey(dependency, mDatastoreKeys);
 
 				if (dependencyKey != null) {
-					Entity entity = new Entity(DatastoreTables.DEPENDENCY.toString(), datastoreKey);
-					entity.setProperty("dependency", dependencyKey);
+					Entity entity = new Entity(DatastoreTables.DEPENDENCY, datastoreKey);
+					entity.setProperty(CDependency.DEPENDENCY, dependencyKey);
 					Key key = DatastoreUtils.put(entity);
 
 					if (key == null) {
@@ -178,6 +277,20 @@ public class Publish extends VoiderServlet {
 	}
 
 	/**
+	 * Undo added published dependencies
+	 */
+	private void undoDependencies() {
+		for (DefEntity def : mMethod.defs) {
+			if (!def.dependencies.isEmpty()) {
+				Key defKey = mDatastoreKeys.get(def.resourceId);
+
+				List<Key> dependenciesKeys = DatastoreUtils.getKeys(DatastoreTables.DEPENDENCY, defKey);
+				DatastoreUtils.delete(dependenciesKeys);
+			}
+		}
+	}
+
+	/**
 	 * Tries to find the resource key, if it doesn't exist in the map it will try to find
 	 * it in the Datastore instead and insert it to datastoreKeys
 	 * @param resourceId the resource to get the blob key from
@@ -189,7 +302,7 @@ public class Publish extends VoiderServlet {
 
 		// Search in datastore
 		if (resourceKey == null) {
-			resourceKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), new FilterWrapper("resource_id", resourceId));
+			resourceKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED, new FilterWrapper(CPublished.RESOURCE_ID, resourceId));
 
 			if (resourceKey != null) {
 				resourceKeys.put(resourceId, resourceKey);
@@ -207,12 +320,12 @@ public class Publish extends VoiderServlet {
 	private boolean createEmptyLevelStatistics(Key key) {
 		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), key);
 
-		entity.setProperty("play_count", 0);
-		entity.setProperty("likes", 0);
-		entity.setProperty("rating_sum", 0);
-		entity.setProperty("ratings", 0);
-		entity.setProperty("rating_avg", 0.0);
-		entity.setProperty("clear_count", 0);
+		entity.setProperty(CLevelStat.PLAY_COUNT, 0);
+		entity.setProperty(CLevelStat.BOOKMARS, 0);
+		entity.setProperty(CLevelStat.RATING_SUM, 0);
+		entity.setProperty(CLevelStat.RATINGS, 0);
+		entity.setProperty(CLevelStat.RATING_AVG, 0.0);
+		entity.setProperty(CLevelStat.CLEAR_COUNT, 0);
 
 		Key statKey = DatastoreUtils.put(entity);
 
@@ -220,31 +333,60 @@ public class Publish extends VoiderServlet {
 	}
 
 	/**
+	 * Add all entities to the datastore
+	 * @return true if successful
+	 */
+	private boolean addEntitiesToDatastore() {
+		mLogger.fine("Add entities to datastore");
+
+		for (DefEntity defEntity : mMethod.defs) {
+			Key datastoreKey = addEntityToDatastore(defEntity);
+
+			if (datastoreKey != null) {
+				if (defEntity instanceof LevelDefEntity) {
+					boolean success = createEmptyLevelStatistics(datastoreKey);
+					if (!success) {
+						return false;
+					}
+				}
+
+				setSyncDownloadDate(datastoreKey);
+
+				mLogger.fine("Create search document");
+				createSearchDocument(defEntity, datastoreKey);
+			} else {
+				mLogger.severe("Failed to add all entities to the datastore, removing all");
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Add an entity to the datastore
 	 * @param defEntity the entity to add to the datastore
-	 * @param blobKeys all blob keys
-	 * @param datastoreKeys adds the added datastore key to this map
 	 * @return datastore key of the def entity
 	 */
-	private Key addEntityToDatastore(DefEntity defEntity, Map<UUID, BlobKey> blobKeys, Map<UUID, Key> datastoreKeys) {
+	private Key addEntityToDatastore(DefEntity defEntity) {
 		boolean success = false;
 		Entity datastoreEntity = new Entity(DatastoreTables.PUBLISHED.toString(), mUser.getKey());
 
 		switch (defEntity.type) {
 		case BULLET_DEF:
-			success = appendBulletDefEntity(datastoreEntity, (BulletDefEntity) defEntity, blobKeys);
+			success = appendBulletDefEntity(datastoreEntity, (BulletDefEntity) defEntity);
 			break;
 
 		case CAMPAIGN_DEF:
-			success = appendCampaignDefEntity(datastoreEntity, (CampaignDefEntity) defEntity, blobKeys);
+			success = appendCampaignDefEntity(datastoreEntity, (CampaignDefEntity) defEntity);
 			break;
 
 		case ENEMY_DEF:
-			success = appendEnemyDefEntity(datastoreEntity, (EnemyDefEntity) defEntity, blobKeys);
+			success = appendEnemyDefEntity(datastoreEntity, (EnemyDefEntity) defEntity);
 			break;
 
 		case LEVEL_DEF:
-			success = appendLevelDefEntity(datastoreEntity, (LevelDefEntity) defEntity, blobKeys);
+			success = appendLevelDefEntity(datastoreEntity, (LevelDefEntity) defEntity);
 			break;
 
 		default:
@@ -256,7 +398,7 @@ public class Publish extends VoiderServlet {
 			Key key = DatastoreUtils.put(datastoreEntity);
 
 			if (key != null) {
-				datastoreKeys.put(defEntity.resourceId, key);
+				mDatastoreKeys.put(defEntity.resourceId, key);
 				return key;
 			}
 		}
@@ -269,13 +411,13 @@ public class Publish extends VoiderServlet {
 	 * @return true if all search documents were added
 	 */
 	private boolean addSearchDocuments() {
-		boolean success = true;
+		mLogger.fine("Adding search documents");
 
 		for (Entry<UploadTypes, ArrayList<Document>> entry : mSearchDocumentsToAdd.entrySet()) {
 			String typeName = entry.getKey().toString();
 			ArrayList<Document> documents = entry.getValue();
 
-			success = SearchUtils.indexDocuments(typeName, documents);
+			boolean success = SearchUtils.indexDocuments(typeName, documents);
 
 			if (!success) {
 				return false;
@@ -283,6 +425,13 @@ public class Publish extends VoiderServlet {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Undo added search documents
+	 */
+	private void undoSearchDocuments() {
+		// TODO
 	}
 
 	/**
@@ -333,22 +482,21 @@ public class Publish extends VoiderServlet {
 	 * Append DefEntity to the datastore entity
 	 * @param datastoreEntity datastore entity
 	 * @param defEntity the def entity to append to the datastore
-	 * @param blobKeys all blob keys
 	 * @return true if successful, false otherwise
 	 */
-	private boolean appendDefEntity(Entity datastoreEntity, DefEntity defEntity, Map<UUID, BlobKey> blobKeys) {
+	private boolean appendDefEntity(Entity datastoreEntity, DefEntity defEntity) {
 		// Type
 		if (defEntity.type != null) {
-			DatastoreUtils.setProperty(datastoreEntity, "type", defEntity.type.getId());
+			DatastoreUtils.setProperty(datastoreEntity, CPublished.TYPE, defEntity.type.getId());
 		} else {
 			mLogger.severe("DefType is null for " + defEntity.resourceId);
 			return false;
 		}
 
 		// Blob key
-		BlobKey blobKey = blobKeys.get(defEntity.resourceId);
+		BlobKey blobKey = mBlobKeys.get(defEntity.resourceId);
 		if (blobKey != null) {
-			DatastoreUtils.setProperty(datastoreEntity, "blob_key", blobKey);
+			DatastoreUtils.setProperty(datastoreEntity, CPublished.BLOB_KEY, blobKey);
 		} else {
 			mLogger.severe("Could not find blob key for " + defEntity.resourceId);
 			return false;
@@ -356,19 +504,19 @@ public class Publish extends VoiderServlet {
 
 		// Original creator key
 		try {
-			DatastoreUtils.setProperty(datastoreEntity, "original_creator_key", KeyFactory.stringToKey(defEntity.originalCreatorKey));
+			DatastoreUtils.setProperty(datastoreEntity, CPublished.ORIGINAL_CREATOR_KEY, KeyFactory.stringToKey(defEntity.originalCreatorKey));
 		} catch (IllegalArgumentException e) {
 			return false;
 		}
 
 
 		// No-test properties
-		DatastoreUtils.setProperty(datastoreEntity, "date", defEntity.date);
-		DatastoreUtils.setProperty(datastoreEntity, "copy_parent_id", defEntity.copyParentId);
-		DatastoreUtils.setProperty(datastoreEntity, "resource_id", defEntity.resourceId);
-		DatastoreUtils.setUnindexedProperty(datastoreEntity, "name", defEntity.name);
-		DatastoreUtils.setUnindexedProperty(datastoreEntity, "description", defEntity.description);
-		DatastoreUtils.setUnindexedProperty(datastoreEntity, "png", defEntity.png);
+		DatastoreUtils.setProperty(datastoreEntity, CPublished.DATE, defEntity.date);
+		DatastoreUtils.setProperty(datastoreEntity, CPublished.COPY_PARENT_ID, defEntity.copyParentId);
+		DatastoreUtils.setProperty(datastoreEntity, CPublished.RESOURCE_ID, defEntity.resourceId);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.NAME, defEntity.name);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.DESCRIPTION, defEntity.description);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.PNG, defEntity.png);
 
 		return true;
 	}
@@ -396,12 +544,11 @@ public class Publish extends VoiderServlet {
 	 * Append EnemyDefEntity to the datastore entity
 	 * @param datastoreEntity datastore entity
 	 * @param enemyDefEntity the enemy def entity to append to the datastore
-	 * @param blobKeys all blob keys
 	 * @return true if successful, false otherwise
 	 */
-	private boolean appendEnemyDefEntity(Entity datastoreEntity, EnemyDefEntity enemyDefEntity, Map<UUID, BlobKey> blobKeys) {
+	private boolean appendEnemyDefEntity(Entity datastoreEntity, EnemyDefEntity enemyDefEntity) {
 		if (enemyDefEntity.enemyMovementType != null) {
-			DatastoreUtils.setProperty(datastoreEntity, "enemy_movement_type", enemyDefEntity.enemyMovementType.getId());
+			DatastoreUtils.setProperty(datastoreEntity, CPublished.ENEMY_MOVEMENT_TYPE, enemyDefEntity.enemyMovementType.getId());
 		} else {
 			mLogger.severe("MovementType is null for " + enemyDefEntity.resourceId);
 			return false;
@@ -409,10 +556,10 @@ public class Publish extends VoiderServlet {
 
 
 		// No-test properties
-		DatastoreUtils.setProperty(datastoreEntity, "enemy_has_weapon", enemyDefEntity.enemyHasWeapon);
+		DatastoreUtils.setProperty(datastoreEntity, CPublished.ENEMY_HAS_WEAPON, enemyDefEntity.enemyHasWeapon);
 
 
-		return appendDefEntity(datastoreEntity, enemyDefEntity, blobKeys);
+		return appendDefEntity(datastoreEntity, enemyDefEntity);
 	}
 
 	/**
@@ -428,14 +575,13 @@ public class Publish extends VoiderServlet {
 	 * Append LevelDefEntity to the datastore entity
 	 * @param datastoreEntity datastore entity
 	 * @param LevelDefEntity the level def entity to append to the datastore
-	 * @param blobKeys all blob keys
 	 * @return true if successful, false otherwise
 	 */
-	private boolean appendLevelDefEntity(Entity datastoreEntity, LevelDefEntity LevelDefEntity, Map<UUID, BlobKey> blobKeys) {
+	private boolean appendLevelDefEntity(Entity datastoreEntity, LevelDefEntity LevelDefEntity) {
 		// Get blob key for level
-		BlobKey blobKey = blobKeys.get(LevelDefEntity.levelId);
+		BlobKey blobKey = mBlobKeys.get(LevelDefEntity.levelId);
 		if (blobKey != null) {
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, "level_blob_key", blobKey);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.LEVEL_BLOB_KEY, blobKey);
 		} else {
 			mLogger.severe("Could not find blob key for level: " + LevelDefEntity.levelId);
 			return false;
@@ -443,10 +589,10 @@ public class Publish extends VoiderServlet {
 
 
 		// No-test properties
-		DatastoreUtils.setUnindexedProperty(datastoreEntity, "level_id", LevelDefEntity.levelId);
-		DatastoreUtils.setProperty(datastoreEntity, "level_length", LevelDefEntity.levelLength);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.LEVEL_ID, LevelDefEntity.levelId);
+		DatastoreUtils.setProperty(datastoreEntity, CPublished.LEVEL_LENGTH, LevelDefEntity.levelLength);
 
-		return appendDefEntity(datastoreEntity, LevelDefEntity, blobKeys);
+		return appendDefEntity(datastoreEntity, LevelDefEntity);
 	}
 
 	/**
@@ -462,11 +608,10 @@ public class Publish extends VoiderServlet {
 	 * Append BulletDefEntity to the datastore entity
 	 * @param datastoreEntity datastore entity
 	 * @param bulletDefEntity the def entity to append to the datastore
-	 * @param blobKeys all blob keys
 	 * @return true if successful, false otherwise
 	 */
-	private boolean appendBulletDefEntity(Entity datastoreEntity, BulletDefEntity bulletDefEntity, Map<UUID, BlobKey> blobKeys) {
-		return appendDefEntity(datastoreEntity, bulletDefEntity, blobKeys);
+	private boolean appendBulletDefEntity(Entity datastoreEntity, BulletDefEntity bulletDefEntity) {
+		return appendDefEntity(datastoreEntity, bulletDefEntity);
 	}
 
 	/**
@@ -482,11 +627,10 @@ public class Publish extends VoiderServlet {
 	 * Append CampaignDefEntity to the datastore entity
 	 * @param datastoreEntity datastore entity
 	 * @param campaignDefEntity the def entity to append to the datastore
-	 * @param blobKeys all blob keys
 	 * @return true if successful, false otherwise
 	 */
-	private boolean appendCampaignDefEntity(Entity datastoreEntity, CampaignDefEntity campaignDefEntity, Map<UUID, BlobKey> blobKeys) {
-		return appendDefEntity(datastoreEntity, campaignDefEntity, blobKeys);
+	private boolean appendCampaignDefEntity(Entity datastoreEntity, CampaignDefEntity campaignDefEntity) {
+		return appendDefEntity(datastoreEntity, campaignDefEntity);
 	}
 
 	/**
@@ -502,4 +646,9 @@ public class Publish extends VoiderServlet {
 	private Logger mLogger = Logger.getLogger(Publish.class.getName());
 	/** Created search documents */
 	private HashMap<UploadTypes, ArrayList<Document>> mSearchDocumentsToAdd = new HashMap<>();
+	private Map<UUID, BlobKey> mBlobKeys = null;
+	/** For getting datastore keys faster when adding dependencies */
+	private Map<UUID, Key> mDatastoreKeys = new HashMap<>();
+	private PublishMethod mMethod = null;
+	private PublishMethodResponse mResponse = null;
 }
