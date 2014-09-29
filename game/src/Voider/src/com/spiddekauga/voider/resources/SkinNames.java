@@ -203,6 +203,8 @@ public class SkinNames {
 		VISUALS,
 		/** Weapon options for enemies and bullets */
 		WEAPON,
+		/** YouTube icon */
+		YOUTUBE,
 
 		;
 

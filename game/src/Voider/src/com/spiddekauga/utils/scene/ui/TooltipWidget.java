@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
@@ -33,11 +35,12 @@ public class TooltipWidget extends WidgetGroup {
 	/**
 	 * Constructor which sets the youtube image
 	 * @param tooltipImage a drawable to display to most left
-	 * @param youtubeImage a drawable to display to the right of the youtube link text
+	 * @param youtubeImage an image button to display to the right of the YouTube link
+	 *        text
 	 * @param labelStyle style for labels
 	 * @param padding padding between tooltips
 	 */
-	public TooltipWidget(Drawable tooltipImage, Drawable youtubeImage, LabelStyle labelStyle, float padding) {
+	public TooltipWidget(Drawable tooltipImage, ImageButtonStyle youtubeImage, LabelStyle labelStyle, float padding) {
 		addActor(mTable);
 		mTable.setAlignTable(Horizontal.LEFT, Vertical.BOTTOM);
 		mTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
@@ -90,10 +93,10 @@ public class TooltipWidget extends WidgetGroup {
 		mYoutubeLabel.addListener(mUrlListener);
 		mTable.add(mYoutubeLabel);
 
-		mYoutubeImage.setDrawable(youtubeImage);
-		mYoutubeImage.addListener(mUrlListener);
-		mTable.add(mYoutubeImage).setPadRight(0);
-		mYoutubeImage.setVisible(false);
+		mYoutubeButton = new ImageButton(youtubeImage);
+		mYoutubeButton.addListener(mUrlListener);
+		mTable.add(mYoutubeButton).setPadRight(0);
+		mYoutubeButton.setVisible(false);
 	}
 
 	/**
@@ -333,14 +336,14 @@ public class TooltipWidget extends WidgetGroup {
 	}
 
 	/**
-	 * Set youtube link
+	 * Set YouTube link
 	 * @param tooltip the tooltip to display the youtube link for
 	 */
 	private void setYoutubeLink(ITooltip tooltip) {
 		mUrlListener.setUrl(tooltip.getYoutubeLink());
 		mYoutubeLabel.setText(tooltip.getText());
-		mYoutubeImage.setVisible(true);
-		mYoutubeImage.invalidateHierarchy();
+		mYoutubeButton.setVisible(true);
+		mYoutubeButton.invalidateHierarchy();
 	}
 
 	/**
@@ -523,29 +526,25 @@ public class TooltipWidget extends WidgetGroup {
 	private ArrayList<Label> mTooltipLabels = new ArrayList<>();
 	/** Tooltip spacing labels, i.e. —> */
 	private ArrayList<Label> mTooltipSpacing = new ArrayList<>();
-	/** Youtube Label */
+	/** YouTube Label */
 	private Label mYoutubeLabel = null;
-	/** Youtube image button */
-	private Image mYoutubeImage = new Image();
+	/** YouTube image button */
+	private ImageButton mYoutubeButton = null;
 	/** Tooltip image button */
 	private Image mTooltipImage = new Image();
-	/** Url listener */
+	/** URL listener */
 	private GotoUrlListener mUrlListener = new GotoUrlListener();
 
 	/**
-	 * Listens to actors and opens the specified urls when pressed.
+	 * Listens to actors and opens the specified URL when pressed.
 	 */
-	private class GotoUrlListener implements EventListener {
+	private class GotoUrlListener extends ButtonListener {
 		@Override
 		public boolean handle(Event event) {
 			// Pressed for buttons
-			Actor actor = event.getTarget();
+			Actor actor = event.getListenerActor();
 			if (actor instanceof Button) {
-				if (event instanceof ChangeEvent) {
-					if (((Button) actor).isChecked()) {
-						openUrl();
-					}
-				}
+				super.handle(event);
 			}
 			// Not button
 			else {
@@ -556,6 +555,11 @@ public class TooltipWidget extends WidgetGroup {
 				}
 			}
 			return false;
+		}
+
+		@Override
+		protected void onPressed(Button button) {
+			openUrl();
 		}
 
 		/**
@@ -643,7 +647,7 @@ public class TooltipWidget extends WidgetGroup {
 	 */
 	public static class CustomTooltip implements ITooltip {
 		/**
-		 * Constructs a costum tooltip. Not a permament.
+		 * Constructs a custom tooltip. Not a permanent.
 		 * @param text tooltip text to display
 		 */
 		public CustomTooltip(String text) {
@@ -651,9 +655,9 @@ public class TooltipWidget extends WidgetGroup {
 		}
 
 		/**
-		 * Constructs a costum tooltip. Not a permanent.
+		 * Constructs a custom tooltip. Not a permanent.
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial
+		 * @param youtubeLink link to YouTube tutorial
 		 */
 		public CustomTooltip(String text, String youtubeLink) {
 			mText = text;
@@ -661,9 +665,9 @@ public class TooltipWidget extends WidgetGroup {
 		}
 
 		/**
-		 * Constructs a costum tooltip. Not a permanent.
+		 * Constructs a custom tooltip. Not a permanent.
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial
+		 * @param youtubeLink link to YouTube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
 		 */
 		public CustomTooltip(String text, String youtubeLink, ITooltip parent) {
@@ -688,9 +692,9 @@ public class TooltipWidget extends WidgetGroup {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a custom tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial
+		 * @param youtubeLink link to YouTube tutorial
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
@@ -701,14 +705,14 @@ public class TooltipWidget extends WidgetGroup {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a custom tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial, may be null
+		 * @param youtubeLink link to YouTube tutorial, may be null
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
 		 * @param hotkey a hotkey for the tooltip, may be null @param youtubeLink link to
-		 *        youtube tutorial, may be null
+		 *        YouTube tutorial, may be null
 		 * @param youtubeOnly set to true to only show the youtube link and no hover
 		 *        messages.
 		 * @param hideWhenHidden true (default) to hide the tooltip if the actor is

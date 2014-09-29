@@ -132,7 +132,7 @@ public class UiFactory {
 	 */
 	public TooltipWidget createTooltipWidget() {
 		Drawable tooltipImage = SkinNames.getDrawable(SkinNames.EditorImages.TOOLTIP);
-		Drawable youtubeImage = SkinNames.getDrawable(SkinNames.EditorImages.YOUTUBE);
+		ImageButtonStyle youtubeImage = SkinNames.getResource(SkinNames.EditorIcons.YOUTUBE);
 
 		TooltipWidget tooltipWidget = new TooltipWidget(tooltipImage, youtubeImage, mStyles.label.tooltip, mStyles.vars.paddingInner);
 		tooltipWidget.setMargin(mStyles.vars.paddingOuter);
