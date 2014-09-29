@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -136,7 +134,8 @@ class GameSceneGui extends Gui {
 	private void initTestRunOptionBar() {
 		// Create buttons
 		mOptionBar.setAlign(Horizontal.CENTER, Vertical.TOP);
-		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.EditorIcons.SCREENSHOT));
+		mOptionBar.setMarginTop(mUiFactory.getStyles().vars.paddingOuter);
+		Button button = mUiFactory.addImageButton(SkinNames.EditorIcons.SCREENSHOT, mOptionBar, null, null);
 		mWidgets.screenShot = button;
 		new ButtonListener(button) {
 			@Override
@@ -144,7 +143,6 @@ class GameSceneGui extends Gui {
 				mGameScene.takeScreenshot();
 			}
 		};
-		mOptionBar.add(button);
 		if (mGameScene.isPublished()) {
 			button.setDisabled(true);
 		}
@@ -153,10 +151,11 @@ class GameSceneGui extends Gui {
 		mUiFactory.addBar(BarLocations.TOP, getStage());
 
 
-		// Offset score and lives table
-		float offsetHeight = mUiFactory.getStyles().vars.barUpperLowerHeight;
-		mMainTable.setPadTop(offsetHeight);
-		mLifeTable.setPadTop(offsetHeight);
+		// Fix so score is vertically centered
+		mMainTable.setMarginTop(0);
+		mMainTable.layout();
+		float topPad = (mUiFactory.getStyles().vars.barUpperLowerHeight - mMainTable.getHeight()) / 2;
+		mMainTable.setMargin(topPad);
 	}
 
 	/**
