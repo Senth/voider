@@ -32,17 +32,19 @@ public class EditorSelectionGui extends MenuGui {
 	private void initMenu() {
 		Skin skin = ResourceCacheFacade.get(InternalNames.UI_EDITOR);
 
-		Button button = new ImageButton(skin, SkinNames.EditorIcons.CAMPAIGN_EDITOR_BIG.toString());
-		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "campaign"));
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mMenuScene.gotoCampaignEditor();
-			}
-		};
-		mMainTable.add(button);
+		// Button button = new ImageButton(skin,
+		// SkinNames.EditorIcons.CAMPAIGN_EDITOR_BIG.toString());
+		// new TooltipListener(button,
+		// Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "campaign"));
+		// new ButtonListener(button) {
+		// @Override
+		// protected void onPressed(Button button) {
+		// mMenuScene.gotoCampaignEditor();
+		// }
+		// };
+		// mMainTable.add(button);
 
-		button = new ImageButton(skin, SkinNames.EditorIcons.LEVEL_EDITOR_BIG.toString());
+		Button button = new ImageButton(skin, SkinNames.EditorIcons.LEVEL_EDITOR_BIG.toString());
 		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL, "level"));
 		new ButtonListener(button) {
 			@Override

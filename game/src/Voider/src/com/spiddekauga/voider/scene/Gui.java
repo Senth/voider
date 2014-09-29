@@ -318,7 +318,7 @@ public abstract class Gui implements Disposable {
 	 * Shows the bug report window
 	 * @param exception the exception that was thrown, null if no exception was thrown
 	 */
-	public void showBugReportWindow(Exception exception) {
+	public synchronized void showBugReportWindow(Exception exception) {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 		msgBox.setTitle("Bug Report");
 
@@ -392,7 +392,7 @@ public abstract class Gui implements Disposable {
 	 * Show wait window
 	 * @param message optional message to display
 	 */
-	public void showWaitWindow(String message) {
+	public synchronized void showWaitWindow(String message) {
 		if (mWidgets.waitWindow.window == null) {
 			return;
 		}
@@ -427,7 +427,7 @@ public abstract class Gui implements Disposable {
 	 * Sets the wait text
 	 * @param message the wait message to set, null will set it to empty
 	 */
-	public void setWaitWindowText(String message) {
+	public synchronized void setWaitWindowText(String message) {
 		mWidgets.waitWindow.label.setText(message != null ? message : "");
 		mWidgets.waitWindow.window.pack();
 	}
@@ -435,7 +435,7 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Hides the wait window. Does nothing if the wait window isn't shown
 	 */
-	public void hideWaitWindow() {
+	public synchronized void hideWaitWindow() {
 		if (mWidgets.waitWindow.window == null || mWidgets.waitWindow.window.getStage() == null) {
 			return;
 		}
@@ -450,7 +450,7 @@ public abstract class Gui implements Disposable {
 	 * Shows the a progress bar for loading/downloading/uploading window
 	 * @param message the message to display
 	 */
-	public void showProgressBar(String message) {
+	public synchronized void showProgressBar(String message) {
 		if (mWidgets.progressBar.window == null) {
 			return;
 		}
@@ -478,7 +478,7 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Hides the progress bar
 	 */
-	public void hideProgressBar() {
+	public synchronized void hideProgressBar() {
 		if (mWidgets.progressBar.window == null || mWidgets.progressBar.window.getStage() == null) {
 			return;
 		}
@@ -508,7 +508,7 @@ public abstract class Gui implements Disposable {
 	 * Updates the progress bar, doesn't set the text
 	 * @param percentage how many percentage that has been loaded
 	 */
-	public void updateProgressBar(float percentage) {
+	public synchronized void updateProgressBar(float percentage) {
 		updateProgressBar(percentage, null);
 	}
 
@@ -517,7 +517,7 @@ public abstract class Gui implements Disposable {
 	 * @param percentage how many percentage that has been loaded
 	 * @param progressText optional message, keeps previous if null
 	 */
-	public void updateProgressBar(float percentage, String progressText) {
+	public synchronized void updateProgressBar(float percentage, String progressText) {
 		if (progressText != null) {
 			mWidgets.progressBar.progressLabel.setText(progressText);
 		}
@@ -621,7 +621,7 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Renders the GUI
 	 */
-	public final void render() {
+	public final synchronized void render() {
 		mStage.act(Gdx.graphics.getDeltaTime());
 		mStage.draw();
 	}
@@ -652,7 +652,7 @@ public abstract class Gui implements Disposable {
 	 * @param message the message to display
 	 * @see #showMessage(String, LabelStyle)
 	 */
-	public void showMessage(String message) {
+	public synchronized void showMessage(String message) {
 		if (mMessageShower != null) {
 			mMessageShower.addMessage(message);
 		}
@@ -664,7 +664,7 @@ public abstract class Gui implements Disposable {
 	 * @param style the label style of the message
 	 * @see #showMessage(String)
 	 */
-	public void showMessage(String message, LabelStyle style) {
+	public synchronized void showMessage(String message, LabelStyle style) {
 		if (mMessageShower != null) {
 			mMessageShower.addMessage(message, style);
 		}
@@ -674,7 +674,7 @@ public abstract class Gui implements Disposable {
 	 * Displays a highlighted message
 	 * @param message the message to display as highlighted
 	 */
-	public void showHighlightMessage(String message) {
+	public synchronized void showHighlightMessage(String message) {
 		if (mMessageShower != null) {
 			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
 		}
@@ -684,7 +684,7 @@ public abstract class Gui implements Disposable {
 	 * Displays an error message
 	 * @param message the message to display as an error
 	 */
-	public void showErrorMessage(String message) {
+	public synchronized void showErrorMessage(String message) {
 		if (mMessageShower != null) {
 			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
 		}
@@ -694,7 +694,7 @@ public abstract class Gui implements Disposable {
 	 * Displays a successful message
 	 * @param message the message to display as successful
 	 */
-	public void showSuccessMessage(String message) {
+	public synchronized void showSuccessMessage(String message) {
 		if (mMessageShower != null) {
 			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 		}
@@ -703,7 +703,7 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Hide all messages
 	 */
-	public void hideAllMessages() {
+	public synchronized void hideAllMessages() {
 		if (mMessageShower != null) {
 			mMessageShower.removeAllMessages();
 		}
@@ -712,7 +712,7 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Show conflict window
 	 */
-	public void showConflictWindow() {
+	public synchronized void showConflictWindow() {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 		msgBox.setTitle("Sync Conflict");

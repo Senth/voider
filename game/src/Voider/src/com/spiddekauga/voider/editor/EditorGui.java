@@ -262,20 +262,23 @@ public abstract class EditorGui extends Gui {
 		Button button;
 
 		// Campaign editor
-		if (this.getClass() == CampaignEditorGui.class) {
-			button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR_SELECTED, mEditorMenu, null, null);
-		} else {
-			button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR, mEditorMenu, null, null);
-		}
-		if (this.getClass() != CampaignEditorGui.class) {
-			new ButtonListener(button) {
-				@Override
-				protected void onPressed(Button button) {
-					switchReturnTo("Campaign Editor", new CSceneSwitch(CampaignEditor.class), UnsavedActions.CAMPAIGN_EDITOR);
-				}
-			};
-		}
-		mTooltip.add(button, Messages.EditorTooltips.EDITOR_CAMPAIGN);
+		// if (this.getClass() == CampaignEditorGui.class) {
+		// button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR_SELECTED,
+		// mEditorMenu, null, null);
+		// } else {
+		// button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR, mEditorMenu,
+		// null, null);
+		// }
+		// if (this.getClass() != CampaignEditorGui.class) {
+		// new ButtonListener(button) {
+		// @Override
+		// protected void onPressed(Button button) {
+		// switchReturnTo("Campaign Editor", new CSceneSwitch(CampaignEditor.class),
+		// UnsavedActions.CAMPAIGN_EDITOR);
+		// }
+		// };
+		// }
+		// mTooltip.add(button, Messages.EditorTooltips.EDITOR_CAMPAIGN);
 
 
 		// Level editor
@@ -615,8 +618,8 @@ public abstract class EditorGui extends Gui {
 		Command saveAndPublish = new CEditorSave(mEditor, new CEditorPublish(mEditor));
 
 		msgBox.content(content);
-		msgBox.button("Publish", saveAndPublish);
 		msgBox.addCancelButtonAndKeys();
+		msgBox.button("Publish", saveAndPublish);
 		showMsgBox(msgBox);
 	}
 

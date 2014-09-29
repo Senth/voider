@@ -3,6 +3,8 @@ package com.spiddekauga.voider.editor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observer;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -27,6 +29,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
+import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
@@ -61,8 +64,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * @return true if the editor shall try to auto-save the current file
 	 */
 	protected boolean shallAutoSave() {
-		if (!mSaved && !isDrawing() && !isPublished()) {
-
+		if (!isSaved() && !isDrawing() && !isPublished()) {
 			float totalTimeElapsed = getGameTime().getTotalTimeElapsed();
 			// Save after X seconds of inactivity or always save after Y minutes
 			// regardless.
@@ -154,6 +156,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 	@Override
 	protected void render() {
+		postWebResponses();
+
 		super.render();
 
 		// Render saving actor
@@ -336,7 +340,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 	@Override
 	public boolean isSaved() {
-		return mSaved;
+		return mSaved || isPublished();
 	}
 
 	/**
@@ -383,7 +387,34 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	@Override
-	public void handleWebResponse(IMethodEntity method, IEntity response) {
+	public final void handleWebResponse(IMethodEntity method, IEntity response) {
+		try {
+			mWebResponses.put(new WebWrapper(method, response));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Post web responses in main thread
+	 */
+	private void postWebResponses() {
+		while (!mWebResponses.isEmpty()) {
+			try {
+				WebWrapper webResponse = mWebResponses.take();
+				handleWebResponseSyncronously(webResponse.method, webResponse.response);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Handle a web response in main thread synchronously
+	 * @param method
+	 * @param response
+	 */
+	protected void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
 		// Publish
 		if (response instanceof PublishMethodResponse) {
 			mGui.hideProgressBar();
@@ -611,6 +642,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	private boolean mGridRenderAboveResources = false;
 	/** For rendering sprites */
 	protected SpriteBatch mSpriteBatch = new SpriteBatch();
+	/** Synchronized queue for handling web response in main thread */
+	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<>();
 
 	/** Synchronizer */
 	protected static Synchronizer mSynchronizer = Synchronizer.getInstance();

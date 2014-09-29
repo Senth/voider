@@ -238,7 +238,15 @@ public class ResourceRepo extends Repo {
 
 			// Delete resources that should be deleted
 			for (UUID removedId : response.resourcesToRemove) {
-				ResourceLocalRepo.remove(removedId);
+				// If the resource was published it shouldn't be removed here, only
+				// revisions should be removed then...
+				if (ResourceLocalRepo.isPublished(removedId)) {
+					ResourceLocalRepo.removeRevisions(removedId);
+				}
+				// Remove everything
+				else {
+					ResourceLocalRepo.remove(removedId);
+				}
 			}
 
 

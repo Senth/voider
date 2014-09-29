@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
@@ -61,7 +60,6 @@ import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
-import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -84,7 +82,7 @@ import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
  * The level editor scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, IResponseListener, IOutstreamProgressListener {
+public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener {
 	/**
 	 * Constructor for the level editor
 	 */
@@ -774,8 +772,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		super.handleWebResponse(method, response);
+	public void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
+		super.handleWebResponseSyncronously(method, response);
 
 		// Publish -> Update available tools
 		if (response instanceof PublishMethodResponse) {

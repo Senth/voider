@@ -502,8 +502,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	@Override
-	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		super.handleWebResponse(method, response);
+	public void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
+		super.handleWebResponseSyncronously(method, response);
 
 		// Publish -> Remove tools
 		if (response instanceof PublishMethodResponse) {

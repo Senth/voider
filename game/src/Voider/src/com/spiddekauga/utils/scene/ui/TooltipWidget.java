@@ -563,7 +563,7 @@ public class TooltipWidget extends WidgetGroup {
 		}
 
 		/**
-		 * Opens the current url
+		 * Opens the current URL
 		 */
 		private void openUrl() {
 			if (mUrl != null && !mUrl.isEmpty()) {

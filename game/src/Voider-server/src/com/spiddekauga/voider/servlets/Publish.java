@@ -191,8 +191,8 @@ public class Publish extends VoiderServlet {
 	 * Send sync messages
 	 */
 	private void sendSyncMessages() {
-		sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD));
 		sendMessage(new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES));
+		sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD));
 	}
 
 	/**
