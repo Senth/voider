@@ -6,11 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config.Community;
 import com.spiddekauga.voider.network.entities.stat.Tags;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -69,13 +67,13 @@ class TagSceneGui extends Gui {
 		mMainTable.row().setHeight(mUiFactory.getStyles().vars.rowHeight);
 		mMainTable.row();
 
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Skip", Positions.BOTTOM, mMainTable, null, null);
-		new ButtonListener(button) {
+		ButtonListener listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
 				mScene.continueToNextScene();
 			};
 		};
+		mUiFactory.addTextButton("Skip", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
 	}
 
 	/** Tag scene */

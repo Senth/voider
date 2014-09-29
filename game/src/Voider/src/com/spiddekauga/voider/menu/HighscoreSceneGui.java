@@ -9,7 +9,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
+import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.entities.stat.HighscoreEntity;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -146,13 +146,13 @@ public class HighscoreSceneGui extends Gui {
 
 		// Continue button
 		mMainTable.row().setPadBottom(0);
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, mMainTable, null, null);
-		new ButtonListener(button) {
+		ButtonListener listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
 				mScene.continueToNextScene();
 			}
 		};
+		mUiFactory.addTextButton("Continue", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
 	}
 
 	/** Highscore scene */
