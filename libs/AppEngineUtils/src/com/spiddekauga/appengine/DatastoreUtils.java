@@ -457,6 +457,19 @@ public class DatastoreUtils {
 	 * @param propertyName name of the property
 	 * @param uuid the UUID to add to the entity
 	 */
+	public static void setUnindexedProperty(Entity entity, String propertyName, UUID uuid) {
+		if (uuid != null) {
+			entity.setProperty(propertyName + UUID_LEAST_POSTFIX, uuid.getLeastSignificantBits());
+			entity.setProperty(propertyName + UUID_MOST_POSTFIX, uuid.getMostSignificantBits());
+		}
+	}
+
+	/**
+	 * Set a UUID property to an entity.
+	 * @param entity the entity to add the UUID to
+	 * @param propertyName name of the property
+	 * @param uuid the UUID to add to the entity
+	 */
 	public static void setProperty(Entity entity, String propertyName, UUID uuid) {
 		if (uuid != null) {
 			entity.setProperty(propertyName + UUID_LEAST_POSTFIX, uuid.getLeastSignificantBits());
