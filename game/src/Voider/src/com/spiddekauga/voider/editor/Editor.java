@@ -545,6 +545,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 			mGui.setVisible(false);
 			createActorDefTexture();
+		} else if (command != null) {
+			command.execute();
 		}
 	}
 

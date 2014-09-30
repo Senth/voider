@@ -301,6 +301,7 @@ public abstract class Gui implements Disposable {
 			if (!mActiveMsgBoxes.isEmpty()) {
 				mActiveMsgBoxes.peek().hide();
 			}
+			msgBox.setVisible(true);
 			mActiveMsgBoxes.push(msgBox);
 		}
 		msgBox.show(mStage);
