@@ -6,9 +6,8 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Bullet actor, contains necessary information about the bullet.
- * Not only the type of bullet, but speed, etc.
- * 
+ * Bullet actor, contains necessary information about the bullet. Not only the type of
+ * bullet, but speed, etc.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletActor extends Actor {
@@ -18,7 +17,8 @@ public class BulletActor extends Actor {
 	 * @param direction the direction of the bullet
 	 * @param speed of the bullet
 	 * @param hitDamage how much life the bullet will inflict when it hits another actor
-	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot this bullet
+	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot
+	 *        this bullet
 	 * @see #shoot(Vector2,Vector2,float,boolean) to use a velocity of the bullet directly
 	 */
 	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean shotByPlayer) {
@@ -26,9 +26,9 @@ public class BulletActor extends Actor {
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(direction).nor().scl(speed);
 
-		//		if (!mEditorActive) {
-		//			velocity.x += mLevel.getSpeed();
-		//		}
+		if (!mEditorActive) {
+			velocity.x += mLevel.getSpeed();
+		}
 		shoot(position, velocity, hitDamage, shotByPlayer);
 		Pools.vector2.free(velocity);
 	}
@@ -38,8 +38,10 @@ public class BulletActor extends Actor {
 	 * @param position the original position of the bullet, i.e. where to shoot from
 	 * @param velocity velocity of the bullet
 	 * @param hitDamage how much life the bullet will inflict when it hits another actor
-	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot this bullet
-	 * @see #shoot(Vector2,Vector2,float,float,boolean) to use a direction and speed to calculate the velocity
+	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot
+	 *        this bullet
+	 * @see #shoot(Vector2,Vector2,float,float,boolean) to use a direction and speed to
+	 *      calculate the velocity
 	 */
 	private void shoot(Vector2 position, Vector2 velocity, float hitDamage, boolean shotByPlayer) {
 		mShotByPlayer = shotByPlayer;

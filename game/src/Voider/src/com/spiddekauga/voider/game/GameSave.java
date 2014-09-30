@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -8,6 +9,8 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.Def;
@@ -94,6 +97,25 @@ public class GameSave extends Resource implements IResourceRevision, IResourceHa
 		mDef = def;
 	}
 
+	/**
+	 * Reinitialize the game save after a load. Creates bodies etc.
+	 */
+	public void reinitialize() {
+		// Create bullet bodies
+		ArrayList<BulletActor> bullets = mBulletDestroyer.getBullets();
+		for (BulletActor bulletActor : bullets) {
+			bulletActor.createBody();
+		}
+
+		// Create bodies for the rest
+		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
+		for (Actor actor : actors) {
+			if (actor.hasSavedBody()) {
+				actor.createBody();
+			}
+		}
+	}
+
 	@Override
 	public void write(Kryo kryo, Output output) {
 		// Class structure revision
@@ -116,17 +138,13 @@ public class GameSave extends Resource implements IResourceRevision, IResourceHa
 	/** Definition */
 	private GameSaveDef mDef = null;
 	/** Saved game time */
-	@Tag(107)
-	private GameTime mGameTime;
+	@Tag(107) private GameTime mGameTime;
 	/** Saved level */
-	@Tag(10)
-	private Level mLevel;
+	@Tag(10) private Level mLevel;
 	/** Saved player ship */
-	@Tag(11)
-	private PlayerActor mPlayerActor;
+	@Tag(11) private PlayerActor mPlayerActor;
 	/** Saved bullets */
-	@Tag(12)
-	private BulletDestroyer mBulletDestroyer;
+	@Tag(12) private BulletDestroyer mBulletDestroyer;
 	/** Class revision */
 	protected static final int CLASS_REVISION = 1;
 }

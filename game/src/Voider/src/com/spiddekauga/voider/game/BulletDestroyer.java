@@ -13,10 +13,9 @@ import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.TimeBullet;
 
 /**
- * Handles alive bullets, and destroys these once they are outside the screen.
- * To avoid checked each bullet every frame, only some are checked each frame.
- * All new bullets shall be added to this BulletDestroyer.
- * 
+ * Handles alive bullets, and destroys these once they are outside the screen. To avoid
+ * checked each bullet every frame, only some are checked each frame. All new bullets
+ * shall be added to this BulletDestroyer.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletDestroyer implements Disposable {
@@ -53,22 +52,29 @@ public class BulletDestroyer implements Disposable {
 	}
 
 	/**
-	 * Removes out of bounds/screen bullets. This function does not remove
-	 * all bullets, as it only checks a bullet every x seconds. Defined
-	 * in Config.Actor.Bullet.CHECK_OUT_OF_BOUNDS_TIME.
-	 * @note because some bullets might come on to the screen again bullets
-	 * it will enlargen the minPos and maxPos by 3 times. I.e. the screen size
-	 * is the XX size.
-	 * \code
-	 * __________
-	 * |__|__|__|
-	 * |__|XX|__|
-	 * |__|__|__|
-	 * \endCode
-	 * @param minPos minimum position of the screen (lower left corner). This
-	 * variable will be changed!
-	 * @param maxPos maximum position of the screen (upper right corner). This
-	 * variable will be changed!
+	 * @return a copied list of all bullets
+	 */
+	public ArrayList<BulletActor> getBullets() {
+		ArrayList<BulletActor> bullets = new ArrayList<>();
+
+		for (TimeBullet timeBullet : mBullets) {
+			bullets.add(timeBullet.bulletActor);
+		}
+
+		return bullets;
+	}
+
+	/**
+	 * Removes out of bounds/screen bullets. This function does not remove all bullets, as
+	 * it only checks a bullet every x seconds. Defined in
+	 * Config.Actor.Bullet.CHECK_OUT_OF_BOUNDS_TIME.
+	 * @note because some bullets might come on to the screen again bullets it will
+	 *       enlarge the minPos and maxPos by 3 times. I.e. the screen size is the XX
+	 *       size. \code __________ |__|__|__| |__|XX|__| |__|__|__| \endCode
+	 * @param minPos minimum position of the screen (lower left corner). This variable
+	 *        will be changed!
+	 * @param maxPos maximum position of the screen (upper right corner). This variable
+	 *        will be changed!
 	 */
 	public void removeOutOfBondsBullets(Vector2 minPos, Vector2 maxPos) {
 		float elapsedTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();

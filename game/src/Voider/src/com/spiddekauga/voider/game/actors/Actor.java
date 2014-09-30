@@ -55,7 +55,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
-IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
+		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
 	/**
 	 * Sets the texture of the actor including the actor definition. Automatically creates
 	 * a body for the actor.
@@ -156,6 +156,7 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 	 * Adds a trigger to the actor
 	 * @param triggerInfo trigger information
 	 */
+	@Override
 	public void addTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.listener = this;
 		triggerInfo.trigger.addListener(triggerInfo);
@@ -166,6 +167,7 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 	 * Removes the specified trigger from this actor
 	 * @param triggerInfo trigger information
 	 */
+	@Override
 	public void removeTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.trigger.removeListener(getId());
 		mTriggerInfos.remove(triggerInfo);
@@ -511,10 +513,9 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 				bodyDef.linearVelocity.set(kryo.readObject(input, Vector2.class));
 				bodyDef.awake = input.readBoolean();
 				bodyDef.active = input.readBoolean();
-
 				bodyDef.position.set(mPosition);
 
-				createBody(bodyDef);
+				mSavedBody = bodyDef;
 			}
 		}
 	}
@@ -632,9 +633,24 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 
 	@Override
 	public void createBody() {
-		BodyDef bodyDef = mDef.getBodyDefCopy();
-		bodyDef.position.set(mPosition);
-		createBody(bodyDef);
+		// Use saved body
+		if (mSavedBody != null) {
+			createBody(mSavedBody);
+			mSavedBody = null;
+		}
+		// Use default
+		else {
+			BodyDef bodyDef = mDef.getBodyDefCopy();
+			bodyDef.position.set(mPosition);
+			createBody(bodyDef);
+		}
+	}
+
+	/**
+	 * @return true if the actor has a saved body
+	 */
+	public boolean hasSavedBody() {
+		return mSavedBody != null;
 	}
 
 	/**
@@ -1199,6 +1215,8 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 	private Body mBody = null;
 
 	// Not saved
+	/** Saved body definition (used when creating the body after a load */
+	private BodyDef mSavedBody = null;
 	/** Current actors we're colliding with @todo do we need to save colliding actors? */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** World corners of the actor, only used for custom shape and in an editor */

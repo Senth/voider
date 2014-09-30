@@ -274,6 +274,7 @@ public class GameScene extends WorldScene {
 			// Resume a level
 			else if (mGameSaveDef != null) {
 				mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId());
+				mGameSave.reinitialize();
 
 				mPlayerActor = mGameSave.getPlayerActor();
 				mBulletDestroyer = mGameSave.getBulletDestroyer();
@@ -300,7 +301,6 @@ public class GameScene extends WorldScene {
 		}
 
 		Actor.setPlayerActor(mPlayerActor);
-		Actor.setWorld(mWorld);
 	}
 
 	@Override
