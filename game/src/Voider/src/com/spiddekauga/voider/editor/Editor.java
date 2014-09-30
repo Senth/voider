@@ -38,6 +38,7 @@ import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
@@ -298,14 +299,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		Pixmap pixmap = Screens.getScreenshot(0, 0, Config.Actor.SAVE_TEXTURE_SIZE, Config.Actor.SAVE_TEXTURE_SIZE, true);
 
 		// Make black color to alpha
-		pixmap.getPixel(0, 0);
-		for (int x = 0; x < pixmap.getWidth(); ++x) {
-			for (int y = 0; y < pixmap.getHeight(); ++y) {
-				if (isColorBlack(pixmap.getPixel(x, y))) {
-					pixmap.drawPixel(x, y, COLOR_TRANSPARENT);
-				}
-			}
-		}
+		Graphics.pixmapReplaceColor(pixmap, COLOR_BLACK, COLOR_TRANSPARENT);
+
 
 		// Convert to PNG
 		try {
@@ -328,14 +323,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			mExecutedAfterSaved.execute();
 			mExecutedAfterSaved = null;
 		}
-	}
-
-	/**
-	 * @param color the color to check if it's black (uses RGBA8888)
-	 * @return true if the color is black
-	 */
-	private boolean isColorBlack(int color) {
-		return (color & COLOR_BLACK) == 0;
 	}
 
 	@Override
@@ -444,7 +431,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		// Create duplicate
 		ActorDef copy = mSavingActorDef.copy();
 
-		// Calculate how many world coordinates 200px is
+		// Calculate how many world coordinates SAVE_TEXTURE_SIZE pixels is
 		float worldScreenRatio = SceneSwitcher.getWorldScreenRatio();
 
 		// Calculate normalize
@@ -455,7 +442,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			normalizeLength /= height;
 		}
 
-		// Normalize width and height vertices to use 200px
+		// Normalize width and height vertices to use SAVE_TEXTURE_SIZE pixels
 		copy.getVisualVars().setCenterOffset(0, 0);
 		ArrayList<Vector2> triangleVertices = copy.getVisualVars().getTriangleVertices();
 		@SuppressWarnings("unchecked")
@@ -652,5 +639,5 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	/** Transparent color */
 	private static final int COLOR_TRANSPARENT = 0x00000000;
 	/** Black color */
-	private static final int COLOR_BLACK = 0xFFFFFFFF;
+	private static final int COLOR_BLACK = 0x000000FF;
 }
