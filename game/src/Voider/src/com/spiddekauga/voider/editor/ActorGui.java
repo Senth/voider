@@ -471,8 +471,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};
-		mWidgets.collision.destroyOnCollide = mUiFactory.addPanelCheckBox("Destroy", buttonListener, mWidgets.collision.table,
-				Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()), null, createdActors);
+		mWidgets.collision.destroyOnCollide = mUiFactory.addPanelCheckBox("Destroy", buttonListener, mWidgets.collision.table, null, null,
+				createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.COLLISION_DESTROY);
 		mDisabledWhenPublished.addAll(createdActors);
 	}

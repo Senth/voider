@@ -51,8 +51,6 @@ public class SkinNames {
 		AIM_ROTATE,
 		/** Go to the bullet editor */
 		BULLET_EDITOR,
-		/** Used in editor selection menu */
-		BULLET_EDITOR_BIG,
 		/** When the bullet editor is selected, i.e. we're in the bullet editor */
 		BULLET_EDITOR_SELECTED,
 		/**
@@ -62,8 +60,6 @@ public class SkinNames {
 		BULLET_SELECT,
 		/** Go to the campaign editor */
 		CAMPAIGN_EDITOR,
-		/** Used in editor selection menu */
-		CAMPAIGN_EDITOR_BIG,
 		/** When the campaign editor is selected, i.e. we're in the campaign editor */
 		CAMPAIGN_EDITOR_SELECTED,
 		/** Deselects all selected actors, maybe does something else? */
@@ -92,8 +88,6 @@ public class SkinNames {
 		ENEMY_INFO,
 		/** Go to the enemy editor */
 		ENEMY_EDITOR,
-		/** Used in editor selection menu */
-		ENEMY_EDITOR_BIG,
 		/** When the enemy editor is selected, i.e. we're in the enemy editor */
 		ENEMY_EDITOR_SELECTED,
 		/** Opens a dialog where the player will be able to select which enemy to add */
@@ -115,8 +109,6 @@ public class SkinNames {
 		INFO,
 		/** Go to the level editor */
 		LEVEL_EDITOR,
-		/** Used in editor selection menu */
-		LEVEL_EDITOR_BIG,
 		/** When the level editor is selected, i.e. we're in the level editor */
 		LEVEL_EDITOR_SELECTED,
 		/** Loads another resource */
@@ -701,8 +693,6 @@ public class SkinNames {
 		IMAGE_BUTTON_STUB_TOGGLE(ImageButtonStyle.class, "stub_toggle"),
 		/** Image button toggle */
 		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
-		/** Info button on front screen */
-		INFO(ImageButtonStyle.class),
 		/** Default label */
 		LABEL_DEFAULT(LabelStyle.class, "default"),
 		/** Error messages style */
@@ -739,8 +729,6 @@ public class SkinNames {
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */
 		LOGOUT(ImageButtonStyle.class),
-		/** Options button on front screen */
-		OPTIONS(ImageButtonStyle.class),
 		/** Play button */
 		PLAY(ImageButtonStyle.class),
 		/** Rating widget default */
@@ -819,6 +807,14 @@ public class SkinNames {
 		SEARCH(ImageButtonStyle.class),
 		/** Browse (explore) */
 		BROWSE(ImageButtonStyle.class),
+		/** Bullet editor icon in menus */
+		EDITOR_BULLET_BIG(ImageButtonStyle.class, "bullet_editor_big"),
+		/** Enemy editor icon in menus */
+		EDITOR_ENEMY_BIG(ImageButtonStyle.class, "enemy_editor_big"),
+		/** Level editor icon in menus */
+		EDITOR_LEVEL_BIG(ImageButtonStyle.class, "level_editor_big"),
+		/** Campaign editor icon in menus */
+		EDITOR_CAMPAIGN_BIG(ImageButtonStyle.class, "campaign_editor_big"),
 
 		;
 

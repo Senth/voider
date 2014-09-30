@@ -81,7 +81,6 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 			case COMMUNITY_DOWNLOAD_SUCCESS:
 			case USER_RESOURCES_DOWNLOAD_SUCCESS:
 				ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
-				// ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 				ResourceCacheFacade.finishLoading();
 				break;
 
@@ -278,7 +277,7 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 		/** Play menu, visible after clicking play in main menu */
 		PLAY(PlayMenuGui.class),
 		/** Editor menu */
-		EDITOR(EditorSelectionGui.class, InternalNames.UI_EDITOR),
+		EDITOR(EditorSelectionGui.class),
 
 		;
 
@@ -295,38 +294,15 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 		}
 
 		/**
-		 * Load resources for this menu
-		 */
-		void loadResources() {
-			for (InternalNames resource : mResources) {
-				ResourceCacheFacade.load(resource);
-			}
-			ResourceCacheFacade.finishLoading();
-		}
-
-		/**
-		 * Unload resources for this menu
-		 */
-		void unloadResources() {
-			for (InternalNames resource : mResources) {
-				ResourceCacheFacade.unload(resource);
-			}
-		}
-
-		/**
 		 * Creates the enumeration with a GUI class
 		 * @param gui the GUI class to create for this menu
-		 * @param resources extra resources to load for the menu
 		 */
-		private Menus(Class<? extends MenuGui> gui, InternalNames... resources) {
+		private Menus(Class<? extends MenuGui> gui) {
 			mGuiType = gui;
-			mResources = resources;
 		}
 
 		/** The GUI class to create for this menu */
 		private Class<? extends MenuGui> mGuiType;
-		/** Resources to load/unload for this menu */
-		private InternalNames[] mResources;
 	}
 
 	/**
@@ -336,7 +312,6 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 	void pushMenu(Menus menu) {
 		MenuGui newGui = menu.newInstance();
 		if (newGui != null) {
-			menu.loadResources();
 			newGui.setMenuScene(this);
 			newGui.initGui();
 			mInputMultiplexer.removeProcessor(mGui.getStage());

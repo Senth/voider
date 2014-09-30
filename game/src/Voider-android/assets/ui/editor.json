@@ -55,18 +55,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: stub_disabled
 	},	
 	
-	/* Editors */
+	/** Editors */
 	
 	bullet_editor: {
 		imageDown: bullet_editor_down,
 		imageOver: bullet_editor_over,
 		imageUp: bullet_editor
-	},
-	
-	bullet_editor_big: {
-		imageDown: bullet_editor_big_down,
-		imageOver: bullet_editor_big_over,
-		imageUp: bullet_editor_big
 	},
 	
 	bullet_editor_selected: {
@@ -79,12 +73,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: campaign_editor
 	},
 	
-	campaign_editor_big: {
-		imageDown: campaign_editor_big_down,
-		imageOver: campaign_editor_big_over,
-		imageUp: campaign_editor_big
-	},
-	
 	campaign_editor_selected: {
 		imageUp: campaign_editor_down
 	},
@@ -93,12 +81,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: level_editor_down,
 		imageOver: level_editor_over,
 		imageUp: level_editor
-	},
-	
-	level_editor_big: {
-		imageDown: level_editor_big_down,
-		imageOver: level_editor_big_over,
-		imageUp: level_editor_big
 	},
 	
 	level_editor_selected: {
@@ -111,17 +93,21 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: enemy_editor
 	},
 	
-	enemy_editor_big: {
-		imageDown: enemy_editor_big_down,
-		imageOver: enemy_editor_big_over,
-		imageUp: enemy_editor_big
-	},
-	
 	enemy_editor_selected: {
 		imageUp: enemy_editor_down
 	},
 	
-	/* Files */
+	ship_editor: {
+		imageDown: ship_editor_down,
+		imageOver: ship_editor_over,
+		imageUp: ship_editor
+	},
+	
+	ship_editor_selected: {
+		imageUp: ship_editor_down,
+	},
+	
+	/** Files */
 	
 	new: {
 		imageUp: new,
@@ -219,7 +205,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: screenshot_down
 	},
 	
-	/* Tools */
+	/** Tools */
 	
 	delete: {
 		imageUp: delete,
@@ -411,7 +397,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: tooltip_disabled
 	},
 	
-	/* Properties */
+	/** Properties */
 	
 	circle_shape: {
 		imageUp: circle_shape,
@@ -553,7 +539,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: enemy_add_disabled,
 	},
 	
-	/* Tabs */
+	/** Tabs */
 	
 	visuals: {
 		imageUp: visuals,

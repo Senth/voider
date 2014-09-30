@@ -275,7 +275,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		checkedOver: button_default_checked_over,
 	},
 	
-	/** Main - Primary */
+	/** Menu - Main */
 	
 	play: {
 		imageUp: play,
@@ -297,28 +297,75 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: create_down,
 		imageDisabled: create_disabled
 	},
-	
-	/** Main - Secondary */
-	
-	info: {
-		imageUp: info,
-		imageOver: info_over,
-		imageDown: info_down,
-		imageDisabled: info_disabled
-	},
-	
-	options: {
-		imageUp: stub,
-		imageOver: stub_over,
-		imageDown: stub_down,
-		imageDisabled: stub_disabled
-	},
-	
+		
 	logout: {
 		imageUp: logout,
 		imageOver: logout_over,
 		imageDown: logout_down,
 		imageDisabled: logout_disabled
+	},
+	
+	info_big: {
+		imageUp: info_big,
+		imageOver: info_big_over,
+		imageDown: info_big_down,
+		imageDisabled: info_big_disabled
+	},
+	
+	player_big: {
+		imageUp: player_big,
+		imageOver: player_big_over,
+		imageDown: player_big_down,
+		imageDisabled: player_big_disabled
+	},
+	
+	settings_big: {
+		imageUp: settings_big,
+		imageOver: settings_big_over,
+		imageDown: settings_big_down,
+		imageDisabled: settings_big_disabled
+	},
+	
+	/** Menu - Play */
+	
+	game_new: {
+		imageUp: game_new,
+		imageOver: game_new_over,
+		imageDown: game_new_down,
+		imageDisabled: game_new_disabled
+	},
+	
+	game_continue: {
+		imageUp: game_continue,
+		imageOver: game_continue_over,
+		imageDown: game_continue_down,
+		imageDisabled: game_continue_disabled
+	},
+	
+	/** Menu - Create */
+	
+	bullet_editor_big: {
+		imageDown: bullet_editor_big_down,
+		imageOver: bullet_editor_big_over,
+		imageUp: bullet_editor_big
+	},
+	
+	campaign_editor_big: {
+		imageDown: campaign_editor_big_down,
+		imageOver: campaign_editor_big_over,
+		imageUp: campaign_editor_big
+	},
+	
+	level_editor_big: {
+		imageDown: level_editor_big_down,
+		imageOver: level_editor_big_over,
+		imageUp: level_editor_big
+	},
+	
+	enemy_editor_big: {
+		imageDown: enemy_editor_big_down,
+		imageOver: enemy_editor_big_over,
+		imageUp: enemy_editor_big
 	},
 	
 	/** Explore */
@@ -377,55 +424,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: search_disabled
 	},
 	
-	/** Buttons */
-	
-	game_new: {
-		imageUp: game_new,
-		imageOver: game_new_over,
-		imageDown: game_new_down,
-		imageDisabled: game_new_disabled
-	},
-	
-	game_continue: {
-		imageUp: game_continue,
-		imageOver: game_continue_over,
-		imageDown: game_continue_down,
-		imageDisabled: game_continue_disabled
-	},
+	/** Score */
 	
 	replay: {
 		imageUp: replay,
 		imageOver: replay_over,
 		imageDown: replay_down,
 		imageDisabled: replay_disabled
-	},
-	
-	info_big: {
-		imageUp: info_big,
-		imageOver: info_big_over,
-		imageDown: info_big_down,
-		imageDisabled: info_big_disabled
-	},
-	
-	login_big: {
-		imageUp: login_big,
-		imageOver: login_big_over,
-		imageDown: login_big_down,
-		imageDisabled: login_big_disabled
-	},
-	
-	player_big: {
-		imageUp: player_big,
-		imageOver: player_big_over,
-		imageDown: player_big_down,
-		imageDisabled: player_big_disabled
-	},
-	
-	settings_big: {
-		imageUp: settings_big,
-		imageOver: settings_big_over,
-		imageDown: settings_big_down,
-		imageDisabled: settings_big_disabled
 	},
 	
 	/** Tabs */
@@ -530,6 +535,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	
 	/** Miscellaneous */
+	
+	login_big: {
+		imageUp: login_big,
+		imageOver: login_big_over,
+		imageDown: login_big_down,
+		imageDisabled: login_big_disabled
+	},
 	
 	bugs:  {
 		imageUp: bugs,

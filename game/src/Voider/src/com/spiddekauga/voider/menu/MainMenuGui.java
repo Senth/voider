@@ -1,21 +1,19 @@
 package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.editor.commands.CGameQuit;
 import com.spiddekauga.voider.editor.commands.CUserLogout;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
-import com.spiddekauga.voider.repo.resource.InternalNames;
-import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
+import com.spiddekauga.voider.utils.User;
 
 
 /**
@@ -28,16 +26,15 @@ public class MainMenuGui extends MenuGui {
 		super.initGui();
 
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mInfoTable.setPreferences(mMainTable);
-		mInfoTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		mOptionTable.setPreferences(mMainTable);
-		mOptionTable.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
-		mLogoutTable.setPreferences(mMainTable);
-		mLogoutTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		mPlayerInfoTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		mOptionTable.setAlign(Horizontal.LEFT, Vertical.BOTTOM);
+		mLogoutTable.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+		mSpiddekaugaTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 
-		addActor(mInfoTable);
+		addActor(mPlayerInfoTable);
 		addActor(mOptionTable);
 		addActor(mLogoutTable);
+		addActor(mSpiddekaugaTable);
 
 		initMainMenu();
 	}
@@ -45,9 +42,10 @@ public class MainMenuGui extends MenuGui {
 	@Override
 	public void dispose() {
 		super.dispose();
-		mInfoTable.dispose();
+		mPlayerInfoTable.dispose();
 		mOptionTable.dispose();
 		mLogoutTable.dispose();
+		mSpiddekaugaTable.dispose();
 	}
 
 	/**
@@ -67,13 +65,9 @@ public class MainMenuGui extends MenuGui {
 	 * Initializes the main menu
 	 */
 	private void initMainMenu() {
-		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-
 		// Play
 		mMainTable.row();
-		Button button = new ImageButton(skin, SkinNames.General.PLAY.toString());
-		mMainTable.add(button);
-		new TooltipListener(button, Messages.Tooltip.Menus.Main.PLAY);
+		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -83,32 +77,29 @@ public class MainMenuGui extends MenuGui {
 
 
 		// Explore
-		button = new ImageButton(skin, SkinNames.General.EXPLORE.toString());
-		mMainTable.add(button);
-		new TooltipListener(button, Messages.Tooltip.Menus.Main.EXPLORE);
+		button = mUiFactory.addImageButtonLabel(SkinNames.General.EXPLORE, "Explore", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.gotoExplore();
 			}
 		};
+		mUiFactory.addButtonPadding(mMainTable);
 
 
 		// Create
-		button = new ImageButton(skin, SkinNames.General.CREATE.toString());
-		mMainTable.add(button);
-		new TooltipListener(button, Messages.Tooltip.Menus.Main.CREATE);
+		button = mUiFactory.addImageButtonLabel(SkinNames.General.CREATE, "Create", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.pushMenu(Menus.EDITOR);
 			}
 		};
+		mUiFactory.addButtonPadding(mMainTable);
 
 
 		// Options
-		button = new ImageButton(skin, SkinNames.General.OPTIONS.toString());
-		mOptionTable.add(button);
+		button = mUiFactory.addImageButton(SkinNames.General.SETTINGS_BIG, mOptionTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -116,9 +107,8 @@ public class MainMenuGui extends MenuGui {
 			}
 		};
 
-		// Info
-		button = new ImageButton(skin, SkinNames.General.INFO.toString());
-		mInfoTable.add(button);
+		// Player Info
+		button = mUiFactory.addImageButton(SkinNames.General.PLAYER_BIG, mPlayerInfoTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -126,14 +116,35 @@ public class MainMenuGui extends MenuGui {
 			}
 		};
 
-		// Logout
-		button = new ImageButton(skin, SkinNames.General.LOGOUT.toString());
-		mLogoutTable.add(button);
-		new TooltipListener(button, Messages.Tooltip.Menus.Main.LOGOUT);
+		// Spiddekauga Info
+		button = mUiFactory.addImageButton(SkinNames.General.SPIDDEKAUGA_INFO, mSpiddekaugaTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				new CUserLogout().execute();
+				// TODO go to game info
+			}
+		};
+
+		// Logout
+		button = mUiFactory.addImageButton(SkinNames.General.LOGOUT, mLogoutTable, null, null);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+				msgBox.setTitle("Logout");
+
+				msgBox.content("Do you want to logout?", Align.center);
+
+				if (!User.getGlobalUser().isOnline()) {
+					msgBox.contentRow();
+					msgBox.content("NOTE! You are currently offline.\nYou will only be able to login (and play) if you have an Internet connection.",
+							Align.center).padTop(mUiFactory.getStyles().vars.paddingSeparator);
+				}
+
+				msgBox.addCancelButtonAndKeys();
+				msgBox.button("Logout", new CUserLogout());
+				showMsgBox(msgBox);
 			}
 		};
 	}
@@ -158,11 +169,9 @@ public class MainMenuGui extends MenuGui {
 		mUiFactory.createUpdateMessageBox(message, changeLog, this);
 	}
 
-	/** Option table */
 	private AlignTable mOptionTable = new AlignTable();
-	/** Info table */
-	private AlignTable mInfoTable = new AlignTable();
-	/** Logout table */
+	private AlignTable mPlayerInfoTable = new AlignTable();
 	private AlignTable mLogoutTable = new AlignTable();
+	private AlignTable mSpiddekaugaTable = new AlignTable();
 
 }

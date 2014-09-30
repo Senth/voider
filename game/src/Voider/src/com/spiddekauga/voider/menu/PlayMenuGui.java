@@ -1,17 +1,14 @@
 package com.spiddekauga.voider.menu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.resources.SkinNames;
 
 /**
  * GUI for play menu
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayMenuGui extends MenuGui {
@@ -39,14 +36,9 @@ public class PlayMenuGui extends MenuGui {
 	 * Init the menu
 	 */
 	private void initMenu() {
-		TextButtonStyle textPressStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TRANSPARENT_PRESS);
-
-		float maxWidth = Gdx.graphics.getWidth() * 0.66f / 3;
-
 		// Resume
-		Button button = new TextButton("Resume", textPressStyle);
+		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Resume", Positions.BOTTOM, mMainTable, null, null);
 		mResumeButton = button;
-		mMainTable.add(button).setSize(maxWidth, maxWidth);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -55,17 +47,14 @@ public class PlayMenuGui extends MenuGui {
 		};
 
 		// New Game
-		button = new TextButton("New Game", textPressStyle);
-		mMainTable.add(button).setSize(maxWidth, maxWidth);
+		button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_NEW, "New Game", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.newGame();
 			}
 		};
-
-
-		// Set same size of buttons
+		mUiFactory.addButtonPadding(mMainTable);
 	}
 
 	/** Resume button */
