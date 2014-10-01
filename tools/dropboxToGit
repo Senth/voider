@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CAN_SYNC=('ui' 'ui-raw' 'gfx')
+CAN_SYNC=('ui' 'ui-raw' 'gfx' 'txt')
 UI_RAW=('general' 'game' 'editor')
 DROPBOX_DIR="$HOME/Dropbox"
 DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider exec/Voider - editable resources/internal_resources"
@@ -11,7 +11,7 @@ GIT_ASSET_DIR="$GIT_SUB_DIR/src/Voider-android/assets"
 
 usage() {
 cat << EOF
-Usage: $0 [ui/gfx/ui-raw]
+Usage: $0 [ui/gfx/txt/ui-raw]
 When not specifying anything all are synced from the dropbox directory to the git folder
 
 Options:

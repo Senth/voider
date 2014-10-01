@@ -66,7 +66,20 @@ java.lang.Float: {
 	padding_transparent_text_button: {value: 2},
 	
 	
+	/** Credits */
+	
+	// Padding before a header (e.g. Credits, Logos at end)
+	padding_credits_header: {value: 64},
+	// Padding before each section (e.g. Programming, UI Design, etc)
+	padding_credits_section: {value: 32},
+	// Scroll speed (pixels per second)
+	credits_scroll_speed: {value: 10},
+	// How long time (in seconds) to wait before showing credits again
+	credits_show_again_wait_time: {value: 5},
+	
+	
 	/** Padding - Explore/Load */
+	
 	// Padding between rows
 	padding_explore: {value: 16},
 	
@@ -154,6 +167,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: grey_dark,
 	},
 	
+	
 	/** Comments */
 	
 	// Name of comment
@@ -172,6 +186,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		font: default_font,
 		fontColor: white,
 	},
+	
 	
 	/** Editor */
 	
@@ -211,7 +226,21 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	error_section: {
 		font: default12,
 		fontColor: red,
-	}
+	},
+	
+	
+	/** Credits */
+	
+	// Section for credits (e.g. Programming, UI Design, etc.)
+	credit_section: {
+		font: default36,
+		fontColor: grey_light,
+	},
+	// Names (e.g. Matteus Magnusson)
+	credit_name: {
+		font: default_font,
+		fontColor: white,
+	},
 },
 
 com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
@@ -580,6 +609,10 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		disabled: button_transparent_disabled,
 		over: button_transparent_over,
 		font: default_font,
+		fontColor: grey_light,
+		downFontColor: highlight,
+		overFontColor: white,
+		disabledFontColor: red,
 	},
 	transparent_toggle: {
 		down: button_transparent_down,
@@ -589,6 +622,11 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		over: button_transparent_over,
 		checkedOver: button_transparent_checked_over,
 		font: default_font,
+		fontColor: grey_light,
+		downFontColor: highlight,
+		overFontColor: white,
+		checkedFontColor: highlight,
+		disabledFontColor: red,
 	},
 	
 	/** Flat Button */
@@ -611,12 +649,22 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	},
 	
 	/** Tag button */
+	
 	tag: {
 		down: button_tag_down,
 		up: button_tag_up,
 		over: button_tag_over,
 		font: default36,
 	},
+	
+	/** Link */
+	link: {
+		font: default_font,
+		fontColor: grey_light,
+		downFontColor: highlight,
+		overFontColor: white,
+		disabledFontColor: red,
+	}
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {

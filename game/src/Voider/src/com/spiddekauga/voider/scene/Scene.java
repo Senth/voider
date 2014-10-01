@@ -256,8 +256,8 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	}
 
 	/**
-	 * Called first time the scene activates, before {@link #onActivate(Outcomes, Object, Outcomes)}
-	 * .
+	 * Called first time the scene activates, before
+	 * {@link #onActivate(Outcomes, Object, Outcomes)} .
 	 */
 	protected void onInit() {
 		mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
@@ -554,6 +554,15 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		camera.unproject(mTestPoint);
 		worldCoordinate.x = mTestPoint.x;
 		worldCoordinate.y = mTestPoint.y;
+	}
+
+	/**
+	 * @param <GuiType> the GUI type to return
+	 * @return GUI in the correct type
+	 */
+	@SuppressWarnings("unchecked")
+	protected <GuiType extends Gui> GuiType getGui() {
+		return (GuiType) mGui;
 	}
 
 	/** Shape Renderer used for rendering stuff */

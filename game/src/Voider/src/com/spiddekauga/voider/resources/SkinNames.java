@@ -507,6 +507,14 @@ public class SkinNames {
 		 * on all sides
 		 */
 		PADDING_TRANSPARENT_TEXT_BUTTON(Float.class),
+		/** Padding before a header (e.g. Credits and various logos at end) */
+		PADDING_CREDITS_HEADER(Float.class),
+		/** Padding before each section (e.g. Programming, UI Design, etc.) */
+		PADDING_CREDITS_SECTION(Float.class),
+		/** Credits scroll speed (pixels per second) */
+		CREDITS_SCROLL_SPEED(Float.class),
+		/** How long time to wait (in seconds) before showing credits again */
+		CREDITS_SHOW_AGAIN_WAIT_TIME(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/**
@@ -725,6 +733,10 @@ public class SkinNames {
 		LABEL_COMMENT_DATE(LabelStyle.class, "comment_date"),
 		/** A Comment */
 		LABEL_COMMENT(LabelStyle.class, "comment"),
+		/** Credit section (e.g. programming, UI Design) */
+		LABEL_CREDIT_SECTION(LabelStyle.class, "credit_section"),
+		/** Credit name (e.g. Matteus Magnusson) */
+		LABEL_CREDIT_NAME(LabelStyle.class, "credit_name"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */
@@ -755,6 +767,8 @@ public class SkinNames {
 		TEXT_BUTTON_FLAT_TOGGLE(TextButtonStyle.class, "flat_toggle"),
 		/** Tag button */
 		TEXT_BUTTON_TAG(TextButtonStyle.class, "tag"),
+		/** Link */
+		TEXT_BUTTON_LINK(TextButtonStyle.class, "link"),
 		/** Text field default */
 		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
 		/** Window default style without title */

@@ -7,8 +7,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.ini4j.Ini;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -32,6 +35,7 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IniLoader;
 import com.spiddekauga.voider.resources.KryoLoaderAsync;
 import com.spiddekauga.voider.resources.KryoLoaderSync;
 import com.spiddekauga.voider.resources.Resource;
@@ -58,26 +62,30 @@ class ResourceLoader {
 		mAssetManager.getLogger().setLevel(Logger.DEBUG);
 
 		// External
-		mAssetManager.setLoader(BulletActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), BulletActorDef.class));
-		mAssetManager.setLoader(EnemyActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), EnemyActorDef.class));
-		mAssetManager.setLoader(PickupActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), PickupActorDef.class));
-		mAssetManager.setLoader(PlayerActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(StaticTerrainActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
-		mAssetManager.setLoader(LevelDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), LevelDef.class));
-		mAssetManager.setLoader(Level.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), Level.class));
-		mAssetManager.setLoader(GameSave.class, new KryoLoaderSync<>(new ExternalFileHandleResolver(), GameSave.class));
-		mAssetManager.setLoader(GameSaveDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), GameSaveDef.class));
-		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), PlayerStats.class));
-		mAssetManager.setLoader(BugReportDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), BugReportDef.class));
+		FileHandleResolver externalFileHandleResolver = new ExternalFileHandleResolver();
+		mAssetManager.setLoader(BulletActorDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, BulletActorDef.class));
+		mAssetManager.setLoader(EnemyActorDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, EnemyActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, PickupActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, PlayerActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, StaticTerrainActorDef.class));
+		mAssetManager.setLoader(LevelDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, LevelDef.class));
+		mAssetManager.setLoader(Level.class, new KryoLoaderAsync<>(externalFileHandleResolver, Level.class));
+		mAssetManager.setLoader(GameSave.class, new KryoLoaderSync<>(externalFileHandleResolver, GameSave.class));
+		mAssetManager.setLoader(GameSaveDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, GameSaveDef.class));
+		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<>(externalFileHandleResolver, PlayerStats.class));
+		mAssetManager.setLoader(BugReportDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, BugReportDef.class));
 
 		// Internal
+		FileHandleResolver internalFileHandleResolver = null;
 		if (Config.File.USE_EXTERNAL_RESOURCES) {
-			mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new AbsoluteFileHandleResolver()));
-			mAssetManager.setLoader(Skin.class, new SkinLoader(new AbsoluteFileHandleResolver()));
+			internalFileHandleResolver = new AbsoluteFileHandleResolver();
+
 		} else {
-			mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
-			mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
+			internalFileHandleResolver = new InternalFileHandleResolver();
 		}
+		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(internalFileHandleResolver));
+		mAssetManager.setLoader(Skin.class, new SkinLoader(internalFileHandleResolver));
+		mAssetManager.setLoader(Ini.class, new IniLoader(internalFileHandleResolver));
 	}
 
 	/**

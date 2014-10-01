@@ -3,6 +3,8 @@ package com.spiddekauga.voider.repo.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ini4j.Ini;
+
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.audio.Sound;
@@ -62,9 +64,16 @@ public enum InternalNames {
 	/** game icon 32x32 */
 	ICON_32("icon-32.png", Texture.class),
 
+
 	// Shaders
 	/** Default vertex shader */
 	SHADER_DEFAULT("default", ShaderProgram.class),
+
+
+	// Text files
+	/** Credits to display */
+	CREDITS("credits.ini", Ini.class),
+
 
 	;
 
@@ -115,6 +124,9 @@ public enum InternalNames {
 	private static String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */
 	private static String SOUND_PATH = "sound/";
+	/** Directory for all text/ini files */
+	private static String TEXT_PATH = "text/";
+
 
 	static {
 		// -- Resource names --
@@ -130,6 +142,7 @@ public enum InternalNames {
 				SHADER_PATH = dir + SHADER_PATH;
 				PARTICLE_PATH = dir + PARTICLE_PATH;
 				SOUND_PATH = dir + SOUND_PATH;
+				TEXT_PATH = dir + TEXT_PATH;
 			}
 
 
@@ -138,6 +151,7 @@ public enum InternalNames {
 			mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
 			mResourcePaths.put(Skin.class, UI_PATH);
 			mResourcePaths.put(Sound.class, SOUND_PATH);
+			mResourcePaths.put(Ini.class, TEXT_PATH);
 		}
 
 

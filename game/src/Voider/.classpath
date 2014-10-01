@@ -19,5 +19,10 @@
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar" sourcepath="libs/commons-io-2.4-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang-2.6.jar" sourcepath="libs/commons-lang-2.6-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.4.jar" sourcepath="libs/gson-2.2.4-sources.jar"/>
+	<classpathentry kind="lib" path="libs/ini4j.jar" sourcepath="libs/ini4j-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Voider/libs/ini4j-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

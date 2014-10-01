@@ -11,7 +11,7 @@ import com.spiddekauga.voider.resources.SkinNames;
  * GUI for play menu
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class PlayMenuGui extends MenuGui {
+class PlayMenuGui extends MenuGui {
 	@Override
 	public void initGui() {
 		super.initGui();

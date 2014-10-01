@@ -259,8 +259,24 @@ public class UiFactory {
 
 		Cell cell = table.add(button);
 
-		// Fitting text, height padding
-		if (style.isFitText()) {
+		// Special style properties
+		switch (style) {
+		// Default size
+		case FILLED_PRESS:
+		case FILLED_TOGGLE:
+			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
+			break;
+
+			// Slim fit to text
+		case LINK:
+			button.layout();
+			cell.setSize(cell.getPrefWidth(), cell.getPrefHeight());
+			break;
+
+		// Fit to text (but with padding)
+		case TAG:
+		case TRANSPARENT_PRESS:
+		case TRANSPARENT_TOGGLE: {
 			button.layout();
 
 			// Set padding around text so it doesn't touch the border
@@ -288,10 +304,8 @@ public class UiFactory {
 				cell.setPadTop(padTop);
 				cell.setPadBottom(padBottom);
 			}
+			break;
 		}
-		// Else - Use default button size
-		else {
-			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 		}
 
 
@@ -1287,6 +1301,7 @@ public class UiFactory {
 		TextButtonStyles.TRANSPARENT_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TRANSPARENT_PRESS));
 		TextButtonStyles.TRANSPARENT_TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TRANSPARENT_TOGGLE));
 		TextButtonStyles.TAG.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TAG));
+		TextButtonStyles.LINK.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_LINK));
 
 		// Checkbox styles
 		CheckBoxStyles.CHECK_BOX.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT));
@@ -1402,11 +1417,13 @@ public class UiFactory {
 		/** Filled with default color, can be toggled/checked */
 		FILLED_TOGGLE,
 		/** Transparent (only text is visible), can be pressed */
-		TRANSPARENT_PRESS(true),
+		TRANSPARENT_PRESS,
 		/** Transparent (only text is visible), can be toggled/checked */
-		TRANSPARENT_TOGGLE(true),
+		TRANSPARENT_TOGGLE,
 		/** Tag button */
-		TAG(true),
+		TAG,
+		/** Text link */
+		LINK,
 
 		;
 
@@ -1415,14 +1432,6 @@ public class UiFactory {
 		 */
 		private TextButtonStyles() {
 			// Does nothing
-		}
-
-		/**
-		 * Sets if the button should fit the text
-		 * @param fitText true if the button should fit the text
-		 */
-		private TextButtonStyles(boolean fitText) {
-			mFitText = fitText;
 		}
 
 		/**
@@ -1440,17 +1449,8 @@ public class UiFactory {
 			return mStyle;
 		}
 
-		/**
-		 * @return true if the button should fit the text
-		 */
-		private boolean isFitText() {
-			return mFitText;
-		}
-
 		/** The style variable */
 		private TextButtonStyle mStyle = null;
-		/** Button should fit the text */
-		private boolean mFitText = false;
 	}
 
 	/**

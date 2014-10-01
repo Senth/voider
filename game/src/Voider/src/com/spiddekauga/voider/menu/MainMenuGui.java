@@ -20,7 +20,7 @@ import com.spiddekauga.voider.utils.User;
  * GUI for main menu
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MainMenuGui extends MenuGui {
+class MainMenuGui extends MenuGui {
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -121,7 +121,7 @@ public class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				// TODO go to game info
+				mMenuScene.pushMenu(Menus.CREDITS);
 			}
 		};
 

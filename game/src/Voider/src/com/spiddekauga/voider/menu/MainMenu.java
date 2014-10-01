@@ -278,15 +278,17 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 		PLAY(PlayMenuGui.class),
 		/** Editor menu */
 		EDITOR(EditorSelectionGui.class),
+		/** Credits */
+		CREDITS(CreditScene.class),
 
 		;
 
 		/**
 		 * @return new instance of this menu
 		 */
-		MenuGui newInstance() {
+		Object newInstance() {
 			try {
-				return mGuiType.getConstructor().newInstance();
+				return mType.getConstructor().newInstance();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -294,15 +296,19 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 		}
 
 		/**
-		 * Creates the enumeration with a GUI class
-		 * @param gui the GUI class to create for this menu
+		 * Creates the enumeration with a GUI or Scene class
+		 * @param type can either be a MenuGui class or Scene class
 		 */
-		private Menus(Class<? extends MenuGui> gui) {
-			mGuiType = gui;
+		private Menus(Class<?> type) {
+			if (MenuGui.class.isAssignableFrom(type)) {
+				mType = type;
+			} else if (Scene.class.isAssignableFrom(type)) {
+				mType = type;
+			}
 		}
 
-		/** The GUI class to create for this menu */
-		private Class<? extends MenuGui> mGuiType;
+		/** The GUI or Scene class to create for this menu */
+		private Class<?> mType = null;
 	}
 
 	/**
@@ -310,16 +316,22 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 	 * @param menu the menu to push to the stack
 	 */
 	void pushMenu(Menus menu) {
-		MenuGui newGui = menu.newInstance();
-		if (newGui != null) {
-			newGui.setMenuScene(this);
-			newGui.initGui();
-			mInputMultiplexer.removeProcessor(mGui.getStage());
-			mGui.hideAllMessages();
-			mGui = newGui;
-			mGuiStack.push(newGui);
-			mInputMultiplexer.addProcessor(0, newGui.getStage());
-			newGui.resetValues();
+		Object newObject = menu.newInstance();
+		if (newObject instanceof MenuGui) {
+			MenuGui newGui = (MenuGui) newObject;
+			if (newGui != null) {
+				newGui.setMenuScene(this);
+				newGui.initGui();
+				mInputMultiplexer.removeProcessor(mGui.getStage());
+				mGui.hideAllMessages();
+				mGui = newGui;
+				mGuiStack.push(newGui);
+				mInputMultiplexer.addProcessor(0, newGui.getStage());
+				newGui.resetValues();
+			}
+		} else if (newObject instanceof Scene) {
+			Scene newScene = (Scene) newObject;
+			SceneSwitcher.switchTo(newScene);
 		}
 	}
 
