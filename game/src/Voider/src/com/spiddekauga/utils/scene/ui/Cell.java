@@ -545,8 +545,8 @@ public class Cell implements Poolable, IPadding<Cell> {
 	 */
 	void updateSize(float width, float height) {
 		if (mActor != null) {
-			float availableWidth = width - getPadLeft() - getPadRight();
-			float availableHeight = height - getPadBottom() - getPadTop();
+			float availableWidth = width - getPadX();
+			float availableHeight = height - getPadY();
 			float actorWidth = mFixedWidth ? mActor.getWidth() : availableWidth;
 			float actorHeight = mFixedHeight ? mActor.getHeight() : availableHeight;
 
@@ -637,15 +637,17 @@ public class Cell implements Poolable, IPadding<Cell> {
 			offset.x += availableSize.x - mActor.getWidth() - getPadRight();
 		} else if (mAlign.horizontal == Horizontal.CENTER) {
 			offset.x += (availableSize.x - mActor.getWidth() - getPadLeft() + getPadRight()) * 0.5f;
+			offset.x += getPadLeft();
 		}
 
 		// Vertical
 		if (mAlign.vertical == Vertical.BOTTOM) {
-			offset.y = startPos.y + getPadBottom();
+			offset.y += getPadBottom();
 		} else if (mAlign.vertical == Vertical.TOP) {
-			offset.y = startPos.y + availableSize.y - mActor.getHeight() - getPadTop();
+			offset.y += availableSize.y - mActor.getHeight() - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (availableSize.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y += (availableSize.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y += getPadBottom();
 		}
 
 		mActor.setPosition((int) offset.x, (int) offset.y);
@@ -667,11 +669,11 @@ public class Cell implements Poolable, IPadding<Cell> {
 		}
 		// Special case for labels as they need to be packed
 		else if (mActor instanceof Label && !mFixedWidth) {
-			return ((Label) mActor).getPrefWidth() + getPadLeft() + getPadRight();
+			return ((Label) mActor).getPrefWidth() + getPadX();
 		} else if (mActor != null) {
-			return mActor.getWidth() + getPadLeft() + getPadRight();
+			return mActor.getWidth() + getPadX();
 		} else {
-			return mCellWidth + getPadLeft() + getPadRight();
+			return mCellWidth + getPadX();
 		}
 	}
 
@@ -684,11 +686,11 @@ public class Cell implements Poolable, IPadding<Cell> {
 		}
 		// Special case for labels as they need to be packed
 		else if (mActor instanceof Label && !mFixedHeight) {
-			return ((Label) mActor).getPrefHeight() + getPadTop() + getPadBottom();
+			return ((Label) mActor).getPrefHeight() + getPadY();
 		} else if (mActor != null) {
-			return mActor.getHeight() + getPadTop() + getPadBottom();
+			return mActor.getHeight() + getPadY();
 		} else {
-			return mCellHeight + getPadTop() + getPadBottom();
+			return mCellHeight + getPadY();
 		}
 	}
 

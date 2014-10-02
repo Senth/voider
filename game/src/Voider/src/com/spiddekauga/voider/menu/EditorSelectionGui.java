@@ -12,6 +12,13 @@ import com.spiddekauga.voider.resources.SkinNames;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class EditorSelectionGui extends MenuGui {
+	/**
+	 * Public constructor
+	 */
+	public EditorSelectionGui() {
+		// Does nothing
+	}
+
 	@Override
 	public void initGui() {
 		super.initGui();

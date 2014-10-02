@@ -125,7 +125,7 @@ public enum InternalNames {
 	/** Directory for all sound effects */
 	private static String SOUND_PATH = "sound/";
 	/** Directory for all text/ini files */
-	private static String TEXT_PATH = "text/";
+	private static String TEXT_PATH = "txt/";
 
 
 	static {

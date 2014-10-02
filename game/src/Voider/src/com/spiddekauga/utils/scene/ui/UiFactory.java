@@ -267,13 +267,12 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-			// Slim fit to text
+		// Slim fit to text
 		case LINK:
-			button.layout();
-			cell.setSize(cell.getPrefWidth(), cell.getPrefHeight());
+			button.pack();
 			break;
 
-		// Fit to text (but with padding)
+			// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {

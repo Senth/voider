@@ -823,7 +823,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		// Set position of this table.
 		// If parent is an AlignTable it has already set the correct position for this
 		// table
-		if (!(getParent() instanceof AlignTable) && !(getParent() instanceof Table) && !(getParent() instanceof Window)) {
+		if (!isParentSettingPosition()) {
 			Vector2 position = Pools.vector2.obtain();
 
 
@@ -888,6 +888,14 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		updateBackgroundSize();
 
 		mValidLayout = true;
+	}
+
+	/**
+	 * @return true if the parent sets the position of the table
+	 */
+	private boolean isParentSettingPosition() {
+		Actor parent = getParent();
+		return parent instanceof AlignTable || parent instanceof Table || parent instanceof Window;
 	}
 
 	@Override

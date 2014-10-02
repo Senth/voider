@@ -598,7 +598,7 @@ public class Row implements Poolable, IPadding<Row> {
 			if (cell.isVisible()) {
 				availableCellSize.x = cell.getWidth();
 				cell.layout(offset, availableCellSize);
-				offset.x += cell.getWidth();
+				offset.x += availableCellSize.x;
 			}
 
 		}

@@ -37,7 +37,7 @@ public class IniLoader extends AsynchronousAssetLoader<Ini, IniLoaderParameters>
 		}
 
 		try {
-			mStoredIni = new Ini(file.file());
+			mStoredIni = new Ini(file.read());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);

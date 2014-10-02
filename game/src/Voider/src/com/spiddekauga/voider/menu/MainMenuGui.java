@@ -21,6 +21,13 @@ import com.spiddekauga.voider.utils.User;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class MainMenuGui extends MenuGui {
+	/**
+	 * Public constructor
+	 */
+	public MainMenuGui() {
+		// Does nothing
+	}
+
 	@Override
 	public void initGui() {
 		super.initGui();
