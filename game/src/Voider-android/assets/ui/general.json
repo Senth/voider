@@ -73,9 +73,9 @@ java.lang.Float: {
 	// Padding before each section (e.g. Programming, UI Design, etc)
 	padding_credits_section: {value: 32},
 	// Scroll speed (pixels per second)
-	credits_scroll_speed: {value: 10},
+	credits_scroll_speed: {value: 40},
 	// How long time (in seconds) to wait before showing credits again
-	credits_show_again_wait_time: {value: 5},
+	credits_restart_time: {value: 5},
 	
 	
 	/** Padding - Explore/Load */

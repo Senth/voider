@@ -8,12 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.Cell;
-import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.menu.CreditScene.CreditName;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
@@ -39,8 +38,6 @@ class CreditGui extends Gui {
 		initHeader();
 		initCredits();
 		initFooter();
-
-		setScrollY(Gdx.graphics.getHeight() * 2 / 3);
 	};
 
 	@Override
@@ -64,11 +61,13 @@ class CreditGui extends Gui {
 	 */
 	private void scrollCredits() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
-		float scrollDist = deltaTime * 40;
+		float scrollDist = deltaTime * mScrollPaneSpeed;
 		float newScrollY = mScrollY + scrollDist;
 		setScrollY(newScrollY);
 
-		// Restart when at end
+		if (mScrollY >= mScrollPane.getVisualScrollY() + mScrollPaneSpeed * mScrollRestartTime) {
+			setScrollY(0);
+		}
 	}
 
 	/**
@@ -80,6 +79,7 @@ class CreditGui extends Gui {
 		mSectionStyle = SkinNames.getResource(SkinNames.General.LABEL_CREDIT_SECTION);
 		mNameStyle = SkinNames.getResource(SkinNames.General.LABEL_CREDIT_NAME);
 		mScrollPaneSpeed = SkinNames.getResource(SkinNames.GeneralVars.CREDITS_SCROLL_SPEED);
+		mScrollRestartTime = SkinNames.getResource(SkinNames.GeneralVars.CREDITS_RESTART_TIME);
 	}
 
 	/**
@@ -92,13 +92,11 @@ class CreditGui extends Gui {
 		float width = Gdx.graphics.getWidth();
 		float height = Gdx.graphics.getHeight();
 
-		ScrollPane scrollPane = new ScrollPane(mCreditTable, mUiFactory.getStyles().scrollPane.noBackground);
+		ScrollPane scrollPane = new ScrollPane(mCreditTable);
 		mScrollPane = scrollPane;
 		mScrollPane.setSmoothScrolling(false);
-		scrollPane.setTouchable(Touchable.childrenOnly);
+		scrollPane.setTouchable(Touchable.disabled);
 		scrollPane.setVelocityY(mScrollPaneSpeed);
-
-		// TODO Should not be able to scroll with mouse
 
 		mMainTable.row();
 		mMainTable.add(scrollPane).setSize(width, height);
@@ -141,6 +139,8 @@ class CreditGui extends Gui {
 			}
 		};
 
+		float padNames = mUiFactory.getStyles().vars.paddingInner / 2;
+
 		// Sections
 		for (CreditSection creditSection : creditSections) {
 			mCreditTable.row();
@@ -148,21 +148,24 @@ class CreditGui extends Gui {
 			mCreditTable.add(label).setPadTop(mPaddingSection).setPadBottom(mPaddingSection / 2);
 
 			// Names
-			for (int i = 0; i < 10; ++i) {
-				for (CreditName creditName : creditSection.names) {
-					mCreditTable.row().setPadBottom(mUiFactory.getStyles().vars.paddingOuter);
+			for (CreditName creditName : creditSection.names) {
+				mCreditTable.row().setPadBottom(mUiFactory.getStyles().vars.paddingOuter).setAlign(Horizontal.CENTER);
 
-					label = new Label(creditName.name, mNameStyle);
-					mCreditTable.add(label);
+				label = new Label(creditName.firstName, mNameStyle);
+				label.setAlignment(Align.right);
+				mCreditTable.add(label).setPadRight(padNames).setWidth(200);
 
-					if (creditName.hasTwitter() || creditName.hasLink()) {
-						Cell linkCell = mUiFactory
-								.addTextButton(creditName.linkText, TextButtonStyles.LINK, mCreditTable, buttonListener, null, null);
-						linkCell.setPadLeft(mUiFactory.getStyles().vars.paddingSeparator);
-						linkCell.getActor().setUserObject(creditName);
-						linkCell.getActor().setTouchable(Touchable.enabled);
-					}
-				}
+				label = new Label(creditName.lastName, mNameStyle);
+				mCreditTable.add(label).setPadLeft(padNames).setWidth(200);
+
+				// if (creditName.hasTwitter() || creditName.hasLink()) {
+				// Cell linkCell = mUiFactory
+				// .addTextButton(creditName.linkText, TextButtonStyles.LINK,
+				// mCreditTable, buttonListener, null, null);
+				// linkCell.setPadLeft(mUiFactory.getStyles().vars.paddingSeparator);
+				// linkCell.getActor().setUserObject(creditName);
+				// linkCell.getActor().setTouchable(Touchable.enabled);
+				// }
 			}
 		}
 	}
@@ -193,6 +196,7 @@ class CreditGui extends Gui {
 	private float mPaddingHeader = 0;
 	private float mPaddingSection = 0;
 	private float mScrollPaneSpeed = 0;
+	private float mScrollRestartTime = 0;
 	private CreditScene mScene = null;
 	private AlignTable mCreditTable = new AlignTable();
 	private ScrollPane mScrollPane = null;

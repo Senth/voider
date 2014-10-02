@@ -514,7 +514,7 @@ public class SkinNames {
 		/** Credits scroll speed (pixels per second) */
 		CREDITS_SCROLL_SPEED(Float.class),
 		/** How long time to wait (in seconds) before showing credits again */
-		CREDITS_SHOW_AGAIN_WAIT_TIME(Float.class),
+		CREDITS_RESTART_TIME(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/**

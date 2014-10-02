@@ -78,15 +78,16 @@ class CreditScene extends Scene {
 		String[] parts = creditString.split(", ");
 
 		// Name
-		if (parts.length >= 1) {
-			creditName.name = parts[0].trim();
+		if (parts.length >= 2) {
+			creditName.firstName = parts[0].trim();
+			creditName.lastName = parts[1].trim();
 		}
 		// LinkText
-		if (parts.length >= 2) {
-			creditName.linkText = parts[1].trim();
+		if (parts.length >= 3) {
+			creditName.linkText = parts[2].trim();
 		}
 		// URL
-		if (parts.length >= 3) {
+		if (parts.length >= 4) {
 			creditName.url = parts[3].trim();
 		}
 
@@ -122,8 +123,10 @@ class CreditScene extends Scene {
 
 	/** Wrapper for a credit name */
 	class CreditName {
-		/** Name to display */
-		String name = null;
+		/** First name */
+		String firstName = null;
+		/** Surname */
+		String lastName = null;
 		/**
 		 * Optional link text, if starts with @ and doesn't have any URL it is treated as
 		 * a twitter link
