@@ -41,7 +41,7 @@ class CreditScene extends Scene {
 	ArrayList<CreditSection> getCredits() {
 		ArrayList<CreditSection> creditSections = new ArrayList<>();
 
-		Ini ini = ResourceCacheFacade.get(InternalNames.CREDITS);
+		Ini ini = ResourceCacheFacade.get(InternalNames.INI_CREDITS);
 
 		if (ini != null) {
 			Section section = ini.get("credits");
@@ -97,7 +97,8 @@ class CreditScene extends Scene {
 	@Override
 	protected void loadResources() {
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.load(InternalNames.CREDITS);
+		ResourceCacheFacade.load(InternalNames.UI_CREDITS);
+		ResourceCacheFacade.load(InternalNames.INI_CREDITS);
 
 		super.loadResources();
 	}
@@ -105,7 +106,8 @@ class CreditScene extends Scene {
 	@Override
 	protected void unloadResources() {
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalNames.CREDITS);
+		ResourceCacheFacade.unload(InternalNames.UI_CREDITS);
+		ResourceCacheFacade.unload(InternalNames.INI_CREDITS);
 
 		super.unloadResources();
 	}

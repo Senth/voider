@@ -1,0 +1,19 @@
+
+credits.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+spiddekauga_white
+  rotate: false
+  xy: 1, 1
+  size: 601, 175
+  orig: 601, 175
+  offset: 0, 0
+  index: -1
+libgdx
+  rotate: false
+  xy: 604, 76
+  size: 600, 100
+  orig: 600, 100
+  offset: 0, 0
+  index: -1

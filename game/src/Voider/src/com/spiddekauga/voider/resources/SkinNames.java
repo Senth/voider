@@ -507,14 +507,6 @@ public class SkinNames {
 		 * on all sides
 		 */
 		PADDING_TRANSPARENT_TEXT_BUTTON(Float.class),
-		/** Padding before a header (e.g. Credits and various logos at end) */
-		PADDING_CREDITS_HEADER(Float.class),
-		/** Padding before each section (e.g. Programming, UI Design, etc.) */
-		PADDING_CREDITS_SECTION(Float.class),
-		/** Credits scroll speed (pixels per second) */
-		CREDITS_SCROLL_SPEED(Float.class),
-		/** How long time to wait (in seconds) before showing credits again */
-		CREDITS_RESTART_TIME(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/**
@@ -534,7 +526,7 @@ public class SkinNames {
 		WAIT_WINDOW_FADE_OUT(Float.class),
 		/** Text area height */
 		TEXT_AREA_HEIGHT(Float.class),
-		/** Defult text button height */
+		/** Default text button height */
 		TEXT_BUTTON_HEIGHT(Float.class),
 		/** Default text button width */
 		TEXT_BUTTON_WIDTH(Float.class),
@@ -733,10 +725,6 @@ public class SkinNames {
 		LABEL_COMMENT_DATE(LabelStyle.class, "comment_date"),
 		/** A Comment */
 		LABEL_COMMENT(LabelStyle.class, "comment"),
-		/** Credit section (e.g. programming, UI Design) */
-		LABEL_CREDIT_SECTION(LabelStyle.class, "credit_section"),
-		/** Credit name (e.g. Matteus Magnusson) */
-		LABEL_CREDIT_NAME(LabelStyle.class, "credit_name"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */
@@ -859,6 +847,161 @@ public class SkinNames {
 		@Override
 		public InternalNames getSkinName() {
 			return InternalNames.UI_GENERAL;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** Class type */
+		private Class<?> mType;
+	}
+
+	/**
+	 * Credit images/logos. These are shown in this specific order
+	 */
+	@SuppressWarnings("javadoc")
+	public enum CreditImages implements IImageNames {
+		SPIDDEKAUGA_WHITE,
+		LIBGDX,
+
+
+		;
+
+		/**
+		 * Used default JSON name for enum
+		 */
+		private CreditImages() {
+			mName = name().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param jsonName name in the json-file
+		 */
+		private CreditImages(String jsonName) {
+			mName = jsonName;
+		}
+
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_CREDITS;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+	}
+
+	/**
+	 * Credits UI (actually stored in general_ui)
+	 */
+	public enum CreditsUi implements ISkinNames {
+		/** Credit section (e.g. programming, UI Design) */
+		LABEL_SECTION(LabelStyle.class, "credit_section"),
+		/** Credit name (e.g. Matteus Magnusson) */
+		LABEL_NAME(LabelStyle.class, "credit_name"),
+
+		;
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private CreditsUi(Class<?> type) {
+			mType = type;
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param type the class type
+		 * @param jsonName name in the json-file
+		 */
+		private CreditsUi(Class<?> type, String jsonName) {
+			mType = type;
+			mName = jsonName;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_GENERAL;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** Class type */
+		private Class<?> mType;
+	}
+
+	/**
+	 * Credits Variables
+	 */
+	public enum CreditsVars implements ISkinNames {
+		/** Padding before a header (e.g. Credits and various logos at end) */
+		PADDING_HEADER(Float.class),
+		/** Padding before each section (e.g. Programming, UI Design, etc.) */
+		PADDING_SECTION(Float.class),
+		/** Padding before each logo */
+		PADDING_LOGO(Float.class),
+		/** Credits scroll speed (pixels per second) */
+		SCROLL_SPEED(Float.class),
+		/** How long time to wait (in seconds) before showing credits again */
+		RESTART_TIME(Float.class),
+
+		;
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private CreditsVars(Class<?> type) {
+			mType = type;
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param type the class type
+		 * @param jsonName name in the json-file
+		 */
+		private CreditsVars(Class<?> type, String jsonName) {
+			mType = type;
+			mName = jsonName;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_CREDITS;
 		}
 
 		/**

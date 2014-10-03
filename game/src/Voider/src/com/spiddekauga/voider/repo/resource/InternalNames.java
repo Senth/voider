@@ -28,10 +28,10 @@ public enum InternalNames {
 	UI_EDITOR("ui/editor.json", Skin.class),
 	/** General UI */
 	UI_GENERAL("ui/general.json", Skin.class),
-	/** Editor tooltip images */
-	UI_EDITOR_TOOLTIPS("ui/editor_tooltips.json", Skin.class),
 	/** Game UI */
 	UI_GAME("ui/game.json", Skin.class),
+	/** Credits UI */
+	UI_CREDITS("ui/credits.json", Skin.class),
 
 	// Themes / Backgrounds
 	/** Core top */
@@ -54,7 +54,7 @@ public enum InternalNames {
 
 	// Images
 	/** Splash Screen */
-	IMAGE_SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
+	IMAGE_SPLASH_SCREEN("background_splash.jpg", Texture.class),
 	/** Game icon 256x256 */
 	ICON_256("icon-256.png", Texture.class),
 	/** Game icon 128x128 */
@@ -72,7 +72,7 @@ public enum InternalNames {
 
 	// Text files
 	/** Credits to display */
-	CREDITS("credits.ini", Ini.class),
+	INI_CREDITS("credits.ini", Ini.class),
 
 
 	;

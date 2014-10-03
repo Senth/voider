@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -12,11 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.menu.CreditScene.CreditName;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.resources.SkinNames.CreditImages;
+import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -74,12 +75,13 @@ class CreditGui extends Gui {
 	 * Initialize variables
 	 */
 	private void initVars() {
-		mPaddingHeader = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CREDITS_HEADER);
-		mPaddingSection = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CREDITS_SECTION);
-		mSectionStyle = SkinNames.getResource(SkinNames.General.LABEL_CREDIT_SECTION);
-		mNameStyle = SkinNames.getResource(SkinNames.General.LABEL_CREDIT_NAME);
-		mScrollPaneSpeed = SkinNames.getResource(SkinNames.GeneralVars.CREDITS_SCROLL_SPEED);
-		mScrollRestartTime = SkinNames.getResource(SkinNames.GeneralVars.CREDITS_RESTART_TIME);
+		mPaddingHeader = SkinNames.getResource(SkinNames.CreditsVars.PADDING_HEADER);
+		mPaddingSection = SkinNames.getResource(SkinNames.CreditsVars.PADDING_SECTION);
+		mPaddingLogo = SkinNames.getResource(SkinNames.CreditsVars.PADDING_LOGO);
+		mSectionStyle = SkinNames.getResource(SkinNames.CreditsUi.LABEL_SECTION);
+		mNameStyle = SkinNames.getResource(SkinNames.CreditsUi.LABEL_NAME);
+		mScrollPaneSpeed = SkinNames.getResource(SkinNames.CreditsVars.SCROLL_SPEED);
+		mScrollRestartTime = SkinNames.getResource(SkinNames.CreditsVars.RESTART_TIME);
 	}
 
 	/**
@@ -109,8 +111,7 @@ class CreditGui extends Gui {
 		// Make able to scroll past whole
 		mUiFactory.addHeader("Voider " + ClientVersions.getLatest().toString(), mCreditTable);
 		mCreditTable.getRow().setPadTop(Gdx.graphics.getHeight());
-		mCreditTable.getRow().setPadBottom(mPaddingHeader);
-		mUiFactory.addHeader("Credits", mCreditTable);
+		addHeader("Credits");
 	}
 
 	/**
@@ -119,25 +120,25 @@ class CreditGui extends Gui {
 	private void initCredits() {
 		ArrayList<CreditSection> creditSections = mScene.getCredits();
 
-		ButtonListener buttonListener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				Object object = button.getUserObject();
-
-				if (object instanceof CreditName) {
-					CreditName creditName = (CreditName) object;
-
-					// Twitter
-					if (creditName.hasTwitter()) {
-						Gdx.net.openURI(creditName.getTwitterLink());
-					}
-					// Regular link
-					else if (creditName.hasLink()) {
-						Gdx.net.openURI(creditName.url);
-					}
-				}
-			}
-		};
+		// ButtonListener buttonListener = new ButtonListener() {
+		// @Override
+		// protected void onPressed(Button button) {
+		// Object object = button.getUserObject();
+		//
+		// if (object instanceof CreditName) {
+		// CreditName creditName = (CreditName) object;
+		//
+		// // Twitter
+		// if (creditName.hasTwitter()) {
+		// Gdx.net.openURI(creditName.getTwitterLink());
+		// }
+		// // Regular link
+		// else if (creditName.hasLink()) {
+		// Gdx.net.openURI(creditName.url);
+		// }
+		// }
+		// }
+		// };
 
 		float padNames = mUiFactory.getStyles().vars.paddingInner / 2;
 
@@ -174,13 +175,36 @@ class CreditGui extends Gui {
 	 * Initialize footer
 	 */
 	private void initFooter() {
-		// TODO
+		// Add all logos to be displayed
+		for (CreditImages creditImage : CreditImages.values()) {
+			addLogo(creditImage);
+		}
 
-		// Can scroll past whole
+		// Scroll past everything
 		mCreditTable.getRow().setPadBottom(Gdx.graphics.getHeight());
 		mCreditTable.layout();
 		mScrollPane.layout();
 	}
+
+	/**
+	 * Add text header to the credit table (with correct padding)
+	 * @param text the text to display
+	 */
+	private void addHeader(String text) {
+		mUiFactory.addHeader(text, mCreditTable);
+		mCreditTable.getRow().setPadTop(mPaddingHeader);
+	}
+
+	/**
+	 * Add a logo
+	 * @param logo an image to display
+	 */
+	private void addLogo(IImageNames logo) {
+		Image image = new Image(SkinNames.getDrawable(logo));
+		mCreditTable.row().setPadTop(mPaddingLogo);
+		mCreditTable.add(image);
+	}
+
 
 	/**
 	 * Set the credit scene
@@ -195,6 +219,7 @@ class CreditGui extends Gui {
 	private LabelStyle mSectionStyle = null;
 	private float mPaddingHeader = 0;
 	private float mPaddingSection = 0;
+	private float mPaddingLogo = 0;
 	private float mScrollPaneSpeed = 0;
 	private float mScrollRestartTime = 0;
 	private CreditScene mScene = null;

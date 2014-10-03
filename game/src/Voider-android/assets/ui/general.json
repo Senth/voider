@@ -66,18 +66,6 @@ java.lang.Float: {
 	padding_transparent_text_button: {value: 2},
 	
 	
-	/** Credits */
-	
-	// Padding before a header (e.g. Credits, Logos at end)
-	padding_credits_header: {value: 64},
-	// Padding before each section (e.g. Programming, UI Design, etc)
-	padding_credits_section: {value: 32},
-	// Scroll speed (pixels per second)
-	credits_scroll_speed: {value: 40},
-	// How long time (in seconds) to wait before showing credits again
-	credits_restart_time: {value: 5},
-	
-	
 	/** Padding - Explore/Load */
 	
 	// Padding between rows

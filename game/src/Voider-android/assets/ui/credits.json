@@ -1,0 +1,20 @@
+{
+java.lang.Float: {
+	
+	/** Padding */
+	
+	// Padding before a text header (e.g. Credits, Version, )
+	padding_header: {value: 64},
+	// Padding before each section (e.g. Programming, UI Design, etc)
+	padding_section: {value: 32},
+	// Padding before each logo
+	padding_logo: {value: 256},
+	
+	/** Misc */
+	
+	// Scroll speed (pixels per second)
+	scroll_speed: {value: 40},
+	// How long time (in seconds) to wait before showing credits again
+	restart_time: {value: 5},
+},
+}
