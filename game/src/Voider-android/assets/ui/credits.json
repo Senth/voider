@@ -8,7 +8,7 @@ java.lang.Float: {
 	// Padding before each section (e.g. Programming, UI Design, etc)
 	padding_section: {value: 32},
 	// Padding before each logo
-	padding_logo: {value: 256},
+	padding_logo: {value: 196},
 	
 	/** Misc */
 	
