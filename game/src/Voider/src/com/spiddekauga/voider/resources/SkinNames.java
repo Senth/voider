@@ -500,6 +500,8 @@ public class SkinNames {
 		PADDING_INNER(Float.class),
 		/** Padding between radio or checkbox buttons */
 		PADDING_CHECKBOX(Float.class),
+		/** Padding between the checkbox icon and the text */
+		PADDING_CHECKBOX_TEXT(Float.class),
 		/** Padding between rows in Explore/Load scenes */
 		PADDING_EXPLORE(Float.class),
 		/**

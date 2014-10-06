@@ -41,7 +41,7 @@ java.lang.Float: {
 	/** Explore / Load */
 	
 	// Tag bar width
-	tag_bar_width: {value: 144},
+	tag_bar_width: {value: 160},
 	// Maximum size of enemies/bullets on load screen (i.e. the image button) 
 	load_actor_size_max: {value: 80},
 	
@@ -61,6 +61,8 @@ java.lang.Float: {
 	padding_inner: {value: 12},
 	// Padding between radio or checkbox buttons
 	padding_checkbox: {value: 12},
+	// Padding between checkbox icon and text
+	padding_checkbox_text: {value: 4},
 	// Transparent button padding (so text doesn't touch the borders)
 	// This is padding on all sides
 	padding_transparent_text_button: {value: 2},

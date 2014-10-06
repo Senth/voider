@@ -267,12 +267,12 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-		// Slim fit to text
+			// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-			// Fit to text (but with padding)
+		// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -763,7 +763,7 @@ public class UiFactory {
 	 * Add an icon with a label
 	 * @param icon the icon to show
 	 * @param text text after the icon
-	 * @param fillWidth TODO
+	 * @param fillWidth fills the width between text and icon
 	 * @param table the table to add the icon to
 	 * @param hider optional hider for icon and label
 	 * @return created label for the text after the icon
@@ -973,13 +973,11 @@ public class UiFactory {
 	 * @param text the text to display before the checkbox
 	 * @param listener button listener that listens when it's checked etc
 	 * @param table the table to add the checkbox to
-	 * @param tooltipText optional tooltip message for all elements (if not null)
 	 * @param hider optional hider to add the elements to (if not null)
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @return created checkbox
 	 */
-	public CheckBox addPanelCheckBox(String text, ButtonListener listener, AlignTable table, String tooltipText, GuiHider hider,
-			ArrayList<Actor> createdActors) {
+	public CheckBox addPanelCheckBox(String text, ButtonListener listener, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
 
 		table.row().setFillWidth(true);
 		Label label = new Label(text, mStyles.label.standard);
@@ -992,7 +990,7 @@ public class UiFactory {
 
 		checkBox.addListener(listener);
 
-		doExtraActionsOnActors(tooltipText, hider, createdActors, label, checkBox);
+		doExtraActionsOnActors(hider, createdActors, label, checkBox);
 
 		return checkBox;
 	}
@@ -1008,9 +1006,19 @@ public class UiFactory {
 	 */
 	public CheckBox addCheckBox(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
 		CheckBox checkBox = new CheckBox(text, style.getStyle());
+		float imageWidth = checkBox.getImage().getWidth();
+		checkBox.getImageCell().width(imageWidth);
+		checkBox.getLabelCell().padLeft(mStyles.vars.paddingCheckBoxText);
+		checkBox.layout();
+		checkBox.left();
 
 		table.add(checkBox);
 		group.add(checkBox);
+
+
+		// checkBox.getImageCell().padRight(pad);
+
+
 		if (listener != null) {
 			checkBox.addListener(listener);
 		}
@@ -1153,37 +1161,6 @@ public class UiFactory {
 	}
 
 	/**
-	 * Set tooltip, add actors to hider, add to created actors, or any combination.
-	 * @param tooltipText creates a tooltip for all actors (if not null)
-	 * @param hider add all actors to the hider (if not null)
-	 * @param createdActors add all actors to this list (if not null)
-	 * @param actors all actors that should be processed
-	 */
-	@Deprecated
-	private void doExtraActionsOnActors(String tooltipText, GuiHider hider, ArrayList<Actor> createdActors, Actor... actors) {
-		// Tooltip
-		if (tooltipText != null) {
-			for (Actor actor : actors) {
-				new TooltipListener(actor, tooltipText);
-			}
-		}
-
-		// Hider
-		if (hider != null) {
-			for (Actor actor : actors) {
-				hider.addToggleActor(actor);
-			}
-		}
-
-		// Add created actors
-		if (createdActors != null) {
-			for (Actor actor : actors) {
-				createdActors.add(actor);
-			}
-		}
-	}
-
-	/**
 	 * Create a default right panel widget
 	 * @return default right panel widget
 	 */
@@ -1272,6 +1249,7 @@ public class UiFactory {
 		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
 		mStyles.vars.paddingButton = SkinNames.getResource(SkinNames.GeneralVars.PADDING_BUTTONS);
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
+		mStyles.vars.paddingCheckBoxText = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX_TEXT);
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mStyles.vars.paddingExplore = SkinNames.getResource(SkinNames.GeneralVars.PADDING_EXPLORE);
@@ -1639,6 +1617,7 @@ public class UiFactory {
 			public float sliderLabelWidth = 0;
 			public float paddingButton = 0;
 			public float paddingCheckBox = 0;
+			public float paddingCheckBoxText = 0;
 			public float paddingOuter = 0;
 			public float paddingInner = 0;
 			public float paddingExplore = 0;

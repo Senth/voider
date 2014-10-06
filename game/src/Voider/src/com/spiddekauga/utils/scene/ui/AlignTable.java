@@ -887,7 +887,13 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		updateBackgroundPosition();
 		updateBackgroundSize();
 
-		mValidLayout = true;
+		// ScrollPane needs to be layout again after we fixed this layout
+		if (getParent() instanceof ScrollPane) {
+			mValidLayout = true;
+			((ScrollPane) getParent()).invalidate();
+		} else {
+			mValidLayout = true;
+		}
 	}
 
 	/**

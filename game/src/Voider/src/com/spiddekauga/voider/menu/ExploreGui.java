@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -35,6 +34,7 @@ import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.UiFactory.CheckBoxStyles;
+import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
@@ -275,16 +275,11 @@ public class ExploreGui extends Gui {
 		mWidgets.sort.hider.addToggleActor(table);
 		getStage().addActor(table);
 
-		CheckBoxStyle radioStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Create buttons
 		for (final SortOrders sortOrder : SortOrders.values()) {
-			CheckBox checkBox = new CheckBox(sortOrder.toString(), radioStyle);
-			mWidgets.sort.buttons[sortOrder.ordinal()] = checkBox;
-			buttonGroup.add(checkBox);
-			table.add(checkBox).setHeight(mUiFactory.getStyles().vars.rowHeight);
-			new ButtonListener(checkBox) {
+			ButtonListener listener = new ButtonListener() {
 				@Override
 				protected void onChecked(Button button, boolean checked) {
 					if (checked) {
@@ -292,6 +287,9 @@ public class ExploreGui extends Gui {
 					}
 				}
 			};
+			CheckBox checkBox = mUiFactory.addCheckBox(sortOrder.toString(), CheckBoxStyles.RADIO, listener, buttonGroup, table);
+			mWidgets.sort.buttons[sortOrder.ordinal()] = checkBox;
+			table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 		}
 	}
 
@@ -481,7 +479,7 @@ public class ExploreGui extends Gui {
 	 * Initializes tags
 	 */
 	private void initTags() {
-		float topMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		float topMargin = mUiFactory.getStyles().vars.barUpperLowerHeight;
 		topMargin += mUiFactory.getStyles().vars.paddingOuter;
 
 
@@ -512,15 +510,15 @@ public class ExploreGui extends Gui {
 		tagTable.getRow().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
 		// Add tags
-		for (Tags tag : Tags.values()) {
-			ButtonListener listener = new ButtonListener() {
-				@Override
-				protected void onChecked(Button button, boolean checked) {
-					if (!mClearingTags) {
-						mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
-					}
+		ButtonListener listener = new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				if (!mClearingTags) {
+					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 				}
-			};
+			}
+		};
+		for (Tags tag : Tags.values()) {
 			CheckBox checkBox = mUiFactory.addCheckBoxRow(tag.toString(), CheckBoxStyles.CHECK_BOX, listener, mWidgets.tag.buttonGroup, tagTable);
 			mWidgets.tag.buttonTag.put(checkBox, tag);
 		}
@@ -535,12 +533,14 @@ public class ExploreGui extends Gui {
 		HideListener hideListener = new HideListener(imageButton, true) {
 			@Override
 			protected void onShow() {
+				mWidgets.tag.wrapper.invalidateHierarchy();
 				mWidgets.tag.wrapper.layout();
 				resetContentMargins();
 			}
 
 			@Override
 			protected void onHide() {
+				mWidgets.tag.wrapper.invalidateHierarchy();
 				mWidgets.tag.wrapper.layout();
 				resetContentMargins();
 			}
@@ -568,6 +568,7 @@ public class ExploreGui extends Gui {
 		wrapper.row();
 		mUiFactory.addTextButton("Clear Tags", TextButtonStyles.FILLED_PRESS, wrapper, buttonListener, hideListener, null);
 		wrapper.getCell().setWidth(tagTableWidth).setPadRight(imageWidth);
+		mUiFactory.addButtonPadding(wrapper, Positions.TOP);
 
 		wrapper.layout();
 	}
@@ -576,8 +577,7 @@ public class ExploreGui extends Gui {
 	 * Initialize level
 	 */
 	private void initContent() {
-		// TODO change scroll pane style to no visible scroll bars
-		ScrollPaneStyle scrollPaneStyle = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
+		ScrollPaneStyle scrollPaneStyle = mUiFactory.getStyles().scrollPane.noBackground;
 		AlignTable table = mWidgets.content.table;
 		table.setName("content");
 		table.setAlign(Horizontal.LEFT, Vertical.TOP);
@@ -625,6 +625,8 @@ public class ExploreGui extends Gui {
 			scrollPane.setPosition(marginLeft, marginBottom);
 			mWidgets.content.table.setWidth(width);
 			mWidgets.content.table.setKeepWidth(true);
+
+			mWidgets.content.table.invalidateHierarchy();
 		}
 	}
 
