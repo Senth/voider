@@ -168,7 +168,7 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 		}
 
 		// Testing
-		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY)) {
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			if (keycode == Input.Keys.F5) {
 				SceneSwitcher.switchTo(new TestUiScene());
 			} else if (keycode == Input.Keys.F6) {

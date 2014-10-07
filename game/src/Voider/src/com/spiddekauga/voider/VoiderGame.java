@@ -88,7 +88,7 @@ public class VoiderGame implements ApplicationListener {
 			SceneSwitcher.update();
 		} catch (RuntimeException e) {
 			// Print where in the serialization it failed
-			if (Gdx.app.getType() == ApplicationType.Desktop && Config.Debug.isBuildOrAbove(Builds.NIGHTLY)) {
+			if (Gdx.app.getType() == ApplicationType.Desktop && Config.Debug.isBuildOrAbove(Builds.NIGHTLY_DEV)) {
 				String stackTrace = Strings.stackTraceToString(e);
 
 				// File error

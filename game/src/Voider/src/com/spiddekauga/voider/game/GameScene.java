@@ -614,7 +614,7 @@ public class GameScene extends WorldScene {
 		}
 
 		// Testing
-		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY)) {
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			if (keycode == Keys.F12) {
 				setOutcome(Outcomes.LEVEL_COMPLETED);
 				if (isPublished()) {

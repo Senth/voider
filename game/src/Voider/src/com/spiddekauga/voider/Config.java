@@ -209,9 +209,9 @@ public class Config {
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_LOCAL;
+		public static final Builds BUILD = Builds.NIGHTLY_RELEASE;
 		/** Set to true to turn on the exception handler */
-		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY);
+		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 		/** Logging verbosity */
@@ -220,7 +220,7 @@ public class Config {
 		 * If debugging tests shall be activate. This causes extra runtime, but checks so
 		 * that none of the checks are broken.
 		 */
-		public static boolean DEBUG_TESTS = isBuildOrBelow(Builds.NIGHTLY);
+		public static boolean DEBUG_TESTS = isBuildOrBelow(Builds.NIGHTLY_DEV);
 
 
 		/**
@@ -233,7 +233,9 @@ public class Config {
 			/** Server development */
 			DEV_SERVER,
 			/** Released to co-developers */
-			NIGHTLY,
+			NIGHTLY_DEV,
+			/** Nightly released */
+			NIGHTLY_RELEASE,
 			/** Beta tests */
 			BETA,
 			/** Release to public, i.e. google play */
@@ -629,7 +631,7 @@ public class Config {
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
 		/** Uses external images, etc. instead of internal for resources */
-		public final static boolean USE_EXTERNAL_RESOURCES = Debug.BUILD == Builds.NIGHTLY;
+		public final static boolean USE_EXTERNAL_RESOURCES = Debug.BUILD == Builds.NIGHTLY_DEV;
 		/** Database filename */
 		public final static String DB_FILENAME = "Voider.db";
 		/** User storage */
@@ -680,7 +682,8 @@ public class Config {
 					PREFERENCE_PREFIX = "Voider-beta";
 					break;
 
-				case NIGHTLY:
+				case NIGHTLY_DEV:
+				case NIGHTLY_RELEASE:
 					PREFERENCE_PREFIX = "Voider-nightly";
 					break;
 
@@ -769,7 +772,7 @@ public class Config {
 		public final static float WIDESCREEN_RATIO = 1.6f / 0.9f;
 
 		static {
-			if (Debug.BUILD == Builds.NIGHTLY) {
+			if (Debug.BUILD == Builds.NIGHTLY_DEV) {
 				WIDTH_START = WIDTH_DEFAULT;
 				HEIGHT_START = HEIGHT_DEFAULT;
 			} else {
@@ -1080,7 +1083,8 @@ public class Config {
 				SERVER_HOST = "http://voider-beta.appspot.com/";
 				break;
 
-			case NIGHTLY:
+			case NIGHTLY_DEV:
+			case NIGHTLY_RELEASE:
 				SERVER_HOST = "http://voider-nightly.appspot.com/";
 				break;
 
