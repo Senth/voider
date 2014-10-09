@@ -243,6 +243,12 @@ public class SkinNames {
 		MOVEMENT_PATH_SAVE,
 		/** Enemy stationary save image */
 		MOVEMENT_STATIONARY_SAVE,
+		/** Back and forth image */
+		PATH_BACK_AND_FORTH,
+		/** Loop image */
+		PATH_LOOP,
+		/** Once image */
+		PATH_ONCE,
 
 		;
 
@@ -305,6 +311,8 @@ public class SkinNames {
 		THEME_BOTTOM_LAYER_SPEED(Float.class),
 		/** How much wider the theme button is than the height */
 		THEME_DISPLAY_RATIO(Float.class),
+		/** Path color */
+		PATH_COLOR(Color.class),
 
 		;
 

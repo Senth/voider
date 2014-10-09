@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -267,7 +268,7 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-			// Slim fit to text
+		// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
@@ -416,7 +417,7 @@ public class UiFactory {
 
 			// Add to table and get label
 			createdActors.clear();
-			Cell cell = addButtonLabel(button, theme.toString(), Positions.BOTTOM, table, null, createdActors);
+			Cell cell = addIconLabel(button, theme.toString(), Positions.BOTTOM, null, table, null, createdActors);
 			cell.setSize(buttonWidth, buttonHeight);
 			table.getCell().setWidth(buttonWidth);
 			Label label = (Label) createdActors.get(createdActors.size() - 1);
@@ -789,39 +790,78 @@ public class UiFactory {
 	 * @param icon the icon to show
 	 * @param text text to display somewhere
 	 * @param textPosition location of the text relative to the button
+	 * @param textStyle optional text style, set to null to use default
 	 * @param table the table to add the icon to
 	 * @param hider optional hider for icon and label
 	 * @param createdActors all created actors
 	 * @return created button
 	 */
-	public ImageButton addImageButtonLabel(ISkinNames icon, String text, Positions textPosition, AlignTable table, GuiHider hider,
-			ArrayList<Actor> createdActors) {
+	public ImageButton addImageButtonLabel(ISkinNames icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table,
+			GuiHider hider, ArrayList<Actor> createdActors) {
 		if (textPosition == Positions.LEFT || textPosition == Positions.RIGHT) {
 			table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		}
 
 		// Actors
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
-		addButtonLabel(imageButton, text, textPosition, table, hider, createdActors);
+		addIconLabel(imageButton, text, textPosition, textStyle, table, hider, createdActors);
 
 		return imageButton;
 	}
 
 	/**
-	 * Add a button label
-	 * @param button the button to add
+	 * Add an image button with a label after the button
+	 * @param icon the icon to show
 	 * @param text text to display somewhere
 	 * @param textPosition location of the text relative to the button
+	 * @param textStyle optional style of the text (set to null to use default)
 	 * @param table the table to add the icon to
 	 * @param hider optional hider for icon and label
 	 * @param createdActors all created actors
-	 * @return cell with the button
+	 * @return created icon
 	 */
-	private Cell addButtonLabel(Button button, String text, Positions textPosition, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
-		Cell cell = null;
-		Label label = new Label(text, mStyles.label.standard);
+	public Image addIconLabel(IImageNames icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table, GuiHider hider,
+			ArrayList<Actor> createdActors) {
+		if (textPosition == Positions.LEFT || textPosition == Positions.RIGHT) {
+			table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		}
 
-		float buttonWidth = button.getPrefWidth();
+		// Actors
+		Image image = new Image(SkinNames.getDrawable(icon));
+		addIconLabel(image, text, textPosition, textStyle, table, hider, createdActors);
+
+		return image;
+	}
+
+	/**
+	 * Add a button label
+	 * @param icon the icon to add
+	 * @param text text to display somewhere
+	 * @param textPosition location of the text relative to the button
+	 * @param textStyle style of the text
+	 * @param table the table to add the icon to
+	 * @param hider optional hider for icon and label
+	 * @param createdActors all created actors
+	 * @return cell with the icon
+	 */
+	private Cell addIconLabel(Actor icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table, GuiHider hider,
+			ArrayList<Actor> createdActors) {
+		Cell cell = null;
+
+		Label label;
+		if (textStyle != null) {
+			label = new Label(text, textStyle);
+		} else {
+			label = new Label(text, mStyles.label.standard);
+		}
+		label.pack();
+
+		float iconWidth = icon.getWidth();
+		if (icon instanceof Layout) {
+			iconWidth = ((Layout) icon).getPrefWidth();
+		}
+
+		float maxWidth = label.getPrefWidth() > iconWidth ? label.getPrefWidth() : iconWidth;
 
 		AlignTable innerTable = null;
 
@@ -829,9 +869,9 @@ public class UiFactory {
 		switch (textPosition) {
 		case BOTTOM:
 			innerTable = new AlignTable();
-			innerTable.setKeepWidth(true).setWidth(buttonWidth);
+			innerTable.setKeepWidth(true).setWidth(maxWidth);
 			innerTable.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
-			cell = innerTable.add(button);
+			cell = innerTable.add(icon);
 			innerTable.row().setHeight(mStyles.vars.rowHeight);
 			innerTable.add(label);
 			table.add(innerTable);
@@ -841,31 +881,32 @@ public class UiFactory {
 
 		case LEFT:
 			table.add(label).setPadRight(mStyles.vars.paddingInner);
-			cell = table.add(button);
+			cell = table.add(icon);
 			break;
 
 		case RIGHT:
-			cell = table.add(button).setPadRight(mStyles.vars.paddingInner);
+			cell = table.add(icon).setPadRight(mStyles.vars.paddingInner);
 			table.add(label);
 			break;
 
 		case TOP:
 			innerTable = new AlignTable();
-			innerTable.setKeepWidth(true).setWidth(buttonWidth);
+			innerTable.setKeepWidth(true).setWidth(maxWidth);
 			innerTable.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
 			innerTable.row().setHeight(mStyles.vars.rowHeight);
 			innerTable.add(label);
 			innerTable.row();
-			cell = innerTable.add(button);
+			cell = innerTable.add(icon);
 			table.add(innerTable);
 			doExtraActionsOnActors(hider, createdActors, innerTable);
 			break;
 		}
 
 		if (innerTable != null) {
-			doExtraActionsOnActors(hider, createdActors, innerTable, button, label);
+			innerTable.setAlignTable(table.getRow().getAlign());
+			doExtraActionsOnActors(hider, createdActors, innerTable, icon, label);
 		} else {
-			doExtraActionsOnActors(hider, createdActors, button, label);
+			doExtraActionsOnActors(hider, createdActors, icon, label);
 		}
 
 		return cell;

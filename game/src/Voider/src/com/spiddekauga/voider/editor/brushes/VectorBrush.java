@@ -16,15 +16,13 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A simple resource that draws a line
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class VectorBrush extends Resource implements IResourceCorner, IResourceEditorRender, Disposable {
 	/**
 	 * Creates a vector brush with the specified brush mode
-	 * @param addMode set to true if the brush shall be in add mode,
-	 * false if it shall be in erase mode. Add mode = green line, otherwise
-	 * the line is dark purple.
+	 * @param addMode set to true if the brush shall be in add mode, false if it shall be
+	 *        in erase mode. Add mode = green line, otherwise the line is dark purple.
 	 */
 	public VectorBrush(boolean addMode) {
 		mUniqueId = UUID.randomUUID();
@@ -34,6 +32,20 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	@Override
 	public RenderOrders getRenderOrder() {
 		return RenderOrders.BRUSH;
+	}
+
+	@Override
+	public void addCorners(java.util.List<Vector2> corners) {
+		for (Vector2 corner : corners) {
+			addCorner(corner);
+		}
+	}
+
+	@Override
+	public void addCorners(Vector2[] corners) {
+		for (Vector2 corner : corners) {
+			addCorner(corner);
+		}
 	}
 
 	@Override
@@ -117,8 +129,8 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 
 	/**
 	 * Sets the brush mode, will affect the brush color
-	 * @param addMode set to true if the brush is in add mode, false
-	 * if the brush is in erase mode.
+	 * @param addMode set to true if the brush is in add mode, false if the brush is in
+	 *        erase mode.
 	 */
 	public void setBrushMode(boolean addMode) {
 		mAddMode = addMode;
@@ -135,8 +147,7 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	}
 
 	/** All corners */
-	@SuppressWarnings("unchecked")
-	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
 	/** If the brush shall add or erase */
 	private boolean mAddMode = true;
 }

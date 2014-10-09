@@ -90,6 +90,51 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	/**
+	 * @return table alignment
+	 */
+	public Align getAlignTable() {
+		return mTableAlign;
+	}
+
+	/**
+	 * @return row alignment
+	 */
+	public Align getRowAlign() {
+		return mRowAlign;
+	}
+
+	/**
+	 * Set the table alignment
+	 * @param align
+	 * @return this for chaining
+	 */
+	public AlignTable setAlignTable(Align align) {
+		mTableAlign.set(align);
+		return this;
+	}
+
+	/**
+	 * Set row alignment
+	 * @param align
+	 * @return this for chaining
+	 */
+	public AlignTable setAlignRow(Align align) {
+		mRowAlign.set(align);
+		return this;
+	}
+
+	/**
+	 * Set table and row alignment
+	 * @param align
+	 * @return this for chaining
+	 */
+	public AlignTable setAlign(Align align) {
+		mTableAlign.set(align);
+		mRowAlign.set(align);
+		return this;
+	}
+
+	/**
 	 * Sets the table alignment
 	 * @param horizontal horizontal alignment of the table
 	 * @param vertical vertical alignment of the table
@@ -823,7 +868,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		// Set position of this table.
 		// If parent is an AlignTable it has already set the correct position for this
 		// table
-		if (!isParentSettingPosition()) {
+		if (!isParentSettingPosition() && !mPositionSetManually) {
 			Vector2 position = Pools.vector2.obtain();
 
 
@@ -927,6 +972,16 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		} else {
 			super.setPosition(x, y);
 		}
+	}
+
+	/**
+	 * Sets the position of this actor
+	 * @param position new position of this table
+	 * @return this for chaining
+	 */
+	public AlignTable setPosition(Vector2 position) {
+		setPosition(position.x, position.y);
+		return this;
 	}
 
 	/**
@@ -1098,6 +1153,24 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	/**
+	 * Sets if the table's position should be update manually/externally (will ignore
+	 * table alignment and margins).
+	 * @param setPositionManually set to true to set this table's position manually
+	 * @return this for chaining
+	 */
+	public AlignTable setPositionManually(boolean setPositionManually) {
+		mPositionSetManually = setPositionManually;
+		return this;
+	}
+
+	/**
+	 * @return true if this table's position is set manually/externally
+	 */
+	public boolean isPositionSetManually() {
+		return mPositionSetManually;
+	}
+
+	/**
 	 * Set a background image of the table
 	 * @param image background image of this table, null to remove an existing background
 	 *        image
@@ -1178,6 +1251,8 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	private boolean mHasPreferredHeight = true;
 	/** If this table has a preferred width */
 	private boolean mHasPreferredWidth = true;
+	/** If this table's position is set manually */
+	private boolean mPositionSetManually = false;
 	/** Default cell padding */
 	private Padding mCellPaddingDefault = new Padding();
 	/** Default row padding */

@@ -32,6 +32,32 @@ public class Pool<T> extends ReflectionPool<T> {
 		super(type, initialCapacity);
 	}
 
+	/**
+	 * Obtain several free objects
+	 * @param list the list to fill with free objects
+	 * @return list
+	 */
+	public List<T> obtain(List<T> list) {
+		for (int i = 0; i < list.size(); ++i) {
+			list.set(i, obtain());
+		}
+
+		return list;
+	}
+
+	/**
+	 * Obtain several free objects
+	 * @param array fill this vector with free objects
+	 * @return array
+	 */
+	public T[] obtain(T[] array) {
+		for (int i = 0; i < array.length; ++i) {
+			array[i] = obtain();
+		}
+
+		return array;
+	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public synchronized T obtain() {
@@ -84,12 +110,27 @@ public class Pool<T> extends ReflectionPool<T> {
 	}
 
 	/**
-	 * Frees all vectors in the list
-	 * @param list list with vectors to free
+	 * Frees all the objects in the object arrays
+	 * @param arrays array with objects to free
 	 */
-	public void freeAll(List<T> list) {
-		for (T object : list) {
-			free(object);
+	public final void freeAll(@SuppressWarnings("unchecked") T[]... arrays) {
+		for (T[] objects : arrays) {
+			for (T object : objects) {
+				free(object);
+			}
+		}
+	}
+
+	/**
+	 * Frees all vectors in the list(s)
+	 * @param lists all lists with vectors to free
+	 */
+	@SafeVarargs
+	public final void freeAll(List<T>... lists) {
+		for (List<T> list : lists) {
+			for (T object : list) {
+				free(object);
+			}
 		}
 	}
 
@@ -98,7 +139,7 @@ public class Pool<T> extends ReflectionPool<T> {
 	 * ensure that each vector is only freed once.
 	 * @param list list with vectors to free, can contain duplicates.
 	 */
-	public void freeDuplicates(List<T> list) {
+	public final void freeDuplicates(List<T> list) {
 		@SuppressWarnings("unchecked")
 		IdentityMap<T, T> freedObjects = Pools.identityMap.obtain();
 

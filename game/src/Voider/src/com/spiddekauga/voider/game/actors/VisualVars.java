@@ -432,6 +432,20 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	@Override
+	public void addCorners(java.util.List<Vector2> corners) {
+		for (Vector2 corner : corners) {
+			addCorner(corner);
+		}
+	}
+
+	@Override
+	public void addCorners(Vector2[] corners) {
+		for (Vector2 corner : corners) {
+			addCorner(corner);
+		}
+	}
+
+	@Override
 	public void addCorner(Vector2 corner) {
 		addCorner(corner, mCorners.size());
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
@@ -474,6 +488,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/**
 	 * @return all the corners of the actor
 	 */
+	@Override
 	public ArrayList<Vector2> getCorners() {
 		return mCorners;
 	}

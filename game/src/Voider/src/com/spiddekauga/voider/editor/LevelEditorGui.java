@@ -940,7 +940,7 @@ class LevelEditorGui extends EditorGui {
 		GuiCheckCommandCreator checkCommandCreator = new GuiCheckCommandCreator(mInvoker);
 
 		// Once
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_ONCE, "Once", Positions.RIGHT, table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_ONCE, "Once", Positions.RIGHT, null, table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_ONCE);
 		mWidgets.path.once = button;
 		buttonGroup.add(button);
@@ -955,7 +955,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Loop
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_LOOP, "Loop", Positions.RIGHT, table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_LOOP, "Loop", Positions.RIGHT, null, table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_LOOP);
 		mWidgets.path.loop = button;
 		buttonGroup.add(button);
@@ -970,8 +970,8 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Back and forth
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", Positions.RIGHT, table, null,
-				mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", Positions.RIGHT, null, table,
+				null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_BACK_AND_FORTH);
 		mWidgets.path.backAndForth = button;
 		buttonGroup.add(button);

@@ -486,10 +486,6 @@ public class Config {
 				public final static float TRIGGER_DEACTIVATE_DELAY_DEFAULT = 0;
 				/** Step size of deactivation trigger delay */
 				public final static float TRIGGER_DEACTIVATE_DELAY_STEP_SIZE = 1;
-				/** Size of enemy buttons in the scroll list */
-				@Deprecated public final static int ADD_BUTTON_SIZE = 60;
-				/** Maximum percentage of width the add enemy table is allowed for */
-				@Deprecated public final static float ADD_ENEMY_TABLE_MAX_WIDTH = 0.25f;
 				/** Number of enemies per row when adding enemies */
 				public final static int LIST_COLUMNS = 3;
 			}
@@ -500,10 +496,6 @@ public class Config {
 			public static class Path {
 				/** Width of displayed path for enemies */
 				public final static float WIDTH = 0.5f;
-				/** Start color of the path */
-				public final static Color START_COLOR = new Color(0, 0.6f, 0, 1);
-				/** End color of the path */
-				public final static Color END_COLOR = new Color(0.6f, 0, 0, 1);
 			}
 
 			/**

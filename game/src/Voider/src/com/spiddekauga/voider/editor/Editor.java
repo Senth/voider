@@ -130,7 +130,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	@Override
-	public boolean onKeyDown(int keycode) {
+	protected boolean onKeyDown(int keycode) {
 		// Redo
 		if (KeyHelper.isRedoPressed(keycode)) {
 			mInvoker.redo();
@@ -152,7 +152,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			}
 		}
 
-		return false;
+		return super.onKeyDown(keycode);
 	}
 
 	@Override

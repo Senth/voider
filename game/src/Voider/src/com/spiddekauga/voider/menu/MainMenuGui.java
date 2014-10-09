@@ -74,7 +74,7 @@ class MainMenuGui extends MenuGui {
 	private void initMainMenu() {
 		// Play
 		mMainTable.row();
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, mMainTable, null, null);
+		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -84,7 +84,7 @@ class MainMenuGui extends MenuGui {
 
 
 		// Explore
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.EXPLORE, "Explore", Positions.BOTTOM, mMainTable, null, null);
+		button = mUiFactory.addImageButtonLabel(SkinNames.General.EXPLORE, "Explore", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -95,7 +95,7 @@ class MainMenuGui extends MenuGui {
 
 
 		// Create
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.CREATE, "Create", Positions.BOTTOM, mMainTable, null, null);
+		button = mUiFactory.addImageButtonLabel(SkinNames.General.CREATE, "Create", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {

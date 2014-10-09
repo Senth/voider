@@ -2,22 +2,23 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.commands.CGuiCheck;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
+import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.utils.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabImageWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabWrapper;
@@ -49,7 +50,7 @@ public class EnemyEditorGui extends ActorGui {
 	public void dispose() {
 		mMovementTable.dispose();
 		mWeaponTable.dispose();
-		mPathLabels.clear();
+		mWidgets.path.dispose();
 
 		mMovementHider.dispose();
 		mWeaponHider.dispose();
@@ -126,7 +127,7 @@ public class EnemyEditorGui extends ActorGui {
 	public void resetValues() {
 		super.resetValues();
 
-		scalePathLabels();
+		updatePathLabelsPositions();
 
 		resetMovementValues();
 
@@ -174,56 +175,50 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the path labels
 	 */
 	private void initPathLabels() {
-		Label label = new Label("Back and Forth", mUiFactory.getStyles().label.standard);
-		Table wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
+		LabelStyle labelStyle = new LabelStyle(mUiFactory.getStyles().label.standard);
+		labelStyle.fontColor = SkinNames.getResource(SkinNames.EditorVars.PATH_COLOR);
 
-		label = new Label("Loop", mUiFactory.getStyles().label.standard);
-		wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
+		mUiFactory.addIconLabel(SkinNames.EditorImages.PATH_BACK_AND_FORTH, "Back and Forth", Positions.BOTTOM, labelStyle, mWidgets.path.backForth,
+				null, null);
 
-		label = new Label("Once", mUiFactory.getStyles().label.standard);
-		wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
+		mUiFactory.addIconLabel(SkinNames.EditorImages.PATH_LOOP, "Loop", Positions.BOTTOM, labelStyle, mWidgets.path.loop, null, null);
 
-		getStage().addActor(mPathLabels);
+		mUiFactory.addIconLabel(SkinNames.EditorImages.PATH_ONCE, "Once", Positions.BOTTOM, labelStyle, mWidgets.path.once, null, null);
+
+		addActor(mWidgets.path.once);
+		addActor(mWidgets.path.backForth);
+		addActor(mWidgets.path.loop);
 	}
 
 	/**
 	 * Scale path labels
 	 */
-	void scalePathLabels() {
-		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
-		float height = Gdx.graphics.getHeight() * 0.2f;
-		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
+	void updatePathLabelsPositions() {
+		Vector2[] centerPositions = mEnemyEditor.getPathPositions();
 
-		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
+		@SuppressWarnings("unchecked")
+		ArrayList<AlignTable> labelTables = Pools.arrayList.obtain();
+		labelTables.add(mWidgets.path.once);
+		labelTables.add(mWidgets.path.loop);
+		labelTables.add(mWidgets.path.backForth);
 
 
-		// Fix padding
-		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
-		// Reset padding first
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(0);
-				table.invalidateHierarchy();
-			}
+		Vector2 offset = Pools.vector2.obtain();
+
+		for (int i = 0; i < centerPositions.length; ++i) {
+			AlignTable table = labelTables.get(i);
+			Vector2 pos = centerPositions[i];
+
+			table.layout();
+			pos.x -= (int) (table.getWidth() / 2);
+			pos.y -= (int) (table.getHeight() / 2);
+
+			table.setPosition(pos);
 		}
 
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(spaceBetween + height - table.getPrefHeight());
-				table.invalidateHierarchy();
-			}
-		}
+		Pools.vector2.freeAll(centerPositions);
+		Pools.vector2.free(offset);
+		Pools.arrayList.free(labelTables);
 	}
 
 	@Override
@@ -480,7 +475,9 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		});
 		mPathHider = pathTab.getHider();
-		mPathHider.addToggleActor(mPathLabels);
+		mPathHider.addToggleActor(mWidgets.path.backForth);
+		mPathHider.addToggleActor(mWidgets.path.once);
+		mPathHider.addToggleActor(mWidgets.path.loop);
 
 		// Stationary
 		TabImageWrapper stationaryTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_STATIONARY);
@@ -768,8 +765,6 @@ public class EnemyEditorGui extends ActorGui {
 	private AlignTable mMovementTable = new AlignTable();
 	/** Container for all weapon options */
 	private AlignTable mWeaponTable = new AlignTable();
-	/** Table for path labels */
-	private Table mPathLabels = new Table();
 
 	// Hiders
 	/** Hides weapon options */
@@ -793,6 +788,28 @@ public class EnemyEditorGui extends ActorGui {
 	private static class InnerWidgets {
 		MovementWidgets movement = new MovementWidgets();
 		WeaponWidgets weapon = new WeaponWidgets();
+		PathLabels path = new PathLabels();
+
+		static class PathLabels {
+			AlignTable once = new AlignTable();
+			AlignTable backForth = new AlignTable();
+			AlignTable loop = new AlignTable();
+
+			{
+				once.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+				backForth.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+				loop.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+				once.setPositionManually(true);
+				backForth.setPositionManually(true);
+				loop.setPositionManually(true);
+			}
+
+			void dispose() {
+				once.dispose();
+				backForth.dispose();
+				loop.dispose();
+			}
+		}
 
 		static class MovementWidgets {
 			// Movement type

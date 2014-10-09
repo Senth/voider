@@ -1,15 +1,27 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
 
 /**
  * Common interface for resources with corners (custom vertices)
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceCorner extends IResource {
+	/**
+	 * Add several corners at the same time
+	 * @param corners all corners to add (will be placed at the back)
+	 */
+	void addCorners(Vector2[] corners);
+
+	/**
+	 * Add several corners at the same time
+	 * @param corners all corners to add (will be placed at the back)
+	 */
+	void addCorners(List<Vector2> corners);
+
 	/**
 	 * Add another corner position to the back of the array
 	 * @param corner a new corner that will be placed at the back
@@ -51,8 +63,8 @@ public interface IResourceCorner extends IResource {
 	/**
 	 * Gets the index of the corner at the exact specified location
 	 * @param position get the index of the corner at this position
-	 * @return index of the corner at the specified position -1 if no
-	 * corner was found on this exact position.
+	 * @return index of the corner at the specified position -1 if no corner was found on
+	 *         this exact position.
 	 */
 	int getCornerIndex(Vector2 position);
 

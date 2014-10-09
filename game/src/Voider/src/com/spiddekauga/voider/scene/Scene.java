@@ -3,6 +3,7 @@ package com.spiddekauga.voider.scene;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
@@ -14,8 +15,11 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.IExceptionHandler;
 import com.spiddekauga.utils.InputMultiplexerExceptionSnatcher;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**
@@ -68,6 +72,14 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @return true if handled, otherwise false
 	 */
 	protected boolean onKeyDown(int keycode) {
+		// Testing
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
+			if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F3) {
+				mGui.dispose();
+				mGui.initGui();
+			}
+		}
+
 		return false;
 	}
 
@@ -535,6 +547,22 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 */
 	public static void screenToWorldCoord(Camera camera, Vector2 screenPos, Vector2 worldCoordinate, boolean clamp) {
 		screenToWorldCoord(camera, screenPos.x, screenPos.y, worldCoordinate, clamp);
+	}
+
+	/**
+	 * Screen to world coordinate
+	 * @param camera for the world coordinate
+	 * @param screenPositions all screen position
+	 * @param worldCoordinates all the vectors to set the world coordinate for
+	 * @param clamp if the x and y coordinates should be clamped
+	 */
+	public static void screenToWorldCoord(Camera camera, Vector2[] screenPositions, Vector2[] worldCoordinates, boolean clamp) {
+		if (screenPositions.length != worldCoordinates.length) {
+			throw new IllegalArgumentException("screenpositions.length != worldCoordinates.length");
+		}
+		for (int i = 0; i < screenPositions.length; ++i) {
+			screenToWorldCoord(camera, screenPositions[i], worldCoordinates[i], clamp);
+		}
 	}
 
 	/**

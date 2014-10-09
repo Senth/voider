@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -28,6 +29,7 @@ import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -56,6 +58,20 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	 */
 	public Vector2 getRightestCorner() {
 		return mRightestCorner;
+	}
+
+	@Override
+	public void addCorners(java.util.List<Vector2> corners) {
+		for (Vector2 corner : corners) {
+			addCorner(corner);
+		}
+	}
+
+	@Override
+	public void addCorners(Vector2[] corners) {
+		for (Vector2 corner : corners) {
+			addCorner(corner);
+		}
 	}
 
 	@Override
@@ -297,6 +313,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	 * @param position the position of a corner
 	 * @return corner index if a corner was found at position, -1 if none was found.
 	 */
+	@Override
 	public int getCornerIndex(Vector2 position) {
 		for (int i = 0; i < mCorners.size(); ++i) {
 			if (mCorners.get(i).equals(position)) {
@@ -354,10 +371,15 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		if (DRAW_COLOR.equals(INITAL_COLOR)) {
+			Color color = SkinNames.getResource(SkinNames.EditorVars.PATH_COLOR);
+			DRAW_COLOR.set(color);
+		}
+
 		if (mVertices != null) {
 			RenderOrders.offsetZValueEditor(shapeRenderer, this);
 
-			shapeRenderer.setColor(Config.Editor.Level.Path.START_COLOR);
+			shapeRenderer.setColor(DRAW_COLOR);
 			shapeRenderer.triangles(mVertices);
 
 			if (mSelected) {
@@ -680,7 +702,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	@Tag(17) private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
 	/** Corner bodies, for picking */
 	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
-	/** Corner furthest to the right */
+	/** Corner farthest to the right */
 	private Vector2 mRightestCorner = null;
 	/**
 	 * What type of path type the enemy uses, only applicable if movement type is set to
@@ -694,6 +716,10 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	/** Enemies bound to this path */
 	@Tag(19) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 
+	/** Initial color */
+	private static final Color INITAL_COLOR = new Color(0, 0, 0, 0);
+	/** Path draw color */
+	private static final Color DRAW_COLOR = new Color(INITAL_COLOR);
 	/** Minimum distance between chain corners, less than this will assert the program */
 	private final static float CHAIN_CORNER_DISTANCE_MIN = 0.005f * 0.005f;
 }

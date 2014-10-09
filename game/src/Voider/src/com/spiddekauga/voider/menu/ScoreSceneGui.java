@@ -113,7 +113,7 @@ public class ScoreSceneGui extends Gui {
 		// -- Buttons --
 		// Replay
 		mMainTable.row().setAlign(Horizontal.CENTER).setPadTop(mUiFactory.getStyles().vars.rowHeight);
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.REPLAY, "Replay", Positions.BOTTOM, mMainTable, null, null);
+		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.REPLAY, "Replay", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -123,7 +123,7 @@ public class ScoreSceneGui extends Gui {
 
 		// Continue
 		mUiFactory.addButtonPadding(mMainTable);
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, mMainTable, null, null);
+		button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {

@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.Editor.ImageSaveOnActor.Locations;
@@ -190,7 +192,7 @@ public class EnemyEditor extends ActorEditor {
 		super.onResize(width, height);
 		mGui.dispose();
 		mGui.initGui();
-		((EnemyEditorGui) mGui).scalePathLabels();
+		((EnemyEditorGui) mGui).updatePathLabelsPositions();
 	}
 
 	@Override
@@ -1114,6 +1116,29 @@ public class EnemyEditor extends ActorEditor {
 	/** Player last position */
 	private Vector2 mPlayerLastPosition = new Vector2();
 
+	/**
+	 * @return all three path positions
+	 */
+	Vector2[] getPathPositions() {
+		Vector2[] positions = Pools.vector2.obtain(new Vector2[3]);
+
+		// X position
+		float availableWidth = Gdx.graphics.getWidth() - UiFactory.getInstance().getStyles().vars.rightPanelWidth;
+		for (Vector2 position : positions) {
+			position.x = (int) (availableWidth / 2);
+		}
+
+		float barUpperLowerHeight = UiFactory.getInstance().getStyles().vars.barUpperLowerHeight;
+		float availableHeight = Gdx.graphics.getHeight() - barUpperLowerHeight * 2;
+		int padding = (int) (availableHeight / 3.0f);
+		int yStartOffset = (int) (barUpperLowerHeight + padding / 2);
+
+		for (int i = 0; i < positions.length; ++i) {
+			positions[i].y = yStartOffset + i * padding;
+		}
+
+		return positions;
+	}
 
 	/**
 	 * Creates the example paths that are used
@@ -1122,83 +1147,107 @@ public class EnemyEditor extends ActorEditor {
 		// All paths should be like each other, so the player clearly sees the
 		// difference between how they work
 
-		// Create a shape like this:
-		// 2 ------- 1
-		// 3 | | 0
-		Vector2[] nodes = new Vector2[4];
-		Vector2[] screenPos = new Vector2[4];
-		for (int i = 0; i < nodes.length; ++i) {
-			screenPos[i] = Pools.vector2.obtain();
-			nodes[i] = Pools.vector2.obtain();
-		}
-		// X-area: From middle of screen to 1/6 of the screen width
-		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't
-		// touch the borders
-		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
-		float height = Gdx.graphics.getHeight() * 0.2f;
-		float heightOffset = height + spaceBetween;
-		float initialOffset = spaceBetween;
-		// 0
-		screenPos[0].set(Gdx.graphics.getWidth() * 0.5f, initialOffset + height);
-		// 1
-		screenPos[1].set(screenPos[0]);
-		screenPos[1].y = initialOffset;
-		// 2
-		screenPos[2].set(screenPos[1]);
-		screenPos[2].x = Gdx.graphics.getWidth() / 6f;
-		// 3
-		screenPos[3].set(screenPos[2]);
-		screenPos[3].y = initialOffset + height;
+		@SuppressWarnings("unchecked")
+		ArrayList<Path> paths = Pools.arrayList.obtain();
 
+
+		// -- Create enemies and set correct path movements
 
 		// BACK AND FORTH
 		mPathBackAndForth.setPathType(PathTypes.BACK_AND_FORTH);
+		paths.add(mPathBackAndForth);
 		mEnemyPathBackAndForth.setPath(mPathBackAndForth);
 		mEnemyPathBackAndForth.resetPathMovement();
-		for (int i = 0; i < nodes.length; ++i) {
-			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-			try {
-				mPathBackAndForth.addCorner(nodes[i]);
-			} catch (Exception e) {
-				// Does nothing...
-			}
-		}
+		//
+		// for (int i = 0; i < nodes.length; ++i) {
+		// screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
+		// try {
+		// mPathBackAndForth.addCorner(nodes[i]);
+		// } catch (Exception e) {
+		// // Does nothing...
+		// }
+		// }
 
 		// LOOP
 		mPathLoop.setPathType(PathTypes.LOOP);
+		paths.add(mPathLoop);
 		mEnemyPathLoop.setPath(mPathLoop);
 		mEnemyPathLoop.resetPathMovement();
-		// Offset all y values so we don't get same path
-		for (int i = 0; i < nodes.length; ++i) {
-			screenPos[i].y += heightOffset;
-			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-			try {
-				mPathLoop.addCorner(nodes[i]);
-			} catch (Exception e) {
-				// Does nothing
-			}
-		}
+		// // Offset all y values so we don't get same path
+		// for (int i = 0; i < nodes.length; ++i) {
+		// screenPos[i].y += heightOffset;
+		// screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
+		// try {
+		// mPathLoop.addCorner(nodes[i]);
+		// } catch (Exception e) {
+		// // Does nothing
+		// }
+		// }
 
 		// ONCE
 		mPathOnce.setPathType(PathTypes.ONCE);
+		paths.add(mPathOnce);
 		mEnemyPathOnce.setPath(mPathOnce);
 		mEnemyPathOnce.resetPathMovement();
-		// Offset all y values so we don't get same path
-		for (int i = 0; i < nodes.length; ++i) {
-			screenPos[i].y += heightOffset;
-			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-			try {
-				mPathOnce.addCorner(nodes[i]);
-			} catch (Exception e) {
-				// Does nothing
-			}
+
+
+		// Create paths corners
+		Vector2[] nodes = Pools.vector2.obtain(new Vector2[4]);
+		Vector2[] screenPos = Pools.vector2.obtain(new Vector2[4]);
+		Vector2[] centerPositions = getPathPositions();
+		Vector2 minPos = Pools.vector2.obtain();
+		Vector2 maxPos = Pools.vector2.obtain();
+
+		// X-area: From middle of screen to 1/6 of the screen width
+		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't
+		// touch the borders
+		assert (centerPositions.length == paths.size());
+
+		float xOffset = Gdx.graphics.getWidth() / 6f;
+		float yOffset = Gdx.graphics.getHeight() * 0.1f;
+
+		for (int i = 0; i < paths.size(); ++i) {
+			Path path = paths.get(i);
+			Vector2 centerPosition = centerPositions[i];
+
+			minPos.set(centerPosition);
+			minPos.add(-xOffset, yOffset);
+			maxPos.set(centerPosition);
+			maxPos.add(xOffset, -yOffset);
+
+			// Create a shape like this:
+			// @formatter:off
+			// 2 ------- 1
+			// 3 |     | 0
+			// @formatter:on
+
+			// 0 - Bottom right
+			screenPos[0].set(maxPos.x, minPos.y);
+			// 1 - Top right
+			screenPos[1].set(maxPos.x, maxPos.y);
+			// 2 - Top left
+			screenPos[2].set(minPos.x, maxPos.y);
+			// 3 - Bottom left
+			screenPos[3].set(minPos.x, minPos.y);
+
+			screenToWorldCoord(mCamera, screenPos, nodes, true);
+			path.addCorners(nodes);
 		}
 
+		// // Offset all y values so we don't get same path
+		// for (int i = 0; i < nodes.length; ++i) {
+		// screenPos[i].y += heightOffset;
+		// screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
+		// try {
+		// mPathOnce.addCorner(nodes[i]);
+		// } catch (Exception e) {
+		// // Does nothing
+		// }
+		// }
+
 		// Free stuff
-		for (int i = 0; i < nodes.length; ++i) {
-			Pools.vector2.free(nodes[i]);
-			Pools.vector2.free(screenPos[i]);
-		}
+		Pools.vector2.freeAll(nodes, screenPos, centerPositions);
+		Pools.vector2.freeAll(minPos, maxPos);
 	}
 
 	/**

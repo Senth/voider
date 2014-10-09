@@ -138,6 +138,23 @@ public class Row implements Poolable, IPadding<Row> {
 		return this;
 	}
 
+	/**
+	 * Set the alignment of this row
+	 * @param align
+	 * @return this for chaining
+	 */
+	public Row setAlign(Align align) {
+		mAlign.set(align);
+		return this;
+	}
+
+	/**
+	 * @return alignment for this row
+	 */
+	public Align getAlign() {
+		return mAlign;
+	}
+
 	@Override
 	public Row setPad(float pad) {
 		setPadLeft(pad);
@@ -340,28 +357,28 @@ public class Row implements Poolable, IPadding<Row> {
 	/**
 	 * @return preferred height of the row
 	 */
-	float getPrefHeight() {
+	public float getPrefHeight() {
 		return mPrefHeight + mPadding.top + mPadding.bottom;
 	}
 
 	/**
 	 * @return preferred width of the row
 	 */
-	float getPrefWidth() {
+	public float getPrefWidth() {
 		return mPrefWidth + mPadding.left + mPadding.right;
 	}
 
 	/**
 	 * @return width of the row
 	 */
-	float getWidth() {
+	public float getWidth() {
 		return mWidth + getPadLeft() + getPadRight();
 	}
 
 	/**
 	 * @return height of the row
 	 */
-	float getHeight() {
+	public float getHeight() {
 		return mHeight + getPadTop() + getPadBottom();
 	}
 

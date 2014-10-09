@@ -55,7 +55,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
-		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
+IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
 	/**
 	 * Sets the texture of the actor including the actor definition. Automatically creates
 	 * a body for the actor.
@@ -1133,6 +1133,16 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		}
 
 		return (ResourceType) copy;
+	}
+
+	@Override
+	public void addCorners(java.util.List<Vector2> corners) {
+		getDef().getVisualVars().addCorners(corners);
+	}
+
+	@Override
+	public void addCorners(Vector2[] corners) {
+		getDef().getVisualVars().addCorners(corners);
 	}
 
 	@Override
