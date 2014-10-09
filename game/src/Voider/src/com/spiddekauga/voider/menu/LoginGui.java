@@ -85,7 +85,7 @@ public class LoginGui extends Gui {
 		mWidgets.login.password.setName("password");
 
 		// Forgot password
-		table.row();
+		table.row().setAlign(Vertical.BOTTOM);
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -124,6 +124,7 @@ public class LoginGui extends Gui {
 			}
 		};
 		mUiFactory.addTextButton("Exit", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		table.getCell().setFixedWidth(false);
 
 		// Login
 		buttonListener = new ButtonListener() {
@@ -133,6 +134,8 @@ public class LoginGui extends Gui {
 			}
 		};
 		mUiFactory.addTextButton("Login", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		table.getCell().setFixedWidth(false);
+		mUiFactory.addButtonPadding(table.getRow());
 		mWidgets.login.table.layout();
 
 		// Add to stage
@@ -313,7 +316,7 @@ public class LoginGui extends Gui {
 
 
 		// Back
-		table.row().setFillWidth(true).setEqualCellSize(true);
+		table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(mUiFactory.getStyles().vars.paddingButton);
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -322,6 +325,7 @@ public class LoginGui extends Gui {
 			}
 		};
 		mUiFactory.addTextButton("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		table.getCell().setFixedWidth(false);
 
 		// Register
 		buttonListener = new ButtonListener() {
@@ -331,6 +335,8 @@ public class LoginGui extends Gui {
 			}
 		};
 		mUiFactory.addTextButton("Register", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		table.getCell().setFixedWidth(false);
+		mUiFactory.addButtonPadding(table.getRow());
 		mWidgets.register.table.row();
 		mWidgets.register.table.layout();
 

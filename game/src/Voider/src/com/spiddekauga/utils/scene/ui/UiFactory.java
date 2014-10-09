@@ -880,6 +880,25 @@ public class UiFactory {
 	}
 
 	/**
+	 * Add button padding between all the cells in a row
+	 * @param row the row to add padding to
+	 */
+	public void addButtonPadding(Row row) {
+		float padHalf = mStyles.vars.paddingButton * 0.5f;
+
+		for (Cell cell : row.getCells()) {
+			cell.setPadLeft(padHalf);
+			cell.setPadRight(padHalf);
+		}
+
+		// Remove padding for before first and after last buttons
+		if (row.getCellCount() > 0) {
+			row.getCells().get(0).setPadLeft(0);
+			row.getCell().setPadRight(0);
+		}
+	}
+
+	/**
 	 * Add a panel section label
 	 * @param text section label text
 	 * @param table the table to add the text to
