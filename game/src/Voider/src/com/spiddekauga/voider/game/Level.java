@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
@@ -51,7 +52,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-IResourceRevision, IResourceHasDef {
+		IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -89,6 +90,9 @@ IResourceRevision, IResourceHasDef {
 		if (mLevelDef.getTheme() != null) {
 			mBackgroundBottom = ResourceCacheFacade.get(mLevelDef.getTheme().getBottomLayer());
 			mBackgroundTop = ResourceCacheFacade.get(mLevelDef.getTheme().getTopLayer());
+
+			mBackgroundBottom.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+			mBackgroundTop.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		}
 
 		// Set background speed
