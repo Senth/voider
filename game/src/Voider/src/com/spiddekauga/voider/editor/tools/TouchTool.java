@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
@@ -18,7 +19,6 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Abstract tool for handling touch events
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class TouchTool extends InputAdapter {
@@ -27,7 +27,7 @@ public abstract class TouchTool extends InputAdapter {
 	 * @param camera used for determining where in the world the pointer is
 	 * @param world used for picking
 	 * @param invoker used for undo/redo of some commands
-	 * @param selection current selected resources
+	 * @param selection current selected resources, can be null
 	 * @param editor the editor used, can be null
 	 */
 	public TouchTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
@@ -39,11 +39,11 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	@Override
-	public boolean touchDown(int x, int y, int pointer, int button) {
+	public final boolean touchDown(int x, int y, int pointer, int button) {
 
 		// Only do something for the first pointer
 		if (pointer == 0) {
-			mScreenCurrent.set(x,y);
+			mScreenCurrent.set(x, y);
 
 			if (mClickTimeLast + Config.Input.DOUBLE_CLICK_TIME > SceneSwitcher.getGameTime().getTotalTimeElapsed()) {
 				mClickTimeLast = 0;
@@ -64,7 +64,7 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
+	public final boolean touchDragged(int x, int y, int pointer) {
 		if (pointer == 0) {
 			mScreenCurrent.set(x, y);
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
@@ -77,7 +77,7 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	@Override
-	public boolean touchUp(int x, int y, int pointer, int button) {
+	public final boolean touchUp(int x, int y, int pointer, int button) {
 		if (pointer == 0) {
 			mScreenCurrent.set(x, y);
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
@@ -88,13 +88,21 @@ public abstract class TouchTool extends InputAdapter {
 		return false;
 	}
 
+	@Override
+	public final boolean scrolled(int amount) {
+		mScreenCurrent.set(Gdx.input.getX(), Gdx.input.getY());
+		Scene.screenToWorldCoord(mCamera, mScreenCurrent, mTouchCurrent, true);
+
+		return scroll(amount);
+	}
+
 	/**
-	 * Activates the tool. This method does nothing by itself except when
-	 * overridden. Usually this will make selected actors add extra corners and/or
-	 * draw them differently
+	 * Activates the tool. This method does nothing by itself except when overridden.
+	 * Usually this will make selected actors add extra corners and/or draw them
+	 * differently
 	 */
 	public void activate() {
-		// Does nothing
+		mActive = true;
 	}
 
 	/**
@@ -102,7 +110,14 @@ public abstract class TouchTool extends InputAdapter {
 	 * Usually this will make selected actors to be drawn regularly again
 	 */
 	public void deactivate() {
-		// Does nothing
+		mActive = false;
+	}
+
+	/**
+	 * @return true if the tool is currently active
+	 */
+	public boolean isActive() {
+		return mActive;
 	}
 
 	/**
@@ -120,8 +135,8 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
-	 * Tests to pick a body from the current touch. The hit body is
-	 * set to mHitBody. Uses the default pick size
+	 * Tests to pick a body from the current touch. The hit body is set to mHitBody. Uses
+	 * the default pick size
 	 * @param callback method to use for getting picks
 	 */
 	protected void testPickAabb(QueryCallback callback) {
@@ -157,8 +172,7 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
-	 * Tests to pick a body from the current touch. The hit body will be
-	 * set to mHitBody
+	 * Tests to pick a body from the current touch. The hit body will be set to mHitBody
 	 * @param callback method to use for getting picks
 	 * @param halfSize how far the touch shall test
 	 */
@@ -167,7 +181,8 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
-	 * Tests to pick a body from the current touch point. The hit body will be set to mHitBody
+	 * Tests to pick a body from the current touch point. The hit body will be set to
+	 * mHitBody
 	 * @param callback callback method used when picking
 	 */
 	protected void testPickPoint(QueryCallback callback) {
@@ -197,6 +212,16 @@ public abstract class TouchTool extends InputAdapter {
 	protected abstract boolean up(int button);
 
 	/**
+	 * Called on scroll event
+	 * @param amount how much was scrolled
+	 * @return false if event should continue to be handled downstream
+	 */
+	protected boolean scroll(int amount) {
+		// Does nothing
+		return false;
+	}
+
+	/**
 	 * Sets the tool as drawing
 	 * @param drawing true if the tool is drawing
 	 */
@@ -205,8 +230,8 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
-	 * What type of resources the selection tool is allowed to select when this
-	 * tool is active
+	 * What type of resources the selection tool is allowed to select when this tool is
+	 * active
 	 * @return array of resources the selection tool is allowed to select
 	 */
 	public final ArrayList<Class<? extends IResource>> getSelectableResourceTypes() {
@@ -214,10 +239,10 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
-	 * Override this method if you want the selection tool to only select resources
-	 * of the currently selected resource
+	 * Override this method if you want the selection tool to only select resources of the
+	 * currently selected resource
 	 * @return true if the selection tool is allowed to change between resources types
-	 * independent of the current selection.
+	 *         independent of the current selection.
 	 */
 	public boolean isSelectionToolAllowedToChangeResourceType() {
 		return true;
@@ -246,6 +271,8 @@ public abstract class TouchTool extends InputAdapter {
 	/** Selectable resource types */
 	protected ArrayList<Class<? extends IResource>> mSelectableResourceTypes = new ArrayList<Class<? extends IResource>>();
 
+	/** If this tool is currently active */
+	private boolean mActive = false;
 	/** If the tool is currently drawing */
 	private boolean mDrawing = false;
 	/** Temporary callback variable, used for testing points */

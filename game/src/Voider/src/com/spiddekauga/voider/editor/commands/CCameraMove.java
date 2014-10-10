@@ -8,7 +8,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Command for moving a camera. This can undo and redo a scroll.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CCameraMove extends Command implements ICommandCombinable {
@@ -20,7 +19,7 @@ public class CCameraMove extends Command implements ICommandCombinable {
 	 */
 	public CCameraMove(Camera camera, Vector2 newPos, Vector2 oldPos) {
 		mNewPos.set(newPos);
-		mOldPos.set(oldPos);
+		mOldPos.set(mCamera.position.x, mCamera.position.y);
 		mCamera = camera;
 	}
 
@@ -58,8 +57,7 @@ public class CCameraMove extends Command implements ICommandCombinable {
 
 	@Override
 	public void dispose() {
-		Pools.vector2.free(mNewPos);
-		Pools.vector2.free(mOldPos);
+		Pools.vector2.freeAll(mNewPos, mOldPos);
 	}
 
 	/** The camera to move */

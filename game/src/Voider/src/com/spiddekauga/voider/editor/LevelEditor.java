@@ -107,7 +107,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_ACTIVATE));
 		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
 		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.PAN.setTool(new PanTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.PAN.setTool(new PanTool(mCamera, mWorld, mInvoker));
 		Tools.PATH_ADD.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PICKUP_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, PickupActor.class));
 		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));

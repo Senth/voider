@@ -8,27 +8,22 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.utils.commands.Invoker;
-import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Pan tool
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PanTool extends TouchTool {
-
 	/**
 	 * @param camera used for picking
 	 * @param world where the objects are
 	 * @param invoker used for undo/redo
-	 * @param selection all selected resources
-	 * @param editor editor this tool is bound to
 	 */
-	public PanTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
-		super(camera, world, invoker, selection, editor);
+	public PanTool(Camera camera, World world, Invoker invoker) {
+		super(camera, world, invoker, null, null);
 
 		// Add all resources so that they don't get deselected
 		// This tool hijacks all event messages anyway
@@ -40,7 +35,7 @@ public class PanTool extends TouchTool {
 		boolean willScroll = false;
 
 		// When active always scroll
-		if (mActive) {
+		if (isActive()) {
 			willScroll = true;
 		}
 		// Only scroll with specific button
@@ -58,7 +53,7 @@ public class PanTool extends TouchTool {
 				Pools.vector2.free(scrollCameraCurrent);
 			}
 
-			mScroller.touchDown((int)mScreenCurrent.x, (int)mScreenCurrent.y);
+			mScroller.touchDown((int) mScreenCurrent.x, (int) mScreenCurrent.y);
 			mScrollCameraOrigin.set(mCamera.position.x, mCamera.position.y);
 			mCreatedScrollCommand = false;
 
@@ -75,7 +70,7 @@ public class PanTool extends TouchTool {
 	@Override
 	protected boolean dragged() {
 		if (mScroller.isScrollingByHand()) {
-			mScroller.touchDragged((int)mScreenCurrent.x, (int)mScreenCurrent.y);
+			mScroller.touchDragged((int) mScreenCurrent.x, (int) mScreenCurrent.y);
 			return true;
 		}
 
@@ -85,27 +80,13 @@ public class PanTool extends TouchTool {
 	@Override
 	protected boolean up(int button) {
 		if (mScroller.isScrollingByHand()) {
-			if (mActive || KeyHelper.isScrolling(button)) {
-				mScroller.touchUp((int)mScreenCurrent.x, (int)mScreenCurrent.y);
+			if (isActive() || KeyHelper.isScrolling(button)) {
+				mScroller.touchUp((int) mScreenCurrent.x, (int) mScreenCurrent.y);
 				return true;
 			}
 		}
 
 		return false;
-	}
-
-	@Override
-	public void activate() {
-		super.activate();
-
-		mActive = true;
-	}
-
-	@Override
-	public void deactivate() {
-		super.deactivate();
-
-		mActive = false;
 	}
 
 	/**
@@ -125,8 +106,7 @@ public class PanTool extends TouchTool {
 			mCamera.update();
 
 			Pools.vector2.free(diffScroll);
-		}
-		else if (!mCreatedScrollCommand) {
+		} else if (!mCreatedScrollCommand) {
 			Vector2 scrollCameraCurrent = Pools.vector2.obtain();
 			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 
@@ -165,6 +145,4 @@ public class PanTool extends TouchTool {
 	private Vector2 mScrollCameraOrigin = new Vector2();
 	/** Logic for scrolling */
 	private Scroller mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
-	/** If the scroller is the activet tool */
-	private boolean mActive = false;
 }

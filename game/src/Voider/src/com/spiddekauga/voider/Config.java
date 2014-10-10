@@ -306,6 +306,11 @@ public class Config {
 				/** Step size of collision damage */
 				public final static float DAMAGE_STEP_SIZE = 1;
 			}
+
+			/** Minimum zoom */
+			public final static float ZOOM_MIN = 1;
+			/** Maximum zoom */
+			public final static float ZOOM_MAX = 10;
 		}
 
 		/**
@@ -514,18 +519,18 @@ public class Config {
 			public final static float ENEMY_SNAP_PATH_DISTANCE = 2;
 			/** Enemy snap distance squared */
 			public final static float ENEMY_SNAP_PATH_DISTANCE_SQ = ENEMY_SNAP_PATH_DISTANCE * ENEMY_SNAP_PATH_DISTANCE;
-			/** Width of the options message box (in percentage of window width) */
-			public final static float OPTIONS_WIDTH = 0.8f;
-			/** Height of the options message box (in percentage of window height) */
-			public final static float OPTIONS_HEIGHT = 0.7f;
 			/** Minimum level speed */
 			public final static float LEVEL_SPEED_MIN = 1;
-			/** Maximum level speeed */
+			/** Maximum level speed */
 			public final static float LEVEL_SPEED_MAX = 50;
 			/** Default level speed */
 			public final static float LEVEL_SPEED_DEFAULT = 15;
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
+			/** Minimum zoom */
+			public final static float ZOOM_MIN = 0.1f;
+			/** Maximum zoom */
+			public final static float ZOOM_MAX = 10;
 		}
 
 		/**
@@ -602,6 +607,8 @@ public class Config {
 		public final static Color BRUSH_ERASE_COLOR = Color.RED;
 		/** Selection brush color */
 		public final static Color BRUSH_SELECTION_COLOR = Color.GRAY;
+		/** Zoom in amount when clicking on the icon */
+		public final static float ZOOM_AMOUNT = 0.1f;
 	}
 
 	/**

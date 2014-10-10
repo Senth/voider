@@ -16,7 +16,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for deleting resources
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DeleteTool extends TouchTool {
@@ -35,7 +34,7 @@ public class DeleteTool extends TouchTool {
 
 	@Override
 	protected boolean down(int button) {
-		if (mActive) {
+		if (isActive()) {
 			removeSelectedResources();
 		}
 		return false;
@@ -56,15 +55,7 @@ public class DeleteTool extends TouchTool {
 	@Override
 	public void activate() {
 		super.activate();
-
 		removeSelectedResources();
-		mActive = true;
-	}
-
-	@Override
-	public void deactivate() {
-		super.deactivate();
-		mActive = false;
 	}
 
 	@Override
@@ -96,7 +87,4 @@ public class DeleteTool extends TouchTool {
 			Pools.arrayList.free(copySelectedResources);
 		}
 	}
-
-	/** True if the tool is active */
-	private boolean mActive = false;
 }

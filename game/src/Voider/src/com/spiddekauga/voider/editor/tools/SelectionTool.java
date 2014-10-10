@@ -23,7 +23,6 @@ import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Container class for all the selected actors in the level editor
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectionTool extends TouchTool {
@@ -114,7 +113,7 @@ public class SelectionTool extends TouchTool {
 	@Override
 	protected boolean down(int button) {
 		// Draw selection box
-		if (mActive) {
+		if (isActive()) {
 			mRectangleBrush = new RectangleBrush(Config.Editor.BRUSH_SELECTION_COLOR, mTouchCurrent);
 			mEditor.onResourceAdded(mRectangleBrush);
 		}
@@ -135,7 +134,7 @@ public class SelectionTool extends TouchTool {
 			}
 		}
 
-		return mActive;
+		return isActive();
 	}
 
 	@Override
@@ -143,7 +142,7 @@ public class SelectionTool extends TouchTool {
 		if (mRectangleBrush != null) {
 			mRectangleBrush.setEndPosition(mTouchCurrent);
 		}
-		return mActive;
+		return isActive();
 	}
 
 	@Override
@@ -174,25 +173,16 @@ public class SelectionTool extends TouchTool {
 
 		mHitResources.clear();
 
-		return mActive;
-	}
-
-	@Override
-	public void activate() {
-		mActive = true;
-	}
-
-	@Override
-	public void deactivate() {
-		mActive = false;
+		return isActive();
 	}
 
 	/**
 	 * Set the current selectable resource
-	 * @param selectableResourceTypes what kind of resource the selection tool is allowed to select
-	 * @param canChangeResourceType if the selection tool is allowed to change the selection
-	 * independent of the current selection. E.g. if it is allowed to change the selection to an
-	 * enemy from a trigger.
+	 * @param selectableResourceTypes what kind of resource the selection tool is allowed
+	 *        to select
+	 * @param canChangeResourceType if the selection tool is allowed to change the
+	 *        selection independent of the current selection. E.g. if it is allowed to
+	 *        change the selection to an enemy from a trigger.
 	 */
 	public void setSelectableResourceTypes(ArrayList<Class<? extends IResource>> selectableResourceTypes, boolean canChangeResourceType) {
 		mSelectableResourceTypes = selectableResourceTypes;
@@ -202,8 +192,7 @@ public class SelectionTool extends TouchTool {
 	}
 
 	/**
-	 * Clears the current selection from the resources that aren't allowed
-	 * to be selected.
+	 * Clears the current selection from the resources that aren't allowed to be selected.
 	 */
 	private void clearSelectionFromUnallowedResources() {
 		mHitResources.clear();
@@ -220,7 +209,7 @@ public class SelectionTool extends TouchTool {
 			Body body = fixture.getBody();
 
 			if (body.getUserData() instanceof Path) {
-				mHitResources.add((IResource)body.getUserData());
+				mHitResources.add((IResource) body.getUserData());
 			}
 
 			return true;
@@ -234,7 +223,7 @@ public class SelectionTool extends TouchTool {
 			Body body = fixture.getBody();
 
 			if (body.getUserData() instanceof Trigger) {
-				mHitResources.add((IResource)body.getUserData());
+				mHitResources.add((IResource) body.getUserData());
 			}
 
 			return true;
@@ -248,7 +237,7 @@ public class SelectionTool extends TouchTool {
 			Body body = fixture.getBody();
 
 			if (body.getUserData() instanceof IResource) {
-				mHitResources.add((IResource)body.getUserData());
+				mHitResources.add((IResource) body.getUserData());
 			}
 
 			return true;
@@ -259,8 +248,6 @@ public class SelectionTool extends TouchTool {
 	private boolean mCanChangeResourceTypeSelection = true;
 	/** Rectangle brush */
 	private RectangleBrush mRectangleBrush = null;
-	/** If the selection tool is active */
-	private boolean mActive = false;
 	/** All hit resources */
 	private ArrayList<IResource> mHitResources = new ArrayList<IResource>();
 
