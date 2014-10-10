@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -58,6 +59,27 @@ public class EnemyEditorGui extends ActorGui {
 		mAiHider.dispose();
 
 		super.dispose();
+	}
+
+	@Override
+	void resetCollisionBoxes() {
+		if (mSettingTabs == null) {
+			return;
+		}
+
+		super.resetCollisionBoxes();
+
+		// Tab widget
+		createCollisionBoxes(mSettingTabs);
+
+		// Tool
+		createCollisionBoxes(mToolMenu);
+
+		// Upper/Lower borders
+		float width = Gdx.graphics.getWidth();
+		float height = mUiFactory.getStyles().vars.barUpperLowerHeight;
+		createCollisionBox(0, 0, width, height);
+		createCollisionBox(0, Gdx.graphics.getHeight() - height, width, height);
 	}
 
 	@Override
@@ -168,6 +190,13 @@ public class EnemyEditorGui extends ActorGui {
 		case DIRECTION:
 			mWidgets.weapon.aimDirection.setChecked(true);
 			break;
+		}
+
+		mSettingTabs.layout();
+		mToolMenu.layout();
+
+		if (mEditor.getScreenToWorldScale() != 0) {
+			resetCollisionBoxes();
 		}
 	}
 

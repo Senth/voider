@@ -12,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
@@ -94,7 +94,7 @@ public abstract class EditorGui extends Gui {
 	 * Sets the editor bound to this GUI
 	 * @param editor the editor bound to this GUI
 	 */
-	public void setEditor(IEditor editor) {
+	public void setEditor(Editor editor) {
 		mEditor = editor;
 		mInvoker = mEditor.getInvoker();
 	}
@@ -727,76 +727,62 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Reset and add collision boxes for all UI-elements. Should be called every frame,
-	 * will reset only when necessary.
+	 * Create collision boxes for these actors
+	 * @param actors
+	 */
+	void createCollisionBoxes(Actor... actors) {
+		Vector2 localPos = Pools.vector2.obtain();
+		for (Actor actor : actors) {
+			if (actor.isVisible()) {
+				if (actor instanceof Layout) {
+					((Layout) actor).validate();
+				}
+				localPos.set(0, 0);
+				Vector2 screenPos = actor.localToStageCoordinates(localPos);
+				createCollisionBox(screenPos.x, screenPos.y, actor.getWidth(), actor.getHeight());
+			}
+		}
+
+		Pools.vector2.free(localPos);
+	}
+
+	/**
+	 * Create a custom collision box
+	 * @param x screen position
+	 * @param y screen position
+	 * @param width width in screen coordinates
+	 * @param height height in screen coordinates
+	 */
+	void createCollisionBox(float x, float y, float width, float height) {
+		if (mEditor.getCamera() != null) {
+			float scale = mEditor.getScreenToWorldScale() * 0.5f;
+
+			float worldWidth = width * scale;
+			float worldHeight = height * scale;
+
+			mCollisionBoxVars.shape.setAsBox(worldWidth, worldHeight);
+
+			// Convert screen to world coordinates
+			Scene.screenToWorldCoord(mEditor.getCamera(), x + width * 0.5f, y + height * 0.5f, mCollisionBoxVars.bodyDef.position, false);
+			mCollisionBoxVars.bodyDef.position.y *= -1;
+
+			// Create body
+			Body body = mEditor.getWorld().createBody(mCollisionBoxVars.bodyDef);
+			body.createFixture(mCollisionBoxVars.fixtureDef);
+			mBodies.add(body);
+		}
+	}
+
+	/**
+	 * Reset and add collision boxes for all UI-elements. Should be called once initially
+	 * and when
 	 */
 	void resetCollisionBoxes() {
 		if (mEditor == null) {
 			return;
 		}
 
-		if (mLayoutWasValid) {
-			mLayoutWasValid = mMainTable.isLayoutValid();
-		}
-
-
-		// Update collision boxes once main table has a valid layout again
-		if (!mLayoutWasValid && mMainTable.isLayoutValid()) {
-			mMainTable.invalidateHierarchy();
-
-			clearCollisionBoxes();
-
-
-			// Create new bodies
-			BodyDef bodyDef = new BodyDef();
-			bodyDef.type = BodyType.StaticBody;
-			FixtureDef fixtureDef = new FixtureDef();
-			fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
-			fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
-
-			PolygonShape polygonShape = new PolygonShape();
-			fixtureDef.shape = polygonShape;
-
-			World world = mEditor.getWorld();
-			float scale = mEditor.getCamera().viewportWidth / Gdx.graphics.getWidth() * 0.5f;
-
-			Vector2 screenPos = Pools.vector2.obtain();
-
-			ArrayList<Actor> allActors = mMainTable.getActors(true);
-			ArrayList<Actor> actors = mEditorMenu.getActors(true);
-			allActors.addAll(actors);
-			Pools.arrayList.free(actors);
-			actors = mFileMenu.getActors(true);
-			allActors.addAll(actors);
-			Pools.arrayList.free(actors);
-			actors = mToolMenu.getActors(true);
-			allActors.addAll(actors);
-			Pools.arrayList.free(actors);
-
-			for (Actor actor : allActors) {
-				// Scale width & height
-				float worldWidth = actor.getWidth() * scale;
-				float worldHeight = actor.getHeight() * scale;
-				polygonShape.setAsBox(worldWidth, worldHeight);
-
-				// Scale position
-				screenPos.set(actor.getWidth() * 0.5f, actor.getHeight() * 0.5f);
-				actor.localToStageCoordinates(screenPos);
-				Scene.screenToWorldCoord(mEditor.getCamera(), screenPos, bodyDef.position, false);
-				bodyDef.position.y *= -1;
-
-				// Create body
-				Body body = world.createBody(bodyDef);
-				body.createFixture(fixtureDef);
-				mBodies.add(body);
-			}
-
-			polygonShape.dispose();
-			Pools.arrayList.free(allActors);
-
-
-			Pools.vector2.freeAll(screenPos);
-		}
+		clearCollisionBoxes();
 	}
 
 	/**
@@ -837,6 +823,24 @@ public abstract class EditorGui extends Gui {
 	public abstract void setInfoNameError(String errorText);
 
 
+	/**
+	 * Container class for collision box standard variables
+	 */
+	private static class CollisionBoxVars {
+		BodyDef bodyDef = new BodyDef();
+		PolygonShape shape = new PolygonShape();
+		FixtureDef fixtureDef = new FixtureDef();
+
+		{
+			bodyDef.type = BodyType.StaticBody;
+
+			fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
+			fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
+			fixtureDef.shape = shape;
+		}
+	}
+
+	private CollisionBoxVars mCollisionBoxVars = new CollisionBoxVars();
 	/** Tooltip widget */
 	protected TooltipWidget mTooltip = null;
 	/** Invoker */
@@ -850,7 +854,7 @@ public abstract class EditorGui extends Gui {
 	/** Grid above button */
 	private Button mGridRenderAbove = null;
 	/** Editor scene */
-	protected IEditor mEditor = null;
+	protected Editor mEditor = null;
 	/** Editor menu table (upper left) */
 	private AlignTable mEditorMenu = new AlignTable();
 	/** File menu table (upper right) */
@@ -865,11 +869,6 @@ public abstract class EditorGui extends Gui {
 	protected AlignTable mInfoTable = new AlignTable();
 	/** Name label */
 	private Label mNameLabel = null;
-	/**
-	 * If the main table has a valid layout, false means the collision boxes will be
-	 * updated once the main table has a valid layout again
-	 */
-	private boolean mLayoutWasValid = false;
 	/** All UI-bodies for collision */
 	private ArrayList<Body> mBodies = null;
 	/** Setting widget */

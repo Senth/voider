@@ -106,6 +106,16 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		mSynchronizer.deleteObserver(this);
 	}
 
+	@Override
+	protected void onResize(int width, int height) {
+		super.onResize(width, height);
+
+		if (isInitialized()) {
+			EditorGui gui = getGui();
+			gui.resetCollisionBoxes();
+		}
+	}
+
 	/**
 	 * Checks if the resource needs saving and then saves it if that's the case
 	 * @param deltaTime time elapsed since last frame
@@ -126,6 +136,11 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 		if (shallAutoSave()) {
 			saveDef();
+		}
+
+		if (!mCollisionBoxesBeenCreated) {
+			mCollisionBoxesBeenCreated = true;
+			((EditorGui) mGui).resetCollisionBoxes();
 		}
 	}
 
@@ -633,6 +648,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 	/** Synchronized queue for handling web response in main thread */
 	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<>();
+	/** If collision boxes have been created */
+	private boolean mCollisionBoxesBeenCreated = false;
 
 	/** Synchronizer */
 	protected static Synchronizer mSynchronizer = Synchronizer.getInstance();

@@ -26,7 +26,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all world scenes
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class WorldScene extends Scene {
@@ -51,6 +50,8 @@ public abstract class WorldScene extends Scene {
 		if (mPickingRadius > 0) {
 			initPickingCircle(mPickingRadius);
 		}
+
+		resetScreenToWorldScale();
 	}
 
 	@Override
@@ -58,12 +59,27 @@ public abstract class WorldScene extends Scene {
 		super.onResize(width, height);
 		fixCamera();
 		mShapeRenderer.setProjectionMatrix(mCamera.combined);
+		resetScreenToWorldScale();
+	}
+
+	/**
+	 * Resets screen to world scale
+	 */
+	private void resetScreenToWorldScale() {
+		mScreenToWorldScale = mCamera.viewportWidth / Gdx.graphics.getWidth();
+	}
+
+	/**
+	 * @return screen to world scale
+	 */
+	public float getScreenToWorldScale() {
+		return mScreenToWorldScale;
 	}
 
 	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
-		mWorld.step(1/60f, 6, 2);
+		mWorld.step(1 / 60f, 6, 2);
 
 		// Remove unwanted bullets
 		Vector2 minScreenPos = getWorldMinCoordinates();
@@ -113,8 +129,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * Return screen width in world coordinates, but only if this scene
-	 * is a world scene.
+	 * Return screen width in world coordinates, but only if this scene is a world scene.
 	 * @return screen width in world coordinates, if scene is not a world it return 0.
 	 */
 	@Override
@@ -123,8 +138,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * Return screen height in world coordinates, but only if this scene is
-	 * a world scene.
+	 * Return screen height in world coordinates, but only if this scene is a world scene.
 	 * @return screen height in world coordinates, if scene is not a world it return 0.
 	 */
 	@Override
@@ -133,9 +147,9 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current scene isn't a world
-	 * scene. Remember to free the returned vector with
-	 * Pools.vector2.free(returnedVector);
+	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current
+	 *         scene isn't a world scene. Remember to free the returned vector with
+	 *         Pools.vector2.free(returnedVector);
 	 */
 	@Override
 	public Vector2 getWorldMinCoordinates() {
@@ -145,9 +159,9 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if current scene
-	 * isn't a world scene. Remember to free the returned vector with
-	 * Pools.vector2.free(returnedVector);
+	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if
+	 *         current scene isn't a world scene. Remember to free the returned vector
+	 *         with Pools.vector2.free(returnedVector);
 	 */
 	@Override
 	public Vector2 getWorldMaxCoordinates() {
@@ -171,7 +185,7 @@ public abstract class WorldScene extends Scene {
 			mCamera.viewportWidth = width;
 			mCamera.update();
 		} else {
-			mCamera = new OrthographicCamera(width , height);
+			mCamera = new OrthographicCamera(width, height);
 		}
 	}
 
@@ -216,8 +230,8 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * Called when creating a border. Can be overridden to specify other
-	 * border dimensions.
+	 * Called when creating a border. Can be overridden to specify other border
+	 * dimensions.
 	 * @return all 4 border corners/vertices
 	 */
 	protected Vector2[] getBorderCorners() {
@@ -281,6 +295,8 @@ public abstract class WorldScene extends Scene {
 	/** Bullet destroyer for this scene */
 	protected BulletDestroyer mBulletDestroyer = new BulletDestroyer();
 
+	/** Screen to world scale */
+	private float mScreenToWorldScale = 0;
 	/** Picking radius */
 	private float mPickingRadius;
 	/** Debug renderer */

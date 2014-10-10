@@ -134,7 +134,7 @@ public abstract class ActorGui extends EditorGui {
 	 * Sets the actor editor for this GUI
 	 * @param actorEditor editor bound to this GUI
 	 */
-	protected void setActorEditor(IActorEditor actorEditor) {
+	protected void setActorEditor(ActorEditor actorEditor) {
 		setEditor(actorEditor);
 		mActorEditor = actorEditor;
 	}
@@ -237,6 +237,17 @@ public abstract class ActorGui extends EditorGui {
 
 		// Custom (draw)
 		TabImageWrapper customTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE);
+		customTab.setHider(new HideListener(true) {
+			@Override
+			protected void onShow() {
+				resetCollisionBoxes();
+			}
+
+			@Override
+			protected void onHide() {
+				resetCollisionBoxes();
+			}
+		});
 		customTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {

@@ -255,8 +255,6 @@ public class EnemyEditor extends ActorEditor {
 		}
 
 		checkAndResetPlayerPosition();
-
-		((EnemyEditorGui) mGui).resetCollisionBoxes();
 	}
 
 	@Override

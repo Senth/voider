@@ -2,6 +2,8 @@ package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -131,6 +133,46 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	@Override
 	public float getMaxHeight() {
 		return mWrapperTable.getMaxHeight();
+	}
+
+	@Override
+	public float getX() {
+		return mWrapperTable.getX();
+	}
+
+	@Override
+	public float getY() {
+		return mWrapperTable.getY();
+	}
+
+	@Override
+	public Vector2 localToParentCoordinates(Vector2 localCoords) {
+		final float rotation = -getRotation();
+		final float scaleX = getScaleX();
+		final float scaleY = getScaleY();
+		final float x = getX();
+		final float y = getY();
+		if (rotation == 0) {
+			if (scaleX == 1 && scaleY == 1) {
+				localCoords.x += x;
+				localCoords.y += y;
+			} else {
+				final float originX = getOriginX();
+				final float originY = getOriginY();
+				localCoords.x = (localCoords.x - originX) * scaleX + originX + x;
+				localCoords.y = (localCoords.y - originY) * scaleY + originY + y;
+			}
+		} else {
+			final float cos = (float) Math.cos(rotation * MathUtils.degreesToRadians);
+			final float sin = (float) Math.sin(rotation * MathUtils.degreesToRadians);
+			final float originX = getOriginX();
+			final float originY = getOriginY();
+			final float tox = (localCoords.x - originX) * scaleX;
+			final float toy = (localCoords.y - originY) * scaleY;
+			localCoords.x = (tox * cos + toy * sin) + originX + x;
+			localCoords.y = (tox * -sin + toy * cos) + originY + y;
+		}
+		return localCoords;
 	}
 
 	/**
