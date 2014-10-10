@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.commands.CGuiCheck;
@@ -492,7 +493,8 @@ public class EnemyEditorGui extends ActorGui {
 	 */
 	private void initMovementMenu() {
 		// Movement type label
-		mUiFactory.addPanelSection("Movement Type", mMovementTable, mMovementHider);
+		mUiFactory.addPanelSection("Movement Type:", mMovementTable, mMovementHider);
+
 
 		// Create radio tabs
 		// Path
@@ -501,6 +503,7 @@ public class EnemyEditorGui extends ActorGui {
 			@Override
 			protected void onPressed(Button button) {
 				mEnemyEditor.setMovementType(MovementTypes.PATH);
+				mWidgets.movement.currentType.setText("Path");
 			}
 		});
 		mPathHider = pathTab.getHider();
@@ -515,6 +518,7 @@ public class EnemyEditorGui extends ActorGui {
 			protected void onPressed(Button button) {
 				if (mEnemyEditor.getMovementType() != MovementTypes.STATIONARY) {
 					mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
+					mWidgets.movement.currentType.setText("Stationary");
 				}
 			}
 		});
@@ -525,6 +529,7 @@ public class EnemyEditorGui extends ActorGui {
 			@Override
 			protected void onPressed(Button button) {
 				mEnemyEditor.setMovementType(MovementTypes.AI);
+				mWidgets.movement.currentType.setText("AI");
 			}
 		});
 		mAiHider = aiTab.getHider();
@@ -539,6 +544,8 @@ public class EnemyEditorGui extends ActorGui {
 		mUiFactory.addTabs(mMovementTable, mMovementHider, tabs, mDisabledWhenPublished, mInvoker);
 		Pools.arrayList.free(tabs);
 
+		mMovementTable.row().setHeight(mUiFactory.getStyles().vars.rowHeightSection).setAlign(Vertical.MIDDLE);
+		mWidgets.movement.currentType = mUiFactory.addLabel("Path", false, mMovementTable);
 
 		// Set buttons
 		mWidgets.movement.pathBox = pathTab.getButton();
@@ -841,6 +848,9 @@ public class EnemyEditorGui extends ActorGui {
 		}
 
 		static class MovementWidgets {
+			// Current movement type
+			Label currentType = null;
+
 			// Movement type
 			Button pathBox = null;
 			Button stationaryBox = null;
