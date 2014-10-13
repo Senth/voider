@@ -504,6 +504,7 @@ public class EnemyEditorGui extends ActorGui {
 			protected void onPressed(Button button) {
 				mEnemyEditor.setMovementType(MovementTypes.PATH);
 				mWidgets.movement.currentType.setText("Path");
+				updatePathLabelsPositions();
 			}
 		});
 		mPathHider = pathTab.getHider();
