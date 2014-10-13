@@ -6,8 +6,8 @@ import java.util.Observer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.User;
-import com.spiddekauga.voider.utils.User.UserEvents;
 
 /**
  * Base class for preference gateways.
@@ -34,14 +34,17 @@ public abstract class PrefsGateway implements Observer {
 	@Override
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
-			if (arg instanceof UserEvents) {
-				switch ((UserEvents) arg) {
-				case LOGIN:
+			if (arg instanceof GameEvent) {
+				switch (((GameEvent) arg).type) {
+				case USER_LOGIN:
 					open();
 					break;
 
-				case LOGOUT:
+				case USER_LOGOUT:
 					close();
+					break;
+
+				default:
 					break;
 				}
 			}

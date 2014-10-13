@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.spiddekauga.utils.Observable;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.utils.GameEvent.Events;
 
 /**
  * User information class
@@ -55,7 +56,7 @@ public class User extends Observable {
 		}
 
 		setChanged();
-		notifyObservers(UserEvents.LOGOUT);
+		notifyObservers(new GameEvent(Events.USER_LOGOUT));
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class User extends Observable {
 		}
 
 		setChanged();
-		notifyObservers(UserEvents.LOGIN);
+		notifyObservers(new GameEvent(Events.USER_LOGIN));
 	}
 
 	/**
@@ -195,16 +196,6 @@ public class User extends Observable {
 	 */
 	public synchronized String dateToString(Date date) {
 		return mDateFormat.format(date);
-	}
-
-	/**
-	 * Observer events
-	 */
-	public enum UserEvents {
-		/** User has logged in */
-		LOGIN,
-		/** User has logged out */
-		LOGOUT,
 	}
 
 	/** Default datetime format */

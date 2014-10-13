@@ -3,12 +3,9 @@ package com.spiddekauga.voider.editor.tools;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
@@ -22,23 +19,17 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResourcePosition;
 
 /**
- * 
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TriggerSetTool extends TouchTool {
 
 	/**
-	 * @param camera used for picking on the screen
-	 * @param world used for converting screen to world coordinates
-	 * @param invoker used for undo/redo
-	 * @param selection all selected resources
 	 * @param levelEditor editor bound to this tool
+	 * @param selection all selected resources
 	 * @param action the action to be set together with the trigger
 	 */
-	public TriggerSetTool(
-			Camera camera, World world, Invoker invoker, ISelection selection, LevelEditor levelEditor, Actions action) {
-		super(camera, world, invoker, selection, levelEditor);
+	public TriggerSetTool(LevelEditor levelEditor, ISelection selection, Actions action) {
+		super(levelEditor, selection);
 
 		mTriggerAction = action;
 		mLevelEditor = levelEditor;
@@ -88,7 +79,8 @@ public class TriggerSetTool extends TouchTool {
 				}
 
 
-				// No triggers were set previously create a new trigger and set the enemies' trigger
+				// No triggers were set previously create a new trigger and set the
+				// enemies' trigger
 				if (!hasSetTrigger) {
 					Trigger createdTrigger = createTrigger();
 
@@ -143,7 +135,8 @@ public class TriggerSetTool extends TouchTool {
 				return false;
 			}
 
-			// Since nothing is selected we didn't hit a trigger or enemy, just create a trigger
+			// Since nothing is selected we didn't hit a trigger or enemy, just create a
+			// trigger
 			createTrigger();
 		}
 

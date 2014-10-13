@@ -3,15 +3,12 @@ package com.spiddekauga.voider.editor.tools;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -33,19 +30,15 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding or moving a corner
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	/**
-	 * @param camera the camera
-	 * @param world the world where the objects are in
-	 * @param invoker used for undo/redo
-	 * @param selection all selected resources
 	 * @param editor the editor this tool is bound to
+	 * @param selection all selected resources
 	 */
-	public AddMoveCornerTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
-		super(camera, world, invoker, selection, editor);
+	public AddMoveCornerTool(IResourceChangeEditor editor, ISelection selection) {
+		super(editor, selection);
 
 		if (editor instanceof LevelEditor) {
 			mSelectableResourceTypes.add(StaticTerrainActor.class);
@@ -144,8 +137,8 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	}
 
 	/**
-	 * Calculates what index a position has between two corners. This method takes
-	 * into account all actors and will always set it to the closest one
+	 * Calculates what index a position has between two corners. This method takes into
+	 * account all actors and will always set it to the closest one
 	 * @param worldPos the world position
 	 */
 	private void calculateIndexOfPosBetweenCorners(Vector2 worldPos) {
@@ -156,7 +149,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 			ArrayList<Vector2> corners = resource.getCorners();
 			Vector2 localPos = getLocalPosition(worldPos, resource);
 
-			for (int i = 0; i < corners.size(); ++i){
+			for (int i = 0; i < corners.size(); ++i) {
 				int nextIndex = Collections.nextIndex(corners, i);
 				float distance = Geometry.distBetweenPointLineSegmentSq(corners.get(i), corners.get(nextIndex), localPos);
 
@@ -179,7 +172,8 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	 * @param worldPos the world position
 	 * @param resource the resource
 	 * @return local resource coordinates (can still be world coordinates if the resource
-	 * shares the same coordinates as the world). Don't forget to free the Vector2 afterwards
+	 *         shares the same coordinates as the world). Don't forget to free the Vector2
+	 *         afterwards
 	 */
 	private static Vector2 getLocalPosition(Vector2 worldPos, IResource resource) {
 		Vector2 localPos = Pools.vector2.obtain();

@@ -2,13 +2,10 @@ package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
@@ -22,19 +19,15 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding paths
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PathAddTool extends TouchTool implements ISelectionListener {
 	/**
-	 * @param camera the camera
-	 * @param world world where all objects are
-	 * @param invoker used for undo/redo
-	 * @param selection all selected resources
 	 * @param editor editor this tool is bound to
+	 * @param selection all selected resources
 	 */
-	public PathAddTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
-		super(camera, world, invoker, selection, editor);
+	public PathAddTool(IResourceChangeEditor editor, ISelection selection) {
+		super(editor, selection);
 
 		mSelectableResourceTypes.add(Path.class);
 	}
@@ -105,8 +98,8 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 	}
 
 	/**
-	 * Creates a new corner for all selected paths. If no paths are selected
-	 * it creates a new path with a corner.
+	 * Creates a new corner for all selected paths. If no paths are selected it creates a
+	 * new path with a corner.
 	 */
 	private void createCorner() {
 		ArrayList<Path> selectedPaths = mSelection.getSelectedResourcesOfType(Path.class);

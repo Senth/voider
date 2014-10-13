@@ -5,10 +5,9 @@ import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Interface for all tools that can create and destroy resources
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public interface IResourceChangeEditor {
+public interface IResourceChangeEditor extends IEditor {
 	/**
 	 * Called when an resource is added
 	 * @param resource the resource that was created

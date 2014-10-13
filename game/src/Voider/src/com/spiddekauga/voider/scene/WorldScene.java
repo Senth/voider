@@ -1,9 +1,10 @@
 package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -21,6 +22,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
+import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -28,7 +30,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Common class for all world scenes
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class WorldScene extends Scene {
+public abstract class WorldScene extends Scene implements Observer {
 	/**
 	 * @param gui the GUI to use for the scene
 	 * @param pickRadius picking radius for editors
@@ -48,7 +50,7 @@ public abstract class WorldScene extends Scene {
 		Actor.setWorld(mWorld);
 
 		if (mPickingRadius > 0) {
-			initPickingCircle(mPickingRadius);
+			createPickingCircle(mPickingRadius);
 		}
 
 		resetScreenToWorldScale();
@@ -262,14 +264,14 @@ public abstract class WorldScene extends Scene {
 	 * Initializes the picking fixture and vertices
 	 * @param pickRadius size of the picking circle
 	 */
-	public void initPickingCircle(float pickRadius) {
+	public void createPickingCircle(float pickRadius) {
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(pickRadius);
 		mPickingFixtureDef = new FixtureDef();
 		mPickingFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
 		mPickingFixtureDef.filter.maskBits = ActorFilterCategories.NONE;
 		mPickingFixtureDef.shape = circleShape;
-		mPickingVertices = Geometry.createCircle(pickRadius);
+		mPickingVertices = Geometry.createCircle(pickRadius, mCamera.zoom);
 	}
 
 	/**
@@ -282,19 +284,40 @@ public abstract class WorldScene extends Scene {
 	/**
 	 * @return camera of the current scene
 	 */
-	public Camera getCamera() {
+	public OrthographicCamera getCamera() {
 		return mCamera;
+	}
+
+	/**
+	 * Called when zoom has been changed
+	 */
+	private void onZoom() {
+		createPickingCircle(mPickingRadius * mCamera.zoom);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg instanceof GameEvent) {
+			switch (((GameEvent) arg).type) {
+			case CAMERA_ZOOM_CHANGE:
+				onZoom();
+				break;
+
+			default:
+				// Does nothing
+				break;
+			}
+		}
 	}
 
 	/** Physics world */
 	protected World mWorld = null;
 	/** Camera for the editor */
-	protected Camera mCamera = null;
-	/** Border around the screen so the player can't "escape" */
+	protected OrthographicCamera mCamera = null;
+	/** Border around the screen so the player ship can't escape */
 	protected Body mBorderBody = null;
 	/** Bullet destroyer for this scene */
 	protected BulletDestroyer mBulletDestroyer = new BulletDestroyer();
-
 	/** Screen to world scale */
 	private float mScreenToWorldScale = 0;
 	/** Picking radius */

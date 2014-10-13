@@ -19,8 +19,8 @@ public class CCameraMove extends Command implements ICommandCombinable {
 	 */
 	public CCameraMove(Camera camera, Vector2 newPos, Vector2 oldPos) {
 		mNewPos.set(newPos);
-		mOldPos.set(mCamera.position.x, mCamera.position.y);
 		mCamera = camera;
+		mOldPos.set(mCamera.position.x, mCamera.position.y);
 	}
 
 	@Override

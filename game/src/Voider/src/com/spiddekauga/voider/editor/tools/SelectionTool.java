@@ -3,13 +3,10 @@ package com.spiddekauga.voider.editor.tools;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -27,14 +24,11 @@ import com.spiddekauga.voider.resources.IResource;
  */
 public class SelectionTool extends TouchTool {
 	/**
-	 * @param camera camera used for determining where in the world the pointer i
-	 * @param world used for picking
-	 * @param invoker used for undo/redo
-	 * @param selection the selection to use
 	 * @param editor the editor the selection tool uses
+	 * @param selection the selection to use
 	 */
-	public SelectionTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
-		super(camera, world, invoker, selection, editor);
+	public SelectionTool(IResourceChangeEditor editor, ISelection selection) {
+		super(editor, selection);
 	}
 
 	/**

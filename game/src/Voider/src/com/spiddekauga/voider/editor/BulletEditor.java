@@ -130,6 +130,8 @@ public class BulletEditor extends ActorEditor {
 
 	@Override
 	public void update(Observable observable, Object arg) {
+		super.update(observable, arg);
+
 		if (arg instanceof SyncEvents) {
 			switch ((SyncEvents) arg) {
 			case USER_RESOURCES_DOWNLOAD_SUCCESS:

@@ -12,8 +12,8 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.User;
-import com.spiddekauga.voider.utils.User.UserEvents;
 
 /**
  * SQLite gateway
@@ -88,14 +88,17 @@ public abstract class SqliteGateway implements Disposable, Observer {
 	@Override
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
-			if (arg instanceof UserEvents) {
-				switch ((UserEvents) arg) {
-				case LOGIN:
+			if (arg instanceof GameEvent) {
+				switch (((GameEvent) arg).type) {
+				case USER_LOGIN:
 					connect();
 					break;
 
-				case LOGOUT:
+				case USER_LOGOUT:
 					dispose();
+					break;
+
+				default:
 					break;
 				}
 			}

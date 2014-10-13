@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
@@ -24,18 +24,15 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 public abstract class TouchTool extends InputAdapter {
 	/**
 	 * Constructs a touch tool with a camera
-	 * @param camera used for determining where in the world the pointer is
-	 * @param world used for picking
-	 * @param invoker used for undo/redo of some commands
-	 * @param selection current selected resources, can be null
 	 * @param editor the editor used, can be null
+	 * @param selection current selected resources, can be null
 	 */
-	public TouchTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
-		mCamera = camera;
-		mWorld = world;
-		mInvoker = invoker;
-		mSelection = selection;
+	public TouchTool(IResourceChangeEditor editor, ISelection selection) {
 		mEditor = editor;
+		mCamera = editor.getCamera();
+		mWorld = editor.getWorld();
+		mInvoker = editor.getInvoker();
+		mSelection = selection;
 	}
 
 	@Override
@@ -261,7 +258,7 @@ public abstract class TouchTool extends InputAdapter {
 	/** World used for picking */
 	protected World mWorld;
 	/** Camera of the tool, used to get world coordinates of the click */
-	protected Camera mCamera;
+	protected OrthographicCamera mCamera;
 	/** Invoker */
 	protected Invoker mInvoker;
 	/** Current selection */

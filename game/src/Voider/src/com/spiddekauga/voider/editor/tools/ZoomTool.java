@@ -1,27 +1,25 @@
 package com.spiddekauga.voider.editor.tools;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CCameraZoom;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ZoomTool extends TouchTool {
 	/**
-	 * @param camera used for determining where in the world the pointer is
-	 * @param world used for picking
-	 * @param invoker used for undo/redo of some commands
+	 * @param editor
 	 * @param zoomMin minimum zoom
 	 * @param zoomMax maximum zoom
 	 */
-	public ZoomTool(Camera camera, World world, Invoker invoker, float zoomMin, float zoomMax) {
-		super(camera, world, invoker, null, null);
+	public ZoomTool(IResourceChangeEditor editor, float zoomMin, float zoomMax) {
+		super(editor, null);
 
 		// Add all resources so that they don't get deselected
 		// This tool hijacks all event messages anyway
@@ -29,8 +27,6 @@ public class ZoomTool extends TouchTool {
 
 		mMinZoom = zoomMin;
 		mMaxZoom = zoomMax;
-		mViewportInitial.x = camera.viewportHeight;
-		mViewportInitial.y = camera.viewportWidth;
 	}
 
 	@Override
@@ -63,7 +59,7 @@ public class ZoomTool extends TouchTool {
 	public boolean scroll(int amount) {
 		if (KeyHelper.isCtrlPressed() || isActive()) {
 			float zoomAmount = amount * mZoomAmount;
-			zoom(zoomAmount);
+			zoom(-zoomAmount);
 		}
 
 		return false;
@@ -85,6 +81,16 @@ public class ZoomTool extends TouchTool {
 	}
 
 	/**
+	 * Reset the zoom
+	 */
+	public void resetZoom() {
+		mZoom = 1;
+		Command command = new CCameraZoom(mCamera, mZoom);
+		command.addObserver(mEditor);
+		mInvoker.execute(command);
+	}
+
+	/**
 	 * Zoom in or out
 	 * @param amount
 	 */
@@ -102,20 +108,33 @@ public class ZoomTool extends TouchTool {
 
 		// Actually zoom
 		if (mZoom != oldZoom) {
-			// TODO
-			// Get cursor world position
+			// Make cursor stay at same position when zooming in
+			Vector2 pointerDiff = Pools.vector2.obtain();
+			pointerDiff.set(mTouchCurrent);
+			pointerDiff.sub(mCamera.position.x, mCamera.position.y);
 
-			// Make cursor position the center
+			Vector2 pointerRatio = Pools.vector2.obtain();
 
-			// Clamp so we don't go out of bounds
+			float oldWidth = mCamera.viewportWidth * oldZoom;
+			float oldHeight = mCamera.viewportHeight * oldZoom;
+			float newWidth = mCamera.viewportWidth * mZoom;
+			float newHeight = mCamera.viewportHeight * mZoom;
+
+			pointerRatio.set(pointerDiff.x / oldWidth, pointerDiff.y / oldHeight);
+
+			Vector2 cameraPos = Pools.vector2.obtain();
+			cameraPos.set(mTouchCurrent);
+			cameraPos.sub(pointerRatio.x * newWidth, pointerRatio.y * newHeight);
 
 			// Call zoom command
-			mInvoker.execute(new CCameraZoom(mCamera, mViewportInitial, mZoom));
+			Command command = new CCameraZoom(mCamera, mZoom, cameraPos);
+			command.addObserver(mEditor);
+			mInvoker.execute(command);
+
+			Pools.vector2.freeAll(cameraPos, pointerRatio, pointerDiff);
 		}
 	}
 
-	/** Original viewport */
-	private Vector2 mViewportInitial = new Vector2();
 	/** True if will zoom in on click */
 	private boolean mZoomInOnClick = true;
 	/** Current zoom value */

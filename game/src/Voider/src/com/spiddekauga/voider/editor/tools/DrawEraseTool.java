@@ -5,16 +5,13 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
@@ -41,16 +38,12 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class DrawEraseTool extends ActorTool {
 	/**
-	 * @param camera the camera
-	 * @param world the world
-	 * @param invoker used for undo/redo
-	 * @param selection which enemies are selected
 	 * @param editor editor this tool is bound to
+	 * @param selection which enemies are selected
 	 * @param actorType the type of actor to draw
 	 */
-	public DrawEraseTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor,
-			Class<? extends Actor> actorType) {
-		super(camera, world, invoker, selection, editor, actorType);
+	public DrawEraseTool(IResourceChangeEditor editor, ISelection selection, Class<? extends Actor> actorType) {
+		super(editor, selection, actorType);
 	}
 
 	@Override

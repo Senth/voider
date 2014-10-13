@@ -21,7 +21,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
-import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
@@ -347,29 +346,70 @@ public abstract class ActorGui extends EditorGui {
 		mDrawToolHider.addToggleActor(mToolMenu);
 
 
-		// Delete
-		mToolMenu.row();
-		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
-		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_ACTOR);
-		new ButtonListener(mWidgets.tool.delete) {
-			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.DELETE);
-				}
-			}
-		};
-
-
 		// Move
 		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_ACTOR);
 		new ButtonListener(mWidgets.tool.move) {
 			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.MOVE);
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.MOVE);
+			}
+		};
+
+		// Delete
+		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_ACTOR);
+		new ButtonListener(mWidgets.tool.delete) {
+			@Override
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.DELETE);
+			}
+		};
+
+
+		// --------- SEPARATOR -----------
+		mUiFactory.addToolSeparator(mToolMenu);
+
+
+		// Zoom in
+		mToolMenu.row();
+		mWidgets.tool.zoomIn = mUiFactory.addToolButton(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
+		mTooltip.add(mWidgets.tool.zoomIn, Messages.EditorTooltips.TOOL_ZOOM_IN_ACTOR);
+		new ButtonListener(mWidgets.tool.zoomIn) {
+			@Override
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.ZOOM_IN);
+			}
+		};
+
+		// Zoom out
+		mWidgets.tool.zoomOut = mUiFactory.addToolButton(EditorIcons.ZOOM_OUT, buttonGroup, mToolMenu, null);
+		mTooltip.add(mWidgets.tool.zoomOut, Messages.EditorTooltips.TOOL_ZOOM_OUT_ACTOR);
+		new ButtonListener(mWidgets.tool.zoomOut) {
+			@Override
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.ZOOM_OUT);
+			}
+		};
+
+		// Pan
+		mToolMenu.row();
+		mWidgets.tool.pan = mUiFactory.addToolButton(EditorIcons.PAN, buttonGroup, mToolMenu, null);
+		mTooltip.add(mWidgets.tool.pan, Messages.EditorTooltips.TOOL_PAN_ACTOR);
+		new ButtonListener(mWidgets.tool.pan) {
+			@Override
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.PAN);
+			}
+		};
+
+		// Reset zoom
+		Button button = mUiFactory.addToolButton(EditorIcons.ZOOM_RESET, null, mToolMenu, null);
+		mTooltip.add(button, Messages.EditorTooltips.TOOL_ZOOM_IN_ACTOR);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.ZOOM_RESET);
 			}
 		};
 
@@ -383,10 +423,8 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.drawAppend, Messages.EditorTooltips.TOOL_DRAW_APPEND_ACTOR);
 		new ButtonListener(mWidgets.tool.drawAppend) {
 			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.DRAW_APPEND);
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.DRAW_APPEND);
 			}
 		};
 
@@ -396,10 +434,8 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.drawErase, Messages.EditorTooltips.TOOL_DRAW_ERASE_ACTOR);
 		new ButtonListener(mWidgets.tool.drawErase) {
 			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.DRAW_ERASE);
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.DRAW_ERASE);
 			}
 		};
 
@@ -409,10 +445,8 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.addMoveCorner, Messages.EditorTooltips.TOOL_DRAW_CORNER_ADD_ACTOR);
 		new ButtonListener(mWidgets.tool.addMoveCorner) {
 			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.ADD_MOVE_CORNER);
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.ADD_MOVE_CORNER);
 			}
 		};
 
@@ -421,10 +455,8 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.removeCorner, Messages.EditorTooltips.TOOL_DRAW_CORNER_REMOVE_ACTOR);
 		new ButtonListener(mWidgets.tool.removeCorner) {
 			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.REMOVE_CORNER);
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.REMOVE_CORNER);
 			}
 		};
 
@@ -438,20 +470,18 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.setCenter, Messages.EditorTooltips.TOOL_CENTER_SET);
 		new ButtonListener(mWidgets.tool.setCenter) {
 			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.SET_CENTER);
-				}
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.CENTER_SET);
 			}
 		};
 
 		// Reset center
-		Button button = mUiFactory.addToolButton(EditorIcons.RESET_CENTER, null, mToolMenu, mDisabledWhenPublished);
+		button = mUiFactory.addToolButton(EditorIcons.RESET_CENTER, null, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_CENTER_RESET);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
+				mActorEditor.switchTool(Tools.CENTER_RESET);
 			}
 		};
 	}
@@ -543,7 +573,7 @@ public abstract class ActorGui extends EditorGui {
 			mWidgets.tool.removeCorner.setChecked(true);
 			break;
 
-		case SET_CENTER:
+		case CENTER_SET:
 			mWidgets.tool.setCenter.setChecked(true);
 			break;
 
@@ -568,6 +598,9 @@ public abstract class ActorGui extends EditorGui {
 		static class ToolWidgets {
 			Button move = null;
 			Button delete = null;
+			Button pan = null;
+			Button zoomIn = null;
+			Button zoomOut = null;
 			Button drawAppend = null;
 			Button drawErase = null;
 			Button addMoveCorner = null;

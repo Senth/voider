@@ -21,8 +21,9 @@ import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
+import com.spiddekauga.voider.utils.GameEvent;
+import com.spiddekauga.voider.utils.GameEvent.Events;
 import com.spiddekauga.voider.utils.User;
-import com.spiddekauga.voider.utils.User.UserEvents;
 
 /**
  * Web repository for highscores
@@ -39,8 +40,8 @@ class HighscoreWebRepo extends WebRepo {
 			@Override
 			public void update(Observable o, Object arg) {
 				// Clear cache when user logs out
-				if (arg instanceof UserEvents) {
-					if (((UserEvents) arg) == UserEvents.LOGOUT) {
+				if (arg instanceof GameEvent) {
+					if (((GameEvent) arg).type == Events.USER_LOGOUT) {
 						mUserCache.clear();
 					}
 				}

@@ -10,8 +10,8 @@ import com.google.gson.Gson;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
+import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.User;
-import com.spiddekauga.voider.utils.User.UserEvents;
 
 import edu.gvsu.cis.masl.channelAPI.ChannelAPI;
 import edu.gvsu.cis.masl.channelAPI.ChannelAPI.ChannelException;
@@ -85,13 +85,13 @@ public class MessageGateway implements ChannelService, Observer {
 	@Override
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
-			if (arg instanceof UserEvents) {
-				switch ((UserEvents) arg) {
-				case LOGIN:
+			if (arg instanceof GameEvent) {
+				switch (((GameEvent) arg).type) {
+				case USER_LOGIN:
 					connect();
 					break;
 
-				case LOGOUT: {
+				case USER_LOGOUT: {
 					// Disconnect in main thread
 					Gdx.app.postRunnable(new Runnable() {
 						@Override
@@ -102,6 +102,9 @@ public class MessageGateway implements ChannelService, Observer {
 
 					break;
 				}
+
+				default:
+					break;
 				}
 			}
 		}

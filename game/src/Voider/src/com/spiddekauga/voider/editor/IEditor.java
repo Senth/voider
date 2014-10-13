@@ -1,8 +1,9 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
+import java.util.Observer;
 
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
@@ -11,7 +12,7 @@ import com.spiddekauga.voider.resources.Def;
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public interface IEditor {
+public interface IEditor extends Observer {
 	/**
 	 * @return Invoker for undo/redo
 	 */
@@ -117,7 +118,7 @@ public interface IEditor {
 	/**
 	 * @return camera of the current scene
 	 */
-	Camera getCamera();
+	OrthographicCamera getCamera();
 
 	// ------------ Grid ----------------
 	/**

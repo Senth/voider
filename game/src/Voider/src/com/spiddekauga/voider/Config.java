@@ -308,9 +308,9 @@ public class Config {
 			}
 
 			/** Minimum zoom */
-			public final static float ZOOM_MIN = 1;
+			public final static float ZOOM_MIN = 0.1f;
 			/** Maximum zoom */
-			public final static float ZOOM_MAX = 10;
+			public final static float ZOOM_MAX = 1;
 		}
 
 		/**

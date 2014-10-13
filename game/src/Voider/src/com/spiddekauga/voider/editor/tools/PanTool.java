@@ -1,13 +1,11 @@
 package com.spiddekauga.voider.editor.tools;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
-import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;
@@ -18,12 +16,10 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class PanTool extends TouchTool {
 	/**
-	 * @param camera used for picking
-	 * @param world where the objects are
-	 * @param invoker used for undo/redo
+	 * @param editor
 	 */
-	public PanTool(Camera camera, World world, Invoker invoker) {
-		super(camera, world, invoker, null, null);
+	public PanTool(IResourceChangeEditor editor) {
+		super(editor, null);
 
 		// Add all resources so that they don't get deselected
 		// This tool hijacks all event messages anyway

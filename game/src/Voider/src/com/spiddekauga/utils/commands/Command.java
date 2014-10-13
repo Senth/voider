@@ -1,14 +1,13 @@
 package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.Observable;
 
 /**
- * Common interface for commands that can be passed as argument and
- * executed later.
- * 
+ * Common interface for commands that can be passed as argument and executed later.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Command implements Disposable {
+public abstract class Command extends Observable implements Disposable {
 	/**
 	 * Executes the command
 	 * @return true if the command was successfully executed

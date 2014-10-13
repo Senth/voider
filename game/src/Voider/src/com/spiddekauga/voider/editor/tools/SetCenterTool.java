@@ -2,10 +2,7 @@ package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CActorCenterMove;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -14,20 +11,16 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for setting the center of a specified actor type
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SetCenterTool extends ActorTool implements ISelectionListener {
 	/**
-	 * @param camera used for picking on screen
-	 * @param world used for converting screen to world coordinates
-	 * @param invoker used undo/redo
-	 * @param selection all selected resources
 	 * @param editor editor this tool is bound to
+	 * @param selection all selected resources
 	 * @param actorType actor type
 	 */
-	public SetCenterTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
-		super(camera, world, invoker, selection, editor, actorType);
+	public SetCenterTool(IResourceChangeEditor editor, ISelection selection, Class<? extends Actor> actorType) {
+		super(editor, selection, actorType);
 	}
 
 	@Override
@@ -137,14 +130,14 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 	@Override
 	public void onResourceSelected(IResource resource) {
 		if (mActorType.isAssignableFrom(resource.getClass())) {
-			((Actor)resource).createBodyCenter();
+			((Actor) resource).createBodyCenter();
 		}
 	}
 
 	@Override
 	public void onResourceDeselected(IResource resource) {
 		if (mActorType.isAssignableFrom(resource.getClass())) {
-			((Actor)resource).destroyBodyCenter();
+			((Actor) resource).destroyBodyCenter();
 		}
 	}
 

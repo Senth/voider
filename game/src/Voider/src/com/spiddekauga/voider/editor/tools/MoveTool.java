@@ -2,12 +2,9 @@ package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
@@ -25,14 +22,11 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class MoveTool extends TouchTool {
 	/**
-	 * @param camera used for picking
-	 * @param world where the objects are
-	 * @param invoker used for undo/redo
-	 * @param selection all selected resources
 	 * @param editor editor this tool is bound to
+	 * @param selection all selected resources
 	 */
-	public MoveTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
-		super(camera, world, invoker, selection, editor);
+	public MoveTool(IResourceChangeEditor editor, ISelection selection) {
+		super(editor, selection);
 
 		mSelectableResourceTypes.add(IResource.class);
 	}

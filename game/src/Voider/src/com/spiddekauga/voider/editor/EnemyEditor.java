@@ -105,9 +105,7 @@ public class EnemyEditor extends ActorEditor {
 		Actor.setLevel(null);
 		Actor.setPlayerActor(mPlayerActor);
 
-		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
-			// Does nothing
-		} else if (outcome == Outcomes.DEF_SELECTED) {
+		if (outcome == Outcomes.DEF_SELECTED) {
 			if (message instanceof ResourceItem) {
 				switch (mSelectionAction) {
 				case BULLET_TYPE:
@@ -305,6 +303,8 @@ public class EnemyEditor extends ActorEditor {
 
 	@Override
 	public void update(Observable observable, Object arg) {
+		super.update(observable, arg);
+
 		if (arg instanceof SyncEvents) {
 			switch ((SyncEvents) arg) {
 			case USER_RESOURCES_DOWNLOAD_SUCCESS:

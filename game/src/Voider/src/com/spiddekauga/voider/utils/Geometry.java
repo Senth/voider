@@ -463,14 +463,15 @@ public class Geometry {
 	/**
 	 * Creates a circle, or rather returns vertices that can be created as a circle.
 	 * @param radius the radius of the circle
+	 * @param zoom how much zoom is currently used
 	 * @return array with the vertices of the circle, all vertices are created from
 	 *         Vector2Pool
 	 */
-	public static ArrayList<Vector2> createCircle(float radius) {
+	public static ArrayList<Vector2> createCircle(float radius, float zoom) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> polygon = Pools.arrayList.obtain();
 
-		int segments = calculateCircleSegments(radius);
+		int segments = calculateCircleSegments(radius, zoom);
 
 		float angle = 2 * 3.1415926f / segments;
 		float cos = MathUtils.cos(angle);
@@ -487,6 +488,17 @@ public class Geometry {
 		}
 
 		return polygon;
+	}
+
+
+	/**
+	 * Creates a circle, or rather returns vertices that can be created as a circle.
+	 * @param radius the radius of the circle
+	 * @return array with the vertices of the circle, all vertices are created from
+	 *         Vector2Pool
+	 */
+	public static ArrayList<Vector2> createCircle(float radius) {
+		return createCircle(radius, 1);
 	}
 
 	/**
@@ -633,10 +645,11 @@ public class Geometry {
 	/**
 	 * Calculates the number of segments a circle needs to be smooth.
 	 * @param radius the radius of the circle
+	 * @param zoom amount of zoom currently used
 	 * @return number of segments of the circle
 	 */
-	public static int calculateCircleSegments(float radius) {
-		return (int) (10 * (float) Math.cbrt(radius));
+	public static int calculateCircleSegments(float radius, float zoom) {
+		return (int) (10 * (float) Math.cbrt(radius) / zoom);
 	}
 
 	/**

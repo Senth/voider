@@ -6,8 +6,8 @@ import java.util.Observer;
 import java.util.UUID;
 
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.User;
-import com.spiddekauga.voider.utils.User.UserEvents;
 
 /**
  * Checks if all resources are available.
@@ -79,9 +79,9 @@ public class ResourceChecker implements Observer {
 	@Override
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
-			if (arg instanceof UserEvents) {
-				switch ((UserEvents) arg) {
-				case LOGIN:
+			if (arg instanceof GameEvent) {
+				switch (((GameEvent) arg).type) {
+				case USER_LOGIN:
 					checkAndCreateResources();
 					break;
 

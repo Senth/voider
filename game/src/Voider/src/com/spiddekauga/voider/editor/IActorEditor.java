@@ -151,6 +151,14 @@ public interface IActorEditor extends IEditor {
 	enum Tools {
 		/** No tool */
 		NONE,
+		/** Zoom in */
+		ZOOM_IN,
+		/** Zoom out */
+		ZOOM_OUT,
+		/** Zoom reset */
+		ZOOM_RESET,
+		/** Pan */
+		PAN,
 		/** move */
 		MOVE,
 		/** Delete */
@@ -164,6 +172,8 @@ public interface IActorEditor extends IEditor {
 		/** Draw erase to/from the shape */
 		DRAW_ERASE,
 		/** Set center */
-		SET_CENTER,
+		CENTER_SET,
+		/** Reset center */
+		CENTER_RESET,
 	}
 }

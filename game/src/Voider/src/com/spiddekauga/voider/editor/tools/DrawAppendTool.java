@@ -1,10 +1,7 @@
 package com.spiddekauga.voider.editor.tools;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -28,16 +25,12 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	/**
-	 * @param camera camera used for the level
-	 * @param world the actual world
-	 * @param invoker used for undo/redo
-	 * @param selection current selection in the editor, can be null
 	 * @param editor the actual editor
+	 * @param selection current selection in the editor, can be null
 	 * @param actorType the actor to draw
 	 */
-	public DrawAppendTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor,
-			Class<? extends Actor> actorType) {
-		super(camera, world, invoker, selection, editor, actorType);
+	public DrawAppendTool(IResourceChangeEditor editor, ISelection selection, Class<? extends Actor> actorType) {
+		super(editor, selection, actorType);
 		mActorType = actorType;
 	}
 

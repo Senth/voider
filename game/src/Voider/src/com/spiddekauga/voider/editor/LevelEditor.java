@@ -101,19 +101,19 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		mSelection.addListener(this);
 
 		// Initialize tools
-		Tools.ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.DELETE.setTool(new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.ENEMY_ADD.setTool(new EnemyAddTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class));
-		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_ACTIVATE));
-		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
-		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.PAN.setTool(new PanTool(mCamera, mWorld, mInvoker));
-		Tools.PATH_ADD.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.PICKUP_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, PickupActor.class));
-		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
-		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
+		Tools.ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(this, mSelection));
+		Tools.DELETE.setTool(new DeleteTool(this, mSelection));
+		Tools.ENEMY_ADD.setTool(new EnemyAddTool(this, mSelection, EnemyActor.class));
+		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new TriggerSetTool(this, mSelection, Actions.ACTOR_ACTIVATE));
+		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new TriggerSetTool(this, mSelection, Actions.ACTOR_DEACTIVATE));
+		Tools.MOVE.setTool(new MoveTool(this, mSelection));
+		Tools.PAN.setTool(new PanTool(null));
+		Tools.PATH_ADD.setTool(new PathAddTool(this, mSelection));
+		Tools.PICKUP_ADD.setTool(new ActorAddTool(this, mSelection, PickupActor.class));
+		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(this, mSelection));
+		Tools.SELECTION.setTool(new SelectionTool(this, mSelection));
+		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(this, mSelection, StaticTerrainActor.class));
+		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(this, mSelection, StaticTerrainActor.class));
 
 		mInputMultiplexer.addProcessor(Tools.PAN.getTool());
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
@@ -287,6 +287,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void update(Observable observable, Object arg) {
+		super.update(observable, arg);
+
 		if (arg instanceof SyncEvents) {
 			switch ((SyncEvents) arg) {
 			case USER_RESOURCES_DOWNLOAD_SUCCESS:

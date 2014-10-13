@@ -197,6 +197,12 @@ public class SkinNames {
 		WEAPON,
 		/** YouTube icon */
 		YOUTUBE,
+		/** Tool - Zoom in */
+		ZOOM_IN,
+		/** Tool - Zoom out */
+		ZOOM_OUT,
+		/** Tool - Reset zoom */
+		ZOOM_RESET,
 
 		;
 

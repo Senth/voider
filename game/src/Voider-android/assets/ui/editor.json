@@ -247,6 +247,31 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: pan_disabled
 	},
 	
+	zoom_in: {
+		imageUp: zoom_in,
+		imageOver: zoom_in_over,
+		imageDown: zoom_in_down,
+		imageChecked: zoom_in_checked,
+		imageCheckedOver: zoom_in_checked_over,
+		imageDisabled: zoom_in_disabled
+	},
+	
+	zoom_out: {
+		imageUp: zoom_out,
+		imageOver: zoom_out_over,
+		imageDown: zoom_out_down,
+		imageChecked: zoom_out_checked,
+		imageCheckedOver: zoom_out_checked_over,
+		imageDisabled: zoom_out_disabled
+	},
+	
+	zoom_reset: {
+		imageUp: zoom_reset,
+		imageOver: zoom_reset_over,
+		imageDown: zoom_reset_down,
+		imageDisabled: zoom_reset_disabled
+	},
+	
 	cancel: {
 		imageUp: cancel,
 		imageOver: cancel_over,

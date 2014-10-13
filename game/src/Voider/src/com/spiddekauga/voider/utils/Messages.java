@@ -243,12 +243,18 @@ public class Messages {
 		// Tools
 		TOOL_SELECTION("Selection tool", "https://www.youtube.com/watch?v=7R1rK2b8jaU", 1),
 		TOOL_PAN_LEVEL("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", 1),
-		TOOL_PAN_ACTOR("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", TAB_VISUAL, 2),
+		TOOL_PAN_ACTOR(TOOL_PAN_LEVEL.mText, TOOL_PAN_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
 		TOOL_MOVE_LEVEL("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", 1),
-		TOOL_MOVE_ACTOR("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", TAB_VISUAL, 2),
+		TOOL_MOVE_ACTOR(TOOL_MOVE_LEVEL.mText, TOOL_MOVE_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
 		TOOL_DELETE_LEVEL("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", 1),
-		TOOL_DELETE_ACTOR("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", TAB_VISUAL, 2),
+		TOOL_DELETE_ACTOR(TOOL_DELETE_LEVEL.mText, TOOL_DELETE_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
 		TOOL_CLEAR_SELECTION("Clear selection"),
+		TOOL_ZOOM_IN_LEVEL("Zoom in", "http://www.youtube.com/watch?v=WThGYvHQSHU", 1),
+		TOOL_ZOOM_OUT_LEVEL("Zoom out", "http://www.youtube.com/watch?v=WThGYvHQSHU", 1),
+		TOOL_ZOOM_RESET_LEVEL("Reset zoom", "http://www.youtube.com/watch?v=WThGYvHQSHU", 1),
+		TOOL_ZOOM_IN_ACTOR(TOOL_ZOOM_IN_LEVEL.mText, TOOL_ZOOM_IN_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
+		TOOL_ZOOM_OUT_ACTOR(TOOL_ZOOM_OUT_LEVEL.mText, TOOL_ZOOM_OUT_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
+		TOOL_ZOOM_RESET_ACTOR(TOOL_ZOOM_RESET_LEVEL.mText, TOOL_ZOOM_RESET_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
 		TOOL_DRAW_APPEND_TERRAIN("Draw terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", 1),
 		TOOL_DRAW_ERASE_TERRAIN("Add/Remove area to/from terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", 1),
 		TOOL_DRAW_CORNER_ADD_TERRAIN("Add/Move terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", 1),
@@ -341,7 +347,7 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a custom tooltip
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial
 		 */
@@ -351,7 +357,7 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a custom tooltip
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
@@ -363,9 +369,9 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a custom tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube totorial
+		 * @param youtubeLink link to YouTube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
@@ -378,7 +384,7 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a custom tooltip
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial
 		 * @param permanentLevel set to the level of priority the permanent should have.
@@ -398,8 +404,8 @@ public class Messages {
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
 		 * @param hotkey a hotkey for the tooltip, may be null @param youtubeLink link to
-		 *        youtube tutorial, may be null
-		 * @param youtubeOnly set to true to only show the youtube link and no hover
+		 *        YouTube tutorial, may be null
+		 * @param youtubeOnly set to true to only show the YouTube link and no hover
 		 *        messages.
 		 * @param hideWhenHidden true (default) to hide the tooltip if the actor is
 		 *        hidden. If false the tooltip will be shown even though the actor is

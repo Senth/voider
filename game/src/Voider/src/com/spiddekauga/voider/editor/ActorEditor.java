@@ -9,16 +9,19 @@ import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
+import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
 import com.spiddekauga.voider.editor.tools.MoveTool;
+import com.spiddekauga.voider.editor.tools.PanTool;
 import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SetCenterTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
+import com.spiddekauga.voider.editor.tools.ZoomTool;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
@@ -55,13 +58,18 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	protected void onInit() {
 		super.onInit();
 
-		mTools[Tools.MOVE.ordinal()] = new MoveTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.DELETE.ordinal()] = new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.DRAW_APPEND.ordinal()] = new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, mActorType);
-		mTools[Tools.DRAW_ERASE.ordinal()] = new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, mActorType);
-		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.SET_CENTER.ordinal()] = new SetCenterTool(mCamera, mWorld, mInvoker, mSelection, this, mActorType);
+		mZoomTool = new ZoomTool(this, Config.Editor.Actor.ZOOM_MIN, Config.Editor.Actor.ZOOM_MAX);
+
+		mTools[Tools.ZOOM_IN.ordinal()] = mZoomTool;
+		mTools[Tools.ZOOM_OUT.ordinal()] = mZoomTool;
+		mTools[Tools.PAN.ordinal()] = new PanTool(this);
+		mTools[Tools.MOVE.ordinal()] = new MoveTool(this, mSelection);
+		mTools[Tools.DELETE.ordinal()] = new DeleteTool(this, mSelection);
+		mTools[Tools.DRAW_APPEND.ordinal()] = new DrawAppendTool(this, mSelection, mActorType);
+		mTools[Tools.DRAW_ERASE.ordinal()] = new DrawEraseTool(this, mSelection, mActorType);
+		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(this, mSelection);
+		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(this, mSelection);
+		mTools[Tools.CENTER_SET.ordinal()] = new SetCenterTool(this, mSelection, mActorType);
 	}
 
 	@Override
@@ -122,18 +130,11 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 		// Add tool to input multiplexer
 		if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType != ActorShapeTypes.CUSTOM) {
-			switchTool(Tools.DRAW_APPEND);
-			((ActorGui) mGui).resetTools();
-
-			// Add delete tool to input multiplexer
-			if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
-				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
-			}
+			activateTools(Tools.DRAW_APPEND);
 		}
 		// Remove tool from input multiplexer
 		else if (shapeType != ActorShapeTypes.CUSTOM && previousShapeType == ActorShapeTypes.CUSTOM) {
-			switchTool(Tools.NONE);
-			mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
+			deactivateTools();
 		}
 
 		setUnsaved();
@@ -306,30 +307,115 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	@Override
 	public void switchTool(Tools tool) {
+		if (mTools[tool.ordinal()] != null) {
+			deactivateCurrentTool();
+		}
+		activateTool(tool);
+	}
+
+	/**
+	 * Deactivate the current tool
+	 */
+	private void deactivateCurrentTool() {
 		if (mTools[mActiveTool.ordinal()] != null) {
 			mTools[mActiveTool.ordinal()].deactivate();
 
-			// Never remove delete tool
-			if (mActiveTool != Tools.DELETE) {
+			// Never remove delete and zoom tool
+			if (mActiveTool != Tools.DELETE && mActiveTool != Tools.ZOOM_IN && mActiveTool != Tools.ZOOM_OUT) {
 				mInputMultiplexer.removeProcessor(mTools[mActiveTool.ordinal()]);
 			}
 		}
+	}
 
-		mActiveTool = tool;
+	/**
+	 * Reset the current zoom
+	 */
+	private void resetZoom() {
+		if (mZoomTool != null) {
+			fixCamera();
+			mZoomTool.resetZoom();
+		}
+	}
 
-		if (mTools[mActiveTool.ordinal()] != null) {
+	/**
+	 * Activation the specific tool
+	 * @param tool the tool that will be activated
+	 */
+	private void activateTool(Tools tool) {
+		// Only switch tool if the a specific tool actually exist
+		if (mTools[tool.ordinal()] != null) {
+			mActiveTool = tool;
+
 			mTools[mActiveTool.ordinal()].activate();
 
-			// Never add delete tool
-			if (mActiveTool != Tools.DELETE) {
+			// Never add delete, zoom, or PAN tool
+			if (mActiveTool != Tools.DELETE && mActiveTool != Tools.ZOOM_IN && mActiveTool != Tools.ZOOM_OUT && mActiveTool != Tools.PAN) {
 				mInputMultiplexer.addProcessor(mTools[mActiveTool.ordinal()]);
 			}
+		}
+
+
+		// Extra activation actions
+		switch (tool) {
+		case ZOOM_IN:
+			mZoomTool.setZoomStateOnClick(true);
+			break;
+
+		case ZOOM_OUT:
+			mZoomTool.setZoomStateOnClick(false);
+			break;
+
+		case ZOOM_RESET:
+			resetZoom();
+			break;
+
+		case CENTER_RESET:
+			mInvoker.execute(new CActorEditorCenterReset(this));
+			break;
+
+		default:
+			// Does nothing
+			break;
 		}
 	}
 
 	@Override
 	public Tools getActiveTool() {
 		return mActiveTool;
+	}
+
+	/**
+	 * Activate tools
+	 * @param activeTool which tool to set as activated
+	 */
+	private void activateTools(Tools activeTool) {
+		switchTool(activeTool);
+		((ActorGui) mGui).resetTools();
+
+		// Add delete tool
+		if (!isPublished() && !mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
+			mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
+		}
+
+		// Add zoom tool
+		if (!mInputMultiplexer.getProcessors().contains(mZoomTool, true)) {
+			mInputMultiplexer.addProcessor(mZoomTool);
+		}
+
+		// Add pan tool
+		if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.PAN.ordinal()], true)) {
+			mInputMultiplexer.addProcessor(mTools[Tools.PAN.ordinal()]);
+		}
+	}
+
+	/**
+	 * Deactivate tools
+	 */
+	private void deactivateTools() {
+		switchTool(Tools.NONE);
+		mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
+		mInputMultiplexer.removeProcessor(mZoomTool);
+		resetZoom();
 	}
 
 	/**
@@ -353,20 +439,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			}
 
 			mDrawingActor.setDef(mActorDef);
-			switchTool(Tools.MOVE);
-			((ActorGui) mGui).resetTools();
-			// Add delete tool to input multiplexer
-			if (!isPublished() && !mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
-				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
-			}
+			activateTools(Tools.MOVE);
 		} else {
-			if (mDrawingActor != null) {
-				mSelection.deselectResource(mDrawingActor);
-				mDrawingActor.dispose();
-				mDrawingActor = null;
-			}
-			switchTool(Tools.NONE);
-			mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
+			deactivateTools();
 		}
 	}
 
@@ -535,4 +610,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	protected Selection mSelection = new Selection();
 	/** Resource Repository */
 	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
+	/** Zoom tool */
+	private ZoomTool mZoomTool = null;
 }
