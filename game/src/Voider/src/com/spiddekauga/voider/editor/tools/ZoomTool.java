@@ -34,9 +34,9 @@ public class ZoomTool extends TouchTool {
 	protected boolean down(int button) {
 		if (isActive()) {
 			if (mZoomInOnClick) {
-				zoom(mZoomAmount);
+				zoom(1);
 			} else {
-				zoom(-mZoomAmount);
+				zoom(-1);
 			}
 
 			return true;
@@ -59,8 +59,7 @@ public class ZoomTool extends TouchTool {
 	@Override
 	public boolean scroll(int amount) {
 		if (KeyHelper.isCtrlPressed() || isActive()) {
-			float zoomAmount = amount * mZoomAmount;
-			zoom(-zoomAmount);
+			zoom(-amount);
 		}
 
 		return false;
@@ -95,10 +94,17 @@ public class ZoomTool extends TouchTool {
 	 * Zoom in or out
 	 * @param amount
 	 */
-	private void zoom(float amount) {
+	private void zoom(int amount) {
 		float oldZoom = mZoom;
 
-		mZoom += amount;
+		// Zoom in
+		if (amount < 0) {
+			mZoom *= Math.pow(mZoomInAmount, -amount);
+		}
+		// Zoom out
+		else {
+			mZoom *= Math.pow(mZoomOutAmount, amount);
+		}
 
 		// Test limits
 		if (mZoom < mZoomMin) {
@@ -226,6 +232,8 @@ public class ZoomTool extends TouchTool {
 	private Vector2 mWorldMin = new Vector2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
 	/** Maximum world coordinates to show */
 	private Vector2 mWorldMax = new Vector2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-	/** Zoom amount on click/scroll */
-	private static float mZoomAmount = Config.Editor.ZOOM_AMOUNT;
+	/** Zoom in amount on click/scroll */
+	private static float mZoomInAmount = Config.Editor.ZOOM_AMOUNT;
+	/** Zoom out amount on click/scroll */
+	private static float mZoomOutAmount = 1 / mZoomInAmount;
 }

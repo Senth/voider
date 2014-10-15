@@ -607,8 +607,8 @@ public class Config {
 		public final static Color BRUSH_ERASE_COLOR = Color.RED;
 		/** Selection brush color */
 		public final static Color BRUSH_SELECTION_COLOR = Color.GRAY;
-		/** Zoom in amount when clicking on the icon */
-		public final static float ZOOM_AMOUNT = 0.1f;
+		/** Zoom in amount when clicking on the icon, this value is multiplied */
+		public final static float ZOOM_AMOUNT = 0.8f;
 	}
 
 	/**
