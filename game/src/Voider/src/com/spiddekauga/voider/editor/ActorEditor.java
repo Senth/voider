@@ -86,6 +86,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mDrawingActor != null && mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			mDrawingActor.updateEditor();
 		}
+
+		((PanTool) mTools[Tools.PAN.ordinal()]).update(deltaTime);
 	}
 
 	@Override
@@ -99,8 +101,15 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	 * Update camera/world limits
 	 */
 	private void updateCameraLimits() {
-		mZoomTool.setWorldMin(-mCamera.viewportWidth / 2, -mCamera.viewportHeight / 2);
-		mZoomTool.setWorldMax(mCamera.viewportWidth / 2, mCamera.viewportHeight / 2);
+		float halfWidth = mCamera.viewportWidth / 2;
+		float halfHeight = mCamera.viewportHeight / 2;
+
+		mZoomTool.setWorldMin(-halfWidth, -halfHeight);
+		mZoomTool.setWorldMax(halfWidth, halfHeight);
+
+		PanTool panTool = (PanTool) mTools[Tools.PAN.ordinal()];
+		panTool.setWorldMin(-halfWidth, -halfHeight);
+		panTool.setWorldMax(halfWidth, halfHeight);
 	}
 
 	@Override

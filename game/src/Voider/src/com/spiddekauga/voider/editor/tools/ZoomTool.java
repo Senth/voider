@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor.tools;
 
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -129,7 +130,7 @@ public class ZoomTool extends TouchTool {
 	 */
 	private Vector2 calculateZoomPos(float newZoom, float oldZoom) {
 		Vector2 cameraPos = calculateCameraPos(newZoom, oldZoom);
-		clampCameraPos(cameraPos);
+		Screens.clampCamera(mCamera, mWorldMin, mWorldMax, cameraPos, mZoom);
 
 		return cameraPos;
 	}
@@ -161,49 +162,6 @@ public class ZoomTool extends TouchTool {
 		Pools.vector2.freeAll(pointerDiff, pointerRatio);
 
 		return cameraPos;
-	}
-
-	/**
-	 * Clamp the camera position to min/max world coordinates
-	 * @param cameraPos the new camera position to clamp
-	 */
-	private void clampCameraPos(Vector2 cameraPos) {
-		float widthHalf = mCamera.viewportWidth * mZoom * 0.5f;
-		float heightHalf = mCamera.viewportHeight * mZoom * 0.5f;
-
-		Vector2 cameraMin = Pools.vector2.obtain();
-		cameraMin.set(cameraPos).sub(widthHalf, heightHalf);
-		Vector2 cameraMax = Pools.vector2.obtain();
-		cameraMax.set(cameraPos).add(widthHalf, heightHalf);
-
-
-		// Clamp X
-		// Both are out of bounds -> Center
-		if (cameraMin.x < mWorldMin.x && cameraMax.x > mWorldMax.x) {
-			cameraPos.x = (mWorldMin.x + mWorldMax.x) / 2;
-		}
-		// Left out of bounds
-		else if (cameraMin.x < mWorldMin.x) {
-			cameraPos.x = mWorldMin.x + widthHalf;
-		}
-		// Right out of bounds
-		else if (cameraMax.x > mWorldMax.x) {
-			cameraPos.x = mWorldMax.x - widthHalf;
-		}
-
-		// Clamp Y
-		// Both are out of bound -> Center
-		if (cameraMin.y < mWorldMin.y && cameraMax.y > mWorldMax.y) {
-			cameraPos.y = (mWorldMin.y + mWorldMax.y) / 2;
-		}
-		// Top out of bounds
-		else if (cameraMin.y < mWorldMin.y) {
-			cameraPos.y = mWorldMin.y + heightHalf;
-		}
-		// Bottom out of bounds
-		else if (cameraMax.y > mWorldMax.y) {
-			cameraPos.y = mWorldMax.y - heightHalf;
-		}
 	}
 
 	/**

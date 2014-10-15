@@ -6,8 +6,11 @@ import java.nio.ByteBuffer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Screen utilities
@@ -82,5 +85,78 @@ public class Screens {
 		}
 
 		return pixmap;
+	}
+
+	/**
+	 * Clamp the current camera position to min/max coordinates
+	 * @param camera
+	 * @param min minimum position
+	 * @param max maximum position
+	 * @return true if clamped
+	 */
+	public static boolean clampCamera(OrthographicCamera camera, Vector2 min, Vector2 max) {
+		Vector2 cameraPos = new Vector2(camera.position.x, camera.position.y);
+		boolean clamped = clampCamera(camera, min, max, cameraPos, camera.zoom);
+		camera.position.x = cameraPos.x;
+		camera.position.y = cameraPos.y;
+		return clamped;
+	}
+
+	/**
+	 * Clamp the specific camera position depending on custom position and zoom. I.e.
+	 * neither uses the camera's position nor the camera's zoom.
+	 * @param camera
+	 * @param min minimum position
+	 * @param max maximum position
+	 * @param cameraPos position of the camera
+	 * @param zoom current zoom
+	 * @return true if clamped
+	 */
+	public static boolean clampCamera(OrthographicCamera camera, Vector2 min, Vector2 max, Vector2 cameraPos, float zoom) {
+		float widthHalf = camera.viewportWidth * zoom * 0.5f;
+		float heightHalf = camera.viewportHeight * zoom * 0.5f;
+
+		Vector2 cameraMin = Pools.vector2.obtain();
+		cameraMin.set(cameraPos).sub(widthHalf, heightHalf);
+		Vector2 cameraMax = Pools.vector2.obtain();
+		cameraMax.set(cameraPos).add(widthHalf, heightHalf);
+
+		boolean clamped = false;
+
+		// Clamp X
+		// Both are out of bounds -> Center
+		if (cameraMin.x < min.x && cameraMax.x > max.x) {
+			cameraPos.x = (min.x + max.x) / 2;
+			clamped = true;
+		}
+		// Left out of bounds
+		else if (cameraMin.x < min.x) {
+			cameraPos.x = min.x + widthHalf;
+			clamped = true;
+		}
+		// Right out of bounds
+		else if (cameraMax.x > max.x) {
+			cameraPos.x = max.x - widthHalf;
+			clamped = true;
+		}
+
+		// Clamp Y
+		// Both are out of bound -> Center
+		if (cameraMin.y < min.y && cameraMax.y > max.y) {
+			cameraPos.y = (min.y + max.y) / 2;
+			clamped = true;
+		}
+		// Top out of bounds
+		else if (cameraMin.y < min.y) {
+			cameraPos.y = min.y + heightHalf;
+			clamped = true;
+		}
+		// Bottom out of bounds
+		else if (cameraMax.y > max.y) {
+			cameraPos.y = max.y - heightHalf;
+			clamped = true;
+		}
+
+		return clamped;
 	}
 }

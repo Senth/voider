@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor.tools;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -56,11 +57,7 @@ public class PanTool extends TouchTool {
 			return true;
 		}
 
-		if (mScroller.isScrolling()) {
-			return true;
-		}
-
-		return false;
+		return mScroller.isScrolling();
 	}
 
 	@Override
@@ -96,9 +93,12 @@ public class PanTool extends TouchTool {
 
 			Vector2 diffScroll = Pools.vector2.obtain();
 			diffScroll.set(mScroller.getOriginScroll()).sub(mScroller.getCurrentScroll());
-			float scale = diffScroll.x / Gdx.graphics.getWidth() * getWorldWidth();
+			float scale = getWorldWidth() / Gdx.graphics.getWidth();
 
-			mCamera.position.x = scale + mScrollCameraOrigin.x;
+			mCamera.position.x = diffScroll.x * scale + mScrollCameraOrigin.x;
+			mCamera.position.y = -diffScroll.y * scale + mScrollCameraOrigin.y;
+			Screens.clampCamera(mCamera, mWorldMin, mWorldMax);
+
 			mCamera.update();
 
 			Pools.vector2.free(diffScroll);
@@ -132,13 +132,67 @@ public class PanTool extends TouchTool {
 	 * @return world width
 	 */
 	private float getWorldWidth() {
-		return mCamera.viewportWidth;
+		return mCamera.viewportWidth * mCamera.zoom;
 	}
 
+	/**
+	 * Set minimum camera/world position. Clamps zoom to this value
+	 * @param x minimum x world position
+	 * @param y minimum y world position
+	 */
+	public void setWorldMin(float x, float y) {
+		mWorldMin.set(x, y);
+	}
+
+	/**
+	 * Sets minimum x camera/world position. Clamps zoom to this value
+	 * @param x minimum x world position
+	 */
+	public void setWorldMinX(float x) {
+		mWorldMin.x = x;
+	}
+
+	/**
+	 * Sets minimum y camera/world position. Clamps zoom to this value
+	 * @param y minimum y world position
+	 */
+	public void setWorldMinY(float y) {
+		mWorldMin.y = y;
+	}
+
+	/**
+	 * Set maximum camera/world position. Clamps zoom to this value
+	 * @param x maximum x world position
+	 * @param y maximum y world position
+	 */
+	public void setWorldMax(float x, float y) {
+		mWorldMax.set(x, y);
+	}
+
+	/**
+	 * Sets maximum x camera/world position. Clamps zoom to this value
+	 * @param x maximum x world position
+	 */
+	public void setWorldMaxX(float x) {
+		mWorldMax.x = x;
+	}
+
+	/**
+	 * Sets maximum y camera/world position. Clamps zoom to this value
+	 * @param y maximum y world position
+	 */
+	public void setWorldMaxY(float y) {
+		mWorldMax.y = y;
+	}
+
+	/** Minimum world coordinates to show */
+	private Vector2 mWorldMin = new Vector2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+	/** Maximum world coordinates to show */
+	private Vector2 mWorldMax = new Vector2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 	/** Created a scroll command */
 	private boolean mCreatedScrollCommand = true;
 	/** Origin of camera scroll */
 	private Vector2 mScrollCameraOrigin = new Vector2();
 	/** Logic for scrolling */
-	private Scroller mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
+	private Scroller mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.ALL);
 }
