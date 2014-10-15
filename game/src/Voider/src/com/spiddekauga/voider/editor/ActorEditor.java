@@ -70,6 +70,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(this, mSelection);
 		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(this, mSelection);
 		mTools[Tools.CENTER_SET.ordinal()] = new SetCenterTool(this, mSelection, mActorType);
+
+
+		updateCameraLimits();
 	}
 
 	@Override
@@ -83,6 +86,21 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mDrawingActor != null && mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			mDrawingActor.updateEditor();
 		}
+	}
+
+	@Override
+	protected void onResize(int width, int height) {
+		super.onResize(width, height);
+
+		updateCameraLimits();
+	}
+
+	/**
+	 * Update camera/world limits
+	 */
+	private void updateCameraLimits() {
+		mZoomTool.setWorldMin(-mCamera.viewportWidth / 2, -mCamera.viewportHeight / 2);
+		mZoomTool.setWorldMax(mCamera.viewportWidth / 2, mCamera.viewportHeight / 2);
 	}
 
 	@Override
