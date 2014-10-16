@@ -10,6 +10,9 @@ import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * Pan tool
@@ -100,6 +103,7 @@ public class PanTool extends TouchTool {
 			Screens.clampCamera(mCamera, mWorldMin, mWorldMax);
 
 			mCamera.update();
+			EventDispatcher.getInstance().fire(new GameEvent(EventTypes.CAMERA_MOVED));
 
 			Pools.vector2.free(diffScroll);
 		} else if (!mCreatedScrollCommand) {

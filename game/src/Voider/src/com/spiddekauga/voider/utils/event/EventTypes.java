@@ -15,6 +15,8 @@ public enum EventTypes {
 	// --- CAMERA ---
 	/** Camera zoom was changed */
 	CAMERA_ZOOM_CHANGE,
+	/** Camera was moved */
+	CAMERA_MOVED,
 
 
 	// --- SYNC ---

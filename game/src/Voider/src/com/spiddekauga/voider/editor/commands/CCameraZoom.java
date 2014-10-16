@@ -61,7 +61,7 @@ public class CCameraZoom extends Command implements ICommandCombinable {
 		mCamera.position.y = mPosNew.y;
 		mCamera.zoom = mZoomNew;
 		mCamera.update();
-		mEventDispatcher.fire(new GameEvent(EventTypes.CAMERA_ZOOM_CHANGE));
+		sendEvent();
 		return true;
 	}
 
@@ -71,8 +71,19 @@ public class CCameraZoom extends Command implements ICommandCombinable {
 		mCamera.position.y = mPosOld.y;
 		mCamera.zoom = mZoomOld;
 		mCamera.update();
-		mEventDispatcher.fire(new GameEvent(EventTypes.CAMERA_ZOOM_CHANGE));
+		sendEvent();
 		return true;
+	}
+
+	/**
+	 * Send events
+	 */
+	private void sendEvent() {
+		mEventDispatcher.fire(new GameEvent(EventTypes.CAMERA_ZOOM_CHANGE));
+
+		if (!mPosNew.equals(mPosOld)) {
+			mEventDispatcher.fire(new GameEvent(EventTypes.CAMERA_MOVED));
+		}
 	}
 
 	@Override
@@ -85,5 +96,5 @@ public class CCameraZoom extends Command implements ICommandCombinable {
 	private float mZoomNew;
 	private Vector2 mPosOld = Pools.vector2.obtain();
 	private Vector2 mPosNew = Pools.vector2.obtain();
-	private static final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
+	private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 }

@@ -1151,31 +1151,14 @@ public class EnemyEditor extends ActorEditor {
 		paths.add(mPathBackAndForth);
 		mEnemyPathBackAndForth.setPath(mPathBackAndForth);
 		mEnemyPathBackAndForth.resetPathMovement();
-		//
-		// for (int i = 0; i < nodes.length; ++i) {
-		// screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-		// try {
-		// mPathBackAndForth.addCorner(nodes[i]);
-		// } catch (Exception e) {
-		// // Does nothing...
-		// }
-		// }
+
 
 		// LOOP
 		mPathLoop.setPathType(PathTypes.LOOP);
 		paths.add(mPathLoop);
 		mEnemyPathLoop.setPath(mPathLoop);
 		mEnemyPathLoop.resetPathMovement();
-		// // Offset all y values so we don't get same path
-		// for (int i = 0; i < nodes.length; ++i) {
-		// screenPos[i].y += heightOffset;
-		// screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-		// try {
-		// mPathLoop.addCorner(nodes[i]);
-		// } catch (Exception e) {
-		// // Does nothing
-		// }
-		// }
+
 
 		// ONCE
 		mPathOnce.setPathType(PathTypes.ONCE);
@@ -1226,17 +1209,6 @@ public class EnemyEditor extends ActorEditor {
 			screenToWorldCoord(mCamera, screenPos, nodes, true);
 			path.addCorners(nodes);
 		}
-
-		// // Offset all y values so we don't get same path
-		// for (int i = 0; i < nodes.length; ++i) {
-		// screenPos[i].y += heightOffset;
-		// screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-		// try {
-		// mPathOnce.addCorner(nodes[i]);
-		// } catch (Exception e) {
-		// // Does nothing
-		// }
-		// }
 
 		// Free stuff
 		Pools.vector2.freeAll(nodes, screenPos, centerPositions);

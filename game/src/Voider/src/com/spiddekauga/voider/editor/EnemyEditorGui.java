@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -33,6 +34,10 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * GUI for the enemy editor
@@ -46,10 +51,18 @@ public class EnemyEditorGui extends ActorGui {
 	public void setEnemyEditor(EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
 		setActorEditor(mEnemyEditor);
+
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.CAMERA_ZOOM_CHANGE, mCameraListener);
+		eventDispatcher.connect(EventTypes.CAMERA_MOVED, mCameraListener);
 	}
 
 	@Override
 	public void dispose() {
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.disconnect(EventTypes.CAMERA_ZOOM_CHANGE, mCameraListener);
+		eventDispatcher.disconnect(EventTypes.CAMERA_MOVED, mCameraListener);
+
 		mMovementTable.dispose();
 		mWeaponTable.dispose();
 		mWidgets.path.dispose();
@@ -218,10 +231,15 @@ public class EnemyEditorGui extends ActorGui {
 		addActor(mWidgets.path.once);
 		addActor(mWidgets.path.backForth);
 		addActor(mWidgets.path.loop);
+
+		// Move to back
+		mWidgets.path.once.setZIndex(0);
+		mWidgets.path.backForth.setZIndex(0);
+		mWidgets.path.loop.setZIndex(0);
 	}
 
 	/**
-	 * Scale path labels
+	 * Update path labels
 	 */
 	void updatePathLabelsPositions() {
 		Vector2[] centerPositions = mEnemyEditor.getPathPositions();
@@ -234,6 +252,8 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		Vector2 offset = Pools.vector2.obtain();
+
+		fixPathLabelOnZoom(centerPositions);
 
 		for (int i = 0; i < centerPositions.length; ++i) {
 			AlignTable table = labelTables.get(i);
@@ -249,6 +269,44 @@ public class EnemyEditorGui extends ActorGui {
 		Pools.vector2.freeAll(centerPositions);
 		Pools.vector2.free(offset);
 		Pools.arrayList.free(labelTables);
+	}
+
+	/**
+	 * Scale paths depending on current zoom
+	 * @param positions center positions to update
+	 */
+	private void fixPathLabelOnZoom(Vector2[] positions) {
+		OrthographicCamera camera = mEditor.getCamera();
+
+		if (camera != null) {
+			// label_0 = original label position
+			// zoom = 1 / camera.zoom
+			// camera_1 = camera center after movement & zoom (screen coordinates)
+			// screen_0 = center of screen
+			// delta_0 = Label diff from center of screen
+			// delta_1 = New label diff from center after zoom
+			// label_1 = New label position
+
+
+			float zoom = 1 / camera.zoom;
+			float worldScale = Gdx.graphics.getWidth() / camera.viewportWidth;
+			Vector2 cameraPos = Pools.vector2.obtain().set(camera.position.x, camera.position.y);
+			cameraPos.scl(worldScale * zoom);
+			Vector2 screenCenter = Pools.vector2.obtain().set(Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
+
+
+			Vector2 deltaPos = Pools.vector2.obtain();
+			Vector2 labelPosOriginal = Pools.vector2.obtain();
+
+			for (Vector2 pos : positions) {
+				labelPosOriginal.set(pos);
+				deltaPos.set(labelPosOriginal).sub(screenCenter);
+				deltaPos.scl(zoom);
+				pos.set(screenCenter).sub(cameraPos).add(deltaPos);
+			}
+
+			Pools.vector2.freeAll(screenCenter, cameraPos, deltaPos, labelPosOriginal);
+		}
 	}
 
 	@Override
@@ -508,9 +566,6 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		});
 		mPathHider = pathTab.getHider();
-		mPathHider.addToggleActor(mWidgets.path.backForth);
-		mPathHider.addToggleActor(mWidgets.path.once);
-		mPathHider.addToggleActor(mWidgets.path.loop);
 
 		// Stationary
 		TabImageWrapper stationaryTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_STATIONARY);
@@ -557,6 +612,12 @@ public class EnemyEditorGui extends ActorGui {
 		mTooltip.add(pathTab.getButton(), Messages.EditorTooltips.MOVEMENT_PATH);
 		mTooltip.add(aiTab.getButton(), Messages.EditorTooltips.MOVEMENT_AI);
 		mTooltip.add(stationaryTab.getButton(), Messages.EditorTooltips.MOVEMENT_STATIONARY);
+
+		// Hider for path labels
+		HideListener pathLabelHider = new HideListener(pathTab.getButton(), true);
+		pathLabelHider.addToggleActor(mWidgets.path.backForth);
+		pathLabelHider.addToggleActor(mWidgets.path.once);
+		pathLabelHider.addToggleActor(mWidgets.path.loop);
 	}
 
 	/**
@@ -796,6 +857,14 @@ public class EnemyEditorGui extends ActorGui {
 	ITooltip getFileInfoTooltip() {
 		return Messages.EditorTooltips.FILE_INFO_ENEMY;
 	}
+
+	/** Zoom listener that fixes label locations */
+	private IEventListener mCameraListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			updatePathLabelsPositions();
+		}
+	};
 
 	// Tables
 	/** Container for all movement options */

@@ -5,6 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.ICommandCombinable;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * Command for moving a camera. This can undo and redo a scroll.
@@ -44,6 +47,7 @@ public class CCameraMove extends Command implements ICommandCombinable {
 		mCamera.position.x = mNewPos.x;
 		mCamera.position.y = mNewPos.y;
 		mCamera.update();
+		sendEvent();
 		return true;
 	}
 
@@ -52,7 +56,15 @@ public class CCameraMove extends Command implements ICommandCombinable {
 		mCamera.position.x = mOldPos.x;
 		mCamera.position.y = mOldPos.y;
 		mCamera.update();
+		sendEvent();
 		return true;
+	}
+
+	/**
+	 * Send event
+	 */
+	private void sendEvent() {
+		EventDispatcher.getInstance().fire(new GameEvent(EventTypes.CAMERA_MOVED));
 	}
 
 	@Override
