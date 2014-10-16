@@ -37,6 +37,7 @@ import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.editor.tools.TriggerSetTool;
+import com.spiddekauga.voider.editor.tools.ZoomTool;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -99,14 +100,18 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		mSelection = new Selection();
 		mSelection.addListener(this);
 
+		mZoomTool = new ZoomTool(this, Config.Editor.Level.ZOOM_MIN, Config.Editor.Level.ZOOM_MAX);
+
 		// Initialize tools
+		Tools.ZOOM_IN.setTool(mZoomTool);
+		Tools.ZOOM_OUT.setTool(mZoomTool);
 		Tools.ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(this, mSelection));
 		Tools.DELETE.setTool(new DeleteTool(this, mSelection));
 		Tools.ENEMY_ADD.setTool(new EnemyAddTool(this, mSelection, EnemyActor.class));
 		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new TriggerSetTool(this, mSelection, Actions.ACTOR_ACTIVATE));
 		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new TriggerSetTool(this, mSelection, Actions.ACTOR_DEACTIVATE));
 		Tools.MOVE.setTool(new MoveTool(this, mSelection));
-		Tools.PAN.setTool(new PanTool(null));
+		Tools.PAN.setTool(new PanTool(this));
 		Tools.PATH_ADD.setTool(new PathAddTool(this, mSelection));
 		Tools.PICKUP_ADD.setTool(new ActorAddTool(this, mSelection, PickupActor.class));
 		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(this, mSelection));
@@ -117,6 +122,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		mInputMultiplexer.addProcessor(Tools.PAN.getTool());
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
 		mInputMultiplexer.addProcessor(Tools.DELETE.getTool());
+		mInputMultiplexer.addProcessor(mZoomTool);
+
+		updateCameraLimits();
 	}
 
 	@Override
@@ -124,6 +132,20 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		super.onResize(width, height);
 		mGui.dispose();
 		mGui.initGui();
+	}
+
+	/**
+	 * Update camera/world limits
+	 */
+	private void updateCameraLimits() {
+		float halfHeight = mCamera.viewportHeight / 2;
+
+		mZoomTool.setWorldMinY(-halfHeight);
+		mZoomTool.setWorldMaxY(halfHeight);
+
+		PanTool panTool = (PanTool) Tools.PAN.getTool();
+		panTool.setWorldMinY(-halfHeight);
+		panTool.setWorldMaxY(halfHeight);
 	}
 
 	@Override
@@ -568,8 +590,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mTool.getTool() != null) {
 			mTool.getTool().deactivate();
 
-			// Never remove pan, selection or delete tool
-			if (mTool != Tools.SELECTION && mTool != Tools.DELETE && mTool != Tools.PAN) {
+			// Never certain tools that should be kept even when inactive
+			if (!isAvailableWhenInactive(mTool)) {
 				mInputMultiplexer.removeProcessor(mTool.getTool());
 			}
 		}
@@ -579,8 +601,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mTool.getTool() != null) {
 			mTool.getTool().activate();
 
-			// Never add pan, selection or delete tool
-			if (mTool != Tools.SELECTION && mTool != Tools.DELETE && mTool != Tools.PAN) {
+			// Never add some tools as they are already added
+			if (!isAvailableWhenInactive(mTool)) {
 				mInputMultiplexer.addProcessor(mTool.getTool());
 			}
 
@@ -589,6 +611,26 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				((SelectionTool) Tools.SELECTION.getTool()).setSelectableResourceTypes(mTool.getTool().getSelectableResourceTypes(), mTool.getTool()
 						.isSelectionToolAllowedToChangeResourceType());
 			}
+		}
+	}
+
+	/**
+	 * Checks if the tool should be available in the background
+	 * @param tool
+	 * @return true if the tool should be available when inactive (but with limited
+	 *         functionality)
+	 */
+	private boolean isAvailableWhenInactive(Tools tool) {
+		switch (tool) {
+		case SELECTION:
+		case DELETE:
+		case PAN:
+		case ZOOM_IN:
+		case ZOOM_OUT:
+			return true;
+
+		default:
+			return false;
 		}
 	}
 
@@ -1379,6 +1421,15 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		return ((ActorAddTool) Tools.ENEMY_ADD.getTool()).getActorDef();
 	}
 
+	/**
+	 * Reset the current zoom
+	 */
+	void resetZoom() {
+		if (mZoomTool != null) {
+			fixCamera();
+			mZoomTool.resetZoom();
+		}
+	}
 
 	/**
 	 * All tools, such as selection, add terrain, etc
@@ -1410,6 +1461,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ENEMY_SET_DEACTIVATE_TRIGGER,
 		/** Add a corner to a path */
 		PATH_ADD,
+		/** Zoom in */
+		ZOOM_IN,
+		/** Zoom out */
+		ZOOM_OUT,
 
 		;
 
@@ -1458,6 +1513,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * Renders the above and below borders
 	 */
 	private void renderAboveBelowBorders() {
+		// TODO
 		// Calculate how much space is left for the borders
 		float heightAvailable = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
 
@@ -1570,6 +1626,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private ISelection mSelection = null;
 	/** Current selected tool */
 	private Tools mTool = Tools.SELECTION;
+	/** Zoom tool */
+	private ZoomTool mZoomTool = null;
 	/** If enemies should be highlighted if they will be used when test running the level */
 	private boolean mEnemyHighlight = true;
 	/** Resource repository */

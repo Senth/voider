@@ -528,7 +528,7 @@ public class Config {
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
 			/** Minimum zoom */
-			public final static float ZOOM_MIN = 0.1f;
+			public final static float ZOOM_MIN = 0.2f;
 			/** Maximum zoom */
 			public final static float ZOOM_MAX = 10;
 		}
