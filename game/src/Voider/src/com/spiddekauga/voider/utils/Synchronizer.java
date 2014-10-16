@@ -9,7 +9,6 @@ import java.util.concurrent.Semaphore;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.net.IDownloadProgressListener;
-import com.spiddekauga.utils.Observable;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
@@ -34,13 +33,16 @@ import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.IMessageListener;
 import com.spiddekauga.voider.server.MessageGateway;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * Listens to server synchronize events when to synchronize. Also checks synchronize
  * everything when user logs in
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Synchronizer extends Observable implements IMessageListener, IResponseListener {
+public class Synchronizer implements IMessageListener, IResponseListener {
 	/**
 	 * Initializes the synchronizer. Private constructor to enforce singleton usage
 	 */
@@ -316,10 +318,10 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	 */
 	private void handleSyncDownloadResponse(DownloadSyncMethodResponse response) {
 		if (response.isSuccessful()) {
-			notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_SUCCESS);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS));
 			SceneSwitcher.showSuccessMessage("Downloaded resources synced");
 		} else {
-			notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_FAILED);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD_FAILED));
 			SceneSwitcher.showErrorMessage("Downloaded resources sync failed");
 		}
 	}
@@ -374,7 +376,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			} else {
 				SceneSwitcher.showErrorMessage("Player resources sync failed");
 			}
-			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_FAILED);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_FAILED));
 			break;
 
 		case SUCCESS_ALL:
@@ -390,22 +392,21 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			else {
 				SceneSwitcher.showSuccessMessage("Conflicts resolved");
 			}
-			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_SUCCESS);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS));
 			break;
 
 		case SUCCESS_PARTIAL:
 			mConflictsFound = response.conflicts;
 			SceneSwitcher.showConflictWindow();
-
-			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_CONFLICT);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_CONFLICT));
 			break;
 		}
 
 		// Send sync messages
 		if (response.downloadStatus) {
-			notifyObservers(SyncEvents.USER_RESOURCES_DOWNLOAD_SUCCESS);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS));
 		} else {
-			notifyObservers(SyncEvents.USER_RESOURCES_DOWNLOAD_FAILED);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_FAILED));
 		}
 	}
 
@@ -425,26 +426,6 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		STATS,
 		/** Fix conflicts */
 		USER_RESOURCE_FIX_CONFLICTS,
-	}
-
-	/**
-	 * Sync event enumerations
-	 */
-	public enum SyncEvents {
-		/** Successfully downloaded user resources */
-		USER_RESOURCES_DOWNLOAD_SUCCESS,
-		/** Failed to download user resources */
-		USER_RESOURCES_DOWNLOAD_FAILED,
-		/** Successfully uploaded and synced ALL user resources */
-		USER_RESOURCES_UPLOAD_SUCCESS,
-		/** Failed to upload user resources */
-		USER_RESOURCES_UPLOAD_FAILED,
-		/** Conflict when uploading user resources */
-		USER_RESOURCES_UPLOAD_CONFLICT,
-		/** Downloaded new community resources */
-		COMMUNITY_DOWNLOAD_SUCCESS,
-		/** Failed to download community resources */
-		COMMUNITY_DOWNLOAD_FAILED,
 	}
 
 	/**
@@ -565,6 +546,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	};
 	/** Last found conflicts */
 	private HashMap<UUID, ResourceConflictEntity> mConflictsFound = null;
+	/** Event dispatcher */
+	private static final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 
 	/** Instance of this class */
 	private static Synchronizer mInstance = null;

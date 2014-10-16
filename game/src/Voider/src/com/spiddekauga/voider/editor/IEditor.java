@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-import java.util.Observer;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.physics.box2d.World;
@@ -12,7 +11,7 @@ import com.spiddekauga.voider.resources.Def;
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public interface IEditor extends Observer {
+public interface IEditor {
 	/**
 	 * @return Invoker for undo/redo
 	 */

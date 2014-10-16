@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -76,7 +75,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
-import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * The level editor scene
@@ -286,23 +285,20 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public void update(Observable observable, Object arg) {
-		super.update(observable, arg);
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS:
+			ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+			ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+			ResourceCacheFacade.finishLoading();
+			break;
 
-		if (arg instanceof SyncEvents) {
-			switch ((SyncEvents) arg) {
-			case USER_RESOURCES_DOWNLOAD_SUCCESS:
-				ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
-				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
-				ResourceCacheFacade.finishLoading();
-				break;
-
-			default:
-				// Does nothing
-				break;
-			}
+		default:
+			// Does nothing
+			break;
 		}
-	}
+
+	};
 
 	@Override
 	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {

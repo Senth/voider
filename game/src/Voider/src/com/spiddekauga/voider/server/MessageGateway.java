@@ -2,16 +2,17 @@ package com.spiddekauga.voider.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
-import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 import edu.gvsu.cis.masl.channelAPI.ChannelAPI;
 import edu.gvsu.cis.masl.channelAPI.ChannelAPI.ChannelException;
@@ -21,13 +22,13 @@ import edu.gvsu.cis.masl.channelAPI.ChannelService;
  * Gateway for all channel messages to and from the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MessageGateway implements ChannelService, Observer {
+public class MessageGateway implements ChannelService {
 	/**
 	 * Creates an empty (invalid) message gateway.
 	 */
 	private MessageGateway() {
 		User user = User.getGlobalUser();
-		user.addObserver(this);
+		new GameEventListener();
 
 		if (user.isOnline()) {
 			connect();
@@ -82,34 +83,6 @@ public class MessageGateway implements ChannelService, Observer {
 		mChannel = null;
 	}
 
-	@Override
-	public void update(Observable object, Object arg) {
-		if (object instanceof User) {
-			if (arg instanceof GameEvent) {
-				switch (((GameEvent) arg).type) {
-				case USER_LOGIN:
-					connect();
-					break;
-
-				case USER_LOGOUT: {
-					// Disconnect in main thread
-					Gdx.app.postRunnable(new Runnable() {
-						@Override
-						public void run() {
-							disconnect();
-						}
-					});
-
-					break;
-				}
-
-				default:
-					break;
-				}
-			}
-		}
-	}
-
 	/**
 	 * @return true if this message gateway is connected to the server
 	 */
@@ -160,6 +133,45 @@ public class MessageGateway implements ChannelService, Observer {
 	@Override
 	public void onError(Integer errorCode, String description) {
 		Gdx.app.error("MessageGateway", "Error code: " + errorCode + ", desc: " + description);
+	}
+
+	/**
+	 * Class that listens to game event
+	 */
+	private class GameEventListener implements IEventListener {
+		/**
+		 * Initializes the listener
+		 */
+		GameEventListener() {
+			EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+
+			eventDispatcher.connect(EventTypes.USER_LOGIN, this);
+			eventDispatcher.connect(EventTypes.USER_LOGOUT, this);
+		}
+
+		@Override
+		public void handleEvent(GameEvent event) {
+			switch (event.type) {
+			case USER_LOGIN:
+				connect();
+				break;
+
+			case USER_LOGOUT: {
+				// Disconnect in main thread
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						disconnect();
+					}
+				});
+
+				break;
+			}
+
+			default:
+				break;
+			}
+		}
 	}
 
 	/** Message listeners */

@@ -1,13 +1,13 @@
 package com.spiddekauga.voider.repo;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Base class for preference gateways.
@@ -16,7 +16,7 @@ import com.spiddekauga.voider.utils.User;
  *       preferences.</strong>
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class PrefsGateway implements Observer {
+public abstract class PrefsGateway implements IEventListener {
 	/**
 	 * Opens a new empty (invalid) preferences gateway.
 	 */
@@ -24,30 +24,29 @@ public abstract class PrefsGateway implements Observer {
 		// Observe/listen to when the user logs in and out to open the
 		// appropriate file
 		User user = User.getGlobalUser();
-		user.addObserver(this);
 
 		if (user.isLoggedIn()) {
 			open();
 		}
+
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.USER_LOGIN, this);
+		eventDispatcher.connect(EventTypes.USER_LOGOUT, this);
 	}
 
 	@Override
-	public void update(Observable object, Object arg) {
-		if (object instanceof User) {
-			if (arg instanceof GameEvent) {
-				switch (((GameEvent) arg).type) {
-				case USER_LOGIN:
-					open();
-					break;
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case USER_LOGIN:
+			open();
+			break;
 
-				case USER_LOGOUT:
-					close();
-					break;
+		case USER_LOGOUT:
+			close();
+			break;
 
-				default:
-					break;
-				}
-			}
+		default:
+			break;
 		}
 	}
 

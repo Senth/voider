@@ -1,11 +1,11 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * Campaign editor for combining existing levels into a campaign.
@@ -47,8 +47,8 @@ public class CampaignEditor extends Editor {
 	}
 
 	@Override
-	public void update(Observable observable, Object arg) {
-		// TODO
+	public void handleEvent(GameEvent event) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override

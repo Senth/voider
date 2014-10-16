@@ -2,7 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -44,7 +43,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
-import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * Editor for creating and editing enemies
@@ -302,20 +301,16 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	@Override
-	public void update(Observable observable, Object arg) {
-		super.update(observable, arg);
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS:
+			ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+			ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
+			ResourceCacheFacade.finishLoading();
+			break;
 
-		if (arg instanceof SyncEvents) {
-			switch ((SyncEvents) arg) {
-			case USER_RESOURCES_DOWNLOAD_SUCCESS:
-				ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
-				ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
-				ResourceCacheFacade.finishLoading();
-				break;
-
-			default:
-				break;
-			}
+		default:
+			break;
 		}
 	}
 

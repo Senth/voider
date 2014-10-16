@@ -3,7 +3,6 @@ package com.spiddekauga.voider.editor.tools;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Screens;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CCameraZoom;
@@ -11,6 +10,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
+ * Tool for zooming in/out in the level editor
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ZoomTool extends TouchTool {
@@ -85,9 +85,7 @@ public class ZoomTool extends TouchTool {
 	 */
 	public void resetZoom() {
 		mZoom = 1;
-		Command command = new CCameraZoom(mCamera, mZoom);
-		command.addObserver(mEditor);
-		mInvoker.execute(command);
+		mInvoker.execute(new CCameraZoom(mCamera, mZoom));
 	}
 
 	/**
@@ -119,9 +117,7 @@ public class ZoomTool extends TouchTool {
 			Vector2 cameraPos = calculateZoomPos(mZoom, oldZoom);
 
 			// Call zoom command
-			Command command = new CCameraZoom(mCamera, mZoom, cameraPos);
-			command.addObserver(mEditor);
-			mInvoker.execute(command);
+			mInvoker.execute(new CCameraZoom(mCamera, mZoom, cameraPos));
 
 			Pools.vector2.free(cameraPos);
 		}

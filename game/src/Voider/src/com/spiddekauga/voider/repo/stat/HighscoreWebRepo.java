@@ -2,8 +2,6 @@ package com.spiddekauga.voider.repo.stat;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.UUID;
 
 import com.spiddekauga.voider.Config;
@@ -21,9 +19,10 @@ import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
-import com.spiddekauga.voider.utils.GameEvent;
-import com.spiddekauga.voider.utils.GameEvent.Events;
-import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Web repository for highscores
@@ -34,17 +33,10 @@ class HighscoreWebRepo extends WebRepo {
 	 * Private constructor to enforce singleton pattern
 	 */
 	private HighscoreWebRepo() {
-
-		// Clear user cache when user logs out
-		User.getGlobalUser().addObserver(new Observer() {
+		EventDispatcher.getInstance().connect(EventTypes.USER_LOGOUT, new IEventListener() {
 			@Override
-			public void update(Observable o, Object arg) {
-				// Clear cache when user logs out
-				if (arg instanceof GameEvent) {
-					if (((GameEvent) arg).type == Events.USER_LOGOUT) {
-						mUserCache.clear();
-					}
-				}
+			public void handleEvent(GameEvent event) {
+				mUserCache.clear();
 			}
 		});
 	}

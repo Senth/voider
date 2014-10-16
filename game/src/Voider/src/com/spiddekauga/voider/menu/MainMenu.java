@@ -3,8 +3,6 @@ package com.spiddekauga.voider.menu;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -36,14 +34,17 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
-import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Main menu of the scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MainMenu extends Scene implements IResponseListener, Observer {
+public class MainMenu extends Scene implements IResponseListener, IEventListener {
 	/**
 	 * Default constructor for main menu
 	 */
@@ -75,32 +76,34 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 	}
 
 	@Override
-	public void update(Observable observable, Object arg) {
-		if (arg instanceof SyncEvents) {
-			switch ((SyncEvents) arg) {
-			case COMMUNITY_DOWNLOAD_SUCCESS:
-			case USER_RESOURCES_DOWNLOAD_SUCCESS:
-				ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
-				ResourceCacheFacade.finishLoading();
-				break;
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case SYNC_COMMUNITY_DOWNLOAD_SUCCESS:
+		case SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS:
+			ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
+			ResourceCacheFacade.finishLoading();
+			break;
 
-			default:
-				break;
-
-			}
+		default:
+			break;
 		}
 	}
 
 	@Override
 	protected void onInit() {
 		super.onInit();
-		mSynchronizer.addObserver(this);
+
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
+		eventDispatcher.connect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS, this);
 	}
 
 	@Override
 	protected void onDispose() {
 		super.onDispose();
-		mSynchronizer.deleteObserver(this);
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.disconnect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
+		eventDispatcher.disconnect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS, this);
 	}
 
 	@Override

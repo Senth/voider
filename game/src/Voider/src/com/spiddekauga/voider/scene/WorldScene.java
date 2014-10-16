@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,15 +20,18 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
-import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Common class for all world scenes
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class WorldScene extends Scene implements Observer {
+public abstract class WorldScene extends Scene {
 	/**
 	 * @param gui the GUI to use for the scene
 	 * @param pickRadius picking radius for editors
@@ -38,6 +39,7 @@ public abstract class WorldScene extends Scene implements Observer {
 	public WorldScene(Gui gui, float pickRadius) {
 		super(gui);
 
+		EventDispatcher.getInstance().connect(EventTypes.CAMERA_ZOOM_CHANGE, mZoomListener);
 		mPickingRadius = pickRadius;
 	}
 
@@ -126,6 +128,7 @@ public abstract class WorldScene extends Scene implements Observer {
 	@Override
 	protected void onDispose() {
 		mBulletDestroyer.dispose();
+		EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_ZOOM_CHANGE, mZoomListener);
 
 		super.onDispose();
 	}
@@ -295,20 +298,13 @@ public abstract class WorldScene extends Scene implements Observer {
 		createPickingCircle(mPickingRadius * mCamera.zoom);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		if (arg instanceof GameEvent) {
-			switch (((GameEvent) arg).type) {
-			case CAMERA_ZOOM_CHANGE:
-				onZoom();
-				break;
-
-			default:
-				// Does nothing
-				break;
-			}
+	/** Listens to zoom changes */
+	private IEventListener mZoomListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			onZoom();
 		}
-	}
+	};
 
 	/** Physics world */
 	protected World mWorld = null;

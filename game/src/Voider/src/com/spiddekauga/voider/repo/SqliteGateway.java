@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.repo;
 
 import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.Database;
@@ -12,14 +10,17 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * SQLite gateway
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class SqliteGateway implements Disposable, Observer {
+public abstract class SqliteGateway implements Disposable, IEventListener {
 	/**
 	 * Closes the database connection to SQLite
 	 */
@@ -56,7 +57,8 @@ public abstract class SqliteGateway implements Disposable, Observer {
 	 * Default constructor
 	 */
 	protected SqliteGateway() {
-		User.getGlobalUser().addObserver(this);
+		EventDispatcher.getInstance().connect(EventTypes.USER_LOGIN, this);
+		EventDispatcher.getInstance().connect(EventTypes.USER_LOGOUT, this);
 
 		// Connect if logged in already
 		if (User.getGlobalUser().isLoggedIn()) {
@@ -86,22 +88,18 @@ public abstract class SqliteGateway implements Disposable, Observer {
 	}
 
 	@Override
-	public void update(Observable object, Object arg) {
-		if (object instanceof User) {
-			if (arg instanceof GameEvent) {
-				switch (((GameEvent) arg).type) {
-				case USER_LOGIN:
-					connect();
-					break;
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case USER_LOGIN:
+			connect();
+			break;
 
-				case USER_LOGOUT:
-					dispose();
-					break;
+		case USER_LOGOUT:
+			dispose();
+			break;
 
-				default:
-					break;
-				}
-			}
+		default:
+			break;
 		}
 	}
 

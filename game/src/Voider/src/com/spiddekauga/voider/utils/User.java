@@ -4,15 +4,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-import com.spiddekauga.utils.Observable;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.GameEvent.Events;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * User information class
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class User extends Observable {
+public class User {
 	/**
 	 * @return global instance of this user, logged in or logged out.
 	 * @note Users can still be created, this is not a singleton class
@@ -55,8 +56,8 @@ public class User extends Observable {
 			Config.File.setUserPaths(mUsername);
 		}
 
-		setChanged();
-		notifyObservers(new GameEvent(Events.USER_LOGOUT));
+
+		EventDispatcher.getInstance().fire(new GameEvent(EventTypes.USER_LOGOUT));
 	}
 
 	/**
@@ -90,8 +91,8 @@ public class User extends Observable {
 			Config.File.setUserPaths(mUsername);
 		}
 
-		setChanged();
-		notifyObservers(new GameEvent(Events.USER_LOGIN));
+
+		EventDispatcher.getInstance().fire(new GameEvent(EventTypes.USER_LOGIN));
 	}
 
 	/**
@@ -197,6 +198,7 @@ public class User extends Observable {
 	public synchronized String dateToString(Date date) {
 		return mDateFormat.format(date);
 	}
+
 
 	/** Default datetime format */
 	private final static SimpleDateFormat DATE_FORMAT_DEFAULT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");

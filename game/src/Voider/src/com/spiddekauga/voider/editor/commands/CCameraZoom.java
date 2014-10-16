@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.ICommandCombinable;
-import com.spiddekauga.voider.utils.GameEvent;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * Zooms and optionally sets a new position of the camera
@@ -59,7 +61,7 @@ public class CCameraZoom extends Command implements ICommandCombinable {
 		mCamera.position.y = mPosNew.y;
 		mCamera.zoom = mZoomNew;
 		mCamera.update();
-		notifyObservers(new GameEvent(GameEvent.Events.CAMERA_ZOOM_CHANGE));
+		mEventDispatcher.fire(new GameEvent(EventTypes.CAMERA_ZOOM_CHANGE));
 		return true;
 	}
 
@@ -69,14 +71,13 @@ public class CCameraZoom extends Command implements ICommandCombinable {
 		mCamera.position.y = mPosOld.y;
 		mCamera.zoom = mZoomOld;
 		mCamera.update();
-		notifyObservers(new GameEvent(GameEvent.Events.CAMERA_ZOOM_CHANGE));
+		mEventDispatcher.fire(new GameEvent(EventTypes.CAMERA_ZOOM_CHANGE));
 		return true;
 	}
 
 	@Override
 	public void dispose() {
 		Pools.vector2.freeAll(mPosNew, mPosOld);
-		deleteObservers();
 	}
 
 	private OrthographicCamera mCamera;
@@ -84,4 +85,5 @@ public class CCameraZoom extends Command implements ICommandCombinable {
 	private float mZoomNew;
 	private Vector2 mPosOld = Pools.vector2.obtain();
 	private Vector2 mPosNew = Pools.vector2.obtain();
+	private static final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 }

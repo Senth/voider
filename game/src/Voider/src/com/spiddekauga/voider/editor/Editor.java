@@ -2,7 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Observer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -42,12 +41,15 @@ import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Common class for all editors
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Editor extends WorldScene implements IEditor, IResponseListener, IOutstreamProgressListener, Observer {
+public abstract class Editor extends WorldScene implements IEditor, IResponseListener, IOutstreamProgressListener, IEventListener {
 
 	/**
 	 * @param gui GUI to be used with the editor
@@ -97,13 +99,13 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	@Override
 	protected void onInit() {
 		super.onInit();
-		mSynchronizer.addObserver(this);
+		EventDispatcher.getInstance().connect(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS, this);
 	}
 
 	@Override
 	protected void onDispose() {
 		super.onDispose();
-		mSynchronizer.deleteObserver(this);
+		EventDispatcher.getInstance().disconnect(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS, this);
 	}
 
 	@Override

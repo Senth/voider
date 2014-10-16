@@ -1,13 +1,13 @@
 package com.spiddekauga.voider.repo.resource;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.UUID;
 
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.utils.GameEvent;
-import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Checks if all resources are available.
@@ -15,12 +15,12 @@ import com.spiddekauga.voider.utils.User;
  * @todo copy them from the local storage instead...
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class ResourceChecker implements Observer {
+public class ResourceChecker implements IEventListener {
 	/**
 	 * Private constructor to enforce singleton usage
 	 */
 	private ResourceChecker() {
-		User.getGlobalUser().addObserver(this);
+		EventDispatcher.getInstance().connect(EventTypes.USER_LOGIN, this);
 	}
 
 	/**
@@ -37,7 +37,7 @@ public class ResourceChecker implements Observer {
 	 */
 	public static void dispose() {
 		if (mInstance != null) {
-			User.getGlobalUser().deleteObserver(mInstance);
+			EventDispatcher.getInstance().disconnect(EventTypes.USER_LOGIN, mInstance);
 			mInstance = null;
 		}
 	}
@@ -77,18 +77,14 @@ public class ResourceChecker implements Observer {
 	}
 
 	@Override
-	public void update(Observable object, Object arg) {
-		if (object instanceof User) {
-			if (arg instanceof GameEvent) {
-				switch (((GameEvent) arg).type) {
-				case USER_LOGIN:
-					checkAndCreateResources();
-					break;
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case USER_LOGIN:
+			checkAndCreateResources();
+			break;
 
-				default:
-					break;
-				}
-			}
+		default:
+			break;
 		}
 	}
 

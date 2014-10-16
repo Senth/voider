@@ -2,8 +2,6 @@ package com.spiddekauga.voider.menu;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -21,9 +19,11 @@ import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pools;
-import com.spiddekauga.voider.utils.Synchronizer;
-import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Scene for selecting definitions (actors, levels). It will display a scene for the
@@ -33,7 +33,7 @@ import com.spiddekauga.voider.utils.User;
  *          for the select \li DEF_SELECT_CANCEL canceled the selection.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class SelectDefScene extends Scene implements Observer {
+public class SelectDefScene extends Scene implements IEventListener {
 	/**
 	 * Private common constructor
 	 * @param defType the definition type that the player want to select.
@@ -89,13 +89,17 @@ public class SelectDefScene extends Scene implements Observer {
 	@Override
 	protected void onInit() {
 		super.onInit();
-		Synchronizer.getInstance().addObserver(this);
+		mEventDispatcher.connect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
+		mEventDispatcher.connect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS, this);
+		mEventDispatcher.connect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_CONFLICT, this);
 	}
 
 	@Override
 	protected void onDispose() {
 		super.onDispose();
-		Synchronizer.getInstance().deleteObserver(this);
+		mEventDispatcher.disconnect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
+		mEventDispatcher.disconnect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS, this);
+		mEventDispatcher.disconnect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_CONFLICT, this);
 	}
 
 	/**
@@ -141,40 +145,37 @@ public class SelectDefScene extends Scene implements Observer {
 	}
 
 	@Override
-	public void update(Observable observable, Object arg) {
-		if (observable instanceof Synchronizer) {
-			if (arg instanceof SyncEvents) {
-				switch ((SyncEvents) arg) {
-				case USER_RESOURCES_DOWNLOAD_SUCCESS:
-				case COMMUNITY_DOWNLOAD_SUCCESS:
-					ResourceCacheFacade.loadAllOf(this, mDefType, false);
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS:
+		case SYNC_COMMUNITY_DOWNLOAD_SUCCESS:
+		case SYNC_USER_RESOURCES_UPLOAD_CONFLICT:
+			ResourceCacheFacade.loadAllOf(this, mDefType, false);
 
-					new Thread() {
+			new Thread() {
+				@Override
+				public void run() {
+					// Wait until loaded
+					while (ResourceCacheFacade.isLoading()) {
+						;
+					}
+
+					Gdx.app.postRunnable(new Runnable() {
+
 						@Override
 						public void run() {
-							// Wait until loaded
-							while (ResourceCacheFacade.isLoading()) {
-								;
-							}
-
-							Gdx.app.postRunnable(new Runnable() {
-
-								@Override
-								public void run() {
-									reloadDefinitions();
-									mGui.resetValues();
-								}
-							});
+							reloadDefinitions();
+							mGui.resetValues();
 						}
-					}.start();
-
-					break;
-
-				default:
-					// Does nothing
-					break;
+					});
 				}
-			}
+			}.start();
+
+			break;
+
+		default:
+			// Does nothing
+			break;
 		}
 	}
 
@@ -643,6 +644,8 @@ public class SelectDefScene extends Scene implements Observer {
 		private Method mMethod = null;
 	}
 
+	/** Event dispatcher */
+	private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 	/** If the player shall be able to choose another revision for the definition */
 	private boolean mCanChooseRevision = false;
 	/** Currently selected definition */
