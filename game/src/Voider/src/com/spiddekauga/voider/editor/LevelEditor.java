@@ -1513,29 +1513,23 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * Renders the above and below borders
 	 */
 	private void renderAboveBelowBorders() {
-		// TODO
-		// Calculate how much space is left for the borders
-		float heightAvailable = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
-
+		// Get screen corners in world coordinates
 		Vector2 minPos = Pools.vector2.obtain();
 		Vector2 maxPos = Pools.vector2.obtain();
-
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
 
-		heightAvailable *= maxPos.y - minPos.y;
-		heightAvailable *= 0.5f;
-		float width = maxPos.x - minPos.x;
+		float yCoord = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.WORLD_SCALE * 0.5f;
 
 		mShapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.LEVEL_ABOVE_BELOW_COLOR));
 
 		// Draw borders
-		mShapeRenderer.translate(0, 0, RenderOrders.LEVEL_UPPER_LOWER_BORDERS.getZValue());
+		RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.LEVEL_UPPER_LOWER_BORDERS);
 		// Upper
-		mShapeRenderer.rect(minPos.x, minPos.y, width, heightAvailable);
+		mShapeRenderer.rect(minPos.x, minPos.y, maxPos.x, -yCoord, true);
 		// Lower
-		mShapeRenderer.rect(minPos.x, maxPos.y - heightAvailable, width, heightAvailable);
-		mShapeRenderer.translate(0, 0, -RenderOrders.LEVEL_UPPER_LOWER_BORDERS.getZValue());
+		mShapeRenderer.rect(minPos.x, maxPos.y, maxPos.x, yCoord, true);
+		RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.LEVEL_UPPER_LOWER_BORDERS);
 	}
 
 	/**

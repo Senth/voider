@@ -84,8 +84,10 @@ public class ZoomTool extends TouchTool {
 	 * Reset the zoom
 	 */
 	public void resetZoom() {
+		Vector2 zoomPos = calculateZoomPos(1, mZoom);
 		mZoom = 1;
-		mInvoker.execute(new CCameraZoom(mCamera, mZoom));
+		mInvoker.execute(new CCameraZoom(mCamera, mZoom, zoomPos));
+		Pools.vector2.free(zoomPos);
 	}
 
 	/**

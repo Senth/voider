@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -214,24 +215,33 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		maxWorldCoord.x = MathUtils.ceil(maxWorldCoord.x);
 		maxWorldCoord.y = MathUtils.ceil(maxWorldCoord.y);
 
-		// Change so that we only show even coordinates
-		if (minWorldCoord.x % 2 != 0) {
+
+		// Which coordinates should we show? If too close only show 10ths coordinates
+		int showStep = Config.Editor.GRID_STEP_SIZE;
+		float pixelsPerWorld = Gdx.graphics.getWidth() / (maxWorldCoord.x - minWorldCoord.x);
+		if (pixelsPerWorld <= Config.Editor.GRID_SHOW_ONLY_MILESTONE_PIXELS_PER_WORLD) {
+			showStep = Config.Editor.GRID_MILESTONE_STEP;
+		}
+
+
+		// Change so that we only show step size coordinates
+		while (minWorldCoord.x % showStep != 0) {
 			minWorldCoord.x -= 1;
 		}
-		if (minWorldCoord.y % 2 != 0) {
+		while (minWorldCoord.y % showStep != 0) {
 			minWorldCoord.y -= 1;
 		}
-		if (maxWorldCoord.x % 2 != 0) {
+		while (maxWorldCoord.x % showStep != 0) {
 			maxWorldCoord.x += 1;
 		}
-		if (maxWorldCoord.y % 2 != 0) {
+		while (maxWorldCoord.y % showStep != 0) {
 			maxWorldCoord.y += 1;
 		}
 
 		// Draw x lines
-		for (int x = (int) minWorldCoord.x; x <= maxWorldCoord.x; x += 2) {
+		for (int x = (int) minWorldCoord.x; x <= maxWorldCoord.x; x += showStep) {
 			// Set color, every 5th is the milestone color
-			if (x % 10 == 0) {
+			if (x % Config.Editor.GRID_MILESTONE_STEP == 0) {
 				mShapeRenderer.setColor(milestoneColor);
 			} else {
 				mShapeRenderer.setColor(color);
@@ -241,9 +251,9 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		}
 
 		// Draw y lines
-		for (int y = (int) minWorldCoord.y; y <= maxWorldCoord.y; y += 2) {
+		for (int y = (int) minWorldCoord.y; y <= maxWorldCoord.y; y += showStep) {
 			// Set color, every 5th is the milestone color
-			if (y % 10 == 0) {
+			if (y % Config.Editor.GRID_MILESTONE_STEP == 0) {
 				mShapeRenderer.setColor(milestoneColor);
 			} else {
 				mShapeRenderer.setColor(color);

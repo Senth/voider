@@ -574,6 +574,15 @@ public class Config {
 		}
 
 
+		/**
+		 * When to only show 10ths of coordinates. True when pixels per world coordinate
+		 * is below this value
+		 */
+		public final static int GRID_SHOW_ONLY_MILESTONE_PIXELS_PER_WORLD = 4;
+		/** Regular step size of grid */
+		public final static int GRID_STEP_SIZE = 2;
+		/** Milestone step size. Should be a multiplier of GRID_STEP_SIZE! */
+		public final static int GRID_MILESTONE_STEP = GRID_STEP_SIZE * 5;
 		/** Maximum name length */
 		public final static int NAME_LENGTH_MAX = 16;
 		/** Maximum length of description */

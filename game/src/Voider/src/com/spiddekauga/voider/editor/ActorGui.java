@@ -346,31 +346,6 @@ public abstract class ActorGui extends EditorGui {
 		mDrawToolHider.addToggleActor(mToolMenu);
 
 
-		// Move
-		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
-		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_ACTOR);
-		new ButtonListener(mWidgets.tool.move) {
-			@Override
-			protected void onPressed(Button button) {
-				mActorEditor.switchTool(Tools.MOVE);
-			}
-		};
-
-		// Delete
-		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
-		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_ACTOR);
-		new ButtonListener(mWidgets.tool.delete) {
-			@Override
-			protected void onPressed(Button button) {
-				mActorEditor.switchTool(Tools.DELETE);
-			}
-		};
-
-
-		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
-
-
 		// Zoom in
 		mToolMenu.row();
 		mWidgets.tool.zoomIn = mUiFactory.addToolButton(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
@@ -405,11 +380,36 @@ public abstract class ActorGui extends EditorGui {
 
 		// Reset zoom
 		Button button = mUiFactory.addToolButton(EditorIcons.ZOOM_RESET, null, mToolMenu, null);
-		mTooltip.add(button, Messages.EditorTooltips.TOOL_ZOOM_IN_ACTOR);
+		mTooltip.add(button, Messages.EditorTooltips.TOOL_ZOOM_RESET_ACTOR);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mActorEditor.switchTool(Tools.ZOOM_RESET);
+			}
+		};
+
+
+		// --------- SEPARATOR -----------
+		mUiFactory.addToolSeparator(mToolMenu);
+
+
+		// Move
+		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_ACTOR);
+		new ButtonListener(mWidgets.tool.move) {
+			@Override
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.MOVE);
+			}
+		};
+
+		// Delete
+		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_ACTOR);
+		new ButtonListener(mWidgets.tool.delete) {
+			@Override
+			protected void onPressed(Button button) {
+				mActorEditor.switchTool(Tools.DELETE);
 			}
 		};
 

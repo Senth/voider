@@ -18,30 +18,28 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * 
-/** Renders points, lines, rectangles, filled rectangles and boxes.</p>
- * 
- * This class works with OpenGL ES 1.x and 2.0. In its base configuration a 2D orthographic projection with the origin in the
- * lower left corner is used. Units are given in screen pixels.</p>
- * 
- * To change the projection properties use the {@link #setProjectionMatrix(Matrix4)} method. Usually the {@link Camera#combined}
- * matrix is set via this method. If the screen orientation or resolution changes, the projection matrix might have to be adapted
- * as well.</p>
- * 
- * Shapes are rendered in batches to increase performance. The standard use-pattern looks as follows:
- * 
+ *
+ /** Renders points, lines, rectangles, filled rectangles and boxes.</p> This class
+ * works with OpenGL ES 1.x and 2.0. In its base configuration a 2D orthographic
+ * projection with the origin in the lower left corner is used. Units are given in screen
+ * pixels.</p> To change the projection properties use the
+ * {@link #setProjectionMatrix(Matrix4)} method. Usually the {@link Camera#combined}
+ * matrix is set via this method. If the screen orientation or resolution changes, the
+ * projection matrix might have to be adapted as well.</p> Shapes are rendered in batches
+ * to increase performance. The standard use-pattern looks as follows:
+ *
  * <pre>
  * {@code
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
- * 
+ *
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
  * shapeRenderer.pop();
- * 
+ *
  * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);
@@ -49,11 +47,13 @@ import com.spiddekauga.voider.utils.Pools;
  * shapeRenderer.pop();
  * }
  * </pre>
- * 
- * The class has a second matrix called the transformation matrix which is used to rotate, scale and translate shapes in a more
- * flexible manner. This mechanism works much like matrix operations in OpenGL ES 1.x. The following example shows how to rotate a
- * rectangle around its center using the z-axis as the rotation axis and placing it's center at (20, 12, 2):
- * 
+ *
+ * The class has a second matrix called the transformation matrix which is used to rotate,
+ * scale and translate shapes in a more flexible manner. This mechanism works much like
+ * matrix operations in OpenGL ES 1.x. The following example shows how to rotate a
+ * rectangle around its center using the z-axis as the rotation axis and placing it's
+ * center at (20, 12, 2):
+ *
  * <pre>
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.identity();
@@ -62,18 +62,15 @@ import com.spiddekauga.voider.utils.Pools;
  * shapeRenderer.rect(-width / 2, -height / 2, width, height);
  * shapeRenderer.pop();
  * </pre>
- * 
- * Matrix operations all use postmultiplication and work just like glTranslate, glScale and glRotate. The last transformation
- * specified will be the first that is applied to a shape (rotate then translate in the above example).
- * 
- * The projection and transformation matrices are a state of the ShapeRenderer, just like the color and will be applied to all
- * shapes until they are changed.
- * 
+ *
+ * Matrix operations all use postmultiplication and work just like glTranslate, glScale
+ * and glRotate. The last transformation specified will be the first that is applied to a
+ * shape (rotate then translate in the above example). The projection and transformation
+ * matrices are a state of the ShapeRenderer, just like the color and will be applied to
+ * all shapes until they are changed.
  * @author mzechner, stbachmann
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
- * A more advanced shape renderer which allows custom shaders and lines
- * with multicolors.
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com> A more advanced shape
+ *         renderer which allows custom shaders and lines with multicolors.
  */
 public class ShapeRendererEx implements Disposable {
 	/**
@@ -82,7 +79,7 @@ public class ShapeRendererEx implements Disposable {
 	 */
 	public void setShader(ShaderProgram shaderProgram) {
 		if (mRenderer instanceof ImmediateModeRenderer20) {
-			((ImmediateModeRenderer20)mRenderer).setShader(shaderProgram);
+			((ImmediateModeRenderer20) mRenderer).setShader(shaderProgram);
 		}
 	}
 
@@ -99,7 +96,7 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * Easier method for drawing a triangle if one has the vertices in Vector2 format.
 	 * @param triangle an array with at least 3 vertices, will only draw the three first
-	 * vertices.
+	 *        vertices.
 	 */
 	public void triangle(ArrayList<Vector2> triangle) {
 		triangle(triangle, 0);
@@ -108,7 +105,7 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * Easier method for drawing a triangle if one has the vertices in Vector2 format.
 	 * @param triangle an array with at least 3 vertices, will only draw the three first
-	 * vertices.
+	 *        vertices.
 	 * @param indexOffset the index offset, the triangle will be drawn from this offset
 	 */
 	public void triangle(ArrayList<Vector2> triangle, int indexOffset) {
@@ -117,16 +114,15 @@ public class ShapeRendererEx implements Disposable {
 		int index2 = indexOffset + 2;
 
 		if (triangle.size() >= indexOffset + 3) {
-			triangle(triangle.get(index0).x, triangle.get(index0).y,
-					triangle.get(index1).x, triangle.get(index1).y,
-					triangle.get(index2).x, triangle.get(index2).y);
+			triangle(triangle.get(index0).x, triangle.get(index0).y, triangle.get(index1).x, triangle.get(index1).y, triangle.get(index2).x,
+					triangle.get(index2).y);
 		}
 	}
 
 	/**
 	 * Easier method for drawing a triangle if one has the vertices in Vector2 format.
 	 * @param triangle an array with at least 3 vertices, will only draw the three first
-	 * vertices.
+	 *        vertices.
 	 */
 	public void triangle(Vector2[] triangle) {
 		triangle(triangle, 0);
@@ -135,7 +131,7 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * Easier method for drawing a triangle if one has the vertices in Vector2 format.
 	 * @param triangle an array with at least 3 vertices, will only draw the three first
-	 * vertices.
+	 *        vertices.
 	 * @param indexOffset the index offset, the triangle will be drawn from this offset
 	 */
 	public void triangle(Vector2[] triangle, int indexOffset) {
@@ -144,9 +140,7 @@ public class ShapeRendererEx implements Disposable {
 		int index2 = indexOffset + 2;
 
 		if (triangle.length >= indexOffset + 3) {
-			triangle(triangle[index0].x, triangle[index0].y,
-					triangle[index1].x, triangle[index1].y,
-					triangle[index2].x, triangle[index2].y);
+			triangle(triangle[index0].x, triangle[index0].y, triangle[index1].x, triangle[index1].y, triangle[index2].x, triangle[index2].y);
 		}
 	}
 
@@ -190,21 +184,23 @@ public class ShapeRendererEx implements Disposable {
 	}
 
 	/**
-	 * Draws a polyline in the x/y plane. The vertices must contain at least 2 points (4 floats x,y). The
-	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	 * Draws a polyline in the x/y plane. The vertices must contain at least 2 points (4
+	 * floats x,y). The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}
+	 * .
 	 * @param vertices all lines
 	 * @param loop set to true if end and beginning shall be connected
 	 */
 	public void polyline(ArrayList<Vector2> vertices, boolean loop) {
 		Vector2 noOffset = Pools.vector2.obtain();
-		noOffset.set(0,0);
+		noOffset.set(0, 0);
 		polyline(vertices, loop, noOffset);
 		Pools.vector2.free(noOffset);
 	}
 
 	/**
-	 * Draws a polyline in the x/y plane. The vertices must contain at least 2 points (4 floats x,y). The
-	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	 * Draws a polyline in the x/y plane. The vertices must contain at least 2 points (4
+	 * floats x,y). The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}
+	 * .
 	 * @param vertices all lines
 	 * @param loop set to true if end and beginning shall be connected
 	 * @param offset offset all lines with this much
@@ -220,11 +216,12 @@ public class ShapeRendererEx implements Disposable {
 		if (loop) {
 			for (int i = 0; i < vertices.size(); ++i) {
 				int nextIndex = Collections.nextIndex(vertices, i);
-				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(nextIndex).x + offset.x, vertices.get(nextIndex).y + offset.y);
+				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(nextIndex).x + offset.x, vertices.get(nextIndex).y
+						+ offset.y);
 			}
 		} else {
 			for (int i = 0; i < vertices.size() - 1; ++i) {
-				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(i+1).x + offset.x, vertices.get(i+1).y + offset.y);
+				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(i + 1).x + offset.x, vertices.get(i + 1).y + offset.y);
 			}
 		}
 	}
@@ -232,8 +229,10 @@ public class ShapeRendererEx implements Disposable {
 	// -----------------------
 	// Old stuff
 	// -----------------------
-	/** Shape types to be used with {@link #push(ShapeType)}.
-	 * @author mzechner, stbachmann */
+	/**
+	 * Shape types to be used with {@link #push(ShapeType)}.
+	 * @author mzechner, stbachmann
+	 */
 	public enum ShapeType {
 		/** Used for drawing points */
 		Point(GL20.GL_POINTS),
@@ -249,14 +248,14 @@ public class ShapeRendererEx implements Disposable {
 		 * Creates the shape type
 		 * @param glType type that will get sent to OpenGL
 		 */
-		ShapeType (int glType) {
+		ShapeType(int glType) {
 			this.glType = glType;
 		}
 
 		/**
 		 * @return OpenGL type for rendering
 		 */
-		public int getGlType () {
+		public int getGlType() {
 			return glType;
 		}
 	}
@@ -279,23 +278,30 @@ public class ShapeRendererEx implements Disposable {
 		}
 	}
 
-	/** Sets the {@link Color} to be used by shapes.
-	 * @param color */
+	/**
+	 * Sets the {@link Color} to be used by shapes.
+	 * @param color
+	 */
 	public void setColor(Color color) {
 		this.mColor.set(color);
 	}
 
-	/** Sets the {@link Color} to be used by shapes.
+	/**
+	 * Sets the {@link Color} to be used by shapes.
 	 * @param r
 	 * @param g
 	 * @param b
-	 * @param a */
+	 * @param a
+	 */
 	public void setColor(float r, float g, float b, float a) {
 		this.mColor.set(r, g, b, a);
 	}
 
-	/** Sets the projection matrix to be used for rendering. Usually this will be set to {@link Camera#combined}.
-	 * @param matrix */
+	/**
+	 * Sets the projection matrix to be used for rendering. Usually this will be set to
+	 * {@link Camera#combined}.
+	 * @param matrix
+	 */
 	public void setProjectionMatrix(Matrix4 matrix) {
 		mProjView.set(matrix);
 		mMatrixDirty = true;
@@ -315,39 +321,45 @@ public class ShapeRendererEx implements Disposable {
 		mMatrixDirty = true;
 	}
 
-	/** Multiplies the current transformation matrix by a translation matrix.
+	/**
+	 * Multiplies the current transformation matrix by a translation matrix.
 	 * @param x
 	 * @param y
-	 * @param z */
+	 * @param z
+	 */
 	public void translate(float x, float y, float z) {
 		mTransform.translate(x, y, z);
 		mMatrixDirty = true;
 	}
 
-	/** Multiplies the current transformation matrix by a rotation matrix.
+	/**
+	 * Multiplies the current transformation matrix by a rotation matrix.
 	 * @param angle angle in degrees
 	 * @param axisX
 	 * @param axisY
-	 * @param axisZ */
+	 * @param axisZ
+	 */
 	public void rotate(float axisX, float axisY, float axisZ, float angle) {
 		mTransform.rotate(axisX, axisY, axisZ, angle);
 		mMatrixDirty = true;
 	}
 
-	/** Multiplies the current transformation matrix by a scale matrix.
+	/**
+	 * Multiplies the current transformation matrix by a scale matrix.
 	 * @param scaleX
 	 * @param scaleY
-	 * @param scaleZ */
+	 * @param scaleZ
+	 */
 	public void scale(float scaleX, float scaleY, float scaleZ) {
 		mTransform.scale(scaleX, scaleY, scaleZ);
 		mMatrixDirty = true;
 	}
 
-	/** Starts a new batch of shapes. All shapes within the batch have to have the type specified. E.g. if {@link ShapeType#Point}
-	 * is specified, only call #point().
-	 * 
-	 * In case OpenGL ES 1.x is used, the projection and modelview matrix will be modified.
-	 * */
+	/**
+	 * Starts a new batch of shapes. All shapes within the batch have to have the type
+	 * specified. E.g. if {@link ShapeType#Point} is specified, only call #point(). In
+	 * case OpenGL ES 1.x is used, the projection and modelview matrix will be modified.
+	 */
 	private void begin() {
 		if (mCurrentType.isEmpty()) {
 			throw new GdxRuntimeException("Call push() before beginning a new shape batch");
@@ -360,11 +372,14 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.begin(mCombined, mCurrentType.peek().getGlType());
 	}
 
-	/** Draws a point. The {@link ShapeType} passed to begin has to be {@link ShapeType#Point}.
+	/**
+	 * Draws a point. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Point}.
 	 * @param x
 	 * @param y
-	 * @param z */
-	public void point(float x, float y, float z){
+	 * @param z
+	 */
+	public void point(float x, float y, float z) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Point) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Point)");
 		}
@@ -374,14 +389,17 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.vertex(x, y, z);
 	}
 
-	/** Draws a line. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	/**
+	 * Draws a line. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Line}.
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param x2
 	 * @param y2
-	 * @param z2 */
-	public void line(float x, float y, float z, float x2, float y2, float z2){
+	 * @param z2
+	 */
+	public void line(float x, float y, float z, float x2, float y2, float z2) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
@@ -393,12 +411,15 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.vertex(x2, y2, z2);
 	}
 
-	/** Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	/**
+	 * Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Line}.
 	 * @param x
 	 * @param y
 	 * @param x2
-	 * @param y2 */
-	public void line(float x, float y, float x2, float y2){
+	 * @param y2
+	 */
+	public void line(float x, float y, float x2, float y2) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
 		}
@@ -410,7 +431,9 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.vertex(x2, y2, 0);
 	}
 
-	/** Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	/**
+	 * Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Line}.
 	 * @param posA draw line from this position
 	 * @param posB to this position
 	 */
@@ -418,7 +441,9 @@ public class ShapeRendererEx implements Disposable {
 		line(posA.x, posA.y, posB.x, posB.y);
 	}
 
-	/** Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	/**
+	 * Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Line}.
 	 * @param posA draw line from this position
 	 * @param posB to this position
 	 * @param offset offsets posA and posB with offset.
@@ -438,14 +463,15 @@ public class ShapeRendererEx implements Disposable {
 	 * @param y2
 	 * @param segments
 	 */
-	public void curve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2, int segments){
+	public void curve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2, int segments) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(segments * 2 + 2);
 
-		// Algorithm from: http://www.antigrain.com/research/bezier_interpolation/index.html#PAGE_BEZIER_INTERPOLATION
+		// Algorithm from:
+		// http://www.antigrain.com/research/bezier_interpolation/index.html#PAGE_BEZIER_INTERPOLATION
 		float subdiv_step = 1f / segments;
 		float subdiv_step2 = subdiv_step * subdiv_step;
 		float subdiv_step3 = subdiv_step * subdiv_step * subdiv_step;
@@ -499,13 +525,13 @@ public class ShapeRendererEx implements Disposable {
 	 * @param x3
 	 * @param y3
 	 */
-	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3){
+	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
 		if (mCurrentType.isEmpty() || (mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line)) {
 			throw new GdxRuntimeException("Must call push(ShapeType.Filled) or push(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(6);
-		if(mCurrentType.peek() == ShapeType.Line){
+		if (mCurrentType.peek() == ShapeType.Line) {
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x1, y1, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
@@ -520,8 +546,7 @@ public class ShapeRendererEx implements Disposable {
 			mRenderer.vertex(x3, y3, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x1, y1, 0);
-		}
-		else {
+		} else {
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x1, y1, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
@@ -542,14 +567,50 @@ public class ShapeRendererEx implements Disposable {
 		rect(startPosition.x, startPosition.y, width, height);
 	}
 
+	/**
+	 * Draws a rectangle in the x/y plane.
+	 * @param x1 one of the x positions
+	 * @param y1 one of the y positions
+	 * @param x2 another x position
+	 * @param y2 another y position
+	 * @param unused only used to make the method different than
+	 *        {@link #rect(float, float, float, float)}
+	 */
+	public void rect(float x1, float y1, float x2, float y2, boolean unused) {
+		float startX;
+		float width;
+		if (x1 < x2) {
+			startX = x1;
+			width = x2 - x1;
+		} else {
+			startX = x2;
+			width = x1 - x2;
+		}
 
-	/** Draws a rectangle in the x/y plane. The x and y coordinate specify the bottom left corner of the rectangle. The
-	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Filled} or  {@link ShapeType#Line}.
+		float startY;
+		float height;
+		if (y1 < y2) {
+			startY = y1;
+			height = y2 - y1;
+		} else {
+			startY = y2;
+			height = y1 - y2;
+		}
+
+		rect(startX, startY, width, height);
+	}
+
+
+	/**
+	 * Draws a rectangle in the x/y plane. The x and y coordinate specify the bottom left
+	 * corner of the rectangle. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Filled} or {@link ShapeType#Line}.
 	 * @param x
 	 * @param y
 	 * @param width
-	 * @param height */
-	public void rect(float x, float y, float width, float height){
+	 * @param height
+	 */
+	public void rect(float x, float y, float width, float height) {
 		if (mCurrentType.isEmpty() || (mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line)) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
 		}
@@ -557,7 +618,7 @@ public class ShapeRendererEx implements Disposable {
 		checkDirty();
 		checkFlush(8);
 
-		if(mCurrentType.peek() == ShapeType.Line){
+		if (mCurrentType.peek() == ShapeType.Line) {
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x, y, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
@@ -577,8 +638,7 @@ public class ShapeRendererEx implements Disposable {
 			mRenderer.vertex(x, y + height, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x, y, 0);
-		}
-		else {
+		} else {
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x, y, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
@@ -596,8 +656,10 @@ public class ShapeRendererEx implements Disposable {
 	}
 
 
-	/** Draws a rectangle in the x/y plane. The x and y coordinate specify the bottom left corner of the rectangle. The
-	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Filled} or  {@link ShapeType#Line}.
+	/**
+	 * Draws a rectangle in the x/y plane. The x and y coordinate specify the bottom left
+	 * corner of the rectangle. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Filled} or {@link ShapeType#Line}.
 	 * @param x
 	 * @param y
 	 * @param width
@@ -605,8 +667,9 @@ public class ShapeRendererEx implements Disposable {
 	 * @param col1 The color at (x, y)
 	 * @param col2 The color at (x + width, y)
 	 * @param col3 The color at (x + width, y + height)
-	 * @param col4 The color at (x, y + height) */
-	public void rect(float x, float y, float width, float height, Color col1, Color col2, Color col3, Color col4){
+	 * @param col4 The color at (x, y + height)
+	 */
+	public void rect(float x, float y, float width, float height, Color col1, Color col2, Color col3, Color col4) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
 		}
@@ -614,7 +677,7 @@ public class ShapeRendererEx implements Disposable {
 		checkDirty();
 		checkFlush(8);
 
-		if(mCurrentType.peek() == ShapeType.Line){
+		if (mCurrentType.peek() == ShapeType.Line) {
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
 			mRenderer.vertex(x, y, 0);
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
@@ -634,8 +697,7 @@ public class ShapeRendererEx implements Disposable {
 			mRenderer.vertex(x, y + height, 0);
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
 			mRenderer.vertex(x, y, 0);
-		}
-		else {
+		} else {
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
 			mRenderer.vertex(x, y, 0);
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
@@ -652,8 +714,9 @@ public class ShapeRendererEx implements Disposable {
 		}
 	}
 
-	/** Draws a box. The x, y and z coordinate specify the bottom left front corner of the rectangle. The {@link ShapeType} passed
-	 * to begin has to be {@link ShapeType#Line}.
+	/**
+	 * Draws a box. The x, y and z coordinate specify the bottom left front corner of the
+	 * rectangle. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
 	 * @param x
 	 * @param y
 	 * @param z
@@ -661,7 +724,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param height
 	 * @param depth
 	 */
-	public void box(float x, float y, float z, float width, float height, float depth){
+	public void box(float x, float y, float z, float width, float height, float depth) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
@@ -732,12 +795,15 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.vertex(x, y + height, z + depth);
 	}
 
-	/** Calls {@link #circle(float, float, float, int)} by estimating the number of segments needed for a smooth circle.
+	/**
+	 * Calls {@link #circle(float, float, float, int)} by estimating the number of
+	 * segments needed for a smooth circle.
 	 * @param x
 	 * @param y
-	 * @param radius */
-	public void circle (float x, float y, float radius) {
-		circle(x, y, radius, (int)(6 * (float)Math.cbrt(radius)));
+	 * @param radius
+	 */
+	public void circle(float x, float y, float radius) {
+		circle(x, y, radius, (int) (6 * (float) Math.cbrt(radius)));
 	}
 
 	/**
@@ -747,7 +813,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param radius
 	 * @param segments
 	 */
-	public void circle(float x, float y, float radius, int segments){
+	public void circle(float x, float y, float radius, int segments) {
 		if (segments <= 0) {
 			throw new IllegalArgumentException("segments must be >= 0.");
 		}
@@ -761,7 +827,7 @@ public class ShapeRendererEx implements Disposable {
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
-		if(mCurrentType.peek() == ShapeType.Line){
+		if (mCurrentType.peek() == ShapeType.Line) {
 			for (int i = 0; i < segments; i++) {
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 				mRenderer.vertex(x + cx, y + cy, 0);
@@ -774,8 +840,7 @@ public class ShapeRendererEx implements Disposable {
 			// Ensure the last segment is identical to the first.
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x + cx, y + cy, 0);
-		}
-		else {
+		} else {
 			segments--;
 			for (int i = 0; i < segments; i++) {
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
@@ -801,15 +866,17 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.vertex(x + cx, y + cy, 0);
 	}
 
-	/** Calls {@link #cone(float, float, float, float, float, int)} by estimating the number of segments needed for a smooth
-	 * circular base.
+	/**
+	 * Calls {@link #cone(float, float, float, float, float, int)} by estimating the
+	 * number of segments needed for a smooth circular base.
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param radius
-	 * @param height */
-	public void cone (float x, float y, float z, float radius, float height) {
-		cone(x, y, z, radius, height, (int)(4 * (float)Math.sqrt(radius)));
+	 * @param height
+	 */
+	public void cone(float x, float y, float z, float radius, float height) {
+		cone(x, y, z, radius, height, (int) (4 * (float) Math.sqrt(radius)));
 	}
 
 	/**
@@ -821,7 +888,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param height
 	 * @param segments
 	 */
-	public void cone(float x, float y, float z, float radius, float height, int segments){
+	public void cone(float x, float y, float z, float radius, float height, int segments) {
 		if (segments <= 0) {
 			throw new IllegalArgumentException("segments must be >= 0.");
 		}
@@ -834,7 +901,7 @@ public class ShapeRendererEx implements Disposable {
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
-		if(mCurrentType.peek() == ShapeType.Line){
+		if (mCurrentType.peek() == ShapeType.Line) {
 			for (int i = 0; i < segments; i++) {
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 				mRenderer.vertex(x + cx, y + cy, z);
@@ -851,8 +918,7 @@ public class ShapeRendererEx implements Disposable {
 			// Ensure the last segment is identical to the first.
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 			mRenderer.vertex(x + cx, y + cy, z);
-		}
-		else {
+		} else {
 			segments--;
 			for (int i = 0; i < segments; i++) {
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
@@ -884,10 +950,13 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.vertex(x + cx, y + cy, z);
 	}
 
-	/** Draws a polygon in the x/y plane. The vertices must contain at least 3 points (6 floats x,y). The
-	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
-	 * @param vertices */
-	public void polygon(float[] vertices){
+	/**
+	 * Draws a polygon in the x/y plane. The vertices must contain at least 3 points (6
+	 * floats x,y). The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}
+	 * .
+	 * @param vertices
+	 */
+	public void polygon(float[] vertices) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
@@ -912,10 +981,10 @@ public class ShapeRendererEx implements Disposable {
 			float x2;
 			float y2;
 
-			if(i + 2 >= numFloats){
+			if (i + 2 >= numFloats) {
 				x2 = firstX;
 				y2 = firstY;
-			}else{
+			} else {
 				x2 = vertices[i + 2];
 				y2 = vertices[i + 3];
 			}
@@ -927,9 +996,12 @@ public class ShapeRendererEx implements Disposable {
 		}
 	}
 
-	/** Draws a polyline in the x/y plane. The vertices must contain at least 2 points (4 floats x,y). The
-	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
-	 * @param vertices */
+	/**
+	 * Draws a polyline in the x/y plane. The vertices must contain at least 2 points (4
+	 * floats x,y). The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}
+	 * .
+	 * @param vertices
+	 */
 	public void polyline(float[] vertices) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
@@ -965,7 +1037,7 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * Checks if the matrix is dirty, it flushes the vertices if it is.
 	 */
-	protected void checkDirty () {
+	protected void checkDirty() {
 		if (!mMatrixDirty) {
 			return;
 		}
@@ -976,7 +1048,7 @@ public class ShapeRendererEx implements Disposable {
 	 * Check if we need to flush
 	 * @param newVertices
 	 */
-	protected void checkFlush (int newVertices) {
+	protected void checkFlush(int newVertices) {
 		if (mRenderer.getMaxVertices() - mRenderer.getNumVertices() >= newVertices) {
 			return;
 		}
@@ -986,7 +1058,7 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * Flushes the shapes to OpenGL. Equivalent to end(); and begin(type);
 	 */
-	public void flush () {
+	public void flush() {
 		mRenderer.end();
 		begin();
 	}
@@ -994,7 +1066,7 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * @return current shape type
 	 */
-	public ShapeType getCurrentType () {
+	public ShapeType getCurrentType() {
 		if (mCurrentType.isEmpty()) {
 			return null;
 		} else {
@@ -1003,13 +1075,13 @@ public class ShapeRendererEx implements Disposable {
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 		mRenderer.dispose();
 	}
 
 	/**
-	 * Pushes the shape type, i.e. will end current rendering type and start
-	 * to draw using this one. {@link #pop()} will return to the previous rendering type
+	 * Pushes the shape type, i.e. will end current rendering type and start to draw using
+	 * this one. {@link #pop()} will return to the previous rendering type
 	 * @param shapeType the new shape type to use for future drawing.
 	 */
 	public void push(ShapeType shapeType) {
@@ -1025,8 +1097,8 @@ public class ShapeRendererEx implements Disposable {
 	}
 
 	/**
-	 * Pops the current rendering type and start to draw the previous one. If
-	 * no previous rendering type exist.
+	 * Pops the current rendering type and start to draw the previous one. If no previous
+	 * rendering type exist.
 	 */
 	public void pop() {
 		if (mCurrentType.isEmpty()) {
