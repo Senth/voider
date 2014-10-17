@@ -34,9 +34,9 @@ public class ZoomTool extends TouchTool {
 	protected boolean down(int button) {
 		if (isActive()) {
 			if (mZoomInOnClick) {
-				zoom(1);
-			} else {
 				zoom(-1);
+			} else {
+				zoom(1);
 			}
 
 			return true;
@@ -84,6 +84,7 @@ public class ZoomTool extends TouchTool {
 	 * Reset the zoom
 	 */
 	public void resetZoom() {
+		mTouchCurrent.set(mCamera.position.x, mCamera.position.y);
 		Vector2 zoomPos = calculateZoomPos(1, mZoom);
 		mZoom = 1;
 		mInvoker.execute(new CCameraZoom(mCamera, mZoom, zoomPos));
@@ -134,7 +135,7 @@ public class ZoomTool extends TouchTool {
 	 */
 	private Vector2 calculateZoomPos(float newZoom, float oldZoom) {
 		Vector2 cameraPos = calculateCameraPos(newZoom, oldZoom);
-		Screens.clampCamera(mCamera, mWorldMin, mWorldMax, cameraPos, mZoom);
+		Screens.clampCamera(mCamera, mWorldMin, mWorldMax, cameraPos, newZoom);
 
 		return cameraPos;
 	}

@@ -334,10 +334,12 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	@Override
 	public void switchTool(Tools tool) {
-		if (mTools[tool.ordinal()] != null) {
-			deactivateCurrentTool();
+		if (mZoomTool != null) {
+			if (mTools[tool.ordinal()] != null) {
+				deactivateCurrentTool();
+			}
+			activateTool(tool);
 		}
-		activateTool(tool);
 	}
 
 	/**
