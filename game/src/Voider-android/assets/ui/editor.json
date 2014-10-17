@@ -48,7 +48,7 @@ com.badlogic.gdx.graphics.Color: {
 	// Terrain
 	terrain_color_start: { r: 0.3, g: 0.3, b: 0.3, a: 1},
 	terrain_color_end: { r: 1, g: 1, b: 1, a: 1},
-	terrain_color_default: { r: 1, g: 1, b: 1, a: terrain_alpha_default},
+	terrain_color_default: { r: 1, g: 1, b: 1, a: 0.5},
 	// Enemy
 	enemy_color_start: { r: 0.3, g: 0, b: 0, a: 1},
 	enemy_color_end: { r: 1, g: 0, b: 0, a: 1},
