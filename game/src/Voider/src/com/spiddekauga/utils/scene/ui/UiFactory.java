@@ -72,6 +72,20 @@ public class UiFactory {
 	}
 
 	/**
+	 * Add a color slider to the table
+	 * @param fromColor from this color value
+	 * @param toColor to this color value
+	 * @param table the table to add this to
+	 * @param createdActors optional, all created actors
+	 * @return created slider
+	 */
+	public ColorTintPicker addColorTintPicker(Color fromColor, Color toColor, AlignTable table, ArrayList<Actor> createdActors) {
+
+
+		return null;
+	}
+
+	/**
 	 * Create 'update message box' to show an update message dialog
 	 * @param message message to display
 	 * @param changeLog all new changes to display

@@ -333,6 +333,11 @@ public class EnemyEditorGui extends ActorGui {
 		button = mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
 		mTooltip.add(button, Messages.EditorTooltips.TAB_VISUAL);
 
+		// Color
+		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLOR);
+		button = mSettingTabs.addTab(buttonStyle, getColorTable());
+		mTooltip.add(button, Messages.EditorTooltips.TAB_COLOR_ACTOR);
+
 		// Collision
 		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLLISION);
 		button = mSettingTabs.addTab(buttonStyle, getCollisionTable());

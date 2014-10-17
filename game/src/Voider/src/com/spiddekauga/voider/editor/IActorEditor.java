@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.editor;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
@@ -25,6 +26,18 @@ public interface IActorEditor extends IEditor {
 	 * Redoes the undone command
 	 */
 	void redo();
+
+	// --------------- Color ----------------
+	/**
+	 * Sets the color of the actor
+	 * @param color new color of the actor
+	 */
+	void setColor(Color color);
+
+	/**
+	 * @return color of the actor
+	 */
+	Color getColor();
 
 	// --------------- Visuals ----------------
 	/**

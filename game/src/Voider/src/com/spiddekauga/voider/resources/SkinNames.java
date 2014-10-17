@@ -68,6 +68,8 @@ public class SkinNames {
 		CIRCLE_SHAPE,
 		/** Collision options for enemies */
 		COLLISION,
+		/** Color tab */
+		COLOR,
 		/** Delete all selected actors */
 		DELETE,
 		/** Appends to the custom draw shape. Only enemy and bullet */

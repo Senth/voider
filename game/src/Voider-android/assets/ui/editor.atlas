@@ -1522,13 +1522,6 @@ zoom_out_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-zoom_reset_checked
-  rotate: false
-  xy: 1513, 149
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 zoom_reset_down
   rotate: false
   xy: 1513, 149
@@ -1572,13 +1565,6 @@ zoom_out_checked_over
   offset: 0, 0
   index: -1
 zoom_out_over
-  rotate: false
-  xy: 1547, 183
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-zoom_reset_checked_over
   rotate: false
   xy: 1547, 183
   size: 32, 32

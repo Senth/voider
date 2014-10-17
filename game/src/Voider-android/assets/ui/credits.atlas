@@ -5,15 +5,15 @@ filter: Nearest,Nearest
 repeat: none
 spiddekauga_white
   rotate: false
-  xy: 1, 1
-  size: 601, 175
-  orig: 601, 175
+  xy: 1, 46
+  size: 256, 75
+  orig: 256, 75
   offset: 0, 0
   index: -1
 libgdx
   rotate: false
-  xy: 604, 76
-  size: 600, 100
-  orig: 600, 100
+  xy: 1, 1
+  size: 256, 43
+  orig: 256, 43
   offset: 0, 0
   index: -1

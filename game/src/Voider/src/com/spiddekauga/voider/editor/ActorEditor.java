@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -488,14 +489,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (resource instanceof Actor) {
 			mDrawingActor = (Actor) resource;
 
-			// Set position other than center
-			// Vector2 worldPosition = Pools.vector2.obtain();
-			// screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3,
-			// Gdx.graphics.getHeight() / 3, worldPosition,
-			// false);
-			// mDrawingActor.setPosition(worldPosition);
-			// Pools.vector2.free(worldPosition);
-
 			setUnsaved();
 		} else if (resource instanceof VectorBrush) {
 			mVectorBrush = (VectorBrush) resource;
@@ -516,6 +509,23 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void onResourceChanged(IResource resource) {
 		// Does nothing
+	}
+
+	@Override
+	public void setColor(Color color) {
+		if (mActorDef != null) {
+			mActorDef.getVisualVars().setColor(color);
+			setUnsaved();
+		}
+	}
+
+	@Override
+	public Color getColor() {
+		if (mActorDef != null) {
+			return mActorDef.getVisualVars().getColor();
+		} else {
+			return new Color();
+		}
 	}
 
 	@Override

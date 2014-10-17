@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -67,27 +68,46 @@ public abstract class ActorGui extends EditorGui {
 
 
 		resetVisuals();
+		resetColor();
+		resetInfoOptions();
+		resetCollision();
+		resetTools();
+	}
 
-		// Options
+	/**
+	 * Reset info options
+	 */
+	private void resetInfoOptions() {
 		mWidgets.info.name.setText(mActorEditor.getName());
 		mWidgets.info.description.setText(mActorEditor.getDescription());
 		mWidgets.info.description.setTextFieldListener(null);
+	}
 
+	/**
+	 * Reset color
+	 */
+	private void resetColor() {
+		// Only if the color has been initialized
+		if (mWidgets.color.slider != null) {
+			// TODO
+		}
+	}
 
-		// Collision
+	/**
+	 * Reset collision options
+	 */
+	private void resetCollision() {
 		// If one variable has been initialized, all has...
 		if (mWidgets.collision.damage != null) {
 			mWidgets.collision.damage.setValue(mActorEditor.getCollisionDamage());
 			mWidgets.collision.destroyOnCollide.setChecked(mActorEditor.isDestroyedOnCollide());
 		}
-
-		resetTools();
 	}
 
 	/**
 	 * Reset the actor's shape
 	 */
-	void resetVisuals() {
+	private void resetVisuals() {
 		// Visuals
 		mWidgets.visual.startAngle.setValue(mActorEditor.getStartingAngle());
 		mWidgets.visual.rotationSpeed.setValue(mActorEditor.getRotationSpeed());
@@ -174,9 +194,21 @@ public abstract class ActorGui extends EditorGui {
 	}
 
 	/**
+	 * Initializes color options
+	 * @param from from color value
+	 * @param to to color value
+	 */
+	protected void initColor(Color from, Color to) {
+		AlignTable table = mWidgets.color.table;
+
+		mUiFactory.addPanelSection(getResourceTypeNameCapital() + " Color", table, null);
+		mWidgets.color.slider = mUiFactory.addColorTintPicker(from, to, table, mDisabledWhenPublished);
+	}
+
+	/**
 	 * Initializes visual options
 	 */
-	protected void initVisual() {
+	private void initVisual() {
 		mWidgets.visual.hider.addToggleActor(mWidgets.visual.table);
 		AlignTable table = mWidgets.visual.table;
 
@@ -532,6 +564,13 @@ public abstract class ActorGui extends EditorGui {
 	}
 
 	/**
+	 * @return color table
+	 */
+	protected AlignTable getColorTable() {
+		return mWidgets.color.table;
+	}
+
+	/**
 	 * @return collision table
 	 */
 	protected AlignTable getCollisionTable() {
@@ -591,6 +630,7 @@ public abstract class ActorGui extends EditorGui {
 		InfoWidgets info = new InfoWidgets();
 		CollisionWidgets collision = new CollisionWidgets();
 		ToolWidgets tool = new ToolWidgets();
+		ColorWidgets color = new ColorWidgets();
 
 		/**
 		 * Tool widgets
@@ -606,6 +646,14 @@ public abstract class ActorGui extends EditorGui {
 			Button addMoveCorner = null;
 			Button removeCorner = null;
 			Button setCenter = null;
+		}
+
+		/**
+		 * Color widgets
+		 */
+		static class ColorWidgets {
+			AlignTable table = new AlignTable();
+			Slider slider = null;
 		}
 
 		/**

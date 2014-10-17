@@ -678,7 +678,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 	loading_bar: {
 		background: loading_bar,
 		knobBefore: loading_bar_progress
-	}
+	},
+	// Color picker
+	color_picker: {
+		knob: color_picker_knob,
+	},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {

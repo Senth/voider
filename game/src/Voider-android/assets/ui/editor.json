@@ -6,13 +6,22 @@ java.lang.Float: {
 	// running the level. See Color.enemy_activate_test_run_outline_color
 	enemy_activate_on_test_run_outline_width: {value: 0.25},
 	
-	/** Theme settings (only for editor) */
+	
+	/** Theme settings (only for level) */
 	
 	// Speed of top/bottom layer when selecting a theme for the level
 	theme_top_layer_speed: {value: 150},
 	theme_bottom_layer_speed: {value: 66.5},
 	// How much wider the theme button is than the height
 	theme_display_ratio: {value: 1.2},
+	
+	
+	/** Actor colors */
+	
+	// Alpha value for terrain
+	terrain_alpha_start: {value: 0.1},
+	terrain_alpha_end: {value: 1},
+	terrain_alpha_default: {value: 0.5},
 },
 
 com.badlogic.gdx.graphics.Color: {
@@ -32,6 +41,24 @@ com.badlogic.gdx.graphics.Color: {
 	enemy_activate_on_test_run_outline_color: { r: 1, g: 1, b: 1, a: 1},
 	// Color of the path
 	path_color: green,
+	
+	
+	/** Actor colors */
+	
+	// Terrain
+	terrain_color_start: { r: 0.3, g: 0.3, b: 0.3, a: 1},
+	terrain_color_end: { r: 1, g: 1, b: 1, a: 1},
+	terrain_color_default: { r: 1, g: 1, b: 1, a: terrain_alpha_default},
+	// Enemy
+	enemy_color_start: { r: 0.3, g: 0, b: 0, a: 1},
+	enemy_color_end: { r: 1, g: 0, b: 0, a: 1},
+	enemy_color_default: { r: 0.8, g: 0, b: 0, a: 1},
+	// Bullet
+	bullet_color_start: { r: 0.3, g: 0.15, b: 0, a: 1},
+	bullet_color_end: { r: 1, g: 0.5, b: 0, a: 1},
+	bullet_color_default: { r: 0.8, g: 0.4, b: 0, a: 1},
+	// Player
+	player_color_default: { r: 1, g: 1, b: 1, a: 1},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {

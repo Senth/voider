@@ -228,9 +228,11 @@ public class Messages {
 		TAB_ENEMY_ADD("Add enemy tab"),
 		TAB_ENEMY("Enemy settings"),
 		TAB_PATH("Path settings"),
+		TAB_COLOR_LEVEL("Terrain color"),
 
 		// Actor tabs
-		TAB_VISUAL("Visual settings"),
+		TAB_VISUAL("Visual settings", null, 1),
+		TAB_COLOR_ACTOR("Color settings", null, 1),
 
 		// Enemy tabs
 		TAB_MOVEMENT("Movement settings", null, 1),
@@ -339,7 +341,7 @@ public class Messages {
 		;
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a temporary tooltip
 		 * @param text tooltip text to display
 		 */
 		private EditorTooltips(String text) {
@@ -347,9 +349,9 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a custom tooltip
+		 * Constructs a temporary tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial
+		 * @param youtubeLink link to YouTube tutorial
 		 */
 		private EditorTooltips(String text, String youtubeLink) {
 			mText = text;
@@ -357,9 +359,9 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a custom tooltip
+		 * Constructs a temporary tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial
+		 * @param youtubeLink link to YouTube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
 		 */
 		private EditorTooltips(String text, String youtubeLink, ITooltip parent) {
@@ -369,7 +371,7 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a custom tooltip
+		 * Constructs a permanent tooltip
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to YouTube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
@@ -384,9 +386,9 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a custom tooltip
+		 * Constructs a permanent tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial
+		 * @param youtubeLink link to YouTube tutorial
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
@@ -397,9 +399,9 @@ public class Messages {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a temporary tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial, may be null
+		 * @param youtubeLink link to YouTube tutorial, may be null
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
