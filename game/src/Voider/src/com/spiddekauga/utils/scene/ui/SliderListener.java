@@ -25,18 +25,37 @@ import com.spiddekauga.voider.Config.Gui;
  */
 public abstract class SliderListener implements EventListener {
 	/**
-	 * Constructor which automatically calls {@link #init(Slider, TextField, Invoker)}
+	 * Constructor which automatically calls {@link #init(Slider, TextField)}
 	 * @param slider slider to bind with textField
 	 * @param textField textField to bind with slider, set to null to skip
 	 * @param invoker used for undoing commands, set to null to skip
 	 */
 	public SliderListener(Slider slider, TextField textField, Invoker invoker) {
-		init(slider, textField, invoker);
+		this(invoker);
+		init(slider, textField);
 	}
 
 	/**
-	 * Default constructor, call {@link #init(Slider, TextField, Invoker)} to initialize
-	 * the slider listener.
+	 * Constructor which automatically calls {@link #init(Slider, TextField)}
+	 * @param slider slider to bind with textField
+	 * @param textField textField to bind with slider, set to null to skip
+	 */
+	public SliderListener(Slider slider, TextField textField) {
+		init(slider, textField);
+	}
+
+	/**
+	 * Creates an invalid slider listener with an invoker. Call
+	 * {@link #init(Slider, TextField)} to initialize the slider listener
+	 * @param invoker used for undoing commands, may be null
+	 */
+	public SliderListener(Invoker invoker) {
+		mInvoker = invoker;
+	}
+
+	/**
+	 * Default constructor, call {@link #init(Slider, TextField)} to initialize the slider
+	 * listener.
 	 */
 	public SliderListener() {
 		// Does nothing
@@ -46,11 +65,9 @@ public abstract class SliderListener implements EventListener {
 	 * Initializes the SliderListener with the specified slider and text field.
 	 * @param slider slider to bind with textField
 	 * @param textField textField to bind with slider, set to null to skip
-	 * @param invoker used for undoing commands, set to null to skip
 	 */
-	public void init(Slider slider, TextField textField, Invoker invoker) {
+	public void init(Slider slider, TextField textField) {
 		mSlider = slider;
-		mInvoker = invoker;
 		mTextField = textField;
 
 		mOldValue = slider.getValue();
@@ -260,15 +277,17 @@ public abstract class SliderListener implements EventListener {
 	 * Sets the text field from the slider value. Rounds correctly
 	 */
 	private void setTextFieldFromSlider() {
-		int cursorPosition = mTextField.getCursorPosition();
-		float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
-		if (mPrecision > 0) {
-			mTextField.setText(Float.toString(rounded));
-		} else {
-			mTextField.setText(Integer.toString((int) rounded));
+		if (mTextField != null) {
+			int cursorPosition = mTextField.getCursorPosition();
+			float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
+			if (mPrecision > 0) {
+				mTextField.setText(Float.toString(rounded));
+			} else {
+				mTextField.setText(Integer.toString((int) rounded));
+			}
+			mTextField.setCursorPosition(cursorPosition);
+			mOldText = mTextField.getText();
 		}
-		mTextField.setCursorPosition(cursorPosition);
-		mOldText = mTextField.getText();
 	}
 
 	/** Extra optional object used for validating the change */

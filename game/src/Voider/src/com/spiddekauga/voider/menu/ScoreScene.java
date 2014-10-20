@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.menu;
 
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
@@ -14,6 +13,7 @@ import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.repo.stat.UserLevelStat;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
 

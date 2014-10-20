@@ -13,11 +13,10 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.ColorTintPicker;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.UiFactory.TabImageWrapper;
-import com.spiddekauga.utils.scene.ui.UiFactory.TabWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
@@ -25,6 +24,8 @@ import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
+import com.spiddekauga.voider.scene.ui.UiFactory.TabImageWrapper;
+import com.spiddekauga.voider.scene.ui.UiFactory.TabWrapper;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -39,6 +40,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.dispose();
 		mWidgets.collision.table.dispose();
 		mInfoTable.dispose();
+		mWidgets.color.table.dispose();
 
 		mDrawToolHider.dispose();
 		mWidgets.collision.hider.dispose();
@@ -88,8 +90,8 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	private void resetColor() {
 		// Only if the color has been initialized
-		if (mWidgets.color.slider != null) {
-			// TODO
+		if (mWidgets.color.picker != null) {
+			mWidgets.color.picker.setPickColor(mActorEditor.getColor());
 		}
 	}
 
@@ -195,14 +197,20 @@ public abstract class ActorGui extends EditorGui {
 
 	/**
 	 * Initializes color options
-	 * @param from from color value
-	 * @param to to color value
+	 * @param colors all the colors to choose between
 	 */
-	protected void initColor(Color from, Color to) {
+	protected void initColor(Color... colors) {
 		AlignTable table = mWidgets.color.table;
 
 		mUiFactory.addPanelSection(getResourceTypeNameCapital() + " Color", table, null);
-		mWidgets.color.slider = mUiFactory.addColorTintPicker(from, to, table, mDisabledWhenPublished);
+
+		mWidgets.color.picker = mUiFactory.addColorTintPicker(table, mDisabledWhenPublished, colors);
+		new SliderListener(mWidgets.color.picker, null, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setColor(mWidgets.color.picker.getPickColor());
+			}
+		};
 	}
 
 	/**
@@ -214,25 +222,25 @@ public abstract class ActorGui extends EditorGui {
 
 		// Starting angle
 		mUiFactory.addPanelSection("Starting Direction", table, null);
-		SliderListener sliderListener = new SliderListener() {
+		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setStartingAngle(newValue);
 			}
 		};
-		mWidgets.visual.startAngle = mUiFactory.addSlider("Angle", 0, 360, 1, sliderListener, table, null, mDisabledWhenPublished, mInvoker);
+		mWidgets.visual.startAngle = mUiFactory.addSlider("Angle", 0, 360, 1, sliderListener, table, null, mDisabledWhenPublished);
 
 
 		// Rotation speed
 		mUiFactory.addPanelSection("Rotation", table, null);
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setRotationSpeed(newValue);
 			}
 		};
 		mWidgets.visual.rotationSpeed = mUiFactory.addSlider("Speed", Editor.Actor.Visual.ROTATE_SPEED_MIN, Editor.Actor.Visual.ROTATE_SPEED_MAX,
-				Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished, mInvoker);
+				Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished);
 
 
 		// Different shape tabs
@@ -311,19 +319,19 @@ public abstract class ActorGui extends EditorGui {
 
 		// Circle
 		// Radius
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeRadius(newValue);
 			}
 		};
 		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider("Radius", Enemy.Visual.RADIUS_MIN, Enemy.Visual.RADIUS_MAX,
-				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, circleTab.getHider(), mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, circleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Rectangle
 		// Width
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeWidth(newValue);
@@ -331,10 +339,10 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeHeight(newValue);
@@ -342,12 +350,12 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Triangle
 		// Width
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeWidth(newValue);
@@ -355,10 +363,10 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE,
-				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished, mInvoker);
+				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeHeight(newValue);
@@ -366,7 +374,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 	}
 
 	/**
@@ -524,14 +532,14 @@ public abstract class ActorGui extends EditorGui {
 	protected void initCollision() {
 		// Collision damage
 		mUiFactory.addPanelSection("Collision", mWidgets.collision.table, null);
-		SliderListener sliderListener = new SliderListener() {
+		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setCollisionDamage(newValue);
 			}
 		};
 		mWidgets.collision.damage = mUiFactory.addSlider("Damage", Editor.Actor.Collision.DAMAGE_MIN, Editor.Actor.Collision.DAMAGE_MAX,
-				Editor.Actor.Collision.DAMAGE_STEP_SIZE, sliderListener, mWidgets.collision.table, null, mDisabledWhenPublished, mInvoker);
+				Editor.Actor.Collision.DAMAGE_STEP_SIZE, sliderListener, mWidgets.collision.table, null, mDisabledWhenPublished);
 
 
 		// Collision destroy
@@ -653,7 +661,7 @@ public abstract class ActorGui extends EditorGui {
 		 */
 		static class ColorWidgets {
 			AlignTable table = new AlignTable();
-			Slider slider = null;
+			ColorTintPicker picker = null;
 		}
 
 		/**

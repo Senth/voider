@@ -19,7 +19,8 @@ import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.esotericsoftware.tablelayout.Cell;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
+import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * Message box wrapper for dialog. This allows other content than just text.

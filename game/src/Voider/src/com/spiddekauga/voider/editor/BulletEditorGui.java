@@ -4,14 +4,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
-import com.spiddekauga.utils.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -28,6 +29,9 @@ public class BulletEditorGui extends ActorGui {
 		mWeaponTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
 		initWeapon();
+		ColorArray colorArray = SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_PICKER);
+		initColor(colorArray.arr);
+
 		resetValues();
 	}
 
@@ -89,31 +93,31 @@ public class BulletEditorGui extends ActorGui {
 	private void initWeapon() {
 		// Speed
 		mUiFactory.addPanelSection("Bullet Properties", mWeaponTable, null);
-		SliderListener sliderListener = new SliderListener() {
+		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mBulletEditor.setBulletSpeed(newValue);
 			}
 		};
 		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE,
-				sliderListener, mWeaponTable, null, null, mInvoker);
+				sliderListener, mWeaponTable, null, null);
 
 
 		// Cooldown
-		SliderListener sliderMinListener = new SliderListener() {
+		SliderListener sliderMinListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mBulletEditor.setCooldownMin(newValue);
 			}
 		};
-		SliderListener sliderMaxListener = new SliderListener() {
+		SliderListener sliderMaxListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mBulletEditor.setCooldownMax(newValue);
 			}
 		};
 		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Cooldown Time", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
-				Weapon.COOLDOWN_STEP_SIZE, sliderMinListener, sliderMaxListener, mWeaponTable, null, null, mInvoker);
+				Weapon.COOLDOWN_STEP_SIZE, sliderMinListener, sliderMaxListener, mWeaponTable, null, null);
 
 		mWidgets.weapon.cooldownMin = sliders.min;
 		mWidgets.weapon.cooldownMax = sliders.max;

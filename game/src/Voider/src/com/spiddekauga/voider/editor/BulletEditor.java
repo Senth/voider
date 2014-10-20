@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -17,6 +18,7 @@ import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
@@ -153,6 +155,7 @@ public class BulletEditor extends ActorEditor {
 	@Override
 	public void newDef() {
 		BulletActorDef newDef = new BulletActorDef();
+		newDef.getVisualVars().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
 		setDef(newDef);
 		mGui.resetValues();
 		setSaved();

@@ -6,8 +6,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -290,6 +292,12 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		if (mSavingImages != null && mSavingImages.length > 0) {
 			int imageSize = Config.Actor.SAVE_IMAGE_ON_ACTOR_SIZE;
 
+			Camera camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			camera.position.x = Gdx.graphics.getWidth() / 2;
+			camera.position.y = Gdx.graphics.getHeight() / 2;
+			camera.update();
+
+			mSpriteBatch.setProjectionMatrix(camera.combined);
 			mSpriteBatch.begin();
 			for (ImageSaveOnActor imageSaveOnActor : mSavingImages) {
 				int offsetX = 0;

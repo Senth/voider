@@ -36,9 +36,6 @@ import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
-import com.spiddekauga.utils.scene.ui.UiFactory.ButtonStyles;
-import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
-import com.spiddekauga.utils.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
@@ -51,6 +48,9 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
+import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
+import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -646,14 +646,14 @@ class LevelEditorGui extends EditorGui {
 
 		// Speed
 		mUiFactory.addSection("Level Speed", left, null);
-		SliderListener sliderListener = new SliderListener() {
+		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setLevelStartingSpeed(newValue);
 			}
 		};
 		mWidgets.info.speed = mUiFactory.addSlider(null, Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX,
-				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, mDisabledWhenPublished, mInvoker);
+				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, mDisabledWhenPublished);
 
 		// Screenshot image
 		mUiFactory.addSection("Level/Screenshot Image", left, null);
@@ -897,7 +897,7 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Enemy count
-		SliderListener sliderListener = new SliderListener() {
+		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
@@ -905,14 +905,14 @@ class LevelEditorGui extends EditorGui {
 		};
 		mUiFactory.addPanelSection("Enemy", table, null);
 		mWidgets.enemy.cEnemies = mUiFactory.addSlider("Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE,
-				sliderListener, table, null, mDisabledWhenPublished, mInvoker);
+				sliderListener, table, null, mDisabledWhenPublished);
 
 		HideSliderValue delayHider = new HideSliderValue(mWidgets.enemy.cEnemies, 2, Float.MAX_VALUE);
 		mWidgets.enemy.hiderTable.addChild(delayHider);
 
 
 		// Spawn delay between enemies
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setEnemySpawnDelay(newValue);
@@ -920,14 +920,14 @@ class LevelEditorGui extends EditorGui {
 		};
 		mUiFactory.addPanelSection("Spawn", table, delayHider);
 		mWidgets.enemy.betweenDelay = mUiFactory.addSlider("Delay", Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX,
-				Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors, mInvoker);
+				Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_SPAWN_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();
 
 
 		// Activation delay
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setSelectedEnemyActivateTriggerDelay(newValue);
@@ -935,14 +935,14 @@ class LevelEditorGui extends EditorGui {
 		};
 		mUiFactory.addPanelSection("Activation", table, mWidgets.enemy.hiderActivateDelay);
 		mWidgets.enemy.activateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX,
-				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table, mWidgets.enemy.hiderActivateDelay, createdActors, mInvoker);
+				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table, mWidgets.enemy.hiderActivateDelay, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_ACTIVATION_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();
 
 
 		// Deactivation delay;
-		sliderListener = new SliderListener() {
+		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setSelectedEnemyDeactivateTriggerDelay(newValue);
@@ -951,7 +951,7 @@ class LevelEditorGui extends EditorGui {
 		mUiFactory.addPanelSection("Deactivation", table, mWidgets.enemy.hiderDeactivateDelay);
 		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
 				Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
-				mWidgets.enemy.hiderDeactivateDelay, createdActors, mInvoker);
+				mWidgets.enemy.hiderDeactivateDelay, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_DEACTIVATION_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();

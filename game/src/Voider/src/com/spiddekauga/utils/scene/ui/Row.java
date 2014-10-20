@@ -423,14 +423,14 @@ public class Row implements Poolable, IPadding<Row> {
 	/**
 	 * @return all cells
 	 */
-	ArrayList<Cell> getCells() {
+	public ArrayList<Cell> getCells() {
 		return mCells;
 	}
 
 	/**
 	 * @return last added cell for this row
 	 */
-	Cell getCell() {
+	public Cell getCell() {
 		if (!mCells.isEmpty()) {
 			return mCells.get(mCells.size() - 1);
 		}

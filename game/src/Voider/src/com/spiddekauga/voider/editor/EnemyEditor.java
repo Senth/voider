@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -17,7 +18,6 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.Editor.ImageSaveOnActor.Locations;
@@ -41,6 +41,7 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -499,7 +500,9 @@ public class EnemyEditor extends ActorEditor {
 	 */
 	@Override
 	public void newDef() {
-		setEnemyDef(new EnemyActorDef());
+		EnemyActorDef def = new EnemyActorDef();
+		def.getVisualVars().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_COLOR_DEFAULT));
+		setEnemyDef(def);
 		mGui.resetValues();
 		setMovementType(MovementTypes.PATH);
 		setSaved();

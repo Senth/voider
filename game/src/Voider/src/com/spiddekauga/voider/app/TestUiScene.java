@@ -3,10 +3,10 @@ package com.spiddekauga.voider.app;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
  * Scene for testing UI elements

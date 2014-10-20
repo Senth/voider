@@ -444,7 +444,7 @@ public class Cell implements Poolable, IPadding<Cell> {
 	/**
 	 * @return preferred width of the cell
 	 */
-	float getPrefWidth() {
+	public float getPrefWidth() {
 		if (mActor instanceof Layout) {
 			if (mFixedWidth) {
 				return mActor.getWidth() + mPadding.left + mPadding.right;
@@ -459,7 +459,7 @@ public class Cell implements Poolable, IPadding<Cell> {
 	/**
 	 * @return preferred height of the cell
 	 */
-	float getPrefHeight() {
+	public float getPrefHeight() {
 		if (mActor instanceof Layout) {
 			if (mFixedHeight) {
 				return mActor.getHeight() + mPadding.top + mPadding.bottom;

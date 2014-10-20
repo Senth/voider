@@ -9,11 +9,11 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
-import com.spiddekauga.utils.scene.ui.UiFactory.ButtonStyles;
-import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * Gui for theme select scene

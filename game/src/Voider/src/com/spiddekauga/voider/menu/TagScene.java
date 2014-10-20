@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
 
-import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
  * Scene for tagging levels or something else

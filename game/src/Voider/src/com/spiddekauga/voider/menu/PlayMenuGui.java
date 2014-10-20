@@ -4,8 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 
 /**
  * GUI for play menu

@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 import com.spiddekauga.voider.repo.resource.InternalNames;
@@ -321,6 +322,30 @@ public class SkinNames {
 		THEME_DISPLAY_RATIO(Float.class),
 		/** Path color */
 		PATH_COLOR(Color.class),
+
+		// Actor colors
+		/** Color picking values for terrain */
+		TERRAIN_COLOR_PICKER(ColorArray.class),
+		/** Default terrain color */
+		TERRAIN_COLOR_DEFAULT(Color.class),
+		/** Color picking values for enemies */
+		ENEMY_COLOR_PICKER(ColorArray.class),
+		/** Default enemy color */
+		ENEMY_COLOR_DEFAULT(Color.class),
+		/** Bullet color picker */
+		BULLET_COLOR_PICKER(ColorArray.class),
+		/** Default bullet color */
+		BULLET_COLOR_DEFAULT(Color.class),
+		/** Default player color */
+		PLAYER_COLOR_DEFAULT(Color.class),
+
+		// Terrain alpha values
+		/** Starting alpha value */
+		TERRAIN_ALPHA_START(Float.class),
+		/** Ending alpha value */
+		TERRAIN_ALPHA_END(Float.class),
+		/** Default terrain alpha value */
+		TERRAIN_ALPHA_DEFAULT(Float.class),
 
 		;
 
@@ -761,8 +786,8 @@ public class SkinNames {
 		SLIDER_DEFAULT(SliderStyle.class, "default"),
 		/** Loading bar slider */
 		SLIDER_LOADING_BAR(SliderStyle.class, "loading_bar"),
-		/** Stub image */
-		STUB(null),
+		/** Color picker */
+		SLIDER_COLOR_PICKER(SliderStyle.class, "color_picker"),
 		/** Text button default style */
 		TEXT_BUTTON_TRANSPARENT_PRESS(TextButtonStyle.class, "transparent"),
 		/** Text button that can toggle */

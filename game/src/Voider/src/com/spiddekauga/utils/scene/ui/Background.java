@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  * Extension of the image that create a background image from a color
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Background extends Image {
@@ -44,6 +43,7 @@ public class Background extends Image {
 		Pixmap pixmap = new Pixmap(1, 1, Format.RGBA8888);
 		pixmap.drawPixel(0, 0, colorToRgbaInt(color));
 		Texture texture = new Texture(pixmap);
+		pixmap.dispose();
 
 		setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
 		setHeight(height);
@@ -68,7 +68,7 @@ public class Background extends Image {
 	 */
 	private static int colorToRgbaInt(Color color) {
 		int argbColor = color.toIntBits();
-		int rgbaColor = (argbColor << 8) | (argbColor >>> (32-8));
+		int rgbaColor = (argbColor << 8) | (argbColor >>> (32 - 8));
 		return rgbaColor;
 	}
 }
