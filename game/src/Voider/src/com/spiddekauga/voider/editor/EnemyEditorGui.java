@@ -323,7 +323,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Movement
 		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.MOVEMENT);
-		Button button = mSettingTabs.addTab(buttonStyle, mMovementTable, mMovementHider);
+		Button button = mSettingTabs.addTabScroll(buttonStyle, mMovementTable, mMovementHider);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_MOVEMENT);
 
 		// Weapons

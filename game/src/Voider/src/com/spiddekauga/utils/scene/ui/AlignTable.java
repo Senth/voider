@@ -82,6 +82,13 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		mValidCellSizes = false;
 	}
 
+	@Override
+	public void validate() {
+		if ((getParent() instanceof ScrollPane && !mValidLayout) || needsLayout()) {
+			super.validate();
+		}
+	}
+
 	/**
 	 * @return true if the table has a valid layout
 	 */
@@ -660,7 +667,9 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 	@Override
 	public float getPrefHeight() {
-		if (mKeepHeight || !mHasPreferredHeight) {
+		if (getParent() instanceof ScrollPane) {
+			return getMinHeight();
+		} else if (mKeepHeight || !mHasPreferredHeight) {
 			return getHeight();
 		} else {
 			return mPrefHeight;
@@ -687,9 +696,12 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 		float width = 0;
 		float height = 0;
+		int visibleRows = 0;
+		int invisibleRows = 0;
 
 		for (Row row : mRows) {
 			if (row.isVisible()) {
+				visibleRows++;
 				row.calculatePreferredSize();
 				mPrefHeight += row.getPrefHeight();
 				mMinHeight += row.getMinHeight();
@@ -706,6 +718,8 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 				if (row.getWidth() > width) {
 					width = row.getWidth();
 				}
+			} else {
+				invisibleRows++;
 			}
 		}
 
@@ -830,6 +844,13 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	@Override
+	public void setSize(float width, float height) {
+		if (!(getParent() instanceof ScrollPane)) {
+			super.setSize(width, height);
+		}
+	}
+
+	@Override
 	public float getHeight() {
 		return super.getHeight() + mPadding.top + mPadding.bottom;
 	}
@@ -932,12 +953,11 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		updateBackgroundPosition();
 		updateBackgroundSize();
 
+		mValidLayout = true;
+
 		// ScrollPane needs to be layout again after we fixed this layout
 		if (getParent() instanceof ScrollPane) {
-			mValidLayout = true;
 			((ScrollPane) getParent()).invalidate();
-		} else {
-			mValidLayout = true;
 		}
 	}
 
@@ -1017,7 +1037,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		} else if (getParent() instanceof TabWidget) {
 			availableHeight = getStage().getHeight();
 		} else if (getParent() instanceof ScrollPane) {
-			availableHeight = getParent().getHeight();
+			availableHeight = getMinHeight();
 		} else {
 			availableHeight = getHeight();
 		}

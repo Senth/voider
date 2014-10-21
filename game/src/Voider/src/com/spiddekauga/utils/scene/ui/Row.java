@@ -247,14 +247,14 @@ public class Row implements Poolable, IPadding<Row> {
 	 * @return minimum height of the row. Equals the non-scalable cells' height
 	 */
 	public float getMinHeight() {
-		return mMinHeight;
+		return mMinHeight + getPadY();
 	}
 
 	/**
 	 * @return minimum width of the row. Equals tho non-scalable cells' width
 	 */
 	public float getMinWidth() {
-		return mMinWidth;
+		return mMinWidth + getPadX();
 	}
 
 	/**
@@ -358,28 +358,28 @@ public class Row implements Poolable, IPadding<Row> {
 	 * @return preferred height of the row
 	 */
 	public float getPrefHeight() {
-		return mPrefHeight + mPadding.top + mPadding.bottom;
+		return mPrefHeight + getPadY();
 	}
 
 	/**
 	 * @return preferred width of the row
 	 */
 	public float getPrefWidth() {
-		return mPrefWidth + mPadding.left + mPadding.right;
+		return mPrefWidth + getPadX();
 	}
 
 	/**
 	 * @return width of the row
 	 */
 	public float getWidth() {
-		return mWidth + getPadLeft() + getPadRight();
+		return mWidth + getPadX();
 	}
 
 	/**
 	 * @return height of the row
 	 */
 	public float getHeight() {
-		return mHeight + getPadTop() + getPadBottom();
+		return mHeight + getPadY();
 	}
 
 	/**
@@ -479,6 +479,13 @@ public class Row implements Poolable, IPadding<Row> {
 				cell.calculatePreferredSize();
 				addSize(cell);
 			}
+		}
+
+		if (mFixedWidth && mMinWidth < mWidth) {
+			mMinWidth = mWidth;
+		}
+		if (mFixedHeight && mMinHeight < mHeight) {
+			mMinHeight = mHeight;
 		}
 	}
 

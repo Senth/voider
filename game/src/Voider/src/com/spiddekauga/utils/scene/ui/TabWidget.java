@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -11,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -45,6 +48,7 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		mContentOuterTable.row().setFillWidth(true).setFillHeight(true);
 		mContentOuterTable.add(mContentInnerTable).setFillWidth(true).setFillHeight(true);
 
+
 		addActor(mWrapperTable);
 	}
 
@@ -61,6 +65,28 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	}
 
 	/**
+	 * Adds a new content tab which is scrollable
+	 * @param imageButtonStyle the style to use for the tab
+	 * @param table the table to display this in this tab
+	 * @param hider the hider that will hide the table
+	 * @return created tab button
+	 */
+	public Button addTabScroll(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider) {
+		return addTab(imageButtonStyle, table, hider, true);
+	}
+
+	/**
+	 * Adds a new content tab which is scrollable. Automatically creates an anonymous
+	 * hider
+	 * @param imageButtonStyle the style to use for the tab
+	 * @param table the table to display in this tab
+	 * @return created tab button
+	 */
+	public Button addTabScroll(ImageButtonStyle imageButtonStyle, AlignTable table) {
+		return addTabScroll(imageButtonStyle, table, new HideListener(true));
+	}
+
+	/**
 	 * Adds a new content tab
 	 * @param imageButtonStyle the style to use for the tab
 	 * @param table the table to display in this tab
@@ -68,14 +94,37 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	 * @return create tab button
 	 */
 	public Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider) {
+		return addTab(imageButtonStyle, table, hider, false);
+	}
+
+	/**
+	 * Adds a new content tab
+	 * @param imageButtonStyle the style to use for the tab
+	 * @param table the table to display in this tab
+	 * @param hider the hider that will hide the table
+	 * @param scrollable if the tab should be scrollable
+	 * @return create tab button
+	 */
+	private Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider, boolean scrollable) {
 		ImageButton button = new ImageButton(imageButtonStyle);
 		mButtonGroup.add(button);
 		mTabTable.add(button);
 		mTabButtons.add(button);
+
+		Actor addActor = table;
+
+		// Create an anonymous inner table if scrollable
+		if (scrollable) {
+			ScrollPane scrollPane = new ScrollPane(table, mScrollPaneStyle);
+			scrollPane.setScrollingDisabled(true, false);
+			scrollPane.setCancelTouchFocus(false);
+			addActor = scrollPane;
+		}
+
 		button.addListener(mTabVisibilityListener);
-		hider.addToggleActor(table);
+		hider.addToggleActor(addActor);
 		hider.setButton(button);
-		mContentInnerTable.add(table).setFillWidth(true).setFillHeight(true);
+		mContentInnerTable.add(addActor).setFillWidth(true).setFillHeight(true);
 		mContentInnerTable.getRow().setFillWidth(true).setFillHeight(true);
 		return button;
 	}
@@ -389,6 +438,18 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	}
 
 	/**
+	 * Set scroll pane style
+	 * @param style new scrollpane style
+	 */
+	public void setScrollPaneStyle(ScrollPaneStyle style) {
+		mScrollPaneStyle = style;
+
+		for (ScrollPane scrollPane : mScrollPanes) {
+			scrollPane.setStyle(style);
+		}
+	}
+
+	/**
 	 * Handle visibility change on specified tab
 	 * @param tab tab button that change visibility
 	 */
@@ -447,6 +508,10 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		}
 	};
 
+	/** Current scroll pane style */
+	private ScrollPaneStyle mScrollPaneStyle = new ScrollPaneStyle();
+	/** Inner scroll pane */
+	private ArrayList<ScrollPane> mScrollPanes = new ArrayList<>();
 	/** All tab buttons */
 	private ArrayList<Button> mTabButtons = new ArrayList<>();
 	/** Tab row, for setting alignment */

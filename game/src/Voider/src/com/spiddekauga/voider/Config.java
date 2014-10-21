@@ -782,8 +782,8 @@ public class Config {
 				WIDTH_START = WIDTH_DEFAULT;
 				HEIGHT_START = HEIGHT_DEFAULT;
 			} else {
-				WIDTH_START = 1280;
-				HEIGHT_START = 720;
+				WIDTH_START = WIDTH_DEFAULT;
+				HEIGHT_START = HEIGHT_DEFAULT;
 			}
 		}
 

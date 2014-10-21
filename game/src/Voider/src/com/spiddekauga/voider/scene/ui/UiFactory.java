@@ -280,12 +280,12 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-		// Slim fit to text
+			// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-		// Fit to text (but with padding)
+			// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -1269,6 +1269,9 @@ public class UiFactory {
 
 		// Background
 		tabWidget.setBackground(new Background(mStyles.color.widgetBackground));
+
+		// Scrollpane style
+		tabWidget.setScrollPaneStyle(mStyles.scrollPane.noBackground);
 
 		return tabWidget;
 	}
