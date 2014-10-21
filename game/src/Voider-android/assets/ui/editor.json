@@ -10,7 +10,7 @@ java.lang.Float: {
 	selected_outline_width: {value: 0.5},
 	// Circle radius for enemies that are displayed as 'will activate'
 	// when test running the level.
-	enemy_activate_on_test_radius: {value: 0.5},
+	enemy_activate_on_test_run_radius: {value: 0.5},
 	
 	
 	/** Theme settings (only for level) */
@@ -48,7 +48,7 @@ com.badlogic.gdx.graphics.Color: {
 	enemy_activate_on_test_run_outline_color: { r: 1, g: 1, b: 1, a: 1},
 	// Color of circle that is displayed for enemies that 'will activate' when
 	// test running the level.
-	enemy_activate_on_test_run_color: {r: 0.5, g: 1, b: 0.5, a: 1},
+	enemy_activate_on_test_run_color: {r: 1, g: 1, b: 0.5, a: 1},
 	// Outline color for selected actors
 	selected_color_actor: {r: 0.75, g: 1, b: 0.75, a: 0.65},
 	// Overlay for selected utilities

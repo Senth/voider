@@ -793,6 +793,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				mPolygon.add(Pools.vector2.obtain().set(vertex));
 			}
 
+			Pools.arrayList.free(circleVertices);
 			Pools.vector2.free(offsetPosition);
 			offsetPosition = null;
 		}

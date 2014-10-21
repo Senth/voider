@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
@@ -29,6 +30,7 @@ import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -198,20 +200,20 @@ public class EnemyActor extends Actor {
 
 						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_COLOR));
 
-						Vector2 offsetPosition = getWorldOffset();
+						Vector2 offsetPosition = new Vector2(getPosition());
 
 						if (getDef().getVisualVars().getCornerCount() == 2) {
 							offsetPosition.sub(getDef().getVisualVars().getCorners().get(0));
 							offsetPosition.sub(getDef().getVisualVars().getCenterOffset());
 						}
 
-						if (mPolygonOutline == null) {
-							reloadPolygonOutline();
+						if (mActivateCircle == null) {
+							reloadActivateCircle();
 						}
 
-						if (mPolygonOutline != null) {
+						if (mActivateCircle != null) {
 							RenderOrders.offsetZValue(shapeRenderer);
-							shapeRenderer.triangles(mPolygonOutline, offsetPosition);
+							shapeRenderer.triangles(mActivateCircle, offsetPosition);
 						}
 					}
 				}
@@ -671,10 +673,10 @@ public class EnemyActor extends Actor {
 			// Calculate where the bullet would intersect with the player
 			else {
 				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*
-																													 * +
-																													 * levelSpeed
-																													 */, mPlayerActor.getPosition(),
-						playerVelocity);
+				 * +
+				 * levelSpeed
+				 */, mPlayerActor.getPosition(),
+				 playerVelocity);
 				shootDirection.set(bulletVelocity);
 				Pools.vector2.free(bulletVelocity);
 				bulletVelocity = null;
@@ -1078,40 +1080,48 @@ public class EnemyActor extends Actor {
 	public void reloadFixtures() {
 		super.reloadFixtures();
 
-		reloadPolygonOutline();
+		reloadActivateCircle();
 	}
 
 	/**
 	 * Clears the polygon outline
 	 */
 	private void clearPolygonOutline() {
-		if (mPolygonOutline != null) {
-			Pools.vector2.freeDuplicates(mPolygonOutline);
-			Pools.arrayList.free(mPolygonOutline);
-			mPolygonOutline = null;
+		if (mActivateCircle != null) {
+			Pools.vector2.freeDuplicates(mActivateCircle);
+			Pools.arrayList.free(mActivateCircle);
+			mActivateCircle = null;
 		}
 	}
 
 	/**
-	 * Reloads the polygon outline for the enemy
+	 * Reloads the activate polygon circle for the enemy
 	 */
-	private void reloadPolygonOutline() {
+	private void reloadActivateCircle() {
 		if (mEditorActive) {
 			clearPolygonOutline();
 
-			ArrayList<Vector2> corners = copyVectorArray(getDef().getVisualVars().getPolygonShape());
-			if (corners != null) {
-				ArrayList<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, 0.25f);
-				mPolygonOutline = Geometry.createBorderVertices(corners, outerCorners);
+			ArrayList<Vector2> vertices = getDef().getVisualVars().getPolygonShape();
+			if (vertices != null && !vertices.isEmpty()) {
+				float radius = SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_RADIUS);
+				ArrayList<Vector2> circleLines = Geometry.createCircle(radius);
 
-				// Rotate outline
-				float rotation = getDef().getBodyDef().angle;
-				if (getBody() != null) {
-					rotation = getBody().getAngle();
+				// Calculate center
+				Vector2 center = Pools.vector2.obtain().set(0, 0);
+				for (Vector2 vertex : vertices) {
+					center.add(vertex);
 				}
-				rotation *= MathUtils.radDeg;
+				center.scl(1 / vertices.size());
 
-				Geometry.rotateVertices(mPolygonOutline, rotation, true, getDef().getVisualVars().getCenterOffset());
+				// Offset to center
+				for (Vector2 vertex : circleLines) {
+					vertex.add(center);
+				}
+
+				EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
+				mActivateCircle = earClippingTriangulator.computeTriangles(circleLines);
+				Collections.reverse(mActivateCircle);
+				Pools.arrayList.free(circleLines);
 			}
 		}
 	}
@@ -1122,7 +1132,7 @@ public class EnemyActor extends Actor {
 	}
 
 	/** Polygon line for drawing wider outline */
-	private ArrayList<Vector2> mPolygonOutline = null;
+	private ArrayList<Vector2> mActivateCircle = null;
 	/** Enemy weapon */
 	private Weapon mWeapon = new Weapon();
 	/** Shooting angle (used when rotating) */
