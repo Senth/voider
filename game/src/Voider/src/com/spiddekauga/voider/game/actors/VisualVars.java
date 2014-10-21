@@ -317,7 +317,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * @param color new color
 	 */
 	public void setColor(Color color) {
-		mColor = color;
+		mColor.set(color);
 	}
 
 	/**

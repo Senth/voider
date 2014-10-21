@@ -93,12 +93,15 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void onInit() {
-		super.onInit();
-
-		Actor.setEditorActive(true);
+		mDefaultTerrainColor.set((Color) SkinNames.getResource(SkinNames.EditorVars.TERRAIN_COLOR_DEFAULT));
+		mDefaultTerrainColor.a = SkinNames.getResource(SkinNames.EditorVars.TERRAIN_ALPHA_DEFAULT);
 
 		mSelection = new Selection();
 		mSelection.addListener(this);
+
+		super.onInit();
+
+		Actor.setEditorActive(true);
 
 		mZoomTool = new ZoomTool(this, Config.Editor.Level.ZOOM_MIN, Config.Editor.Level.ZOOM_MAX);
 
@@ -520,6 +523,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public void onResourceAdded(IResource resource) {
 		mGui.resetValues();
 		mLevel.addResource(resource);
+
+		// Set default color
+		if (resource instanceof StaticTerrainActor) {
+			((StaticTerrainActor) resource).getDef().getVisualVars().setColor(mDefaultTerrainColor);
+		}
+
 		setUnsaved();
 	}
 
@@ -612,6 +621,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 						.isSelectionToolAllowedToChangeResourceType());
 			}
 		}
+
+		((LevelEditorGui) mGui).resetColor();
 	}
 
 	/**
@@ -958,6 +969,142 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			return mLevel.getDef().getPngImage() != null;
 		}
 		return false;
+	}
+
+	/**
+	 * Sets the color of the selected terrain
+	 * @param color new color of the terrain
+	 */
+	void setSelectedTerrainColor(Color color) {
+		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
+
+		for (StaticTerrainActor terrain : terrains) {
+			Color terrainColor = terrain.getDef().getVisualVars().getColor();
+			terrainColor.r = color.r;
+			terrainColor.g = color.g;
+			terrainColor.b = color.b;
+		}
+	}
+
+	/**
+	 * @return color of the selected terrain. If multiple terrains are selected and have
+	 *         different colors, null is returned. If no terrain is selected the default
+	 *         color is returned.
+	 */
+	Color getSelectedTerrainColor() {
+		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
+
+
+		if (!terrains.isEmpty()) {
+			Color terrainColor = new Color(terrains.get(0).getDef().getVisualVars().getColor());
+			terrainColor.a = 1;
+
+			// Check for different colors -> Return default color
+			Color testColor = new Color();
+			for (StaticTerrainActor terrain : terrains) {
+				testColor.set(terrain.getDef().getVisualVars().getColor());
+				testColor.a = 1;
+
+				if (!terrainColor.equals(testColor)) {
+					return null;
+				}
+			}
+
+			return terrainColor;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Sets the opacity of the selected terrain
+	 * @param opacity new transparency level of the terrain, should be between 0-100
+	 */
+	void setSelectedTerrainOpacity(float opacity) {
+		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
+
+		for (StaticTerrainActor terrain : terrains) {
+			terrain.getDef().getVisualVars().getColor().a = opacity / 100f;
+		}
+	}
+
+	/**
+	 * @return opacity of the selected terrain. -1 if multiple terrains are selected and
+	 *         have different opacity. The default opacity is return when no terrain is
+	 *         selected.
+	 */
+	float getSelectedTerrainOpacity() {
+		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
+
+		if (!terrains.isEmpty()) {
+			float opacity = terrains.get(0).getDef().getVisualVars().getColor().a;
+
+			// Check for different colors -> Return default color
+			for (StaticTerrainActor terrain : terrains) {
+				if (opacity != terrain.getDef().getVisualVars().getColor().a) {
+					return -1;
+				}
+			}
+
+			return opacity * 100;
+		}
+
+		return mDefaultTerrainColor.a * 100;
+	}
+
+	/**
+	 * Sets the default color for new terrain. Doesn't use alpha value
+	 * @param color default color for new terrains
+	 */
+	void setDefaultTerrainColor(Color color) {
+		mDefaultTerrainColor.set(color.r, color.g, color.b, mDefaultTerrainColor.a);
+	}
+
+	/**
+	 * @return default color for new terrains
+	 */
+	Color getDefaultTerrainColor() {
+		Color color = new Color(mDefaultTerrainColor);
+		color.a = 1;
+		return color;
+	}
+
+	/**
+	 * Sets the default opacity/alpha value for new terrain.
+	 * @param opacity transparency of new terrains, should be from 0-100
+	 */
+	void setDefaultTerrainOpacity(float opacity) {
+		mDefaultTerrainColor.a = opacity / 100f;
+	}
+
+	/**
+	 * @return default opacity value for new terrain
+	 */
+	float getDefaultTerrainOpacity() {
+		return mDefaultTerrainColor.a * 100;
+	}
+
+	/**
+	 * @return true if a terrain tool is currently selected
+	 */
+	boolean isTerrainToolSelected() {
+		switch (mTool) {
+		case TERRAIN_DRAW_APPEND:
+		case TERRAIN_DRAW_ERASE:
+		case ADD_MOVE_CORNER:
+		case REMOVE_CORNER:
+			return true;
+
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * @return true if any terrain is selected
+	 */
+	boolean isTerrainSelected() {
+		return mSelection.isSelected(StaticTerrainActor.class);
 	}
 
 	/**
@@ -1606,7 +1753,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		PICKUP,
 	}
 
-	/** Png bytes before testing the level */
+	/** PNG bytes before testing the level */
 	private byte[] mPngBytesBeforeTest = null;
 	/** Enemies in the add enemy table */
 	@SuppressWarnings("unchecked") private ArrayList<EnemyActorDef> mAddEnemies = Pools.arrayList.obtain();
@@ -1624,6 +1771,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private ZoomTool mZoomTool = null;
 	/** If enemies should be highlighted if they will be used when test running the level */
 	private boolean mEnemyHighlight = true;
+	/** Default terrain color */
+	private Color mDefaultTerrainColor = new Color();
 	/** Resource repository */
 	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 }

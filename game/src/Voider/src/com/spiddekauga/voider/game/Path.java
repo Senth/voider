@@ -384,7 +384,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 			if (mSelected) {
 				shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
-				shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.SELECTED_COLOR_UTILITY));
 				shapeRenderer.triangles(mVertices);
 
 

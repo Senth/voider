@@ -280,12 +280,12 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-			// Slim fit to text
+		// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-			// Fit to text (but with padding)
+		// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -711,18 +711,19 @@ public class UiFactory {
 	/**
 	 * Add a color slider to the table
 	 * @param table the table to add this to
+	 * @param hider optional hider for the color picker
 	 * @param createdActors optional, all created actors
 	 * @param colors all the colors to show in the color picker
 	 * @return created slider
 	 */
-	public ColorTintPicker addColorTintPicker(AlignTable table, ArrayList<Actor> createdActors, Color... colors) {
+	public ColorTintPicker addColorTintPicker(AlignTable table, GuiHider hider, ArrayList<Actor> createdActors, Color... colors) {
 		table.row().setFillWidth(true);
 
 		// Picking color
 		ColorTintPicker picker = new ColorTintPicker(false, mStyles.slider.colorPicker, colors);
 		table.add(picker).setFillWidth(true);
 
-		doExtraActionsOnActors(null, createdActors, picker);
+		doExtraActionsOnActors(hider, createdActors, picker);
 
 		return picker;
 	}

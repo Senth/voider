@@ -598,8 +598,6 @@ public class Config {
 		public final static Color CORNER_COLOR = new Color(0.75f, 0, 0, 1);
 		/** Center offset pick color */
 		public final static Color CENTER_OFFSET_COLOR = new Color(0, 0.75f, 0, 1);
-		/** Selected color overlay */
-		public final static Color SELECTED_COLOR = new Color(1, 1, 1, 0.45f);
 		/** Default pick size */
 		public final static float PICK_SIZE_DEFAULT = 0.0001f;
 		/** Path pick size */

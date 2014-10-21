@@ -2,7 +2,6 @@ package com.spiddekauga.utils.scene.ui;
 
 /**
  * Manually hides/shows the toggle actors
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HideManual extends GuiHider {
@@ -11,6 +10,18 @@ public class HideManual extends GuiHider {
 	 */
 	public HideManual() {
 
+	}
+
+	/**
+	 * Sets if the GUI objects should be hidden or shown
+	 * @param visible set to true to show, false to hide
+	 */
+	public void setVisibility(boolean visible) {
+		if (visible) {
+			show();
+		} else {
+			hide();
+		}
 	}
 
 	/**

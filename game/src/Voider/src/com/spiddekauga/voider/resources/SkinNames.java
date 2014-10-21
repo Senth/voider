@@ -299,13 +299,19 @@ public class SkinNames {
 
 	public enum EditorVars implements ISkinNames {
 		/** Enemy will be activated when test running from here, line color */
-		ENEMY_ACTIVATE_ON_TEST_RUN_OUTLINE_COLOR(Color.class),
+		ENEMY_ACTIVATE_ON_TEST_RUN_COLOR(Color.class),
 		/** Line width of outline color when the enemy will be activated */
-		ENEMY_ACTIVATE_ON_TEST_RUN_OUTLINE_WIDTH(Float.class),
+		ENEMY_ACTIVATE_ON_TEST_RUN_RADIUS(Float.class),
 		/** Color of line between enemy and activate trigger */
 		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Color of line between enemy and deactivate trigger */
 		ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR(Color.class),
+		/** Width of the outline for selected actors */
+		SELECTED_OUTLINE_WIDTH(Float.class),
+		/** Color of the selected outline for actors */
+		SELECTED_COLOR_ACTOR(Color.class),
+		/** Color of the selected utilities */
+		SELECTED_COLOR_UTILITY(Color.class),
 		/** Grid color */
 		GRID_COLOR(Color.class),
 		/** Grid milestone color */

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.commands.CGuiSlider;
 import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
 import com.spiddekauga.utils.commands.Invoker;
@@ -25,6 +27,8 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Cell;
+import com.spiddekauga.utils.scene.ui.ColorTintPicker;
+import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
@@ -83,14 +87,12 @@ class LevelEditorGui extends EditorGui {
 		initEnemyOptions();
 		initEnemyAddOptions();
 		initSettingsMenu();
+		initColor();
 	}
 
 	@Override
 	public void dispose() {
-		mWidgets.enemy.table.dispose();
-		mWidgets.enemyAdd.table.dispose();
-		mWidgets.enemyAdd.scrollTable.dispose();
-		mWidgets.path.table.dispose();
+		mWidgets.dispose();
 		mInfoTable.dispose();
 
 		super.dispose();
@@ -106,7 +108,7 @@ class LevelEditorGui extends EditorGui {
 		resetEnemyAddTable();
 		resetTools();
 		resetImage();
-		resetTheme();
+		resetColor();
 	}
 
 	/**
@@ -181,7 +183,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.prologue.setText(mLevelEditor.getPrologue());
 		mWidgets.info.epilogue.setText(mLevelEditor.getEpilogue());
 		mWidgets.info.speed.setValue(mLevelEditor.getLevelStartingSpeed());
-		// TODO set theme
+		resetTheme();
 	}
 
 	/**
@@ -364,6 +366,90 @@ class LevelEditorGui extends EditorGui {
 
 		} else {
 			mWidgets.enemy.hiderTab.hide();
+		}
+	}
+
+	/**
+	 * Initializes color settings
+	 */
+	private void initColor() {
+		AlignTable table = mWidgets.color.table;
+		table.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+
+		// Get colors
+		ColorArray colorArray = SkinNames.getResource(SkinNames.EditorVars.TERRAIN_COLOR_PICKER);
+		float minOpacity = SkinNames.getResource(SkinNames.EditorVars.TERRAIN_ALPHA_START);
+		float maxOpacity = SkinNames.getResource(SkinNames.EditorVars.TERRAIN_ALPHA_END);
+		minOpacity *= 100;
+		maxOpacity *= 100;
+
+		// Default color
+		GuiHider hider = mWidgets.color.hiderDefault;
+		mUiFactory.addPanelSection("Default Color", table, hider);
+		ColorTintPicker picker = mUiFactory.addColorTintPicker(table, hider, mDisabledWhenPublished, colorArray.arr);
+		mWidgets.color.defaultPicker = picker;
+		new SliderListener(picker, null, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setDefaultTerrainColor(mWidgets.color.defaultPicker.getPickColor());
+			}
+		};
+		SliderListener sliderListener = new SliderListener(mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setDefaultTerrainOpacity(newValue);
+			}
+		};
+		mWidgets.color.defaultOpacity = mUiFactory.addSlider("Opacity", minOpacity, maxOpacity, 1, sliderListener, table, hider,
+				mDisabledWhenPublished);
+
+		// Selected color
+		hider = mWidgets.color.hiderTerrain;
+		mUiFactory.addPanelSection("Terrain Color", table, hider);
+		picker = mUiFactory.addColorTintPicker(table, hider, mDisabledWhenPublished, colorArray.arr);
+		mWidgets.color.terrainPicker = picker;
+		new SliderListener(picker, null, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setSelectedTerrainColor(mWidgets.color.terrainPicker.getPickColor());
+			}
+		};
+		sliderListener = new SliderListener(mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setSelectedTerrainOpacity(newValue);
+			}
+		};
+		mWidgets.color.terrainOpacity = mUiFactory.addSlider("Opacity", minOpacity, maxOpacity, 1, sliderListener, table, hider,
+				mDisabledWhenPublished);
+	}
+
+	/**
+	 * Resets the color
+	 */
+	void resetColor() {
+		// Update hiders
+		mWidgets.color.hiderDefault.setVisibility(mLevelEditor.isTerrainToolSelected());
+		mWidgets.color.hiderTerrain.setVisibility(mLevelEditor.isTerrainSelected());
+
+		if (mLevelEditor.isTerrainSelected() || mLevelEditor.isTerrainToolSelected()) {
+			mWidgets.color.hiderTab.show();
+		} else {
+			mWidgets.color.hiderTab.hide();
+		}
+
+		// Set widgets
+		mWidgets.color.defaultPicker.setPickColor(mLevelEditor.getDefaultTerrainColor());
+		mWidgets.color.defaultOpacity.setValue(mLevelEditor.getDefaultTerrainOpacity());
+
+		// Current terrain color
+		Color selectedColor = mLevelEditor.getSelectedTerrainColor();
+		if (selectedColor != null) {
+			mWidgets.color.terrainPicker.setPickColor(selectedColor);
+		}
+		float selectedOpacity = mLevelEditor.getSelectedTerrainOpacity();
+		if (selectedOpacity != -1) {
+			mWidgets.color.terrainOpacity.setValue(selectedOpacity);
 		}
 	}
 
@@ -842,6 +928,12 @@ class LevelEditorGui extends EditorGui {
 		button = mSettingTabs.addTab(buttonStyle, mWidgets.path.table, mWidgets.path.hiderTable);
 		mWidgets.path.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_PATH);
+
+		// Color settings
+		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLOR);
+		button = mSettingTabs.addTab(buttonStyle, mWidgets.color.table, mWidgets.color.hiderTable);
+		mWidgets.color.hiderTab.addToggleActor(button);
+		mTooltip.add(button, Messages.EditorTooltips.TAB_COLOR_LEVEL);
 	}
 
 	/**
@@ -1066,12 +1158,46 @@ class LevelEditorGui extends EditorGui {
 		InfoWidgets info = new InfoWidgets();
 		EnemyAddWidgets enemyAdd = new EnemyAddWidgets();
 		ToolWidgets tool = new ToolWidgets();
+		ColorWidgets color = new ColorWidgets();
 
 		@Override
 		public void dispose() {
 			enemy.dispose();
 			enemyAdd.dispose();
 			path.dispose();
+			color.dispose();
+		}
+
+		class ColorWidgets implements Disposable {
+			AlignTable table = new AlignTable();
+			ColorTintPicker defaultPicker = null;
+			ColorTintPicker terrainPicker = null;
+			Slider defaultOpacity = null;
+			Slider terrainOpacity = null;
+
+			// Hiders
+			HideListener hiderTable = new HideListener(true);
+			HideManual hiderTab = new HideManual();
+			HideManual hiderTerrain = new HideManual();
+			HideManual hiderDefault = new HideManual();
+
+			/**
+			 * Set hider children
+			 */
+			ColorWidgets() {
+				hiderTab.addChild(hiderTable);
+				hiderTable.addChild(hiderDefault);
+				hiderTable.addChild(hiderTerrain);
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hiderDefault.dispose();
+				hiderTab.dispose();
+				hiderTerrain.dispose();
+				hiderDefault.dispose();
+			}
 		}
 
 		class ToolWidgets {

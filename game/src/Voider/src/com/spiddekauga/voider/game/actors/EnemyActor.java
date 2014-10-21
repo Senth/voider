@@ -196,7 +196,7 @@ public class EnemyActor extends Actor {
 					// Enemy will spawn
 					if (levelStartCoord <= enemyActivationCoord) {
 
-						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_OUTLINE_COLOR));
+						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_COLOR));
 
 						Vector2 offsetPosition = getWorldOffset();
 
@@ -205,9 +205,9 @@ public class EnemyActor extends Actor {
 							offsetPosition.sub(getDef().getVisualVars().getCenterOffset());
 						}
 
-						// if (mPolygonOutline == null) {
-						reloadPolygonOutline();
-						// }
+						if (mPolygonOutline == null) {
+							reloadPolygonOutline();
+						}
 
 						if (mPolygonOutline != null) {
 							RenderOrders.offsetZValue(shapeRenderer);
@@ -1086,8 +1086,8 @@ public class EnemyActor extends Actor {
 	 */
 	private void clearPolygonOutline() {
 		if (mPolygonOutline != null) {
-			Pools.arrayList.free(mPolygonOutline);
 			Pools.vector2.freeDuplicates(mPolygonOutline);
+			Pools.arrayList.free(mPolygonOutline);
 			mPolygonOutline = null;
 		}
 	}

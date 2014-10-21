@@ -27,33 +27,7 @@ public abstract class ActorDef extends Def {
 	 */
 	protected ActorDef(ActorTypes actorType) {
 		mVisualVars = new VisualVars(actorType);
-
-		/** @todo remove default color */
-		switch (actorType) {
-		case BULLET:
-			mVisualVars.setColor(new Color(0.8f, 0.5f, 0, 1));
-			break;
-
-		case ENEMY:
-			mVisualVars.setColor(new Color(1, 0, 0, 1));
-			break;
-
-		case PICKUP:
-			mVisualVars.setColor(new Color(1, 1, 0, 1));
-			break;
-
-		case PLAYER:
-			mVisualVars.setColor(new Color(1, 1, 1, 1));
-			break;
-
-		case STATIC_TERRAIN:
-			mVisualVars.setColor(new Color(1, 1, 1, 0.5f));
-			break;
-
-		default:
-			mVisualVars.setColor(new Color(1, 1, 1, 1));
-			break;
-		}
+		mVisualVars.setColor(new Color(1, 1, 1, 1));
 	}
 
 	@Override

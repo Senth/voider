@@ -649,7 +649,7 @@ public class Geometry {
 	 * @return number of segments of the circle
 	 */
 	public static int calculateCircleSegments(float radius, float zoom) {
-		return (int) (10 * (float) Math.cbrt(radius) / zoom);
+		return (int) (10 * (float) Math.cbrt(radius) / (zoom * 0.5f));
 	}
 
 	/**

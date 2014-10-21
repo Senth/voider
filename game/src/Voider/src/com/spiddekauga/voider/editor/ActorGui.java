@@ -204,7 +204,7 @@ public abstract class ActorGui extends EditorGui {
 
 		mUiFactory.addPanelSection(getResourceTypeNameCapital() + " Color", table, null);
 
-		mWidgets.color.picker = mUiFactory.addColorTintPicker(table, mDisabledWhenPublished, colors);
+		mWidgets.color.picker = mUiFactory.addColorTintPicker(table, null, mDisabledWhenPublished, colors);
 		new SliderListener(mWidgets.color.picker, null, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {

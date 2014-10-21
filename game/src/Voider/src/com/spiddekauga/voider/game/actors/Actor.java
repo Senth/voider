@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -46,6 +47,7 @@ import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -343,10 +345,17 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 
 		Vector2 offsetPosition = getWorldOffset();
 
-		// Draw selected overlay
+		// Draw selected outline
 		if (!mDrawOnlyOutline && mSelected && getDef().getVisualVars().isComplete() && mRotatedVertices != null) {
-			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
-			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
+			if (mSelectedOutline == null) {
+				reloadSelectedOutline();
+			}
+
+			if (mSelectedOutline != null) {
+				Color color = SkinNames.getResource(SkinNames.EditorVars.SELECTED_COLOR_ACTOR);
+				shapeRenderer.setColor(color);
+				shapeRenderer.triangles(mSelectedOutline, offsetPosition);
+			}
 		}
 
 
@@ -383,10 +392,47 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 			shapeRenderer.pop();
 		}
 		RenderOrders.resetZValueOffset(shapeRenderer);
+		RenderOrders.resetZValueOffset(shapeRenderer);
 
 		Pools.vector2.free(offsetPosition);
 
 		RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
+	}
+
+	/**
+	 * Reload selected outline
+	 */
+	private void reloadSelectedOutline() {
+		if (mEditorActive) {
+			clearSelectedOutline();
+
+			ArrayList<Vector2> corners = copyVectorArray(getDef().getVisualVars().getPolygonShape());
+			if (corners != null) {
+				float width = SkinNames.getResource(SkinNames.EditorVars.SELECTED_OUTLINE_WIDTH);
+				ArrayList<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, width);
+				mSelectedOutline = Geometry.createBorderVertices(corners, outerCorners);
+
+				// Rotate outline
+				float rotation = getDef().getBodyDef().angle;
+				if (getBody() != null) {
+					rotation = getBody().getAngle();
+				}
+				rotation *= MathUtils.radDeg;
+
+				Geometry.rotateVertices(mSelectedOutline, rotation, true, getDef().getVisualVars().getCenterOffset());
+			}
+		}
+	}
+
+	/**
+	 * Clear selected outline
+	 */
+	private void clearSelectedOutline() {
+		if (mSelectedOutline != null) {
+			Pools.vector2.freeDuplicates(mSelectedOutline);
+			Pools.arrayList.free(mSelectedOutline);
+			mSelectedOutline = null;
+		}
 	}
 
 	/**
@@ -753,20 +799,20 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 	 */
 	public void reloadFixtures() {
 		if (mBody != null) {
-			Gdx.app.debug("Actor.reloadFixtures()", "Fixtures before: " + mBody.getFixtureList().size);
+			Gdx.app.log("Actor.reloadFixtures()", "Fixtures before: " + mBody.getFixtureList().size);
 			destroyFixtures();
-			Gdx.app.debug("Actor.reloadFixtures()", "After destroyed: " + mBody.getFixtureList().size);
+			Gdx.app.log("Actor.reloadFixtures()", "After destroyed: " + mBody.getFixtureList().size);
 
 			calculateRotatedVertices(true);
 
-			Gdx.app.debug("Actor.reloadFixtures()", "Def fixtures: " + mDef.getVisualVars().getFixtureDefs().size());
+			Gdx.app.log("Actor.reloadFixtures()", "Def fixtures: " + mDef.getVisualVars().getFixtureDefs().size());
 
 			for (FixtureDef fixtureDef : mDef.getVisualVars().getFixtureDefs()) {
 				if (fixtureDef != null && fixtureDef.shape != null) {
 					mBody.createFixture(fixtureDef);
 				}
 			}
-			Gdx.app.debug("Actor.reloadFixtures()", "After creaated: " + mBody.getFixtureList().size);
+			Gdx.app.log("Actor.reloadFixtures()", "After creaated: " + mBody.getFixtureList().size);
 
 			// Do we have body corners? Reset those in that case
 			if (mHasBodyCorners) {
@@ -780,6 +826,8 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 			}
 
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
+
+			reloadSelectedOutline();
 		}
 	}
 
@@ -1257,6 +1305,8 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 	private boolean mDrawOnlyOutline = false;
 	/** If the actor is being moved */
 	private boolean mIsBeingMoved = false;
+	/** Selected outline */
+	private ArrayList<Vector2> mSelectedOutline = null;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

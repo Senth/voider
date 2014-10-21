@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.triggers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -19,12 +20,12 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourcePrepareWrite;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Triggered when an actor is activated, or otherwise active
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TActorActivated extends Trigger implements KryoPostRead, Disposable, IResourceBody, IResourcePrepareWrite, IResourceChangeListener {
@@ -77,7 +78,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 			shapeRenderer.triangles(mVertices, offsetPosition);
 
 			if (isSelected()) {
-				shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.SELECTED_COLOR_UTILITY));
 				shapeRenderer.triangles(mVertices, offsetPosition);
 			}
 
@@ -111,11 +112,11 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	}
 
 	@Override
-	public boolean addBoundResource(IResource boundResource)  {
+	public boolean addBoundResource(IResource boundResource) {
 		boolean success = super.addBoundResource(boundResource);
 
 		if (boundResource instanceof Actor) {
-			mActor = (Actor)boundResource;
+			mActor = (Actor) boundResource;
 
 			setActorListener();
 		}
@@ -176,7 +177,8 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 			ArrayList<Vector2> polygon = new ArrayList<Vector2>();
 			ArrayList<Vector2> actorShape = mActor.getDef().getVisualVars().getPolygonShape();
 			if (actorShape != null) {
-				// Copy polygon from actor, so we don't free the actor's vectors when freeing
+				// Copy polygon from actor, so we don't free the actor's vectors when
+				// freeing
 				// this trigger
 				for (Vector2 vertex : actorShape) {
 					polygon.add(Pools.vector2.obtain().set(vertex));

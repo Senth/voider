@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game.triggers;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -18,13 +19,14 @@ import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
+
 /**
- * Triggers when the right side of the screen is at or beyond a specific position.
- * Equal to the level's current x-coordinate
- * 
+ * Triggers when the right side of the screen is at or beyond a specific position. Equal
+ * to the level's current x-coordinate
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TScreenAt extends Trigger implements IResourceBody, IResourcePosition, Disposable {
@@ -53,7 +55,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 			if (isSelected()) {
 				shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
-				shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.SELECTED_COLOR_UTILITY));
 				shapeRenderer.triangles(mVertices);
 				shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 			}
