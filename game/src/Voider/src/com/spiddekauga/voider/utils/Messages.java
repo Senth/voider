@@ -60,6 +60,8 @@ public class Messages {
 		BULLET_EDITOR("switching to Bullet Editor"),
 		/** Switching to campaign editor */
 		CAMPAIGN_EDITOR("switching to Campaign Editor"),
+		/** Switching to ship editor */
+		SHIP_EDITOR("switching to Ship Editor"),
 		/** Returning to main menu */
 		MAIN_MENU("exiting to Main Menu"),
 
@@ -277,9 +279,11 @@ public class Messages {
 		FILE_NEW_LEVEL("New level"),
 		FILE_NEW_ENEMY("New enemy"),
 		FILE_NEW_BULLET("New bullet"),
+		FILE_NEW_SHIP("New ship"),
 		FILE_DUPLICATE_LEVEL("Create a copy of this level"),
 		FILE_DUPLICATE_ENEMY("Create a copy of this enemy"),
 		FILE_DUPLICATE_BULLET("Create a copy of this bullet"),
+		FILE_DUPLICATE_SHIP("Create a copy of this ship"),
 		FILE_SAVE("Save"),
 		FILE_OPEN("Open"),
 		FILE_PUBLISH_CAMPAIGN("Publish campaign with levels"),
@@ -290,12 +294,14 @@ public class Messages {
 		FILE_INFO_LEVEL("Level settings", "https://www.youtube.com/watch?v=MiQCTPsKMS0"),
 		FILE_INFO_ENEMY("Enemy settings"),
 		FILE_INFO_BULLET("Bullet settings"),
+		FILE_INFO_SHIP("Ship name"),
 
 		// Editors
 		EDITOR_CAMPAIGN("Campaign editor"),
 		EDITOR_LEVEL("Level editor", "https://www.youtube.com/watch?v=MiQCTPsKMS0"),
 		EDITOR_ENEMY("Enemy editor", "https://www.youtube.com/watch?v=MKDrEu0leYA"),
 		EDITOR_BULLET("Bullet editor", "https://www.youtube.com/watch?v=guOTjFNKRJU"),
+		EDITOR_SHIP("Ship editor"),
 
 		// Top bar middle actions
 		ACTION_UNDO("Undo", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),

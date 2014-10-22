@@ -10,23 +10,6 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IActorEditor extends IEditor {
-	// ------------- File Menu ----------------
-
-	/**
-	 * @return true if the editor has the ability to undo
-	 */
-	boolean hasUndo();
-
-	/**
-	 * undoes the previous command
-	 */
-	void undo();
-
-	/**
-	 * Redoes the undone command
-	 */
-	void redo();
-
 	// --------------- Color ----------------
 	/**
 	 * Sets the color of the actor

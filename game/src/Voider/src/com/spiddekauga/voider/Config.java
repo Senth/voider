@@ -573,6 +573,64 @@ public class Config {
 			public final static float DAMAGE_STEP_SIZE = 1;
 		}
 
+		/**
+		 * Ship editor
+		 */
+		public static class Ship {
+			/** Minimum mouse joint force */
+			public static final float FORCE_MIN = 1;
+			/** Maximum mouse joint force */
+			public static final float FORCE_MAX = 10000;
+			/** Mouse joint force step size */
+			public static final float FORCE_STEP_SIZE = 1;
+			/** Default mouse joint force */
+			public static final float FORCE_DEFAULT = 10000;
+
+			/** Minimum mouse joint frequency */
+			public static final float FREQUENCY_MIN = 1;
+			/** Maximum mouse joint frequency */
+			public static final float FREQUENCY_MAX = 120;
+			/** Step size for mouse joint frequency */
+			public static final float FREQUENCY_STEP_SIZE = 1;
+			/** Default mouse joint frequency */
+			public static final float FREQUENCY_DEFAULT = 60;
+
+			/** Minimum mouse joint dampening */
+			public static final float DAMPENING_MIN = 0;
+			/** Maximum mouse joint dampening */
+			public static final float DAMPENING_MAX = 1;
+			/** Step size for mouse joint dampening */
+			public static final float DAMPENING_STEP_SIZE = 0.01f;
+			/** Default mouse joint dampening */
+			public static final float DAMPENING_DEFAULT = 0.7f;
+
+			/** Minimum density of the body */
+			public static final float DENSITY_MIN = 0;
+			/** Maximum density of the body */
+			public static final float DENSITY_MAX = 10000;
+			/** Step size for density */
+			public static final float DENSITY_STEP_SIZE = 1;
+			/** Default density for the body */
+			public static final float DENSITY_DEFAULT = 0;
+
+			/** Minimum friction of the body */
+			public static final float FRICTION_MIN = 0;
+			/** Maximum friction of the body */
+			public static final float FRICTION_MAX = 1;
+			/** Step size for friction */
+			public static final float FRICTION_STEP_SIZE = 0.01f;
+			/** Default friction for the body */
+			public static final float FRICTION_DEFAULT = 0.2f;
+
+			/** Minimum elasticity of the body */
+			public static final float ELASTICITY_MIN = 0;
+			/** Maximum elasticity of the body */
+			public static final float ELASTICITY_MAX = 1;
+			/** Step size for elasticity */
+			public static final float ELASTICITY_STEP_SIZE = 0.01f;
+			/** Default elasticity for the body */
+			public static final float ELASTICITY_DEFAULT = 0;
+		}
 
 		/**
 		 * When to only show 10ths of coordinates. True when pixels per world coordinate
@@ -722,7 +780,7 @@ public class Config {
 			/** Update frequency of the mouse joint */
 			public final static float FREQUENCY = 500;
 			/** Maximum force the mouse joint has */
-			public final static float FORCE_MAX = 10000;
+			@Deprecated public final static float FORCE_MAX = 10000;
 		}
 
 		/** Score multiplier, used to create a greater score */
@@ -782,8 +840,8 @@ public class Config {
 				WIDTH_START = WIDTH_DEFAULT;
 				HEIGHT_START = HEIGHT_DEFAULT;
 			} else {
-				WIDTH_START = WIDTH_DEFAULT;
-				HEIGHT_START = HEIGHT_DEFAULT;
+				WIDTH_START = 1280;
+				HEIGHT_START = 720;
 			}
 		}
 

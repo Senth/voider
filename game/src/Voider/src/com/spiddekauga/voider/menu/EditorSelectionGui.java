@@ -4,6 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 
@@ -57,5 +59,16 @@ class EditorSelectionGui extends MenuGui {
 			}
 		};
 		mUiFactory.addButtonPadding(mMainTable);
+
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
+			button = mUiFactory.addImageButtonLabel(SkinNames.General.EDITOR_SHIP_BIG, "Ship", Positions.BOTTOM, null, mMainTable, null, null);
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed(Button button) {
+					mMenuScene.gotoShipEditor();
+				}
+			};
+			mUiFactory.addButtonPadding(mMainTable);
+		}
 	}
 }

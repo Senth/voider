@@ -37,7 +37,6 @@ public class BulletEditorGui extends ActorGui {
 
 	@Override
 	public void dispose() {
-		mMainTable.dispose();
 		mWeaponTable.dispose();
 
 		super.dispose();
@@ -77,7 +76,7 @@ public class BulletEditorGui extends ActorGui {
 	 * Bind this GUI to the specified bullet editor scene
 	 * @param bulletEditor scene to bind this GUI with
 	 */
-	public void setBulletEditor(BulletEditor bulletEditor) {
+	void setBulletEditor(BulletEditor bulletEditor) {
 		mBulletEditor = bulletEditor;
 		setActorEditor(mBulletEditor);
 	}

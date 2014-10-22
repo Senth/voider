@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
@@ -87,10 +86,8 @@ public class EnemyEditor extends ActorEditor {
 		createBorder();
 
 		// Create mouse joint
-		BodyDef bodyDef = new BodyDef();
-		mMouseBody = mWorld.createBody(bodyDef);
 		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
-		mMouseJointDef.bodyA = mMouseBody;
+		mMouseJointDef.bodyA = mWorld.createBody(new BodyDef());
 		mMouseJointDef.bodyB = mPlayerActor.getBody();
 		mMouseJointDef.collideConnected = true;
 		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
@@ -344,16 +341,16 @@ public class EnemyEditor extends ActorEditor {
 	 */
 	private void checkAndResetPlayerPosition() {
 		// Skip if moving player
-		if (mMovingPlayer) {
+		if (mHitPlayer) {
 			return;
 		}
 
 
 		// Only test if player is still
-		if (!mPlayerLastPosition.equals(mPlayerActor.getPosition())) {
-			mPlayerLastPosition.set(mPlayerActor.getPosition());
-			return;
-		}
+		// if (!mPlayerLastPosition.equals(mPlayerActor.getPosition())) {
+		// mPlayerLastPosition.set(mPlayerActor.getPosition());
+		// return;
+		// }
 
 
 		// Test hit UI
@@ -379,7 +376,8 @@ public class EnemyEditor extends ActorEditor {
 			mWorld.QueryAABB(mCallbackPlayerHit, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f,
 					mCursorWorld.y + 0.0001f);
 
-			if (mMovingPlayer) {
+			if (mHitPlayer) {
+				mHitPlayer = false;
 				mPlayerPointer = pointer;
 
 				mMouseJointDef.target.set(mPlayerActor.getBody().getPosition());
@@ -396,7 +394,7 @@ public class EnemyEditor extends ActorEditor {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
-		if (mPlayerPointer == pointer && mMovingPlayer) {
+		if (mPlayerPointer == pointer) {
 			screenToWorldCoord(mCamera, x, y, mCursorWorld, true);
 			mMouseJoint.setTarget(mCursorWorld);
 			return true;
@@ -406,9 +404,9 @@ public class EnemyEditor extends ActorEditor {
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		if (mPlayerPointer == pointer && mMovingPlayer) {
+		if (mPlayerPointer == pointer) {
 			mPlayerPointer = INVALID_POINTER;
-			mMovingPlayer = false;
+			mHitPlayer = false;
 
 			mWorld.destroyJoint(mMouseJoint);
 			mMouseJoint = null;
@@ -560,21 +558,6 @@ public class EnemyEditor extends ActorEditor {
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public boolean hasUndo() {
-		return mInvoker.canUndo();
-	}
-
-	@Override
-	public void undo() {
-		mInvoker.undo();
-	}
-
-	@Override
-	public void redo() {
-		mInvoker.redo();
 	}
 
 	/**
@@ -1005,7 +988,7 @@ public class EnemyEditor extends ActorEditor {
 	 */
 	@Override
 	public void duplicateDef() {
-		setEnemyDef((EnemyActorDef) mDef.copy());
+		setEnemyDef((EnemyActorDef) mDef.copyNewResource());
 		mGui.resetValues();
 		saveDef();
 	}
@@ -1066,51 +1049,6 @@ public class EnemyEditor extends ActorEditor {
 			return false;
 		}
 	}
-
-	/** Invalid pointer id */
-	private static final int INVALID_POINTER = -1;
-	/** Current pointer that moves the player */
-	private int mPlayerPointer = INVALID_POINTER;
-	/** If we're currently moving the player */
-	private boolean mMovingPlayer = false;
-	/** Mouse joint definition */
-	private MouseJointDef mMouseJointDef = new MouseJointDef();
-	/** Mouse joint for player */
-	private MouseJoint mMouseJoint = null;
-	/** Body of the mouse, for mouse joint */
-	private Body mMouseBody = null;
-	/** Callback for "ray testing" if hit player */
-	private QueryCallback mCallbackPlayerHit = new QueryCallback() {
-		@Override
-		public boolean reportFixture(Fixture fixture) {
-			if (fixture.testPoint(mCursorWorld.x, mCursorWorld.y)) {
-				if (fixture.getBody().getUserData() instanceof PlayerActor) {
-					mMovingPlayer = true;
-					return false;
-				}
-			}
-			return true;
-		}
-	};
-	/** World coordinate for the cursor */
-	private Vector2 mCursorWorld = new Vector2();
-
-	/** Callback for "ray testing" hitting a UI element */
-	private QueryCallback mCallbackUiHit = new QueryCallback() {
-		@Override
-		public boolean reportFixture(Fixture fixture) {
-			mPlayerHitUi = false;
-			if (fixture.getFilterData().categoryBits == ActorFilterCategories.SCREEN_BORDER) {
-				mPlayerHitUi = true;
-				return false;
-			}
-			return true;
-		}
-	};
-	/** Player hit UI element */
-	private boolean mPlayerHitUi = false;
-	/** Player last position */
-	private Vector2 mPlayerLastPosition = new Vector2();
 
 	/**
 	 * @return all three path positions
@@ -1345,7 +1283,7 @@ public class EnemyEditor extends ActorEditor {
 	/**
 	 * Which selection action we're currently using (when a SelectDefScene is active)
 	 */
-	enum SelectionActions {
+	private enum SelectionActions {
 		/** Bullet type for the weapon */
 		BULLET_TYPE,
 		/** Load an existing enemy */
@@ -1379,5 +1317,47 @@ public class EnemyEditor extends ActorEditor {
 	private PlayerActor mPlayerActor = null;
 	/** Listens for collisions */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
+
+	/** Invalid pointer id */
+	private static final int INVALID_POINTER = -1;
+	/** Current pointer that moves the player */
+	private int mPlayerPointer = INVALID_POINTER;
+	/** If we're currently moving the player */
+	private boolean mHitPlayer = false;
+	/** Mouse joint definition */
+	private MouseJointDef mMouseJointDef = new MouseJointDef();
+	/** Mouse joint for player */
+	private MouseJoint mMouseJoint = null;
+	/** Callback for "ray testing" if hit player */
+	private QueryCallback mCallbackPlayerHit = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			if (fixture.testPoint(mCursorWorld.x, mCursorWorld.y)) {
+				if (fixture.getBody().getUserData() instanceof PlayerActor) {
+					mHitPlayer = true;
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+	/** World coordinate for the cursor */
+	private Vector2 mCursorWorld = new Vector2();
+	/** Callback for "ray testing" hitting a UI element */
+	private QueryCallback mCallbackUiHit = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			mPlayerHitUi = false;
+			if (fixture.getFilterData().categoryBits == ActorFilterCategories.SCREEN_BORDER) {
+				mPlayerHitUi = true;
+				return false;
+			}
+			return true;
+		}
+	};
+	/** Player hit UI element */
+	private boolean mPlayerHitUi = false;
+	/** Player last position */
+	private Vector2 mPlayerLastPosition = new Vector2();
 
 }

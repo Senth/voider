@@ -71,9 +71,13 @@ public abstract class Gui implements Disposable {
 	 * @param height new height of the GUI
 	 */
 	public void resize(int width, int height) {
-		if (mStage != null) {
-			mStage.getViewport().update(width, height, true);
-			updateBackground();
+		if (isInitialized()) {
+			dispose();
+			initGui();
+			if (mStage != null) {
+				mStage.getViewport().update(width, height, true);
+				updateBackground();
+			}
 		}
 	}
 

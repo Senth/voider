@@ -36,6 +36,7 @@ import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -94,7 +95,7 @@ public abstract class EditorGui extends Gui {
 	 * Sets the editor bound to this GUI
 	 * @param editor the editor bound to this GUI
 	 */
-	public void setEditor(Editor editor) {
+	protected void setEditor(Editor editor) {
 		mEditor = editor;
 		mInvoker = mEditor.getInvoker();
 	}
@@ -330,6 +331,25 @@ public abstract class EditorGui extends Gui {
 			};
 		}
 		mTooltip.add(button, Messages.EditorTooltips.EDITOR_BULLET);
+
+
+		// Ship editor
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
+			if (this.getClass() == ShipEditorGui.class) {
+				button = mUiFactory.addImageButton(EditorIcons.SHIP_EDITOR_SELECTED, mEditorMenu, null, null);
+			} else {
+				button = mUiFactory.addImageButton(EditorIcons.SHIP_EDITOR, mEditorMenu, null, null);
+			}
+			if (this.getClass() != BulletEditorGui.class) {
+				new ButtonListener(button) {
+					@Override
+					protected void onPressed(Button button) {
+						switchReturnTo("Ship Editor", new CSceneSwitch(ShipEditor.class), UnsavedActions.SHIP_EDITOR);
+					}
+				};
+			}
+			mTooltip.add(button, Messages.EditorTooltips.EDITOR_SHIP);
+		}
 	}
 
 	/**
@@ -501,25 +521,43 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Publish
-		button = mUiFactory.addImageButton(EditorIcons.PUBLISH, mFileMenu, null, mDisabledWhenPublished);
-		tooltip = getFilePublishTooltip();
-		if (tooltip != null) {
-			mTooltip.add(button, tooltip);
-		}
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				boolean showPublish = true;
+		if (!(this instanceof ShipEditorGui)) {
+			button = mUiFactory.addImageButton(EditorIcons.PUBLISH, mFileMenu, null, mDisabledWhenPublished);
+			tooltip = getFilePublishTooltip();
+			if (tooltip != null) {
+				mTooltip.add(button, tooltip);
+			}
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed(Button button) {
+					boolean showPublish = true;
 
-				// For level, make sure level has screen shot before publishing
-				if (mEditor instanceof LevelEditor) {
-					if (!((LevelEditor) mEditor).hasScreenshot()) {
+					// For level, make sure level has screen shot before publishing
+					if (mEditor instanceof LevelEditor) {
+						if (!((LevelEditor) mEditor).hasScreenshot()) {
+							showPublish = false;
+
+							MsgBoxExecuter msgBox = getFreeMsgBox(true);
+							msgBox.setTitle("No screenshot taken");
+							String text = "Please take a screenshot of this level before publishing it. "
+									+ "You can do this by test running the level and click on the camera " + "icon in the top bar.";
+							Label label = new Label(text, mUiFactory.getStyles().label.standard);
+							msgBox.content(label);
+							msgBox.addCancelButtonAndKeys("OK");
+							label.setWrap(true);
+							label.setWidth(Gdx.graphics.getWidth() * 0.5f);
+							showMsgBox(msgBox);
+						}
+					}
+
+					// Check if online
+					if (!User.getGlobalUser().isOnline()) {
 						showPublish = false;
 
 						MsgBoxExecuter msgBox = getFreeMsgBox(true);
-						msgBox.setTitle("No screenshot taken");
-						String text = "Please take a screenshot of this level before publishing it. "
-								+ "You can do this by test running the level and click on the camera " + "icon in the top bar.";
+						msgBox.setTitle("Offline");
+						String text = "You need to go online to publish the level. Currently this is "
+								+ "only possible by either logging out and logging in or restarting " + "the game.";
 						Label label = new Label(text, mUiFactory.getStyles().label.standard);
 						msgBox.content(label);
 						msgBox.addCancelButtonAndKeys("OK");
@@ -527,29 +565,13 @@ public abstract class EditorGui extends Gui {
 						label.setWidth(Gdx.graphics.getWidth() * 0.5f);
 						showMsgBox(msgBox);
 					}
-				}
 
-				// Check if online
-				if (!User.getGlobalUser().isOnline()) {
-					showPublish = false;
-
-					MsgBoxExecuter msgBox = getFreeMsgBox(true);
-					msgBox.setTitle("Offline");
-					String text = "You need to go online to publish the level. Currently this is "
-							+ "only possible by either logging out and logging in or restarting " + "the game.";
-					Label label = new Label(text, mUiFactory.getStyles().label.standard);
-					msgBox.content(label);
-					msgBox.addCancelButtonAndKeys("OK");
-					label.setWrap(true);
-					label.setWidth(Gdx.graphics.getWidth() * 0.5f);
-					showMsgBox(msgBox);
+					if (showPublish) {
+						showPublishDialog();
+					}
 				}
-
-				if (showPublish) {
-					showPublishDialog();
-				}
-			}
-		};
+			};
+		}
 
 		// Info
 		button = mUiFactory.addImageButton(EditorIcons.INFO, mFileMenu, null, null);

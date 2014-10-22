@@ -14,6 +14,7 @@ import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.CampaignEditor;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.editor.ShipEditor;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
@@ -269,6 +270,13 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	 */
 	void gotoBulletEditor() {
 		SceneSwitcher.switchTo(new BulletEditor());
+	}
+
+	/**
+	 * Go to ship editor
+	 */
+	void gotoShipEditor() {
+		SceneSwitcher.switchTo(new ShipEditor());
 	}
 
 	/**

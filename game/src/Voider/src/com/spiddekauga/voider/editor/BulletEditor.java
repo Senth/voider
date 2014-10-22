@@ -3,7 +3,6 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
@@ -15,7 +14,6 @@ import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -40,13 +38,6 @@ public class BulletEditor extends ActorEditor {
 	}
 
 	@Override
-	protected void onResize(int width, int height) {
-		super.onResize(width, height);
-		mGui.dispose();
-		mGui.initGui();
-	}
-
-	@Override
 	protected void onInit() {
 		super.onInit();
 
@@ -65,14 +56,7 @@ public class BulletEditor extends ActorEditor {
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
 
-		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
-			mInvoker.dispose();
-
-			ShaderProgram defaultShader = ResourceCacheFacade.get(InternalNames.SHADER_DEFAULT);
-			if (defaultShader != null) {
-				mShapeRenderer.setShader(defaultShader);
-			}
-		} else if (outcome == Outcomes.DEF_SELECTED) {
+		if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
 				if (message instanceof ResourceItem) {
@@ -89,8 +73,9 @@ public class BulletEditor extends ActorEditor {
 					setSaved();
 					mInvoker.dispose();
 				} else {
-					Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
+					Gdx.app.error("BulletEditor", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 				}
+				break;
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
@@ -148,11 +133,6 @@ public class BulletEditor extends ActorEditor {
 	}
 
 	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-	}
-
-	@Override
 	public void newDef() {
 		BulletActorDef newDef = new BulletActorDef();
 		newDef.getVisualVars().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
@@ -206,26 +186,11 @@ public class BulletEditor extends ActorEditor {
 
 	@Override
 	public void duplicateDef() {
-		mDef = (BulletActorDef) mDef.copy();
+		mDef = mDef.copyNewResource();
 		mWeapon.getDef().setBulletActorDef(mDef);
 		mGui.resetValues();
 		mInvoker.dispose();
 		saveDef();
-	}
-
-	@Override
-	public boolean hasUndo() {
-		return true;
-	}
-
-	@Override
-	public void undo() {
-		mInvoker.undo();
-	}
-
-	@Override
-	public void redo() {
-		mInvoker.redo();
 	}
 
 	/**
@@ -341,7 +306,7 @@ public class BulletEditor extends ActorEditor {
 	/**
 	 * Enumeration for what we're currently selecting from a selection scene
 	 */
-	enum SelectionActions {
+	private enum SelectionActions {
 		/** Loading another bullet */
 		LOAD_BULLET
 	}

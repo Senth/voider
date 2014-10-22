@@ -12,6 +12,7 @@ import com.spiddekauga.voider.resources.Def;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IEditor {
+	// ------------- File Menu ----------------
 	/**
 	 * @return Invoker for undo/redo
 	 */

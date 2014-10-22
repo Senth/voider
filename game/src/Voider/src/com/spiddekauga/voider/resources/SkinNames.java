@@ -180,6 +180,12 @@ public class SkinNames {
 		SELECT,
 		/** Set the center of the shape (only visible when actor shape is set to draw) */
 		SET_CENTER,
+		/** Small ship editor icon */
+		SHIP_EDITOR,
+		/** Selected ship editor icon */
+		SHIP_EDITOR_SELECTED,
+		/** Ship settings tab */
+		SHIP_SETTINGS,
 		/** As {@link #ADD_MOVE_CORNER} but for terrain */
 		TERRAIN_ADD_MOVE_CORNER,
 		/** As {@link #DRAW_APPEND} but for terrain */
@@ -866,6 +872,8 @@ public class SkinNames {
 		EDITOR_LEVEL_BIG(ImageButtonStyle.class, "level_editor_big"),
 		/** Campaign editor icon in menus */
 		EDITOR_CAMPAIGN_BIG(ImageButtonStyle.class, "campaign_editor_big"),
+		/** Ship editor icon in menus */
+		EDITOR_SHIP_BIG(ImageButtonStyle.class, "ship_editor_big"),
 
 		;
 

@@ -387,6 +387,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: enemy_editor_big
 	},
 	
+	ship_editor_big: {
+		imageDown: ship_editor_big_down,
+		imageOver: ship_editor_big_over,
+		imageUp: ship_editor_big
+	},
+	
 	/** Explore */
 	
 	featured_big: {

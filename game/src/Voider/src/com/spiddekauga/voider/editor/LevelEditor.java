@@ -774,7 +774,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void duplicateDef() {
-		Level level = mLevel.copy();
+		Level level = mLevel.copyNewResource();
 
 		setLevel(level);
 

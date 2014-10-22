@@ -696,12 +696,9 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 		float width = 0;
 		float height = 0;
-		int visibleRows = 0;
-		int invisibleRows = 0;
 
 		for (Row row : mRows) {
 			if (row.isVisible()) {
-				visibleRows++;
 				row.calculatePreferredSize();
 				mPrefHeight += row.getPrefHeight();
 				mMinHeight += row.getMinHeight();
@@ -718,8 +715,6 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 				if (row.getWidth() > width) {
 					width = row.getWidth();
 				}
-			} else {
-				invisibleRows++;
 			}
 		}
 

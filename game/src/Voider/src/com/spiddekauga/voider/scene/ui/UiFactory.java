@@ -28,6 +28,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
+import com.spiddekauga.utils.Maths;
+import com.spiddekauga.utils.Maths.MagnitudeWrapper;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -693,7 +695,7 @@ public class UiFactory {
 
 		// Text field
 		TextField textField = new TextField("", mStyles.textField.standard);
-		textField.setMaxLength(4);
+		textField.setMaxLength(calculateTextFieldCharacters(min, max, stepSize));
 		table.add(textField).setWidth(mStyles.vars.textFieldNumberWidth);
 
 		// Set slider listener
@@ -706,6 +708,41 @@ public class UiFactory {
 		}
 
 		return slider;
+	}
+
+	/**
+	 * Calculate how many characters are needed to be displayed in the slider text field
+	 * for all values to be shown. I.e. order of magnitude (sort of)
+	 * @param min minimum slider value
+	 * @param max maximum slider value
+	 * @param stepSize
+	 * @return maximum character count for slider text field
+	 */
+	private static int calculateTextFieldCharacters(float min, float max, float stepSize) {
+		MagnitudeWrapper minMag = Maths.calculateMagnitude(min);
+		MagnitudeWrapper maxMag = Maths.calculateMagnitude(max);
+		MagnitudeWrapper stepMag = Maths.calculateMagnitude(stepSize);
+		int textWidth = 0;
+
+		// Highest integer magnitude
+		textWidth += Math.max(minMag.getInt(), maxMag.getInt());
+
+		// Highest decimal value
+		textWidth += Math.max(Math.max(minMag.getDec(), maxMag.getDec()), stepMag.getDec());
+
+
+		// Extra characters
+		// Minus
+		if (min < 0) {
+			textWidth++;
+		}
+
+		// Decimal point
+		if (minMag.getDec() > 0 || maxMag.getDec() > 0 || stepMag.getDec() > 0) {
+			textWidth++;
+		}
+
+		return textWidth;
 	}
 
 	/**

@@ -692,6 +692,15 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: color_disabled
 	},
 	
+	ship_settings: {
+		imageUp: ship_settings,
+		imageOver: ship_settings_over,
+		imageDown: ship_settings_down,
+		imageChecked: ship_settings_checked,
+		imageCheckedOver: ship_settings_checked_over,
+		imageDisabled: ship_settings_disabled
+	},
+	
 	movement_ai: {
 		imageUp: movement_ai,
 		imageOver: movement_ai_over,
