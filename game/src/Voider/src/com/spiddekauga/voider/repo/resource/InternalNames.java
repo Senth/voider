@@ -73,6 +73,8 @@ public enum InternalNames {
 	// Text files
 	/** Credits to display */
 	INI_CREDITS("credits.ini", Ini.class),
+	/** Config file */
+	INI_CONFIG("config.ini", Ini.class),
 
 
 	;

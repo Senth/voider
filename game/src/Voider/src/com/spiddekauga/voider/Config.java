@@ -272,7 +272,7 @@ public class Config {
 			/**
 			 * Visual options
 			 */
-			public class Visual {
+			public static class Visual {
 				/** Minimum rotate speed of an actor */
 				public final static float ROTATE_SPEED_MIN = -720;
 				/** Maximum rotate speed of an actor */
@@ -291,6 +291,24 @@ public class Config {
 				public final static float DRAW_CORNER_ANGLE_MIN = 9;
 				/** Maximum squared distance a new corners might be from a line segment */
 				public final static float NEW_CORNER_DIST_MAX_SQ = 3 * 3;
+				/** Minimum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MIN = 0.2f;
+				/** Maximum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MAX = 6f;
+				/** Default radius of the enemy (when it's a circle) */
+				public final static float RADIUS_DEFAULT = 0.4f;
+				/** Step size for radius */
+				public final static float RADIUS_STEP_SIZE = 0.1f;
+				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MIN = 0.1f;
+				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MAX = RADIUS_MAX * 2;
+				/** Default width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
+				/** Step size for the enemy width/height */
+				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
+				/** Default shape type of the enemy */
+				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.CIRCLE;
 			}
 
 			/**
@@ -577,6 +595,38 @@ public class Config {
 		 * Ship editor
 		 */
 		public static class Ship {
+			/**
+			 * Visuals
+			 */
+			public static class Visual {
+				/** Minimum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MIN = 0.2f;
+				/** Maximum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MAX = 6f;
+				/** Default radius of the enemy (when it's a circle) */
+				public final static float RADIUS_DEFAULT = 0.4f;
+				/** Step size for radius */
+				public final static float RADIUS_STEP_SIZE = 0.1f;
+				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MIN = 0.1f;
+				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MAX = RADIUS_MAX * 2;
+				/** Default width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
+				/** Step size for the enemy width/height */
+				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
+				/** Default shape type of the enemy */
+				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.CIRCLE;
+
+				/** Minimum distance for new corners when drawing */
+				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.25f * 0.25f;
+				/**
+				 * Minimum angle between corners, if less than this, the corner will be
+				 * removed
+				 */
+				public final static float DRAW_CORNER_ANGLE_MIN = 5;
+			}
+
 			/** Minimum mouse joint force */
 			public static final float FORCE_MIN = 1;
 			/** Maximum mouse joint force */

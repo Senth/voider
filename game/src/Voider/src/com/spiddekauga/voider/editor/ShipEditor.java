@@ -90,6 +90,7 @@ public class ShipEditor extends ActorEditor {
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
 
+		mActor.updateEditor();
 		mActor.update(deltaTime);
 	}
 

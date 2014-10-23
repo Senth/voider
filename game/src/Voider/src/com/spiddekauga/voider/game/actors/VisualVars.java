@@ -24,6 +24,7 @@ import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.Config.Editor.Ship;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
@@ -109,10 +110,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			break;
 
 		case PLAYER:
-			mShapeType = ActorShapeTypes.CIRCLE;
-			mShapeCircleRadius = 1;
-			mShapeHeight = 0;
-			mShapeWidth = 0;
+			mShapeType = Ship.Visual.SHAPE_DEFAULT;
+			mShapeCircleRadius = Ship.Visual.RADIUS_DEFAULT;
+			mShapeHeight = Ship.Visual.SIZE_DEFAULT;
+			mShapeWidth = Ship.Visual.SIZE_DEFAULT;
 			break;
 
 		default:

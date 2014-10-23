@@ -116,6 +116,18 @@ public class Collections {
 	 * @param addFrom the collection to add from
 	 * @param addTo the collection to add to
 	 */
+	public static <ElementType> void addAll(ElementType[] addFrom, Collection<ElementType> addTo) {
+		for (ElementType element : addFrom) {
+			addTo.add(element);
+		}
+	}
+
+	/**
+	 * Adds all elements to an collection
+	 * @param <ElementType> the element type
+	 * @param addFrom the collection to add from
+	 * @param addTo the collection to add to
+	 */
 	public static <ElementType> void addAll(Iterable<ElementType> addFrom, Collection<ElementType> addTo) {
 		for (ElementType element : addFrom) {
 			addTo.add(element);

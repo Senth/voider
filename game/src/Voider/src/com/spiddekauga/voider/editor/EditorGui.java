@@ -340,7 +340,7 @@ public abstract class EditorGui extends Gui {
 			} else {
 				button = mUiFactory.addImageButton(EditorIcons.SHIP_EDITOR, mEditorMenu, null, null);
 			}
-			if (this.getClass() != BulletEditorGui.class) {
+			if (this.getClass() != ShipEditorGui.class) {
 				new ButtonListener(button) {
 					@Override
 					protected void onPressed(Button button) {
