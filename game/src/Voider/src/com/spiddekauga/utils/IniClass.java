@@ -74,6 +74,7 @@ public abstract class IniClass {
 			// Get constructor
 			try {
 				Constructor<?> constructor = child.getType().getDeclaredConstructor(Ini.class, Section.class);
+				constructor.setAccessible(true);
 				try {
 					IniClass childInstance = (IniClass) constructor.newInstance(ini, childSection);
 					child.set(this, childInstance);
@@ -151,8 +152,7 @@ public abstract class IniClass {
 	 * @param vars all class variables (including super classes)
 	 */
 	private void setSectionVars(Section classSection, Map<String, Field> vars) {
-		// TODO How do we get all variable names?
-		for (String varName : classSection.getAll()) {
+		for (String varName : classSection.keySet()) {
 			// Skip sections
 			if (classSection.getChild(varName) == null) {
 				Field field = vars.get(varName);
@@ -198,6 +198,8 @@ public abstract class IniClass {
 
 		// Split into children and vars
 		for (Field field : fields) {
+			field.setAccessible(true);
+
 			// Inner class
 			if (IniClass.class.isAssignableFrom(field.getType())) {
 				// Check for inner class

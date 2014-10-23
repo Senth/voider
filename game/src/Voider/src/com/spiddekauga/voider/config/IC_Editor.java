@@ -12,16 +12,16 @@ import com.spiddekauga.utils.IniClass;
  */
 @SuppressWarnings("javadoc")
 public class IC_Editor extends IniClass {
-	public IC_Actor actor;
-	public IC_Bullet bullet;
-	public IC_Enemy enemy;
-	public IC_Ship ship;
+	IC_Actor actor;
+	IC_Bullet bullet;
+	IC_Enemy enemy;
+	IC_Ship ship;
 
 	/**
 	 * Editor actor options
 	 */
 	public static class IC_Actor extends IniClass {
-		public IC_Visual visual;
+		IC_Visual visual;
 		protected float zoomMin;
 		protected float zoomMax;
 
@@ -47,7 +47,7 @@ public class IC_Editor extends IniClass {
 			// protected float sizeStepSize;
 			// protected ActorShapeTypes shapeType;
 
-			public IC_Visual(Ini ini, Section classSection) {
+			IC_Visual(Ini ini, Section classSection) {
 				super(ini, classSection);
 			}
 
@@ -164,7 +164,7 @@ public class IC_Editor extends IniClass {
 			// }
 		}
 
-		public IC_Actor(Ini ini, Section classSection) {
+		IC_Actor(Ini ini, Section classSection) {
 			super(ini, classSection);
 		}
 
@@ -187,19 +187,19 @@ public class IC_Editor extends IniClass {
 	 * Bullet editor options
 	 */
 	public static class IC_Bullet extends IniClass {
-		public IC_Visual visual;
+		IC_Visual visual;
 
 		/**
 		 * Overridden visual options
 		 */
 		public static class IC_Visual extends com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual {
-			public IC_Visual(Ini ini, Section classSection) {
+			IC_Visual(Ini ini, Section classSection) {
 				super(ini, classSection);
 			}
 		}
 
 
-		public IC_Bullet(Ini ini, Section classSection) {
+		IC_Bullet(Ini ini, Section classSection) {
 			super(ini, classSection);
 		}
 
@@ -209,18 +209,18 @@ public class IC_Editor extends IniClass {
 	 * Enemy editor options
 	 */
 	public static class IC_Enemy extends IniClass {
-		public IC_Visual visual;
+		IC_Visual visual;
 
 		/**
 		 * Overridden visual options
 		 */
 		public static class IC_Visual extends com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual {
-			public IC_Visual(Ini ini, Section classSection) {
+			IC_Visual(Ini ini, Section classSection) {
 				super(ini, classSection);
 			}
 		}
 
-		public IC_Enemy(Ini ini, Section classSection) {
+		IC_Enemy(Ini ini, Section classSection) {
 			super(ini, classSection);
 		}
 	}
@@ -234,18 +234,18 @@ public class IC_Editor extends IniClass {
 		 * Overridden visual options
 		 */
 		public static class IC_Visual extends com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual {
-			public IC_Visual(Ini ini, Section classSection) {
+			IC_Visual(Ini ini, Section classSection) {
 				super(ini, classSection);
 			}
 		}
 
-		public IC_Ship(Ini ini, Section classSection) {
+		IC_Ship(Ini ini, Section classSection) {
 			super(ini, classSection);
 		}
 
 	}
 
-	public IC_Editor(Ini ini, Section classSection) {
+	IC_Editor(Ini ini, Section classSection) {
 		super(ini, classSection);
 	}
 }
