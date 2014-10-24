@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
@@ -21,6 +21,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
@@ -143,7 +144,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	 */
 	private void calculateIndexOfPosBetweenCorners(Vector2 worldPos) {
 		ArrayList<IResourceCorner> resources = mSelection.getSelectedResourcesOfType(IResourceCorner.class);
-		float bestDist = Config.Editor.Actor.Visual.NEW_CORNER_DIST_MAX_SQ;
+		float bestDist = ConfigIni.getInstance().editor.actor.getVisual((Scene) mEditor).getNewCornerDistMaxSq();
 
 		for (IResourceCorner resource : resources) {
 			ArrayList<Vector2> corners = resource.getCorners();

@@ -8,8 +8,6 @@ import com.badlogic.gdx.utils.Pool;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -24,22 +22,19 @@ public class CResourceCornerRemoveExcessive extends Command {
 	/**
 	 * Constructor which takes the resource to remove excessive corners from
 	 * @param resource the resource to remove excessive corners from
+	 * @param newCornerMinDistSq squared minimum distance between corners
+	 * @param cornerMinAngle minimum corner angle
 	 */
-	public CResourceCornerRemoveExcessive(IResourceCorner resource) {
+	public CResourceCornerRemoveExcessive(IResourceCorner resource, float newCornerMinDistSq, float cornerMinAngle) {
 		mResource = resource;
+		mCornerDistMinSq = newCornerMinDistSq;
+		mCornerAngleMin = cornerMinAngle;
 	}
 
 	@Override
 	public boolean execute() {
 		if (mResource.getCornerCount() < 2) {
 			return false;
-		}
-
-		float drawNewCornerMinDistanceSq = Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
-		float drawCornerAngleMin = Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN;
-		if (mResource instanceof BulletActorDef) {
-			drawNewCornerMinDistanceSq = Config.Editor.Bullet.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
-			drawCornerAngleMin = Config.Editor.Bullet.Visual.DRAW_CORNER_ANGLE_MIN;
 		}
 
 		Vector2 afterVector = Pools.vector2.obtain();
@@ -58,7 +53,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 				removeCorner = false;
 
 				// Test distance
-				if (afterVector.len2() < drawNewCornerMinDistanceSq) {
+				if (afterVector.len2() < mCornerDistMinSq) {
 					removeCorner = true;
 				}
 				// Test angle
@@ -67,14 +62,14 @@ public class CResourceCornerRemoveExcessive extends Command {
 					afterVector.set(corners.get(Collections.nextIndex(corners, i))).sub(corners.get(i));
 					afterAngle = afterVector.angle();
 
-					if (Maths.approxCompare(beforeAngle, afterAngle, drawCornerAngleMin)) {
+					if (Maths.approxCompare(beforeAngle, afterAngle, mCornerAngleMin)) {
 						removeCorner = true;
 					} else if (beforeAngle < afterAngle) {
-						if (Maths.approxCompare(beforeAngle + 360, afterAngle, drawCornerAngleMin)) {
+						if (Maths.approxCompare(beforeAngle + 360, afterAngle, mCornerAngleMin)) {
 							removeCorner = true;
 						}
 					} else {
-						if (Maths.approxCompare(beforeAngle - 360, afterAngle, drawCornerAngleMin)) {
+						if (Maths.approxCompare(beforeAngle - 360, afterAngle, mCornerAngleMin)) {
 							removeCorner = true;
 						}
 					}
@@ -98,7 +93,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 			// end-1 -> end.
 			if (corners.size() > 1) {
 				afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(corners.size() - 2));
-				if (afterVector.len2() < drawNewCornerMinDistanceSq) {
+				if (afterVector.len2() < mCornerDistMinSq) {
 					removeCorner(corners.size() - 1);
 				}
 			}
@@ -106,7 +101,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 			// end -> begin
 			if (corners.size() > 1) {
 				afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(0));
-				if (afterVector.len2() < drawNewCornerMinDistanceSq) {
+				if (afterVector.len2() < mCornerDistMinSq) {
 					removeCorner(corners.size() - 1);
 				}
 			}
@@ -176,11 +171,11 @@ public class CResourceCornerRemoveExcessive extends Command {
 		int index = -1;
 	}
 
-	/** Resource to remove excessive corners from */
+	private float mCornerDistMinSq;
+	private float mCornerAngleMin;
 	private IResourceCorner mResource;
 	/** Removed corners */
-	@SuppressWarnings("unchecked")
-	private ArrayList<CornerIndex> mRemovedCorners = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") private ArrayList<CornerIndex> mRemovedCorners = Pools.arrayList.obtain();
 	/** Pool for corner index */
 	private Pool<CornerIndex> mCornerIndexPool = com.badlogic.gdx.utils.Pools.get(CornerIndex.class);
 }

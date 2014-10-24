@@ -38,8 +38,6 @@ public class ConfigIni {
 		Ini ini = ResourceCacheFacade.get(mFileName);
 		IniClass.setJavaClassPrefix("IC_");
 		editor = new IC_Editor(ini, ini.get("Editor"));
-
-		boolean nothing = true;
 	}
 
 	/**

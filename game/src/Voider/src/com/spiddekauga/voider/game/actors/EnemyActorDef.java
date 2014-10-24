@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.resources.Resource;
@@ -18,11 +19,9 @@ public class EnemyActorDef extends ActorDef {
 	public EnemyActorDef() {
 		super(ActorTypes.ENEMY);
 
-		setCollisionDamage(5);
+		setCollisionDamage(Config.Editor.Actor.Collision.DAMAGE_DEFAULT);
 		getBodyDef().type = BodyType.KinematicBody;
 		getBodyDef().fixedRotation = true;
-
-		mVisualVars.setShapeType(Enemy.Visual.SHAPE_DEFAULT);
 	}
 
 	@Override

@@ -66,24 +66,47 @@ public abstract class IniClass {
 	 */
 	private void setChildren(Ini ini, Section classSection, ArrayList<Field> children) {
 		for (Field child : children) {
-			String childClassName = child.getType().getSimpleName();
+			String childClassName = getFullSimpleName(child.getType());
 			String childName = getSimpleSectionName(child.getType());
 			Section childSection = classSection.getChild(childName);
 
-			// Get constructor
+			// Static inner class
+			IniClass childInstance = null;
 			try {
 				Constructor<?> constructor = child.getType().getDeclaredConstructor(Ini.class, Section.class);
 				constructor.setAccessible(true);
 				try {
-					IniClass childInstance = (IniClass) constructor.newInstance(ini, childSection);
-					child.set(this, childInstance);
+					childInstance = (IniClass) constructor.newInstance(ini, childSection);
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			} catch (NoSuchMethodException e) {
-				mLogger.severe("Could not find constructor for " + childClassName);
+				// Do nothing check for regular inner class constructor
 			} catch (SecurityException e) {
 				mLogger.severe("Cannot access constructor for " + childClassName);
+			}
+
+			// Inner class
+			if (childInstance == null) {
+				try {
+					Constructor<?> constructor = child.getType().getDeclaredConstructor(getClass(), Ini.class, Section.class);
+					constructor.setAccessible(true);
+					try {
+						childInstance = (IniClass) constructor.newInstance(this, ini, childSection);
+					} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						e.printStackTrace();
+					}
+				} catch (NoSuchMethodException e) {
+					mLogger.severe("Could not find constructor for " + childClassName);
+				} catch (SecurityException e) {
+					mLogger.severe("Cannot access constructor for " + childClassName);
+				}
+			}
+
+			try {
+				child.set(this, childInstance);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				mLogger.severe("Cannot set the child " + childClassName);
 			}
 		}
 	}

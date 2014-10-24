@@ -11,6 +11,8 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config.Editor.Weapon;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.utils.Messages;
@@ -153,6 +155,11 @@ public class BulletEditorGui extends ActorGui {
 	@Override
 	ITooltip getFileInfoTooltip() {
 		return Messages.EditorTooltips.FILE_INFO_BULLET;
+	}
+
+	@Override
+	protected IC_Visual getVisualConfig() {
+		return ConfigIni.getInstance().editor.bullet.visual;
 	}
 
 	// Tables

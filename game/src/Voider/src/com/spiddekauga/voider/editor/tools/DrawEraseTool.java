@@ -12,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
@@ -20,7 +19,6 @@ import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -72,7 +70,7 @@ public class DrawEraseTool extends ActorTool {
 	@Override
 	protected boolean dragged() {
 		if (mDrawEraseBrush != null) {
-			if (haveMovedEnoughToAddAnotherCorner()) {
+			if (haveMovedEnoughToAddAnotherCorner(mDragOrigin)) {
 				mDrawEraseBrush.addCorner(mTouchCurrent);
 				mDragOrigin.set(mTouchCurrent);
 			}
@@ -85,7 +83,9 @@ public class DrawEraseTool extends ActorTool {
 		if (mDrawEraseBrush != null) {
 			mDrawEraseBrush.addCorner(mTouchCurrent);
 
-			Command removeExcessiveCorners = new CResourceCornerRemoveExcessive(mDrawEraseBrush);
+			float distMinSq = getVisualConfig().getDrawNewCornerDistMinSq();
+			float angleMin = getVisualConfig().getDrawCornerAngleMin();
+			Command removeExcessiveCorners = new CResourceCornerRemoveExcessive(mDrawEraseBrush, distMinSq, angleMin);
 			removeExcessiveCorners.execute();
 
 			// Check for intersections in draw erase brush...
@@ -329,7 +329,9 @@ public class DrawEraseTool extends ActorTool {
 
 
 		// Remove all excess corners
-		mInvoker.execute(new CResourceCornerRemoveExcessive(actorCorners), true);
+		float distMinSq = getVisualConfig().getDrawNewCornerDistMinSq();
+		float angleMin = getVisualConfig().getDrawCornerAngleMin();
+		mInvoker.execute(new CResourceCornerRemoveExcessive(actorCorners, distMinSq, angleMin), true);
 
 
 		// Create fixtures (and maybe fix area)
@@ -493,28 +495,6 @@ public class DrawEraseTool extends ActorTool {
 		return intersections;
 	}
 
-	/**
-	 * Tests whether the pointer have moved enough to add another corner
-	 * @return true if we shall add another corner.
-	 */
-	private boolean haveMovedEnoughToAddAnotherCorner() {
-		boolean movedEnough = false;
-
-		float drawNewCornerMinDistSq = Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
-		if (mActorDef instanceof BulletActorDef) {
-			drawNewCornerMinDistSq = Config.Editor.Bullet.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
-		}
-
-		// If has drawn more than minimum distance, add another corner here
-		Vector2 diffVector = Pools.vector2.obtain();
-		diffVector.set(mTouchCurrent).sub(mDragOrigin);
-		if (diffVector.len2() >= drawNewCornerMinDistSq) {
-			movedEnough = true;
-		}
-		Pools.vector2.free(diffVector);
-
-		return movedEnough;
-	}
 
 	/**
 	 * Wrapper class for intersection, actor corner index, brush index.

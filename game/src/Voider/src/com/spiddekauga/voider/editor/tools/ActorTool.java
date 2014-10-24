@@ -4,11 +4,14 @@ import java.lang.reflect.Constructor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -117,6 +120,36 @@ abstract public class ActorTool extends TouchTool {
 	public ActorDef getActorDef() {
 		return mActorDef;
 	}
+
+	/**
+	 * Helper method to get the visual options for the current editor
+	 * @return visual options for the current editor
+	 */
+	protected IC_Visual getVisualConfig() {
+		return ConfigIni.getInstance().editor.actor.getVisual((Scene) mEditor);
+	}
+
+	/**
+	 * Tests whether the pointer have moved enough to add another corner
+	 * @param dragOrigin where we started to drag the
+	 * @return true if we shall add another corner.
+	 */
+	protected boolean haveMovedEnoughToAddAnotherCorner(Vector2 dragOrigin) {
+		boolean movedEnough = false;
+
+		float drawNewCornerMinDistSq = getVisualConfig().getDrawNewCornerDistMinSq();
+
+		// If has drawn more than minimum distance, add another corner here
+		Vector2 diffVector = Pools.vector2.obtain();
+		diffVector.set(mTouchCurrent).sub(dragOrigin);
+		if (diffVector.len2() >= drawNewCornerMinDistSq) {
+			movedEnough = true;
+		}
+		Pools.vector2.free(diffVector);
+
+		return movedEnough;
+	}
+
 
 	/** Created an actor this turn */
 	protected boolean mCreatedActorThisDown = false;

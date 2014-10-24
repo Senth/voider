@@ -26,6 +26,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
 import com.spiddekauga.voider.Config.Editor.Weapon;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -862,6 +864,11 @@ public class EnemyEditorGui extends ActorGui {
 	@Override
 	ITooltip getFileInfoTooltip() {
 		return Messages.EditorTooltips.FILE_INFO_ENEMY;
+	}
+
+	@Override
+	protected IC_Visual getVisualConfig() {
+		return ConfigIni.getInstance().editor.enemy.visual;
 	}
 
 	/** Zoom listener that fixes label locations */

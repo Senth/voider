@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
@@ -59,7 +61,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	protected void onInit() {
 		super.onInit();
 
-		mZoomTool = new ZoomTool(this, Config.Editor.Actor.ZOOM_MIN, Config.Editor.Actor.ZOOM_MAX);
+		IC_Actor icActor = ConfigIni.getInstance().editor.actor;
+
+		mZoomTool = new ZoomTool(this, icActor.getZoomMin(), icActor.getZoomMax());
 
 		mTools[Tools.ZOOM_IN.ordinal()] = mZoomTool;
 		mTools[Tools.ZOOM_OUT.ordinal()] = mZoomTool;

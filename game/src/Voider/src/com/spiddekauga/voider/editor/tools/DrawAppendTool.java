@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
@@ -10,7 +10,6 @@ import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
@@ -59,7 +58,7 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	@Override
 	protected boolean dragged() {
 		if (mSelectedActor != null) {
-			if (haveMovedEnoughToAddAnotherCorner()) {
+			if (haveMovedEnoughToAddAnotherCorner(mDragOrigin)) {
 				appendCorner(true);
 			}
 		}
@@ -72,7 +71,9 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 			// Add a final corner when released
 			appendCorner(true);
 
-			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
+			IC_Visual icVisual = getVisualConfig();
+			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars(), icVisual.getDrawNewCornerDistMinSq(),
+					icVisual.getDrawCornerAngleMin()), true);
 
 			try {
 				// Reset center if the actor was just created
@@ -143,29 +144,6 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	private void handleBadCornerPosition(String message) {
 		mInvoker.undo(false);
 		mInvoker.clearRedo();
-	}
-
-	/**
-	 * Tests whether the pointer have moved enough to add another corner
-	 * @return true if we shall add another corner.
-	 */
-	private boolean haveMovedEnoughToAddAnotherCorner() {
-		boolean movedEnough = false;
-
-		float drawNewCornerMinDistSq = Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
-		if (mActorDef instanceof BulletActorDef) {
-			drawNewCornerMinDistSq = Config.Editor.Bullet.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
-		}
-
-		// If has drawn more than minimum distance, add another corner here
-		Vector2 diffVector = Pools.vector2.obtain();
-		diffVector.set(mTouchCurrent).sub(mDragOrigin);
-		if (diffVector.len2() >= drawNewCornerMinDistSq) {
-			movedEnough = true;
-		}
-		Pools.vector2.free(diffVector);
-
-		return movedEnough;
 	}
 
 	/**

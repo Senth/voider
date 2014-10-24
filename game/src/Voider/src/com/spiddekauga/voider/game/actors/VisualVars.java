@@ -22,9 +22,8 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Debug;
-import com.spiddekauga.voider.Config.Editor.Bullet;
-import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.Config.Editor.Ship;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
@@ -45,8 +44,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * @param actorType the default values depends on which actor type is set
 	 */
 	VisualVars(ActorTypes actorType) {
-		this();
-
 		mActorType = actorType;
 		setDefaultValues();
 
@@ -79,20 +76,16 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Sets the default values of the visual vars depending on the current actor type
 	 */
 	private void setDefaultValues() {
+		IC_Visual icVisual = null;
+
 		// Type specific settings
 		switch (mActorType) {
 		case ENEMY:
-			mShapeType = Enemy.Visual.SHAPE_DEFAULT;
-			mShapeCircleRadius = Enemy.Visual.RADIUS_DEFAULT;
-			mShapeWidth = Enemy.Visual.SIZE_DEFAULT;
-			mShapeHeight = Enemy.Visual.SIZE_DEFAULT;
+			icVisual = ConfigIni.getInstance().editor.enemy.visual;
 			break;
 
 		case BULLET:
-			mShapeType = Bullet.Visual.SHAPE_DEFAULT;
-			mShapeCircleRadius = Bullet.Visual.RADIUS_DEFAULT;
-			mShapeWidth = Bullet.Visual.SIZE_DEFAULT;
-			mShapeHeight = Bullet.Visual.SIZE_DEFAULT;
+			icVisual = ConfigIni.getInstance().editor.bullet.visual;
 			break;
 
 		case STATIC_TERRAIN:
@@ -110,22 +103,24 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			break;
 
 		case PLAYER:
-			mShapeType = Ship.Visual.SHAPE_DEFAULT;
-			mShapeCircleRadius = Ship.Visual.RADIUS_DEFAULT;
-			mShapeHeight = Ship.Visual.SIZE_DEFAULT;
-			mShapeWidth = Ship.Visual.SIZE_DEFAULT;
+			icVisual = ConfigIni.getInstance().editor.ship.visual;
 			break;
 
 		default:
+			icVisual = ConfigIni.getInstance().editor.actor.visual;
 			if (Gdx.app != null) {
 				Gdx.app.error("VisualVars", "Unknown actor type: " + mActorType);
 			}
-			mShapeType = ActorShapeTypes.CIRCLE;
-			mShapeCircleRadius = 1;
-			mShapeHeight = 1;
-			mShapeWidth = 1;
 			break;
 		}
+
+		if (icVisual != null) {
+			mShapeCircleRadius = icVisual.getRadiusDefault();
+			mShapeHeight = icVisual.getSizeDefault();
+			mShapeWidth = icVisual.getSizeDefault();
+			setShapeType(icVisual.getShapeDefault());
+		}
+
 	}
 
 	/**

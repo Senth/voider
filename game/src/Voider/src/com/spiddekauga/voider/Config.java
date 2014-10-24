@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config.Debug.Builds;
-import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceRender;
@@ -270,48 +269,6 @@ public class Config {
 		 */
 		public static class Actor {
 			/**
-			 * Visual options
-			 */
-			public static class Visual {
-				/** Minimum rotate speed of an actor */
-				public final static float ROTATE_SPEED_MIN = -720;
-				/** Maximum rotate speed of an actor */
-				public final static float ROTATE_SPEED_MAX = 720;
-				/** Default rotate speed of an actor */
-				public final static float ROTATE_SPEED_DEFAULT = 0;
-				/** Step size of rotate speed */
-				public final static float ROTATE_SPEED_STEP_SIZE = 1;
-
-				/** Minimum distance for new corners when drawing */
-				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.75f * 0.75f;
-				/**
-				 * Minimum angle between corners, if less than this, the corner will be
-				 * removed
-				 */
-				public final static float DRAW_CORNER_ANGLE_MIN = 9;
-				/** Maximum squared distance a new corners might be from a line segment */
-				public final static float NEW_CORNER_DIST_MAX_SQ = 3 * 3;
-				/** Minimum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MIN = 0.2f;
-				/** Maximum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MAX = 6f;
-				/** Default radius of the enemy (when it's a circle) */
-				public final static float RADIUS_DEFAULT = 0.4f;
-				/** Step size for radius */
-				public final static float RADIUS_STEP_SIZE = 0.1f;
-				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MIN = 0.1f;
-				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MAX = RADIUS_MAX * 2;
-				/** Default width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
-				/** Step size for the enemy width/height */
-				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
-				/** Default shape type of the enemy */
-				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.CIRCLE;
-			}
-
-			/**
 			 * Collision options
 			 */
 			public class Collision {
@@ -320,53 +277,12 @@ public class Config {
 				/** Maximum collision damage */
 				public final static float DAMAGE_MAX = 100;
 				/** Default collision damage */
-				public final static float DAMAGE_DEFAULT = 0;
+				public final static float DAMAGE_DEFAULT = 5;
 				/** Step size of collision damage */
 				public final static float DAMAGE_STEP_SIZE = 1;
 			}
-
-			/** Minimum zoom */
-			public final static float ZOOM_MIN = 0.1f;
-			/** Maximum zoom */
-			public final static float ZOOM_MAX = 1;
 		}
 
-		/**
-		 * Bullet editor options
-		 */
-		public static class Bullet {
-			/**
-			 * Visuals
-			 */
-			public static class Visual {
-				/** Minimum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MIN = 0.2f;
-				/** Maximum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MAX = 6f;
-				/** Default radius of the enemy (when it's a circle) */
-				public final static float RADIUS_DEFAULT = 0.4f;
-				/** Step size for radius */
-				public final static float RADIUS_STEP_SIZE = 0.1f;
-				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MIN = 0.1f;
-				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MAX = RADIUS_MAX * 2;
-				/** Default width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
-				/** Step size for the enemy width/height */
-				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
-				/** Default shape type of the enemy */
-				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.RECTANGLE;
-
-				/** Minimum distance for new corners when drawing */
-				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.25f * 0.25f;
-				/**
-				 * Minimum angle between corners, if less than this, the corner will be
-				 * removed
-				 */
-				public final static float DRAW_CORNER_ANGLE_MIN = 5;
-			}
-		}
 
 		/**
 		 * Enemy editor options
@@ -422,30 +338,6 @@ public class Config {
 				public final static float RANDOM_MOVEMENT_TIME_STEP_SIZE = 0.1f;
 				/** If random movement shall be turned on by default */
 				public final static boolean RANDOM_MOVEMENT_DEFAULT = false;
-			}
-
-			/**
-			 * Visuals
-			 */
-			public static class Visual {
-				/** Minimum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MIN = 0.2f;
-				/** Maximum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MAX = 10f;
-				/** Default radius of the enemy (when it's a circle) */
-				public final static float RADIUS_DEFAULT = 1;
-				/** Step size for radius */
-				public final static float RADIUS_STEP_SIZE = 0.1f;
-				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MIN = RADIUS_MIN * 2;
-				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MAX = RADIUS_MAX * 2;
-				/** Default width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
-				/** Step size for the enemy width/height */
-				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
-				/** Default shape type of the enemy */
-				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.CIRCLE;
 			}
 
 			/**
@@ -591,96 +483,6 @@ public class Config {
 			public final static float DAMAGE_STEP_SIZE = 1;
 		}
 
-		/**
-		 * Ship editor
-		 */
-		public static class Ship {
-			/**
-			 * Visuals
-			 */
-			public static class Visual {
-				/** Minimum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MIN = 0.2f;
-				/** Maximum radius for the enemy (when it's a circle) */
-				public final static float RADIUS_MAX = 6f;
-				/** Default radius of the enemy (when it's a circle) */
-				public final static float RADIUS_DEFAULT = 0.4f;
-				/** Step size for radius */
-				public final static float RADIUS_STEP_SIZE = 0.1f;
-				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MIN = 0.1f;
-				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MAX = RADIUS_MAX * 2;
-				/** Default width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
-				/** Step size for the enemy width/height */
-				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
-				/** Default shape type of the enemy */
-				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.CIRCLE;
-
-				/** Minimum distance for new corners when drawing */
-				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.25f * 0.25f;
-				/**
-				 * Minimum angle between corners, if less than this, the corner will be
-				 * removed
-				 */
-				public final static float DRAW_CORNER_ANGLE_MIN = 5;
-			}
-
-			/** Minimum mouse joint force */
-			public static final float FORCE_MIN = 1;
-			/** Maximum mouse joint force */
-			public static final float FORCE_MAX = 10000;
-			/** Mouse joint force step size */
-			public static final float FORCE_STEP_SIZE = 1;
-			/** Default mouse joint force */
-			public static final float FORCE_DEFAULT = 10000;
-
-			/** Minimum mouse joint frequency */
-			public static final float FREQUENCY_MIN = 1;
-			/** Maximum mouse joint frequency */
-			public static final float FREQUENCY_MAX = 120;
-			/** Step size for mouse joint frequency */
-			public static final float FREQUENCY_STEP_SIZE = 1;
-			/** Default mouse joint frequency */
-			public static final float FREQUENCY_DEFAULT = 60;
-
-			/** Minimum mouse joint dampening */
-			public static final float DAMPENING_MIN = 0;
-			/** Maximum mouse joint dampening */
-			public static final float DAMPENING_MAX = 1;
-			/** Step size for mouse joint dampening */
-			public static final float DAMPENING_STEP_SIZE = 0.01f;
-			/** Default mouse joint dampening */
-			public static final float DAMPENING_DEFAULT = 0.7f;
-
-			/** Minimum density of the body */
-			public static final float DENSITY_MIN = 0;
-			/** Maximum density of the body */
-			public static final float DENSITY_MAX = 10000;
-			/** Step size for density */
-			public static final float DENSITY_STEP_SIZE = 1;
-			/** Default density for the body */
-			public static final float DENSITY_DEFAULT = 0;
-
-			/** Minimum friction of the body */
-			public static final float FRICTION_MIN = 0;
-			/** Maximum friction of the body */
-			public static final float FRICTION_MAX = 1;
-			/** Step size for friction */
-			public static final float FRICTION_STEP_SIZE = 0.01f;
-			/** Default friction for the body */
-			public static final float FRICTION_DEFAULT = 0.2f;
-
-			/** Minimum elasticity of the body */
-			public static final float ELASTICITY_MIN = 0;
-			/** Maximum elasticity of the body */
-			public static final float ELASTICITY_MAX = 1;
-			/** Step size for elasticity */
-			public static final float ELASTICITY_STEP_SIZE = 0.01f;
-			/** Default elasticity for the body */
-			public static final float ELASTICITY_DEFAULT = 0;
-		}
 
 		/**
 		 * When to only show 10ths of coordinates. True when pixels per world coordinate

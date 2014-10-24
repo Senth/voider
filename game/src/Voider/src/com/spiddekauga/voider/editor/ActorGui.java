@@ -19,7 +19,7 @@ import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
-import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -217,6 +217,8 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes visual options
 	 */
 	private void initVisual() {
+		IC_Visual icVisual = getVisualConfig();
+
 		mWidgets.visual.hider.addToggleActor(mWidgets.visual.table);
 		AlignTable table = mWidgets.visual.table;
 
@@ -239,8 +241,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setRotationSpeed(newValue);
 			}
 		};
-		mWidgets.visual.rotationSpeed = mUiFactory.addSlider("Speed", Editor.Actor.Visual.ROTATE_SPEED_MIN, Editor.Actor.Visual.ROTATE_SPEED_MAX,
-				Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished);
+		mWidgets.visual.rotationSpeed = mUiFactory.addSlider("Speed", icVisual.getRotateSpeedMin(), icVisual.getRotateSpeedMax(),
+				icVisual.getRotateSpeedStepSize(), sliderListener, table, null, mDisabledWhenPublished);
 
 
 		// Different shape tabs
@@ -325,8 +327,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setShapeRadius(newValue);
 			}
 		};
-		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider("Radius", Enemy.Visual.RADIUS_MIN, Enemy.Visual.RADIUS_MAX,
-				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, circleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider("Radius", icVisual.getRadiusMin(), icVisual.getRadiusMax(),
+				icVisual.getRadiusStepSize(), sliderListener, table, circleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Rectangle
@@ -338,8 +340,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeTriangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
+				sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
 		sliderListener = new SliderListener(mInvoker) {
@@ -349,8 +351,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(),
+				icVisual.getSizeStepSize(), sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Triangle
@@ -362,7 +364,7 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeRectangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE,
+		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
 				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
@@ -373,8 +375,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeRectangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(),
+				icVisual.getSizeStepSize(), sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 	}
 
 	/**
@@ -629,6 +631,11 @@ public abstract class ActorGui extends EditorGui {
 			break;
 		}
 	}
+
+	/**
+	 * @return visual options for the actor gui
+	 */
+	protected abstract IC_Visual getVisualConfig();
 
 	/**
 	 * All the widgets which state can be changed and thus reset
