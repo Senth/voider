@@ -67,8 +67,7 @@ public abstract class IniClass {
 	private void setChildren(Ini ini, Section classSection, ArrayList<Field> children) {
 		for (Field child : children) {
 			String childClassName = child.getType().getSimpleName();
-			@SuppressWarnings("unchecked")
-			String childName = getSimpleSectionName((Class<? extends IniClass>) child.getType());
+			String childName = getSimpleSectionName(child.getType());
 			Section childSection = classSection.getChild(childName);
 
 			// Get constructor
@@ -96,7 +95,7 @@ public abstract class IniClass {
 	private void printUnsetVars(Map<String, Field> vars) {
 		HashMap<String, Set<String>> unsetVars = new HashMap<>();
 		for (Field var : vars.values()) {
-			String className = var.getDeclaringClass().getSimpleName();
+			String className = getFullSimpleName(var.getDeclaringClass());
 			Set<String> unsetClass = unsetVars.get(className);
 			if (unsetClass == null) {
 				unsetClass = new HashSet<>();
@@ -107,7 +106,7 @@ public abstract class IniClass {
 		}
 
 		StringBuilder message = new StringBuilder();
-		message.append(getClass().getSimpleName()).append(" has ").append(vars.size()).append(" variables:\n");
+		message.append(getFullSimpleName(getClass())).append(" has ").append(vars.size()).append(" unset variables:\n");
 
 		for (Entry<String, Set<String>> classVars : unsetVars.entrySet()) {
 			message.append(classVars.getKey()).append("\n");
@@ -116,6 +115,8 @@ public abstract class IniClass {
 				message.append("\t").append(varName).append("\n");
 			}
 		}
+
+		mLogger.severe(message.toString());
 	}
 
 	/**
@@ -161,7 +162,7 @@ public abstract class IniClass {
 					setVar(field, classSection, varName);
 					vars.remove(varName);
 				} else {
-					mLogger.warning("No field '" + varName + "' found in " + getClass().getSimpleName());
+					mLogger.warning("No field '" + varName + "' found in " + getFullSimpleName(getClass()));
 				}
 			}
 		}
@@ -174,13 +175,14 @@ public abstract class IniClass {
 	 * @param varName variable name in the section
 	 */
 	private void setVar(Field field, Section section, String varName) {
-		Object value = section.get(varName, field.getType());
+		Object value = section.fetch(varName, field.getType());
 		try {
 			field.set(this, value);
 		} catch (IllegalArgumentException e) {
-			mLogger.severe("Could not set field '" + varName + "' as '" + field.getType() + "' in " + getClass().getSimpleName());
+			mLogger.severe("Could not set field '" + varName + "' as '" + getFullSimpleName(field.getType()) + "' in "
+					+ getFullSimpleName(getClass()));
 		} catch (IllegalAccessException e) {
-			mLogger.severe("No access to field '" + varName + "' in " + getClass().getSimpleName());
+			mLogger.severe("No access to field '" + varName + "' in " + getFullSimpleName(getClass()));
 		}
 	}
 
@@ -274,11 +276,11 @@ public abstract class IniClass {
 	 * @param clazz the class to get the simple section name for
 	 * @return simple section name
 	 */
-	private static String getSimpleSectionName(Class<? extends IniClass> clazz) {
+	private static String getSimpleSectionName(Class<?> clazz) {
 		String className = clazz.getSimpleName();
 
 		// Remove prefix
-		if (!mClassPrefix.isEmpty()) {
+		if (!mClassPrefix.isEmpty() && IniClass.class.isAssignableFrom(clazz)) {
 			if (className.indexOf(mClassPrefix) == 0) {
 				className = className.substring(mClassPrefix.length());
 			} else {
@@ -290,19 +292,41 @@ public abstract class IniClass {
 	}
 
 	/**
+	 * Get a full simple name with all outer classes
+	 * @param clazz the class to get the full simple name for
+	 * @return full simple name of the class
+	 */
+	private static String getFullSimpleName(Class<?> clazz) {
+		Class<?> currentClass = clazz;
+		StringBuilder nameBuilder = new StringBuilder();
+
+		do {
+			nameBuilder.append(currentClass.getSimpleName());
+
+			currentClass = currentClass.getEnclosingClass();
+
+			if (currentClass != null) {
+				nameBuilder.append(".");
+			}
+		} while (currentClass != null);
+
+		return nameBuilder.toString();
+	}
+
+	/**
 	 * Get the correct section name for the specified class
 	 * @param clazz the class to get the fully qualified section name for
 	 * @return fully qualified section name
 	 */
 	private static String getFullSectionName(Class<? extends IniClass> clazz) {
-		Class<? extends IniClass> currentClass = clazz;
+		Class<?> currentClass = clazz;
 		StringBuilder sectionBuilder = new StringBuilder();
 
 		do {
 			String className = getSimpleSectionName(currentClass);
 			sectionBuilder.insert(0, className);
 
-			currentClass = getSuperClass(currentClass);
+			currentClass = currentClass.getEnclosingClass();
 
 			if (currentClass != null) {
 				sectionBuilder.insert(0, "/");

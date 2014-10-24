@@ -11,7 +11,6 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
-import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceChecker;
@@ -30,8 +29,6 @@ public class VoiderGame implements ApplicationListener {
 	public void create() {
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 		Log.ERROR();
-
-		ConfigIni.getInstance();
 
 		// Init various classes
 		MessageGateway.getInstance();

@@ -5,6 +5,7 @@ import org.ini4j.Ini;
 import org.ini4j.Profile.Section;
 
 import com.spiddekauga.utils.IniClass;
+import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
  * Editor settings
@@ -32,20 +33,19 @@ public class IC_Editor extends IniClass {
 			protected float rotateSpeedMin;
 			protected float rotateSpeedMax;
 			protected float rotateSpeedDefault;
-
-			// protected float rotateSpeedStepSize;
-			// protected float drawNewCornerMinDistSq;
-			// protected float drawCornerAngleMin;
-			// protected float newCornerDistMaxSq;
-			// protected float radiusMin;
-			// protected float radiusMax;
-			// protected float radiusDefault;
-			// protected float radiusStepSize;
-			// protected float sizeMin;
-			// protected float sizeMax;
-			// protected float sizeDefault;
-			// protected float sizeStepSize;
-			// protected ActorShapeTypes shapeType;
+			protected float rotateSpeedStepSize;
+			protected float drawNewCornerMinDistSq;
+			protected float drawCornerAngleMin;
+			protected float newCornerDistMaxSq;
+			protected float radiusMin;
+			protected float radiusMax;
+			protected float radiusDefault;
+			protected float radiusStepSize;
+			protected float sizeMin;
+			protected float sizeMax;
+			protected float sizeDefault;
+			protected float sizeStepSize;
+			protected ActorShapeTypes shapeType;
 
 			IC_Visual(Ini ini, Section classSection) {
 				super(ini, classSection);
@@ -72,96 +72,96 @@ public class IC_Editor extends IniClass {
 				return rotateSpeedDefault;
 			}
 
-			// /**
-			// * @return the rotateSpeedStepSize
-			// */
-			// public float getRotateSpeedStepSize() {
-			// return rotateSpeedStepSize;
-			// }
-			//
-			// /**
-			// * @return the drawNewCornerMinDistSq
-			// */
-			// public float getDrawNewCornerMinDistSq() {
-			// return drawNewCornerMinDistSq;
-			// }
-			//
-			// /**
-			// * @return the drawCornerAngleMin
-			// */
-			// public float getDrawCornerAngleMin() {
-			// return drawCornerAngleMin;
-			// }
-			//
-			// /**
-			// * @return the newCornerDistMaxSq
-			// */
-			// public float getNewCornerDistMaxSq() {
-			// return newCornerDistMaxSq;
-			// }
-			//
-			// /**
-			// * @return the radiusMin
-			// */
-			// public float getRadiusMin() {
-			// return radiusMin;
-			// }
-			//
-			// /**
-			// * @return the radiusMax
-			// */
-			// public float getRadiusMax() {
-			// return radiusMax;
-			// }
-			//
-			// /**
-			// * @return the radiusDefault
-			// */
-			// public float getRadiusDefault() {
-			// return radiusDefault;
-			// }
-			//
-			// /**
-			// * @return the radiusStepSize
-			// */
-			// public float getRadiusStepSize() {
-			// return radiusStepSize;
-			// }
-			//
-			// /**
-			// * @return the sizeMin
-			// */
-			// public float getSizeMin() {
-			// return sizeMin;
-			// }
-			//
-			// /**
-			// * @return the sizeMax
-			// */
-			// public float getSizeMax() {
-			// return sizeMax;
-			// }
-			//
-			// /**
-			// * @return the sizeDefault
-			// */
-			// public float getSizeDefault() {
-			// return sizeDefault;
-			// }
-			//
-			// /**
-			// * @return the sizeStepSize
-			// */
-			// public float getSizeStepSize() {
-			// return sizeStepSize;
-			// }
-			//
-			// /**
-			// * @return the shapeType
-			// */
-			// public ActorShapeTypes getShapeType() {
-			// return shapeType;
-			// }
+			/**
+			 * @return the rotateSpeedStepSize
+			 */
+			public float getRotateSpeedStepSize() {
+				return rotateSpeedStepSize;
+			}
+
+			/**
+			 * @return the drawNewCornerMinDistSq
+			 */
+			public float getDrawNewCornerMinDistSq() {
+				return drawNewCornerMinDistSq;
+			}
+
+			/**
+			 * @return the drawCornerAngleMin
+			 */
+			public float getDrawCornerAngleMin() {
+				return drawCornerAngleMin;
+			}
+
+			/**
+			 * @return the newCornerDistMaxSq
+			 */
+			public float getNewCornerDistMaxSq() {
+				return newCornerDistMaxSq;
+			}
+
+			/**
+			 * @return the radiusMin
+			 */
+			public float getRadiusMin() {
+				return radiusMin;
+			}
+
+			/**
+			 * @return the radiusMax
+			 */
+			public float getRadiusMax() {
+				return radiusMax;
+			}
+
+			/**
+			 * @return the radiusDefault
+			 */
+			public float getRadiusDefault() {
+				return radiusDefault;
+			}
+
+			/**
+			 * @return the radiusStepSize
+			 */
+			public float getRadiusStepSize() {
+				return radiusStepSize;
+			}
+
+			/**
+			 * @return the sizeMin
+			 */
+			public float getSizeMin() {
+				return sizeMin;
+			}
+
+			/**
+			 * @return the sizeMax
+			 */
+			public float getSizeMax() {
+				return sizeMax;
+			}
+
+			/**
+			 * @return the sizeDefault
+			 */
+			public float getSizeDefault() {
+				return sizeDefault;
+			}
+
+			/**
+			 * @return the sizeStepSize
+			 */
+			public float getSizeStepSize() {
+				return sizeStepSize;
+			}
+
+			/**
+			 * @return the shapeType
+			 */
+			public ActorShapeTypes getShapeType() {
+				return shapeType;
+			}
 		}
 
 		IC_Actor(Ini ini, Section classSection) {
@@ -229,6 +229,7 @@ public class IC_Editor extends IniClass {
 	 * Ship editor options
 	 */
 	public static class IC_Ship extends IniClass {
+		IC_Visual visual;
 
 		/**
 		 * Overridden visual options
