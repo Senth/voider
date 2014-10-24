@@ -182,14 +182,20 @@ public class ShipEditor extends ActorEditor {
 	 * @param density
 	 */
 	void setDensity(float density) {
-		// TODO
+		if (mDef != null) {
+			mDef.getVisualVars().setDensity(density);
+		}
 	}
 
 	/**
 	 * @return density of the ship
 	 */
 	float getDensity() {
-		return 0; // TODO
+		if (mDef != null) {
+			return mDef.getVisualVars().getDensity();
+		}
+
+		return 0;
 	}
 
 	/**
@@ -197,14 +203,20 @@ public class ShipEditor extends ActorEditor {
 	 * @param friction
 	 */
 	void setFriction(float friction) {
-		// TODO
+		if (mDef != null) {
+			mDef.getVisualVars().setFriction(friction);
+		}
 	}
 
 	/**
 	 * @return friction of the ship
 	 */
 	float getFriction() {
-		return 0; // TODO
+		if (mDef != null) {
+			return mDef.getVisualVars().getFriction();
+		}
+
+		return 0;
 	}
 
 	/**
@@ -212,14 +224,20 @@ public class ShipEditor extends ActorEditor {
 	 * @param elasticity
 	 */
 	void setElasticity(float elasticity) {
-		// TODO
+		if (mDef != null) {
+			mDef.getVisualVars().setElasticity(elasticity);
+		}
 	}
 
 	/**
 	 * @return elasticity of the ship
 	 */
 	float getElasticity() {
-		return 0; // TODO
+		if (mDef != null) {
+			return mDef.getVisualVars().getElasticity();
+		}
+
+		return 0;
 	}
 
 	@Override

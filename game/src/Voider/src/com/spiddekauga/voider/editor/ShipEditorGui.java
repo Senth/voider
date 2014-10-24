@@ -62,7 +62,7 @@ public class ShipEditorGui extends ActorGui {
 
 
 		// Movement
-		mUiFactory.addPanelSection("Movement settings", table, null);
+		mUiFactory.addPanelSection("Movement Settings", table, null);
 
 		// Force
 		SliderListener sliderListener = new SliderListener(mInvoker) {
@@ -73,6 +73,8 @@ public class ShipEditorGui extends ActorGui {
 		};
 		mWidgets.movement.force = mUiFactory.addSlider("Force", icSettings.getForceMin(), icSettings.getForceMax(), icSettings.getForceStepSize(),
 				sliderListener, table, null, null);
+
+		mUiFactory.addPanelSection("Movement Settings (not saved)", table, null);
 
 		// Frequency
 		sliderListener = new SliderListener(mInvoker) {
@@ -96,7 +98,7 @@ public class ShipEditorGui extends ActorGui {
 
 
 		// Body settings
-		mUiFactory.addPanelSection("Body settings", table, null);
+		mUiFactory.addPanelSection("Body Settings", table, null);
 
 		// Density
 		sliderListener = new SliderListener(mInvoker) {

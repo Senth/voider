@@ -143,7 +143,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		calculateBoundingRadius();
 
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	/**
@@ -179,7 +179,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		calculateBoundingRadius();
 
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	/**
@@ -215,7 +215,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		calculateBoundingRadius();
 
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	/**
@@ -342,29 +342,30 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 
 		clearVertices();
+		clearFixtures();
 
 		mShapeType = shapeType;
 
 		// Too many fixtures
-		if (mFixtureDefs.size() > 1) {
-			// Save first fixture def
-			FixtureDef fixtureDef = mFixtureDefs.get(0);
-			clearFixtures();
-			addFixtureDef(fixtureDef);
-		}
+		// if (mFixtureDefs.size() > 1) {
+		// // Save first fixture def
+		// FixtureDef fixtureDef = mFixtureDefs.get(0);
+		// clearFixtures();
+		// addFixtureDef(fixtureDef);
+		// }
 		// Too few
-		else if (mFixtureDefs.size() == 0) {
-			addFixtureDef(getDefaultFixtureDef());
-		}
+		// else if (mFixtureDefs.size() == 0) {
+		addFixtureDef(getDefaultFixtureDef());
+		// }
 
 		FixtureDef fixtureDef = getFirstFixtureDef();
 
 		if (fixtureDef != null) {
-			// Remove the old shape if one exists
-			if (fixtureDef.shape != null) {
-				fixtureDef.shape.dispose();
-				fixtureDef.shape = null;
-			}
+			// // Remove the old shape if one exists
+			// if (fixtureDef.shape != null) {
+			// fixtureDef.shape.dispose();
+			// fixtureDef.shape = null;
+			// }
 
 			// Create the new shape
 			switch (shapeType) {
@@ -394,7 +395,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		calculateBoundingRadius();
 
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	/**
@@ -403,7 +404,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public void addFixtureDef(FixtureDef fixtureDef) {
 		mFixtureDefs.add(fixtureDef);
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	/**
@@ -444,13 +445,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@Override
 	public void addCorner(Vector2 corner) {
 		addCorner(corner, mCorners.size());
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
 		mCorners.add(index, Pools.vector2.obtain().set(corner));
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	@Override
@@ -466,14 +467,14 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public Vector2 removeCorner(int index) {
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 		return mCorners.remove(index);
 	}
 
 	@Override
 	public void moveCorner(int index, Vector2 newPos) {
 		mCorners.get(index).set(newPos);
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	@Override
@@ -495,7 +496,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		mCorners.clear();
 		clearFixtures();
 		clearVertices();
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		fixtureChanged();
 	}
 
 	/**
@@ -575,6 +576,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		setCenterOffset(center);
 		Pools.vector2.free(center);
 
+		fixtureChanged();
+	}
+
+	/**
+	 * Updates the fixture change time
+	 */
+	private void fixtureChanged() {
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
@@ -603,18 +611,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	@SuppressWarnings("unchecked")
 	public void fixCustomShapeFixtures() {
-		// Save fixture properties
-		FixtureDef savedFixtureProperties = null;
-		if (mFixtureDefs.size() >= 1) {
-			savedFixtureProperties = mFixtureDefs.get(0);
-		} else {
-			savedFixtureProperties = getDefaultFixtureDef();
-		}
-
-
 		// Destroy previous fixtures
 		clearFixtures();
 		clearVertices();
+
+		FixtureDef savedFixtureProperties = getDefaultFixtureDef();
 
 
 		// Create the new fixture
@@ -1002,9 +1003,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	private FixtureDef getDefaultFixtureDef() {
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.1f;
-		fixtureDef.density = 0.001f;
+		fixtureDef.friction = mFriction;
+		fixtureDef.restitution = mElasticity;
+		fixtureDef.density = mDensity;
 		return fixtureDef;
 	}
 
@@ -1089,21 +1090,69 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		// Does nothing
 	}
 
+	/**
+	 * Set the density of the actor
+	 * @param density
+	 */
+	public void setDensity(float density) {
+		mDensity = density;
+		fixtureChanged();
+	}
 
-	/** Color of the actor */
+	/**
+	 * @return density of the actor
+	 */
+	public float getDensity() {
+		return mDensity;
+	}
+
+	/**
+	 * Sets the friction of the actor
+	 * @param friction
+	 */
+	public void setFriction(float friction) {
+		mFriction = friction;
+		fixtureChanged();
+	}
+
+	/**
+	 * @return friction of the actor
+	 */
+	public float getFriction() {
+		return mFriction;
+	}
+
+	/**
+	 * Sets the elasticity of the actor
+	 * @param elasticity
+	 */
+	public void setElasticity(float elasticity) {
+		mElasticity = elasticity;
+		fixtureChanged();
+	}
+
+	/**
+	 * @return elasticity of the actor
+	 */
+	public float getElasticity() {
+		return mElasticity;
+	}
+
 	@Tag(52) private Color mColor = new Color();
-	/** Current shape of the enemy */
 	@Tag(49) private ActorShapeTypes mShapeType = null;
-	/** radius of circle */
 	@Tag(60) private float mShapeCircleRadius;
-	/** width of rectangle/triangle */
 	@Tag(61) private float mShapeWidth;
-	/** height of rectangle/triangle */
 	@Tag(62) private float mShapeHeight;
-	/** Center offset for fixtures */
 	@Tag(51) private Vector2 mCenterOffset = Pools.vector2.obtain().set(0, 0);
+	@Tag(50) private ActorTypes mActorType = null;
 	/** Corners of polygon, used for custom shapes */
 	@SuppressWarnings("unchecked") @Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+
+	// Fixture def values
+	private float mDensity = 0.001f;
+	private float mElasticity = 0.1f;
+	private float mFriction = 0;
+
 	/**
 	 * Array list of the polygon figure, this contains the vertices but not in triangles.
 	 * Used for when creating a border of some kind
@@ -1120,8 +1169,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@SuppressWarnings("unchecked") private ArrayList<FixtureDef> mFixtureDefs = Pools.arrayList.obtain();
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
-	/** Actor type, used for setting default values */
-	@Tag(50) private ActorTypes mActorType = null;
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** Class structure revision */
