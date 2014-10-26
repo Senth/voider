@@ -3,8 +3,10 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Collision;
+import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Movement;
+import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.resources.Resource;
 
@@ -19,9 +21,13 @@ public class EnemyActorDef extends ActorDef {
 	public EnemyActorDef() {
 		super(ActorTypes.ENEMY);
 
-		setCollisionDamage(Config.Editor.Actor.Collision.DAMAGE_DEFAULT);
+		IC_Collision icCollision = ConfigIni.getInstance().editor.actor.collision;
+		IC_Movement icMovement = ConfigIni.getInstance().editor.enemy.movement;
+
+		setCollisionDamage(icCollision.getDamageDefault());
+		setDestroyOnCollide(icCollision.getDestroyByDefault());
 		getBodyDef().type = BodyType.KinematicBody;
-		getBodyDef().fixedRotation = true;
+		getBodyDef().fixedRotation = icMovement.isTurningByDefault();
 	}
 
 	@Override
@@ -351,9 +357,15 @@ public class EnemyActorDef extends ActorDef {
 		}
 
 		/** Speed of the enemy */
-		@Tag(64) float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
+		@Tag(64) private float speed;
 		/** How fast the enemy can turn */
-		@Tag(65) float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
+		@Tag(65) private float turnSpeed;
+
+		{
+			IC_Movement icMovement = ConfigIni.getInstance().editor.enemy.movement;
+			speed = icMovement.getMoveSpeedDefault();
+			turnSpeed = icMovement.getTurnSpeedDefault();
+		}
 	}
 
 	/**
@@ -412,19 +424,30 @@ public class EnemyActorDef extends ActorDef {
 		}
 
 		/** Minimum distance from the player */
-		@Tag(66) float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
+		@Tag(66) private float playerDistanceMin;
 		/** Minimum distance from player, squared */
-		@Tag(67) float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
+		@Tag(67) private float playerDistanceMinSq;
 		/** Maximum distance from the player */
-		@Tag(68) float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
+		@Tag(68) private float playerDistanceMax;
 		/** Maximum distance from the player, squared */
-		@Tag(69) float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
+		@Tag(69) private float playerDistanceMaxSq;
 		/** If the enemy shall move randomly when inside the preferred space */
-		@Tag(70) boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
+		@Tag(70) private boolean randomMove;
 		/** Minimum time until next random move */
-		@Tag(71) float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
+		@Tag(71) private float randomTimeMin;
 		/** Maximum time until next random move */
-		@Tag(72) float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
+		@Tag(72) private float randomTimeMax;
+
+		{
+			IC_Movement icMovement = ConfigIni.getInstance().editor.enemy.movement;
+			playerDistanceMin = icMovement.getAiDistanceMinDefault();
+			playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
+			playerDistanceMax = icMovement.getAiDistanceMaxDefault();
+			playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
+			randomMove = icMovement.isRandomMovementOnDefault();
+			randomTimeMin = icMovement.getRandomMovementTimeMinDefault();
+			randomTimeMax = icMovement.getRandomMovementTimeMaxDefault();
+		}
 	}
 
 	/**
@@ -464,8 +487,14 @@ public class EnemyActorDef extends ActorDef {
 
 
 		/** Starting angle */
-		@Tag(73) float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
+		@Tag(73) private float startAngle;
 		/** Rotating speed */
-		@Tag(74) float rotateSpeed = Enemy.Weapon.ROTATE_SPEED_DEFAULT;
+		@Tag(74) private float rotateSpeed;
+
+		{
+			IC_Weapon icWeapon = ConfigIni.getInstance().editor.enemy.weapon;
+			startAngle = icWeapon.getStartAngleDefault();
+			rotateSpeed = icWeapon.getRotateSpeedDefault();
+		}
 	}
 }

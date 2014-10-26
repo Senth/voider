@@ -23,11 +23,11 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
+import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Movement;
+import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -365,6 +365,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		AlignTable table = mMovementTable;
 		GuiHider hider = mAiHider;
+		IC_Movement icMovement = ConfigIni.getInstance().editor.enemy.movement;
 
 
 		// Distance from player
@@ -380,8 +381,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setPlayerDistanceMax(newValue);
 			}
 		};
-		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Distance From Player", Enemy.Movement.AI_DISTANCE_MIN,
-				Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, minSliderListener, maxSliderListener, table, hider,
+		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Distance From Player", icMovement.getAiDistanceMin(),
+				icMovement.getAiDistanceMax(), icMovement.getAiDistanceStepSize(), minSliderListener, maxSliderListener, table, hider,
 				mDisabledWhenPublished);
 
 		// Set sliders
@@ -439,8 +440,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setRandomTimeMax(newValue);
 			}
 		};
-		sliders = mUiFactory.addSliderMinMax(null, Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX,
-				Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.getHider(), createdActors);
+		sliders = mUiFactory.addSliderMinMax(null, icMovement.getRandomMovementTimeMin(), icMovement.getRandomMovementTimeMax(),
+				icMovement.getRandomMovementTimeStepSize(), minSliderListener, maxSliderListener, table, onTab.getHider(), createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.MOVEMENT_AI_RANDOM_COOLDOWN);
 		mDisabledWhenPublished.addAll(createdActors);
 
@@ -455,6 +456,8 @@ public class EnemyEditorGui extends ActorGui {
 	 * @param movementType which table to add the movement UI elements to
 	 */
 	private void createMovementUi(final MovementTypes movementType) {
+		IC_Movement icMovement = ConfigIni.getInstance().editor.enemy.movement;
+
 		AlignTable table = mMovementTable;
 		GuiHider hider = null;
 		if (movementType == MovementTypes.PATH) {
@@ -474,7 +477,7 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.movement.aiSpeedSlider.setValue(newValue);
 			}
 		};
-		Slider slider = mUiFactory.addSlider(null, Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE,
+		Slider slider = mUiFactory.addSlider(null, icMovement.getMoveSpeedMin(), icMovement.getMoveSpeedMax(), icMovement.getMoveSpeedStepSize(),
 				sliderListener, table, hider, mDisabledWhenPublished);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathSpeedSlider = slider;
@@ -545,7 +548,7 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.movement.aiTurnSpeedSlider.setValue(newValue);
 			}
 		};
-		slider = mUiFactory.addSlider(null, Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Movement.TURN_SPEED_STEP_SIZE, sliderListener, table,
+		slider = mUiFactory.addSlider(null, icMovement.getTurnSpeedMin(), icMovement.getTurnSpeedMax(), icMovement.getTurnSpeedStepSize(), sliderListener, table,
 				onTab.getHider(), mDisabledWhenPublished);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathTurnSpeedSlider = slider;
@@ -812,6 +815,8 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Specific settings
+		IC_Weapon icWeapon = ConfigIni.getInstance().editor.enemy.weapon;
+
 		// Direction angle
 		sliderListener = new SliderListener(mInvoker) {
 			@Override
@@ -820,8 +825,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.weapon.aimRotateStartAngle.setValue(newValue);
 			}
 		};
-		mWidgets.weapon.aimDirectionAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, directionTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.aimDirectionAngle = mUiFactory.addSlider("Angle", icWeapon.getStartAngleMin(), icWeapon.getStartAngleMax(),
+				icWeapon.getStartAngleStepSize(), sliderListener, table, directionTab.getHider(), mDisabledWhenPublished);
 
 		// Rotate options
 		// Angle
@@ -832,8 +837,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.weapon.aimDirectionAngle.setValue(newValue);
 			}
 		};
-		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", icWeapon.getStartAngleMin(), icWeapon.getStartAngleMax(),
+				icWeapon.getStartAngleStepSize(), sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
 
 		// Rotation speed
 		sliderListener = new SliderListener(mInvoker) {
@@ -842,8 +847,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setAimRotateSpeed(newValue);
 			}
 		};
-		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", Enemy.Weapon.ROTATE_SPEED_MIN, Enemy.Weapon.ROTATE_SPEED_MAX,
-				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", icWeapon.getRotateSpeedMin(), icWeapon.getRotateSpeedMax(),
+				icWeapon.getRotateSpeedStepSize(), sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
 	}
 
 	@Override

@@ -18,7 +18,8 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Editor;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Collision;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
@@ -532,6 +533,8 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes collision options, this is optional
 	 */
 	protected void initCollision() {
+		IC_Collision icCollision = ConfigIni.getInstance().editor.actor.collision;
+
 		// Collision damage
 		mUiFactory.addPanelSection("Collision", mWidgets.collision.table, null);
 		SliderListener sliderListener = new SliderListener(mInvoker) {
@@ -540,8 +543,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setCollisionDamage(newValue);
 			}
 		};
-		mWidgets.collision.damage = mUiFactory.addSlider("Damage", Editor.Actor.Collision.DAMAGE_MIN, Editor.Actor.Collision.DAMAGE_MAX,
-				Editor.Actor.Collision.DAMAGE_STEP_SIZE, sliderListener, mWidgets.collision.table, null, mDisabledWhenPublished);
+		mWidgets.collision.damage = mUiFactory.addSlider("Damage", icCollision.getDamageMin(), icCollision.getDamageMax(),
+				icCollision.getDamageStepSize(), sliderListener, mWidgets.collision.table, null, mDisabledWhenPublished);
 
 
 		// Collision destroy

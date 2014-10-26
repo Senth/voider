@@ -18,7 +18,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.editor.Editor.ImageSaveOnActor.Locations;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
 import com.spiddekauga.voider.game.CollisionResolver;
@@ -228,12 +228,12 @@ public class EnemyEditor extends ActorEditor {
 			mEnemyPathBackAndForth.update(deltaTime);
 			mEnemyPathBackAndForth.updateEditor();
 
-			// Reset Once enemy ever 4 seconds
+			// Reset Once enemy ever X seconds
 			if (mfEnemyOnceReachEnd != null) {
 				try {
 					if ((Boolean) mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
 						if (mEnemyPathOnceOutOfBoundsTime != 0.0f) {
-							if (mEnemyPathOnceOutOfBoundsTime + Enemy.Movement.PATH_ONCE_RESET_TIME <= SceneSwitcher.getGameTime()
+							if (mEnemyPathOnceOutOfBoundsTime + ConfigIni.getInstance().editor.enemy.movement.getPathOnceResetTime() <= SceneSwitcher.getGameTime()
 									.getTotalTimeElapsed()) {
 								mEnemyPathOnce.resetPathMovement();
 								mEnemyPathOnceOutOfBoundsTime = 0.0f;
@@ -427,6 +427,9 @@ public class EnemyEditor extends ActorEditor {
 		setSaving(mDef, new EnemyActor(), command, getSaveImages());
 	}
 
+	/**
+	 * @return all images to save on the enemy actor
+	 */
 	private ImageSaveOnActor[] getSaveImages() {
 		ImageSaveOnActor[] images = null;
 
