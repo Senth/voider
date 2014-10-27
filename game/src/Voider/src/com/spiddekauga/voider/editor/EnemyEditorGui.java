@@ -35,6 +35,7 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabImageWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabWrapper;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -223,7 +224,7 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the path labels
 	 */
 	private void initPathLabels() {
-		LabelStyle labelStyle = new LabelStyle(mUiFactory.getStyles().label.standard);
+		LabelStyle labelStyle = new LabelStyle(LabelStyles.DEFAULT.getStyle());
 		labelStyle.fontColor = SkinNames.getResource(SkinNames.EditorVars.PATH_COLOR);
 
 		mUiFactory.addIconLabel(SkinNames.EditorImages.PATH_BACK_AND_FORTH, "Back and Forth", Positions.BOTTOM, labelStyle, mWidgets.path.backForth,
@@ -391,7 +392,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Random movement
-		mUiFactory.addPanelSection("Random Movement", table, hider);
+		mUiFactory.text.addPanelSection("Random Movement", table, hider);
 
 		// ON/OFF tabs
 		// ON
@@ -451,8 +452,7 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	/**
-	 * Initializes standard movement variables such as speed and turning for the specified
-	 * table
+	 * Initializes standard movement variables such as speed and turning for the specified table
 	 * @param movementType which table to add the movement UI elements to
 	 */
 	private void createMovementUi(final MovementTypes movementType) {
@@ -468,7 +468,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Movement Speed
-		mUiFactory.addPanelSection("Movement Speed", table, hider);
+		mUiFactory.text.addPanelSection("Movement Speed", table, hider);
 		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -487,7 +487,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Turning
-		mUiFactory.addPanelSection("Turning Speed", table, hider);
+		mUiFactory.text.addPanelSection("Turning Speed", table, hider);
 
 		// Create ON/OFF tabs
 		// ON
@@ -548,8 +548,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.movement.aiTurnSpeedSlider.setValue(newValue);
 			}
 		};
-		slider = mUiFactory.addSlider(null, icMovement.getTurnSpeedMin(), icMovement.getTurnSpeedMax(), icMovement.getTurnSpeedStepSize(), sliderListener, table,
-				onTab.getHider(), mDisabledWhenPublished);
+		slider = mUiFactory.addSlider(null, icMovement.getTurnSpeedMin(), icMovement.getTurnSpeedMax(), icMovement.getTurnSpeedStepSize(),
+				sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathTurnSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -562,7 +562,7 @@ public class EnemyEditorGui extends ActorGui {
 	 */
 	private void initMovementMenu() {
 		// Movement type label
-		mUiFactory.addPanelSection("Movement Type:", mMovementTable, mMovementHider);
+		mUiFactory.text.addPanelSection("Movement Type:", mMovementTable, mMovementHider);
 
 
 		// Create radio tabs
@@ -612,7 +612,7 @@ public class EnemyEditorGui extends ActorGui {
 		Pools.arrayList.free(tabs);
 
 		mMovementTable.row().setHeight(mUiFactory.getStyles().vars.rowHeightSection).setAlign(Vertical.MIDDLE);
-		mWidgets.movement.currentType = mUiFactory.addLabel("Path", false, mMovementTable);
+		mWidgets.movement.currentType = mUiFactory.text.add("Path", mMovementTable);
 
 		// Set buttons
 		mWidgets.movement.pathBox = pathTab.getButton();
@@ -638,7 +638,7 @@ public class EnemyEditorGui extends ActorGui {
 	private void initWeapon() {
 		AlignTable table = mWeaponTable;
 
-		mUiFactory.addPanelSection("Enemy Weapon", table, mWeaponHider);
+		mUiFactory.text.addPanelSection("Enemy Weapon", table, mWeaponHider);
 
 		// Toggle weapon ON/OFF
 		// ON
@@ -667,7 +667,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Select bullet type
-		mUiFactory.addPanelSection("Select Bullet Type", table, onTab.getHider());
+		mUiFactory.text.addPanelSection("Select Bullet Type", table, onTab.getHider());
 
 		// Bullet image
 		table.row();
@@ -681,7 +681,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Bullet settings
-		mUiFactory.addPanelSection("Bullet Settings", table, onTab.getHider());
+		mUiFactory.text.addPanelSection("Bullet Settings", table, onTab.getHider());
 
 		// Speed
 		SliderListener sliderListener = new SliderListener(mInvoker) {

@@ -79,20 +79,50 @@ public class UiStyles {
 		public TextFieldStyle standard = null;
 	}
 
-	public static class Labels {
-		public LabelStyle standard = null;
-		public LabelStyle panelSection = null;
-		public LabelStyle errorSectionInfo = null;
-		public LabelStyle errorSection = null;
-		public LabelStyle error = null;
-		public LabelStyle highlight = null;
-		public LabelStyle tooltip = null;
-		public LabelStyle header = null;
+	static class Labels {
+		LabelStyle errorSectionInfo = null;
+		LabelStyle errorSection = null;
 	}
 
 	public static class Windows {
 		public WindowStyle title = null;
 		public WindowStyle noTitle = null;
+	}
+
+	/**
+	 * Various label styles
+	 */
+	public enum LabelStyles {
+		DEFAULT,
+		PANEL_SECTION,
+		ERROR,
+		HIGHLIGHT,
+		SUCCESS,
+		TOOLTIP,
+		/** Larger text */
+		HEADER,
+		/** Default text style for text fields */
+		TEXT_FIELD_DEFAULT,
+
+
+		;
+
+		/**
+		 * Set the Scene2D text button style
+		 * @param style the text button style
+		 */
+		private void setStyle(LabelStyle style) {
+			mStyle = style;
+		}
+
+		/**
+		 * @return get the text button style associated with this enumeration
+		 */
+		public LabelStyle getStyle() {
+			return mStyle;
+		}
+
+		private LabelStyle mStyle = null;
 	}
 
 	/**
@@ -180,13 +210,6 @@ public class UiStyles {
 		;
 
 		/**
-		 * Default constructor
-		 */
-		private TextButtonStyles() {
-			// Does nothing
-		}
-
-		/**
 		 * Set the Scene2D text button style
 		 * @param style the text button style
 		 */
@@ -212,14 +235,6 @@ public class UiStyles {
 		slider.standard = SkinNames.getResource(SkinNames.General.SLIDER_DEFAULT);
 		slider.colorPicker = SkinNames.getResource(SkinNames.General.SLIDER_COLOR_PICKER);
 		textField.standard = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
-		label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
-		label.panelSection = SkinNames.getResource(SkinNames.General.LABEL_PANEL_SECTION);
-		label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);
-		label.errorSection = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION);
-		label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
-		label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
-		label.tooltip = SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP);
-		label.header = SkinNames.getResource(SkinNames.General.LABEL_HEADER);
 		select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 		rating.stars = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 		window.title = SkinNames.getResource(SkinNames.General.WINDOW_TITLE);
@@ -253,6 +268,18 @@ public class UiStyles {
 		vars.textButtonHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_HEIGHT);
 		vars.textButtonWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_WIDTH);
 		vars.rightPanelWidth = SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH);
+
+		// Label styles
+		label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);
+		label.errorSection = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION);
+		LabelStyles.DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+		LabelStyles.PANEL_SECTION.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PANEL_SECTION));
+		LabelStyles.ERROR.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
+		LabelStyles.HIGHLIGHT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
+		LabelStyles.TOOLTIP.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP));
+		LabelStyles.HEADER.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER));
+		LabelStyles.TEXT_FIELD_DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TEXT_FIELD_DEFAULT));
+
 
 		// Button styles
 		ButtonStyles.PRESS.setStyle((ButtonStyle) SkinNames.getResource(SkinNames.General.BUTTON_PRESS));

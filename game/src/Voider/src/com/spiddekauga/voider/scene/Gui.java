@@ -43,6 +43,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -99,8 +100,7 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Update background images. Should be called when setting a new background or
-	 * resizing the window
+	 * Update background images. Should be called when setting a new background or resizing the window
 	 */
 	private void updateBackground() {
 		if (mWidgets.background.drawable == null) {
@@ -188,8 +188,8 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Resets the GUI and adds the main table again. This will remove any actors that have
-	 * been added manually through #addActor(Actor)
+	 * Resets the GUI and adds the main table again. This will remove any actors that have been added manually through
+	 * #addActor(Actor)
 	 */
 	public void reset() {
 		mStage.clear();
@@ -290,9 +290,8 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Shows the specified message box. This will hide any active message box, remove the
-	 * specified message box from the inactive list, and then show the specified active
-	 * box (once the currently active box has been fully hidden).
+	 * Shows the specified message box. This will hide any active message box, remove the specified message box from the
+	 * inactive list, and then show the specified active box (once the currently active box has been fully hidden).
 	 * @param msgBox the message box to show
 	 */
 	public void showMsgBox(MsgBoxExecuter msgBox) {
@@ -574,7 +573,7 @@ public abstract class Gui implements Disposable {
 		mWidgets.waitWindow.window.setModal(true);
 		mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
 		mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
-		mWidgets.waitWindow.label = new Label("", mUiFactory.getStyles().label.standard);
+		mWidgets.waitWindow.label = new Label("", LabelStyles.DEFAULT.getStyle());
 		mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight(mUiFactory.getStyles().vars.paddingSeparator);
 		mWidgets.waitWindow.window.add(mWidgets.waitWindow.label).padRight(mUiFactory.getStyles().vars.paddingInner);
 	}
@@ -591,7 +590,7 @@ public abstract class Gui implements Disposable {
 		window.pad(mUiFactory.getStyles().vars.paddingInner);
 
 		// Text
-		mWidgets.progressBar.label = new Label("", mUiFactory.getStyles().label.standard);
+		mWidgets.progressBar.label = mUiFactory.text.create("");
 		window.row();
 		window.add(mWidgets.progressBar.label);
 
@@ -603,7 +602,7 @@ public abstract class Gui implements Disposable {
 
 		// Progress text
 		window.row().padTop(mUiFactory.getStyles().vars.paddingInner);
-		mWidgets.progressBar.progressLabel = new Label("", mUiFactory.getStyles().label.standard);
+		mWidgets.progressBar.progressLabel = mUiFactory.text.create("");
 		window.add(mWidgets.progressBar.progressLabel);
 		mWidgets.progressBar.label.pack();
 		window.pack();
@@ -736,12 +735,11 @@ public abstract class Gui implements Disposable {
 
 		// Text
 		// @formatter:off
-		LabelStyle errorStyle = mUiFactory.getStyles().label.error;
-		Label label = new Label("Due to some event, one or more of your levels, enemies, or bullets are in conflict.\n"
+		String text = "Due to some event, one or more of your levels, enemies, or bullets are in conflict.\n"
 				+ "Which version would you like to keep?\n\n"
-				+ "Choose carefully! As the other choice will be discarded.", errorStyle);
+				+ "Choose carefully! As the other choice will be discarded.";
+		Label label = mUiFactory.text.create(text, true, LabelStyles.ERROR);
 		label.setAlignment(Align.center);
-		label.setWrap(true);
 		label.setWidth(buttonWidth * 3);
 		msgBox.content(label).width(buttonWidth * 3).colspan(3);
 		// @formatter:on
@@ -774,8 +772,7 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Checks if a button is checked (from the event).
 	 * @param event checks if the target inside the event is a button and it's checked
-	 * @return checked button. If the target isn't a button or the button isn't checked it
-	 *         returns null.
+	 * @return checked button. If the target isn't a button or the button isn't checked it returns null.
 	 */
 	protected static Button getCheckedButton(Event event) {
 		if (event.getTarget() instanceof Button) {

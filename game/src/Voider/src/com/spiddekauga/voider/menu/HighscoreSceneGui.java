@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -13,6 +12,7 @@ import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.entities.stat.HighscoreEntity;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.User;
 
@@ -84,28 +84,26 @@ public class HighscoreSceneGui extends Gui {
 	private void addScoreToTable(int placement, String name, int score) {
 		AlignTable table = mWidgets.scoreTable;
 
-		LabelStyle labelStyle;
+		LabelStyles labelStyle;
 		if (name.equals(User.getGlobalUser().getUsername())) {
-			labelStyle = mUiFactory.getStyles().label.highlight;
+			labelStyle = LabelStyles.HIGHLIGHT;
 		} else {
-			labelStyle = mUiFactory.getStyles().label.standard;
+			labelStyle = LabelStyles.DEFAULT;
 		}
 
 		table.row().setFillWidth(true).setHeight(mRowHegiht);
 
 		// Placement
-		Label label = new Label("" + placement + ".", labelStyle);
-		table.add(label).setWidth(mPlacementWidth);
+		mUiFactory.text.add("" + placement + ".", table, labelStyle);
+		table.getCell().setWidth(mPlacementWidth);
 
 		// Name
-		label = new Label(name, labelStyle);
-		table.add(label);
+		mUiFactory.text.add(name, table, labelStyle);
 		table.add().setFillWidth(true);
 
 		// Score
 		String scoreString = PlayerStats.formatScore(score);
-		label = new Label(scoreString, labelStyle);
-		table.add(label);
+		mUiFactory.text.add(scoreString, table, labelStyle);
 	}
 
 	/**
@@ -126,18 +124,18 @@ public class HighscoreSceneGui extends Gui {
 		mMainTable.setPaddingRowDefault(mUiFactory.getStyles().vars.paddingInner, 0, 0, 0);
 
 		// Level highscores label
-		mUiFactory.addHeader("Level Scores", mMainTable);
+		mUiFactory.text.addHeader("Level Scores", mMainTable);
 
 		// First place
 		mMainTable.row().setFillWidth(true).setHeight(mRowHegiht);
 
-		mUiFactory.addLabel("1.", false, mMainTable);
+		mUiFactory.text.add("1.", mMainTable);
 		mMainTable.getCell().setWidth(mPlacementWidth);
 
-		mWidgets.firstPlaceName = mUiFactory.addLabel("Loading...", false, mMainTable);
+		mWidgets.firstPlaceName = mUiFactory.text.add("Loading...", mMainTable);
 		mMainTable.add().setFillWidth(true);
 
-		mWidgets.firstPlaceScore = mUiFactory.addLabel("...", false, mMainTable);
+		mWidgets.firstPlaceScore = mUiFactory.text.add("...", mMainTable);
 
 
 		// User tables

@@ -56,6 +56,7 @@ import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 import com.spiddekauga.voider.utils.Pools;
@@ -148,8 +149,7 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * An optional settings menu for the editor. E.g. to switch between visuals and weapon
-	 * settings in enemy editor.
+	 * An optional settings menu for the editor. E.g. to switch between visuals and weapon settings in enemy editor.
 	 */
 	protected void initSettingsMenu() {
 		mSettingTabs = mUiFactory.createRightPanel();
@@ -541,10 +541,9 @@ public abstract class EditorGui extends Gui {
 							msgBox.setTitle("No screenshot taken");
 							String text = "Please take a screenshot of this level before publishing it. "
 									+ "You can do this by test running the level and click on the camera " + "icon in the top bar.";
-							Label label = new Label(text, mUiFactory.getStyles().label.standard);
+							Label label = mUiFactory.text.create(text, true);
 							msgBox.content(label);
 							msgBox.addCancelButtonAndKeys("OK");
-							label.setWrap(true);
 							label.setWidth(Gdx.graphics.getWidth() * 0.5f);
 							showMsgBox(msgBox);
 						}
@@ -558,10 +557,9 @@ public abstract class EditorGui extends Gui {
 						msgBox.setTitle("Offline");
 						String text = "You need to go online to publish the level. Currently this is "
 								+ "only possible by either logging out and logging in or restarting " + "the game.";
-						Label label = new Label(text, mUiFactory.getStyles().label.standard);
+						Label label = mUiFactory.text.create(text, true);
 						msgBox.content(label);
 						msgBox.addCancelButtonAndKeys("OK");
-						label.setWrap(true);
 						label.setWidth(Gdx.graphics.getWidth() * 0.5f);
 						showMsgBox(msgBox);
 					}
@@ -595,7 +593,7 @@ public abstract class EditorGui extends Gui {
 		msgBox.setTitle("Publish");
 
 		AlignTable content = new AlignTable();
-		Label label = new Label("", mUiFactory.getStyles().label.highlight);
+		Label label = mUiFactory.text.create("", LabelStyles.HIGHLIGHT);
 
 		float width = Gdx.graphics.getWidth() * 0.5f;
 
@@ -625,7 +623,7 @@ public abstract class EditorGui extends Gui {
 			}
 
 			// Add name
-			label = new Label(dependency.getName(), mUiFactory.getStyles().label.standard);
+			label = mUiFactory.text.create(dependency.getName());
 			depTable.add(label);
 		}
 
@@ -704,13 +702,12 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Run a command. If the editor isn't saved a message box is displayed that asks the
-	 * player to either save or discard the resource before executing the command.
+	 * Run a command. If the editor isn't saved a message box is displayed that asks the player to either save or
+	 * discard the resource before executing the command.
 	 * @param command the command to run
 	 * @param title message box title
 	 * @param saveButtonText text for the save button then execute the command
-	 * @param withoutSaveButtonText text for the button when to just execute the command
-	 *        without saving
+	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
 	 * @param content the message to be displayed in the message box
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content) {
@@ -718,16 +715,14 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Run a command. Displays a message box that asks the player to either save or
-	 * discard the resources before executing the command.
+	 * Run a command. Displays a message box that asks the player to either save or discard the resources before
+	 * executing the command.
 	 * @param command the command to run
 	 * @param title message box title
 	 * @param saveButtonText text for the save button then execute the command
-	 * @param withoutSaveButtonText text for the button when to just execute the command
-	 *        without saving
+	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
 	 * @param content the message to be displayed in the message box
-	 * @param alwaysShow set to true to always show the message box even if the resource
-	 *        has been saved
+	 * @param alwaysShow set to true to always show the message box even if the resource has been saved
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content,
 			boolean alwaysShow) {
@@ -796,8 +791,7 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Reset and add collision boxes for all UI-elements. Should be called once initially
-	 * and when
+	 * Reset and add collision boxes for all UI-elements. Should be called once initially and when
 	 */
 	void resetCollisionBoxes() {
 		if (mEditor == null) {

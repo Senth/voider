@@ -59,15 +59,19 @@ import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Factory for creating UI objects, more specifically combined UI objects. This factory
- * class gets its default settings from general.json
+ * Factory for creating UI objects, more specifically combined UI objects. This factory class gets its default settings
+ * from general.json
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UiFactory {
+	/** Create labels */
+	public LabelFactory text = null;
+
 	/**
 	 * Creates an empty UI Factory. Call {@link #init()} to initialize all styles
 	 */
@@ -98,7 +102,7 @@ public class UiFactory {
 		final int maxHeight = Gdx.graphics.getHeight() / 2;
 
 		msgBox.setTitle("Update Required");
-		Label label = new Label(message, mStyles.label.highlight);
+		Label label = new Label(message, LabelStyles.HIGHLIGHT.getStyle());
 		label.setWrap(true);
 		label.setWidth(width);
 		label.setAlignment(Align.center);
@@ -115,7 +119,7 @@ public class UiFactory {
 				changeLogMsgBox.contentRow();
 
 
-				Label label = new Label(changeLog, mStyles.label.standard);
+				Label label = new Label(changeLog, LabelStyles.DEFAULT.getStyle());
 				label.setWrap(true);
 				label.setWidth(width);
 
@@ -149,7 +153,7 @@ public class UiFactory {
 		Drawable tooltipImage = SkinNames.getDrawable(SkinNames.EditorImages.TOOLTIP);
 		ImageButtonStyle youtubeImage = SkinNames.getResource(SkinNames.EditorIcons.YOUTUBE);
 
-		TooltipWidget tooltipWidget = new TooltipWidget(tooltipImage, youtubeImage, mStyles.label.tooltip, mStyles.vars.paddingInner);
+		TooltipWidget tooltipWidget = new TooltipWidget(tooltipImage, youtubeImage, LabelStyles.TOOLTIP.getStyle(), mStyles.vars.paddingInner);
 		tooltipWidget.setMargin(mStyles.vars.paddingOuter);
 
 		float width = Gdx.graphics.getWidth() - mStyles.vars.paddingOuter * 2;
@@ -208,9 +212,8 @@ public class UiFactory {
 
 	/**
 	 * Adds a window to a table
-	 * @param title title of the table. When setting the title it will use the window skin
-	 *        with a title, if null it will instead use a default window skin without a
-	 *        title
+	 * @param title title of the table. When setting the title it will use the window skin with a title, if null it will
+	 *        instead use a default window skin without a title
 	 * @param innerTable the inner table of the window
 	 * @param table the table to add the window to
 	 * @param hider optional GUI hider
@@ -282,12 +285,12 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-			// Slim fit to text
+		// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-			// Fit to text (but with padding)
+		// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -338,8 +341,8 @@ public class UiFactory {
 	 * @param comment the comment to display
 	 * @param date date of the comment
 	 * @param usePadding if there should be padding above the name and date.
-	 * @param createdActors (optional) All created actors (except the returned table) is
-	 *        added to this. In the specified order: username, comment, date.
+	 * @param createdActors (optional) All created actors (except the returned table) is added to this. In the specified
+	 *        order: username, comment, date.
 	 * @return table with the comment
 	 */
 	public AlignTable createComment(String username, String comment, String date, boolean usePadding, ArrayList<Actor> createdActors) {
@@ -382,8 +385,7 @@ public class UiFactory {
 	 * Create a scrollable list for all available themes.
 	 * @param width available width for scroll pane
 	 * @param height available height for scroll pane
-	 * @param checkable true if the buttons should be checkable, otherwise they can only
-	 *        be pressed.
+	 * @param checkable true if the buttons should be checkable, otherwise they can only be pressed.
 	 * @param listener listens to the button presses
 	 * @param selectedTheme the default theme to be set as selected
 	 * @return created scroll pane.
@@ -441,7 +443,7 @@ public class UiFactory {
 			// Set correct selected
 			if (theme == selectedTheme) {
 				button.setChecked(true);
-				label.setStyle(mStyles.label.highlight);
+				label.setStyle(LabelStyles.HIGHLIGHT.getStyle());
 			}
 		}
 
@@ -455,57 +457,14 @@ public class UiFactory {
 	}
 
 	/**
-	 * @return last created error label
-	 */
-	public Label getLastCreatedErrorLabel() {
-		return mCreatedErrorLabelLast;
-	}
-
-	/**
-	 * Create an error label.
-	 * @param labelText text to display before the error
-	 * @param labelIsSection set to true if the label is a section (different styles are
-	 *        used for true/false).
-	 * @param table the table to add the error text to
-	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @return created error label. Can also be accessed via
-	 *         {@link #getLastCreatedErrorLabel()} directly after calling this method.
-	 */
-	public Label addErrorLabel(String labelText, boolean labelIsSection, AlignTable table, ArrayList<Actor> createdActors) {
-		AlignTable wrapTable = new AlignTable();
-		wrapTable.setName("error-table");
-		table.row();
-		table.add(wrapTable).setWidth(mStyles.vars.textFieldWidth);
-
-		Label label = addSection(labelText, wrapTable, null);
-		// Change style to error info
-		if (!labelIsSection) {
-			label.setStyle(mStyles.label.errorSectionInfo);
-		}
-
-		// Fill width
-		wrapTable.getRows().get(0).setFillWidth(true);
-		wrapTable.add().setFillWidth(true);
-
-		// Add error label
-		mCreatedErrorLabelLast = new Label("", mStyles.label.errorSection);
-		wrapTable.add(mCreatedErrorLabelLast).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
-
-		doExtraActionsOnActors(null, createdActors, label, mCreatedErrorLabelLast);
-
-		return mCreatedErrorLabelLast;
-	}
-
-	/**
 	 * Adds a text field with an optional label header
 	 * @param sectionText optional text for the label, if null no label is added
 	 * @param defaultText default text in the text field
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @param errorLabel set to true to create an error label (only works if sectionText
-	 *        isn't null). This label can be accessed by calling
-	 *        {@link #getLastCreatedErrorLabel()} directly after this method.
+	 * @param errorLabel set to true to create an error label (only works if sectionText isn't null). This label can be
+	 *        accessed by calling {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
 	public TextField addTextField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
@@ -514,9 +473,9 @@ public class UiFactory {
 		if (sectionText != null) {
 			// If error label, wrap the both labels in another table with fixed width
 			if (errorLabel) {
-				addErrorLabel(sectionText, true, table, createdActors);
+				text.addError(sectionText, true, table, createdActors);
 			} else {
-				addSection(sectionText, table, null, createdActors);
+				text.addSection(sectionText, table, null, createdActors);
 			}
 		}
 
@@ -540,9 +499,8 @@ public class UiFactory {
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @param errorLabel set to true to create an error label (only works if sectionText
-	 *        isn't null). This label can be accessed by calling
-	 *        {@link #getLastCreatedErrorLabel()} directly after this method.
+	 * @param errorLabel set to true to create an error label (only works if sectionText isn't null). This label can be
+	 *        accessed by calling {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
 	public TextField addPasswordField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
@@ -580,7 +538,7 @@ public class UiFactory {
 	public TextArea addTextArea(String sectionText, String defaultText, float width, TextFieldListener listener, AlignTable table,
 			ArrayList<Actor> createdActors) {
 		// Label
-		addSection(sectionText, table, null, createdActors);
+		text.addSection(sectionText, table, null, createdActors);
 
 		TextArea textArea = new TextArea(defaultText, mStyles.textField.standard);
 		listener.setTextField(textArea);
@@ -607,7 +565,7 @@ public class UiFactory {
 	 */
 	public <SelectType> SelectBox<SelectType> addSelectBox(String sectionText, SelectType[] items, SelectBoxListener listener, AlignTable table,
 			ArrayList<Actor> createdActors) {
-		addSection(sectionText, table, null, createdActors);
+		text.addSection(sectionText, table, null, createdActors);
 
 		SelectBox<SelectType> selectBox = new SelectBox<>(mStyles.select.standard);
 		selectBox.setItems(items);
@@ -623,8 +581,7 @@ public class UiFactory {
 	}
 
 	/**
-	 * Adds a min and max slider with section text to a table. These sliders are
-	 * synchronized.
+	 * Adds a min and max slider with section text to a table. These sliders are synchronized.
 	 * @param text optional section text for the sliders
 	 * @param min minimum value of the sliders
 	 * @param max maximum value of the sliders
@@ -640,7 +597,7 @@ public class UiFactory {
 			SliderListener maxSliderListener, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
 		// Label
 		if (text != null) {
-			Label label = addPanelSection(text, table, null);
+			Label label = this.text.addPanelSection(text, table, null);
 			doExtraActionsOnActors(hider, createdActors, label);
 		}
 
@@ -681,7 +638,7 @@ public class UiFactory {
 		// Label
 		Label label = null;
 		if (text != null) {
-			label = new Label(text, mStyles.label.standard);
+			label = new Label(text, LabelStyles.DEFAULT.getStyle());
 			table.add(label).setWidth(mStyles.vars.sliderLabelWidth);
 		}
 
@@ -711,8 +668,8 @@ public class UiFactory {
 	}
 
 	/**
-	 * Calculate how many characters are needed to be displayed in the slider text field
-	 * for all values to be shown. I.e. order of magnitude (sort of)
+	 * Calculate how many characters are needed to be displayed in the slider text field for all values to be shown.
+	 * I.e. order of magnitude (sort of)
 	 * @param min minimum slider value
 	 * @param max maximum slider value
 	 * @param stepSize
@@ -782,50 +739,6 @@ public class UiFactory {
 		return rating;
 	}
 
-	/**
-	 * Add a label
-	 * @param text the text of the label
-	 * @param wrap if the label should be wrapped
-	 * @param table the table to add the label to
-	 * @param labelStyle style of the label
-	 * @return created label
-	 */
-	public Label addLabel(String text, boolean wrap, AlignTable table, ISkinNames labelStyle) {
-		Label label = new Label(text, (LabelStyle) SkinNames.getResource(labelStyle));
-		label.setWrap(wrap);
-		table.add(label);
-
-		return label;
-	}
-
-	/**
-	 * Add a label
-	 * @param text the text of the label
-	 * @param wrap if the label should be wrapped
-	 * @param table the table to add the label to
-	 * @return created label
-	 */
-	public Label addLabel(String text, boolean wrap, AlignTable table) {
-		Label label = new Label(text, mStyles.label.standard);
-		label.setWrap(wrap);
-		table.add(label);
-
-		return label;
-	}
-
-	/**
-	 * Add a header label
-	 * @param text the text of the header
-	 * @param table the table to add the header to
-	 * @return created label
-	 */
-	public Label addHeader(String text, AlignTable table) {
-		Label label = new Label(text, mStyles.label.header);
-		table.row().setAlign(Horizontal.CENTER);
-		table.add(label);
-
-		return label;
-	}
 
 	/**
 	 * Add an icon with a label
@@ -844,7 +757,7 @@ public class UiFactory {
 		table.add(image);
 
 		// Label
-		Label label = new Label(text, mStyles.label.standard);
+		Label label = new Label(text, LabelStyles.DEFAULT.getStyle());
 		table.add(label).setFillWidth(fillWidth);
 
 		doExtraActionsOnActors(hider, null, image, label);
@@ -919,7 +832,7 @@ public class UiFactory {
 		if (textStyle != null) {
 			label = new Label(text, textStyle);
 		} else {
-			label = new Label(text, mStyles.label.standard);
+			label = new Label(text, LabelStyles.DEFAULT.getStyle());
 		}
 		label.pack();
 
@@ -1007,56 +920,6 @@ public class UiFactory {
 	}
 
 	/**
-	 * Add a panel section label
-	 * @param text section label text
-	 * @param table the table to add the text to
-	 * @param hider optional hider to hide the label
-	 * @return label that was created
-	 */
-	public Label addPanelSection(String text, AlignTable table, GuiHider hider) {
-		Label label = new Label(text, mStyles.label.panelSection);
-		table.row().setHeight(mStyles.vars.rowHeightSection);
-		table.add(label).setAlign(Vertical.MIDDLE);
-
-		doExtraActionsOnActors(hider, null, label);
-
-		return label;
-	}
-
-	/**
-	 * Add a section label
-	 * @param text section label text
-	 * @param table the table to add the text to
-	 * @param hider optional hider to hide the label
-	 * @return label that was created
-	 */
-	public Label addSection(String text, AlignTable table, GuiHider hider) {
-		return addSection(text, table, hider, null);
-	}
-
-	/**
-	 * Add a section label
-	 * @param text section label text, if null this method does nothing
-	 * @param table the table to add the text to
-	 * @param hider optional hider to hide the label
-	 * @param createdActors optional adds the created label to this array
-	 * @return label that was created
-	 */
-	private Label addSection(String text, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
-		if (text != null) {
-			Label label = new Label(text, mStyles.label.standard);
-			table.row();
-			table.add(label).setHeight(mStyles.vars.rowHeight);
-
-			doExtraActionsOnActors(hider, createdActors, label);
-			return label;
-		} else {
-			return null;
-		}
-	}
-
-
-	/**
 	 * Adds a tool icon to the specified table
 	 * @param icon icon for the tool
 	 * @param group the button group the tools belong to
@@ -1107,7 +970,7 @@ public class UiFactory {
 	public CheckBox addPanelCheckBox(String text, ButtonListener listener, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
 
 		table.row().setFillWidth(true);
-		Label label = new Label(text, mStyles.label.standard);
+		Label label = new Label(text, LabelStyles.DEFAULT.getStyle());
 		table.add(label);
 
 		table.add().setFillWidth(true);
@@ -1314,12 +1177,12 @@ public class UiFactory {
 	}
 
 	/**
-	 * Set tooltip, add actors to hider, add to created actors, or any combination.
+	 * Add actors to hider, add to created actors, or any combination.
 	 * @param hider add all actors to the hider (if not null)
 	 * @param createdActors add all actors to this list (if not null)
 	 * @param actors all actors that should be processed
 	 */
-	private void doExtraActionsOnActors(GuiHider hider, ArrayList<Actor> createdActors, Actor... actors) {
+	static void doExtraActionsOnActors(GuiHider hider, ArrayList<Actor> createdActors, Actor... actors) {
 		// Hider
 		if (hider != null) {
 			for (Actor actor : actors) {
@@ -1351,6 +1214,7 @@ public class UiFactory {
 		}
 
 		mStyles = new UiStyles();
+		text = new LabelFactory(mStyles);
 	}
 
 	/**
@@ -1377,8 +1241,8 @@ public class UiFactory {
 
 		;
 		/**
-		 * If the location contains the specified enumeration name. E.g. if singleLocation
-		 * is TOP it will return true for the TOP and TOP_BOTTOM enumerations.
+		 * If the location contains the specified enumeration name. E.g. if singleLocation is TOP it will return true
+		 * for the TOP and TOP_BOTTOM enumerations.
 		 * @param singleLocation should be either TOP or BOTTOM.
 		 * @return true if the location contains the specified location.
 		 */
@@ -1461,8 +1325,7 @@ public class UiFactory {
 		}
 
 		/**
-		 * Set the hide listener. Useful when you want to use something else than the
-		 * default hider
+		 * Set the hide listener. Useful when you want to use something else than the default hider
 		 * @param hider
 		 */
 		public void setHider(HideListener hider) {
@@ -1537,8 +1400,7 @@ public class UiFactory {
 
 	/** Current tab widget */
 	private TabWidget mTabWidget = null;
-	/** Last created error label */
-	private Label mCreatedErrorLabelLast = null;
+
 	/** If the factory has been initialized */
 	private boolean mInitialized = false;
 	/** Contains all styles */

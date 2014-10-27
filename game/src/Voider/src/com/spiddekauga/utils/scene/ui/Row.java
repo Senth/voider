@@ -68,11 +68,13 @@ public class Row implements Poolable, IPadding<Row> {
 	/**
 	 * Sets the cells to equal size
 	 * @param equalSize set to true to use equal spacing
-	 * @param useCellAlign set this to true if you want to use the cell's alignment
-	 *        instead of the row's alignment. With this you can accomplish a layout like
-	 *        this: \code |————————————————————————————————————| |Left | Right| Center |
-	 *        |————————————————————————————————————| \endcode Only applicable if
-	 *        equalSpacing is set to true
+	 * @param useCellAlign set this to true if you want to use the cell's alignment instead of the row's alignment. With
+	 *        this you can accomplish a layout like this: \code
+	 *        |��������������������������������������������������������
+	 *        ����������������������������������������������������| |Left | Right| Center |
+	 *        |����������������������������
+	 *        ��������������������������������������������������������������������������������| \endcode Only applicable
+	 *        if equalSpacing is set to true
 	 * @todo useCellAlign has not been implemented yet
 	 * @return This row for chaining
 	 */
@@ -280,9 +282,8 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * Sets the row as fixed width. Can be used together with
-	 * {@link #setFillWidth(boolean)} so that the row is actually bigger than the cells
-	 * inside it.
+	 * Sets the row as fixed width. Can be used together with {@link #setFillWidth(boolean)} so that the row is actually
+	 * bigger than the cells inside it.
 	 * @param fixedWidth set to true to make it fixed width
 	 * @return this for chaining
 	 */
@@ -292,9 +293,8 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * Sets the row as fixed height. Can be used together with
-	 * {@link #setFillHeight(boolean)} so that the row is actually bigger than the cells
-	 * inside it.
+	 * Sets the row as fixed height. Can be used together with {@link #setFillHeight(boolean)} so that the row is
+	 * actually bigger than the cells inside it.
 	 * @param fixedHeight set to true to make it fixed height
 	 * @return this for chaining
 	 */
@@ -311,16 +311,14 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * @return true if this row has fixed height. I.e. it has changed its height
-	 *         externally.
+	 * @return true if this row has fixed height. I.e. it has changed its height externally.
 	 */
 	boolean isFixedHeight() {
 		return mFixedHeight;
 	}
 
 	/**
-	 * Sets if the row shall fill the remaining width of the table. This works for all
-	 * rows in the table.
+	 * Sets if the row shall fill the remaining width of the table. This works for all rows in the table.
 	 * @param fillWidth set to true if the row shall fill the remaining width of the table
 	 * @return this row for chaining
 	 */
@@ -452,8 +450,8 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * @return false if all cells are invisible. If a row exists without a cell or with an
-	 *         empty cell it still returs true if the cell is set as visible.
+	 * @return false if all cells are invisible. If a row exists without a cell or with an empty cell it still returs
+	 *         true if the cell is set as visible.
 	 */
 	boolean isVisible() {
 		return mCells.isEmpty() || getVisibleCellCount() > 0;
@@ -612,7 +610,7 @@ public class Row implements Poolable, IPadding<Row> {
 		} else if (mAlign.vertical == Vertical.TOP) {
 			offset.y = startPos.y + availableSize.y - mHeight - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (availableSize.y - mHeight - getPadBottom() - getPadTop()) * 0.5f;
+			offset.y = startPos.y + (availableSize.y - getHeight()) * 0.5f;
 		}
 
 		Vector2 availableCellSize = Pools.vector2.obtain();
@@ -688,8 +686,7 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * True if the row uses the full width of the parents getPrefWidth() and sets the
-	 * cell's size to equal
+	 * True if the row uses the full width of the parents getPrefWidth() and sets the cell's size to equal
 	 */
 	private boolean mEqualSize = false;
 	/** All the columns in the table */
@@ -697,8 +694,7 @@ public class Row implements Poolable, IPadding<Row> {
 	/** Total preferred width of the actors in this row */
 	private float mPrefWidth = 0;
 	/**
-	 * Preferred height of the actors in this row, this is set to the actor with most
-	 * preferred height.
+	 * Preferred height of the actors in this row, this is set to the actor with most preferred height.
 	 */
 	private float mPrefHeight = 0;
 	/** Width of the row, calculated from the cells */

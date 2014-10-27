@@ -46,8 +46,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	VisualVars(ActorTypes actorType) {
 		mActorType = actorType;
 		setDefaultValues();
-
-
 		createFixtureDef();
 	}
 
@@ -60,6 +58,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	public void read(Kryo kryo, Input input) {
 		@SuppressWarnings("unused")
 		int classRevision = input.readInt(true);
+
+		IC_Visual icVisual = ConfigIni.getInstance().editor.actor.getVisual(mActorType);
+		mDensity = icVisual.getDensityDefault();
+		mFriction = icVisual.getFrictionDefault();
+		mElasticity = icVisual.getElasticityDefault();
 
 		createFixtureDef();
 		calculateBoundingRadius();
@@ -118,6 +121,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			mShapeCircleRadius = icVisual.getRadiusDefault();
 			mShapeHeight = icVisual.getSizeDefault();
 			mShapeWidth = icVisual.getSizeDefault();
+			mDensity = icVisual.getDensityDefault();
+			mFriction = icVisual.getFrictionDefault();
+			mElasticity = icVisual.getElasticityDefault();
 			setShapeType(icVisual.getShapeDefault());
 		}
 
@@ -1149,8 +1155,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@SuppressWarnings("unchecked") @Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
 
 	// Fixture def values
-	private float mDensity = 0.001f;
-	private float mElasticity = 0.1f;
+	private float mDensity = 0;
+	private float mElasticity = 0;
 	private float mFriction = 0;
 
 	/**

@@ -278,7 +278,7 @@ public class LoginGui extends Gui {
 			}
 		};
 		mWidgets.register.username = mUiFactory.addTextField("Username", true, "Username", mWidgets.register.usernameListener, table, null);
-		mWidgets.register.usernameError = mUiFactory.getLastCreatedErrorLabel();
+		mWidgets.register.usernameError = mUiFactory.text.getLastCreatedErrorLabel();
 
 		// Password
 		mWidgets.register.passwordListener = new TextFieldListener() {
@@ -288,7 +288,7 @@ public class LoginGui extends Gui {
 			}
 		};
 		mWidgets.register.password = mUiFactory.addPasswordField("Password", true, "Password", mWidgets.register.passwordListener, table, null);
-		mWidgets.register.passwordError = mUiFactory.getLastCreatedErrorLabel();
+		mWidgets.register.passwordError = mUiFactory.text.getLastCreatedErrorLabel();
 
 		// Confirm password
 		TextFieldListener textFieldListener = new TextFieldListener() {
@@ -307,7 +307,7 @@ public class LoginGui extends Gui {
 			}
 		};
 		mWidgets.register.email = mUiFactory.addTextField("Email", true, "your@email.com", mWidgets.register.emailListener, table, null);
-		mWidgets.register.emailError = mUiFactory.getLastCreatedErrorLabel();
+		mWidgets.register.emailError = mUiFactory.text.getLastCreatedErrorLabel();
 
 
 		// Set fixed width

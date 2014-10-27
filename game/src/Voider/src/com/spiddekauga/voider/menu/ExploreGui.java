@@ -364,7 +364,7 @@ public class ExploreGui extends Gui {
 		table.setName("info");
 
 		// Name
-		mWidgets.info.name = mUiFactory.addPanelSection("", table, null);
+		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
 		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
 
 		// Rating
@@ -373,14 +373,14 @@ public class ExploreGui extends Gui {
 
 		// Description
 		table.row(Horizontal.CENTER, Vertical.TOP);
-		mWidgets.info.description = mUiFactory.addLabel("", true, table);
+		mWidgets.info.description = mUiFactory.text.add("", true, table);
 
 		// Created by
-		mUiFactory.addPanelSection("Created by", table, null);
+		mUiFactory.text.addPanelSection("Created by", table, null);
 		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Revised by
-		mUiFactory.addPanelSection("Revised by", table, null);
+		mUiFactory.text.addPanelSection("Revised by", table, null);
 		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Date
@@ -411,7 +411,7 @@ public class ExploreGui extends Gui {
 		// User comment
 		GuiHider userHider = mWidgets.comment.userHider;
 
-		mUiFactory.addPanelSection("Your comment", table, userHider);
+		mUiFactory.text.addPanelSection("Your comment", table, userHider);
 
 		ArrayList<Actor> createdActors = new ArrayList<>();
 		AlignTable userComment = mUiFactory.createComment(User.getGlobalUser().getUsername(), "", "", false, createdActors);
@@ -422,7 +422,7 @@ public class ExploreGui extends Gui {
 		mWidgets.comment.userDate = (Label) createdActors.get(2);
 
 		// Level comments
-		mUiFactory.addPanelSection("Latest comments", table, null);
+		mUiFactory.text.addPanelSection("Latest comments", table, null);
 		mWidgets.comment.comments.setAlign(Horizontal.LEFT, Vertical.TOP);
 		ScrollPane scrollPane = new ScrollPane(mWidgets.comment.comments, mUiFactory.getStyles().scrollPane.noBackground);
 		table.row().setFillHeight(true).setFillWidth(true);
@@ -506,7 +506,7 @@ public class ExploreGui extends Gui {
 		wrapper.add(tagTable).setFillHeight(true);
 
 		// Filter results
-		mUiFactory.addPanelSection("Filter Results", tagTable, null);
+		mUiFactory.text.addPanelSection("Filter Results", tagTable, null);
 		tagTable.getRow().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
 		// Add tags
@@ -760,7 +760,7 @@ public class ExploreGui extends Gui {
 
 		// Level name
 		table.row();
-		mUiFactory.addLabel(level.defEntity.name, false, table);
+		mUiFactory.text.add(level.defEntity.name, table);
 		table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 
 		// Rating

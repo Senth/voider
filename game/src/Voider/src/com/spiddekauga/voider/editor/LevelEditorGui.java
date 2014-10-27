@@ -55,6 +55,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -290,8 +291,8 @@ class LevelEditorGui extends EditorGui {
 
 	/**
 	 * @return calculate and get max scroll table height for the enemy list.
-	 * @note scrollPane needs to be set to height 0 and wrapper table must call layout()
-	 *       as it calculates the height of the rest of the widgets.
+	 * @note scrollPane needs to be set to height 0 and wrapper table must call layout() as it calculates the height of
+	 *       the rest of the widgets.
 	 */
 	private float getEnemyScrollListMaxHeight() {
 		mWidgets.enemyAdd.scrollPane.setHeight(0);
@@ -385,7 +386,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Default color
 		GuiHider hider = mWidgets.color.hiderDefault;
-		mUiFactory.addPanelSection("Default Color", table, hider);
+		mUiFactory.text.addPanelSection("Default Color", table, hider);
 		ColorTintPicker picker = mUiFactory.addColorTintPicker(table, hider, mDisabledWhenPublished, colorArray.arr);
 		mWidgets.color.defaultPicker = picker;
 		new SliderListener(picker, null, mInvoker) {
@@ -405,7 +406,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Selected color
 		hider = mWidgets.color.hiderTerrain;
-		mUiFactory.addPanelSection("Terrain Color", table, hider);
+		mUiFactory.text.addPanelSection("Terrain Color", table, hider);
 		picker = mUiFactory.addColorTintPicker(table, hider, mDisabledWhenPublished, colorArray.arr);
 		mWidgets.color.terrainPicker = picker;
 		new SliderListener(picker, null, mInvoker) {
@@ -712,12 +713,12 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.name = mUiFactory.addTextField("Name", true, Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
 				textFieldListener, left, mDisabledWhenPublished);
 		mWidgets.info.name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
-		mWidgets.info.nameError = mUiFactory.getLastCreatedErrorLabel();
+		mWidgets.info.nameError = mUiFactory.text.getLastCreatedErrorLabel();
 
 		// Theme
-		mUiFactory.addSection("Theme", left, null);
+		mUiFactory.text.addSection("Theme", left, null);
 		left.row().setFillWidth(true);
-		mUiFactory.addLabel("Select Theme", false, left, SkinNames.General.LABEL_TEXT_FIELD_DEFAULT);
+		mUiFactory.text.add("Select Theme", left, LabelStyles.TEXT_FIELD_DEFAULT);
 		left.add().setFillWidth(true);
 		float buttonWidth = mUiFactory.getStyles().vars.textButtonWidth;
 		float buttonHeight = mUiFactory.getStyles().vars.textButtonHeight;
@@ -731,7 +732,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Speed
-		mUiFactory.addSection("Level Speed", left, null);
+		mUiFactory.text.addSection("Level Speed", left, null);
 		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -742,7 +743,7 @@ class LevelEditorGui extends EditorGui {
 				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, mDisabledWhenPublished);
 
 		// Screenshot image
-		mUiFactory.addSection("Level/Screenshot Image", left, null);
+		mUiFactory.text.addSection("Level/Screenshot Image", left, null);
 		left.row().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mWidgets.info.image = new Image();
 		left.add(mWidgets.info.image).setWidth(mUiFactory.getStyles().vars.textFieldWidth);
@@ -834,9 +835,9 @@ class LevelEditorGui extends EditorGui {
 
 						if (checked) {
 							mLevelEditor.setTheme(themeData.theme);
-							themeData.label.setStyle(mUiFactory.getStyles().label.highlight);
+							themeData.label.setStyle(LabelStyles.HIGHLIGHT.getStyle());
 						} else {
-							themeData.label.setStyle(mUiFactory.getStyles().label.standard);
+							themeData.label.setStyle(LabelStyles.DEFAULT.getStyle());
 						}
 					}
 				}
@@ -995,7 +996,7 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
 			}
 		};
-		mUiFactory.addPanelSection("Enemy", table, null);
+		mUiFactory.text.addPanelSection("Enemy", table, null);
 		mWidgets.enemy.cEnemies = mUiFactory.addSlider("Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE,
 				sliderListener, table, null, mDisabledWhenPublished);
 
@@ -1010,7 +1011,7 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEnemySpawnDelay(newValue);
 			}
 		};
-		mUiFactory.addPanelSection("Spawn", table, delayHider);
+		mUiFactory.text.addPanelSection("Spawn", table, delayHider);
 		mWidgets.enemy.betweenDelay = mUiFactory.addSlider("Delay", Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX,
 				Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_SPAWN_DELAY);
@@ -1025,7 +1026,7 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedEnemyActivateTriggerDelay(newValue);
 			}
 		};
-		mUiFactory.addPanelSection("Activation", table, mWidgets.enemy.hiderActivateDelay);
+		mUiFactory.text.addPanelSection("Activation", table, mWidgets.enemy.hiderActivateDelay);
 		mWidgets.enemy.activateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX,
 				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table, mWidgets.enemy.hiderActivateDelay, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_ACTIVATION_DELAY);
@@ -1040,7 +1041,7 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedEnemyDeactivateTriggerDelay(newValue);
 			}
 		};
-		mUiFactory.addPanelSection("Deactivation", table, mWidgets.enemy.hiderDeactivateDelay);
+		mUiFactory.text.addPanelSection("Deactivation", table, mWidgets.enemy.hiderDeactivateDelay);
 		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
 				Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
 				mWidgets.enemy.hiderDeactivateDelay, createdActors);
@@ -1059,7 +1060,7 @@ class LevelEditorGui extends EditorGui {
 		AlignTable table = mWidgets.path.table;
 		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
-		mUiFactory.addPanelSection("Enemy path movement", table, null);
+		mUiFactory.text.addPanelSection("Enemy path movement", table, null);
 
 		// Buttons
 		Button button;

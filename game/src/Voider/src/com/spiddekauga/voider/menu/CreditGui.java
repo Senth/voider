@@ -109,7 +109,7 @@ class CreditGui extends Gui {
 	 */
 	private void initHeader() {
 		// Make able to scroll past whole
-		mUiFactory.addHeader("Voider " + ClientVersions.getLatest().toString(), mCreditTable);
+		mUiFactory.text.addHeader("Voider " + ClientVersions.getLatest().toString(), mCreditTable);
 		mCreditTable.getRow().setPadTop(Gdx.graphics.getHeight());
 		addHeader("Credits");
 	}
@@ -191,7 +191,7 @@ class CreditGui extends Gui {
 	 * @param text the text to display
 	 */
 	private void addHeader(String text) {
-		mUiFactory.addHeader(text, mCreditTable);
+		mUiFactory.text.addHeader(text, mCreditTable);
 		mCreditTable.getRow().setPadTop(mPaddingHeader);
 	}
 

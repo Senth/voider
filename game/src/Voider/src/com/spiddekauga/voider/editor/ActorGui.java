@@ -182,7 +182,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.info.name = mUiFactory.addTextField("Name", true, Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
 				listener, mInfoTable, mDisabledWhenPublished);
 		mWidgets.info.name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
-		mWidgets.info.nameError = mUiFactory.getLastCreatedErrorLabel();
+		mWidgets.info.nameError = mUiFactory.text.getLastCreatedErrorLabel();
 
 
 		// Description
@@ -203,7 +203,7 @@ public abstract class ActorGui extends EditorGui {
 	protected void initColor(Color... colors) {
 		AlignTable table = mWidgets.color.table;
 
-		mUiFactory.addPanelSection(getResourceTypeNameCapital() + " Color", table, null);
+		mUiFactory.text.addPanelSection(getResourceTypeNameCapital() + " Color", table, null);
 
 		mWidgets.color.picker = mUiFactory.addColorTintPicker(table, null, mDisabledWhenPublished, colors);
 		new SliderListener(mWidgets.color.picker, null, mInvoker) {
@@ -224,7 +224,7 @@ public abstract class ActorGui extends EditorGui {
 		AlignTable table = mWidgets.visual.table;
 
 		// Starting angle
-		mUiFactory.addPanelSection("Starting Direction", table, null);
+		mUiFactory.text.addPanelSection("Starting Direction", table, null);
 		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -235,7 +235,7 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Rotation speed
-		mUiFactory.addPanelSection("Rotation", table, null);
+		mUiFactory.text.addPanelSection("Rotation", table, null);
 		sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -536,7 +536,7 @@ public abstract class ActorGui extends EditorGui {
 		IC_Collision icCollision = ConfigIni.getInstance().editor.actor.collision;
 
 		// Collision damage
-		mUiFactory.addPanelSection("Collision", mWidgets.collision.table, null);
+		mUiFactory.text.addPanelSection("Collision", mWidgets.collision.table, null);
 		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -550,7 +550,7 @@ public abstract class ActorGui extends EditorGui {
 		// Collision destroy
 		@SuppressWarnings("unchecked")
 		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
-		createdActors.add(mUiFactory.addPanelSection("Collision Destruction", mWidgets.collision.table, null));
+		createdActors.add(mUiFactory.text.addPanelSection("Collision Destruction", mWidgets.collision.table, null));
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(Button button, boolean checked) {

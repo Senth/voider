@@ -11,6 +11,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship.IC_Settings;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -62,7 +63,7 @@ public class ShipEditorGui extends ActorGui {
 
 
 		// Movement
-		mUiFactory.addPanelSection("Movement Settings", table, null);
+		mUiFactory.text.addPanelSection("Movement Settings", table, null);
 
 		// Force
 		SliderListener sliderListener = new SliderListener(mInvoker) {
@@ -74,7 +75,9 @@ public class ShipEditorGui extends ActorGui {
 		mWidgets.movement.force = mUiFactory.addSlider("Force", icSettings.getForceMin(), icSettings.getForceMax(), icSettings.getForceStepSize(),
 				sliderListener, table, null, null);
 
-		mUiFactory.addPanelSection("Movement Settings (not saved)", table, null);
+		mUiFactory.text.addPanel("The settings below aren't saved. Use these for testing and changing values in config.ini.", table,
+				LabelStyles.HIGHLIGHT);
+		mUiFactory.text.addPanelSection("Movement Settings", table, null);
 
 		// Frequency
 		sliderListener = new SliderListener(mInvoker) {
@@ -98,7 +101,8 @@ public class ShipEditorGui extends ActorGui {
 
 
 		// Body settings
-		mUiFactory.addPanelSection("Body Settings", table, null);
+		IC_Visual icVisual = ConfigIni.getInstance().editor.ship.visual;
+		mUiFactory.text.addPanelSection("Body Settings", table, null);
 
 		// Density
 		sliderListener = new SliderListener(mInvoker) {
@@ -107,8 +111,8 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setDensity(newValue);
 			}
 		};
-		mWidgets.movement.density = mUiFactory.addSlider("Density", icSettings.getDensityMin(), icSettings.getDensityMax(),
-				icSettings.getDensityStepSize(), sliderListener, table, null, null);
+		mWidgets.movement.density = mUiFactory.addSlider("Density", icVisual.getDensityMin(), icVisual.getDensityMax(),
+				icVisual.getDensityStepSize(), sliderListener, table, null, null);
 
 		// Friction
 		sliderListener = new SliderListener(mInvoker) {
@@ -117,8 +121,8 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setFriction(newValue);
 			}
 		};
-		mWidgets.movement.friction = mUiFactory.addSlider("Friction", icSettings.getFrictionMin(), icSettings.getFrictionMax(),
-				icSettings.getFrictionStepSize(), sliderListener, table, null, null);
+		mWidgets.movement.friction = mUiFactory.addSlider("Friction", icVisual.getFrictionMin(), icVisual.getFrictionMax(),
+				icVisual.getFrictionStepSize(), sliderListener, table, null, null);
 
 		// Elasticity
 		sliderListener = new SliderListener(mInvoker) {
@@ -127,8 +131,8 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setElasticity(newValue);
 			}
 		};
-		mWidgets.movement.elasticity = mUiFactory.addSlider("Elasticity", icSettings.getElasticityMin(), icSettings.getElasticityMax(),
-				icSettings.getElasticityStepSize(), sliderListener, table, null, null);
+		mWidgets.movement.elasticity = mUiFactory.addSlider("Elasticity", icVisual.getElasticityMin(), icVisual.getElasticityMax(),
+				icVisual.getElasticityStepSize(), sliderListener, table, null, null);
 
 	}
 

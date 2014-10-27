@@ -9,6 +9,7 @@ import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.ShipEditor;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -49,6 +50,20 @@ public class IC_Editor extends IniClass {
 			protected float sizeDefault;
 			protected float sizeStepSize;
 			protected ActorShapeTypes shapeDefault;
+
+			// Fixtures (usually never changed)
+			protected float densityMin;
+			protected float densityMax;
+			protected float densityStepSize;
+			protected float densityDefault;
+			protected float frictionMin;
+			protected float frictionMax;
+			protected float frictionStepSize;
+			protected float frictionDefault;
+			protected float elasticityMin;
+			protected float elasticityMax;
+			protected float elasticityStepSize;
+			protected float elasticityDefault;
 
 			IC_Visual(Ini ini, Section classSection) {
 				super(ini, classSection);
@@ -117,6 +132,54 @@ public class IC_Editor extends IniClass {
 			public ActorShapeTypes getShapeDefault() {
 				return shapeDefault;
 			}
+
+			public float getDensityMin() {
+				return densityMin;
+			}
+
+			public float getDensityMax() {
+				return densityMax;
+			}
+
+			public float getDensityStepSize() {
+				return densityStepSize;
+			}
+
+			public float getDensityDefault() {
+				return densityDefault;
+			}
+
+			public float getFrictionMin() {
+				return frictionMin;
+			}
+
+			public float getFrictionMax() {
+				return frictionMax;
+			}
+
+			public float getFrictionStepSize() {
+				return frictionStepSize;
+			}
+
+			public float getFrictionDefault() {
+				return frictionDefault;
+			}
+
+			public float getElasticityMin() {
+				return elasticityMin;
+			}
+
+			public float getElasticityMax() {
+				return elasticityMax;
+			}
+
+			public float getElasticityStepSize() {
+				return elasticityStepSize;
+			}
+
+			public float getElasticityDefault() {
+				return elasticityDefault;
+			}
 		}
 
 		public class IC_Collision extends IniClass {
@@ -170,6 +233,31 @@ public class IC_Editor extends IniClass {
 				return ship.visual;
 			} else {
 				return visual;
+			}
+		}
+
+		/**
+		 * Get the correct visual type for the specified actor type
+		 * @param actorType the actor type
+		 * @return correct visual type for the actor type, if not found it will return the default visual config
+		 */
+		public IC_Visual getVisual(ActorTypes actorType) {
+			switch (actorType) {
+			case BULLET:
+				return bullet.visual;
+
+			case ENEMY:
+				return enemy.visual;
+
+			case PLAYER:
+				return ship.visual;
+
+			case BOSS:
+			case INVALID:
+			case PICKUP:
+			case STATIC_TERRAIN:
+			default:
+				return actor.visual;
 			}
 		}
 
@@ -406,18 +494,7 @@ public class IC_Editor extends IniClass {
 			protected float dampeningMax;
 			protected float dampeningStepSize;
 			protected float dampeningDefault;
-			protected float densityMin;
-			protected float densityMax;
-			protected float densityStepSize;
-			protected float densityDefault;
-			protected float frictionMin;
-			protected float frictionMax;
-			protected float frictionStepSize;
-			protected float frictionDefault;
-			protected float elasticityMin;
-			protected float elasticityMax;
-			protected float elasticityStepSize;
-			protected float elasticityDefault;
+
 
 			IC_Settings(Ini ini, Section classSection) {
 				super(ini, classSection);
@@ -470,55 +547,6 @@ public class IC_Editor extends IniClass {
 			public float getDampeningDefault() {
 				return dampeningDefault;
 			}
-
-			public float getDensityMin() {
-				return densityMin;
-			}
-
-			public float getDensityMax() {
-				return densityMax;
-			}
-
-			public float getDensityStepSize() {
-				return densityStepSize;
-			}
-
-			public float getDensityDefault() {
-				return densityDefault;
-			}
-
-			public float getFrictionMin() {
-				return frictionMin;
-			}
-
-			public float getFrictionMax() {
-				return frictionMax;
-			}
-
-			public float getFrictionStepSize() {
-				return frictionStepSize;
-			}
-
-			public float getFrictionDefault() {
-				return frictionDefault;
-			}
-
-			public float getElasticityMin() {
-				return elasticityMin;
-			}
-
-			public float getElasticityMax() {
-				return elasticityMax;
-			}
-
-			public float getElasticityStepSize() {
-				return elasticityStepSize;
-			}
-
-			public float getElasticityDefault() {
-				return elasticityDefault;
-			}
-
 		}
 
 		IC_Ship(Ini ini, Section classSection) {

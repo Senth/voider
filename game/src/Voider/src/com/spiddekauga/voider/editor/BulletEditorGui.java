@@ -2,7 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -15,6 +14,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.SliderMinMaxWrapper;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -93,7 +93,7 @@ public class BulletEditorGui extends ActorGui {
 	 */
 	private void initWeapon() {
 		// Speed
-		mUiFactory.addPanelSection("Bullet Properties", mWeaponTable, null);
+		mUiFactory.text.addPanelSection("Bullet Properties", mWeaponTable, null);
 		SliderListener sliderListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -128,13 +128,7 @@ public class BulletEditorGui extends ActorGui {
 				+ "test how the bullet will appear on " + "different weapons.";
 
 
-		Label label = new Label(warningText, mUiFactory.getStyles().label.highlight);
-		label.setWrap(true);
-		label.setWidth(240);
-		label.layout();
-		mWeaponTable.setName("weapon");
-		mWeaponTable.row().setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
-		mWeaponTable.add(label).setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
+		mUiFactory.text.addPanel(warningText, mWeaponTable, LabelStyles.HIGHLIGHT);
 	}
 
 	@Override

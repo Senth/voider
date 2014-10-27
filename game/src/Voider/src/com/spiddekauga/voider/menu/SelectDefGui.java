@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -33,15 +34,15 @@ import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.User;
 
 /**
- * GUI for Select Definition Scene. This creates a border at the top for filtering search,
- * and an optionally checkbox for only showing the player's own actors.
+ * GUI for Select Definition Scene. This creates a border at the top for filtering search, and an optionally checkbox
+ * for only showing the player's own actors.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectDefGui extends Gui {
 	/**
 	 * Creates the GUI (but does not init it) for the select actor
-	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox to
-	 *        only display one's own actors.
+	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox to only display one's own
+	 *        actors.
 	 * @param buttonText what text to display on load/play ?
 	 */
 	public SelectDefGui(boolean showMineOnlyCheckbox, String buttonText) {
@@ -168,21 +169,22 @@ public class SelectDefGui extends Gui {
 		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
 
 		// Name
-		mWidgets.info.name = mUiFactory.addPanelSection("", table, null);
+		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
 		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
 		table.getCell().setAlign(Vertical.TOP);
 		mWidgets.info.name.setName("info-name");
 
 		// Description
 		table.row(Horizontal.CENTER, Vertical.TOP);
-		mWidgets.info.description = mUiFactory.addLabel("", true, table);
+		mWidgets.info.description = mUiFactory.text.add("", true, table);
+		mWidgets.info.description.setAlignment(Align.center);
 
 		// Created by
-		mUiFactory.addPanelSection("Created by", table, null);
+		mUiFactory.text.addPanelSection("Created by", table, null);
 		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Revised by
-		mUiFactory.addPanelSection("Revised by", table, null);
+		mUiFactory.text.addPanelSection("Revised by", table, null);
 		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Date
@@ -451,7 +453,7 @@ public class SelectDefGui extends Gui {
 
 		// Def name
 		table.row();
-		mUiFactory.addLabel(def.def.getName(), false, table);
+		mUiFactory.text.add(def.def.getName(), false, table);
 		table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 
 		return table;

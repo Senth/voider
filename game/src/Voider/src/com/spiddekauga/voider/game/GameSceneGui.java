@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -16,6 +15,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
 /**
  * GUI for the GameScene
@@ -173,16 +173,15 @@ class GameSceneGui extends Gui {
 	 * Initializes the score and multiplier
 	 */
 	public void initScoreMultiplier() {
-		LabelStyle labelStyle = mUiFactory.getStyles().label.highlight;
+		LabelStyles labelStyle = LabelStyles.HIGHLIGHT;
 
+		AlignTable table = mMainTable;
 
 		// Score
-		mWidgets.score = new Label("", labelStyle);
-		mMainTable.add(mWidgets.score);
+		mWidgets.score = mUiFactory.text.add("", table, labelStyle);
 
 		// Multiplier
-		mWidgets.multiplier = new Label("(X1)", labelStyle);
-		mMainTable.add(mWidgets.multiplier);
+		mWidgets.multiplier = mUiFactory.text.add("(X1)", table, labelStyle);
 	}
 
 	/** GameScene object that this GUI acts on */

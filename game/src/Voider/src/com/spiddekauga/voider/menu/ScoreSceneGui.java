@@ -15,6 +15,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
 /**
  * GUI for the game over screen
@@ -69,7 +70,7 @@ public class ScoreSceneGui extends Gui {
 
 			// Rate
 			mMainTable.row().setFillWidth(true).setPadTop(mUiFactory.getStyles().vars.paddingInner);
-			mUiFactory.addLabel("Rate", false, mMainTable);
+			mUiFactory.text.add("Rate", mMainTable);
 			mMainTable.add().setFillWidth(true);
 			RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.enabled, mMainTable, null);
 			mWidgets.rating = ratingWidget;
@@ -83,7 +84,7 @@ public class ScoreSceneGui extends Gui {
 
 			// Bookmark
 			mMainTable.row().setFillWidth(true);
-			mUiFactory.addLabel("Bookmark", false, mMainTable);
+			mUiFactory.text.add("Bookmark", mMainTable);
 			mMainTable.add().setFillWidth(true);
 			Button button = mUiFactory.addImageButton(SkinNames.General.BOOKMARK, mMainTable, null, null);
 			mWidgets.bookmark = button;
@@ -106,7 +107,7 @@ public class ScoreSceneGui extends Gui {
 			String text = "Highscore, rate, bookmark, and comment features are disabled for unpublished levels. "
 					+ "They will be available once you publish your level :D";
 			mMainTable.row().setPadTop(mUiFactory.getStyles().vars.rowHeight);
-			mUiFactory.addLabel(text, true, mMainTable);
+			mUiFactory.text.add(text, true, mMainTable);
 			mMainTable.getCell().setWidth(tableWidth);
 		}
 
@@ -135,15 +136,14 @@ public class ScoreSceneGui extends Gui {
 	/**
 	 * Add a text (left aligned) and then another actor (right aligned) to the score table
 	 * @param text label text
-	 * @param labelStyle (optional) style for the text, if null it will use the default
-	 *        label style
+	 * @param labelStyle (optional) style for the text, if null it will use the default label style
 	 * @param actor the actor to add as right aligned
 	 */
 	private void addToScoreTable(String text, LabelStyle labelStyle, Actor actor) {
 		LabelStyle usesLabelStyle = labelStyle;
 
 		if (usesLabelStyle == null) {
-			usesLabelStyle = mUiFactory.getStyles().label.standard;
+			usesLabelStyle = LabelStyles.DEFAULT.getStyle();
 		}
 
 		float rowHeight = SkinNames.getResource(SkinNames.GeneralVars.SCORE_LABEL_HEIGHT);
@@ -158,15 +158,14 @@ public class ScoreSceneGui extends Gui {
 	/**
 	 * Add a text (left aligned) and then another actor (right aligned) to the score table
 	 * @param leftText label text
-	 * @param labelStyle (optional) style for both the left and right text, if null it
-	 *        will use the default label style
+	 * @param labelStyle (optional) style for both the left and right text, if null it will use the default label style
 	 * @param rightText text for the right side
 	 */
 	private void addToScoreTable(String leftText, LabelStyle labelStyle, String rightText) {
 		LabelStyle usesLabelStyle = labelStyle;
 
 		if (usesLabelStyle == null) {
-			usesLabelStyle = mUiFactory.getStyles().label.standard;
+			usesLabelStyle = LabelStyles.DEFAULT.getStyle();
 		}
 
 		Label label = new Label(rightText, usesLabelStyle);
