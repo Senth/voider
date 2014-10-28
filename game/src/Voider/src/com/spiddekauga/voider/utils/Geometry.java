@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 
 /**
@@ -17,6 +18,130 @@ import com.spiddekauga.voider.Config;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Geometry {
+	/**
+	 * Calculate the center of all points
+	 * @param points the points to calculate the center of
+	 * @return center of all points
+	 */
+	public static Vector2 calculateCenter(ArrayList<Vector2> points) {
+		Vector2 center = new Vector2();
+
+		for (Vector2 point : points) {
+			center.add(point);
+		}
+
+		center.scl(1 / points.size());
+
+		return center;
+	}
+
+	/**
+	 * Remove points that are too close or have less than the specified angle between them
+	 * @param distMinSq squared minimum distance
+	 * @param angleMin minimum angle between corners
+	 * @param points the points to check. This array will be changed
+	 * @return all removed points and their specified indexes
+	 */
+	public static ArrayList<PointIndex> removeExcessivePoints(float distMinSq, float angleMin, ArrayList<Vector2> points) {
+		ArrayList<PointIndex> removedPoints = new ArrayList<>();
+		Vector2 afterVector = new Vector2();
+
+		int oldSize = points.size();
+		do {
+			afterVector.set(points.get(1)).sub(points.get(0));
+			float beforeAngle = 0;
+			float afterAngle = afterVector.angle();
+
+			for (int i = 1; i < points.size() - 1; ++i) {
+				beforeAngle = afterAngle;
+				boolean removePoint = false;
+
+				// Test distance
+				if (afterVector.len2() < distMinSq) {
+					removePoint = true;
+				}
+				// Test angle
+				else {
+					// Calculate after vector
+					afterVector.set(points.get(com.spiddekauga.utils.Collections.nextIndex(points, i))).sub(points.get(i));
+					afterAngle = afterVector.angle();
+
+					if (Maths.approxCompare(beforeAngle, afterAngle, angleMin)) {
+						removePoint = true;
+					} else if (beforeAngle < afterAngle) {
+						if (Maths.approxCompare(beforeAngle + 360, afterAngle, angleMin)) {
+							removePoint = true;
+						}
+					} else {
+						if (Maths.approxCompare(beforeAngle - 360, afterAngle, angleMin)) {
+							removePoint = true;
+						}
+					}
+				}
+
+				// Too low difference in degrees between angles...
+				if (removePoint) {
+					removePoint(i, points, removedPoints);
+
+					// Before vector will have changed again
+					if (i < points.size() - 1) {
+						afterVector.set(points.get(i)).sub(points.get(i - 1));
+						afterAngle = afterVector.angle();
+
+						--i;
+					}
+				}
+			}
+
+			// Test length between last points, i.e. end-1 -> end & end -> begin
+			// end-1 -> end.
+			if (points.size() > 1) {
+				afterVector.set(points.get(points.size() - 1)).sub(points.get(points.size() - 2));
+				if (afterVector.len2() < distMinSq) {
+					removePoint(points.size() - 1, points, removedPoints);
+				}
+			}
+
+			// end -> begin
+			if (points.size() > 1) {
+				afterVector.set(points.get(points.size() - 1)).sub(points.get(0));
+				if (afterVector.len2() < distMinSq) {
+					removePoint(points.size() - 1, points, removedPoints);
+				}
+			}
+
+		} while (oldSize != points.size() && points.size() > 2);
+
+		return removedPoints;
+	}
+
+	/**
+	 * Removes a point from an array
+	 * @param index the index to remove the point at
+	 * @param points all points
+	 * @param removedPoints all removed points
+	 */
+	private static void removePoint(int index, ArrayList<Vector2> points, ArrayList<PointIndex> removedPoints) {
+		Vector2 removedPoint = points.remove(index);
+
+		if (removedPoint != null && removedPoints != null) {
+			PointIndex pointIndex = new PointIndex();
+			pointIndex.index = index;
+			pointIndex.point = removedPoint;
+			removedPoints.add(pointIndex);
+		}
+	}
+
+	/**
+	 * A point with an index
+	 */
+	public static class PointIndex {
+		/** Point */
+		public Vector2 point;
+		/** Index of the point */
+		public int index;
+	}
+
 	/**
 	 * Checks if two lines intersects, but skips the vertex points of the lines (i.e. if a
 	 * point is the same, it simply skips the calculation. Note that the lines might still

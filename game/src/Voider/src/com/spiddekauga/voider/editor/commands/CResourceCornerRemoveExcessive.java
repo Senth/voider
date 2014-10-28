@@ -16,6 +16,9 @@ import com.spiddekauga.voider.utils.Pools;
  * difference between them. E.g. three corners > 0,0 -> 0,5 -> 0,10. In this case 0,5 does
  * not add anything to the shape, it will only make calculations slower... Also removes
  * corners that are too close.
+ * @todo use
+ *       {@link com.spiddekauga.voider.utils.Geometry#removeExcessivePoints(float, float, ArrayList)}
+ *       instead of internal algorithm
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceCornerRemoveExcessive extends Command {
@@ -42,7 +45,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 
 
 		// Iterate through several times until no corners are removed
-		boolean removeCorner = false;
+		int oldSize = corners.size();
 		do {
 			afterVector.set(corners.get(1)).sub(corners.get(0));
 			float beforeAngle = 0;
@@ -50,7 +53,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 
 			for (int i = 1; i < corners.size() - 1; ++i) {
 				beforeAngle = afterAngle;
-				removeCorner = false;
+				boolean removeCorner = false;
 
 				// Test distance
 				if (afterVector.len2() < mCornerDistMinSq) {
@@ -106,7 +109,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 				}
 			}
 
-		} while (removeCorner && corners.size() > 2);
+		} while (oldSize != corners.size() && corners.size() > 2);
 
 		Pools.vector2.free(afterVector);
 
