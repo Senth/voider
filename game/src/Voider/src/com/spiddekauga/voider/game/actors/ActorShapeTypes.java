@@ -2,7 +2,6 @@ package com.spiddekauga.voider.game.actors;
 
 /**
  * Shapes of the different actors
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum ActorShapeTypes {
@@ -13,5 +12,7 @@ public enum ActorShapeTypes {
 	/** Triangle */
 	TRIANGLE,
 	/** Custom */
-	CUSTOM
+	CUSTOM,
+	/** From image */
+	IMAGE,
 }

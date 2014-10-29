@@ -1,7 +1,6 @@
-package com.spiddekauga.voider.editor.commands;
+package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.utils.commands.Command;
 
 /**
  * Forcibly quit the game

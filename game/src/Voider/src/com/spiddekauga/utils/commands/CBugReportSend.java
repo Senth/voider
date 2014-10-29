@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.editor.commands;
+package com.spiddekauga.utils.commands;
 
 import java.util.Date;
 
@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.Strings;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;

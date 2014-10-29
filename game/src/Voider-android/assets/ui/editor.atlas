@@ -2285,6 +2285,13 @@ rectangle_shape
   orig: 32, 32
   offset: 0, 0
   index: -1
+shape_from_image
+  rotate: false
+  xy: 1071, 115
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 rectangle_shape_checked
   rotate: false
   xy: 1105, 115
@@ -2293,6 +2300,20 @@ rectangle_shape_checked
   offset: 0, 0
   index: -1
 rectangle_shape_down
+  rotate: false
+  xy: 1105, 115
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+shape_from_image_checked
+  rotate: false
+  xy: 1105, 115
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+shape_from_image_down
   rotate: false
   xy: 1105, 115
   size: 32, 32
@@ -2313,7 +2334,28 @@ rectangle_shape_over
   orig: 32, 32
   offset: 0, 0
   index: -1
+shape_from_image_checked_over
+  rotate: false
+  xy: 1139, 115
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+shape_from_image_over
+  rotate: false
+  xy: 1139, 115
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 rectangle_shape_disabled
+  rotate: false
+  xy: 1173, 115
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+shape_from_image_disabled
   rotate: false
   xy: 1173, 115
   size: 32, 32

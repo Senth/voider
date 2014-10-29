@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.Maths.MagnitudeWrapper;
+import com.spiddekauga.utils.commands.GuiCheckCommandCreator;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -50,7 +51,6 @@ import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
-import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -64,12 +64,12 @@ import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Factory for creating UI objects, more specifically combined UI objects. This factory class gets its default settings
- * from general.json
+ * Factory for creating UI objects, more specifically combined UI objects. This factory
+ * class gets its default settings from general.json
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UiFactory {
-	/** Create labels */
+	/** Create labels and text */
 	public LabelFactory text = null;
 
 	/**
@@ -212,8 +212,9 @@ public class UiFactory {
 
 	/**
 	 * Adds a window to a table
-	 * @param title title of the table. When setting the title it will use the window skin with a title, if null it will
-	 *        instead use a default window skin without a title
+	 * @param title title of the table. When setting the title it will use the window skin
+	 *        with a title, if null it will instead use a default window skin without a
+	 *        title
 	 * @param innerTable the inner table of the window
 	 * @param table the table to add the window to
 	 * @param hider optional GUI hider
@@ -285,12 +286,12 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-		// Slim fit to text
+			// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-		// Fit to text (but with padding)
+			// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -341,8 +342,8 @@ public class UiFactory {
 	 * @param comment the comment to display
 	 * @param date date of the comment
 	 * @param usePadding if there should be padding above the name and date.
-	 * @param createdActors (optional) All created actors (except the returned table) is added to this. In the specified
-	 *        order: username, comment, date.
+	 * @param createdActors (optional) All created actors (except the returned table) is
+	 *        added to this. In the specified order: username, comment, date.
 	 * @return table with the comment
 	 */
 	public AlignTable createComment(String username, String comment, String date, boolean usePadding, ArrayList<Actor> createdActors) {
@@ -385,7 +386,8 @@ public class UiFactory {
 	 * Create a scrollable list for all available themes.
 	 * @param width available width for scroll pane
 	 * @param height available height for scroll pane
-	 * @param checkable true if the buttons should be checkable, otherwise they can only be pressed.
+	 * @param checkable true if the buttons should be checkable, otherwise they can only
+	 *        be pressed.
 	 * @param listener listens to the button presses
 	 * @param selectedTheme the default theme to be set as selected
 	 * @return created scroll pane.
@@ -463,8 +465,9 @@ public class UiFactory {
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @param errorLabel set to true to create an error label (only works if sectionText isn't null). This label can be
-	 *        accessed by calling {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
 	public TextField addTextField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
@@ -499,8 +502,9 @@ public class UiFactory {
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @param errorLabel set to true to create an error label (only works if sectionText isn't null). This label can be
-	 *        accessed by calling {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
 	public TextField addPasswordField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
@@ -560,12 +564,15 @@ public class UiFactory {
 	 * @param items all selectable items
 	 * @param listener selection box listener
 	 * @param table the table to add the selection box to
+	 * @param hider optional hider for the select box
 	 * @param createdActors optional adds all created elements to this list
 	 * @return created selection box
 	 */
-	public <SelectType> SelectBox<SelectType> addSelectBox(String sectionText, SelectType[] items, SelectBoxListener listener, AlignTable table,
-			ArrayList<Actor> createdActors) {
-		text.addSection(sectionText, table, null, createdActors);
+	public <SelectType> SelectBox<SelectType> addSelectBox(String sectionText, SelectType[] items, SelectBoxListener<SelectType> listener,
+			AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		if (sectionText != null) {
+			text.addSection(sectionText, table, hider, createdActors);
+		}
 
 		SelectBox<SelectType> selectBox = new SelectBox<>(mStyles.select.standard);
 		selectBox.setItems(items);
@@ -575,13 +582,14 @@ public class UiFactory {
 		table.row();
 		table.add(selectBox).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);
 
-		doExtraActionsOnActors(null, createdActors, selectBox);
+		doExtraActionsOnActors(hider, createdActors, selectBox);
 
 		return selectBox;
 	}
 
 	/**
-	 * Adds a min and max slider with section text to a table. These sliders are synchronized.
+	 * Adds a min and max slider with section text to a table. These sliders are
+	 * synchronized.
 	 * @param text optional section text for the sliders
 	 * @param min minimum value of the sliders
 	 * @param max maximum value of the sliders
@@ -668,8 +676,8 @@ public class UiFactory {
 	}
 
 	/**
-	 * Calculate how many characters are needed to be displayed in the slider text field for all values to be shown.
-	 * I.e. order of magnitude (sort of)
+	 * Calculate how many characters are needed to be displayed in the slider text field
+	 * for all values to be shown. I.e. order of magnitude (sort of)
 	 * @param min minimum slider value
 	 * @param max maximum slider value
 	 * @param stepSize
@@ -1165,7 +1173,7 @@ public class UiFactory {
 		tabWidget.setContentWidth(mStyles.vars.rightPanelWidth);
 
 		// Alignment
-		tabWidget.setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT);
+		tabWidget.setAlignTab(Horizontal.RIGHT).setAlign(Horizontal.RIGHT, Vertical.TOP);
 
 		// Background
 		tabWidget.setBackground(new Background(mStyles.color.widgetBackground));
@@ -1241,8 +1249,8 @@ public class UiFactory {
 
 		;
 		/**
-		 * If the location contains the specified enumeration name. E.g. if singleLocation is TOP it will return true
-		 * for the TOP and TOP_BOTTOM enumerations.
+		 * If the location contains the specified enumeration name. E.g. if singleLocation
+		 * is TOP it will return true for the TOP and TOP_BOTTOM enumerations.
 		 * @param singleLocation should be either TOP or BOTTOM.
 		 * @return true if the location contains the specified location.
 		 */
@@ -1325,7 +1333,8 @@ public class UiFactory {
 		}
 
 		/**
-		 * Set the hide listener. Useful when you want to use something else than the default hider
+		 * Set the hide listener. Useful when you want to use something else than the
+		 * default hider
 		 * @param hider
 		 */
 		public void setHider(HideListener hider) {

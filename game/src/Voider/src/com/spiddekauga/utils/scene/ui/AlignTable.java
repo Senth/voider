@@ -514,12 +514,48 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		row.add(newCell);
 
 		if (actor != null) {
-			addActor(actor);
+			super.addActor(actor);
 		}
 
 		invalidateHierarchy();
 
 		return newCell;
+	}
+
+	/**
+	 * @deprecated Use {@link #add(Actor)} instead.
+	 */
+	@Deprecated
+	@Override
+	public void addActor(Actor actor) {
+		throw new UnsupportedOperationException("Use #add(Actor) instead");
+	}
+
+	/**
+	 * @deprecated Use {@link #add(Actor)} instead.
+	 */
+	@Deprecated
+	@Override
+	public void addActorAt(int index, Actor actor) {
+		throw new UnsupportedOperationException("Use #add(Actor) instead");
+	}
+
+	/**
+	 * @deprecated Use {@link #add(Actor)} instead.
+	 */
+	@Deprecated
+	@Override
+	public void addActorAfter(Actor actorAfter, Actor actor) {
+		throw new UnsupportedOperationException("Use #add(Actor) instead");
+	}
+
+	/**
+	 * @deprecated Use {@link #add(Actor)} instead.
+	 */
+	@Deprecated
+	@Override
+	public void addActorBefore(Actor actorBefore, Actor actor) {
+		throw new UnsupportedOperationException("Use #add(Actor) instead");
 	}
 
 	/**
@@ -1200,7 +1236,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 		if (mBackground != null) {
 			updateBackgroundSize();
-			addActorAt(0, mBackground);
+			super.addActorAt(0, mBackground);
 		}
 	}
 

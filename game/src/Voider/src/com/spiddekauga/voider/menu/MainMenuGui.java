@@ -2,13 +2,13 @@ package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.spiddekauga.utils.commands.CGameQuit;
+import com.spiddekauga.utils.commands.CUserLogout;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.voider.editor.commands.CGameQuit;
-import com.spiddekauga.voider.editor.commands.CUserLogout;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;

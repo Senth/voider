@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 
@@ -22,7 +21,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
  * Widget that allows for tab functionality.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPadding<TabWidget> {
+public class TabWidget extends AlignTable {
 	/**
 	 * Default constructor.
 	 * <ul>
@@ -34,22 +33,64 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	 * </ul>
 	 */
 	public TabWidget() {
-		mWrapperTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		setAlign(Horizontal.LEFT, Vertical.TOP);
 		mTabTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		mContentInnerTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		mContentOuterTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 
-		mTabRow = mWrapperTable.row();
-		mWrapperTable.add(mTabTable);
+		mTabRow = super.row(Horizontal.LEFT, Vertical.TOP);
+		super.add(mTabTable);
 
-		mContentOuterRow = mWrapperTable.row();
-		mContentOuterCell = mWrapperTable.add(mContentOuterTable);
+		mContentOuterRow = super.row(Horizontal.LEFT, Vertical.TOP);
+		mContentOuterCell = super.add(mContentOuterTable);
 
 		mContentOuterTable.row().setFillWidth(true).setFillHeight(true);
 		mContentOuterTable.add(mContentInnerTable).setFillWidth(true).setFillHeight(true);
+	}
 
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
+	public Row row() {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
+	}
 
-		addActor(mWrapperTable);
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
+	public Row row(Horizontal horizontal, Vertical vertical) {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
+	}
+
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
+	public Cell add() {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
+	}
+
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
+	public Cell add(Actor actor) {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
+	}
+
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
+	public ArrayList<Cell> add(int cellCount) {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
 	}
 
 	/**
@@ -140,61 +181,6 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	}
 
 	@Override
-	public void layout() {
-		mWrapperTable.layout();
-	}
-
-	@Override
-	public float getHeight() {
-		return mWrapperTable.getHeight();
-	}
-
-	@Override
-	public float getWidth() {
-		return mWrapperTable.getWidth();
-	}
-
-	@Override
-	public float getMinWidth() {
-		return mWrapperTable.getMinWidth();
-	}
-
-	@Override
-	public float getMinHeight() {
-		return mWrapperTable.getMinHeight();
-	}
-
-	@Override
-	public float getPrefWidth() {
-		return mWrapperTable.getPrefWidth();
-	}
-
-	@Override
-	public float getPrefHeight() {
-		return mWrapperTable.getPrefHeight();
-	}
-
-	@Override
-	public float getMaxWidth() {
-		return mWrapperTable.getMaxWidth();
-	}
-
-	@Override
-	public float getMaxHeight() {
-		return mWrapperTable.getMaxHeight();
-	}
-
-	@Override
-	public float getX() {
-		return mWrapperTable.getX();
-	}
-
-	@Override
-	public float getY() {
-		return mWrapperTable.getY();
-	}
-
-	@Override
 	public Vector2 localToParentCoordinates(Vector2 localCoords) {
 		final float rotation = -getRotation();
 		final float scaleX = getScaleX();
@@ -225,20 +211,6 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	}
 
 	/**
-	 * @return available height inside the tab
-	 */
-	public float getAvailableHeight() {
-		return mContentOuterTable.getAvailableHeight();
-	}
-
-	/**
-	 * @return available width inside the tab
-	 */
-	public float getAvailableWidth() {
-		return mContentOuterTable.getAvailableWidth();
-	}
-
-	/**
 	 * Set content width
 	 * @param width width of the content
 	 * @return this for chaining
@@ -249,72 +221,6 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		return this;
 	}
 
-	@Override
-	public TabWidget setMargin(float top, float right, float bottom, float left) {
-		mWrapperTable.setMargin(top, right, bottom, left);
-		return this;
-	}
-
-	@Override
-	public TabWidget setMargin(float margin) {
-		mWrapperTable.setMargin(margin);
-		return this;
-	}
-
-	@Override
-	public TabWidget setMargin(Padding margin) {
-		mWrapperTable.setMargin(margin);
-		return this;
-	}
-
-	@Override
-	public TabWidget setMarginLeft(float marginLeft) {
-		mWrapperTable.setMarginLeft(marginLeft);
-		return this;
-	}
-
-	@Override
-	public TabWidget setMarginRight(float marginRight) {
-		mWrapperTable.setMarginRight(marginRight);
-		return this;
-	}
-
-	@Override
-	public TabWidget setMarginBottom(float marginBottom) {
-		mWrapperTable.setMarginBottom(marginBottom);
-		return this;
-	}
-
-	@Override
-	public TabWidget setMarginTop(float marginTop) {
-		mWrapperTable.setMarginTop(marginTop);
-		return this;
-	}
-
-	@Override
-	public float getMarginTop() {
-		return mWrapperTable.getMarginTop();
-	}
-
-	@Override
-	public float getMarginRight() {
-		return mWrapperTable.getMarginRight();
-	}
-
-	@Override
-	public float getMarginBottom() {
-		return mWrapperTable.getMarginBottom();
-	}
-
-	@Override
-	public float getMarginLeft() {
-		return mWrapperTable.getMarginLeft();
-	}
-
-	@Override
-	public Padding getMargin() {
-		return mWrapperTable.getMargin();
-	};
 
 	@Override
 	public TabWidget setPad(float top, float right, float bottom, float left) {
@@ -393,36 +299,14 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		return mContentOuterTable.getPadY();
 	}
 
-	@Override
-	public float getMarginX() {
-		return mWrapperTable.getMarginX();
-	}
-
-	@Override
-	public float getMarginY() {
-		return mWrapperTable.getMarginY();
-	}
-
 	/**
 	 * Set tab alignment
 	 * @param horizontal horizontal alignment
 	 * @return this for chaining
 	 * @see #setAlign(Horizontal,Vertical)
 	 */
-	public TabWidget setTabAlign(Horizontal horizontal) {
+	public TabWidget setAlignTab(Horizontal horizontal) {
 		mTabRow.setAlign(horizontal, Vertical.MIDDLE);
-		return this;
-	}
-
-	/**
-	 * Set widget alignment
-	 * @param horizontal alignment in x plane
-	 * @param vertical alignment in y plane
-	 * @return this for chaining
-	 * @see #setTabAlign(Horizontal)
-	 */
-	public TabWidget setAlign(Horizontal horizontal, Vertical vertical) {
-		mWrapperTable.setAlignTable(horizontal, vertical);
 		return this;
 	}
 
@@ -516,8 +400,6 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	private ArrayList<Button> mTabButtons = new ArrayList<>();
 	/** Tab row, for setting alignment */
 	private Row mTabRow = null;
-	/** Wrapper table */
-	private AlignTable mWrapperTable = new AlignTable();
 	/** Tab table (all tabs) */
 	private AlignTable mTabTable = new AlignTable();
 	/** Content (inner) of the tabs */

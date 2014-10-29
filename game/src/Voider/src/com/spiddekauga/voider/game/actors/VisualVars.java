@@ -27,6 +27,7 @@ import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
@@ -287,7 +288,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 			break;
 
-
+		case IMAGE:
 		case RECTANGLE:
 		case TRIANGLE:
 		case CUSTOM: {
@@ -391,6 +392,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 
 			case CUSTOM:
+			case IMAGE:
 				fixCustomShapeFixtures();
 				break;
 			}
@@ -577,6 +579,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				center.set(0, 0);
 			}
 			break;
+
+
+		case IMAGE:
+			// Does nothing
+			break;
 		}
 
 		setCenterOffset(center);
@@ -632,18 +639,33 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				triangles = createCopy(mCorners);
 				Geometry.makePolygonCounterClockwise(triangles);
 			} else {
-				ArrayList<Vector2> tempVertices = createCopy(mCorners);
+				ArrayList<Vector2> tempVertices = null;
 
-				switch (Geometry.intersectionExists(tempVertices)) {
-				case NONE:
-					mShapeComplete = true;
-					break;
+				if (mShapeType == ActorShapeTypes.CUSTOM) {
+					tempVertices = createCopy(mCorners);
+					switch (Geometry.intersectionExists(tempVertices)) {
+					case NONE:
+						mShapeComplete = true;
+						break;
 
-				case INTERSECTS:
-				case INTERSECTS_WITH_LOOP:
-					mShapeComplete = false;
-					handlePolygonComplexException(tempVertices, null);
-					break;
+					case INTERSECTS:
+					case INTERSECTS_WITH_LOOP:
+						mShapeComplete = false;
+						handlePolygonComplexException(tempVertices, null);
+						break;
+					}
+				}
+				// Fix intersections
+				else if (mShapeType == ActorShapeTypes.IMAGE) {
+					int intersectionId = -1;
+					do {
+						intersectionId = Geometry.getIntersection(mCorners);
+						if (intersectionId != -1) {
+							mCorners.remove(intersectionId);
+						}
+					} while (intersectionId != -1);
+
+					tempVertices = createCopy(mCorners);
 				}
 
 
@@ -667,8 +689,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			Vector2 lengthTest = Pools.vector2.obtain();
 
 			// Add the fixtures
-			boolean cornerTooClose = false;
 			for (int triangle = 0; triangle < cTriangles; ++triangle) {
+				boolean cornerTooClose = false;
 				int offset = triangle * 3;
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
 					triangleVertices[vertex].set(triangles.get(offset + vertex));
@@ -711,27 +733,29 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 					}
 
 					if (!Geometry.isTriangleAreaOk(triangleArea)) {
-						throw new PolygonAreaTooSmallException(triangleArea, triangleVertices);
+						throwException = new PolygonAreaTooSmallException(triangleArea, triangleVertices);
 					}
 				}
 
 				if (throwException != null) {
 					Gdx.app.error("ActorDef", throwException.getMessage());
-					Pools.vector2.freeDuplicates(triangles);
-					Pools.arrayList.free(triangles);
-					triangles = null;
-					Pools.vector2.free(lengthTest);
-					lengthTest = null;
+					if (mShapeType == ActorShapeTypes.CUSTOM) {
+						Pools.vector2.freeDuplicates(triangles);
+						Pools.arrayList.free(triangles);
+						triangles = null;
+						Pools.vector2.free(lengthTest);
+						lengthTest = null;
 
-					throw throwException;
+						throw throwException;
+					} else if (mShapeType == ActorShapeTypes.IMAGE) {
+						continue;
+					}
 				}
 
 
 				FixtureDef fixtureDef = new FixtureDef();
 				copyFixtureDef(savedFixtureProperties, fixtureDef);
 				PolygonShape polygonShape = new PolygonShape();
-				// Gdx.app.debug("VisualVars", "Area of triangle(" + triangle + "): " +
-				// Geometry.calculateTriangleArea(triangleVertices));
 				polygonShape.set(triangleVertices);
 				fixtureDef.shape = polygonShape;
 				addFixtureDef(fixtureDef);
@@ -1144,6 +1168,21 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		return mElasticity;
 	}
 
+	/**
+	 * Sets the image name for the actor
+	 * @param imageName
+	 */
+	public void setImageName(IImageNames imageName) {
+		mImageName = imageName;
+	}
+
+	/**
+	 * @return image name for the actor, null if not used
+	 */
+	public IImageNames getImageName() {
+		return mImageName;
+	}
+
 	@Tag(52) private Color mColor = new Color();
 	@Tag(49) private ActorShapeTypes mShapeType = null;
 	@Tag(60) private float mShapeCircleRadius;
@@ -1153,6 +1192,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@Tag(50) private ActorTypes mActorType = null;
 	/** Corners of polygon, used for custom shapes */
 	@SuppressWarnings("unchecked") @Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	@Tag(126) private IImageNames mImageName = null;
 
 	// Fixture def values
 	private float mDensity = 0;

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -15,6 +16,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.ColorTintPicker;
 import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
@@ -25,6 +27,7 @@ import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
+import com.spiddekauga.voider.resources.SkinNames.GeneralImages;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabImageWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabWrapper;
 import com.spiddekauga.voider.utils.Messages;
@@ -131,6 +134,7 @@ public abstract class ActorGui extends EditorGui {
 		if (mWidgets.visual.shapeTriangleHeight != null) {
 			mWidgets.visual.shapeTriangleHeight.setValue(mActorEditor.getShapeHeight());
 		}
+
 		if (mActorEditor.getShapeType() != null) {
 			switch (mActorEditor.getShapeType()) {
 			case CIRCLE:
@@ -148,6 +152,20 @@ public abstract class ActorGui extends EditorGui {
 			case CUSTOM:
 				mWidgets.visual.shapeCustom.setChecked(true);
 				break;
+
+			case IMAGE:
+				mWidgets.visual.shapeImage.setChecked(true);
+				break;
+			}
+		}
+
+		if (mWidgets.visual.shapeImageScale != null) {
+			mWidgets.visual.shapeImageScale.setValue(mActorEditor.getShapeImageScale());
+			mWidgets.visual.shapeImageSelect.setSelected((GeneralImages) mActorEditor.getShapeImage());
+			if (mActorEditor.isShapeImageUpdatedContinuously()) {
+				mWidgets.visual.shapeImageUpdateOn.setChecked(true);
+			} else {
+				mWidgets.visual.shapeImageUpdateOff.setChecked(true);
 			}
 		}
 	}
@@ -219,6 +237,8 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	private void initVisual() {
 		IC_Visual icVisual = getVisualConfig();
+		@SuppressWarnings("unchecked")
+		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 
 		mWidgets.visual.hider.addToggleActor(mWidgets.visual.table);
 		AlignTable table = mWidgets.visual.table;
@@ -247,6 +267,8 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Different shape tabs
+		mUiFactory.text.addPanelSection("Shape", table, null);
+
 		// Circle
 		TabImageWrapper circleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.CIRCLE_SHAPE);
 		circleTab.setListener(new ButtonListener() {
@@ -256,6 +278,7 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.resetCenterOffset();
 			}
 		});
+		tabs.add(circleTab);
 
 		// Rectangle
 		TabImageWrapper rectangleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.RECTANGLE_SHAPE);
@@ -266,6 +289,7 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.resetCenterOffset();
 			}
 		});
+		tabs.add(rectangleTab);
 
 		// Triangle
 		TabImageWrapper triangleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.TRIANGLE_SHAPE);
@@ -276,6 +300,7 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.resetCenterOffset();
 			}
 		});
+		tabs.add(triangleTab);
 
 		// Custom (draw)
 		TabImageWrapper customTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE);
@@ -298,14 +323,23 @@ public abstract class ActorGui extends EditorGui {
 			}
 		});
 		mDrawToolHider = customTab.getHider();
+		tabs.add(customTab);
+
+		// Shape from image
+		TabImageWrapper imageTab = null;
+		if (getClass() == ShipEditorGui.class) {
+			imageTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.SHAPE_FROM_IMAGE);
+			imageTab.setListener(new ButtonListener() {
+				@Override
+				protected void onPressed(Button button) {
+					mActorEditor.setShapeType(ActorShapeTypes.IMAGE);
+				}
+			});
+			tabs.add(imageTab);
+		}
+
 
 		// Create tabs
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
-		tabs.add(circleTab);
-		tabs.add(rectangleTab);
-		tabs.add(triangleTab);
-		tabs.add(customTab);
 		mUiFactory.addTabs(table, mWidgets.visual.hider, tabs, mDisabledWhenPublished, mInvoker);
 		Pools.arrayList.free(tabs);
 		tabs = null;
@@ -315,6 +349,10 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.shapeRectangle = rectangleTab.getButton();
 		mWidgets.visual.shapeTriangle = triangleTab.getButton();
 		mWidgets.visual.shapeCustom = customTab.getButton();
+		if (imageTab != null) {
+			mWidgets.visual.shapeImage = imageTab.getButton();
+		}
+
 
 		// Set tooltip
 		mTooltip.add(customTab.getButton(), Messages.EditorTooltips.VISUAL_CUSTOM);
@@ -378,6 +416,53 @@ public abstract class ActorGui extends EditorGui {
 		};
 		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(),
 				icVisual.getSizeStepSize(), sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
+
+		// Image
+		if (imageTab != null) {
+			// Update
+			mUiFactory.text.addPanelSection("Update Continuously", table, imageTab.getHider());
+			tabs = new ArrayList<>();
+			TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+			onTab.setListener(new ButtonListener() {
+				@Override
+				protected void onChecked(Button button, boolean checked) {
+					mActorEditor.setShapeImageUpdateContinuously(checked);
+				}
+			});
+			tabs.add(onTab);
+
+			TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
+			tabs.add(offTab);
+
+			mUiFactory.addTabs(table, imageTab.getHider(), tabs, mDisabledWhenPublished, mInvoker);
+			tabs = null;
+
+			mWidgets.visual.shapeImageUpdateOn = onTab.getButton();
+			mWidgets.visual.shapeImageUpdateOff = offTab.getButton();
+
+
+			// Select image
+			SelectBoxListener<SkinNames.GeneralImages> selectBoxListener = new SelectBoxListener<SkinNames.GeneralImages>(mInvoker) {
+				@Override
+				protected void onSelectionChanged(int itemIndex) {
+					mActorEditor.setShapeImage(mSelectBox.getSelected());
+				}
+			};
+			mUiFactory.text.addPanelSection("Image", table, imageTab.getHider());
+			mWidgets.visual.shapeImageSelect = mUiFactory.addSelectBox(null, SkinNames.GeneralImages.values(), selectBoxListener, table,
+					imageTab.getHider(), mDisabledWhenPublished);
+			mWidgets.visual.shapeImageSelect.setMaxListCount(7);
+
+			// Scale
+			sliderListener = new SliderListener(mInvoker) {
+				@Override
+				protected void onChange(float newValue) {
+					mActorEditor.setShapeImageScale(newValue);
+				}
+			};
+			mWidgets.visual.shapeImageScale = mUiFactory.addSlider("Scale", icVisual.getImageScaleMin(), icVisual.getImageScaleMax(),
+					icVisual.getImageScaleStepSize(), sliderListener, table, imageTab.getHider(), mDisabledWhenPublished);
+		}
 	}
 
 	/**
@@ -695,6 +780,13 @@ public abstract class ActorGui extends EditorGui {
 			Slider shapeTriangleHeight = null;
 			Slider shapeRectangleWidth = null;
 			Slider shapeRectangleHeight = null;
+
+			// Image shape
+			Button shapeImage = null;
+			Button shapeImageUpdateOn = null;
+			Button shapeImageUpdateOff = null;
+			Slider shapeImageScale = null;
+			SelectBox<SkinNames.GeneralImages> shapeImageSelect = null;
 		}
 
 		/**

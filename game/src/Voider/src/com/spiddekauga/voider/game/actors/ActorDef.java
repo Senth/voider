@@ -14,14 +14,16 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Definition of the actor. This include common attribute for a common type of actor. E.g. A specific enemy will have
- * the same variables here. The only thing changed during it's life is the variables in the Actor class.
+ * Definition of the actor. This include common attribute for a common type of actor. E.g.
+ * A specific enemy will have the same variables here. The only thing changed during it's
+ * life is the variables in the Actor class.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ActorDef extends Def {
 	/**
 	 * Sets the visual variable to the specified type
-	 * @param actorType the actor type to which set the default values of the visual variables
+	 * @param actorType the actor type to which set the default values of the visual
+	 *        variables
 	 */
 	protected ActorDef(ActorTypes actorType) {
 		mVisualVars = new VisualVars(actorType);
@@ -73,8 +75,8 @@ public abstract class ActorDef extends Def {
 	}
 
 	/**
-	 * Calculates the height of the actor definition. Only works if the actor has created vertices. This takes into
-	 * account the starting angle of the actor.
+	 * Calculates the height of the actor definition. Only works if the actor has created
+	 * vertices. This takes into account the starting angle of the actor.
 	 * @return actual height of the actor. 0 if no vertices has been created.
 	 */
 	public float getHeight() {
@@ -110,8 +112,8 @@ public abstract class ActorDef extends Def {
 	}
 
 	/**
-	 * Calculates the width of the actor definition. Only works if the actor has created vertices. This takes into
-	 * account the starting angle of the actor.
+	 * Calculates the width of the actor definition. Only works if the actor has created
+	 * vertices. This takes into account the starting angle of the actor.
 	 * @return actual width of the actor. 0 if no vertices has been created.
 	 */
 	public float getWidth() {
@@ -147,10 +149,11 @@ public abstract class ActorDef extends Def {
 	}
 
 	/**
-	 * Sets the collision damage of the actor If the actor is set to be destroyed on collision (
-	 * {@link #setDestroyOnCollide(boolean)}) it will decrease the full collisionDamage from the other actor and not per
-	 * second.
-	 * @param collisionDamage damage (per second) this actor will make to another when colliding actor.
+	 * Sets the collision damage of the actor If the actor is set to be destroyed on
+	 * collision ( {@link #setDestroyOnCollide(boolean)}) it will decrease the full
+	 * collisionDamage from the other actor and not per second.
+	 * @param collisionDamage damage (per second) this actor will make to another when
+	 *        colliding actor.
 	 * @return this for chaining commands
 	 */
 	public ActorDef setCollisionDamage(float collisionDamage) {
@@ -159,7 +162,8 @@ public abstract class ActorDef extends Def {
 	}
 
 	/**
-	 * @return the collision damage (per second) this actor will make to another colliding actor.
+	 * @return the collision damage (per second) this actor will make to another colliding
+	 *         actor.
 	 */
 	public float getCollisionDamage() {
 		return mCollisionDamage;
@@ -183,7 +187,8 @@ public abstract class ActorDef extends Def {
 	}
 
 	/**
-	 * @return collectible of the actor def. Only works for PickupActorDef other actors defs returns null.
+	 * @return collectible of the actor def. Only works for PickupActorDef other actors
+	 *         defs returns null.
 	 */
 	public Collectibles getCollectible() {
 		return null;
@@ -228,8 +233,9 @@ public abstract class ActorDef extends Def {
 
 
 	/**
-	 * Sets whether this actor shall be destroyed on collision. If this actor has any collision damage set to it, it
-	 * will decrease the other actors health with the whole amount instead of per second if this is set to true.
+	 * Sets whether this actor shall be destroyed on collision. If this actor has any
+	 * collision damage set to it, it will decrease the other actors health with the whole
+	 * amount instead of per second if this is set to true.
 	 * @param destroyOnCollision set to true to destroy the actor on collision
 	 */
 	public void setDestroyOnCollide(boolean destroyOnCollision) {
@@ -258,7 +264,8 @@ public abstract class ActorDef extends Def {
 	}
 
 	/**
-	 * Sets the rotation speed of the actor. This might not work for some actors that rotate the actor on their own...
+	 * Sets the rotation speed of the actor. This might not work for some actors that
+	 * rotate the actor on their own...
 	 * @param rotationSpeed new rotation speed of the actor. In radians.
 	 */
 	public void setRotationSpeedRad(float rotationSpeed) {
@@ -267,7 +274,8 @@ public abstract class ActorDef extends Def {
 	}
 
 	/**
-	 * Sets the rotation speed of the actor. This might not work for some actors that rotate the actor on their own...
+	 * Sets the rotation speed of the actor. This might not work for some actors that
+	 * rotate the actor on their own...
 	 * @param rotationSpeed new rotation speed of the actor. In degrees
 	 */
 	public void setRotationSpeedDeg(float rotationSpeed) {
@@ -295,7 +303,6 @@ public abstract class ActorDef extends Def {
 	@Tag(44) private float mMaxLife = 0;
 	/** The body definition of the actor */
 	@Tag(45) private BodyDef mBodyDef = new BodyDef();
-
 	/** Collision damage (per second) */
 	@Tag(46) private float mCollisionDamage = 0;
 	/** If this actor shall be destroy on collision */

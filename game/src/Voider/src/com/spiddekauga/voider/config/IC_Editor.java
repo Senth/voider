@@ -51,6 +51,12 @@ public class IC_Editor extends IniClass {
 			protected float sizeStepSize;
 			protected ActorShapeTypes shapeDefault;
 
+			// From image
+			protected float imageScaleMin;
+			protected float imageScaleMax;
+			protected float imageScaleStepSize;
+			protected float imageScaleDefault;
+
 			// Fixtures (usually never changed)
 			protected float densityMin;
 			protected float densityMax;
@@ -180,6 +186,22 @@ public class IC_Editor extends IniClass {
 			public float getElasticityDefault() {
 				return elasticityDefault;
 			}
+
+			public float getImageScaleMin() {
+				return imageScaleMin;
+			}
+
+			public float getImageScaleMax() {
+				return imageScaleMax;
+			}
+
+			public float getImageScaleStepSize() {
+				return imageScaleStepSize;
+			}
+
+			public float getImageScaleDefault() {
+				return imageScaleDefault;
+			}
 		}
 
 		public class IC_Collision extends IniClass {
@@ -239,7 +261,8 @@ public class IC_Editor extends IniClass {
 		/**
 		 * Get the correct visual type for the specified actor type
 		 * @param actorType the actor type
-		 * @return correct visual type for the actor type, if not found it will return the default visual config
+		 * @return correct visual type for the actor type, if not found it will return the
+		 *         default visual config
 		 */
 		public IC_Visual getVisual(ActorTypes actorType) {
 			switch (actorType) {

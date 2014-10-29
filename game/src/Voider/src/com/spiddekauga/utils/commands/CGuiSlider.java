@@ -44,10 +44,9 @@ public class CGuiSlider extends CGui implements ICommandCombinable {
 			mSlider.setValue(mNewValue);
 			mSlider.fire(new ChangeListener.ChangeEvent());
 			setOriginalName(mSlider);
-			return true;
-		} else {
-			return false;
 		}
+
+		return success;
 	}
 
 	@Override

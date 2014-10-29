@@ -57,7 +57,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
-IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
+		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
 	/**
 	 * Sets the texture of the actor including the actor definition. Automatically creates
 	 * a body for the actor.
@@ -412,14 +412,16 @@ IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IRe
 				ArrayList<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, width);
 				mSelectedOutline = Geometry.createBorderVertices(corners, outerCorners);
 
-				// Rotate outline
-				float rotation = getDef().getBodyDef().angle;
-				if (getBody() != null) {
-					rotation = getBody().getAngle();
-				}
-				rotation *= MathUtils.radDeg;
+				if (mSelectedOutline != null) {
+					// Rotate outline
+					float rotation = getDef().getBodyDef().angle;
+					if (getBody() != null) {
+						rotation = getBody().getAngle();
+					}
+					rotation *= MathUtils.radDeg;
 
-				Geometry.rotateVertices(mSelectedOutline, rotation, true, getDef().getVisualVars().getCenterOffset());
+					Geometry.rotateVertices(mSelectedOutline, rotation, true, getDef().getVisualVars().getCenterOffset());
+				}
 			}
 		}
 	}

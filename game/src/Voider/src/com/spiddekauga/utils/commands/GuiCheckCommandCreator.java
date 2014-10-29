@@ -1,11 +1,9 @@
-package com.spiddekauga.voider.editor.commands;
+package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.spiddekauga.utils.commands.CGuiCheck;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config.Gui;
 
 /**

@@ -30,7 +30,7 @@ public class Geometry {
 			center.add(point);
 		}
 
-		center.scl(1 / points.size());
+		center.scl(1f / points.size());
 
 		return center;
 	}
@@ -46,8 +46,9 @@ public class Geometry {
 		ArrayList<PointIndex> removedPoints = new ArrayList<>();
 		Vector2 afterVector = new Vector2();
 
-		int oldSize = points.size();
+		int oldSize;
 		do {
+			oldSize = points.size();
 			afterVector.set(points.get(1)).sub(points.get(0));
 			float beforeAngle = 0;
 			float afterAngle = afterVector.angle();
@@ -1158,7 +1159,7 @@ public class Geometry {
 		int end = testLoop ? vertices.size() : vertices.size() - 1;
 
 		for (int i = 0; i < end; ++i) {
-			int intersectionIndexEnd = intersectionExists(vertices, i, i, end);
+			int intersectionIndexEnd = getIntersection(vertices, i, i, end);
 
 			if (intersectionIndexEnd != -1) {
 				Vector2 line1a = vertices.get(i);
@@ -1279,17 +1280,40 @@ public class Geometry {
 	public static Intersections intersectionExists(ArrayList<Vector2> vertices) {
 		// Test inside intersection
 		for (int i = 0; i < vertices.size() - 1; ++i) {
-			if (intersectionExists(vertices, i, i, vertices.size() - 1) != -1) {
+			if (getIntersection(vertices, i, i, vertices.size() - 1) != -1) {
 				return Intersections.INTERSECTS;
 			}
 		}
 
 		// Test loop
-		if (intersectionExists(vertices, vertices.size() - 1, 0, vertices.size()) != -1) {
+		if (getIntersection(vertices, vertices.size() - 1, 0, vertices.size()) != -1) {
 			return Intersections.INTERSECTS_WITH_LOOP;
 		}
 
 		return Intersections.NONE;
+	}
+
+	/**
+	 * Checks if an intersection exists in the polygon
+	 * @param vertices the vertices of the polygon
+	 * @return id of the intersection, -1 if no intersection was found
+	 */
+	public static int getIntersection(ArrayList<Vector2> vertices) {
+		// Test inside intersection
+		for (int i = 0; i < vertices.size() - 1; ++i) {
+			int intersectionId = getIntersection(vertices, i, i, vertices.size() - 1);
+			if (intersectionId != -1) {
+				return intersectionId;
+			}
+		}
+
+		// Test loop
+		int intersectionId = getIntersection(vertices, vertices.size() - 1, 0, vertices.size());
+		if (intersectionId != -1) {
+			return intersectionId;
+		}
+
+		return -1;
 	}
 
 	/**
@@ -1303,7 +1327,7 @@ public class Geometry {
 	 * @return index of the other line that intersects with lineIndex, -1 if no
 	 *         intersection exists.
 	 */
-	public static int intersectionExists(ArrayList<Vector2> vertices, int lineIndex, int testFromIndex, int testToIndex) {
+	public static int getIntersection(ArrayList<Vector2> vertices, int lineIndex, int testFromIndex, int testToIndex) {
 		if (vertices.size() < 3) {
 			return -1;
 		}

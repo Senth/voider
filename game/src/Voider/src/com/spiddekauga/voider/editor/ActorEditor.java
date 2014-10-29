@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -38,7 +39,11 @@ import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.resources.SkinNames.GeneralImages;
+import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -155,10 +160,17 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			return;
 		}
 
+		if (shapeType == ActorShapeTypes.IMAGE) {
+			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisualVars(), this));
+
+			if (mActorDef.getVisualVars().getImageName() == null) {
+				mActorDef.getVisualVars().setImageName(SHAPE_IMAGE_DEFAULT);
+			}
+		}
+
 		ActorShapeTypes previousShapeType = mActorDef.getVisualVars().getShapeType();
 
 		mActorDef.getVisualVars().setShapeType(shapeType);
-
 
 		// Add tool to input multiplexer
 		if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType != ActorShapeTypes.CUSTOM) {
@@ -637,6 +649,68 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		return mActorDef;
 	}
 
+	@Override
+	public void setShapeImageScale(float scale) {
+		mShapeImageScale = scale;
+		updateShapeImageActor();
+	}
+
+	@Override
+	public float getShapeImageScale() {
+		return mShapeImageScale;
+	}
+
+	@Override
+	public void setShapeImage(IImageNames image) {
+		if (mActorDef != null) {
+			mActorDef.getVisualVars().setImageName(image);
+			updateShapeImageActor();
+		}
+	}
+
+	@Override
+	public IImageNames getShapeImage() {
+		if (mActorDef != null) {
+			return mActorDef.getVisualVars().getImageName();
+		}
+
+		return SHAPE_IMAGE_DEFAULT;
+	}
+
+	/**
+	 * Updates and creates the shape image actor
+	 */
+	private void updateShapeImageActor() {
+		if (mShapeImageUpdate && mActorDef != null) {
+			mActorDef.getVisualVars().clearCorners();
+
+			TextureRegion region = SkinNames.getRegion(mActorDef.getVisualVars().getImageName());
+			float scale = getScreenToWorldScale() * mShapeImageScale;
+			ArrayList<Vector2> corners = Graphics.getContour(region, 0, scale);
+
+			mActorDef.getVisualVars().addCorners(corners);
+			mActorDef.getVisualVars().fixCustomShapeFixtures();
+			setUnsaved();
+		}
+	}
+
+	@Override
+	public void setShapeImageUpdateContinuously(boolean update) {
+		mShapeImageUpdate = update;
+		updateShapeImageActor();
+	}
+
+	@Override
+	public boolean isShapeImageUpdatedContinuously() {
+		return mShapeImageUpdate;
+	}
+
+	/** If the shape image should be updated continuously */
+	private boolean mShapeImageUpdate = false;
+	/** Default shape image */
+	private static final IImageNames SHAPE_IMAGE_DEFAULT = GeneralImages.SHUTTLE_LARGE;
+	/** Scaling of the shape image */
+	private float mShapeImageScale = 1;
 	/** The actor type */
 	private Class<? extends Actor> mActorType;
 	/** Vector brush to render when drawing custom shapes */

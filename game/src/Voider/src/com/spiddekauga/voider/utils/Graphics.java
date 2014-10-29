@@ -79,10 +79,9 @@ public class Graphics {
 			}
 			Pixmap pixmap = textureData.consumePixmap();
 			Vector2 startPos = getContourStartPos(pixmap, region.getRegionX(), region.getRegionY(), region.getRegionWidth(), region.getRegionHeight());
-			pixmap.dispose();
-
 			points = getRawContourPoints(pixmap, startPos, region.getRegionX(), region.getRegionY(), region.getRegionWidth(),
 					region.getRegionHeight());
+			pixmap.dispose();
 
 
 			// Remove points that have less or equal to angleMin degrees
@@ -93,12 +92,12 @@ public class Graphics {
 				point.scl(scale);
 			}
 
-			// // Center
-			// Vector2 center = Geometry.calculateCenter(points);
-			// center.scl(-1);
-			//
-			// // Update positions relative to the center
-			// Geometry.moveVertices(points, center, false);
+			// Center
+			Vector2 center = Geometry.calculateCenter(points);
+			center.scl(-1);
+
+			// Update positions relative to the center
+			Geometry.moveVertices(points, center, false);
 		}
 
 		return points;
@@ -145,7 +144,7 @@ public class Graphics {
 		do {
 			if (isPixelInsideBounds(currentPos, x, y, width, height) && isPixelOpaque(pixmap, currentPos)) {
 				// Only add if the previously added isn't the same
-				if (!points.isEmpty() && !points.get(points.size() - 1).equals(currentPos)) {
+				if (points.isEmpty() || !points.get(points.size() - 1).equals(currentPos)) {
 					points.add(currentPos);
 				}
 				direction = direction.left();
@@ -155,7 +154,7 @@ public class Graphics {
 
 			// Get next position
 			currentPos = direction.nextPixel(currentPos);
-		} while (currentPos.equals(startPos) && direction == Directions.UP);
+		} while (!(currentPos.equals(startPos) && direction == Directions.UP));
 
 		return points;
 	}
@@ -194,8 +193,8 @@ public class Graphics {
 	 * @return start position for the contour algorithm.
 	 */
 	public static Vector2 getContourStartPos(Pixmap pixmap, int startX, int startY, int width, int height) {
-		for (int x = startX; x < width; ++x) {
-			for (int y = startY; y < height; ++y) {
+		for (int x = startX; x < width + startX; ++x) {
+			for (int y = startY; y < height + startY; ++y) {
 				if (isPixelOpaque(pixmap, x, y)) {
 					return new Vector2(x, y);
 				}

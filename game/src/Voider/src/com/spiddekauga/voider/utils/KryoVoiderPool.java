@@ -69,6 +69,8 @@ import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceItem;
+import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 
 /**
  * Pool for Kryo instances. When creating a new instance Kryo registers all necessary
@@ -240,6 +242,10 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		BUG_REPORT_DEF(BugReportDef.class, SerializerType.TAGGED),
 		/** InternalDeps */
 		INTERNAL_DEPS(InternalDeps.class),
+		/** Image names */
+		IMAGE_NAMES(IImageNames.class),
+		/** General images */
+		GENERAL_IMAGES(SkinNames.GeneralImages.class),
 
 		;
 

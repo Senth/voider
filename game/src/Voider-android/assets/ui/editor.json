@@ -523,6 +523,15 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: draw_custom_shape_disabled
 	},
 	
+	shape_from_image: {
+		imageUp: shape_from_image,
+		imageOver: shape_from_image_over,
+		imageDown: shape_from_image_down,
+		imageChecked: shape_from_image_checked,
+		imageCheckedOver: shape_from_image_checked_over,
+		imageDisabled: shape_from_image_disabled
+	},
+	
 	path_once: {
 		imageUp: path_once,
 		imageOver: path_once_over,

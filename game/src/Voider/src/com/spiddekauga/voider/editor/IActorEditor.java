@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 
 /**
  * Interface for actor editors. This interface have some common actions for all actor
@@ -105,6 +106,39 @@ public interface IActorEditor extends IEditor {
 	 * @return center offset of the actor
 	 */
 	Vector2 getCenterOffset();
+
+	/**
+	 * Set image scaling
+	 * @param scale how much to scale the image shape
+	 */
+	void setShapeImageScale(float scale);
+
+	/**
+	 * @return Current image scaling
+	 */
+	float getShapeImageScale();
+
+	/**
+	 * Set shape image
+	 * @param image the image of the shape
+	 */
+	void setShapeImage(IImageNames image);
+
+	/**
+	 * @return current shape image
+	 */
+	IImageNames getShapeImage();
+
+	/**
+	 * Sets whether the shape image should be set continuously or not
+	 * @param update true if it should be updated continuously
+	 */
+	void setShapeImageUpdateContinuously(boolean update);
+
+	/**
+	 * @return true if the shape image should be updated continuously
+	 */
+	boolean isShapeImageUpdatedContinuously();
 
 	// --------------- Custom Tool ----------------
 	/**

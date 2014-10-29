@@ -180,6 +180,8 @@ public class SkinNames {
 		SELECT,
 		/** Set the center of the shape (only visible when actor shape is set to draw) */
 		SET_CENTER,
+		/** Shape of actor from an image */
+		SHAPE_FROM_IMAGE,
 		/** Small ship editor icon */
 		SHIP_EDITOR,
 		/** Selected ship editor icon */
@@ -683,6 +685,10 @@ public class SkinNames {
 		SYNC_CLOUD,
 		/** Sync from device */
 		SYNC_DEVICE,
+		/** Shuttle large */
+		SHUTTLE_LARGE,
+		/** Smaller ship */
+		SHUTTLE_SMALL,
 
 		;
 
