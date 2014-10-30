@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.kryo.KryoPostRead;
@@ -23,13 +24,13 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -81,7 +82,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
-		mCorners.add(index, Pools.vector2.obtain().set(corner));
+		mCorners.add(index, new Vector2(corner));
 
 		if (mWorld != null) {
 			updateVerticesBodyFixtures();
@@ -143,8 +144,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	 */
 	@Override
 	public Vector2 getPosition() {
-		Vector2 center = Pools.vector2.obtain();
-		center.set(0, 0);
+		Vector2 center = new Vector2();
 
 		for (Vector2 corner : mCorners) {
 			center.add(corner);
@@ -161,7 +161,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	public float getBoundingRadius() {
 		// Calculate the bounding radius
 		float maxLengthSq = Float.MIN_VALUE;
-		Vector2 diffVector = Pools.vector2.obtain();
+		Vector2 diffVector = new Vector2();
 		Vector2 center = getPosition();
 
 		for (Vector2 corner : mCorners) {
@@ -172,11 +172,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 				maxLengthSq = lengthSq;
 			}
 		}
-
-		Pools.vector2.free(center);
-		Pools.vector2.free(diffVector);
-		center = null;
-		diffVector = null;
 
 		float maxLength = 0;
 		if (maxLengthSq > 0) {
@@ -331,7 +326,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			destroyBodyCorners();
 		}
 		destroyVertices();
-		Pools.vector2.freeAll(mCorners);
 		mCorners.clear();
 	}
 
@@ -457,7 +451,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	private void createFixture() {
 		// Assertion test (to skip crash)
 		if (mCorners.size() >= 2) {
-			Vector2 diff = Pools.vector2.obtain();
+			Vector2 diff = new Vector2();
 			for (int i = 0; i < mCorners.size() - 1; ++i) {
 				diff.set(mCorners.get(i)).sub(mCorners.get(i + 1));
 				if (diff.len2() <= CHAIN_CORNER_DISTANCE_MIN) {
@@ -465,7 +459,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 					return;
 				}
 			}
-			Pools.vector2.free(diff);
 		}
 
 		if (mBody == null || mWorld == null || mVertices == null) {
@@ -474,10 +467,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 
 		// Temporary vertices for creating polygon shape
-		Vector2[] triangleVertices = new Vector2[3];
-		for (int i = 0; i < triangleVertices.length; ++i) {
-			triangleVertices[i] = Pools.vector2.obtain();
-		}
+		Vector2[] triangleVertices = Collections.fillNew(new Vector2[3], Vector2.class);
 
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
@@ -500,9 +490,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			// Dispose
 			polygonShape.dispose();
 		}
-
-		// Dispose
-		Pools.vector2.freeAll(triangleVertices);
 	}
 
 	/**
@@ -588,14 +575,12 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		if (mCorners.size() >= 2) {
 			mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
 		} else if (mCorners.size() >= 1) {
-			@SuppressWarnings("unchecked")
-			ArrayList<Vector2> corners = Pools.arrayList.obtain();
+			ArrayList<Vector2> corners = new ArrayList<>();
 			corners.addAll(mCorners);
-			Vector2 tempCorner = Pools.vector2.obtain();
+			Vector2 tempCorner = new Vector2();
 			tempCorner.set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);
 			corners.add(tempCorner);
 			mVertices = Geometry.createLinePolygon(corners, Config.Editor.Level.Path.WIDTH);
-			Pools.arrayList.free(corners);
 			corners = null;
 		}
 	}
@@ -605,8 +590,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	 */
 	private void destroyVertices() {
 		if (mVertices != null) {
-			Pools.vector2.freeDuplicates(mVertices);
-			Pools.arrayList.free(mVertices);
 			mVertices = null;
 		}
 	}

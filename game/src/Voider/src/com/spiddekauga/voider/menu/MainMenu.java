@@ -33,7 +33,6 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -123,7 +122,6 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 				LevelDef loadedLevelDef = ResourceCacheFacade.get(((ResourceItem) message).id);
 				gameScene.setLevelToLoad(loadedLevelDef);
 				SceneSwitcher.switchTo(gameScene);
-				Pools.resourceItem.free((ResourceItem) message);
 			} else {
 				Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 			}
@@ -208,7 +206,6 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	boolean hasResumeGame() {
 		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(ExternalTypes.GAME_SAVE_DEF);
 		boolean hasSaves = gameSaves.size() > 0;
-		Pools.arrayList.free(gameSaves);
 		return hasSaves;
 	}
 
@@ -223,8 +220,6 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 			gameScene.setGameToResume(gameSaves.get(0));
 			SceneSwitcher.switchTo(gameScene);
 		}
-
-		Pools.arrayList.free(gameSaves);
 	}
 
 	/**

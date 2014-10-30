@@ -62,7 +62,7 @@ public class BodyShepherd {
 	 */
 	private boolean isActorWithinMinMax(Vector2 minPos, Vector2 maxPos, Actor actor) {
 		Vector2 actorPos = actor.getPosition();
-		float actorRadius = actor.getDef().getVisualVars().getBoundingRadius();
+		float actorRadius = actor.getDef().getVisual().getBoundingRadius();
 
 		// Left
 		if (actorPos.x + actorRadius < minPos.x) {

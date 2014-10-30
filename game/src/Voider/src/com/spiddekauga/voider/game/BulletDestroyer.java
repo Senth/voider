@@ -47,7 +47,7 @@ public class BulletDestroyer implements Disposable {
 	 */
 	public void render(ShapeRendererEx shapeRenderer) {
 		for (TimeBullet timeBullet : mBullets) {
-			timeBullet.bulletActor.render(shapeRenderer);
+			timeBullet.bulletActor.renderShape(shapeRenderer);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class BulletDestroyer implements Disposable {
 	public void removeOutOfBondsBullets(Vector2 minPos, Vector2 maxPos) {
 		float elapsedTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 
-		Vector2 diffVector = Pools.vector2.obtain();
+		Vector2 diffVector = new Vector2();
 		diffVector.set(maxPos).sub(minPos);
 		minPos.sub(diffVector);
 		maxPos.add(diffVector);
@@ -123,8 +123,6 @@ public class BulletDestroyer implements Disposable {
 				}
 			}
 		}
-
-		Pools.vector2.free(diffVector);
 	}
 
 	@Override

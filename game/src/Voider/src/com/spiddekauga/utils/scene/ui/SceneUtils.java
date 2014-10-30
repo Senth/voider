@@ -2,7 +2,6 @@ package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Helper methods for various scene tasks
@@ -17,8 +16,8 @@ public class SceneUtils {
 	 * @return true if point is within the actor
 	 */
 	public static boolean isStagePointInsideActor(Actor actor, float x, float y) {
-		Vector2 min = Pools.vector2.obtain();
-		Vector2 max = Pools.vector2.obtain();
+		Vector2 min = new Vector2();
+		Vector2 max = new Vector2();
 
 		min.set(actor.getX(), actor.getY());
 		actor.localToStageCoordinates(min);
@@ -28,8 +27,6 @@ public class SceneUtils {
 		if (x < min.x || x >= max.x || y < min.y || y >= max.y) {
 			inside = false;
 		}
-
-		Pools.vector2.freeAll(min, max);
 
 		return inside;
 	}

@@ -44,74 +44,72 @@ public class Geometry {
 	 */
 	public static ArrayList<PointIndex> removeExcessivePoints(float distMinSq, float angleMin, ArrayList<Vector2> points) {
 		ArrayList<PointIndex> removedPoints = new ArrayList<>();
-		Vector2 afterVector = new Vector2();
+		final int MIN_POINTS = 3;
+		if (points == null || points.size() <= MIN_POINTS) {
+			return removedPoints;
+		}
+
 
 		int oldSize;
 		do {
 			oldSize = points.size();
-			afterVector.set(points.get(1)).sub(points.get(0));
-			float beforeAngle = 0;
-			float afterAngle = afterVector.angle();
 
-			for (int i = 1; i < points.size() - 1; ++i) {
-				beforeAngle = afterAngle;
-				boolean removePoint = false;
+
+			Vector2 pointCurrent = com.spiddekauga.utils.Collections.getWrapped(points, -1);
+			Vector2 pointNext = points.get(0);
+			Vector2 vectorBefore = new Vector2();
+			Vector2 vectorAfter = new Vector2(pointNext).sub(pointCurrent);
+			float angleAfter = vectorAfter.angle();
+			for (int i = 0; i < points.size(); ++i) {
+				pointCurrent = pointNext;
+				pointNext = com.spiddekauga.utils.Collections.getWrapped(points, i + 1);
+
+				vectorBefore.set(vectorAfter);
+				vectorAfter.set(pointNext).sub(pointCurrent);
+
+				float angleBefore = angleAfter;
+				angleAfter = vectorAfter.angle();
 
 				// Test distance
-				if (afterVector.len2() < distMinSq) {
+				boolean removePoint = false;
+				if (vectorAfter.len2() < distMinSq) {
 					removePoint = true;
 				}
 				// Test angle
 				else {
-					// Calculate after vector
-					afterVector.set(points.get(com.spiddekauga.utils.Collections.nextIndex(points, i))).sub(points.get(i));
-					afterAngle = afterVector.angle();
-
-					if (Maths.approxCompare(beforeAngle, afterAngle, angleMin)) {
+					if (Maths.approxCompare(angleBefore, angleAfter, angleMin)) {
 						removePoint = true;
-					} else if (beforeAngle < afterAngle) {
-						if (Maths.approxCompare(beforeAngle + 360, afterAngle, angleMin)) {
+					} else if (angleBefore < angleAfter) {
+						if (Maths.approxCompare(angleBefore + 360, angleAfter, angleMin)) {
 							removePoint = true;
 						}
 					} else {
-						if (Maths.approxCompare(beforeAngle - 360, afterAngle, angleMin)) {
+						if (Maths.approxCompare(angleBefore - 360, angleAfter, angleMin)) {
 							removePoint = true;
 						}
 					}
 				}
 
-				// Too low difference in degrees between angles...
 				if (removePoint) {
 					removePoint(i, points, removedPoints);
 
-					// Before vector will have changed again
-					if (i < points.size() - 1) {
-						afterVector.set(points.get(i)).sub(points.get(i - 1));
-						afterAngle = afterVector.angle();
+					// Change after variables (or rather before variables on next
+					// iteration)
+					if (points.size() > MIN_POINTS && i < points.size() - 1) {
+						Vector2 pointPrev = com.spiddekauga.utils.Collections.getWrapped(points, i - 1);
+						vectorAfter.set(pointNext).sub(pointPrev);
+						angleAfter = vectorAfter.angle();
 
 						--i;
 					}
+					// Too few points to continue
+					else {
+						break;
+					}
 				}
-			}
 
-			// Test length between last points, i.e. end-1 -> end & end -> begin
-			// end-1 -> end.
-			if (points.size() > 1) {
-				afterVector.set(points.get(points.size() - 1)).sub(points.get(points.size() - 2));
-				if (afterVector.len2() < distMinSq) {
-					removePoint(points.size() - 1, points, removedPoints);
-				}
 			}
-
-			// end -> begin
-			if (points.size() > 1) {
-				afterVector.set(points.get(points.size() - 1)).sub(points.get(0));
-				if (afterVector.len2() < distMinSq) {
-					removePoint(points.size() - 1, points, removedPoints);
-				}
-			}
-
-		} while (oldSize != points.size() && points.size() > 2);
+		} while (oldSize != points.size() && points.size() >= MIN_POINTS);
 
 		return removedPoints;
 	}
@@ -267,7 +265,7 @@ public class Geometry {
 		}
 		float x = (det(det1And2, x1LessX2, det3And4, x3LessX4) / det1Less2And3Less4);
 		float y = (det(det1And2, y1LessY2, det3And4, y3LessY4) / det1Less2And3Less4);
-		return Pools.vector2.obtain().set(x, y);
+		return new Vector2(x, y);
 	}
 
 	/**
@@ -346,6 +344,8 @@ public class Geometry {
 		Vector2 e2 = Pools.vector2.obtain().set(vertices[2]).sub(vertices[0]);
 
 		float crossProduct = e1.crs(e2);
+		Pools.vector2.freeAll(e1, e2);
+
 		return crossProduct * 0.5f;
 	}
 
@@ -523,8 +523,7 @@ public class Geometry {
 	 *         polygons.
 	 */
 	private static float calculatePolygonArea(final List<Vector2> vertices, int lowIndex, int highIndex) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> copy = Pools.arrayList.obtain();
+		ArrayList<Vector2> copy = new ArrayList<>();
 		copy.addAll(vertices);
 
 		// Remove all between the specified indices
@@ -535,8 +534,6 @@ public class Geometry {
 		}
 
 		float area = calculatePolygonArea(copy);
-
-		Pools.arrayList.free(copy);
 
 		return area;
 	}
@@ -578,7 +575,7 @@ public class Geometry {
 		float g = (objectSpeed * objectSpeed) - targetVelocity.dot(targetVelocity);
 		float t = (float) ((f + Math.sqrt((f * f) + 4 * g * e)) / (g * 2));
 
-		Vector2 objectVelocity = Pools.vector2.obtain();
+		Vector2 objectVelocity = new Vector2();
 		objectVelocity.set(distanceVector).scl(1 / t).add(targetVelocity);
 
 		Pools.vector2.free(distanceVector);
@@ -594,8 +591,7 @@ public class Geometry {
 	 *         Vector2Pool
 	 */
 	public static ArrayList<Vector2> createCircle(float radius, float zoom) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> polygon = Pools.arrayList.obtain();
+		ArrayList<Vector2> polygon = new ArrayList<>();
 
 		int segments = calculateCircleSegments(radius, zoom);
 
@@ -604,7 +600,7 @@ public class Geometry {
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
 		for (int i = 0; i < segments; i++) {
-			Vector2 vertex = Pools.vector2.obtain();
+			Vector2 vertex = new Vector2();
 			vertex.set(cx, cy);
 			polygon.add(vertex);
 
@@ -640,20 +636,19 @@ public class Geometry {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> vertices = Pools.arrayList.obtain();
+		ArrayList<Vector2> vertices = new ArrayList<>();
 
-		Vector2 directionBefore = Pools.vector2.obtain();
-		Vector2 directionAfter = Pools.vector2.obtain();
+		Vector2 directionBefore = new Vector2();
+		Vector2 directionAfter = new Vector2();
 
-		Vector2 borderAboveBefore1 = Pools.vector2.obtain();
-		Vector2 borderAboveBefore2 = Pools.vector2.obtain();
-		Vector2 borderAboveAfter1 = Pools.vector2.obtain();
-		Vector2 borderAboveAfter2 = Pools.vector2.obtain();
-		Vector2 borderBelowBefore1 = Pools.vector2.obtain();
-		Vector2 borderBelowBefore2 = Pools.vector2.obtain();
-		Vector2 borderBelowAfter1 = Pools.vector2.obtain();
-		Vector2 borderBelowAfter2 = Pools.vector2.obtain();
+		Vector2 borderAboveBefore1 = new Vector2();
+		Vector2 borderAboveBefore2 = new Vector2();
+		Vector2 borderAboveAfter1 = new Vector2();
+		Vector2 borderAboveAfter2 = new Vector2();
+		Vector2 borderBelowBefore1 = new Vector2();
+		Vector2 borderBelowBefore2 = new Vector2();
+		Vector2 borderBelowAfter1 = new Vector2();
+		Vector2 borderBelowAfter2 = new Vector2();
 
 		for (int i = 0; i < corners.size(); ++i) {
 			int nextIndex = com.spiddekauga.utils.Collections.nextIndex(corners, i);
@@ -666,8 +661,8 @@ public class Geometry {
 
 				borderAboveAfter1.set(corners.get(i)).add(directionAfter);
 				borderBelowAfter1.set(corners.get(i)).sub(directionAfter);
-				vertices.add(Pools.vector2.obtain().set(borderAboveAfter1));
-				vertices.add(Pools.vector2.obtain().set(borderBelowAfter1));
+				vertices.add(new Vector2(borderAboveAfter1));
+				vertices.add(new Vector2(borderBelowAfter1));
 			}
 			// Last position only takes into account the previous direction
 			else if (i == corners.size() - 1) {
@@ -676,8 +671,8 @@ public class Geometry {
 
 				borderAboveBefore2.set(corners.get(i)).add(directionBefore);
 				borderBelowBefore2.set(corners.get(i)).sub(directionBefore);
-				vertices.add(Pools.vector2.obtain().set(borderAboveBefore2));
-				vertices.add(Pools.vector2.obtain().set(borderBelowBefore2));
+				vertices.add(new Vector2(borderAboveBefore2));
+				vertices.add(new Vector2(borderBelowBefore2));
 			}
 			// The rest uses both forward and backward directions to calculate
 			// the intersection of these
@@ -714,8 +709,7 @@ public class Geometry {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> triangles = Pools.arrayList.obtain();
+		ArrayList<Vector2> triangles = new ArrayList<>();
 
 		// Create triangles from the positions
 		if (Geometry.isPolygonCounterClockwise(corners)) {
@@ -750,21 +744,6 @@ public class Geometry {
 			}
 		}
 
-		Pools.arrayList.free(vertices);
-		vertices = null;
-
-		Pools.vector2.free(directionBefore);
-		Pools.vector2.free(directionAfter);
-
-		Pools.vector2.free(borderAboveBefore1);
-		Pools.vector2.free(borderAboveBefore2);
-		Pools.vector2.free(borderAboveAfter1);
-		Pools.vector2.free(borderAboveAfter2);
-		Pools.vector2.free(borderBelowBefore1);
-		Pools.vector2.free(borderBelowBefore2);
-		Pools.vector2.free(borderBelowAfter1);
-		Pools.vector2.free(borderBelowAfter2);
-
 		return triangles;
 	}
 
@@ -785,7 +764,7 @@ public class Geometry {
 	 * @return normalized direction from lineA to lineB
 	 */
 	public static Vector2 getDirection(Vector2 fromPoint, Vector2 toPoint) {
-		Vector2 direction = Pools.vector2.obtain();
+		Vector2 direction = new Vector2();
 		direction.set(toPoint).sub(fromPoint).nor();
 		return direction;
 	}
@@ -881,16 +860,15 @@ public class Geometry {
 			clockwise = !clockwise;
 		}
 
-		Vector2 directionBefore = Pools.vector2.obtain();
-		Vector2 directionAfter = Pools.vector2.obtain();
+		Vector2 directionBefore = new Vector2();
+		Vector2 directionAfter = new Vector2();
 
-		Vector2 borderBefore1 = Pools.vector2.obtain();
-		Vector2 borderBefore2 = Pools.vector2.obtain();
-		Vector2 borderAfter1 = Pools.vector2.obtain();
-		Vector2 borderAfter2 = Pools.vector2.obtain();
+		Vector2 borderBefore1 = new Vector2();
+		Vector2 borderBefore2 = new Vector2();
+		Vector2 borderAfter1 = new Vector2();
+		Vector2 borderAfter2 = new Vector2();
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> borderCorners = Pools.arrayList.obtain();
+		ArrayList<Vector2> borderCorners = new ArrayList<>();
 		for (int i = 0; i < corners.size(); ++i) {
 			// Get direction of lines that uses this vertex (i.e. that has it
 			// as its end (line before) or start (line after) position.
@@ -927,14 +905,6 @@ public class Geometry {
 			}
 		}
 
-		Pools.vector2.free(directionBefore);
-		Pools.vector2.free(directionAfter);
-
-		Pools.vector2.free(borderBefore1);
-		Pools.vector2.free(borderBefore2);
-		Pools.vector2.free(borderAfter1);
-		Pools.vector2.free(borderAfter2);
-
 		return borderCorners;
 	}
 
@@ -951,8 +921,7 @@ public class Geometry {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> vertices = Pools.arrayList.obtain();
+		ArrayList<Vector2> vertices = new ArrayList<>();
 
 		// Create the two triangle in front of the index
 		// For example if we're at index 1 we will create the triangles
@@ -1008,7 +977,7 @@ public class Geometry {
 	 *        never changed)
 	 */
 	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences, final Vector2 offset) {
-		Vector2 copyOffset = Pools.vector2.obtain().set(offset);
+		Vector2 copyOffset = new Vector2(offset);
 		moveVertices(vertices, copyOffset, containsReferences);
 		rotateVertices(vertices, degrees, containsReferences);
 		copyOffset.scl(-1);
@@ -1025,15 +994,13 @@ public class Geometry {
 	 */
 	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences) {
 		if (containsReferences) {
-			@SuppressWarnings("unchecked")
-			HashSet<Vector2> rotatedVertices = Pools.hashSet.obtain();
+			HashSet<Vector2> rotatedVertices = new HashSet<>();
 			for (Vector2 vertex : vertices) {
 				if (!rotatedVertices.contains(vertex)) {
 					vertex.rotate(degrees);
 					rotatedVertices.add(vertex);
 				}
 			}
-			Pools.hashSet.free(rotatedVertices);
 		} else {
 			for (Vector2 vertex : vertices) {
 				vertex.rotate(degrees);
@@ -1051,8 +1018,7 @@ public class Geometry {
 	 */
 	public static void moveVertices(ArrayList<Vector2> vertices, Vector2 offset, boolean containsReferences) {
 		if (containsReferences) {
-			@SuppressWarnings("unchecked")
-			HashSet<Vector2> movedVertices = Pools.hashSet.obtain();
+			HashSet<Vector2> movedVertices = new HashSet<>();
 			for (Vector2 vertex : vertices) {
 				if (!movedVertices.contains(vertex)) {
 					vertex.add(offset);
@@ -1110,8 +1076,7 @@ public class Geometry {
 			return true;
 		}
 
-		@SuppressWarnings("unchecked")
-		Stack<Vector2> stack = Pools.stack.obtain();
+		Stack<Vector2> stack = new Stack<>();
 
 		// This method will iterate through vertices and push the intersection
 		// if the intersection isn't at the top of the stack, in that case it will
@@ -1134,8 +1099,6 @@ public class Geometry {
 			simpleIntersections = true;
 		}
 
-		Pools.stack.free(stack);
-
 		return simpleIntersections;
 	}
 
@@ -1153,8 +1116,7 @@ public class Geometry {
 	 *         vertices were created.
 	 */
 	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, boolean testLoop) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
+		ArrayList<Vector2> newVertices = new ArrayList<>();
 
 		int end = testLoop ? vertices.size() : vertices.size() - 1;
 
@@ -1195,7 +1157,6 @@ public class Geometry {
 		}
 
 		if (newVertices.isEmpty()) {
-			Pools.arrayList.free(newVertices);
 			newVertices = null;
 		}
 
@@ -1211,12 +1172,10 @@ public class Geometry {
 	 *         free the array lists!
 	 */
 	public static ArrayList<ArrayList<Vector2>> splitPolygonWithIntersections(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
-		@SuppressWarnings("unchecked")
-		ArrayList<ArrayList<Vector2>> polygons = Pools.arrayList.obtain();
+		ArrayList<ArrayList<Vector2>> polygons = new ArrayList<>();
 
 		// Add original list
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> tempPolygon = Pools.arrayList.obtain();
+		ArrayList<Vector2> tempPolygon = new ArrayList<>();
 		tempPolygon.addAll(vertices);
 		polygons.add(tempPolygon);
 
@@ -1237,8 +1196,7 @@ public class Geometry {
 					int splitEndIndex = currentPolygon.lastIndexOf(intersection);
 
 					// Move to new polygon
-					@SuppressWarnings("unchecked")
-					ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
+					ArrayList<Vector2> newPolygon = new ArrayList<>();
 
 					// Add to new polygon
 					for (int vertex = splitStartIndex; vertex < splitEndIndex; ++vertex) {
@@ -1383,9 +1341,9 @@ public class Geometry {
 			return lineStart.dst2(point);
 		}
 
-		Vector2 lineStartDiffPoint = Pools.vector2.obtain();
+		Vector2 lineStartDiffPoint = new Vector2();
 		lineStartDiffPoint.set(point).sub(lineStart);
-		Vector2 lineStartDiffLineEnd = Pools.vector2.obtain();
+		Vector2 lineStartDiffLineEnd = new Vector2();
 		lineStartDiffLineEnd.set(lineEnd).sub(lineStart);
 
 		float t = lineStartDiffPoint.dot(lineStartDiffLineEnd) / lineLengthSq;
@@ -1401,7 +1359,7 @@ public class Geometry {
 		// Projection falls on the segment
 		else {
 			lineStartDiffLineEnd.scl(t);
-			Vector2 projection = Pools.vector2.obtain();
+			Vector2 projection = new Vector2();
 			projection.set(lineStart).add(lineStartDiffLineEnd);
 			return projection.dst2(point);
 		}

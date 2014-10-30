@@ -18,8 +18,8 @@ import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
@@ -102,31 +102,13 @@ public class ShipEditor extends ActorEditor {
 
 		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving() && !isDone()) {
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
-			mActor.render(mShapeRenderer);
+			mActor.renderShape(mShapeRenderer);
 			mActor.renderEditor(mShapeRenderer);
+			mActor.renderSprite(mSpriteBatch);
 			mShapeRenderer.pop();
 		}
-	}
-
-	@Override
-	public void setCollisionDamage(float damage) {
-		// Does nothing
-	}
-
-	@Override
-	public float getCollisionDamage() {
-		return 0;
-	}
-
-	@Override
-	public void setDestroyOnCollide(boolean destroyOnCollision) {
-		// Does nothing
-	}
-
-	@Override
-	public boolean isDestroyedOnCollide() {
-		return false;
 	}
 
 	/**
@@ -183,7 +165,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	void setDensity(float density) {
 		if (mDef != null) {
-			mDef.getVisualVars().setDensity(density);
+			mDef.getVisual().setDensity(density);
 		}
 	}
 
@@ -192,7 +174,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	float getDensity() {
 		if (mDef != null) {
-			return mDef.getVisualVars().getDensity();
+			return mDef.getVisual().getDensity();
 		}
 
 		return 0;
@@ -204,7 +186,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	void setFriction(float friction) {
 		if (mDef != null) {
-			mDef.getVisualVars().setFriction(friction);
+			mDef.getVisual().setFriction(friction);
 		}
 	}
 
@@ -213,7 +195,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	float getFriction() {
 		if (mDef != null) {
-			return mDef.getVisualVars().getFriction();
+			return mDef.getVisual().getFriction();
 		}
 
 		return 0;
@@ -225,7 +207,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	void setElasticity(float elasticity) {
 		if (mDef != null) {
-			mDef.getVisualVars().setElasticity(elasticity);
+			mDef.getVisual().setElasticity(elasticity);
 		}
 	}
 
@@ -234,16 +216,32 @@ public class ShipEditor extends ActorEditor {
 	 */
 	float getElasticity() {
 		if (mDef != null) {
-			return mDef.getVisualVars().getElasticity();
+			return mDef.getVisual().getElasticity();
 		}
 
 		return 0;
 	}
 
 	@Override
+	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
+		if (mActor != null) {
+			mActor.setDrawOnlyOutline(drawOnlyOutline);
+		}
+	}
+
+	@Override
+	public boolean isDrawOnlyOutline() {
+		if (mActor != null) {
+			return mActor.isDrawOnlyOutline();
+		}
+
+		return false;
+	}
+
+	@Override
 	public void newDef() {
 		PlayerActorDef newDef = new PlayerActorDef();
-		newDef.getVisualVars().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.PLAYER_COLOR_DEFAULT));
+		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.PLAYER_COLOR_DEFAULT));
 		setDef(newDef);
 		mGui.resetValues();
 		setSaved();

@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.repo.SqliteGateway;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Sqlite gateway for highscores
@@ -61,8 +60,7 @@ class HighscoreSqliteGateway extends SqliteGateway {
 	 * @return all unsynced highscores
 	 */
 	ArrayList<HighscoreSyncEntity> getUnsynced() {
-		@SuppressWarnings("unchecked")
-		ArrayList<HighscoreSyncEntity> highscores = Pools.arrayList.obtain();
+		ArrayList<HighscoreSyncEntity> highscores = new ArrayList<>();
 
 		DatabaseCursor cursor = rawQuery("SELECT level_id, score, date FROM highscore WHERE synced=0;");
 

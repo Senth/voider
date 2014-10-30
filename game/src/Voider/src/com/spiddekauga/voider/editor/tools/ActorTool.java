@@ -12,7 +12,6 @@ import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
@@ -74,15 +73,13 @@ abstract public class ActorTool extends TouchTool {
 	 * Get local position for the specified actor from the specified world position
 	 * @param worldPos world position
 	 * @param actor the actor to calculate the position from
-	 * @return Local position of the actor, copy of worldPos if actor is null. Don't
-	 *         forget to free the localPos using Pools.vector2.free(localPos)
+	 * @return Local position of the actor, copy of worldPos if actor is null.
 	 */
 	protected static Vector2 getLocalPosition(Vector2 worldPos, Actor actor) {
-		Vector2 localPos = Pools.vector2.obtain();
-		localPos.set(worldPos);
+		Vector2 localPos = new Vector2(worldPos);
 
 		if (actor != null) {
-			localPos.sub(actor.getPosition()).sub(actor.getDef().getVisualVars().getCenterOffset());
+			localPos.sub(actor.getPosition()).sub(actor.getDef().getVisual().getCenterOffset());
 		}
 
 		return localPos;
@@ -92,15 +89,13 @@ abstract public class ActorTool extends TouchTool {
 	 * Get world position from the specified actor
 	 * @param localPos local position
 	 * @param actor the actor to calculate the position from
-	 * @return world position of the actor, copy of localPos if actor is null. Don't
-	 *         forget to free the worldPos using Pools.vector2.free(worldPos);
+	 * @return world position of the actor, copy of localPos if actor is null.
 	 */
 	protected static Vector2 getWorldPosition(Vector2 localPos, Actor actor) {
-		Vector2 worldPos = Pools.vector2.obtain();
-		worldPos.set(localPos);
+		Vector2 worldPos = new Vector2(localPos);
 
 		if (actor != null) {
-			worldPos.add(actor.getPosition()).add(actor.getDef().getVisualVars().getCenterOffset());
+			worldPos.add(actor.getPosition()).add(actor.getDef().getVisual().getCenterOffset());
 		}
 
 		return worldPos;
@@ -140,12 +135,10 @@ abstract public class ActorTool extends TouchTool {
 		float drawNewCornerMinDistSq = getVisualConfig().getDrawNewCornerDistMinSq();
 
 		// If has drawn more than minimum distance, add another corner here
-		Vector2 diffVector = Pools.vector2.obtain();
-		diffVector.set(mTouchCurrent).sub(dragOrigin);
+		Vector2 diffVector = new Vector2(mTouchCurrent).sub(dragOrigin);
 		if (diffVector.len2() >= drawNewCornerMinDistSq) {
 			movedEnough = true;
 		}
-		Pools.vector2.free(diffVector);
 
 		return movedEnough;
 	}

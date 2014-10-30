@@ -7,7 +7,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CCameraZoom;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for zooming in/out in the level editor
@@ -88,7 +87,6 @@ public class ZoomTool extends TouchTool {
 		Vector2 zoomPos = calculateZoomPos(1, mZoom);
 		mZoom = 1;
 		mInvoker.execute(new CCameraZoom(mCamera, mZoom, zoomPos));
-		Pools.vector2.free(zoomPos);
 	}
 
 	/**
@@ -121,8 +119,6 @@ public class ZoomTool extends TouchTool {
 
 			// Call zoom command
 			mInvoker.execute(new CCameraZoom(mCamera, mZoom, cameraPos));
-
-			Pools.vector2.free(cameraPos);
 		}
 	}
 
@@ -147,24 +143,19 @@ public class ZoomTool extends TouchTool {
 	 * @return camera position with correct pointer position
 	 */
 	private Vector2 calculateCameraPos(float newZoom, float oldZoom) {
-		Vector2 pointerDiff = Pools.vector2.obtain();
-		pointerDiff.set(mTouchCurrent);
+		Vector2 pointerDiff = new Vector2(mTouchCurrent);
 		pointerDiff.sub(mCamera.position.x, mCamera.position.y);
-
-		Vector2 pointerRatio = Pools.vector2.obtain();
 
 		float oldWidth = mCamera.viewportWidth * oldZoom;
 		float oldHeight = mCamera.viewportHeight * oldZoom;
 		float newWidth = mCamera.viewportWidth * mZoom;
 		float newHeight = mCamera.viewportHeight * mZoom;
 
+		Vector2 pointerRatio = new Vector2();
 		pointerRatio.set(pointerDiff.x / oldWidth, pointerDiff.y / oldHeight);
 
-		Vector2 cameraPos = Pools.vector2.obtain();
-		cameraPos.set(mTouchCurrent);
+		Vector2 cameraPos = new Vector2(mTouchCurrent);
 		cameraPos.sub(pointerRatio.x * newWidth, pointerRatio.y * newHeight);
-
-		Pools.vector2.freeAll(pointerDiff, pointerRatio);
 
 		return cameraPos;
 	}

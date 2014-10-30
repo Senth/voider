@@ -5,13 +5,13 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor;
+import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
@@ -37,13 +37,14 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
+import com.spiddekauga.voider.repo.resource.SkinNames.GeneralImages;
+import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.resources.SkinNames.GeneralImages;
-import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.utils.Graphics;
+import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
+import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
+import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -58,8 +59,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	 */
 	public ActorEditor(Gui gui, float pickRadius, Class<? extends Actor> actorType) {
 		super(gui, pickRadius);
-
 		mActorType = actorType;
+
+
+		// Set config variables
+		IC_Visual icVisual = ((ActorGui) mGui).getVisualConfig();
+		mShapeImageAngleMin = icVisual.getImageAngleDefault();
+		mShapeImageDistMin = icVisual.getImageDistDefault();
 	}
 
 	@Override
@@ -93,7 +99,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			return;
 		}
 
-		if (mDrawingActor != null && mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+		if (mDrawingActor != null && mActorDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM) {
 			mDrawingActor.updateEditor();
 		}
 
@@ -140,8 +146,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mShapeRenderer.translate(0, 0, -1);
 
 			// Drawing actor
-			if (mDrawingActor != null && mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-				mDrawingActor.render(mShapeRenderer);
+			if (mDrawingActor != null && mActorDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM) {
+				mDrawingActor.renderShape(mShapeRenderer);
 				mDrawingActor.renderEditor(mShapeRenderer);
 			}
 
@@ -156,21 +162,21 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
-		if (mActorDef == null) {
+		if (mActorDef == null || mActorDef.getVisual().getShapeType() == shapeType) {
 			return;
 		}
 
 		if (shapeType == ActorShapeTypes.IMAGE) {
-			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisualVars(), this));
+			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisual(), this));
 
-			if (mActorDef.getVisualVars().getImageName() == null) {
-				mActorDef.getVisualVars().setImageName(SHAPE_IMAGE_DEFAULT);
+			if (mActorDef.getVisual().getImageName() == null) {
+				mActorDef.getVisual().setImageName(SHAPE_IMAGE_DEFAULT);
 			}
 		}
 
-		ActorShapeTypes previousShapeType = mActorDef.getVisualVars().getShapeType();
+		ActorShapeTypes previousShapeType = mActorDef.getVisual().getShapeType();
 
-		mActorDef.getVisualVars().setShapeType(shapeType);
+		mActorDef.getVisual().setShapeType(shapeType);
 
 		// Add tool to input multiplexer
 		if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType != ActorShapeTypes.CUSTOM) {
@@ -187,7 +193,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public ActorShapeTypes getShapeType() {
 		if (mActorDef != null) {
-			return mActorDef.getVisualVars().getShapeType();
+			return mActorDef.getVisual().getShapeType();
 		} else {
 			return ActorShapeTypes.CIRCLE;
 		}
@@ -198,14 +204,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mActorDef == null) {
 			return;
 		}
-		mActorDef.getVisualVars().setShapeRadius(radius);
+		mActorDef.getVisual().setShapeRadius(radius);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeRadius() {
 		if (mActorDef != null) {
-			return mActorDef.getVisualVars().getShapeRadius();
+			return mActorDef.getVisual().getShapeRadius();
 		} else {
 			return 0;
 		}
@@ -216,14 +222,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mActorDef == null) {
 			return;
 		}
-		mActorDef.getVisualVars().setShapeWidth(width);
+		mActorDef.getVisual().setShapeWidth(width);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeWidth() {
 		if (mActorDef != null) {
-			return mActorDef.getVisualVars().getShapeWidth();
+			return mActorDef.getVisual().getShapeWidth();
 		} else {
 			return 0;
 		}
@@ -234,14 +240,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mActorDef == null) {
 			return;
 		}
-		mActorDef.getVisualVars().setShapeHeight(height);
+		mActorDef.getVisual().setShapeHeight(height);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeHeight() {
 		if (mActorDef != null) {
-			return mActorDef.getVisualVars().getShapeHeight();
+			return mActorDef.getVisual().getShapeHeight();
 		} else {
 			return 0;
 		}
@@ -257,14 +263,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mDrawingActor != null) {
 			mDrawingActor.destroyBody();
 
-			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mActorDef.getVisualVars().getCenterOffset());
+			diffOffset = new Vector2(mActorDef.getVisual().getCenterOffset());
 		}
 
-		mActorDef.getVisualVars().resetCenterOffset();
+		mActorDef.getVisual().resetCenterOffset();
 
 		if (mDrawingActor != null) {
-			diffOffset.sub(mActorDef.getVisualVars().getCenterOffset());
+			diffOffset.sub(mActorDef.getVisual().getCenterOffset());
 			diffOffset.add(mDrawingActor.getPosition());
 			mDrawingActor.setPosition(diffOffset);
 			mDrawingActor.createBody();
@@ -284,14 +289,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mDrawingActor != null) {
 			mDrawingActor.destroyBody();
 
-			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mActorDef.getVisualVars().getCenterOffset());
+			diffOffset = new Vector2(mActorDef.getVisual().getCenterOffset());
 		}
 
-		mActorDef.getVisualVars().setCenterOffset(newCenter);
+		mActorDef.getVisual().setCenterOffset(newCenter);
 
 		if (mDrawingActor != null) {
-			diffOffset.sub(mActorDef.getVisualVars().getCenterOffset());
+			diffOffset.sub(mActorDef.getVisual().getCenterOffset());
 			diffOffset.add(mDrawingActor.getPosition());
 			mDrawingActor.setPosition(diffOffset);
 			mDrawingActor.createBody();
@@ -304,7 +308,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public Vector2 getCenterOffset() {
 		if (mActorDef != null) {
-			return mActorDef.getVisualVars().getCenterOffset();
+			return mActorDef.getVisual().getCenterOffset();
 		} else {
 			return new Vector2();
 		}
@@ -477,7 +481,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 		((DrawAppendTool) mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mActorDef);
 
-		if (mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+		if (mActorDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM) {
 			if (mDrawingActor == null) {
 				mDrawingActor = newActor();
 				mDrawingActor.createBody();
@@ -514,7 +518,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof Actor) {
-			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisualVars(), this), true);
+			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisual(), this), true);
 			mDrawingActor = null;
 			setUnsaved();
 		} else if (resource instanceof VectorBrush) {
@@ -530,7 +534,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void setColor(Color color) {
 		if (mActorDef != null) {
-			mActorDef.getVisualVars().setColor(color);
+			mActorDef.getVisual().setColor(color);
 			setUnsaved();
 		}
 	}
@@ -538,7 +542,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public Color getColor() {
 		if (mActorDef != null) {
-			return mActorDef.getVisualVars().getColor();
+			return mActorDef.getVisual().getColor();
 		} else {
 			return new Color();
 		}
@@ -651,19 +655,24 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	@Override
 	public void setShapeImageScale(float scale) {
-		mShapeImageScale = scale;
-		updateShapeImageActor();
+		if (mActorDef != null) {
+			mActorDef.getVisual().setImageScale(scale);
+			updateShapeImageActor();
+		}
 	}
 
 	@Override
 	public float getShapeImageScale() {
-		return mShapeImageScale;
+		if (mActorDef != null) {
+			return mActorDef.getVisual().getImageScale();
+		}
+		return 0;
 	}
 
 	@Override
 	public void setShapeImage(IImageNames image) {
 		if (mActorDef != null) {
-			mActorDef.getVisualVars().setImageName(image);
+			mActorDef.getVisual().setImageName(image);
 			updateShapeImageActor();
 		}
 	}
@@ -671,7 +680,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public IImageNames getShapeImage() {
 		if (mActorDef != null) {
-			return mActorDef.getVisualVars().getImageName();
+			return mActorDef.getVisual().getImageName();
 		}
 
 		return SHAPE_IMAGE_DEFAULT;
@@ -682,15 +691,12 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	 */
 	private void updateShapeImageActor() {
 		if (mShapeImageUpdate && mActorDef != null) {
-			mActorDef.getVisualVars().clearCorners();
-
-			TextureRegion region = SkinNames.getRegion(mActorDef.getVisualVars().getImageName());
-			float scale = getScreenToWorldScale() * mShapeImageScale;
-			ArrayList<Vector2> corners = Graphics.getContour(region, 0, scale);
-
-			mActorDef.getVisualVars().addCorners(corners);
-			mActorDef.getVisualVars().fixCustomShapeFixtures();
-			setUnsaved();
+			try {
+				mActorDef.getVisual().updateImageShape(mShapeImageDistMin, mShapeImageAngleMin, getScreenToWorldScale());
+				setUnsaved();
+			} catch (PolygonAreaTooSmallException | PolygonComplexException | PolygonCornersTooCloseException e) {
+				// Do nothing
+			}
 		}
 	}
 
@@ -705,12 +711,82 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		return mShapeImageUpdate;
 	}
 
+	@Override
+	public void setShapeImageDistMin(float distMin) {
+		mShapeImageDistMin = distMin;
+		updateShapeImageActor();
+	}
+
+	@Override
+	public float getShapeImageDistMin() {
+		return mShapeImageDistMin;
+	}
+
+	@Override
+	public void setShapeImageAngleMin(float angleMin) {
+		mShapeImageAngleMin = angleMin;
+		updateShapeImageActor();
+	}
+
+	@Override
+	public float getShapeImageAngleMin() {
+		return mShapeImageAngleMin;
+	}
+
+	/**
+	 * Sets colliding damage of the enemy
+	 * @param damage how much damage the enemy will inflict on a collision
+	 */
+	@Override
+	public void setCollisionDamage(float damage) {
+		if (mActorDef != null) {
+			mActorDef.setCollisionDamage(damage);
+			setUnsaved();
+		}
+	}
+
+	/**
+	 * @return collision damage with the enemy
+	 */
+	@Override
+	public float getCollisionDamage() {
+		if (mActorDef != null) {
+			return mActorDef.getCollisionDamage();
+		}
+		return 0;
+	}
+
+	/**
+	 * Sets whether this actor shall be destroyed on collision
+	 * @param destroyOnCollision set to true to destroy the enemy on collision
+	 */
+	@Override
+	public void setDestroyOnCollide(boolean destroyOnCollision) {
+		if (mActorDef != null) {
+			mActorDef.setDestroyOnCollide(destroyOnCollision);
+			setUnsaved();
+		}
+	}
+
+	/**
+	 * @return true if this enemy shall be destroyed on collision
+	 */
+	@Override
+	public boolean isDestroyedOnCollide() {
+		if (mActorDef != null) {
+			return mActorDef.isDestroyedOnCollide();
+		}
+		return false;
+	}
+
 	/** If the shape image should be updated continuously */
 	private boolean mShapeImageUpdate = false;
+	/** Minimum angle to save between actors */
+	private float mShapeImageAngleMin;
+	/** Minimum distance between points */
+	private float mShapeImageDistMin;
 	/** Default shape image */
 	private static final IImageNames SHAPE_IMAGE_DEFAULT = GeneralImages.SHUTTLE_LARGE;
-	/** Scaling of the shape image */
-	private float mShapeImageScale = 1;
 	/** The actor type */
 	private Class<? extends Actor> mActorType;
 	/** Vector brush to render when drawing custom shapes */

@@ -36,7 +36,6 @@ import com.spiddekauga.voider.repo.Repo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
 import com.spiddekauga.voider.utils.User;
@@ -163,8 +162,7 @@ public class ResourceRepo extends Repo {
 	 * @param actorDef the actor to publish
 	 */
 	public void publish(IResponseListener responseListener, IOutstreamProgressListener progressListener, ActorDef actorDef) {
-		@SuppressWarnings("unchecked")
-		ArrayList<IResource> resources = Pools.arrayList.obtain();
+		ArrayList<IResource> resources = new ArrayList<>();
 
 		resources.addAll(getNonPublishedDependencies(actorDef));
 		resources.add(actorDef);
@@ -179,8 +177,7 @@ public class ResourceRepo extends Repo {
 	 * @param level the level to publish
 	 */
 	public void publish(IResponseListener responseListener, IOutstreamProgressListener progressListener, Level level) {
-		@SuppressWarnings("unchecked")
-		ArrayList<IResource> resources = Pools.arrayList.obtain();
+		ArrayList<IResource> resources = new ArrayList<>();
 
 		resources.addAll(getNonPublishedDependencies(level.getDef()));
 		resources.add(level);
@@ -286,8 +283,7 @@ public class ResourceRepo extends Repo {
 
 		// Add resource locally
 		if (response.downloadStatus) {
-			@SuppressWarnings("unchecked")
-			ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
+			ArrayList<RevisionEntity> revisions = new ArrayList<>();
 
 			for (Entry<UUID, ArrayList<ResourceRevisionBlobEntity>> entry : response.blobsToDownload.entrySet()) {
 				UUID resourceId = entry.getKey();
@@ -310,8 +306,6 @@ public class ResourceRepo extends Repo {
 					ResourceCacheFacade.reload(resourceId);
 				}
 			}
-
-			Pools.arrayList.free(revisions);
 		}
 
 		// Set sync time
@@ -402,14 +396,10 @@ public class ResourceRepo extends Repo {
 	 */
 	public static ArrayList<Def> getNonPublishedDependencies(Def def) {
 		if (def != null) {
-			@SuppressWarnings("unchecked")
-			HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
-			@SuppressWarnings("unchecked")
-			ArrayList<Def> dependencies = Pools.arrayList.obtain();
+			HashSet<UUID> uuidDeps = new HashSet<>();
+			ArrayList<Def> dependencies = new ArrayList<>();
 
 			getNonPublishedDependencies(def, uuidDeps, dependencies);
-
-			Pools.hashSet.free(uuidDeps);
 			return dependencies;
 		}
 		return null;

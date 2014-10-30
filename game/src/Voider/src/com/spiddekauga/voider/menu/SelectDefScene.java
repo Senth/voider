@@ -18,7 +18,6 @@ import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -126,7 +125,6 @@ public class SelectDefScene extends Scene implements IEventListener {
 			}
 		}
 
-		Pools.arrayList.free(defs);
 		defs = null;
 	}
 
@@ -399,7 +397,7 @@ public class SelectDefScene extends Scene implements IEventListener {
 	 */
 	void loadDef() {
 		if (mSelectedDef != null) {
-			ResourceItem resourceItem = Pools.resourceItem.obtain();
+			ResourceItem resourceItem = new ResourceItem();
 			resourceItem.id = mSelectedDef.getId();
 			resourceItem.revision = -1;
 			if (mSelectedDef instanceof IResourceRevision) {

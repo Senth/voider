@@ -11,7 +11,6 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceHasDef;
 import com.spiddekauga.voider.resources.IResourceRevision;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Local repository to all resources
@@ -207,7 +206,6 @@ public class ResourceLocalRepo {
 			mFileGateway.remove(resource);
 			mFileGateway.removeRevisionDir(resource);
 		}
-		Pools.arrayList.free(resources);
 
 
 		// Database

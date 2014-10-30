@@ -25,9 +25,9 @@ import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePosition;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
@@ -49,9 +49,6 @@ public class EnemyActor extends Actor {
 	@Override
 	public void dispose() {
 		super.dispose();
-		Pools.vector2.freeAll(mTargetDirection, mRandomMoveDirection);
-		mTargetDirection = null;
-		mRandomMoveDirection = null;
 
 		clearPolygonOutline();
 	}
@@ -136,14 +133,14 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
-	public void render(ShapeRendererEx shapeRenderer) {
+	public void renderShape(ShapeRendererEx shapeRenderer) {
 		// Don't render non-leaders when in editor
 		if (mEditorActive) {
 			if (mGroup == null || mGroupLeader) {
-				super.render(shapeRenderer);
+				super.renderShape(shapeRenderer);
 			}
 		} else {
-			super.render(shapeRenderer);
+			super.renderShape(shapeRenderer);
 		}
 	}
 
@@ -202,9 +199,9 @@ public class EnemyActor extends Actor {
 
 						Vector2 offsetPosition = new Vector2(getPosition());
 
-						if (getDef().getVisualVars().getCornerCount() == 2) {
-							offsetPosition.sub(getDef().getVisualVars().getCorners().get(0));
-							offsetPosition.sub(getDef().getVisualVars().getCenterOffset());
+						if (getDef().getVisual().getCornerCount() == 2) {
+							offsetPosition.sub(getDef().getVisual().getCorners().get(0));
+							offsetPosition.sub(getDef().getVisual().getCenterOffset());
 						}
 
 						if (mActivateCircle == null) {
@@ -330,7 +327,7 @@ public class EnemyActor extends Actor {
 	 */
 	private float calculateDefaultActivateTriggerPosition(float levelSpeed) {
 		// Calculate position of trigger
-		float xCoord = getPosition().x - getDef().getVisualVars().getBoundingRadius();
+		float xCoord = getPosition().x - getDef().getVisual().getBoundingRadius();
 
 		// Decrease position if we are in an enemy group
 		if (mGroup != null) {
@@ -474,8 +471,8 @@ public class EnemyActor extends Actor {
 		enemyCopy.mGroupLeader = false;
 
 		enemyCopy.mWeapon = mWeapon.copy();
-		enemyCopy.mRandomMoveDirection = Pools.vector2.obtain().set(mRandomMoveDirection);
-		enemyCopy.mTargetDirection = Pools.vector2.obtain().set(mTargetDirection);
+		enemyCopy.mRandomMoveDirection.set(mRandomMoveDirection);
+		enemyCopy.mTargetDirection.set(mTargetDirection);
 
 		return copy;
 	}
@@ -622,7 +619,7 @@ public class EnemyActor extends Actor {
 	 *         Pools.vector2.free(vector);.
 	 */
 	private Vector2 getShootDirection() {
-		Vector2 shootDirection = Pools.vector2.obtain();
+		Vector2 shootDirection = new Vector2();
 
 		switch (getDef(EnemyActorDef.class).getAimType()) {
 		case ON_PLAYER:
@@ -673,10 +670,10 @@ public class EnemyActor extends Actor {
 			// Calculate where the bullet would intersect with the player
 			else {
 				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*
-				 * +
-				 * levelSpeed
-				 */, mPlayerActor.getPosition(),
-				 playerVelocity);
+																													 * +
+																													 * levelSpeed
+																													 */, mPlayerActor.getPosition(),
+						playerVelocity);
 				shootDirection.set(bulletVelocity);
 				Pools.vector2.free(bulletVelocity);
 				bulletVelocity = null;
@@ -1023,7 +1020,7 @@ public class EnemyActor extends Actor {
 	 */
 	private void checkPathDeactivate() {
 		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
-			if (getPath().getRightestCorner().x + getDef().getVisualVars().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+			if (getPath().getRightestCorner().x + getDef().getVisual().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 
 				// For 'once', check that the ship cannot be seen too
 				boolean deactivate = false;
@@ -1032,19 +1029,19 @@ public class EnemyActor extends Actor {
 					Vector2 maxPos = SceneSwitcher.getWorldMaxCoordinates();
 
 					// Left
-					if (getPosition().x + getDef().getVisualVars().getBoundingRadius() < minPos.x) {
+					if (getPosition().x + getDef().getVisual().getBoundingRadius() < minPos.x) {
 						deactivate = true;
 					}
 					// Right
-					else if (getPosition().x - getDef().getVisualVars().getBoundingRadius() > maxPos.x) {
+					else if (getPosition().x - getDef().getVisual().getBoundingRadius() > maxPos.x) {
 						deactivate = true;
 					}
 					// Bottom
-					else if (getPosition().y + getDef().getVisualVars().getBoundingRadius() < minPos.y) {
+					else if (getPosition().y + getDef().getVisual().getBoundingRadius() < minPos.y) {
 						deactivate = true;
 					}
 					// Top
-					else if (getPosition().y - getDef().getVisualVars().getBoundingRadius() > maxPos.y) {
+					else if (getPosition().y - getDef().getVisual().getBoundingRadius() > maxPos.y) {
 						deactivate = true;
 					}
 
@@ -1069,7 +1066,7 @@ public class EnemyActor extends Actor {
 	 */
 	private void checkStationaryDeactivate() {
 		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
-			if (getPosition().x + getDef().getVisualVars().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+			if (getPosition().x + getDef().getVisual().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 				deactivate();
 				destroyBody();
 			}
@@ -1089,7 +1086,6 @@ public class EnemyActor extends Actor {
 	private void clearPolygonOutline() {
 		if (mActivateCircle != null) {
 			Pools.vector2.freeDuplicates(mActivateCircle);
-			Pools.arrayList.free(mActivateCircle);
 			mActivateCircle = null;
 		}
 	}
@@ -1101,13 +1097,13 @@ public class EnemyActor extends Actor {
 		if (mEditorActive) {
 			clearPolygonOutline();
 
-			ArrayList<Vector2> vertices = getDef().getVisualVars().getPolygonShape();
+			ArrayList<Vector2> vertices = getDef().getVisual().getPolygonShape();
 			if (vertices != null && !vertices.isEmpty()) {
 				float radius = SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_RADIUS);
 				ArrayList<Vector2> circleLines = Geometry.createCircle(radius);
 
 				// Calculate center
-				Vector2 center = Pools.vector2.obtain().set(0, 0);
+				Vector2 center = new Vector2();
 				for (Vector2 vertex : vertices) {
 					center.add(vertex);
 				}
@@ -1121,7 +1117,6 @@ public class EnemyActor extends Actor {
 				EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
 				mActivateCircle = earClippingTriangulator.computeTriangles(circleLines);
 				Collections.reverse(mActivateCircle);
-				Pools.arrayList.free(circleLines);
 			}
 		}
 	}
@@ -1148,7 +1143,7 @@ public class EnemyActor extends Actor {
 	/** Next random move time */
 	private float mRandomMoveNext = 0;
 	/** Direction of the current random move */
-	private Vector2 mRandomMoveDirection = Pools.vector2.obtain().set(0, 0);
+	private Vector2 mRandomMoveDirection = new Vector2();
 
 
 	// PATH MOVEMENT
@@ -1162,5 +1157,5 @@ public class EnemyActor extends Actor {
 	/** ONCE path reach end */
 	private boolean mPathOnceReachedEnd = false;
 	/** Last direction */
-	private Vector2 mTargetDirection = Pools.vector2.obtain().set(0, 0);
+	private Vector2 mTargetDirection = new Vector2();
 }

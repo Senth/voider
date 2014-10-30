@@ -6,17 +6,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Removes all the corners from the specified resource
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceCornerRemoveAll extends CResourceChange {
 	/**
-	 * Creates a command which removes all the corners from the resource
-	 * definition
+	 * Creates a command which removes all the corners from the resource definition
 	 * @param resourceDef the resource definition to remove all corners from
 	 * @param resourceEditor editor to notify about the change via onActorChange(Actor)
 	 */
@@ -25,7 +22,7 @@ public class CResourceCornerRemoveAll extends CResourceChange {
 		mResourceCorner = resourceDef;
 		ArrayList<Vector2> corners = mResourceCorner.getCorners();
 		for (Vector2 corner : corners) {
-			mCorners.add(Pools.vector2.obtain().set(corner));
+			mCorners.add(new Vector2(corner));
 		}
 	}
 
@@ -54,17 +51,8 @@ public class CResourceCornerRemoveAll extends CResourceChange {
 		return true;
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-
-		Pools.vector2.freeAll(mCorners);
-		Pools.arrayList.free(mCorners);
-	}
-
 	/** The resource definition to remove all the corners from */
 	private IResourceCorner mResourceCorner;
 	/** All the corners to restore on undo */
-	@SuppressWarnings("unchecked")
-	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	private ArrayList<Vector2> mCorners = new ArrayList<>();
 }

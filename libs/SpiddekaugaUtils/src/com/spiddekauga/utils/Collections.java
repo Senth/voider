@@ -1,5 +1,7 @@
 package com.spiddekauga.utils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,6 +53,54 @@ public class Collections {
 	 */
 	public static int nextIndex(int size, int index) {
 		return index == size - 1 ? 0 : index + 1;
+	}
+
+	/**
+	 * Wraps an index of an array so that the index always is valid
+	 * @param size the size of the array/list
+	 * @param index the index to wrap
+	 * @return correct wrapped index
+	 */
+	public static int wrapIndex(int size, int index) {
+		int correctIndex = index;
+
+		// Negative
+		while (correctIndex < 0) {
+			correctIndex += size;
+		}
+
+		// Larger
+		while (correctIndex >= size) {
+			correctIndex -= size;
+		}
+
+		return correctIndex;
+	}
+
+	/**
+	 * Wraps an index of an array so that the index always is valid
+	 * @param array the array/list to wrap
+	 * @param index the index to wrap
+	 * @return correct wrapped index
+	 */
+	public static int wrapIndex(final List<?> array, int index) {
+		return wrapIndex(array.size(), index);
+	}
+
+	/**
+	 * Returns wrapped object
+	 * @param <ElementType> Element type in the list
+	 * @param list the list to get from
+	 * @param index the index to get (this will be wrapped)
+	 * @return object in the list, null if the list is empty
+	 */
+	public static <ElementType> ElementType getWrapped(final List<ElementType> list, int index) {
+		if (list.isEmpty()) {
+			return null;
+		}
+
+		int wrappedIndex = wrapIndex(list, index);
+		return list.get(wrappedIndex);
 	}
 
 	/**
@@ -108,6 +158,28 @@ public class Collections {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Fill a collection with new elements
+	 * @param <ElementType> type to create
+	 * @param array the array to fill
+	 * @param clazz create these type of elements
+	 * @return same array
+	 */
+	public static <ElementType> ElementType[] fillNew(ElementType[] array, Class<ElementType> clazz) {
+		try {
+			Constructor<ElementType> constructor = clazz.getConstructor();
+
+			for (int i = 0; i < array.length; ++i) {
+				array[i] = constructor.newInstance();
+			}
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		return array;
 	}
 
 	/**

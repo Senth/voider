@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.ICommandCombinable;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -86,15 +85,10 @@ public class CCameraZoom extends Command implements ICommandCombinable {
 		}
 	}
 
-	@Override
-	public void dispose() {
-		Pools.vector2.freeAll(mPosNew, mPosOld);
-	}
-
 	private OrthographicCamera mCamera;
 	private float mZoomOld;
 	private float mZoomNew;
-	private Vector2 mPosOld = Pools.vector2.obtain();
-	private Vector2 mPosNew = Pools.vector2.obtain();
+	private Vector2 mPosOld = new Vector2();
+	private Vector2 mPosNew = new Vector2();
 	private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 }

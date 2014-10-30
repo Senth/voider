@@ -14,13 +14,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.commands.CGuiCheck;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Weapon;
@@ -30,14 +30,13 @@ import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Movement;
 import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
-import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabImageWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabWrapper;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -250,14 +249,10 @@ public class EnemyEditorGui extends ActorGui {
 	void updatePathLabelsPositions() {
 		Vector2[] centerPositions = mEnemyEditor.getPathPositions();
 
-		@SuppressWarnings("unchecked")
-		ArrayList<AlignTable> labelTables = Pools.arrayList.obtain();
+		ArrayList<AlignTable> labelTables = new ArrayList<>();
 		labelTables.add(mWidgets.path.once);
 		labelTables.add(mWidgets.path.loop);
 		labelTables.add(mWidgets.path.backForth);
-
-
-		Vector2 offset = Pools.vector2.obtain();
 
 		fixPathLabelOnZoom(centerPositions);
 
@@ -271,10 +266,6 @@ public class EnemyEditorGui extends ActorGui {
 
 			table.setPosition(pos);
 		}
-
-		Pools.vector2.freeAll(centerPositions);
-		Pools.vector2.free(offset);
-		Pools.arrayList.free(labelTables);
 	}
 
 	/**
@@ -296,13 +287,13 @@ public class EnemyEditorGui extends ActorGui {
 
 			float zoom = 1 / camera.zoom;
 			float worldScale = Gdx.graphics.getWidth() / camera.viewportWidth;
-			Vector2 cameraPos = Pools.vector2.obtain().set(camera.position.x, camera.position.y);
+			Vector2 cameraPos = new Vector2(camera.position.x, camera.position.y);
 			cameraPos.scl(worldScale * zoom);
-			Vector2 screenCenter = Pools.vector2.obtain().set(Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
+			Vector2 screenCenter = new Vector2(Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
 
 
-			Vector2 deltaPos = Pools.vector2.obtain();
-			Vector2 labelPosOriginal = Pools.vector2.obtain();
+			Vector2 deltaPos = new Vector2();
+			Vector2 labelPosOriginal = new Vector2();
 
 			for (Vector2 pos : positions) {
 				labelPosOriginal.set(pos);
@@ -310,8 +301,6 @@ public class EnemyEditorGui extends ActorGui {
 				deltaPos.scl(zoom);
 				pos.set(screenCenter).sub(cameraPos).add(deltaPos);
 			}
-
-			Pools.vector2.freeAll(screenCenter, cameraPos, deltaPos, labelPosOriginal);
 		}
 	}
 
@@ -413,12 +402,10 @@ public class EnemyEditorGui extends ActorGui {
 		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		ArrayList<TabWrapper> tabs = new ArrayList<>();
 		tabs.add(onTab);
 		tabs.add(offTab);
 		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
-		Pools.arrayList.free(tabs);
 		tabs = null;
 
 		// Set buttons
@@ -427,8 +414,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Sliders
-		@SuppressWarnings("unchecked")
-		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
+		ArrayList<Actor> createdActors = new ArrayList<>();
 		minSliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
@@ -452,7 +438,8 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	/**
-	 * Initializes standard movement variables such as speed and turning for the specified table
+	 * Initializes standard movement variables such as speed and turning for the specified
+	 * table
 	 * @param movementType which table to add the movement UI elements to
 	 */
 	private void createMovementUi(final MovementTypes movementType) {
@@ -497,12 +484,10 @@ public class EnemyEditorGui extends ActorGui {
 		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		ArrayList<TabWrapper> tabs = new ArrayList<>();
 		tabs.add(onTab);
 		tabs.add(offTab);
 		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
-		Pools.arrayList.free(tabs);
 		tabs = null;
 
 		// Set buttons
@@ -603,13 +588,11 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Create buttons
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		ArrayList<TabWrapper> tabs = new ArrayList<>();
 		tabs.add(pathTab);
 		tabs.add(aiTab);
 		tabs.add(stationaryTab);
 		mUiFactory.addTabs(mMovementTable, mMovementHider, tabs, mDisabledWhenPublished, mInvoker);
-		Pools.arrayList.free(tabs);
 
 		mMovementTable.row().setHeight(mUiFactory.getStyles().vars.rowHeightSection).setAlign(Vertical.MIDDLE);
 		mWidgets.movement.currentType = mUiFactory.text.add("Path", mMovementTable);
@@ -634,7 +617,6 @@ public class EnemyEditorGui extends ActorGui {
 	/**
 	 * Initializes the weapon GUI part
 	 */
-	@SuppressWarnings("unchecked")
 	private void initWeapon() {
 		AlignTable table = mWeaponTable;
 
@@ -654,11 +636,10 @@ public class EnemyEditorGui extends ActorGui {
 		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		ArrayList<TabWrapper> tabs = new ArrayList<>();
 		tabs.add(onTab);
 		tabs.add(offTab);
 		mUiFactory.addTabs(table, mWeaponHider, tabs, mDisabledWhenPublished, mInvoker);
-		Pools.arrayList.free(tabs);
 		tabs = null;
 
 		// Set buttons
@@ -772,14 +753,13 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// Create tabs
-		tabs = Pools.arrayList.obtain();
+		tabs = new ArrayList<>();
 		tabs.add(onPlayerTab);
 		tabs.add(inFrontPlayerTab);
 		tabs.add(moveDirTab);
 		tabs.add(directionTab);
 		tabs.add(rotateTab);
 		mUiFactory.addTabs(table, onTab.getHider(), tabs, mDisabledWhenPublished, mInvoker);
-		Pools.arrayList.free(tabs);
 
 		// Set buttons
 		mWidgets.weapon.aimOnPlayer = onPlayerTab.getButton();

@@ -1,21 +1,20 @@
 package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
+
 /**
  * Weapon that hadles the shooting and cooldown.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Weapon implements Disposable {
+public class Weapon {
 	/**
-	 * Creates an invalid weapon. setWeaponDef needs to be called one can shoot with
-	 * the weapon.
+	 * Creates an invalid weapon. setWeaponDef needs to be called one can shoot with the
+	 * weapon.
 	 */
 	public Weapon() {
 		// Does nothing
@@ -113,8 +112,8 @@ public class Weapon implements Disposable {
 	}
 
 	/**
-	 * Sets the position of the weapon. It will copy the position and use its
-	 * own Vector2 for containing the data.
+	 * Sets the position of the weapon. It will copy the position and use its own Vector2
+	 * for containing the data.
 	 * @param position the position of the weapon.
 	 */
 	public void setPosition(Vector2 position) {
@@ -126,12 +125,6 @@ public class Weapon implements Disposable {
 	 */
 	public Vector2 getPosition() {
 		return mPosition;
-	}
-
-	@Override
-	public void dispose() {
-		Pools.vector2.free(mPosition);
-		mPosition = null;
 	}
 
 	/**
@@ -170,16 +163,14 @@ public class Weapon implements Disposable {
 			if (other.mDef != null) {
 				return false;
 			}
-		}
-		else if (!mDef.equals(other.mDef)) {
+		} else if (!mDef.equals(other.mDef)) {
 			return false;
 		}
 		if (mPosition == null) {
 			if (other.mPosition != null) {
 				return false;
 			}
-		}
-		else if (!mPosition.equals(other.mPosition)) {
+		} else if (!mPosition.equals(other.mPosition)) {
 			return false;
 		}
 		return true;
@@ -190,5 +181,5 @@ public class Weapon implements Disposable {
 	/** Current cooldown timer */
 	@Tag(89) private float mCooldown = 0;
 	/** Position of the weapon */
-	private Vector2 mPosition = Pools.vector2.obtain().set(0,0);
+	private Vector2 mPosition = new Vector2();
 }

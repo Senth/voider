@@ -11,13 +11,11 @@ import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Groups together enemies. These enemies have the same properties: Same position,
- * same, definition, same trigger, same everything. Except they have all have
- * different trigger delays, so they don't start at the same time
- * 
+ * Groups together enemies. These enemies have the same properties: Same position, same,
+ * definition, same trigger, same everything. Except they have all have different trigger
+ * delays, so they don't start at the same time
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyGroup extends Resource {
@@ -29,9 +27,9 @@ public class EnemyGroup extends Resource {
 	}
 
 	/**
-	 * Sets an enemy to the enemy group. This automatically sets the enemy's
-	 * group to this one. An enemy can only belong to one enemy group.
-	 * This will be the original enemy of all duplicates
+	 * Sets an enemy to the enemy group. This automatically sets the enemy's group to this
+	 * one. An enemy can only belong to one enemy group. This will be the original enemy
+	 * of all duplicates
 	 * @param enemyActor original enemy used for duplicating enemies in this group
 	 * @pre this enemy group has to be empty
 	 */
@@ -42,7 +40,7 @@ public class EnemyGroup extends Resource {
 			enemyActor.setEnemyGroup(this);
 			enemyActor.setGroupLeader(true);
 		} else {
-			Gdx.app.error("EnemyGroup",	"Group is not empty when setOriginalEnemy() was called");
+			Gdx.app.error("EnemyGroup", "Group is not empty when setOriginalEnemy() was called");
 		}
 	}
 
@@ -50,10 +48,10 @@ public class EnemyGroup extends Resource {
 	 * Sets the number of enemies in this group. This will automatically create/delete
 	 * other enemies if necessary.
 	 * @param cEnemies number of enemies to have, must be set to 1 or higher.
-	 * @param addedEnemies all enemies that were added due to increment of enemies,
-	 * set to null if you don't want to use this.
+	 * @param addedEnemies all enemies that were added due to increment of enemies, set to
+	 *        null if you don't want to use this.
 	 * @param removedEnemies all enemies that were removed due to decrement of enemies,
-	 * set to null if you don't want to use this.
+	 *        set to null if you don't want to use this.
 	 */
 	public void setEnemyCount(int cEnemies, ArrayList<EnemyActor> addedEnemies, ArrayList<EnemyActor> removedEnemies) {
 		if (cEnemies < 1 || mEnemies.size() < 1) {
@@ -99,14 +97,13 @@ public class EnemyGroup extends Resource {
 	}
 
 	/**
-	 * Clears all enemies. This will remove them from the group. Although the leader
-	 * isn't in the returned array it is too removed from the group.
+	 * Clears all enemies. This will remove them from the group. Although the leader isn't
+	 * in the returned array it is too removed from the group.
 	 * @return all enemies that were removed from the group, except the group leader.
-	 * Don't forget to free the array.
+	 *         Don't forget to free the array.
 	 */
 	public ArrayList<EnemyActor> clear() {
-		@SuppressWarnings("unchecked")
-		ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+		ArrayList<EnemyActor> removedEnemies = new ArrayList<>();
 
 		for (EnemyActor enemyActor : mEnemies) {
 			enemyActor.setEnemyGroup(null);

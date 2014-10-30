@@ -10,12 +10,10 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Contains all the resources. Used for example in levels to later bind all
- * resources that have been loaded.
- * 
+ * Contains all the resources. Used for example in levels to later bind all resources that
+ * have been loaded.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceBinder {
@@ -31,10 +29,10 @@ public class ResourceBinder {
 	/**
 	 * Removes the specified resource
 	 * @param resourceId the resource to remove
-	 * @param addRemoveBoundResourceToInvoker if the removed bound resources should be added
-	 * to the invoker. If the removed resource should be undone via the undo() command
-	 * this variable should be true, otherwise the resource won't be bound to the previously
-	 * bound resources.
+	 * @param addRemoveBoundResourceToInvoker if the removed bound resources should be
+	 *        added to the invoker. If the removed resource should be undone via the
+	 *        undo() command this variable should be true, otherwise the resource won't be
+	 *        bound to the previously bound resources.
 	 * @return resource that was removed
 	 */
 	public IResource removeResource(UUID resourceId, boolean addRemoveBoundResourceToInvoker) {
@@ -86,25 +84,23 @@ public class ResourceBinder {
 			if (other.mResources != null) {
 				return false;
 			}
-		}
-		else if (!mResources.equals(other.mResources)) {
+		} else if (!mResources.equals(other.mResources)) {
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * To easily get all the resources of a specific type after they have
-	 * been read.
+	 * To easily get all the resources of a specific type after they have been read.
 	 * @param <ResourceType> type of resources to return
 	 * @param resourceType the resource type (including derived) to return
-	 * @return a list of resources that are instances of the specified type.
-	 * Don't forget to free the ArrayList once it has been used using
-	 * Pools.arraylist.free(resources);
+	 * @return a list of resources that are instances of the specified type. Don't forget
+	 *         to free the ArrayList once it has been used using
+	 *         Pools.arraylist.free(resources);
 	 */
 	@SuppressWarnings("unchecked")
 	public <ResourceType> ArrayList<ResourceType> getResources(Class<ResourceType> resourceType) {
-		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
+		ArrayList<ResourceType> resources = new ArrayList<>();
 
 		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
 			IResource resource = entry.getValue();

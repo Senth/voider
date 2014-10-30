@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.TextureData.TextureDataType;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.spiddekauga.voider.utils.Geometry.PointIndex;
 
 /**
  * General graphics helper methods
@@ -83,13 +84,17 @@ public class Graphics {
 					region.getRegionHeight());
 			pixmap.dispose();
 
-
 			// Remove points that have less or equal to angleMin degrees
-			Geometry.removeExcessivePoints(0, angleMin, points);
+			ArrayList<PointIndex> removedPoints = Geometry.removeExcessivePoints(0, angleMin, points);
+			// for (PointIndex pointIndex : removedPoints) {
+			// Pools.vector2.free(pointIndex.point);
+			// }
 
 			// Scale
-			for (Vector2 point : points) {
-				point.scl(scale);
+			if (scale != 1) {
+				for (Vector2 point : points) {
+					point.scl(scale);
+				}
 			}
 
 			// Center
@@ -196,6 +201,7 @@ public class Graphics {
 		for (int x = startX; x < width + startX; ++x) {
 			for (int y = startY; y < height + startY; ++y) {
 				if (isPixelOpaque(pixmap, x, y)) {
+					// return Pools.vector2.obtain().set(x, y);
 					return new Vector2(x, y);
 				}
 			}
@@ -222,6 +228,7 @@ public class Graphics {
 		 * @return nextPixel the next pixel to set
 		 */
 		Vector2 nextPixel(Vector2 currentPixel) {
+			// Vector2 nextPixel = Pools.vector2.obtain().set(currentPixel);
 			Vector2 nextPixel = new Vector2(currentPixel);
 
 			switch (this) {

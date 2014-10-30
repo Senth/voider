@@ -24,11 +24,10 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Pools;
 
 
 /**
@@ -397,7 +396,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 		int cursorX = Gdx.input.getX();
 		int cursorY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-		Vector2 min = Pools.vector2.obtain().set(0, 0);
+		Vector2 min = new Vector2();
 		mActor.localToStageCoordinates(min);
 
 		int width = (int) mActor.getWidth();

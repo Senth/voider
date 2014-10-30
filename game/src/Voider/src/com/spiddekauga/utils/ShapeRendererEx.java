@@ -32,14 +32,14 @@ import com.spiddekauga.voider.utils.Pools;
  * {@code
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
- *
+ * 
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
  * shapeRenderer.pop();
- *
+ * 
  * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);
@@ -1120,7 +1120,7 @@ public class ShapeRendererEx implements Disposable {
 	boolean mMatrixDirty = false;
 	/** projection view matrix */
 	Matrix4 mProjView = new Matrix4();
-	/** any temporary transformtion to move the object */
+	/** any temporary transformation to move the object */
 	Matrix4 mTransform = new Matrix4();
 	/** combined view of the camera */
 	Matrix4 mCombined = new Matrix4();

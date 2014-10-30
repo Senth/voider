@@ -447,11 +447,8 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 *         used.
 	 */
 	public ArrayList<Actor> getActors(boolean onlyVisible) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Actor> actors = Pools.arrayList.obtain();
-
+		ArrayList<Actor> actors = new ArrayList<>();
 		getActors(onlyVisible, actors);
-
 		return actors;
 	}
 
@@ -921,7 +918,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		// If parent is an AlignTable it has already set the correct position for this
 		// table
 		if (!isParentSettingPosition() && !mPositionSetManually) {
-			Vector2 position = Pools.vector2.obtain();
+			Vector2 position = new Vector2();
 
 
 			// Set custom position if we don't have any table parent
@@ -958,14 +955,13 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 			}
 
 			super.setPosition((int) position.x, (int) position.y);
-			Pools.vector2.free(position);
 		}
 
 
 		// Layout the rows
-		Vector2 offset = Pools.vector2.obtain();
+		Vector2 offset = new Vector2();
 		offset.set(mPadding.left, mPadding.top);
-		Vector2 availableRowSize = Pools.vector2.obtain();
+		Vector2 availableRowSize = new Vector2();
 		availableRowSize.x = rowWidthMax;
 
 		for (int i = mRows.size() - 1; i >= 0; --i) {
@@ -978,8 +974,6 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 			}
 		}
 
-
-		Pools.vector2.freeAll(offset, availableRowSize);
 
 		updateBackgroundPosition();
 		updateBackgroundSize();

@@ -9,7 +9,6 @@ import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -47,10 +46,8 @@ public class PanTool extends TouchTool {
 		if (willScroll) {
 			// Already scrolling, create scroll command to stop the scrolling
 			if (mScroller.isScrolling()) {
-				Vector2 scrollCameraCurrent = Pools.vector2.obtain();
-				scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
+				Vector2 scrollCameraCurrent = new Vector2(mCamera.position.x, mCamera.position.y);
 				mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
-				Pools.vector2.free(scrollCameraCurrent);
 			}
 
 			mScroller.touchDown((int) mScreenCurrent.x, (int) mScreenCurrent.y);
@@ -94,8 +91,7 @@ public class PanTool extends TouchTool {
 		if (mScroller.isScrolling()) {
 			mScroller.update(deltaTime);
 
-			Vector2 diffScroll = Pools.vector2.obtain();
-			diffScroll.set(mScroller.getOriginScroll()).sub(mScroller.getCurrentScroll());
+			Vector2 diffScroll = new Vector2(mScroller.getOriginScroll()).sub(mScroller.getCurrentScroll());
 			float scale = getWorldWidth() / Gdx.graphics.getWidth();
 
 			mCamera.position.x = diffScroll.x * scale + mScrollCameraOrigin.x;
@@ -104,17 +100,12 @@ public class PanTool extends TouchTool {
 
 			mCamera.update();
 			EventDispatcher.getInstance().fire(new GameEvent(EventTypes.CAMERA_MOVED));
-
-			Pools.vector2.free(diffScroll);
 		} else if (!mCreatedScrollCommand) {
-			Vector2 scrollCameraCurrent = Pools.vector2.obtain();
-			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
+			Vector2 scrollCameraCurrent = new Vector2(mCamera.position.x, mCamera.position.y);
 
 			mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
 
 			mCreatedScrollCommand = true;
-
-			Pools.vector2.free(scrollCameraCurrent);
 		}
 	}
 

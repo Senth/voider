@@ -29,7 +29,7 @@ public class CActorDefFixCustomFixtures extends Command {
 	@Override
 	public boolean execute() {
 		if (mOnExecute) {
-			mActorDef.getVisualVars().fixCustomShapeFixtures();
+			mActorDef.getVisual().fixCustomShapeFixtures();
 		}
 		return true;
 	}
@@ -38,7 +38,7 @@ public class CActorDefFixCustomFixtures extends Command {
 	public boolean undo() {
 		if (!mOnExecute) {
 			try {
-				mActorDef.getVisualVars().fixCustomShapeFixtures();
+				mActorDef.getVisual().fixCustomShapeFixtures();
 			} catch (PolygonComplexException e) {
 				Gdx.app.error("CActorDefFixCustomFixtures", "PolygonComplexException should never happen here!");
 			} catch (PolygonCornersTooCloseException e) {

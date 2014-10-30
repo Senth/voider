@@ -11,7 +11,6 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Definition of the actor. This include common attribute for a common type of actor. E.g.
@@ -80,11 +79,11 @@ public abstract class ActorDef extends Def {
 	 * @return actual height of the actor. 0 if no vertices has been created.
 	 */
 	public float getHeight() {
-		if (!getVisualVars().isPolygonShapeValid()) {
+		if (!getVisual().isPolygonShapeValid()) {
 			return 0;
 		}
 
-		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
+		ArrayList<Vector2> vertices = getVisual().getPolygonShape();
 
 		float rotation = getStartAngleDeg();
 
@@ -92,7 +91,7 @@ public abstract class ActorDef extends Def {
 		float lowest = Float.MAX_VALUE;
 
 		// Rotate vertex and check if it's the highest lowest y-value
-		Vector2 tempRotatedVertex = Pools.vector2.obtain();
+		Vector2 tempRotatedVertex = new Vector2();
 		for (Vector2 vertex : vertices) {
 			tempRotatedVertex.set(vertex);
 
@@ -117,11 +116,11 @@ public abstract class ActorDef extends Def {
 	 * @return actual width of the actor. 0 if no vertices has been created.
 	 */
 	public float getWidth() {
-		if (!getVisualVars().isPolygonShapeValid()) {
+		if (!getVisual().isPolygonShapeValid()) {
 			return 0;
 		}
 
-		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
+		ArrayList<Vector2> vertices = getVisual().getPolygonShape();
 
 		float rotation = getStartAngleDeg();
 
@@ -129,7 +128,7 @@ public abstract class ActorDef extends Def {
 		float lowest = Float.MAX_VALUE;
 
 		// Rotate vertex and check if it's the highest lowest y-value
-		Vector2 tempRotatedVertex = Pools.vector2.obtain();
+		Vector2 tempRotatedVertex = new Vector2();
 		for (Vector2 vertex : vertices) {
 			tempRotatedVertex.set(vertex);
 
@@ -259,7 +258,7 @@ public abstract class ActorDef extends Def {
 	/**
 	 * @return visual variables/parameters of the actor
 	 */
-	public VisualVars getVisualVars() {
+	public VisualVars getVisual() {
 		return mVisualVars;
 	}
 

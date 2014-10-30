@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo.resource;
 
 import java.io.IOException;
 
@@ -12,8 +12,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
-import com.spiddekauga.voider.resources.IniLoader.IniLoaderParameters;
+import com.spiddekauga.voider.repo.resource.IniLoader.IniLoaderParameters;
 
 /**
  * Loads INI files

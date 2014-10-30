@@ -82,8 +82,7 @@ public class ActorAddTool extends ActorTool {
 	 * @return new position of the actor
 	 */
 	protected Vector2 getNewPosition() {
-		Vector2 newPosition = Pools.vector2.obtain();
-		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
+		Vector2 newPosition = new Vector2(mTouchCurrent).sub(mTouchOrigin);
 		newPosition.add(mDragOrigin);
 		return newPosition;
 	}

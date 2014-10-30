@@ -40,7 +40,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 			return false;
 		}
 
-		Vector2 afterVector = Pools.vector2.obtain();
+		Vector2 afterVector = new Vector2();
 		ArrayList<Vector2> corners = mResource.getCorners();
 
 
@@ -111,8 +111,6 @@ public class CResourceCornerRemoveExcessive extends Command {
 
 		} while (oldSize != corners.size() && corners.size() > 2);
 
-		Pools.vector2.free(afterVector);
-
 
 		return true;
 	}
@@ -159,7 +157,6 @@ public class CResourceCornerRemoveExcessive extends Command {
 				Pools.vector2.free(cornerIndex.corner);
 				mCornerIndexPool.free(cornerIndex);
 			}
-			Pools.arrayList.free(mRemovedCorners);
 			mRemovedCorners = null;
 		}
 	}
@@ -177,8 +174,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 	private float mCornerDistMinSq;
 	private float mCornerAngleMin;
 	private IResourceCorner mResource;
-	/** Removed corners */
-	@SuppressWarnings("unchecked") private ArrayList<CornerIndex> mRemovedCorners = Pools.arrayList.obtain();
+	private ArrayList<CornerIndex> mRemovedCorners = new ArrayList<>();
 	/** Pool for corner index */
 	private Pool<CornerIndex> mCornerIndexPool = com.badlogic.gdx.utils.Pools.get(CornerIndex.class);
 }

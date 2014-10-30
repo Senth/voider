@@ -66,16 +66,15 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -516,7 +515,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		super.onDispose();
 
 		setLevel(null);
-		Pools.arrayList.free(mAddEnemies);
 	}
 
 	@Override
@@ -526,7 +524,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		// Set default color
 		if (resource instanceof StaticTerrainActor) {
-			((StaticTerrainActor) resource).getDef().getVisualVars().setColor(mDefaultTerrainColor);
+			((StaticTerrainActor) resource).getDef().getVisual().setColor(mDefaultTerrainColor);
 		}
 
 		setUnsaved();
@@ -979,7 +977,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
 
 		for (StaticTerrainActor terrain : terrains) {
-			Color terrainColor = terrain.getDef().getVisualVars().getColor();
+			Color terrainColor = terrain.getDef().getVisual().getColor();
 			terrainColor.r = color.r;
 			terrainColor.g = color.g;
 			terrainColor.b = color.b;
@@ -996,13 +994,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 
 		if (!terrains.isEmpty()) {
-			Color terrainColor = new Color(terrains.get(0).getDef().getVisualVars().getColor());
+			Color terrainColor = new Color(terrains.get(0).getDef().getVisual().getColor());
 			terrainColor.a = 1;
 
 			// Check for different colors -> Return default color
 			Color testColor = new Color();
 			for (StaticTerrainActor terrain : terrains) {
-				testColor.set(terrain.getDef().getVisualVars().getColor());
+				testColor.set(terrain.getDef().getVisual().getColor());
 				testColor.a = 1;
 
 				if (!terrainColor.equals(testColor)) {
@@ -1024,7 +1022,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
 
 		for (StaticTerrainActor terrain : terrains) {
-			terrain.getDef().getVisualVars().getColor().a = opacity / 100f;
+			terrain.getDef().getVisual().getColor().a = opacity / 100f;
 		}
 	}
 
@@ -1037,11 +1035,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
 
 		if (!terrains.isEmpty()) {
-			float opacity = terrains.get(0).getDef().getVisualVars().getColor().a;
+			float opacity = terrains.get(0).getDef().getVisual().getColor().a;
 
 			// Check for different colors -> Return default color
 			for (StaticTerrainActor terrain : terrains) {
-				if (opacity != terrain.getDef().getVisualVars().getColor().a) {
+				if (opacity != terrain.getDef().getVisual().getColor().a) {
 					return -1;
 				}
 			}
@@ -1149,10 +1147,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				if (enemyGroup != null) {
 					// Just change amount of enemies
 					if (cEnemies > 1) {
-						@SuppressWarnings("unchecked")
-						ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-						@SuppressWarnings("unchecked")
-						ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+						ArrayList<EnemyActor> addedEnemies = new ArrayList<>();
+						ArrayList<EnemyActor> removedEnemies = new ArrayList<>();
 
 						enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
 
@@ -1163,10 +1159,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 						for (EnemyActor removedEnemy : removedEnemies) {
 							mLevel.removeResource(removedEnemy.getId());
 						}
-
-						Pools.arrayList.freeAll(addedEnemies, removedEnemies);
-						addedEnemies = null;
-						removedEnemies = null;
 					}
 					// Delete enemy group
 					else {
@@ -1178,8 +1170,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 						}
 
 						mLevel.removeResource(enemyGroup.getId());
-
-						Pools.arrayList.free(removedEnemies);
 						removedEnemies = null;
 					}
 				}
@@ -1190,25 +1180,19 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 					enemyGroup.setLeaderEnemy(selectedEnemy);
 
-					@SuppressWarnings("unchecked")
-					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+					ArrayList<EnemyActor> addedEnemies = new ArrayList<>();
 					enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
 
 					for (EnemyActor addedEnemy : addedEnemies) {
 						mLevel.addResource(addedEnemy);
 						addedEnemy.destroyBody();
 					}
-
-					Pools.arrayList.free(addedEnemies);
 					addedEnemies = null;
 				}
 			}
 		}
 
 		((LevelEditorGui) mGui).resetEnemyOptions();
-
-		Pools.arrayList.free(selectedEnemies);
-
 		setUnsaved();
 	}
 
@@ -1242,8 +1226,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			return cEnemies;
 		}
 
-		Pools.arrayList.free(selectedEnemies);
-
 		return -1;
 	}
 
@@ -1268,9 +1250,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				enemyGroup.setSpawnTriggerDelay(delay);
 			}
 		}
-
-		Pools.arrayList.free(selectedEnemies);
-
 		setUnsaved();
 	}
 
@@ -1285,8 +1264,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			if (!selectedEnemies.isEmpty()) {
 				return selectedEnemies.get(0).getEnemyGroup().getSpawnTriggerDelay();
 			}
-
-			Pools.arrayList.free(selectedEnemies);
 		}
 
 		return -1;
@@ -1302,8 +1279,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		for (Path path : selectedPaths) {
 			path.setPathType(pathType);
 		}
-
-		Pools.arrayList.free(selectedPaths);
 
 		mGui.resetValues();
 	}
@@ -1334,9 +1309,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				break;
 			}
 		}
-
-		Pools.arrayList.free(selectedPaths);
-
 
 		// Only allow one to be above 0
 		if (cOnce > 0 && cLoop == 0 && cBackAndForth == 0) {
@@ -1402,10 +1374,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				break;
 			}
 		}
-
-
-		Pools.arrayList.free(selectedEnemies);
-
 		return allHasActivateTrigger;
 	}
 
@@ -1432,9 +1400,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				break;
 			}
 		}
-
-		Pools.arrayList.free(selectedEnemies);
-
 		return triggerDelay;
 	}
 
@@ -1453,9 +1418,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				break;
 			}
 		}
-
-		Pools.arrayList.free(selectedEnemies);
-
 		setUnsaved();
 	}
 
@@ -1473,10 +1435,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				break;
 			}
 		}
-
-
-		Pools.arrayList.free(selectedEnemies);
-
 		return allHasDeactivateTrigger;
 	}
 
@@ -1503,9 +1461,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				break;
 			}
 		}
-
-		Pools.arrayList.free(selectedEnemies);
-
 		return triggerDelay;
 	}
 
@@ -1524,9 +1479,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				break;
 			}
 		}
-
-		Pools.arrayList.free(selectedEnemies);
-
 		setUnsaved();
 	}
 
@@ -1661,8 +1613,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	private void renderAboveBelowBorders() {
 		// Get screen corners in world coordinates
-		Vector2 minPos = Pools.vector2.obtain();
-		Vector2 maxPos = Pools.vector2.obtain();
+		Vector2 minPos = new Vector2();
+		Vector2 maxPos = new Vector2();
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
 
@@ -1756,7 +1708,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/** PNG bytes before testing the level */
 	private byte[] mPngBytesBeforeTest = null;
 	/** Enemies in the add enemy table */
-	@SuppressWarnings("unchecked") private ArrayList<EnemyActorDef> mAddEnemies = Pools.arrayList.obtain();
+	private ArrayList<EnemyActorDef> mAddEnemies = new ArrayList<>();
 	/** Level we're currently editing */
 	private Level mLevel = null;
 	/** Which definition we're currently selecting */

@@ -7,11 +7,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceSelectable;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Current selection in the level editor
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Selection implements ISelection {
@@ -109,10 +107,10 @@ public class Selection implements ISelection {
 		return highestTypeCount;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
+	@Override
 	public <ResourceType extends IResource> ArrayList<ResourceType> getSelectedResourcesOfType(Class<ResourceType> type) {
-		ArrayList<ResourceType> selectedActors = Pools.arrayList.obtain();
+		ArrayList<ResourceType> selectedActors = new ArrayList<>();
 
 		for (IResource selectedResource : mSelectedResources) {
 			if (type.isAssignableFrom(selectedResource.getClass())) {
@@ -126,8 +124,7 @@ public class Selection implements ISelection {
 
 	@Override
 	public void clearSelection() {
-		@SuppressWarnings("unchecked")
-		ArrayList<IResource> removingResources = Pools.arrayList.obtain();
+		ArrayList<IResource> removingResources = new ArrayList<>();
 		removingResources.addAll(mSelectedResources);
 
 		mSelectedResources.clear();
@@ -141,8 +138,6 @@ public class Selection implements ISelection {
 				listener.onResourceDeselected(resource);
 			}
 		}
-
-		Pools.arrayList.free(removingResources);
 	}
 
 	@Override

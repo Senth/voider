@@ -56,6 +56,14 @@ public class IC_Editor extends IniClass {
 			protected float imageScaleMax;
 			protected float imageScaleStepSize;
 			protected float imageScaleDefault;
+			protected float imageDistMin;
+			protected float imageDistMax;
+			protected float imageDistStepSize;
+			protected float imageDistDefault;
+			protected float imageAngleMin;
+			protected float imageAngleMax;
+			protected float imageAngleStepSize;
+			protected float imageAngleDefault;
 
 			// Fixtures (usually never changed)
 			protected float densityMin;
@@ -201,6 +209,38 @@ public class IC_Editor extends IniClass {
 
 			public float getImageScaleDefault() {
 				return imageScaleDefault;
+			}
+
+			public float getImageDistMin() {
+				return imageDistMin;
+			}
+
+			public float getImageDistMax() {
+				return imageDistMax;
+			}
+
+			public float getImageDistStepSize() {
+				return imageDistStepSize;
+			}
+
+			public float getImageDistDefault() {
+				return imageDistDefault;
+			}
+
+			public float getImageAngleMin() {
+				return imageAngleMin;
+			}
+
+			public float getImageAngleMax() {
+				return imageAngleMax;
+			}
+
+			public float getImageAngleStepSize() {
+				return imageAngleStepSize;
+			}
+
+			public float getImageAngleDefault() {
+				return imageAngleDefault;
 			}
 		}
 

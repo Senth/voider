@@ -153,24 +153,22 @@ public abstract class WorldScene extends Scene {
 
 	/**
 	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current
-	 *         scene isn't a world scene. Remember to free the returned vector with
-	 *         Pools.vector2.free(returnedVector);
+	 *         scene isn't a world scene.
 	 */
 	@Override
 	public Vector2 getWorldMinCoordinates() {
-		Vector2 minPos = Pools.vector2.obtain();
+		Vector2 minPos = new Vector2();
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
 		return minPos;
 	}
 
 	/**
 	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if
-	 *         current scene isn't a world scene. Remember to free the returned vector
-	 *         with Pools.vector2.free(returnedVector);
+	 *         current scene isn't a world scene.
 	 */
 	@Override
 	public Vector2 getWorldMaxCoordinates() {
-		Vector2 maxPos = Pools.vector2.obtain();
+		Vector2 maxPos = new Vector2();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
 		return maxPos;
 	}
@@ -241,10 +239,7 @@ public abstract class WorldScene extends Scene {
 	 */
 	protected Vector2[] getBorderCorners() {
 		// Get world coordinates for the screen's corners
-		Vector2[] corners = new Vector2[4];
-		for (int i = 0; i < corners.length; ++i) {
-			corners[i] = Pools.vector2.obtain();
-		}
+		Vector2[] corners = Collections.fillNew(new Vector2[4], Vector2.class);
 		corners[0].set(0, -getWorldHeight() * 0.5f);
 		corners[1].set(-getWorldWidth(), -getWorldHeight() * 0.5f);
 		corners[2].set(-getWorldWidth(), getWorldHeight() * 0.5f);

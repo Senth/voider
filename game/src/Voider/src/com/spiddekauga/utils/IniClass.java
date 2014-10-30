@@ -231,8 +231,8 @@ public abstract class IniClass {
 				if (innerClasses.contains(field.getType())) {
 					children.add(field);
 				} else {
-					mLogger.warning("Field (" + field.getName() + ") seems to be an inner class variable, but no inner class of type "
-							+ field.getType().getSimpleName() + " was found.");
+					mLogger.warning("Field (" + field.getName() + ") seems to be an inner class variable for " + getFullSimpleName(getClass())
+							+ " , but no inner class of type " + field.getType().getSimpleName() + " was found.");
 				}
 			}
 			// Variable
@@ -273,7 +273,12 @@ public abstract class IniClass {
 			return;
 		}
 
-		Collections.addAll(clazz.getDeclaredFields(), fields);
+		// Skip outer classes and weird variables
+		for (Field field : clazz.getDeclaredFields()) {
+			if (!field.getName().startsWith("this$") && !field.getName().startsWith("$")) {
+				fields.add(field);
+			}
+		}
 		getDeclaredFields(getSuperClass(clazz), fields);
 	}
 
@@ -324,12 +329,12 @@ public abstract class IniClass {
 		StringBuilder nameBuilder = new StringBuilder();
 
 		do {
-			nameBuilder.append(currentClass.getSimpleName());
+			nameBuilder.insert(0, currentClass.getSimpleName());
 
 			currentClass = currentClass.getEnclosingClass();
 
 			if (currentClass != null) {
-				nameBuilder.append(".");
+				nameBuilder.insert(0, ".");
 			}
 		} while (currentClass != null);
 

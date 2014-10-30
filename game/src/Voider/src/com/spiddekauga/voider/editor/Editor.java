@@ -37,12 +37,11 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
-import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -294,10 +293,10 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 */
 	private void saveResourceScreenshot() {
 		// Only render if it has valid shape
-		if (mSavingActorDef.getVisualVars().isPolygonShapeValid()) {
+		if (mSavingActorDef.getVisual().isPolygonShapeValid()) {
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
-			mSavingActor.render(mShapeRenderer);
+			mSavingActor.renderShape(mShapeRenderer);
 			mShapeRenderer.pop();
 		}
 		mSavingActor.dispose();
@@ -493,25 +492,23 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		}
 
 		// Normalize width and height vertices to use SAVE_TEXTURE_SIZE pixels
-		copy.getVisualVars().setCenterOffset(0, 0);
-		ArrayList<Vector2> triangleVertices = copy.getVisualVars().getTriangleVertices();
-		@SuppressWarnings("unchecked")
-		IdentityMap<Vector2, Vector2> scaledVertices = Pools.identityMap.obtain();
+		copy.getVisual().setCenterOffset(0, 0);
+		ArrayList<Vector2> triangleVertices = copy.getVisual().getTriangleVertices();
+		IdentityMap<Vector2, Vector2> scaledVertices = new IdentityMap<>();
 		for (Vector2 vertex : triangleVertices) {
 			if (!scaledVertices.containsKey(vertex)) {
 				vertex.scl(normalizeLength);
 				scaledVertices.put(vertex, vertex);
 			}
 		}
-		Pools.identityMap.free(scaledVertices);
 
-		ArrayList<Vector2> polygonVertices = copy.getVisualVars().getPolygonShape();
+		ArrayList<Vector2> polygonVertices = copy.getVisual().getPolygonShape();
 		for (Vector2 vertex : polygonVertices) {
 			vertex.scl(normalizeLength);
 		}
 
 		// Center to the rectangle screenshot area.
-		Vector2 offset = Pools.vector2.obtain();
+		Vector2 offset = new Vector2();
 		offset.set(0, 0);
 		height = copy.getHeight();
 		float maxSize = Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio;
@@ -526,7 +523,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		}
 
 		// Calculate where to offset it so it's inside the screenshot area
-		Vector2 minPos = Pools.vector2.obtain();
+		Vector2 minPos = new Vector2();
 		minPos.set(Float.MAX_VALUE, Float.MAX_VALUE);
 		float rotation = mSavingActorDef.getBodyDef().angle * MathUtils.radiansToDegrees;
 		for (Vector2 vertex : polygonVertices) {
@@ -550,8 +547,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 		// Set position
 		mSavingActor.setPosition(offset);
-
-		Pools.vector2.freeAll(offset, minScreenPos);
 	}
 
 	/**

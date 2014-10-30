@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.spiddekauga.voider.utils.Pools;
-
 
 /**
  * Dispatches events to all listeners
@@ -58,17 +56,12 @@ public class EventDispatcher {
 	 * @param event the event to fire
 	 */
 	public void fire(GameEvent event) {
-		@SuppressWarnings("unchecked")
-		HashSet<IEventListener> copy = Pools.hashSet.obtain();
+		HashSet<IEventListener> copy = new HashSet<>();
 		copy.addAll(mListeners.get(event.type.ordinal()));
 
 		for (IEventListener listeners : copy) {
 			listeners.handleEvent(event);
 		}
-
-		Pools.hashSet.free(copy);
-
-
 	}
 
 	/**
@@ -80,7 +73,6 @@ public class EventDispatcher {
 		}
 		return mInstance;
 	}
-
 
 	private List<Set<IEventListener>> mListeners = new ArrayList<>();
 	private static EventDispatcher mInstance = null;

@@ -15,7 +15,6 @@ import com.spiddekauga.voider.resources.IResourceDependency;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Makes sure that all dependencies to the specified resource is loaded and unloaded.
@@ -69,7 +68,7 @@ class ResourceDependencyLoader implements Disposable {
 			mResourceLoader.update();
 		} catch (ResourceException e) {
 			// Remove the queue item
-			ResourceItem searchResourceItem = Pools.resourceItem.obtain();
+			ResourceItem searchResourceItem = new ResourceItem();
 			searchResourceItem.id = e.getId();
 			mLoadingDefs.remove(searchResourceItem);
 

@@ -20,6 +20,7 @@ import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**
@@ -74,9 +75,14 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	protected boolean onKeyDown(int keycode) {
 		// Testing
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
+			// UI - reload
 			if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F3) {
 				mGui.dispose();
 				mGui.initGui();
+			}
+			// INI - reload
+			if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F2) {
+				ConfigIni.getInstance().reload();
 			}
 		}
 

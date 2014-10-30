@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo.resource;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,8 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
-import com.spiddekauga.voider.repo.resource.InternalNames;
-import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 
 
 /**

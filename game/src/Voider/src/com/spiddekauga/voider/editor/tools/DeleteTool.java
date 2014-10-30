@@ -9,7 +9,6 @@ import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for deleting resources
@@ -66,8 +65,7 @@ public class DeleteTool extends TouchTool {
 	private void removeSelectedResources() {
 		// Delete all selected resources
 		if (!mSelection.isEmpty()) {
-			@SuppressWarnings("unchecked")
-			ArrayList<IResource> copySelectedResources = Pools.arrayList.obtain();
+			ArrayList<IResource> copySelectedResources = new ArrayList<>();
 			copySelectedResources.addAll(mSelection.getSelectedResources());
 
 			mInvoker.execute(new CSelectionSet(mSelection));
@@ -77,8 +75,6 @@ public class DeleteTool extends TouchTool {
 				}
 				mInvoker.execute(new CResourceRemove(resource, mEditor), true);
 			}
-
-			Pools.arrayList.free(copySelectedResources);
 		}
 	}
 }

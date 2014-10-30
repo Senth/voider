@@ -29,7 +29,6 @@ import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all Web Repositories
@@ -161,8 +160,7 @@ public abstract class WebRepo {
 	 * @return list with all field names and files to upload
 	 */
 	protected static ArrayList<FieldNameFileWrapper> createFieldNameFiles(HashMap<UUID, ResourceRevisionEntity> resources) {
-		@SuppressWarnings("unchecked")
-		ArrayList<FieldNameFileWrapper> files = Pools.arrayList.obtain();
+		ArrayList<FieldNameFileWrapper> files = new ArrayList<>();
 
 		for (Entry<UUID, ResourceRevisionEntity> entry : resources.entrySet()) {
 			ResourceRevisionEntity entity = entry.getValue();
@@ -195,8 +193,7 @@ public abstract class WebRepo {
 	 * @return list with all field names and files to upload
 	 */
 	protected static ArrayList<FieldNameFileWrapper> createFieldNameFiles(ArrayList<IResource> resources) {
-		@SuppressWarnings("unchecked")
-		ArrayList<FieldNameFileWrapper> files = Pools.arrayList.obtain();
+		ArrayList<FieldNameFileWrapper> files = new ArrayList<>();
 
 		for (IResource resource : resources) {
 			// Get file

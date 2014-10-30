@@ -22,6 +22,8 @@ import com.spiddekauga.utils.commands.CGuiSlider;
 import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
 import com.spiddekauga.utils.commands.GuiCheckCommandCreator;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
@@ -32,13 +34,11 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
+import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
@@ -49,15 +49,14 @@ import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * GUI for the level editor
@@ -291,8 +290,8 @@ class LevelEditorGui extends EditorGui {
 
 	/**
 	 * @return calculate and get max scroll table height for the enemy list.
-	 * @note scrollPane needs to be set to height 0 and wrapper table must call layout() as it calculates the height of
-	 *       the rest of the widgets.
+	 * @note scrollPane needs to be set to height 0 and wrapper table must call layout()
+	 *       as it calculates the height of the rest of the widgets.
 	 */
 	private float getEnemyScrollListMaxHeight() {
 		mWidgets.enemyAdd.scrollPane.setHeight(0);
@@ -985,8 +984,7 @@ class LevelEditorGui extends EditorGui {
 	private void initEnemyOptions() {
 		AlignTable table = mWidgets.enemy.table;
 		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
-		@SuppressWarnings("unchecked")
-		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
+		ArrayList<Actor> createdActors = new ArrayList<>();
 
 
 		// Enemy count
@@ -1048,9 +1046,6 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_DEACTIVATION_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();
-
-
-		Pools.arrayList.free(createdActors);
 	}
 
 	/**

@@ -5,12 +5,10 @@ import java.util.LinkedList;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
- * A virtual scroller, this scroller both scrolls and emulates scrolls when
- * the user "flings".
- * 
+ * A virtual scroller, this scroller both scrolls and emulates scrolls when the user
+ * "flings".
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Scroller {
@@ -69,13 +67,12 @@ public class Scroller {
 	}
 
 	/**
-	 * Call this when the user lifts the finger/button. Now the scroller tests
-	 * whether to initiate the emulation, i.e. if the speed isn't below the minimum
-	 * start speed.
+	 * Call this when the user lifts the finger/button. Now the scroller tests whether to
+	 * initiate the emulation, i.e. if the speed isn't below the minimum start speed.
 	 * @param x the current X-coordinate
 	 * @param y the current Y-coordinate
-	 * @see #getCurrentScroll() for getting the current scroll coordinate. Both
-	 * when emulating and not.
+	 * @see #getCurrentScroll() for getting the current scroll coordinate. Both when
+	 *      emulating and not.
 	 */
 	public void touchUp(int x, int y) {
 		mScrollByHand = false;
@@ -111,10 +108,8 @@ public class Scroller {
 			break;
 
 		case ALL: {
-			Vector2 velocity = Pools.vector2.obtain();
-			velocity.set(mScrollCurrent).sub(mRecentPointerLocation.getLast().position);
+			Vector2 velocity = new Vector2(mScrollCurrent).sub(mRecentPointerLocation.getLast().position);
 			distance = velocity.len();
-			Pools.vector2.free(velocity);
 			break;
 		}
 		}
@@ -145,10 +140,11 @@ public class Scroller {
 	}
 
 	/**
-	 * @return the current scrolling coordinates. Depending what scroll axis(es) the scroller
-	 * has been set to it will only "change" those coordinates which are affected. E.g. if the
-	 * scroller only shall scroll on the X-axis x will be either the last touch
-	 * x-coordinate or emulated x-coordinate, y will always be the same y as it had in touchDown.
+	 * @return the current scrolling coordinates. Depending what scroll axis(es) the
+	 *         scroller has been set to it will only "change" those coordinates which are
+	 *         affected. E.g. if the scroller only shall scroll on the X-axis x will be
+	 *         either the last touch x-coordinate or emulated x-coordinate, y will always
+	 *         be the same y as it had in touchDown.
 	 */
 	public Vector2 getCurrentScroll() {
 		return mScrollCurrent;
@@ -192,13 +188,10 @@ public class Scroller {
 			mSpeed -= mFriction * deltaTime;
 
 			if (mSpeed > mStopSpeed) {
-				Vector2 velocity = Pools.vector2.obtain();
-				velocity.set(mDirection);
+				Vector2 velocity = new Vector2(mDirection);
 				velocity.scl(mSpeed * deltaTime);
 
 				mScrollCurrent.add(velocity);
-
-				Pools.vector2.free(velocity);
 			}
 			// Too low speed to continue
 			else {
@@ -236,8 +229,7 @@ public class Scroller {
 	}
 
 	/**
-	 * Removes the last pointer locations that were longer than
-	 * #MEASURE_TIME seconds ago
+	 * Removes the last pointer locations that were longer than #MEASURE_TIME seconds ago
 	 */
 	private void removeOldPointerLocations() {
 		float currentTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
@@ -248,7 +240,6 @@ public class Scroller {
 
 	/**
 	 * Wrapper for pointer location time
-	 * 
 	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
 	 */
 	public static class PointerTime {

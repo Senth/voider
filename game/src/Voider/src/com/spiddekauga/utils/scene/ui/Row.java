@@ -26,17 +26,13 @@ public class Row implements Poolable, IPadding<Row> {
 	 * @param disposeActor true if you want to call dispose() on the actors
 	 */
 	public void dispose(boolean disposeActor) {
-		if (mCells != null) {
-			for (Cell cell : mCells) {
-				cell.dispose(disposeActor);
-				Pools.cell.free(cell);
-			}
-			Pools.arrayList.free(mCells);
-			mCells = null;
+		for (Cell cell : mCells) {
+			cell.dispose(disposeActor);
+			Pools.cell.free(cell);
 		}
+		mCells.clear();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void reset() {
 		mPrefHeight = 0;
@@ -54,27 +50,20 @@ public class Row implements Poolable, IPadding<Row> {
 		mAlign.vertical = Vertical.MIDDLE;
 		mPadding.reset();
 
-		if (mCells != null) {
-			for (Cell cell : mCells) {
-				cell.dispose(true);
-				Pools.cell.free(cell);
-			}
-			mCells.clear();
-		} else {
-			mCells = Pools.arrayList.obtain();
-		}
+		dispose(true);
 	}
 
 	/**
 	 * Sets the cells to equal size
 	 * @param equalSize set to true to use equal spacing
-	 * @param useCellAlign set this to true if you want to use the cell's alignment instead of the row's alignment. With
-	 *        this you can accomplish a layout like this: \code
-	 *        |��������������������������������������������������������
-	 *        ����������������������������������������������������| |Left | Right| Center |
-	 *        |����������������������������
-	 *        ��������������������������������������������������������������������������������| \endcode Only applicable
-	 *        if equalSpacing is set to true
+	 * @param useCellAlign set this to true if you want to use the cell's alignment
+	 *        instead of the row's alignment. With this you can accomplish a layout like
+	 *        this: \code |��������������������������������������������������������
+	 *        ����������������������������������������������������| |Left | Right| Center
+	 *        | |����������������������������
+	 *        ���������������������������������������������
+	 *        �����������������������������������| \endcode Only applicable if
+	 *        equalSpacing is set to true
 	 * @todo useCellAlign has not been implemented yet
 	 * @return This row for chaining
 	 */
@@ -282,8 +271,9 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * Sets the row as fixed width. Can be used together with {@link #setFillWidth(boolean)} so that the row is actually
-	 * bigger than the cells inside it.
+	 * Sets the row as fixed width. Can be used together with
+	 * {@link #setFillWidth(boolean)} so that the row is actually bigger than the cells
+	 * inside it.
 	 * @param fixedWidth set to true to make it fixed width
 	 * @return this for chaining
 	 */
@@ -293,8 +283,9 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * Sets the row as fixed height. Can be used together with {@link #setFillHeight(boolean)} so that the row is
-	 * actually bigger than the cells inside it.
+	 * Sets the row as fixed height. Can be used together with
+	 * {@link #setFillHeight(boolean)} so that the row is actually bigger than the cells
+	 * inside it.
 	 * @param fixedHeight set to true to make it fixed height
 	 * @return this for chaining
 	 */
@@ -311,14 +302,16 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * @return true if this row has fixed height. I.e. it has changed its height externally.
+	 * @return true if this row has fixed height. I.e. it has changed its height
+	 *         externally.
 	 */
 	boolean isFixedHeight() {
 		return mFixedHeight;
 	}
 
 	/**
-	 * Sets if the row shall fill the remaining width of the table. This works for all rows in the table.
+	 * Sets if the row shall fill the remaining width of the table. This works for all
+	 * rows in the table.
 	 * @param fillWidth set to true if the row shall fill the remaining width of the table
 	 * @return this row for chaining
 	 */
@@ -450,8 +443,8 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * @return false if all cells are invisible. If a row exists without a cell or with an empty cell it still returs
-	 *         true if the cell is set as visible.
+	 * @return false if all cells are invisible. If a row exists without a cell or with an
+	 *         empty cell it still returs true if the cell is set as visible.
 	 */
 	boolean isVisible() {
 		return mCells.isEmpty() || getVisibleCellCount() > 0;
@@ -580,7 +573,7 @@ public class Row implements Poolable, IPadding<Row> {
 	 * @param availableSize available size for the row
 	 */
 	void layout(Vector2 startPos, Vector2 availableSize) {
-		Vector2 offset = Pools.vector2.obtain();
+		Vector2 offset = new Vector2();
 		offset.set(startPos);
 
 
@@ -613,7 +606,7 @@ public class Row implements Poolable, IPadding<Row> {
 			offset.y = startPos.y + (availableSize.y - getHeight()) * 0.5f;
 		}
 
-		Vector2 availableCellSize = Pools.vector2.obtain();
+		Vector2 availableCellSize = new Vector2();
 		availableCellSize.y = mHeight;
 
 		for (Cell cell : mCells) {
@@ -624,7 +617,6 @@ public class Row implements Poolable, IPadding<Row> {
 			}
 
 		}
-		Pools.vector2.freeAll(offset, availableCellSize);
 	}
 
 	/**
@@ -686,15 +678,17 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * True if the row uses the full width of the parents getPrefWidth() and sets the cell's size to equal
+	 * True if the row uses the full width of the parents getPrefWidth() and sets the
+	 * cell's size to equal
 	 */
 	private boolean mEqualSize = false;
 	/** All the columns in the table */
-	@SuppressWarnings("unchecked") private ArrayList<Cell> mCells = Pools.arrayList.obtain();
+	private ArrayList<Cell> mCells = new ArrayList<>();
 	/** Total preferred width of the actors in this row */
 	private float mPrefWidth = 0;
 	/**
-	 * Preferred height of the actors in this row, this is set to the actor with most preferred height.
+	 * Preferred height of the actors in this row, this is set to the actor with most
+	 * preferred height.
 	 */
 	private float mPrefHeight = 0;
 	/** Width of the row, calculated from the cells */

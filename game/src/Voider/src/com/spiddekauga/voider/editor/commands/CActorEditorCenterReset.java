@@ -3,11 +3,9 @@ package com.spiddekauga.voider.editor.commands;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.IActorEditor;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Calls the reset actor in the actor editor.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CActorEditorCenterReset extends Command {
@@ -32,14 +30,8 @@ public class CActorEditorCenterReset extends Command {
 		return true;
 	}
 
-	@Override
-	public void dispose() {
-		Pools.vector2.free(mCenterOld);
-		mCenterOld = null;
-	}
-
 	/** The actor editor */
 	private IActorEditor mActorEditor;
 	/** Old center position of the actor */
-	private Vector2 mCenterOld = Pools.vector2.obtain();
+	private Vector2 mCenterOld = new Vector2();
 }

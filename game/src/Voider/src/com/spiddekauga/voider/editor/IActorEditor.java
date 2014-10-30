@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
-import com.spiddekauga.voider.resources.SkinNames.IImageNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 
 /**
  * Interface for actor editors. This interface have some common actions for all actor
@@ -139,6 +139,39 @@ public interface IActorEditor extends IEditor {
 	 * @return true if the shape image should be updated continuously
 	 */
 	boolean isShapeImageUpdatedContinuously();
+
+	/**
+	 * Sets minimum distance for image actor (in pixels)
+	 * @param distMin minimum distance between points
+	 */
+	void setShapeImageDistMin(float distMin);
+
+	/**
+	 * @return minimum distance for image actor (in pixels)
+	 */
+	float getShapeImageDistMin();
+
+	/**
+	 * Sets the minimum angle between points in image actors
+	 * @param angleMin minimum angle between points
+	 */
+	void setShapeImageAngleMin(float angleMin);
+
+	/**
+	 * @return minimum angle between points in image actors
+	 */
+	float getShapeImageAngleMin();
+
+	/**
+	 * Sets if we only shall draw the outline of the actor
+	 * @param drawOnlyOutline set to true to only draw the outline
+	 */
+	void setDrawOnlyOutline(boolean drawOnlyOutline);
+
+	/**
+	 * @return true if we only draw the outline
+	 */
+	boolean isDrawOnlyOutline();
 
 	// --------------- Custom Tool ----------------
 	/**

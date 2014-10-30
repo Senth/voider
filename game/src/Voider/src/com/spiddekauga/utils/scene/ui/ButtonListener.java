@@ -44,7 +44,9 @@ public abstract class ButtonListener implements EventListener {
 					lastChecked.set(button.isChecked());
 
 					onChecked(button, button.isChecked());
-					onPressed(button);
+					if (button.isChecked()) {
+						onPressed(button);
+					}
 				}
 			}
 		}
@@ -105,8 +107,8 @@ public abstract class ButtonListener implements EventListener {
 	}
 
 	/**
-	 * Called when the button is pressed, or actually released. Will not be called if the
-	 * tooltip message box is active even if the button is pressed.
+	 * Called when the button is pressed, or actually released. If the button can be
+	 * checked this will only be called when the button is checked.
 	 * @param button button that fired the event
 	 */
 	protected void onPressed(Button button) {

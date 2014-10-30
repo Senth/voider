@@ -16,7 +16,6 @@ import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for draw append on the selected actor
@@ -72,8 +71,9 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 			appendCorner(true);
 
 			IC_Visual icVisual = getVisualConfig();
-			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars(), icVisual.getDrawNewCornerDistMinSq(),
-					icVisual.getDrawCornerAngleMin()), true);
+			mInvoker.execute(
+					new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisual(), icVisual.getDrawNewCornerDistMinSq(), icVisual
+							.getDrawCornerAngleMin()), true);
 
 			try {
 				// Reset center if the actor was just created
@@ -154,10 +154,8 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 		if (mSelectedActor != null) {
 			Vector2 localPos = getLocalPosition(mTouchCurrent, mSelectedActor);
 
-			mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisualVars(), localPos, mEditor), chained);
+			mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisual(), localPos, mEditor), chained);
 			mDragOrigin.set(mTouchCurrent);
-
-			Pools.vector2.free(localPos);
 		}
 	}
 

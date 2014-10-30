@@ -15,7 +15,6 @@ import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pool;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding paths
@@ -132,8 +131,6 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 			}
 		}
 		mAddedCorner = true;
-
-		Pools.arrayList.free(selectedPaths);
 	}
 
 	@Override

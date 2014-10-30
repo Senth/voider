@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
@@ -36,8 +37,8 @@ import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
@@ -233,8 +234,8 @@ public class EnemyEditor extends ActorEditor {
 				try {
 					if ((Boolean) mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
 						if (mEnemyPathOnceOutOfBoundsTime != 0.0f) {
-							if (mEnemyPathOnceOutOfBoundsTime + ConfigIni.getInstance().editor.enemy.movement.getPathOnceResetTime() <= SceneSwitcher.getGameTime()
-									.getTotalTimeElapsed()) {
+							if (mEnemyPathOnceOutOfBoundsTime + ConfigIni.getInstance().editor.enemy.movement.getPathOnceResetTime() <= SceneSwitcher
+									.getGameTime().getTotalTimeElapsed()) {
 								mEnemyPathOnce.resetPathMovement();
 								mEnemyPathOnceOutOfBoundsTime = 0.0f;
 							}
@@ -277,20 +278,20 @@ public class EnemyEditor extends ActorEditor {
 			case AI:
 			case STATIONARY:
 				mEnemyActor.renderEditor(mShapeRenderer);
-				mEnemyActor.render(mShapeRenderer);
+				mEnemyActor.renderShape(mShapeRenderer);
 				break;
 
 			case PATH:
 				mPathBackAndForth.renderEditor(mShapeRenderer);
 				mPathLoop.renderEditor(mShapeRenderer);
 				mPathOnce.renderEditor(mShapeRenderer);
-				mEnemyPathBackAndForth.render(mShapeRenderer);
-				mEnemyPathLoop.render(mShapeRenderer);
-				mEnemyPathOnce.render(mShapeRenderer);
+				mEnemyPathBackAndForth.renderShape(mShapeRenderer);
+				mEnemyPathLoop.renderShape(mShapeRenderer);
+				mEnemyPathOnce.renderShape(mShapeRenderer);
 				break;
 			}
 
-			mPlayerActor.render(mShapeRenderer);
+			mPlayerActor.renderShape(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
 
 			mShapeRenderer.translate(0, 0, 1);
@@ -354,7 +355,7 @@ public class EnemyEditor extends ActorEditor {
 
 
 		// Test hit UI
-		float playerRadius = mPlayerActor.getDef().getVisualVars().getBoundingRadius();
+		float playerRadius = mPlayerActor.getDef().getVisual().getBoundingRadius();
 		mWorld.QueryAABB(mCallbackUiHit, mPlayerLastPosition.x - playerRadius, mPlayerLastPosition.y - playerRadius, mPlayerLastPosition.x
 				+ playerRadius, mPlayerLastPosition.y + playerRadius);
 
@@ -502,7 +503,7 @@ public class EnemyEditor extends ActorEditor {
 	@Override
 	public void newDef() {
 		EnemyActorDef def = new EnemyActorDef();
-		def.getVisualVars().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_COLOR_DEFAULT));
+		def.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_COLOR_DEFAULT));
 		setEnemyDef(def);
 		mGui.resetValues();
 		setMovementType(MovementTypes.PATH);
@@ -1003,54 +1004,18 @@ public class EnemyEditor extends ActorEditor {
 		return mDef != null && mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null;
 	}
 
-	/**
-	 * Sets colliding damage of the enemy
-	 * @param damage how much damage the enemy will inflict on a collision
-	 */
+
 	@Override
-	public void setCollisionDamage(float damage) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setCollisionDamage(damage);
-		setUnsaved();
+	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
+		mEnemyActor.setDrawOnlyOutline(drawOnlyOutline);
+		mEnemyPathBackAndForth.setDrawOnlyOutline(drawOnlyOutline);
+		mEnemyPathLoop.setDrawOnlyOutline(drawOnlyOutline);
+		mEnemyPathOnce.setDrawOnlyOutline(drawOnlyOutline);
 	}
 
-	/**
-	 * @return collision damage with the enemy
-	 */
 	@Override
-	public float getCollisionDamage() {
-		if (mDef != null) {
-			return mDef.getCollisionDamage();
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Sets whether this actor shall be destroyed on collision
-	 * @param destroyOnCollision set to true to destroy the enemy on collision
-	 */
-	@Override
-	public void setDestroyOnCollide(boolean destroyOnCollision) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setDestroyOnCollide(destroyOnCollision);
-		setUnsaved();
-	}
-
-	/**
-	 * @return true if this enemy shall be destroyed on collision
-	 */
-	@Override
-	public boolean isDestroyedOnCollide() {
-		if (mDef != null) {
-			return mDef.isDestroyedOnCollide();
-		} else {
-			return false;
-		}
+	public boolean isDrawOnlyOutline() {
+		return mEnemyActor.isDrawOnlyOutline();
 	}
 
 	/**
@@ -1083,9 +1048,7 @@ public class EnemyEditor extends ActorEditor {
 	private void createExamplePaths() {
 		// All paths should be like each other, so the player clearly sees the
 		// difference between how they work
-
-		@SuppressWarnings("unchecked")
-		ArrayList<Path> paths = Pools.arrayList.obtain();
+		ArrayList<Path> paths = new ArrayList<>();
 
 
 		// -- Create enemies and set correct path movements
@@ -1112,11 +1075,11 @@ public class EnemyEditor extends ActorEditor {
 
 
 		// Create paths corners
-		Vector2[] nodes = Pools.vector2.obtain(new Vector2[4]);
-		Vector2[] screenPos = Pools.vector2.obtain(new Vector2[4]);
+		Vector2[] nodes = Collections.fillNew(new Vector2[4], Vector2.class);
+		Vector2[] screenPos = Collections.fillNew(new Vector2[4], Vector2.class);
 		Vector2[] centerPositions = getPathPositions();
-		Vector2 minPos = Pools.vector2.obtain();
-		Vector2 maxPos = Pools.vector2.obtain();
+		Vector2 minPos = new Vector2();
+		Vector2 maxPos = new Vector2();
 
 		// X-area: From middle of screen to 1/6 of the screen width
 		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't
@@ -1153,10 +1116,6 @@ public class EnemyEditor extends ActorEditor {
 			screenToWorldCoord(mCamera, screenPos, nodes, true);
 			path.addCorners(nodes);
 		}
-
-		// Free stuff
-		Pools.vector2.freeAll(nodes, screenPos, centerPositions);
-		Pools.vector2.freeAll(minPos, maxPos);
 	}
 
 	/**
@@ -1209,11 +1168,10 @@ public class EnemyEditor extends ActorEditor {
 	 * Resets the player position
 	 */
 	private void resetPlayerPosition() {
-		Vector2 playerPosition = Pools.vector2.obtain();
+		Vector2 playerPosition = new Vector2();
 		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
 		mPlayerActor.setPosition(playerPosition);
 		mPlayerActor.getBody().setLinearVelocity(0, 0);
-		Pools.vector2.free(playerPosition);
 	}
 
 	/**

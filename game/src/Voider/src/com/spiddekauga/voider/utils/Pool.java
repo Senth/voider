@@ -66,6 +66,7 @@ public class Pool<T> extends ReflectionPool<T> {
 		// Debug tests for checking duplicate frees
 		if (Config.Debug.DEBUG_TESTS) {
 			mFreeObjects.remove(object);
+			mObtainedObjects.put(object, object);
 		}
 
 		// Clear
@@ -84,7 +85,9 @@ public class Pool<T> extends ReflectionPool<T> {
 	public synchronized void free(T object) {
 		if (Config.Debug.DEBUG_TESTS) {
 			assert !mFreeObjects.containsKey(object);
+			assert mObtainedObjects.containsKey(object);
 			mFreeObjects.put(object, object);
+			mObtainedObjects.remove(object);
 		}
 
 		super.free(object);
@@ -140,8 +143,7 @@ public class Pool<T> extends ReflectionPool<T> {
 	 * @param list list with vectors to free, can contain duplicates.
 	 */
 	public final void freeDuplicates(List<T> list) {
-		@SuppressWarnings("unchecked")
-		IdentityMap<T, T> freedObjects = Pools.identityMap.obtain();
+		IdentityMap<T, T> freedObjects = new IdentityMap<>();
 
 		for (T object : list) {
 			if (!freedObjects.containsKey(object)) {
@@ -149,11 +151,10 @@ public class Pool<T> extends ReflectionPool<T> {
 				freedObjects.put(object, object);
 			}
 		}
-
-		Pools.identityMap.free(freedObjects);
 	}
 
-
+	/** Obtained objects */
+	IdentityMap<T, T> mObtainedObjects = new IdentityMap<>();
 	/** Debug tests if we're freeing the same object twice */
-	IdentityMap<T, T> mFreeObjects = new IdentityMap<T, T>();
+	IdentityMap<T, T> mFreeObjects = new IdentityMap<>();
 }

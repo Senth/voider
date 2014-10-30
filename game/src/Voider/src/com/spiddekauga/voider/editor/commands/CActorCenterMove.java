@@ -4,20 +4,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Moves the center offset to the specified position. This command
- * also takes an optional actor which will be moved in the opposite
- * direction; this will cause it to look as it wasn't moved at all.
- * 
+ * Moves the center offset to the specified position. This command also takes an optional
+ * actor which will be moved in the opposite direction; this will cause it to look as it
+ * wasn't moved at all.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CActorCenterMove extends CResourceChange {
 	/**
-	 * Creates a command that will move the center of the actor definition.
-	 * It will also update the actors position. Note that the actors position
-	 * must be its position where it was at oldCenter.
+	 * Creates a command that will move the center of the actor definition. It will also
+	 * update the actors position. Note that the actors position must be its position
+	 * where it was at oldCenter.
 	 * @param actorDef the actor definition which center to move
 	 * @param newCenter the new center position
 	 * @param oldCenter old center position, used for restoring using undo
@@ -34,7 +32,6 @@ public class CActorCenterMove extends CResourceChange {
 
 	/**
 	 * Creates a command that will move the center of the actor definition
-
 	 * @param actorDef the actor definition which center to move
 	 * @param newCenter the new center position
 	 * @param oldCenter old center position, used for restoring using undo
@@ -47,16 +44,14 @@ public class CActorCenterMove extends CResourceChange {
 
 	@Override
 	public boolean execute() {
-		mActorDef.getVisualVars().setCenterOffset(mCenterNew);
+		mActorDef.getVisual().setCenterOffset(mCenterNew);
 
 		if (mActor != null) {
-			Vector2 newActorPos = Pools.vector2.obtain();
-			newActorPos.set(mCenterOld).sub(mCenterNew);
+			Vector2 newActorPos = new Vector2(mCenterOld).sub(mCenterNew);
 			newActorPos.add(mActor.getPosition());
 			mActor.destroyBody();
 			mActor.setPosition(newActorPos);
 			mActor.createBody();
-			Pools.vector2.free(newActorPos);
 		}
 
 		sendOnChange();
@@ -66,16 +61,14 @@ public class CActorCenterMove extends CResourceChange {
 
 	@Override
 	public boolean undo() {
-		mActorDef.getVisualVars().setCenterOffset(mCenterOld);
+		mActorDef.getVisual().setCenterOffset(mCenterOld);
 
 		if (mActor != null) {
-			Vector2 newActorPos = Pools.vector2.obtain();
-			newActorPos.set(mCenterNew).sub(mCenterOld);
+			Vector2 newActorPos = new Vector2(mCenterNew).sub(mCenterOld);
 			newActorPos.add(mActor.getPosition());
 			mActor.destroyBody();
 			mActor.setPosition(newActorPos);
 			mActor.createBody();
-			Pools.vector2.free(newActorPos);
 		}
 
 		sendOnChange();
@@ -83,20 +76,12 @@ public class CActorCenterMove extends CResourceChange {
 		return true;
 	}
 
-	@Override
-	public void dispose() {
-		Pools.vector2.free(mCenterNew);
-		Pools.vector2.free(mCenterOld);
-		mCenterNew = null;
-		mCenterOld = null;
-	}
-
 	/** Actor which uses the actor def */
 	private Actor mActor;
 	/** Actor definition which center to move */
 	private ActorDef mActorDef;
 	/** New center position offset to use at execute */
-	private Vector2 mCenterNew = Pools.vector2.obtain();
+	private Vector2 mCenterNew = new Vector2();
 	/** Old center position to restore to at undo */
-	private Vector2 mCenterOld = Pools.vector2.obtain();
+	private Vector2 mCenterOld = new Vector2();
 }

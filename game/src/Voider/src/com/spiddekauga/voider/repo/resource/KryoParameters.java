@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo.resource;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 

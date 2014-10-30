@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.menu;
 
-import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**

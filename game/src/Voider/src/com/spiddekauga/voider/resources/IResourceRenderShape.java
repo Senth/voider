@@ -4,13 +4,12 @@ import com.spiddekauga.utils.ShapeRendererEx;
 
 /**
  * A Resource that can be rendered
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public interface IResourceRender extends IResourceRenderOrder {
+public interface IResourceRenderShape extends IResourceRenderOrder {
 	/**
-	 * Renders the resource
+	 * Renders the resource as a shape
 	 * @param shapeRenderer current shape renderer batch
 	 */
-	public void render(ShapeRendererEx shapeRenderer);
+	public void renderShape(ShapeRendererEx shapeRenderer);
 }

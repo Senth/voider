@@ -15,6 +15,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.ColorTintPicker;
+import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
@@ -25,13 +26,12 @@ import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Collision;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
-import com.spiddekauga.voider.resources.SkinNames.GeneralImages;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
+import com.spiddekauga.voider.repo.resource.SkinNames.GeneralImages;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabImageWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.TabWrapper;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Has some common methods for gui
@@ -119,20 +119,20 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.rotationSpeed.setValue(mActorEditor.getRotationSpeed());
 
 		// Shape
-		if (mWidgets.visual.shapeCircleRadius != null) {
-			mWidgets.visual.shapeCircleRadius.setValue(mActorEditor.getShapeRadius());
+		if (mWidgets.visual.circleRadius != null) {
+			mWidgets.visual.circleRadius.setValue(mActorEditor.getShapeRadius());
 		}
-		if (mWidgets.visual.shapeRectangleWidth != null) {
-			mWidgets.visual.shapeRectangleWidth.setValue(mActorEditor.getShapeWidth());
+		if (mWidgets.visual.rectangleWidth != null) {
+			mWidgets.visual.rectangleWidth.setValue(mActorEditor.getShapeWidth());
 		}
-		if (mWidgets.visual.shapeRectangleHeight != null) {
-			mWidgets.visual.shapeRectangleHeight.setValue(mActorEditor.getShapeHeight());
+		if (mWidgets.visual.rectangleHeight != null) {
+			mWidgets.visual.rectangleHeight.setValue(mActorEditor.getShapeHeight());
 		}
-		if (mWidgets.visual.shapeTriangleWidth != null) {
-			mWidgets.visual.shapeTriangleWidth.setValue(mActorEditor.getShapeWidth());
+		if (mWidgets.visual.triangleWidth != null) {
+			mWidgets.visual.triangleWidth.setValue(mActorEditor.getShapeWidth());
 		}
-		if (mWidgets.visual.shapeTriangleHeight != null) {
-			mWidgets.visual.shapeTriangleHeight.setValue(mActorEditor.getShapeHeight());
+		if (mWidgets.visual.triangleHeight != null) {
+			mWidgets.visual.triangleHeight.setValue(mActorEditor.getShapeHeight());
 		}
 
 		if (mActorEditor.getShapeType() != null) {
@@ -159,13 +159,17 @@ public abstract class ActorGui extends EditorGui {
 			}
 		}
 
-		if (mWidgets.visual.shapeImageScale != null) {
-			mWidgets.visual.shapeImageScale.setValue(mActorEditor.getShapeImageScale());
+		// Image
+		if (mWidgets.visual.imageScale != null) {
+			mWidgets.visual.imageAngleMin.setValue(mActorEditor.getShapeImageAngleMin());
+			mWidgets.visual.imageDistMin.setValue(mActorEditor.getShapeImageDistMin());
+			mWidgets.visual.imageScale.setValue(mActorEditor.getShapeImageScale());
+			mWidgets.visual.imageDrawOutline.setChecked(mActorEditor.isDrawOnlyOutline());
 			mWidgets.visual.shapeImageSelect.setSelected((GeneralImages) mActorEditor.getShapeImage());
 			if (mActorEditor.isShapeImageUpdatedContinuously()) {
-				mWidgets.visual.shapeImageUpdateOn.setChecked(true);
+				mWidgets.visual.imageUpdateOn.setChecked(true);
 			} else {
-				mWidgets.visual.shapeImageUpdateOff.setChecked(true);
+				mWidgets.visual.imageUpdateOff.setChecked(true);
 			}
 		}
 	}
@@ -237,8 +241,7 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	private void initVisual() {
 		IC_Visual icVisual = getVisualConfig();
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		ArrayList<TabWrapper> tabs = new ArrayList<>();
 
 		mWidgets.visual.hider.addToggleActor(mWidgets.visual.table);
 		AlignTable table = mWidgets.visual.table;
@@ -341,8 +344,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Create tabs
 		mUiFactory.addTabs(table, mWidgets.visual.hider, tabs, mDisabledWhenPublished, mInvoker);
-		Pools.arrayList.free(tabs);
-		tabs = null;
 
 		// Set buttons
 		mWidgets.visual.shapeCircle = circleTab.getButton();
@@ -366,8 +367,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setShapeRadius(newValue);
 			}
 		};
-		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider("Radius", icVisual.getRadiusMin(), icVisual.getRadiusMax(),
-				icVisual.getRadiusStepSize(), sliderListener, table, circleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.circleRadius = mUiFactory.addSlider("Radius", icVisual.getRadiusMin(), icVisual.getRadiusMax(), icVisual.getRadiusStepSize(),
+				sliderListener, table, circleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Rectangle
@@ -376,10 +377,10 @@ public abstract class ActorGui extends EditorGui {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeWidth(newValue);
-				mWidgets.visual.shapeTriangleWidth.setValue(newValue);
+				mWidgets.visual.triangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
+		mWidgets.visual.rectangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
 				sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
@@ -387,11 +388,11 @@ public abstract class ActorGui extends EditorGui {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeHeight(newValue);
-				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
+				mWidgets.visual.triangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(),
-				icVisual.getSizeStepSize(), sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.rectangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
+				sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Triangle
@@ -400,10 +401,10 @@ public abstract class ActorGui extends EditorGui {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeWidth(newValue);
-				mWidgets.visual.shapeRectangleWidth.setValue(newValue);
+				mWidgets.visual.rectangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
+		mWidgets.visual.triangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
 				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
@@ -411,58 +412,97 @@ public abstract class ActorGui extends EditorGui {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeHeight(newValue);
-				mWidgets.visual.shapeRectangleHeight.setValue(newValue);
+				mWidgets.visual.rectangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(),
-				icVisual.getSizeStepSize(), sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.triangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
+				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Image
 		if (imageTab != null) {
-			// Update
-			mUiFactory.text.addPanelSection("Update Continuously", table, imageTab.getHider());
-			tabs = new ArrayList<>();
-			TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
-			onTab.setListener(new ButtonListener() {
-				@Override
-				protected void onChecked(Button button, boolean checked) {
-					mActorEditor.setShapeImageUpdateContinuously(checked);
-				}
-			});
-			tabs.add(onTab);
-
-			TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
-			tabs.add(offTab);
-
-			mUiFactory.addTabs(table, imageTab.getHider(), tabs, mDisabledWhenPublished, mInvoker);
-			tabs = null;
-
-			mWidgets.visual.shapeImageUpdateOn = onTab.getButton();
-			mWidgets.visual.shapeImageUpdateOff = offTab.getButton();
-
-
-			// Select image
-			SelectBoxListener<SkinNames.GeneralImages> selectBoxListener = new SelectBoxListener<SkinNames.GeneralImages>(mInvoker) {
-				@Override
-				protected void onSelectionChanged(int itemIndex) {
-					mActorEditor.setShapeImage(mSelectBox.getSelected());
-				}
-			};
-			mUiFactory.text.addPanelSection("Image", table, imageTab.getHider());
-			mWidgets.visual.shapeImageSelect = mUiFactory.addSelectBox(null, SkinNames.GeneralImages.values(), selectBoxListener, table,
-					imageTab.getHider(), mDisabledWhenPublished);
-			mWidgets.visual.shapeImageSelect.setMaxListCount(7);
-
-			// Scale
-			sliderListener = new SliderListener(mInvoker) {
-				@Override
-				protected void onChange(float newValue) {
-					mActorEditor.setShapeImageScale(newValue);
-				}
-			};
-			mWidgets.visual.shapeImageScale = mUiFactory.addSlider("Scale", icVisual.getImageScaleMin(), icVisual.getImageScaleMax(),
-					icVisual.getImageScaleStepSize(), sliderListener, table, imageTab.getHider(), mDisabledWhenPublished);
+			initVisualImageSettings(imageTab.getHider());
 		}
+	}
+
+	/**
+	 * Initializes image shape settings
+	 * @param imageHider
+	 */
+	private void initVisualImageSettings(GuiHider imageHider) {
+		AlignTable table = mWidgets.visual.table;
+		IC_Visual icVisual = getVisualConfig();
+
+		// Update
+		mUiFactory.text.addPanelSection("Update Continuously", table, imageHider);
+		ArrayList<TabWrapper> tabs = new ArrayList<>();
+		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+		onTab.setListener(new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mActorEditor.setShapeImageUpdateContinuously(checked);
+			}
+		});
+		tabs.add(onTab);
+
+		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
+		tabs.add(offTab);
+
+		mUiFactory.addTabs(table, imageHider, tabs, mDisabledWhenPublished, mInvoker);
+		tabs = null;
+
+		mWidgets.visual.imageUpdateOn = onTab.getButton();
+		mWidgets.visual.imageUpdateOff = offTab.getButton();
+
+		// Draw outline
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mActorEditor.setDrawOnlyOutline(checked);
+			};
+		};
+		mWidgets.visual.imageDrawOutline = mUiFactory.addPanelCheckBox("Draw outline", buttonListener, table, imageHider, mDisabledWhenPublished);
+
+		// Select image
+		SelectBoxListener<SkinNames.GeneralImages> selectBoxListener = new SelectBoxListener<SkinNames.GeneralImages>(mInvoker) {
+			@Override
+			protected void onSelectionChanged(int itemIndex) {
+				mActorEditor.setShapeImage(mSelectBox.getSelected());
+			}
+		};
+		mUiFactory.text.addPanelSection("Image", table, imageHider);
+		mWidgets.visual.shapeImageSelect = mUiFactory.addSelectBox(null, SkinNames.GeneralImages.values(), selectBoxListener, table, imageHider,
+				mDisabledWhenPublished);
+		mWidgets.visual.shapeImageSelect.setMaxListCount(7);
+
+		// Scale
+		SliderListener sliderListener = new SliderListener(mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setShapeImageScale(newValue);
+			}
+		};
+		mWidgets.visual.imageScale = mUiFactory.addSlider("Scale", icVisual.getImageScaleMin(), icVisual.getImageScaleMax(),
+				icVisual.getImageScaleStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
+
+		// Min Distance between points
+		sliderListener = new SliderListener(mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setShapeImageDistMin(newValue);
+			}
+		};
+		mWidgets.visual.imageDistMin = mUiFactory.addSlider("Dist", icVisual.getImageDistMin(), icVisual.getImageDistMax(),
+				icVisual.getImageDistStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
+
+		// Min Angle between points
+		sliderListener = new SliderListener(mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setShapeImageAngleMin(newValue);
+			}
+		};
+		mWidgets.visual.imageAngleMin = mUiFactory.addSlider("Angle", icVisual.getImageAngleMin(), icVisual.getImageAngleMax(),
+				icVisual.getImageAngleStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
 	}
 
 	/**
@@ -633,8 +673,7 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Collision destroy
-		@SuppressWarnings("unchecked")
-		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
+		ArrayList<Actor> createdActors = new ArrayList<>();
 		createdActors.add(mUiFactory.text.addPanelSection("Collision Destruction", mWidgets.collision.table, null));
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
@@ -774,18 +813,22 @@ public abstract class ActorGui extends EditorGui {
 			Button shapeTriangle = null;
 			Button shapeRectangle = null;
 			Button shapeCustom = null;
-
-			Slider shapeCircleRadius = null;
-			Slider shapeTriangleWidth = null;
-			Slider shapeTriangleHeight = null;
-			Slider shapeRectangleWidth = null;
-			Slider shapeRectangleHeight = null;
-
-			// Image shape
 			Button shapeImage = null;
-			Button shapeImageUpdateOn = null;
-			Button shapeImageUpdateOff = null;
-			Slider shapeImageScale = null;
+
+			// Settings
+			Slider circleRadius = null;
+			Slider triangleWidth = null;
+			Slider triangleHeight = null;
+			Slider rectangleWidth = null;
+			Slider rectangleHeight = null;
+
+			// Image settings
+			Button imageUpdateOn = null;
+			Button imageUpdateOff = null;
+			Button imageDrawOutline = null;
+			Slider imageScale = null;
+			Slider imageAngleMin = null;
+			Slider imageDistMin = null;
 			SelectBox<SkinNames.GeneralImages> shapeImageSelect = null;
 		}
 

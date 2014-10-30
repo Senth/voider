@@ -16,13 +16,12 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourcePrepareWrite;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Triggered when an actor is activated, or otherwise active
@@ -41,7 +40,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	@Override
 	public void createBody() {
 		if (mBody == null && !isHidden()) {
-			List<FixtureDef> fixtures = mActor.getDef().getVisualVars().getFixtureDefs();
+			List<FixtureDef> fixtures = mActor.getDef().getVisual().getFixtureDefs();
 
 			mBody = Actor.getWorld().createBody(new BodyDef());
 
@@ -73,16 +72,14 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mVertices != null && mActor != null) {
 			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
-			Vector2 offsetPosition = Pools.vector2.obtain();
-			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getVisualVars().getCenterOffset());
+			Vector2 offsetPosition = new Vector2();
+			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getVisual().getCenterOffset());
 			shapeRenderer.triangles(mVertices, offsetPosition);
 
 			if (isSelected()) {
 				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.SELECTED_COLOR_UTILITY));
 				shapeRenderer.triangles(mVertices, offsetPosition);
 			}
-
-			Pools.vector2.free(offsetPosition);
 		}
 	}
 
@@ -175,13 +172,13 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 			destroyVertices();
 
 			ArrayList<Vector2> polygon = new ArrayList<Vector2>();
-			ArrayList<Vector2> actorShape = mActor.getDef().getVisualVars().getPolygonShape();
+			ArrayList<Vector2> actorShape = mActor.getDef().getVisual().getPolygonShape();
 			if (actorShape != null) {
 				// Copy polygon from actor, so we don't free the actor's vectors when
 				// freeing
 				// this trigger
 				for (Vector2 vertex : actorShape) {
-					polygon.add(Pools.vector2.obtain().set(vertex));
+					polygon.add(new Vector2(vertex));
 				}
 				ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(polygon, false, Config.Editor.Level.Trigger.ENEMY_WIDTH);
 
@@ -195,7 +192,6 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	 */
 	private void destroyVertices() {
 		if (mVertices != null) {
-			Pools.vector2.freeDuplicates(mVertices);
 			mVertices = null;
 		}
 	}

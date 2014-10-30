@@ -5,9 +5,9 @@ import java.util.UUID;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.resources.SkinNames;
 
 /**
  * Level definition of a level. I.e. this is the level's header information

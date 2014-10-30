@@ -37,13 +37,12 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -683,7 +682,6 @@ public class GameScene extends WorldScene {
 			ArrayList<PlayerActorDef> ships = ResourceCacheFacade.getAll(ExternalTypes.PLAYER_DEF);
 			if (ships.isEmpty()) {
 				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
-				Pools.arrayList.free(ships);
 				ships = null;
 				return;
 			}
@@ -694,8 +692,6 @@ public class GameScene extends WorldScene {
 
 			mPlayerStats = new PlayerStats(mLevel.getLevelDef().getStartXCoord(), mLevel.getSpeed(), mPlayerActor);
 			mLevel.addResource(mPlayerStats);
-
-			Pools.arrayList.free(ships);
 			ships = null;
 		} else {
 			mPlayerActor.createBody();
@@ -720,7 +716,7 @@ public class GameScene extends WorldScene {
 	 */
 	private void resetPlayerPosition() {
 		if (mPlayerActor != null && mPlayerActor.getBody() != null) {
-			Vector2 playerPosition = Pools.vector2.obtain();
+			Vector2 playerPosition = new Vector2();
 			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
 			// Get radius of player and offset it with the width
@@ -732,7 +728,6 @@ public class GameScene extends WorldScene {
 
 				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
 			}
-			Pools.vector2.free(playerPosition);
 		}
 	}
 

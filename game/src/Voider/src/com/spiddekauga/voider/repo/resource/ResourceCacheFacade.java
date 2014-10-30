@@ -13,7 +13,6 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.Pools;
 
 
 /**
@@ -53,11 +52,6 @@ public class ResourceCacheFacade {
 				mResourceLoader.load(scene, resourceId, -1);
 			}
 		}
-
-
-		// Free
-		Pools.arrayList.free(resources);
-		resources = null;
 	}
 
 	/**

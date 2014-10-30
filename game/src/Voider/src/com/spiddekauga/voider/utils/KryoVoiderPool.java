@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,8 +21,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.CollectionSerializer;
-import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.kryo.AtomicIntegerSerializer;
@@ -65,12 +62,12 @@ import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 
 /**
  * Pool for Kryo instances. When creating a new instance Kryo registers all necessary
@@ -302,24 +299,24 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		 * serializers are created with this method instead.
 		 * @param kryo creates the serializers for this Kryo instance.
 		 */
-		@SuppressWarnings("rawtypes")
 		private static void createSerializers(Kryo kryo) {
-			// Vector2
-			VECTOR_2.mSerializer = new FieldSerializer<Vector2>(kryo, Vector2.class) {
-				@Override
-				public Vector2 create(Kryo kryo, Input input, Class<Vector2> type) {
-					return Pools.vector2.obtain();
-				}
-			};
-
-			// ArrayList
-			ARRAY_LIST.mSerializer = new CollectionSerializer() {
-				@Override
-				protected Collection create(Kryo kryo, Input input, Class<Collection> type) {
-					ArrayList arrayList = Pools.arrayList.obtain();
-					return arrayList;
-				}
-			};
+			// // Vector2
+			// VECTOR_2.mSerializer = new FieldSerializer<Vector2>(kryo, Vector2.class) {
+			// @Override
+			// public Vector2 create(Kryo kryo, Input input, Class<Vector2> type) {
+			// return Pools.vector2.obtain();
+			// }
+			// };
+			//
+			// // ArrayList
+			// ARRAY_LIST.mSerializer = new CollectionSerializer() {
+			// @Override
+			// protected Collection create(Kryo kryo, Input input, Class<Collection> type)
+			// {
+			// ArrayList arrayList = Pools.arrayList.obtain();
+			// return arrayList;
+			// }
+			// };
 
 
 			// Create tagged or compatible serializers
@@ -357,7 +354,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		}
 
 		/** Offset for register id, as there exists some default registered types */
-		private static int OFFSET = 50;
+		private static final int OFFSET = 50;
 		/** Class type to register, if null it is not registered */
 		private Class<?> mType;
 		/** Serializer to use, if null it uses the default serializer */
@@ -408,12 +405,10 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		public void write(Kryo kryo, Output output, PolygonShape object) {
 			Vector2[] vertices = new Vector2[object.getVertexCount()];
 			for (int i = 0; i < vertices.length; ++i) {
-				vertices[i] = Pools.vector2.obtain();
+				vertices[i] = new Vector2();
 				object.getVertex(i, vertices[i]);
 			}
 			kryo.writeObject(output, vertices);
-
-			Pools.vector2.freeAll(vertices);
 		}
 
 		@Override
@@ -425,8 +420,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 				polygonShape.set(vertices);
 			}
 
-			Pools.vector2.freeAll(vertices);
-
 			return polygonShape;
 		}
 
@@ -436,12 +429,10 @@ public class KryoVoiderPool extends Pool<Kryo> {
 
 			Vector2[] vertices = new Vector2[original.getVertexCount()];
 			for (int i = 0; i < vertices.length; ++i) {
-				vertices[i] = Pools.vector2.obtain();
+				vertices[i] = new Vector2();
 				original.getVertex(i, vertices[i]);
 			}
 			polygonShape.set(vertices);
-
-			Pools.vector2.freeAll(vertices);
 
 			return polygonShape;
 		}
@@ -453,7 +444,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 	private static class EdgeShapeSerializer extends Serializer<EdgeShape> {
 		@Override
 		public void write(Kryo kryo, Output output, EdgeShape object) {
-			Vector2 tempVector = Pools.vector2.obtain();
+			Vector2 tempVector = new Vector2();
 
 			kryo.setReferences(false);
 			object.getVertex1(tempVector);
@@ -461,8 +452,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 			object.getVertex2(tempVector);
 			kryo.writeObject(output, tempVector);
 			kryo.setReferences(true);
-
-			Pools.vector2.free(tempVector);
 		}
 
 		@Override
@@ -476,8 +465,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 
 			edgeShape.set(vertex1, vertex2);
 
-			Pools.vector2.freeAll(vertex1, vertex2);
-
 			return edgeShape;
 		}
 
@@ -485,14 +472,12 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		public EdgeShape copy(Kryo kryo, EdgeShape original) {
 			EdgeShape edgeShape = new EdgeShape();
 
-			Vector2 v1 = Pools.vector2.obtain();
-			Vector2 v2 = Pools.vector2.obtain();
+			Vector2 v1 = new Vector2();
+			Vector2 v2 = new Vector2();
 
 			original.getVertex1(v1);
 			original.getVertex2(v2);
 			edgeShape.set(v1, v2);
-
-			Pools.vector2.freeAll(v1, v2);
 
 			return edgeShape;
 		}
@@ -509,8 +494,8 @@ public class KryoVoiderPool extends Pool<Kryo> {
 			output.writeBoolean(cVertices > 0);
 
 			if (cVertices > 0) {
-				Vector2 firstVertex = Pools.vector2.obtain();
-				Vector2 lastVertex = Pools.vector2.obtain();
+				Vector2 firstVertex = new Vector2();
+				Vector2 lastVertex = new Vector2();
 				object.getVertex(0, firstVertex);
 				object.getVertex(cVertices - 1, lastVertex);
 
@@ -525,12 +510,10 @@ public class KryoVoiderPool extends Pool<Kryo> {
 				// Write vertices
 				Vector2[] vertices = new Vector2[cVertices];
 				for (int i = 0; i < vertices.length; i++) {
-					vertices[i] = Pools.vector2.obtain();
+					vertices[i] = new Vector2();
 					object.getVertex(i, vertices[i]);
 				}
 				kryo.writeObject(output, vertices);
-
-				Pools.vector2.freeAll(vertices);
 			}
 		}
 
@@ -562,8 +545,8 @@ public class KryoVoiderPool extends Pool<Kryo> {
 			boolean isLoop;
 
 			if (cVertices > 0) {
-				Vector2 firstVertex = Pools.vector2.obtain();
-				Vector2 lastVertex = Pools.vector2.obtain();
+				Vector2 firstVertex = new Vector2();
+				Vector2 lastVertex = new Vector2();
 				original.getVertex(0, firstVertex);
 				original.getVertex(cVertices - 1, lastVertex);
 
@@ -578,7 +561,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 				// Write vertices
 				Vector2[] vertices = new Vector2[cVertices];
 				for (int i = 0; i < vertices.length; i++) {
-					vertices[i] = Pools.vector2.obtain();
+					vertices[i] = new Vector2();
 					original.getVertex(i, vertices[i]);
 				}
 
@@ -587,8 +570,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 				} else {
 					chainShape.createChain(vertices);
 				}
-
-				Pools.vector2.freeAll(vertices);
 			}
 
 			return chainShape;

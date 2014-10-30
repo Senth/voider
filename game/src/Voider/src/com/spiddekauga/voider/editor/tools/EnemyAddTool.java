@@ -86,7 +86,7 @@ public class EnemyAddTool extends ActorAddTool {
 		}
 		// Path enemy, try to snap
 		else {
-			Vector2 snappedPosition = Pools.vector2.obtain().set(newPosition);
+			Vector2 snappedPosition = new Vector2(newPosition);
 			boolean usesPath = false;
 
 			// Is the position close to a path?
@@ -115,8 +115,6 @@ public class EnemyAddTool extends ActorAddTool {
 			} else {
 				enemyActor.setPosition(snappedPosition);
 			}
-
-			Pools.vector2.free(snappedPosition);
 		}
 	}
 

@@ -15,7 +15,7 @@ import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
-import com.spiddekauga.voider.resources.IResourceRender;
+import com.spiddekauga.voider.resources.IResourceRenderShape;
 
 /**
  * Game configuration
@@ -719,7 +719,7 @@ public class Config {
 			 * @param shapeRenderer the shape renderer to reset the z-value translation
 			 * @param object information about z-value translation
 			 */
-			public static void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceRender object) {
+			public static void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceRenderShape object) {
 				float zValue = object.getRenderOrder().getZValue();
 				if (com.spiddekauga.voider.game.actors.Actor.isEditorActive()) {
 					if (object instanceof IResourcePosition) {
@@ -737,7 +737,7 @@ public class Config {
 			 * @param shapeRenderer the shape renderer to translate
 			 * @param object information about z-value translation
 			 */
-			public static void offsetZValue(ShapeRendererEx shapeRenderer, IResourceRender object) {
+			public static void offsetZValue(ShapeRendererEx shapeRenderer, IResourceRenderShape object) {
 				float zValue = object.getRenderOrder().getZValue();
 				if (com.spiddekauga.voider.game.actors.Actor.isEditorActive()) {
 					if (object instanceof IResourcePosition) {

@@ -104,11 +104,9 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 				addOrMoveCommand = new CResourceCornerAdd(mHitResource, removedCorner, mCornerIndexCurrent, mEditor);
 				Pools.vector2.free(removedCorner);
 			} else {
-				Vector2 newPos = Pools.vector2.obtain();
-				newPos.set(mHitResource.getCornerPosition(mCornerIndexCurrent));
+				Vector2 newPos = new Vector2(mHitResource.getCornerPosition(mCornerIndexCurrent));
 				mHitResource.moveCorner(mCornerIndexCurrent, mDragOrigin);
 				addOrMoveCommand = new CResourceCornerMove(mHitResource, mCornerIndexCurrent, newPos, mEditor);
-				Pools.vector2.free(newPos);
 			}
 
 			// Add corner via invoker instead
@@ -160,12 +158,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 					bestDist = distance;
 				}
 			}
-
-			Pools.vector2.free(localPos);
 		}
-
-
-		Pools.arrayList.free(resources);
 	}
 
 	/**
@@ -173,11 +166,10 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	 * @param worldPos the world position
 	 * @param resource the resource
 	 * @return local resource coordinates (can still be world coordinates if the resource
-	 *         shares the same coordinates as the world). Don't forget to free the Vector2
-	 *         afterwards
+	 *         shares the same coordinates as the world).
 	 */
 	private static Vector2 getLocalPosition(Vector2 worldPos, IResource resource) {
-		Vector2 localPos = Pools.vector2.obtain();
+		Vector2 localPos = null;
 
 		// Use local position not world
 		if (resource instanceof Actor) {
@@ -185,8 +177,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 		}
 		// Use world position
 		else {
-			localPos = Pools.vector2.obtain();
-			localPos.set(worldPos);
+			localPos = new Vector2(worldPos);
 		}
 
 		return localPos;

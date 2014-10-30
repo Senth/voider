@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -24,15 +26,18 @@ import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Geometry.PointIndex;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
+import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -241,15 +246,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public void dispose() {
-		Pools.vector2.freeAll(mCorners);
-		Pools.vector2.free(mCenterOffset);
 		mCenterOffset = null;
 		clearVertices();
 
 		clearFixtures();
-		Pools.arrayList.freeAll(mCorners, mFixtureDefs);
-		mCorners = null;
-		mFixtureDefs = null;
+		disposeImage();
 	}
 
 	/**
@@ -258,12 +259,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	public void clearVertices() {
 		if (mVertices != null) {
 			Pools.vector2.freeDuplicates(mVertices);
-			Pools.arrayList.free(mVertices);
 			mVertices = null;
 		}
 		if (mPolygon != null) {
 			Pools.vector2.freeDuplicates(mPolygon);
-			Pools.arrayList.free(mPolygon);
 			mPolygon = null;
 		}
 	}
@@ -279,6 +278,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Calculates the bounding radius
 	 */
 	private void calculateBoundingRadius() {
+		Vector2 farthestAway = null;
+
 		switch (mShapeType) {
 		case CIRCLE:
 			mBoundingRadius = mShapeCircleRadius;
@@ -288,30 +289,23 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 			break;
 
-		case IMAGE:
 		case RECTANGLE:
 		case TRIANGLE:
-		case CUSTOM: {
-			Vector2 farthestAway = null;
-			// Use corners
-			if (mShapeType == ActorShapeTypes.CUSTOM) {
-				farthestAway = Geometry.vertexFarthestAway(mCenterOffset, mCorners);
-			}
-			// Use vertices
-			else {
-				farthestAway = Geometry.vertexFarthestAway(mCenterOffset, mVertices);
-			}
+			farthestAway = Geometry.vertexFarthestAway(mCenterOffset, mVertices);
+			break;
 
-			if (farthestAway != null) {
-				Vector2 diffVector = Pools.vector2.obtain();
-				diffVector.set(mCenterOffset).add(farthestAway);
-				mBoundingRadius = diffVector.len();
-				Pools.vector2.free(diffVector);
-			} else {
-				mBoundingRadius = 0;
-			}
+		case IMAGE:
+		case CUSTOM:
+			farthestAway = Geometry.vertexFarthestAway(mCenterOffset, mCorners);
 			break;
 		}
+
+		if (farthestAway != null) {
+			Vector2 diffVector = new Vector2();
+			diffVector.set(mCenterOffset).add(farthestAway);
+			mBoundingRadius = diffVector.len();
+		} else {
+			mBoundingRadius = 0;
 		}
 	}
 
@@ -353,41 +347,28 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		mShapeType = shapeType;
 
-		// Too many fixtures
-		// if (mFixtureDefs.size() > 1) {
-		// // Save first fixture def
-		// FixtureDef fixtureDef = mFixtureDefs.get(0);
-		// clearFixtures();
-		// addFixtureDef(fixtureDef);
-		// }
-		// Too few
-		// else if (mFixtureDefs.size() == 0) {
 		addFixtureDef(getDefaultFixtureDef());
-		// }
 
 		FixtureDef fixtureDef = getFirstFixtureDef();
 
 		if (fixtureDef != null) {
-			// // Remove the old shape if one exists
-			// if (fixtureDef.shape != null) {
-			// fixtureDef.shape.dispose();
-			// fixtureDef.shape = null;
-			// }
-
 			// Create the new shape
 			switch (shapeType) {
 			case CIRCLE:
 				fixtureDef.shape = createCircleShape();
+				calculateBoundingRadius();
 				break;
 
 
 			case RECTANGLE:
 				fixtureDef.shape = createRectangleShape();
+				calculateBoundingRadius();
 				break;
 
 
 			case TRIANGLE:
 				fixtureDef.shape = createTriangleShape();
+				calculateBoundingRadius();
 				break;
 
 
@@ -396,12 +377,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				fixCustomShapeFixtures();
 				break;
 			}
-
 		} else {
 			Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeType()");
 		}
 
-		calculateBoundingRadius();
 
 		fixtureChanged();
 	}
@@ -458,7 +437,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
-		mCorners.add(index, Pools.vector2.obtain().set(corner));
+		// mCorners.add(index, Pools.vector2.obtain().set(corner));
+		mCorners.add(index, new Vector2(corner));
 		fixtureChanged();
 	}
 
@@ -548,8 +528,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * there.
 	 */
 	public void resetCenterOffset() {
-		Vector2 center = Pools.vector2.obtain();
-		center.set(0, 0);
+		Vector2 center = new Vector2();
 
 		switch (mShapeType) {
 		case CIRCLE:
@@ -568,6 +547,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 
 		case CUSTOM:
+		case IMAGE:
 			// Polygon, calculate center
 			if (mCorners.size() >= 3) {
 				for (Vector2 vertex : mCorners) {
@@ -579,16 +559,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				center.set(0, 0);
 			}
 			break;
-
-
-		case IMAGE:
-			// Does nothing
-			break;
 		}
 
 		setCenterOffset(center);
-		Pools.vector2.free(center);
-
 		fixtureChanged();
 	}
 
@@ -622,7 +595,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 *         non-complex
 	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
-	@SuppressWarnings("unchecked")
 	public void fixCustomShapeFixtures() {
 		// Destroy previous fixtures
 		clearFixtures();
@@ -677,7 +649,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				} catch (PolygonComplexException e) {
 					handlePolygonComplexException(tempVertices, e);
 				}
-				Pools.arrayList.free(tempVertices);
 				tempVertices = null;
 			}
 
@@ -686,7 +657,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			for (int i = 0; i < triangleVertices.length; ++i) {
 				triangleVertices[i] = new Vector2();
 			}
-			Vector2 lengthTest = Pools.vector2.obtain();
+			Vector2 lengthTest = new Vector2();
 
 			// Add the fixtures
 			for (int triangle = 0; triangle < cTriangles; ++triangle) {
@@ -741,7 +712,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 					Gdx.app.error("ActorDef", throwException.getMessage());
 					if (mShapeType == ActorShapeTypes.CUSTOM) {
 						Pools.vector2.freeDuplicates(triangles);
-						Pools.arrayList.free(triangles);
 						triangles = null;
 						Pools.vector2.free(lengthTest);
 						lengthTest = null;
@@ -773,9 +743,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			if (!mShapeComplete) {
 				clearVertices();
 			} else {
-				mPolygon = Pools.arrayList.obtain();
+				mPolygon = new ArrayList<>();
 				for (Vector2 vertex : mCorners) {
-					mPolygon.add(Pools.vector2.obtain().set(vertex));
+					mPolygon.add(new Vector2(vertex));
 				}
 			}
 
@@ -785,8 +755,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		else if (mCorners.size() >= 1) {
 			CircleShape circle = new CircleShape();
 
-			Vector2 offsetPosition = Pools.vector2.obtain();
-			offsetPosition.set(0, 0).sub(mCenterOffset).sub(mCorners.get(0));
+			Vector2 offsetPosition = new Vector2();
+			offsetPosition.sub(mCenterOffset).sub(mCorners.get(0));
 
 			float radius = 0;
 
@@ -796,11 +766,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			}
 			// Else two corners, determine radius of circle
 			else {
-				Vector2 lengthVector = Pools.vector2.obtain();
-				lengthVector.set(mCorners.get(0)).sub(mCorners.get(1));
+				Vector2 lengthVector = new Vector2(mCorners.get(0)).sub(mCorners.get(1));
 				radius = lengthVector.len();
-				Pools.vector2.free(lengthVector);
-				lengthVector = null;
 			}
 			circle.setRadius(radius);
 
@@ -815,14 +782,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVertices);
 
-			mPolygon = Pools.arrayList.obtain();
 			for (Vector2 vertex : circleVertices) {
-				mPolygon.add(Pools.vector2.obtain().set(vertex));
+				mPolygon.add(new Vector2(vertex));
 			}
-
-			Pools.arrayList.free(circleVertices);
-			Pools.vector2.free(offsetPosition);
-			offsetPosition = null;
 		}
 
 		calculateBoundingRadius();
@@ -840,7 +802,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Creates a circle from the visual variables
 	 * @return circle shape for fixture
 	 */
-	@SuppressWarnings("unchecked")
 	private CircleShape createCircleShape() {
 		clearVertices();
 
@@ -854,9 +815,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
 
-		mPolygon = Pools.arrayList.obtain();
 		for (Vector2 vertex : circleVertices) {
-			mPolygon.add(Pools.vector2.obtain().set(vertex));
+			mPolygon.add(new Vector2(vertex));
 		}
 
 		return circleShape;
@@ -866,7 +826,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Creates a rectangle shape from the visual variables
 	 * @return rectangle shape for fixture
 	 */
-	@SuppressWarnings("unchecked")
 	private PolygonShape createRectangleShape() {
 		PolygonShape rectangleShape = new PolygonShape();
 
@@ -881,29 +840,26 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
-			mVertices = Pools.arrayList.obtain();
-			mPolygon = Pools.arrayList.obtain();
-
 			// First triangle
-			Vector2 vertex = Pools.vector2.obtain();
+			Vector2 vertex = new Vector2();
 			rectangleShape.getVertex(0, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(Pools.vector2.obtain().set(vertex));
-			vertex = Pools.vector2.obtain();
+			mPolygon.add(new Vector2(vertex));
+			vertex = new Vector2();
 			rectangleShape.getVertex(1, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(Pools.vector2.obtain().set(vertex));
-			vertex = Pools.vector2.obtain();
+			mPolygon.add(new Vector2(vertex));
+			vertex = new Vector2();
 			rectangleShape.getVertex(2, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(Pools.vector2.obtain().set(vertex));
+			mPolygon.add(new Vector2(vertex));
 
 			// Second triangle
 			mVertices.add(vertex);
-			vertex = Pools.vector2.obtain();
+			vertex = new Vector2();
 			rectangleShape.getVertex(3, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(Pools.vector2.obtain().set(vertex));
+			mPolygon.add(new Vector2(vertex));
 			mVertices.add(mVertices.get(0));
 
 		} else {
@@ -917,13 +873,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Creates a triangle shape from the visual variables
 	 * @return triangle polygon used for fixture
 	 */
-	@SuppressWarnings("unchecked")
 	private PolygonShape createTriangleShape() {
-		Vector2[] vertices = new Vector2[3];
-
-		for (int i = 0; i < vertices.length; ++i) {
-			vertices[i] = Pools.vector2.obtain();
-		}
+		Vector2[] vertices = com.spiddekauga.utils.Collections.fillNew(new Vector2[3], Vector2.class);
 
 		// It will look something like this:
 		// | \
@@ -944,7 +895,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 
 		// Set the center...
-		Vector2 center = Pools.vector2.obtain();
+		Vector2 center = new Vector2();
 		center.set(vertices[0]).add(vertices[1]).add(vertices[2]).scl(1f / 3f);
 
 		// Offset all vertices with negative center
@@ -956,17 +907,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		PolygonShape polygonShape = new PolygonShape();
 		polygonShape.set(vertices);
-
-		Pools.vector2.free(center);
 		center = null;
 
 		// Set vertices and create border
 		clearVertices();
-		mVertices = Pools.arrayList.obtain();
-		mPolygon = Pools.arrayList.obtain();
 		for (Vector2 vertex : vertices) {
 			mVertices.add(vertex);
-			mPolygon.add(Pools.vector2.obtain().set(vertex));
+			mPolygon.add(new Vector2(vertex));
 		}
 
 
@@ -1045,8 +992,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * @return new array list with a copy of the vertices
 	 */
 	private ArrayList<Vector2> createCopy(ArrayList<Vector2> vertices) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> copy = Pools.arrayList.obtain();
+		ArrayList<Vector2> copy = new ArrayList<>();
 
 		for (Vector2 vertex : vertices) {
 			copy.add(Pools.vector2.obtain().set(vertex));
@@ -1063,7 +1009,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
 		Pools.vector2.freeAll(tempVertices);
-		Pools.arrayList.free(tempVertices);
 		tempVertices = null;
 
 		if (exception == null) {
@@ -1174,6 +1119,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public void setImageName(IImageNames imageName) {
 		mImageName = imageName;
+		if (imageName == null && mImageOffset != null) {
+			Pools.vector2.free(mImageOffset);
+		}
 	}
 
 	/**
@@ -1183,36 +1131,117 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		return mImageName;
 	}
 
+	/**
+	 * @return image to draw as the actor; null if no image has been set
+	 */
+	public Sprite getImage() {
+		// TODO create sprite if it hasn't been created yet.
+
+		return mImage;
+	}
+
+	private void disposeImage() {
+		if (mImageOffset != null) {
+			Pools.vector2.free(mImageOffset);
+		}
+
+		if (mContourRaw != null) {
+			Pools.vector2.freeAll(mContourRaw);
+		}
+	}
+
+	/**
+	 * Set image scaling. Call {@link #updateImageShape(float, float, float)} to update
+	 * the image
+	 * @param scale
+	 */
+	public void setImageScale(float scale) {
+		mImageScale = scale;
+	}
+
+	/**
+	 * @return image scaling
+	 */
+	public float getImageScale() {
+		return mImageScale;
+	}
+
+	/**
+	 * Update the image actor's shape
+	 * @param distMin minimum distance between corners
+	 * @param angleMin minimum angle between corners
+	 * @param worldScale amount of world scale
+	 */
+	public void updateImageShape(float distMin, float angleMin, float worldScale) {
+		if (mImageName == null) {
+			return;
+		}
+
+		clearCorners();
+
+		// Calculate raw corners if we don't have yet
+		if (mContourRaw == null) {
+			TextureRegion region = SkinNames.getRegion(mImageName);
+			mContourRaw = Graphics.getContour(region);
+		}
+
+		ArrayList<Vector2> transformedContour = createCopy(mContourRaw);
+
+		// Remove excessive corners
+		ArrayList<PointIndex> removedPoints = Geometry.removeExcessivePoints(distMin * distMin, angleMin, transformedContour);
+		for (PointIndex pointIndex : removedPoints) {
+			Pools.vector2.free(pointIndex.point);
+		}
+
+		// Scale
+		float scale = worldScale * mImageScale;
+		for (Vector2 point : transformedContour) {
+			point.scl(scale);
+		}
+
+		addCorners(transformedContour);
+		fixCustomShapeFixtures();
+
+		Pools.vector2.freeAll(transformedContour);
+	}
+
+
 	@Tag(52) private Color mColor = new Color();
 	@Tag(49) private ActorShapeTypes mShapeType = null;
 	@Tag(60) private float mShapeCircleRadius;
 	@Tag(61) private float mShapeWidth;
 	@Tag(62) private float mShapeHeight;
-	@Tag(51) private Vector2 mCenterOffset = Pools.vector2.obtain().set(0, 0);
+	@Tag(51) private Vector2 mCenterOffset = new Vector2();
 	@Tag(50) private ActorTypes mActorType = null;
 	/** Corners of polygon, used for custom shapes */
-	@SuppressWarnings("unchecked") @Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	@Tag(63) private ArrayList<Vector2> mCorners = new ArrayList<>();
 	@Tag(126) private IImageNames mImageName = null;
+	@Tag(127) private Vector2 mImageOffset = null;
+	@Tag(128) private float mImageScale = 1;
 
 	// Fixture def values
 	private float mDensity = 0;
 	private float mElasticity = 0;
 	private float mFriction = 0;
 
+	/** Temporary raw image contour points of the actor */
+	private ArrayList<Vector2> mContourRaw = null;
+	/** Image/Texture to draw as the actor */
+	private Sprite mImage = null;
 	/**
 	 * Array list of the polygon figure, this contains the vertices but not in triangles.
 	 * Used for when creating a border of some kind
 	 */
-	private ArrayList<Vector2> mPolygon = null;
+	private ArrayList<Vector2> mPolygon = new ArrayList<>();
 	/**
 	 * Triangle vertices. To easier render the shape. No optimization has been done to
 	 * reduce the number of vertices.
 	 */
-	private ArrayList<Vector2> mVertices = null;
+	private ArrayList<Vector2> mVertices = new ArrayList<>();
 	/** True if shape is drawable/complete */
 	private boolean mShapeComplete = true;
 	/** Defines the mass, shape, etc. */
-	@SuppressWarnings("unchecked") private ArrayList<FixtureDef> mFixtureDefs = Pools.arrayList.obtain();
+	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<>();
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
 	/** Time when the fixture was changed last time */

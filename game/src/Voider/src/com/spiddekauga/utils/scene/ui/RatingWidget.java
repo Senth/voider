@@ -9,14 +9,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.utils.Disposable;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Widget for displaying ratings that can be changed if set
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class RatingWidget extends WidgetGroup implements Disposable {
+public class RatingWidget extends WidgetGroup {
 
 	/**
 	 * Constructor which sets the style for the rating and number of stars. Rating can be
@@ -78,13 +76,6 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	 */
 	public RatingWidget(Drawable checked, Drawable empty, int ratingMax, Touchable touchable) {
 		this(new RatingWidgetStyle(checked, empty), ratingMax, touchable);
-	}
-
-	@Override
-	public void dispose() {
-		if (mChangeListeners != null) {
-			Pools.arrayList.free(mChangeListeners);
-		}
 	}
 
 	/**
@@ -281,7 +272,7 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	/** Table where the stars are located */
 	private AlignTable mTable = new AlignTable();
 	/** Rating listeners */
-	@SuppressWarnings("unchecked") private ArrayList<IRatingListener> mChangeListeners = Pools.arrayList.obtain();
+	private ArrayList<IRatingListener> mChangeListeners = new ArrayList<>();
 
 	/**
 	 * Style for rating widget

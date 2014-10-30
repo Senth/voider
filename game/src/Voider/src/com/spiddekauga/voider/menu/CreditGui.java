@@ -15,9 +15,9 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.menu.CreditScene.CreditName;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.resources.SkinNames.CreditImages;
-import com.spiddekauga.voider.resources.SkinNames.IImageNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.CreditImages;
+import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**

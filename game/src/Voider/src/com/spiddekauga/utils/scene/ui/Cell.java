@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Wrapper for a cell. Contains both the actor in the cell and align information
@@ -627,7 +626,7 @@ public class Cell implements Poolable, IPadding<Cell> {
 			return;
 		}
 
-		Vector2 offset = Pools.vector2.obtain();
+		Vector2 offset = new Vector2();
 		offset.set(startPos);
 
 		// Horizontal
@@ -655,9 +654,6 @@ public class Cell implements Poolable, IPadding<Cell> {
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).layout();
 		}
-
-		Pools.vector2.free(offset);
-
 	}
 
 	/**

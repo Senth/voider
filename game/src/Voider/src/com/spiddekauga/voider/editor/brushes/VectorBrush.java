@@ -65,6 +65,7 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 
 	@Override
 	public void clearCorners() {
+		Pools.vector2.freeAll(mCorners);
 		mCorners.clear();
 	}
 
@@ -122,9 +123,7 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 
 	@Override
 	public void dispose() {
-		Pools.vector2.freeAll(mCorners);
-		Pools.arrayList.free(mCorners);
-		mCorners = null;
+		clearCorners();
 	}
 
 	/**
@@ -147,7 +146,7 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	}
 
 	/** All corners */
-	@SuppressWarnings("unchecked") private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	private ArrayList<Vector2> mCorners = new ArrayList<>();
 	/** If the brush shall add or erase */
 	private boolean mAddMode = true;
 }

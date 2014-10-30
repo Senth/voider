@@ -15,12 +15,11 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -42,10 +41,9 @@ public class BulletEditor extends ActorEditor {
 		super.onInit();
 
 		mWeapon.setWeaponDef(new WeaponDef());
-		Vector2 weaponPos = Pools.vector2.obtain();
+		Vector2 weaponPos = new Vector2();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.7f, weaponPos, true);
 		mWeapon.setPosition(weaponPos);
-		Pools.vector2.free(weaponPos);
 	}
 
 	@Override
@@ -135,7 +133,7 @@ public class BulletEditor extends ActorEditor {
 	@Override
 	public void newDef() {
 		BulletActorDef newDef = new BulletActorDef();
-		newDef.getVisualVars().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
+		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
 		setDef(newDef);
 		mGui.resetValues();
 		setSaved();
@@ -191,56 +189,6 @@ public class BulletEditor extends ActorEditor {
 		mGui.resetValues();
 		mInvoker.dispose();
 		saveDef();
-	}
-
-	/**
-	 * Sets colliding damage of the enemy
-	 * @param damage how much damage the enemy will inflict on a collision
-	 */
-	@Override
-	public void setCollisionDamage(float damage) {
-		if (mDef != null) {
-			mDef.setCollisionDamage(damage);
-
-			setUnsaved();
-		}
-	}
-
-	/**
-	 * @return collision damage with the enemy
-	 */
-	@Override
-	public float getCollisionDamage() {
-		if (mDef != null) {
-			return mDef.getCollisionDamage();
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Sets whether this actor shall be destroyed on collision
-	 * @param destroyOnCollision set to true to destroy the enemy on collision
-	 */
-	@Override
-	public void setDestroyOnCollide(boolean destroyOnCollision) {
-		if (mDef != null) {
-			mDef.setDestroyOnCollide(destroyOnCollision);
-
-			setUnsaved();
-		}
-	}
-
-	/**
-	 * @return true if this enemy shall be destroyed on collision
-	 */
-	@Override
-	public boolean isDestroyedOnCollide() {
-		if (mDef != null) {
-			return mDef.isDestroyedOnCollide();
-		} else {
-			return false;
-		}
 	}
 
 	/**
@@ -323,6 +271,16 @@ public class BulletEditor extends ActorEditor {
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
 		}
+	}
+
+	@Override
+	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
+		// Does nothing
+	}
+
+	@Override
+	public boolean isDrawOnlyOutline() {
+		return false;
 	}
 
 	@Override

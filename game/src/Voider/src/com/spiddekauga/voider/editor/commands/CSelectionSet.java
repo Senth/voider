@@ -6,11 +6,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Sets the current selection
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CSelectionSet extends Command implements Disposable {
@@ -60,17 +58,10 @@ public class CSelectionSet extends Command implements Disposable {
 		}
 	}
 
-	@Override
-	public void dispose() {
-		Pools.arrayList.free(mOldSelection);
-		mOldSelection = null;
-	}
-
 	/** The resources to select */
 	private IResource[] mResources;
 	/** Old selection */
-	@SuppressWarnings("unchecked")
-	private ArrayList<IResource> mOldSelection = Pools.arrayList.obtain();
+	private ArrayList<IResource> mOldSelection = new ArrayList<>();
 	/** The selection */
 	private ISelection mSelection;
 }

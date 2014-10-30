@@ -32,6 +32,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
@@ -39,20 +40,18 @@ import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourceHasDef;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourcePrepareWrite;
-import com.spiddekauga.voider.resources.IResourceRender;
+import com.spiddekauga.voider.resources.IResourceRenderShape;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A game level
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-		IResourceRevision, IResourceHasDef {
+IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -148,7 +147,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			for (IResourceEditorUpdate resource : resourceUpdates) {
 				resource.updateEditor();
 			}
-			Pools.arrayList.free(resourceUpdates);
 			resourceUpdates = null;
 		}
 	}
@@ -265,22 +263,20 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	public void render(ShapeRendererEx shapeRenderer) {
 		if (mRunning) {
 			if (mResourceRenders == null) {
-				mResourceRenders = mResourceBinder.getResources(IResourceRender.class);
+				mResourceRenders = mResourceBinder.getResources(IResourceRenderShape.class);
 			}
-			for (IResourceRender resourceRender : mResourceRenders) {
-				resourceRender.render(shapeRenderer);
+			for (IResourceRenderShape resourceRender : mResourceRenders) {
+				resourceRender.renderShape(shapeRenderer);
 			}
 		} else {
-			ArrayList<IResourceRender> resourceRenders = mResourceBinder.getResources(IResourceRender.class);
-			for (IResourceRender resourceRender : resourceRenders) {
-				resourceRender.render(shapeRenderer);
+			ArrayList<IResourceRenderShape> resourceRenders = mResourceBinder.getResources(IResourceRenderShape.class);
+			for (IResourceRenderShape resourceRender : resourceRenders) {
+				resourceRender.renderShape(shapeRenderer);
 			}
-			Pools.arrayList.free(resourceRenders);
-			resourceRenders = null;
 		}
 
 		if (mPlayerActor != null) {
-			mPlayerActor.render(shapeRenderer);
+			mPlayerActor.renderShape(shapeRenderer);
 		}
 	}
 
@@ -293,8 +289,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		for (IResourceEditorRender resourceRender : resourceRenders) {
 			resourceRender.renderEditor(shapeRenderer);
 		}
-		Pools.arrayList.free(resourceRenders);
-		resourceRenders = null;
 	}
 
 	/**
@@ -385,8 +379,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 				}
 			}
 		}
-		Pools.arrayList.free(enemies);
-		enemies = null;
 	}
 
 	/**
@@ -427,18 +419,13 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			for (Disposable disposable : disposables) {
 				disposable.dispose();
 			}
-			Pools.arrayList.free(disposables);
-			disposables = null;
-
 			mResourceBinder = null;
 		}
 
 		if (mResourceRenders != null) {
-			Pools.arrayList.free(mResourceRenders);
 			mResourceRenders = null;
 		}
 		if (mResourceUpdates != null) {
-			Pools.arrayList.free(mResourceUpdates);
 			mResourceUpdates = null;
 		}
 	}
@@ -490,9 +477,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		} else {
 			mLevelDef.setStartXCoord(0);
 		}
-
-		Pools.arrayList.free(resources);
-		resources = null;
 	}
 
 	/**
@@ -518,9 +502,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		} else {
 			mLevelDef.setEndXCoord(100);
 		}
-
-		Pools.arrayList.free(resources);
-		resources = null;
 	}
 
 	@Override
@@ -532,8 +513,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 		// Remove multiple enemies from the group, i.e. only save the leader.
 		if (Actor.isEditorActive()) {
-			@SuppressWarnings("unchecked")
-			ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
+			ArrayList<EnemyActor> removeEnemies = new ArrayList<>();
 
 			for (EnemyActor enemyActor : mResourceBinder.getResources(EnemyActor.class)) {
 				int cEnemiesBefore = removeEnemies.size();
@@ -553,8 +533,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 				mResourceBinder.removeResource(removeEnemy.getId(), false);
 				removeEnemy.dispose();
 			}
-
-			Pools.arrayList.free(removeEnemies);
 			removeEnemies = null;
 		}
 	}
@@ -568,8 +546,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	public void postRead() {
 		// Add all the removed enemies again
 		if (!mGroupEnemiesSave.isEmpty()) {
-			@SuppressWarnings("unchecked")
-			ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
+			ArrayList<EnemyActor> addEnemies = new ArrayList<>();
 
 			for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
 				EnemyGroup enemyGroup = entry.getKey();
@@ -581,8 +558,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			for (EnemyActor addEnemy : addEnemies) {
 				mResourceBinder.addResource(addEnemy);
 			}
-
-			Pools.arrayList.free(addEnemies);
 			addEnemies = null;
 		}
 	}
@@ -650,7 +625,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All resources that shall be rendered */
-	private ArrayList<IResourceRender> mResourceRenders = null;
+	private ArrayList<IResourceRenderShape> mResourceRenders = null;
 	/** Current x coordinate (of the screen's left edge) */
 	@Tag(14) private float mXCoord = 0.0f;
 	/** Level definition for this level */

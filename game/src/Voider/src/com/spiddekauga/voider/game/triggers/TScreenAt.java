@@ -17,9 +17,9 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -160,8 +160,8 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 			float halfHeight = SceneSwitcher.getWorldHeight() * 0.5f;
 
 			// Create vertices for the body
-			Vector2 upperVertex = Pools.vector2.obtain();
-			Vector2 lowerVertex = Pools.vector2.obtain();
+			Vector2 upperVertex = new Vector2();
+			Vector2 lowerVertex = new Vector2();
 			upperVertex.set(0, -halfHeight).add(mPosition);
 			lowerVertex.set(0, halfHeight).add(mPosition);
 
@@ -180,8 +180,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	 */
 	private void destroyVertices() {
 		if (mVertices != null) {
-			Pools.vector2.freeDuplicates(mVertices);
-			Pools.arrayList.free(mVertices);
 			mVertices = null;
 		}
 	}
@@ -205,5 +203,5 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	/** Level to check for the x-coordinate */
 	@Tag(34) private Level mLevel = null;
 	/** Temporary position, stores x-coord for getting the position */
-	@Tag(35) private Vector2 mPosition = Pools.vector2.obtain();
+	@Tag(35) private Vector2 mPosition = new Vector2();
 }

@@ -2,23 +2,20 @@ package com.spiddekauga.voider.editor.brushes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A simple resource that draws a rectangle
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class RectangleBrush extends Resource implements IResourceEditorRender, Disposable {
+public class RectangleBrush extends Resource implements IResourceEditorRender {
 	/**
-	 * Creates the rectangle with a start point. The end point
-	 * will be set to the start point.
+	 * Creates the rectangle with a start point. The end point will be set to the start
+	 * point.
 	 * @param color the color of the brush
 	 * @param startPoint where the rectangle starts
 	 */
@@ -36,12 +33,6 @@ public class RectangleBrush extends Resource implements IResourceEditorRender, D
 		mColor.set(color);
 		mStartPoint.set(startPoint);
 		mEndPoint.set(endPoint);
-	}
-
-	@Override
-	public void dispose() {
-		Pools.vector2.freeAll(mStartPoint, mEndPoint);
-		Pools.color.free(mColor);
 	}
 
 	@Override
@@ -92,9 +83,9 @@ public class RectangleBrush extends Resource implements IResourceEditorRender, D
 	}
 
 	/** Color of the brush */
-	private Color mColor = Pools.color.obtain();
+	private Color mColor = new Color();
 	/** Start point of the rectangle */
-	private Vector2 mStartPoint = Pools.vector2.obtain();
+	private Vector2 mStartPoint = new Vector2();
 	/** End point of the rectangle */
-	private Vector2 mEndPoint = Pools.vector2.obtain();
+	private Vector2 mEndPoint = new Vector2();
 }

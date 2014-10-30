@@ -12,7 +12,6 @@ import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.repo.SqliteGateway;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Gateway for handling resource in an SQLite database
@@ -80,8 +79,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 *         all resources that have been removed
 	 */
 	ArrayList<UUID> getRemovedResources() {
-		@SuppressWarnings("unchecked")
-		ArrayList<UUID> resources = Pools.arrayList.obtain();
+		ArrayList<UUID> resources = new ArrayList<>();
 
 		DatabaseCursor cursor = rawQuery("SELECT * FROM resource_removed;");
 
@@ -149,8 +147,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @return all resources of the specified type. Don't forget to free the arraylist!
 	 */
 	ArrayList<UUID> getAll(int typeIdentifier) {
-		@SuppressWarnings("unchecked")
-		ArrayList<UUID> resources = Pools.arrayList.obtain();
+		ArrayList<UUID> resources = new ArrayList<>();
 
 		DatabaseCursor cursor = rawQuery("SELECT uuid FROM resource WHERE type=" + typeIdentifier + ";");
 
@@ -184,13 +181,12 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @return all revisions
 	 */
 	ArrayList<RevisionEntity> getRevisions(UUID uuid) {
-		@SuppressWarnings("unchecked")
-		ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
+		ArrayList<RevisionEntity> revisions = new ArrayList<>();
 
 		DatabaseCursor cursor = rawQuery("SELECT * FROM resource_revision WHERE uuid='" + uuid + "';");
 
 		while (cursor.next()) {
-			RevisionEntity revisionInfo = Pools.revisionInfo.obtain();
+			RevisionEntity revisionInfo = new RevisionEntity();
 			revisionInfo.revision = cursor.getInt(RESOURCE_REVISION__REVISION);
 			revisionInfo.date.setTime(cursor.getLong(RESOURCE_REVISION__DATE));
 			revisions.add(revisionInfo);
@@ -210,7 +206,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 		DatabaseCursor cursor = rawQuery("SELECT * FROM resource_revision WHERE uuid='" + uuid + "' ORDER BY revision DESC LIMIT 1;");
 
 		if (cursor.next()) {
-			RevisionEntity revisionInfo = Pools.revisionInfo.obtain();
+			RevisionEntity revisionInfo = new RevisionEntity();
 			revisionInfo.revision = cursor.getInt(RESOURCE_REVISION__REVISION);
 			revisionInfo.date.setTime(cursor.getLong(RESOURCE_REVISION__DATE));
 			cursor.close();

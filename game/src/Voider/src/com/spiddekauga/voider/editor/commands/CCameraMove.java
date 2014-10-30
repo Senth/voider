@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.ICommandCombinable;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -67,15 +66,10 @@ public class CCameraMove extends Command implements ICommandCombinable {
 		EventDispatcher.getInstance().fire(new GameEvent(EventTypes.CAMERA_MOVED));
 	}
 
-	@Override
-	public void dispose() {
-		Pools.vector2.freeAll(mNewPos, mOldPos);
-	}
-
 	/** The camera to move */
 	private Camera mCamera;
 	/** New position of the camera (execute()) */
-	private Vector2 mNewPos = Pools.vector2.obtain();
+	private Vector2 mNewPos = new Vector2();
 	/** Old position of the camera (undo()) */
-	private Vector2 mOldPos = Pools.vector2.obtain();
+	private Vector2 mOldPos = new Vector2();
 }

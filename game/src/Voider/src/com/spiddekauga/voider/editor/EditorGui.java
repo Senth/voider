@@ -28,14 +28,14 @@ import com.spiddekauga.utils.commands.CSceneReturn;
 import com.spiddekauga.utils.commands.CSceneSwitch;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
@@ -49,17 +49,16 @@ import com.spiddekauga.voider.editor.commands.CEditorUndoJustCreated;
 import com.spiddekauga.voider.editor.commands.CLevelRun;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.menu.MainMenu;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceTexture;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Messages.UnsavedActions;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -85,8 +84,6 @@ public abstract class EditorGui extends Gui {
 
 		if (mBodies != null) {
 			clearCollisionBoxes();
-			Pools.arrayList.free(mBodies);
-			mBodies = null;
 		}
 
 		super.dispose();
@@ -101,7 +98,6 @@ public abstract class EditorGui extends Gui {
 		mInvoker = mEditor.getInvoker();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -119,8 +115,6 @@ public abstract class EditorGui extends Gui {
 
 			initTooltipBar();
 		}
-
-		mBodies = Pools.arrayList.obtain();
 
 		mEditorMenu.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 		mEditMenu.setAlignTable(Horizontal.CENTER, Vertical.TOP);
@@ -149,7 +143,8 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * An optional settings menu for the editor. E.g. to switch between visuals and weapon settings in enemy editor.
+	 * An optional settings menu for the editor. E.g. to switch between visuals and weapon
+	 * settings in enemy editor.
 	 */
 	protected void initSettingsMenu() {
 		mSettingTabs = mUiFactory.createRightPanel();
@@ -627,7 +622,6 @@ public abstract class EditorGui extends Gui {
 			depTable.add(label);
 		}
 
-		Pools.arrayList.free(dependencies);
 		ScrollPane scrollPane = new ScrollPane(depTable, (ScrollPaneStyle) SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND));
 		scrollPane.setTouchable(Touchable.enabled);
 		content.setTouchable(Touchable.childrenOnly);
@@ -702,12 +696,13 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Run a command. If the editor isn't saved a message box is displayed that asks the player to either save or
-	 * discard the resource before executing the command.
+	 * Run a command. If the editor isn't saved a message box is displayed that asks the
+	 * player to either save or discard the resource before executing the command.
 	 * @param command the command to run
 	 * @param title message box title
 	 * @param saveButtonText text for the save button then execute the command
-	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
+	 * @param withoutSaveButtonText text for the button when to just execute the command
+	 *        without saving
 	 * @param content the message to be displayed in the message box
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content) {
@@ -715,14 +710,16 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Run a command. Displays a message box that asks the player to either save or discard the resources before
-	 * executing the command.
+	 * Run a command. Displays a message box that asks the player to either save or
+	 * discard the resources before executing the command.
 	 * @param command the command to run
 	 * @param title message box title
 	 * @param saveButtonText text for the save button then execute the command
-	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
+	 * @param withoutSaveButtonText text for the button when to just execute the command
+	 *        without saving
 	 * @param content the message to be displayed in the message box
-	 * @param alwaysShow set to true to always show the message box even if the resource has been saved
+	 * @param alwaysShow set to true to always show the message box even if the resource
+	 *        has been saved
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content,
 			boolean alwaysShow) {
@@ -748,7 +745,7 @@ public abstract class EditorGui extends Gui {
 	 * @param actors
 	 */
 	void createCollisionBoxes(Actor... actors) {
-		Vector2 localPos = Pools.vector2.obtain();
+		Vector2 localPos = new Vector2();
 		for (Actor actor : actors) {
 			if (actor.isVisible()) {
 				if (actor instanceof Layout) {
@@ -759,8 +756,6 @@ public abstract class EditorGui extends Gui {
 				createCollisionBox(screenPos.x, screenPos.y, actor.getWidth(), actor.getHeight());
 			}
 		}
-
-		Pools.vector2.free(localPos);
 	}
 
 	/**
@@ -791,7 +786,8 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Reset and add collision boxes for all UI-elements. Should be called once initially and when
+	 * Reset and add collision boxes for all UI-elements. Should be called once initially
+	 * and when
 	 */
 	void resetCollisionBoxes() {
 		if (mEditor == null) {
@@ -886,7 +882,7 @@ public abstract class EditorGui extends Gui {
 	/** Name label */
 	private Label mNameLabel = null;
 	/** All UI-bodies for collision */
-	private ArrayList<Body> mBodies = null;
+	private ArrayList<Body> mBodies = new ArrayList<>();
 	/** Setting widget */
 	protected TabWidget mSettingTabs = null;
 }

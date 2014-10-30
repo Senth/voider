@@ -19,9 +19,9 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Shows error messages on the screen
@@ -77,11 +77,10 @@ public class MessageShower {
 				}
 
 				// Get free label
-				Label messageLabel = Pools.label.obtain();
+				Label messageLabel = UiFactory.getInstance().text.create(message);
 
 				// Reset label
 				messageLabel.setStyle(style);
-				messageLabel.setText(message);
 				messageLabel.setWidth(Gdx.graphics.getWidth() * 0.3f);
 				messageLabel.setWrap(true);
 				mcMessages++;
@@ -94,8 +93,7 @@ public class MessageShower {
 				// Set timer for fadeIn - display - fadeOut - remove - free
 				float showDuration = Messages.calculateTimeToShowMessage(message);
 				Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
-				messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(),
-						Actions.run(new FreeLabel(messageLabel))));
+				messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor()));
 
 			}
 		});
@@ -160,26 +158,6 @@ public class MessageShower {
 		}
 	};
 
-	/**
-	 * Frees the label
-	 */
-	private class FreeLabel implements Runnable {
-		/**
-		 * Which label to free
-		 * @param label the label to free
-		 */
-		public FreeLabel(Label label) {
-			mLabel = label;
-		}
-
-		@Override
-		public void run() {
-			Pools.label.free(mLabel);
-		}
-
-		/** The label to free */
-		private Label mLabel;
-	}
 
 	/** Number of active messages */
 	private int mcMessages = 0;

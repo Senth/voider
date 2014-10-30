@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Screen utilities
@@ -116,10 +115,8 @@ public class Screens {
 		float widthHalf = camera.viewportWidth * zoom * 0.5f;
 		float heightHalf = camera.viewportHeight * zoom * 0.5f;
 
-		Vector2 cameraMin = Pools.vector2.obtain();
-		cameraMin.set(cameraPos).sub(widthHalf, heightHalf);
-		Vector2 cameraMax = Pools.vector2.obtain();
-		cameraMax.set(cameraPos).add(widthHalf, heightHalf);
+		Vector2 cameraMin = new Vector2(cameraPos).sub(widthHalf, heightHalf);
+		Vector2 cameraMax = new Vector2(cameraPos).add(widthHalf, heightHalf);
 
 		boolean clamped = false;
 

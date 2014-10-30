@@ -35,15 +35,11 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.IniLoader;
-import com.spiddekauga.voider.resources.KryoLoaderAsync;
-import com.spiddekauga.voider.resources.KryoLoaderSync;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
 import com.spiddekauga.voider.utils.Pool;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Handles loading resources
@@ -215,7 +211,7 @@ class ResourceLoader {
 	 */
 	@SuppressWarnings("unchecked")
 	<ResourceType extends IResource> ArrayList<ResourceType> getAllLoadedResourcesOf(ExternalTypes type) {
-		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
+		ArrayList<ResourceType> resources = new ArrayList<>();
 
 		for (Entry<UuidRevision, LoadedResource> entry : mLoadedResources.entrySet()) {
 			if (type.getClassType().isAssignableFrom(entry.getValue().resource.getClass())) {

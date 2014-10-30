@@ -53,15 +53,14 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.resources.SkinNames.IImageNames;
-import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Factory for creating UI objects, more specifically combined UI objects. This factory
@@ -286,12 +285,12 @@ public class UiFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-			// Slim fit to text
+		// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-			// Fit to text (but with padding)
+		// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -407,8 +406,7 @@ public class UiFactory {
 		float topLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_TOP_LAYER_SPEED);
 		float bottomLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_BOTTOM_LAYER_SPEED);
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
+		ArrayList<Actor> createdActors = new ArrayList<>();
 
 		ButtonGroup buttonGroup = checkable ? new ButtonGroup() : null;
 
@@ -448,8 +446,6 @@ public class UiFactory {
 				label.setStyle(LabelStyles.HIGHLIGHT.getStyle());
 			}
 		}
-
-		Pools.arrayList.free(createdActors);
 
 		// Remove padding from last table
 		table.getCell().setPadRight(0);

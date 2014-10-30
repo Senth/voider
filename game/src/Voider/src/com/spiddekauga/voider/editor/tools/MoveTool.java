@@ -14,7 +14,6 @@ import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.utils.Pool;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for moving resources that has a position
@@ -51,8 +50,6 @@ public class MoveTool extends TouchTool {
 				mMovingResources.add(resourcePosition);
 				resource.setIsBeingMoved(true);
 			}
-
-			Pools.arrayList.free(selectedResources);
 			mHitResource = false;
 
 			return true;
@@ -66,25 +63,18 @@ public class MoveTool extends TouchTool {
 		if (!mMovingResources.isEmpty()) {
 			// Special case for enemies - snap to path
 			if (mMovingResources.size() == 1 && mSelection.isSelected(EnemyActor.class) && mEditor instanceof LevelEditor) {
-				Vector2 newPosition = Pools.vector2.obtain();
-				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
-				newPosition.add(mMovingResources.get(0).originalPos);
-				EnemyAddTool.setSnapPosition((EnemyActor) mMovingResources.get(0).resource, newPosition, (LevelEditor) mEditor, null);
-
-				Pools.vector2.free(newPosition);
+				mtNewPosition.set(mTouchCurrent).sub(mTouchOrigin);
+				mtNewPosition.add(mMovingResources.get(0).originalPos);
+				EnemyAddTool.setSnapPosition((EnemyActor) mMovingResources.get(0).resource, mtNewPosition, (LevelEditor) mEditor, null);
 			}
 			// Regular move
 			else {
-				Vector2 diffMovement = Pools.vector2.obtain();
-				diffMovement.set(mTouchCurrent).sub(mTouchOrigin);
-				Vector2 newPosition = Pools.vector2.obtain();
+				mtDiffPosition.set(mTouchCurrent).sub(mTouchOrigin);
 
 				for (ResourcePositionWrapper movingResource : mMovingResources) {
-					newPosition.set(movingResource.originalPos).add(diffMovement);
-					movingResource.resource.setPosition(newPosition);
+					mtNewPosition.set(movingResource.originalPos).add(mtDiffPosition);
+					movingResource.resource.setPosition(mtNewPosition);
 				}
-
-				Pools.vector2.freeAll(diffMovement, newPosition);
 			}
 			return true;
 		}
@@ -96,33 +86,26 @@ public class MoveTool extends TouchTool {
 		if (!mMovingResources.isEmpty()) {
 			// Special case for one enemy - snap to path
 			if (mMovingResources.size() == 1 && mSelection.isSelected(EnemyActor.class) && mEditor instanceof LevelEditor) {
-				Vector2 newPosition = Pools.vector2.obtain();
-				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
-				newPosition.add(mMovingResources.get(0).originalPos);
-				EnemyAddTool.setSnapPosition((EnemyActor) mMovingResources.get(0).resource, newPosition, (LevelEditor) mEditor, mInvoker);
+				mtNewPosition.set(mTouchCurrent).sub(mTouchOrigin);
+				mtNewPosition.add(mMovingResources.get(0).originalPos);
+				EnemyAddTool.setSnapPosition((EnemyActor) mMovingResources.get(0).resource, mtNewPosition, (LevelEditor) mEditor, mInvoker);
 
 				mMovingResources.get(0).resource.setIsBeingMoved(false);
-
-				Pools.vector2.free(newPosition);
 			}
 			// Regular move
 			else {
-				Vector2 diffMovement = Pools.vector2.obtain();
-				diffMovement.set(mTouchCurrent).sub(mTouchOrigin);
-				Vector2 newPosition = Pools.vector2.obtain();
+				mtDiffPosition.set(mTouchCurrent).sub(mTouchOrigin);
 
 				// Reset to original position then move to new position using command
 				boolean chained = false;
 				for (ResourcePositionWrapper movingResource : mMovingResources) {
-					newPosition.set(movingResource.originalPos).add(diffMovement);
+					mtNewPosition.set(movingResource.originalPos).add(mtDiffPosition);
 					movingResource.resource.setPosition(movingResource.originalPos);
 					movingResource.resource.setIsBeingMoved(false);
 
-					mInvoker.execute(new CResourceMove(movingResource.resource, newPosition, mEditor), chained);
+					mInvoker.execute(new CResourceMove(movingResource.resource, mtNewPosition, mEditor), chained);
 					chained = true;
 				}
-
-				Pools.vector2.freeAll(diffMovement, newPosition);
 			}
 
 			mResourcePositionPool.freeAll(mMovingResources);
@@ -171,6 +154,10 @@ public class MoveTool extends TouchTool {
 		}
 	};
 
+	/** Temporary new position */
+	private Vector2 mtNewPosition = new Vector2();
+	/** Temporary diff position */
+	private Vector2 mtDiffPosition = new Vector2();
 	/** Array of the current resources we're moving */
 	private ArrayList<ResourcePositionWrapper> mMovingResources = new ArrayList<MoveTool.ResourcePositionWrapper>();
 	/** If we hit a resource with a position */

@@ -130,15 +130,14 @@ public class DrawEraseTool extends ActorTool {
 	 *         intersections for the same actor. Don't forget to free both the hash map
 	 *         and all inner arrays
 	 */
-	@SuppressWarnings("unchecked")
 	private HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersectionsByActor(ArrayList<BrushActorIntersection> intersections) {
-		HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersections = Pools.hashMap.obtain();
+		HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersections = new HashMap<>();
 
 		for (BrushActorIntersection intersection : intersections) {
 			ArrayList<BrushActorIntersection> actorIntersections = splitIntersections.get(intersection.actor);
 
 			if (actorIntersections == null) {
-				actorIntersections = Pools.arrayList.obtain();
+				actorIntersections = new ArrayList<>();
 				splitIntersections.put(intersection.actor, actorIntersections);
 			}
 
@@ -158,7 +157,7 @@ public class DrawEraseTool extends ActorTool {
 		mInvoker.execute(new CActorDefFixCustomFixtures(actor.getDef(), false));
 
 		// Change shape of actor to use the brush corners.
-		IResourceCorner actorCorners = actor.getDef().getVisualVars();
+		IResourceCorner actorCorners = actor.getDef().getVisual();
 		while (intersections.size() >= 2) {
 			boolean intersectionSame = false;
 
@@ -245,15 +244,12 @@ public class DrawEraseTool extends ActorTool {
 					lowIntersection = intersections.get(1);
 					highIntersection = intersections.get(0);
 				}
-
-				Pools.vector2.freeAll(intersection0Diff, intersection1Diff);
 			}
 
 			// Add new corners
 			// Add end intersection
 			Vector2 localPos = getLocalPosition(highIntersection.intersection, actor);
 			mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
-			Pools.vector2.free(localPos);
 
 			// Add brush corners
 			if (highIntersection.brushIndex < lowIntersection.brushIndex) {
@@ -262,7 +258,6 @@ public class DrawEraseTool extends ActorTool {
 				for (int i = fromIndex; i < toIndex; ++i) {
 					localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i), actor);
 					mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
-					Pools.vector2.free(localPos);
 				}
 			} else {
 				int fromIndex = highIntersection.brushIndex;
@@ -270,14 +265,12 @@ public class DrawEraseTool extends ActorTool {
 				for (int i = fromIndex; i > toIndex; --i) {
 					localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i), actor);
 					mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
-					Pools.vector2.free(localPos);
 				}
 			}
 
 			// Add begin intersection
 			localPos = getLocalPosition(lowIntersection.intersection, actor);
 			mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
-			Pools.vector2.free(localPos);
 
 			intersections.remove(1).dispose();
 			intersections.remove(0).dispose();
@@ -309,8 +302,6 @@ public class DrawEraseTool extends ActorTool {
 							}
 						}
 					}
-
-					Pools.vector2.freeAll(brushBegin, brushEnd);
 
 					if (foundIntersection) {
 						currentIntersection.actorIndex = actorIndex;
@@ -355,12 +346,9 @@ public class DrawEraseTool extends ActorTool {
 						int indexToRemove = indicesToRemove.get(i);
 						mInvoker.execute(new CResourceCornerRemove(actorCorners, indexToRemove, mEditor), true);
 					}
-
-					Pools.arrayList.free(indicesToRemove);
 				}
 				// Didn't find any solution, throw again
 				else {
-					Pools.arrayList.free(indicesToRemove);
 					throw e;
 				}
 
@@ -440,7 +428,7 @@ public class DrawEraseTool extends ActorTool {
 	 */
 	@SuppressWarnings("unchecked")
 	private ArrayList<BrushActorIntersection> getBrushActorIntersections() {
-		ArrayList<BrushActorIntersection> intersections = Pools.arrayList.obtain();
+		ArrayList<BrushActorIntersection> intersections = new ArrayList<>();
 		ArrayList<Vector2> brushCorners = mDrawEraseBrush.getCorners();
 
 
@@ -449,7 +437,7 @@ public class DrawEraseTool extends ActorTool {
 
 		// Only the actor we hit
 		if (mHitActor != null) {
-			selectedActors = Pools.arrayList.obtain();
+			selectedActors = new ArrayList<>();
 			selectedActors.add(mHitActor);
 		}
 		// Hit outside of any selected actor, iterate through all
@@ -459,10 +447,10 @@ public class DrawEraseTool extends ActorTool {
 
 
 		// Iterate through all actors
-		ArrayList<Vector2> actorCornerss = Pools.arrayList.obtain();
+		ArrayList<Vector2> actorCornerss = new ArrayList<>();
 		for (Actor selectedActor : selectedActors) {
 			// Convert to world positions
-			for (Vector2 corner : selectedActor.getDef().getVisualVars().getCorners()) {
+			for (Vector2 corner : selectedActor.getDef().getVisual().getCorners()) {
 				actorCornerss.add(getWorldPosition(corner, selectedActor));
 			}
 
@@ -487,10 +475,6 @@ public class DrawEraseTool extends ActorTool {
 			Pools.vector2.freeAll(actorCornerss);
 			actorCornerss.clear();
 		}
-
-
-		Pools.arrayList.freeAll(actorCornerss, selectedActors);
-
 
 		return intersections;
 	}
