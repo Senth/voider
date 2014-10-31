@@ -173,7 +173,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 
 			ArrayList<Vector2> polygon = new ArrayList<Vector2>();
 			ArrayList<Vector2> actorShape = mActor.getDef().getVisual().getPolygonShape();
-			if (actorShape != null) {
+			if (actorShape != null && !actorShape.isEmpty()) {
 				// Copy polygon from actor, so we don't free the actor's vectors when
 				// freeing
 				// this trigger

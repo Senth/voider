@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -28,7 +27,6 @@ import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding or removing from a shape
@@ -272,8 +270,8 @@ public class DrawEraseTool extends ActorTool {
 			localPos = getLocalPosition(lowIntersection.intersection, actor);
 			mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
 
-			intersections.remove(1).dispose();
-			intersections.remove(0).dispose();
+			intersections.remove(1);
+			intersections.remove(0);
 
 
 			// Correct other intersections after we added the corners...
@@ -308,9 +306,6 @@ public class DrawEraseTool extends ActorTool {
 					}
 					// We probably removed the intersections, remove these rest
 					else {
-						for (BrushActorIntersection brushActorIntersection : intersections) {
-							brushActorIntersection.dispose();
-						}
 						intersections.clear();
 						break;
 					}
@@ -447,11 +442,11 @@ public class DrawEraseTool extends ActorTool {
 
 
 		// Iterate through all actors
-		ArrayList<Vector2> actorCornerss = new ArrayList<>();
+		ArrayList<Vector2> actorCorners = new ArrayList<>();
 		for (Actor selectedActor : selectedActors) {
 			// Convert to world positions
 			for (Vector2 corner : selectedActor.getDef().getVisual().getCorners()) {
-				actorCornerss.add(getWorldPosition(corner, selectedActor));
+				actorCorners.add(getWorldPosition(corner, selectedActor));
 			}
 
 
@@ -460,9 +455,9 @@ public class DrawEraseTool extends ActorTool {
 				Vector2 brushLineStart = brushCorners.get(brushIndex);
 				Vector2 brushLineEnd = brushCorners.get(Collections.nextIndex(brushCorners, brushIndex));
 
-				for (int actorIndex = 0; actorIndex < actorCornerss.size(); ++actorIndex) {
-					Vector2 actorLineStart = actorCornerss.get(actorIndex);
-					Vector2 actorLineEnd = actorCornerss.get(Collections.nextIndex(actorCornerss, actorIndex));
+				for (int actorIndex = 0; actorIndex < actorCorners.size(); ++actorIndex) {
+					Vector2 actorLineStart = actorCorners.get(actorIndex);
+					Vector2 actorLineEnd = actorCorners.get(Collections.nextIndex(actorCorners, actorIndex));
 
 					// Save intersection
 					if (Geometry.linesIntersect(actorLineStart, actorLineEnd, brushLineStart, brushLineEnd)) {
@@ -472,8 +467,7 @@ public class DrawEraseTool extends ActorTool {
 					}
 				}
 			}
-			Pools.vector2.freeAll(actorCornerss);
-			actorCornerss.clear();
+			actorCorners.clear();
 		}
 
 		return intersections;
@@ -483,7 +477,7 @@ public class DrawEraseTool extends ActorTool {
 	/**
 	 * Wrapper class for intersection, actor corner index, brush index.
 	 */
-	private class BrushActorIntersection implements Disposable {
+	private class BrushActorIntersection {
 		/**
 		 * Initializes with initial parameters
 		 * @param actor the actor the intersion is in
@@ -496,11 +490,6 @@ public class DrawEraseTool extends ActorTool {
 			this.intersection = intersection;
 			this.actorIndex = actorIndex;
 			this.brushIndex = brushIndex;
-		}
-
-		@Override
-		public void dispose() {
-			Pools.vector2.free(intersection);
 		}
 
 		/** Intersection point */

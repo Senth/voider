@@ -31,14 +31,13 @@ import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Geometry.PointIndex;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Class for all shape variables
@@ -258,13 +257,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public void clearVertices() {
 		if (mVertices != null) {
-			Pools.vector2.freeDuplicates(mVertices);
 			mVertices = null;
 		}
-		if (mPolygon != null) {
-			Pools.vector2.freeDuplicates(mPolygon);
-			mPolygon = null;
-		}
+		mPolygon.clear();
 	}
 
 	/**
@@ -480,7 +475,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public void clearCorners() {
-		Pools.vector2.freeAll(mCorners);
 		mCorners.clear();
 		clearFixtures();
 		clearVertices();
@@ -711,11 +705,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				if (throwException != null) {
 					Gdx.app.error("ActorDef", throwException.getMessage());
 					if (mShapeType == ActorShapeTypes.CUSTOM) {
-						Pools.vector2.freeDuplicates(triangles);
-						triangles = null;
-						Pools.vector2.free(lengthTest);
-						lengthTest = null;
-
 						throw throwException;
 					} else if (mShapeType == ActorShapeTypes.IMAGE) {
 						continue;
@@ -731,11 +720,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				addFixtureDef(fixtureDef);
 			}
 
-			// Free stuff
-			Pools.vector2.freeAll(triangleVertices);
-			Pools.vector2.free(lengthTest);
-			triangleVertices = null;
-			lengthTest = null;
 
 			mVertices = triangles;
 
@@ -743,7 +727,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			if (!mShapeComplete) {
 				clearVertices();
 			} else {
-				mPolygon = new ArrayList<>();
 				for (Vector2 vertex : mCorners) {
 					mPolygon.add(new Vector2(vertex));
 				}
@@ -995,7 +978,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		ArrayList<Vector2> copy = new ArrayList<>();
 
 		for (Vector2 vertex : vertices) {
-			copy.add(Pools.vector2.obtain().set(vertex));
+			copy.add(new Vector2(vertex));
 		}
 
 		return copy;
@@ -1008,9 +991,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 *        exception.
 	 */
 	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
-		Pools.vector2.freeAll(tempVertices);
-		tempVertices = null;
-
 		if (exception == null) {
 			throw new PolygonComplexException();
 		} else {
@@ -1119,9 +1099,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public void setImageName(IImageNames imageName) {
 		mImageName = imageName;
-		if (imageName == null && mImageOffset != null) {
-			Pools.vector2.free(mImageOffset);
-		}
 	}
 
 	/**
@@ -1132,26 +1109,33 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
+	 * @param pos offset the image with this position
 	 * @return image to draw as the actor; null if no image has been set
 	 */
-	public Sprite getImage() {
-		// TODO create sprite if it hasn't been created yet.
+	public Sprite getImage(Vector2 pos) {
+		if (mImageName == null) {
+			return null;
+		}
+
+		if (mImage == null) {
+			TextureRegion textureRegion = SkinNames.getRegion(mImageName);
+			mImage = new Sprite(textureRegion);
+		}
+
+		mImage.setScale(mImageScale / SceneSwitcher.getWorldScreenRatio());
+		Vector2 offset = new Vector2(pos);
+		offset.sub(mImageOffset);
+		mImage.setPosition(offset.x, offset.y);
 
 		return mImage;
 	}
 
 	private void disposeImage() {
-		if (mImageOffset != null) {
-			Pools.vector2.free(mImageOffset);
-		}
-
-		if (mContourRaw != null) {
-			Pools.vector2.freeAll(mContourRaw);
-		}
+		mContourRaw = null;
 	}
 
 	/**
-	 * Set image scaling. Call {@link #updateImageShape(float, float, float)} to update
+	 * Set image scaling. Call {@link #updateImageShape(float, Float, float)} to update
 	 * the image
 	 * @param scale
 	 */
@@ -1169,10 +1153,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/**
 	 * Update the image actor's shape
 	 * @param distMin minimum distance between corners
-	 * @param angleMin minimum angle between corners
+	 * @param angleMin minimum angle between corners, set to null to not use
 	 * @param worldScale amount of world scale
 	 */
-	public void updateImageShape(float distMin, float angleMin, float worldScale) {
+	public void updateImageShape(float distMin, Float angleMin, float worldScale) {
 		if (mImageName == null) {
 			return;
 		}
@@ -1181,17 +1165,16 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		// Calculate raw corners if we don't have yet
 		if (mContourRaw == null) {
+			mImageOffset = new Vector2();
 			TextureRegion region = SkinNames.getRegion(mImageName);
-			mContourRaw = Graphics.getContour(region);
+			mContourRaw = Graphics.getContour(region, mImageOffset);
 		}
+
 
 		ArrayList<Vector2> transformedContour = createCopy(mContourRaw);
 
 		// Remove excessive corners
-		ArrayList<PointIndex> removedPoints = Geometry.removeExcessivePoints(distMin * distMin, angleMin, transformedContour);
-		for (PointIndex pointIndex : removedPoints) {
-			Pools.vector2.free(pointIndex.point);
-		}
+		Geometry.removeExcessivePoints(distMin * distMin, angleMin, transformedContour);
 
 		// Scale
 		float scale = worldScale * mImageScale;
@@ -1202,7 +1185,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		addCorners(transformedContour);
 		fixCustomShapeFixtures();
 
-		Pools.vector2.freeAll(transformedContour);
+		mImage = null;
 	}
 
 
@@ -1216,7 +1199,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/** Corners of polygon, used for custom shapes */
 	@Tag(63) private ArrayList<Vector2> mCorners = new ArrayList<>();
 	@Tag(126) private IImageNames mImageName = null;
-	@Tag(127) private Vector2 mImageOffset = null;
+	@Tag(127) private Vector2 mImageOffset = new Vector2();
 	@Tag(128) private float mImageScale = 1;
 
 	// Fixture def values

@@ -27,7 +27,6 @@ import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding or moving a corner
@@ -74,7 +73,6 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 			if (mCornerIndexCurrent != -1) {
 				Vector2 localPos = getLocalPosition(mTouchCurrent, mHitResource);
 				mHitResource.addCorner(localPos, mCornerIndexCurrent);
-				Pools.vector2.free(localPos);
 
 				setDrawing(true);
 			}
@@ -89,7 +87,6 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 			Vector2 newCornerPos = getLocalPosition(mTouchCurrent, mHitResource);
 
 			mHitResource.moveCorner(mCornerIndexCurrent, newCornerPos);
-			Pools.vector2.free(newCornerPos);
 		}
 		return false;
 	}
@@ -102,7 +99,6 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 			if (mAddingCorner) {
 				Vector2 removedCorner = mHitResource.removeCorner(mCornerIndexCurrent);
 				addOrMoveCommand = new CResourceCornerAdd(mHitResource, removedCorner, mCornerIndexCurrent, mEditor);
-				Pools.vector2.free(removedCorner);
 			} else {
 				Vector2 newPos = new Vector2(mHitResource.getCornerPosition(mCornerIndexCurrent));
 				mHitResource.moveCorner(mCornerIndexCurrent, mDragOrigin);

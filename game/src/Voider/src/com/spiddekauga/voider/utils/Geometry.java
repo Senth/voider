@@ -72,7 +72,7 @@ public class Geometry {
 
 				// Test distance
 				boolean removePoint = false;
-				if (vectorAfter.len2() < distMinSq) {
+				if (vectorBefore.len2() < distMinSq) {
 					removePoint = true;
 				}
 				// Test angle
@@ -982,7 +982,6 @@ public class Geometry {
 		rotateVertices(vertices, degrees, containsReferences);
 		copyOffset.scl(-1);
 		moveVertices(vertices, copyOffset, containsReferences);
-		Pools.vector2.free(copyOffset);
 	}
 
 	/**
@@ -1047,8 +1046,7 @@ public class Geometry {
 		Vector2 farthestAway = null;
 		float longestSquareDistance = 0;
 
-		Vector2 diffVector = Pools.vector2.obtain();
-
+		Vector2 diffVector = new Vector2();
 		for (Vector2 vertex : vertices) {
 			diffVector.set(point).sub(vertex);
 			float squaredDistance = diffVector.len2();
@@ -1058,8 +1056,6 @@ public class Geometry {
 				farthestAway = vertex;
 			}
 		}
-
-		Pools.vector2.free(diffVector);
 
 		return farthestAway;
 	}
@@ -1437,11 +1433,6 @@ public class Geometry {
 		public PolygonAreaTooSmallException(float area, Vector2... vertices) {
 			super("Area too small: " + area);
 			mVertices = vertices;
-		}
-
-		@Override
-		protected void finalize() throws Throwable {
-			Pools.vector2.freeAll(mVertices);
 		}
 
 		/**

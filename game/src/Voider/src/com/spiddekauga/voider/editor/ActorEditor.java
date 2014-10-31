@@ -45,7 +45,6 @@ import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all actor editors
@@ -273,7 +272,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			diffOffset.add(mDrawingActor.getPosition());
 			mDrawingActor.setPosition(diffOffset);
 			mDrawingActor.createBody();
-			Pools.vector2.free(diffOffset);
 		}
 
 		setUnsaved();
@@ -299,7 +297,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			diffOffset.add(mDrawingActor.getPosition());
 			mDrawingActor.setPosition(diffOffset);
 			mDrawingActor.createBody();
-			Pools.vector2.free(diffOffset);
 		}
 
 		setUnsaved();
@@ -782,7 +779,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	/** If the shape image should be updated continuously */
 	private boolean mShapeImageUpdate = false;
 	/** Minimum angle to save between actors */
-	private float mShapeImageAngleMin;
+	private Float mShapeImageAngleMin;
 	/** Minimum distance between points */
 	private float mShapeImageDistMin;
 	/** Default shape image */

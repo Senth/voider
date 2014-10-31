@@ -433,7 +433,6 @@ public class EnemyActor extends Actor {
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
 			if (enemyDef.isMovingRandomly()) {
 				mRandomMoveNext = input.readFloat(100, true);
-				Pools.vector2.free(mRandomMoveDirection);
 				mRandomMoveDirection = kryo.readObject(input, Vector2.class);
 			}
 		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
@@ -609,8 +608,6 @@ public class EnemyActor extends Actor {
 			if (getDef(EnemyActorDef.class).getAimType() == AimTypes.ROTATE) {
 				mShootAngle += mWeapon.getCooldownTime() * getDef(EnemyActorDef.class).getAimRotateSpeed();
 			}
-
-			Pools.vector2.free(shootDirection);
 		}
 	}
 
@@ -669,14 +666,9 @@ public class EnemyActor extends Actor {
 			}
 			// Calculate where the bullet would intersect with the player
 			else {
-				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*
-																													 * +
-																													 * levelSpeed
-																													 */, mPlayerActor.getPosition(),
+				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed(), mPlayerActor.getPosition(),
 						playerVelocity);
 				shootDirection.set(bulletVelocity);
-				Pools.vector2.free(bulletVelocity);
-				bulletVelocity = null;
 
 				// Cannot intercept, target player
 				if (shootDirection.x != shootDirection.x || shootDirection.y != shootDirection.y) {
@@ -779,6 +771,8 @@ public class EnemyActor extends Actor {
 				resetRandomMove();
 			}
 		}
+
+		Pools.vector2.free(targetDirection);
 	}
 
 	/**
@@ -1044,9 +1038,6 @@ public class EnemyActor extends Actor {
 					else if (getPosition().y - getDef().getVisual().getBoundingRadius() > maxPos.y) {
 						deactivate = true;
 					}
-
-					Pools.vector2.free(minPos);
-					Pools.vector2.free(maxPos);
 				} else {
 					deactivate = true;
 				}
@@ -1084,10 +1075,7 @@ public class EnemyActor extends Actor {
 	 * Clears the polygon outline
 	 */
 	private void clearPolygonOutline() {
-		if (mActivateCircle != null) {
-			Pools.vector2.freeDuplicates(mActivateCircle);
-			mActivateCircle = null;
-		}
+		mActivateCircle = null;
 	}
 
 	/**

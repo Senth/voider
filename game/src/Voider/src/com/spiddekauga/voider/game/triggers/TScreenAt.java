@@ -22,7 +22,6 @@ import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Triggers when the right side of the screen is at or beyond a specific position. Equal
@@ -133,8 +132,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 	@Override
 	public void dispose() {
-		Pools.vector2.free(mPosition);
-		mPosition = null;
 		destroyBody();
 	}
 
@@ -170,8 +167,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 			line.add(lowerVertex);
 
 			mVertices = Geometry.createLinePolygon(line, Config.Editor.Level.Trigger.SCREEN_AT_WIDTH);
-
-			Pools.vector2.freeAll(line);
 		}
 	}
 

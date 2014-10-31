@@ -21,7 +21,6 @@ import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -91,8 +90,6 @@ public abstract class WorldScene extends Scene {
 		mBulletDestroyer.update(deltaTime);
 		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
 
-		Pools.vector2.freeAll(minScreenPos, maxScreenPos);
-
 		// Sync border position with screen
 		if (mBorderBody != null) {
 			synchronizeBorder(mBorderBody);
@@ -109,7 +106,6 @@ public abstract class WorldScene extends Scene {
 		if (!Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
 			border.setTransform(maxScreenPos.x, border.getPosition().y, 0);
 		}
-		Pools.vector2.free(maxScreenPos);
 	}
 
 	@Override
@@ -228,7 +224,6 @@ public abstract class WorldScene extends Scene {
 		synchronizeBorder(mBorderBody);
 
 		// Free stuff
-		Pools.vector2.freeAll(corners);
 		shape.dispose();
 	}
 

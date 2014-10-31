@@ -6,7 +6,6 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding an actor
@@ -51,7 +50,6 @@ public class ActorAddTool extends ActorTool {
 		if (mMovingActor != null) {
 			Vector2 newPosition = getNewPosition();
 			mMovingActor.setPosition(newPosition);
-			Pools.vector2.free(newPosition);
 		}
 		return false;
 	}

@@ -166,6 +166,7 @@ public abstract class ActorGui extends EditorGui {
 			mWidgets.visual.imageScale.setValue(mActorEditor.getShapeImageScale());
 			mWidgets.visual.imageDrawOutline.setChecked(mActorEditor.isDrawOnlyOutline());
 			mWidgets.visual.shapeImageSelect.setSelected((GeneralImages) mActorEditor.getShapeImage());
+
 			if (mActorEditor.isShapeImageUpdatedContinuously()) {
 				mWidgets.visual.imageUpdateOn.setChecked(true);
 			} else {

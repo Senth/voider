@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Pool;
 
 /**
  *
@@ -32,14 +32,14 @@ import com.spiddekauga.voider.utils.Pools;
  * {@code
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
- * 
+ *
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
  * shapeRenderer.pop();
- * 
+ *
  * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);
@@ -168,10 +168,7 @@ public class ShapeRendererEx implements Disposable {
 			throw new IllegalArgumentException("triangles must have a pair of 3 vertices.");
 		}
 
-		Vector2[] localVertices = new Vector2[3];
-		for (int i = 0; i < localVertices.length; ++i) {
-			localVertices[i] = Pools.vector2.obtain();
-		}
+		Vector2[] localVertices = mVectorPool.obtain(new Vector2[3]);
 
 		for (int triangleIndex = 0; triangleIndex < triangles.size() - 2; triangleIndex += 3) {
 			for (int localIndex = 0; localIndex < localVertices.length; ++localIndex) {
@@ -180,7 +177,7 @@ public class ShapeRendererEx implements Disposable {
 			triangle(localVertices);
 		}
 
-		Pools.vector2.freeAll(localVertices);
+		mVectorPool.freeAll(localVertices);
 	}
 
 	/**
@@ -191,10 +188,8 @@ public class ShapeRendererEx implements Disposable {
 	 * @param loop set to true if end and beginning shall be connected
 	 */
 	public void polyline(ArrayList<Vector2> vertices, boolean loop) {
-		Vector2 noOffset = Pools.vector2.obtain();
-		noOffset.set(0, 0);
+		Vector2 noOffset = new Vector2();
 		polyline(vertices, loop, noOffset);
-		Pools.vector2.free(noOffset);
 	}
 
 	/**
@@ -1130,4 +1125,6 @@ public class ShapeRendererEx implements Disposable {
 	Color mColor = new Color(1, 1, 1, 1);
 	/** Stack of shape type */
 	Stack<ShapeType> mCurrentType = new Stack<ShapeRendererEx.ShapeType>();
+	/** Pool for vector */
+	Pool<Vector2> mVectorPool = new Pool<>(Vector2.class, 3, 10);
 }

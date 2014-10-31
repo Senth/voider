@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -52,15 +53,14 @@ import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * The abstract base class for all actors
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
-IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRenderShape, IResourceRenderSprite, IResourceEditorRender,
-IResourceSelectable, IResourceCorner {
+		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRenderShape, IResourceRenderSprite, IResourceEditorRender,
+		IResourceSelectable, IResourceCorner {
 	/**
 	 * Sets the texture of the actor including the actor definition. Automatically creates
 	 * a body for the actor.
@@ -328,14 +328,16 @@ IResourceSelectable, IResourceCorner {
 			shapeRenderer.pop();
 		}
 
-		Pools.vector2.free(offsetPosition);
-
 		RenderOrders.resetZValueOffset(shapeRenderer, this);
 	}
 
 	@Override
 	public void renderSprite(SpriteBatch spriteBatch) {
+		Sprite sprite = mDef.getVisual().getImage(mPosition);
 
+		if (sprite != null) {
+			sprite.draw(spriteBatch);
+		}
 	}
 
 	/**
@@ -400,8 +402,6 @@ IResourceSelectable, IResourceCorner {
 		RenderOrders.resetZValueOffset(shapeRenderer);
 		RenderOrders.resetZValueOffset(shapeRenderer);
 
-		Pools.vector2.free(offsetPosition);
-
 		RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 	}
 
@@ -413,7 +413,7 @@ IResourceSelectable, IResourceCorner {
 			clearSelectedOutline();
 
 			ArrayList<Vector2> corners = copyVectorArray(getDef().getVisual().getPolygonShape());
-			if (corners != null) {
+			if (corners != null && !corners.isEmpty()) {
 				float width = SkinNames.getResource(SkinNames.EditorVars.SELECTED_OUTLINE_WIDTH);
 				ArrayList<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, width);
 				mSelectedOutline = Geometry.createBorderVertices(corners, outerCorners);
@@ -436,10 +436,7 @@ IResourceSelectable, IResourceCorner {
 	 * Clear selected outline
 	 */
 	private void clearSelectedOutline() {
-		if (mSelectedOutline != null) {
-			Pools.vector2.freeDuplicates(mSelectedOutline);
-			mSelectedOutline = null;
-		}
+		mSelectedOutline = null;
 	}
 
 	/**
@@ -1079,10 +1076,7 @@ IResourceSelectable, IResourceCorner {
 	 * Clears the rotated vertices
 	 */
 	private void clearRotatedVertices() {
-		if (mRotatedVertices != null) {
-			Pools.vector2.freeDuplicates(mRotatedVertices);
-			mRotatedVertices = null;
-		}
+		mRotatedVertices = null;
 	}
 
 	/**

@@ -15,7 +15,6 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
@@ -37,7 +36,6 @@ public class EnemyAddTool extends ActorAddTool {
 		if (mMovingActor != null) {
 			Vector2 newPosition = getNewPosition();
 			setSnapPosition((EnemyActor) mMovingActor, newPosition, (LevelEditor) mEditor, null);
-			Pools.vector2.free(newPosition);
 		}
 		return false;
 	}
@@ -49,7 +47,6 @@ public class EnemyAddTool extends ActorAddTool {
 			if (mCreatedThisEvent) {
 				Vector2 newPosition = getNewPosition();
 				setSnapPosition((EnemyActor) mMovingActor, newPosition, (LevelEditor) mEditor, mInvoker);
-				Pools.vector2.free(newPosition);
 			}
 			// If not new actor, reset to old position and move using command
 			else {
@@ -57,7 +54,6 @@ public class EnemyAddTool extends ActorAddTool {
 				mMovingActor.setPosition(mDragOrigin);
 				Vector2 newPosition = getNewPosition();
 				setSnapPosition((EnemyActor) mMovingActor, newPosition, (LevelEditor) mEditor, mInvoker);
-				Pools.vector2.free(newPosition);
 			}
 
 			mMovingActor.setIsBeingMoved(false);

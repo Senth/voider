@@ -106,8 +106,11 @@ public class ShipEditor extends ActorEditor {
 			mShapeRenderer.push(ShapeType.Filled);
 			mActor.renderShape(mShapeRenderer);
 			mActor.renderEditor(mShapeRenderer);
-			mActor.renderSprite(mSpriteBatch);
 			mShapeRenderer.pop();
+
+			mSpriteBatch.begin();
+			mActor.renderSprite(mSpriteBatch);
+			mSpriteBatch.end();
 		}
 	}
 

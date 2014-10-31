@@ -33,7 +33,6 @@ import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Pools;
 
 
 /**
@@ -132,8 +131,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		updateEnemyPositions();
 
 		calculateRightestCorner();
-
-		Pools.vector2.free(diff);
 	}
 
 	/**
@@ -455,7 +452,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			for (int i = 0; i < mCorners.size() - 1; ++i) {
 				diff.set(mCorners.get(i)).sub(mCorners.get(i + 1));
 				if (diff.len2() <= CHAIN_CORNER_DISTANCE_MIN) {
-					Pools.vector2.free(diff);
 					return;
 				}
 			}

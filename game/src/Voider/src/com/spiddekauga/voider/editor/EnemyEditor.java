@@ -43,7 +43,6 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -1022,7 +1021,7 @@ public class EnemyEditor extends ActorEditor {
 	 * @return all three path positions
 	 */
 	Vector2[] getPathPositions() {
-		Vector2[] positions = Pools.vector2.obtain(new Vector2[3]);
+		Vector2[] positions = Collections.fillNew(new Vector2[3], Vector2.class);
 
 		// X position
 		float availableWidth = Gdx.graphics.getWidth() - UiFactory.getInstance().getStyles().vars.rightPanelWidth;

@@ -12,7 +12,6 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A simple resource that draws a line
@@ -55,7 +54,7 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
-		mCorners.add(index, Pools.vector2.obtain().set(corner));
+		mCorners.add(index, new Vector2(corner));
 	}
 
 	@Override
@@ -65,7 +64,6 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 
 	@Override
 	public void clearCorners() {
-		Pools.vector2.freeAll(mCorners);
 		mCorners.clear();
 	}
 

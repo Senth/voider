@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.TextureData.TextureDataType;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.spiddekauga.voider.utils.Geometry.PointIndex;
 
 /**
  * General graphics helper methods
@@ -56,7 +55,17 @@ public class Graphics {
 	 * @return Contour of the texture region.
 	 */
 	public static ArrayList<Vector2> getContour(TextureRegion region) {
-		return getContour(region, 0, 1);
+		return getContour(region, null);
+	}
+
+	/**
+	 * Create contour points from a picture.
+	 * @param region the texture region to create the ship from
+	 * @param offset optional, if not null it will set the pixel offset of the image.
+	 * @return Contour of the texture region. Center?
+	 */
+	public static ArrayList<Vector2> getContour(TextureRegion region, Vector2 offset) {
+		return getContour(region, 0, 1, offset);
 	}
 
 	/**
@@ -68,9 +77,10 @@ public class Graphics {
 	 *        will be removed. 0 keeps the structure of the contour while removing all
 	 *        unnecessary points.
 	 * @param scale scale the points with this value.
+	 * @param offset optional, if not null it will set the pixel offset of the image.
 	 * @return Contour of the texture region. Center?
 	 */
-	public static ArrayList<Vector2> getContour(TextureRegion region, float angleMin, float scale) {
+	public static ArrayList<Vector2> getContour(TextureRegion region, float angleMin, float scale, Vector2 offset) {
 		ArrayList<Vector2> points = null;
 
 		TextureData textureData = region.getTexture().getTextureData();
@@ -85,10 +95,7 @@ public class Graphics {
 			pixmap.dispose();
 
 			// Remove points that have less or equal to angleMin degrees
-			ArrayList<PointIndex> removedPoints = Geometry.removeExcessivePoints(0, angleMin, points);
-			// for (PointIndex pointIndex : removedPoints) {
-			// Pools.vector2.free(pointIndex.point);
-			// }
+			Geometry.removeExcessivePoints(0, angleMin, points);
 
 			// Scale
 			if (scale != 1) {
@@ -99,9 +106,14 @@ public class Graphics {
 
 			// Center
 			Vector2 center = Geometry.calculateCenter(points);
-			center.scl(-1);
+
+			// Set offset
+			if (offset != null) {
+				offset.set(center).sub(region.getRegionX(), region.getRegionY());
+			}
 
 			// Update positions relative to the center
+			center.scl(-1);
 			Geometry.moveVertices(points, center, false);
 		}
 

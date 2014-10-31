@@ -531,7 +531,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 				} else {
 					chainShape.createChain(vertices);
 				}
-				Pools.vector2.freeAll(vertices);
 			}
 
 			return chainShape;
