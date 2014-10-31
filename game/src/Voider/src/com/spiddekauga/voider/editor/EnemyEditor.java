@@ -97,9 +97,6 @@ public class EnemyEditor extends ActorEditor {
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		Actor.setEditorActive(true);
-		Actor.setWorld(mWorld);
-		Actor.setLevel(null);
 		Actor.setPlayerActor(mPlayerActor);
 
 		if (outcome == Outcomes.DEF_SELECTED) {
@@ -169,8 +166,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * @return selected bullet definition, null if none are selected, or if no weapon is
-	 *         available
+	 * @return selected bullet definition, null if none are selected, or if no weapon is available
 	 */
 	public BulletActorDef getSelectedBulletDef() {
 		BulletActorDef selectedBulletDef = null;
@@ -336,8 +332,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Resets the player if necessary. This happens if the player gets stuck behind
-	 * something.
+	 * Resets the player if necessary. This happens if the player gets stuck behind something.
 	 */
 	private void checkAndResetPlayerPosition() {
 		// Skip if moving player
@@ -677,8 +672,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets if the enemy shall move randomly using the random spread set through
-	 * #setRandomSpread(float).
+	 * Sets if the enemy shall move randomly using the random spread set through #setRandomSpread(float).
 	 * @param moveRandomly true if the enemy shall move randomly.
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
@@ -702,8 +696,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum time that must have passed until the enemy will decide on another
-	 * direction.
+	 * Sets the minimum time that must have passed until the enemy will decide on another direction.
 	 * @param minTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -727,8 +720,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum time that must have passed until the enemy will decide on another
-	 * direction.
+	 * Sets the maximum time that must have passed until the enemy will decide on another direction.
 	 * @param maxTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -839,9 +831,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum weapon cooldown. If this is equal to the max value set through
-	 * #setCooldownMax(float) it will always have the same cooldown; if not it will get a
-	 * random cooldown between min and max time.
+	 * Sets the minimum weapon cooldown. If this is equal to the max value set through #setCooldownMax(float) it will
+	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
 	 * @param minCooldown minimum cooldown.
 	 */
 	void setCooldownMin(float minCooldown) {
@@ -864,9 +855,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum weapon cooldown. If this is equal to the min value set through
-	 * #setCooldownMin(float) it will always have the same cooldown; if not it will get a
-	 * random cooldown between min and max time.
+	 * Sets the maximum weapon cooldown. If this is equal to the min value set through #setCooldownMin(float) it will
+	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
 	 * @param maxCooldown maximum cooldown.
 	 */
 	void setCooldownMax(float maxCooldown) {

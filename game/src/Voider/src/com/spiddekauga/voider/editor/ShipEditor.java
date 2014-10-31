@@ -12,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.menu.SelectDefScene;
@@ -52,10 +51,6 @@ public class ShipEditor extends ActorEditor {
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		Actor.setEditorActive(true);
-		Actor.setWorld(mWorld);
-		Actor.setLevel(null);
-
 		if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case LOAD_SHIP:
@@ -92,6 +87,7 @@ public class ShipEditor extends ActorEditor {
 
 		mActor.updateEditor();
 		mActor.update(deltaTime);
+		createBorder();
 	}
 
 	@Override

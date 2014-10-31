@@ -3,12 +3,8 @@ package com.spiddekauga.voider.game.actors;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.Collectibles;
 
-
-
-
 /**
  * The ship the player controls
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {

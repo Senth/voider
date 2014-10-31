@@ -9,7 +9,6 @@ import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
-import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.menu.SelectDefScene;
@@ -49,10 +48,6 @@ public class BulletEditor extends ActorEditor {
 	@Override
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
-
-		Actor.setEditorActive(true);
-		Actor.setWorld(mWorld);
-		Actor.setLevel(null);
 
 		if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {

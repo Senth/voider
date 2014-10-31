@@ -48,13 +48,26 @@ public abstract class WorldScene extends Scene {
 
 		fixCamera();
 		mWorld = new World(new Vector2(), true);
-		Actor.setWorld(mWorld);
 
 		if (mPickingRadius > 0) {
 			createPickingCircle(mPickingRadius);
 		}
 
 		resetScreenToWorldScale();
+	}
+
+	@Override
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
+
+		Actor.setWorld(mWorld);
+	}
+
+	@Override
+	protected void onDeactivate() {
+		super.onDeactivate();
+
+		Actor.setWorld(null);
 	}
 
 	@Override
@@ -148,8 +161,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current
-	 *         scene isn't a world scene.
+	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current scene isn't a world scene.
 	 */
 	@Override
 	public Vector2 getWorldMinCoordinates() {
@@ -159,8 +171,8 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if
-	 *         current scene isn't a world scene.
+	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if current scene isn't a world
+	 *         scene.
 	 */
 	@Override
 	public Vector2 getWorldMaxCoordinates() {
@@ -228,8 +240,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * Called when creating a border. Can be overridden to specify other border
-	 * dimensions.
+	 * Called when creating a border. Can be overridden to specify other border dimensions.
 	 * @return all 4 border corners/vertices
 	 */
 	protected Vector2[] getBorderCorners() {

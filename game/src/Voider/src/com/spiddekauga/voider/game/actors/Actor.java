@@ -59,11 +59,10 @@ import com.spiddekauga.voider.utils.Geometry;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
-		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRenderShape, IResourceRenderSprite, IResourceEditorRender,
-		IResourceSelectable, IResourceCorner {
+IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRenderShape, IResourceRenderSprite, IResourceEditorRender,
+IResourceSelectable, IResourceCorner {
 	/**
-	 * Sets the texture of the actor including the actor definition. Automatically creates
-	 * a body for the actor.
+	 * Sets the texture of the actor including the actor definition. Automatically creates a body for the actor.
 	 * @param def actor definition
 	 */
 	public Actor(ActorDef def) {
@@ -116,8 +115,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they have
-	 * been changed since the actor was created.
+	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they have been changed since the actor
+	 * was created.
 	 */
 	@Override
 	public void updateEditor() {
@@ -244,8 +243,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * Returns the definition of the specified type
 	 * @param <DefType> derived definition type to get instead
 	 * @param defType the derived definition type to get instead of default ActorDef
-	 * @return if the actor's definition is an instance of type it will return this type
-	 *         instead, if not null is returned
+	 * @return if the actor's definition is an instance of type it will return this type instead, if not null is
+	 *         returned
 	 */
 	@SuppressWarnings("unchecked")
 	public <DefType> DefType getDef(Class<DefType> defType) {
@@ -449,8 +448,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	/**
 	 * Removes a colliding actor from this actor
-	 * @param actorDef the actor definition this actor is colliding with, but to now
-	 *        remove
+	 * @param actorDef the actor definition this actor is colliding with, but to now remove
 	 */
 	public void removeCollidingActor(ActorDef actorDef) {
 		boolean removeSuccess = mCollidingActors.remove(actorDef);
@@ -492,8 +490,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	/**
 	 * Sets if the actor shall only draw its outline
-	 * @param drawOnlyOutline set to true if the actor shall only draw its shape's
-	 *        outline.
+	 * @param drawOnlyOutline set to true if the actor shall only draw its shape's outline.
 	 */
 	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
 		mDrawOnlyOutline = drawOnlyOutline;
@@ -760,8 +757,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Disables the actor fully. Removes the body from the world and a level will not
-	 * render it as it has been disposed.
+	 * Disables the actor fully. Removes the body from the world and a level will not render it as it has been disposed.
 	 */
 	@Override
 	public void dispose() {
@@ -784,9 +780,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Reload fixtures. This destroys all the existing fixtures and creates new fixtures
-	 * from the actor definition. Does nothing if the actor doesn't have a body. This also
-	 * resets the body corners if we have any
+	 * Reload fixtures. This destroys all the existing fixtures and creates new fixtures from the actor definition. Does
+	 * nothing if the actor doesn't have a body. This also resets the body corners if we have any
 	 */
 	public void reloadFixtures() {
 		if (mBody != null) {
@@ -798,11 +793,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 			Gdx.app.log("Actor.reloadFixtures()", "Def fixtures: " + mDef.getVisual().getFixtureDefs().size());
 
-			for (FixtureDef fixtureDef : mDef.getVisual().getFixtureDefs()) {
-				if (fixtureDef != null && fixtureDef.shape != null) {
-					mBody.createFixture(fixtureDef);
-				}
-			}
+			createFixtures();
 			Gdx.app.log("Actor.reloadFixtures()", "After created: " + mBody.getFixtureList().size);
 
 			// Do we have body corners? Reset those in that case
@@ -823,9 +814,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not handle
-	 *         the def. This is true for terrain actors, as there is only one actor per
-	 *         definition, defaults to false.
+	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not handle the def. This is true for
+	 *         terrain actors, as there is only one actor per definition, defaults to false.
 	 */
 	public boolean savesDef() {
 		return false;
@@ -866,8 +856,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Creates body corners for the actor. Only applicable if actor is using a custom
-	 * shape and in an editor.
+	 * Creates body corners for the actor. Only applicable if actor is using a custom shape and in an editor.
 	 */
 	@Override
 	public void createBodyCorners() {
@@ -1080,8 +1069,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Calculates the rotated vertices (both regular and border). Calls
-	 * {@link #calculateRotatedVertices(boolean)} with false.
+	 * Calculates the rotated vertices (both regular and border). Calls {@link #calculateRotatedVertices(boolean)} with
+	 * false.
 	 */
 	protected void calculateRotatedVertices() {
 		calculateRotatedVertices(false);

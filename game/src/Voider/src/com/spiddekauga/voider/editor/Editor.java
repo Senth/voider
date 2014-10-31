@@ -87,6 +87,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
+		Actor.setEditorActive(true);
+
 		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			mInvoker.dispose();
 
@@ -95,6 +97,13 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 				mShapeRenderer.setShader(defaultShader);
 			}
 		}
+	}
+
+	@Override
+	protected void onDeactivate() {
+		super.onDeactivate();
+
+		Actor.setEditorActive(false);
 	}
 
 	@Override
@@ -465,8 +474,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	/**
-	 * Creates a texture out of the specified actor definition and sets it for the actor
-	 * definition.
+	 * Creates a texture out of the specified actor definition and sets it for the actor definition.
 	 */
 	private void createActorDefTexture() {
 		float width = mSavingActorDef.getWidth();
@@ -560,8 +568,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	/**
-	 * Set the actor as saving. This will create an image of the actor. After the resource
-	 * is saved the command will be executed
+	 * Set the actor as saving. This will create an image of the actor. After the resource is saved the command will be
+	 * executed
 	 * @param actorDef the actor definition to save
 	 * @param actor a new empty actor to use for creating a screen shot
 	 * @param command the command to be executed after the resource has been saved
@@ -583,8 +591,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	/**
-	 * @return true if the editor is currently saving an actor. I.e. creating a texture
-	 *         file for it.
+	 * @return true if the editor is currently saving an actor. I.e. creating a texture file for it.
 	 */
 	public boolean isSaving() {
 		return mSaving;

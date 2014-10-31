@@ -100,8 +100,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		super.onInit();
 
-		Actor.setEditorActive(true);
-
 		mZoomTool = new ZoomTool(this, Config.Editor.Level.ZOOM_MIN, Config.Editor.Level.ZOOM_MAX);
 
 		// Initialize tools
@@ -336,9 +334,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		Actor.setEditorActive(true);
-		Actor.setWorld(mWorld);
-
 		// Check so that all resources have been loaded
 		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			// Loading a level
@@ -488,8 +483,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Selects the specified pickup definition. This pickup will be used when adding new
-	 * pickups
+	 * Selects the specified pickup definition. This pickup will be used when adding new pickups
 	 * @param pickupId the pickup id to select
 	 * @return true if the pickup was selected successfully, false if unsuccessful
 	 */
@@ -626,8 +620,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/**
 	 * Checks if the tool should be available in the background
 	 * @param tool
-	 * @return true if the tool should be available when inactive (but with limited
-	 *         functionality)
+	 * @return true if the tool should be available when inactive (but with limited functionality)
 	 */
 	private boolean isAvailableWhenInactive(Tools tool) {
 		switch (tool) {
@@ -926,8 +919,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed before the level, empty string if no level is
-	 *         available
+	 * @return story that will be displayed before the level, empty string if no level is available
 	 */
 	String getPrologue() {
 		if (mLevel != null) {
@@ -949,8 +941,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed after completing the level, empty string if no
-	 *         level is available
+	 * @return story that will be displayed after completing the level, empty string if no level is available
 	 */
 	String getEpilogue() {
 		if (mLevel != null) {
@@ -985,9 +976,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return color of the selected terrain. If multiple terrains are selected and have
-	 *         different colors, null is returned. If no terrain is selected the default
-	 *         color is returned.
+	 * @return color of the selected terrain. If multiple terrains are selected and have different colors, null is
+	 *         returned. If no terrain is selected the default color is returned.
 	 */
 	Color getSelectedTerrainColor() {
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
@@ -1027,9 +1017,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return opacity of the selected terrain. -1 if multiple terrains are selected and
-	 *         have different opacity. The default opacity is return when no terrain is
-	 *         selected.
+	 * @return opacity of the selected terrain. -1 if multiple terrains are selected and have different opacity. The
+	 *         default opacity is return when no terrain is selected.
 	 */
 	float getSelectedTerrainOpacity() {
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
@@ -1254,8 +1243,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return spawn delay between actors in the same group, negative value if no group
-	 *         exist
+	 * @return spawn delay between actors in the same group, negative value if no group exist
 	 */
 	float getEnemySpawnDelay() {
 		if (getEnemyCount() > 1) {
@@ -1284,8 +1272,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return current path type. If several paths are selected and they have different
-	 *         path types null is return. If no path is selected null is also returned.
+	 * @return current path type. If several paths are selected and they have different path types null is return. If no
+	 *         path is selected null is also returned.
 	 */
 	PathTypes getPathType() {
 		int cOnce = 0;
@@ -1361,8 +1349,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the selected enemy has an activation trigger, false if not or if no
-	 *         enemy is selected
+	 * @return true if the selected enemy has an activation trigger, false if not or if no enemy is selected
 	 */
 	boolean hasSelectedEnemyActivateTrigger() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1378,8 +1365,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return delay of the activation trigger, negative if no activation trigger has been
-	 *         set.
+	 * @return delay of the activation trigger, negative if no activation trigger has been set.
 	 */
 	float getSelectedEnemyActivateTriggerDelay() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1422,8 +1408,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the selected enemy has an deactivation trigger, false if not or if
-	 *         no enemy is selected
+	 * @return true if the selected enemy has an deactivation trigger, false if not or if no enemy is selected
 	 */
 	boolean hasSelectedEnemyDeactivateTrigger() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1439,8 +1424,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return delay of the deactivation trigger, negative if no deactivation trigger has
-	 *         been set.
+	 * @return delay of the deactivation trigger, negative if no deactivation trigger has been set.
 	 */
 	float getSelectedEnemyDeactivateTriggerDelay() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1483,8 +1467,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Sets if enemies that will be used when test running the level from here should be
-	 * highlighted.
+	 * Sets if enemies that will be used when test running the level from here should be highlighted.
 	 * @param highlight set to true to highlight the enemies
 	 */
 	void setEnemyHighlight(boolean highlight) {
@@ -1492,8 +1475,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the enemy should be highlighted if the will be used when test
-	 *         running a level from the current position
+	 * @return true if the enemy should be highlighted if the will be used when test running a level from the current
+	 *         position
 	 */
 	public boolean isEnemyHighlightOn() {
 		return mEnemyHighlight;

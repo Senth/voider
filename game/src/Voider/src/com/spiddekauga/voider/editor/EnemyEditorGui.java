@@ -79,27 +79,6 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	@Override
-	void resetCollisionBoxes() {
-		if (mSettingTabs == null) {
-			return;
-		}
-
-		super.resetCollisionBoxes();
-
-		// Tab widget
-		createCollisionBoxes(mSettingTabs);
-
-		// Tool
-		createCollisionBoxes(mToolMenu);
-
-		// Upper/Lower borders
-		float width = Gdx.graphics.getWidth();
-		float height = mUiFactory.getStyles().vars.barUpperLowerHeight;
-		createCollisionBox(0, 0, width, height);
-		createCollisionBox(0, Gdx.graphics.getHeight() - height, width, height);
-	}
-
-	@Override
 	public void initGui() {
 		super.initGui();
 
@@ -438,8 +417,7 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	/**
-	 * Initializes standard movement variables such as speed and turning for the specified
-	 * table
+	 * Initializes standard movement variables such as speed and turning for the specified table
 	 * @param movementType which table to add the movement UI elements to
 	 */
 	private void createMovementUi(final MovementTypes movementType) {

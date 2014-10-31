@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -78,6 +79,27 @@ public abstract class ActorGui extends EditorGui {
 		resetInfoOptions();
 		resetCollision();
 		resetTools();
+	}
+
+	@Override
+	void resetCollisionBoxes() {
+		if (mSettingTabs == null) {
+			return;
+		}
+
+		super.resetCollisionBoxes();
+
+		// Tab widget
+		createCollisionBoxes(mSettingTabs);
+
+		// Tool
+		createCollisionBoxes(mToolMenu);
+
+		// Upper/Lower borders
+		float width = Gdx.graphics.getWidth();
+		float height = mUiFactory.getStyles().vars.barUpperLowerHeight;
+		createCollisionBox(0, 0, width, height);
+		createCollisionBox(0, Gdx.graphics.getHeight() - height, width, height);
 	}
 
 	/**
