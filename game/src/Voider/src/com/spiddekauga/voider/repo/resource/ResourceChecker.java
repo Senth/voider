@@ -1,9 +1,9 @@
 package com.spiddekauga.voider.repo.resource;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
-import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -57,23 +57,20 @@ public class ResourceChecker implements IEventListener {
 	 * @return true if a player ship was found
 	 */
 	private boolean isMissingPlayerShips() {
-		ArrayList<UUID> ships = ResourceLocalRepo.getAll(ExternalTypes.PLAYER_DEF);
-
-		/** @todo check for specific ships */
-
-		boolean missing = ships.isEmpty();
-
-		return missing;
+		return !ResourceLocalRepo.exists(SHIP_FIGHTER_ID);
 	}
 
 	/**
 	 * Creates player ships
 	 */
 	private void createPlayerShips() {
-		PlayerActorDef playerActorDef = new PlayerActorDef();
-		playerActorDef.setId(SHIP_REGULAR_ID);
-		ResourceLocalRepo.save(playerActorDef);
-		ResourceLocalRepo.removeRevisions(playerActorDef.getId());
+		// Copy ship from internal resources to external resources
+		FileHandle internal = Gdx.files.internal("export/" + SHIP_FIGHTER_ID);
+		FileHandle external = Gdx.files.external(ResourceLocalRepo.getFilepath(SHIP_FIGHTER_ID));
+		internal.copyTo(external);;
+
+		// Add to Local DB
+		ResourceLocalRepo.addDownloaded(SHIP_FIGHTER_ID, ExternalTypes.PLAYER_DEF);
 	}
 
 	@Override
@@ -89,8 +86,6 @@ public class ResourceChecker implements IEventListener {
 	}
 
 	// Player ships
-	/** Regular ship */
-	private static final UUID SHIP_REGULAR_ID = UUID.fromString("6d5f7bd4-e947-4d91-9c57-ce982f0542d0");
-	/** This instance */
+	private static final UUID SHIP_FIGHTER_ID = UUID.fromString("7e21267c-839d-4e6f-963a-a193d4d607d4");
 	private static ResourceChecker mInstance = null;
 }
