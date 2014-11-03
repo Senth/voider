@@ -64,13 +64,19 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		@SuppressWarnings("unused")
 		int classRevision = input.readInt(true);
 
+		setDefaultFixtureValues();
+		createFixtureDef();
+		calculateBoundingRadius();
+	}
+
+	/**
+	 * Set default fixture values
+	 */
+	private void setDefaultFixtureValues() {
 		IC_Visual icVisual = ConfigIni.getInstance().editor.actor.getVisual(mActorType);
 		mDensity = icVisual.getDensityDefault();
 		mFriction = icVisual.getFrictionDefault();
 		mElasticity = icVisual.getElasticityDefault();
-
-		createFixtureDef();
-		calculateBoundingRadius();
 	}
 
 	/**
@@ -327,8 +333,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * Sets the shape type of the enemy. This will clear the existing fixture shape for the enemy and created another
-	 * one with default values.
+	 * Sets the shape type of the enemy. This will clear the existing fixture shape for
+	 * the enemy and created another one with default values.
 	 * @param shapeType type of shape the enemy has
 	 */
 	public void setShapeType(ActorShapeTypes shapeType) {
@@ -508,8 +514,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * Center the offset. This will set the offset to the middle of the fixture(s). It will NOT set the center to (0,0)
-	 * (only if the actual center of the fixtures are there.
+	 * Center the offset. This will set the offset to the middle of the fixture(s). It
+	 * will NOT set the center to (0,0) (only if the actual center of the fixtures are
+	 * there.
 	 */
 	public void resetCenterOffset() {
 		Vector2 center = new Vector2();
@@ -574,10 +581,12 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * Readjusts/fixes the fixtures for the custom shape would become too small. NOTE: When this exception is thrown all
-	 * fixtures have been removed and some might have been added. Fix the faulty corner and call
-	 * #fixCustomShapeFixtures() again to fix this.
-	 * @throws PolygonComplexException if the method failed to make the polygon non-complex
+	 * Readjusts/fixes the fixtures for the custom shape would become too small. NOTE:
+	 * When this exception is thrown all fixtures have been removed and some might have
+	 * been added. Fix the faulty corner and call #fixCustomShapeFixtures() again to fix
+	 * this.
+	 * @throws PolygonComplexException if the method failed to make the polygon
+	 *         non-complex
 	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
 	public void fixCustomShapeFixtures() {
@@ -766,7 +775,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * @return triangle vertices for the current shape. Grouped together in groups of three to form a triangle.
+	 * @return triangle vertices for the current shape. Grouped together in groups of
+	 *         three to form a triangle.
 	 */
 	public ArrayList<Vector2> getTriangleVertices() {
 		return mVertices;
@@ -895,7 +905,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * Gets the first fixture definition. Prints an error if there are more or less fixtures than 1
+	 * Gets the first fixture definition. Prints an error if there are more or less
+	 * fixtures than 1
 	 * @return first fixture definition, null if none is found
 	 */
 	private FixtureDef getFirstFixtureDef() {
@@ -977,7 +988,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/**
 	 * Handles PolygonComplexException for #fixCustomShapeFixtures()
 	 * @param tempVertices
-	 * @param exception if null it will throw a new exception, else it will re-throw the exception.
+	 * @param exception if null it will throw a new exception, else it will re-throw the
+	 *        exception.
 	 */
 	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
 		if (exception == null) {
@@ -1099,35 +1111,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		return mImageName;
 	}
 
-	/**
-	 * @param pos offset the image with this position
-	 * @return image to draw as the actor; null if no image has been set
-	 */
-	public Sprite getImage(Vector2 pos) {
-		if (mImageName == null) {
-			return null;
-		}
-
-		if (mImage == null) {
-			TextureRegion textureRegion = SkinNames.getRegion(mImageName);
-			mImage = new Sprite(textureRegion);
-			mImage.setScale(mImageScale / SceneSwitcher.getWorldScreenRatio());
-		}
-
-		float scale = mImageScale / SceneSwitcher.getWorldScreenRatio();
-		mImage.setOrigin(-mImageOffset.x * scale, -mImageOffset.y * scale);
-		// mImage.setOrigin(0, 0);
-		mImage.setPosition(pos.x, pos.y);
-
-		return mImage;
-	}
-
 	private void disposeImage() {
 		mContourRaw = null;
 	}
 
 	/**
-	 * Set image scaling. Call {@link #updateImageShape(float, Float, float)} to update the image
+	 * Set image scaling. Call {@link #updateImageShape(float, Float, float)} to update
+	 * the image
 	 * @param scale
 	 */
 	public void setImageScale(float scale) {
@@ -1156,9 +1146,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		// Calculate raw corners if we don't have yet
 		if (mContourRaw == null) {
-			mImageOffset = new Vector2();
+			if (mImageOffset == null) {
+				mImageOffset = new Vector2();
+			}
 			TextureRegion region = SkinNames.getRegion(mImageName);
-			mContourRaw = Graphics.getContour(region, mContourRawOffset);
+			mContourRaw = Graphics.getContour(region, mImageOffset);
 		}
 
 
@@ -1166,13 +1158,12 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		// Remove excessive corners
 		Geometry.removeExcessivePoints(distMin * distMin, angleMin, transformedContour);
+		setCenterOffset(0, 0);
 
-		// Calculate center offset
-		Vector2 newCenter = Geometry.calculateCenter(transformedContour);
-		mImageOffset.set(mContourRawOffset).add(newCenter);
 
 		// Scale
 		float scale = worldScale * mImageScale;
+		// float scale = worldScale;
 		for (Vector2 point : transformedContour) {
 			point.scl(scale);
 		}
@@ -1181,6 +1172,29 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		fixCustomShapeFixtures();
 
 		mImage = null;
+	}
+
+	/**
+	 * @param pos offset the image with this position
+	 * @return image to draw as the actor; null if no image has been set
+	 */
+	public Sprite getImage(Vector2 pos) {
+		if (mImageName == null) {
+			return null;
+		}
+
+		if (mImage == null) {
+			TextureRegion textureRegion = SkinNames.getRegion(mImageName);
+			mImage = new Sprite(textureRegion);
+			mImage.setOrigin(0, 0);
+			mImageScaleWorld = mImageScale / SceneSwitcher.getWorldScreenRatio();
+			mImageOffsetWorld.set(mImageOffset).scl(mImageScaleWorld);
+			mImage.setScale(mImageScaleWorld);
+		}
+
+		mImage.setPosition(pos.x - mImageOffsetWorld.x, pos.y - mImageOffsetWorld.y);
+
+		return mImage;
 	}
 
 
@@ -1197,23 +1211,22 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@Tag(127) private Vector2 mImageOffset = new Vector2();
 	@Tag(128) private float mImageScale = 1;
 
-	// Fixture def values
-	private float mDensity = 0;
-	private float mElasticity = 0;
-	private float mFriction = 0;
-
 	/** Temporary raw image contour points of the actor */
 	private ArrayList<Vector2> mContourRaw = null;
-	private Vector2 mContourRawOffset = new Vector2();
 	/** Image/Texture to draw as the actor */
 	private Sprite mImage = null;
+	/** Image scale in the world */
+	private float mImageScaleWorld = 1;
+	/** Scaled offset */
+	private Vector2 mImageOffsetWorld = new Vector2();
 	/**
-	 * Array list of the polygon figure, this contains the vertices but not in triangles. Used for when creating a
-	 * border of some kind
+	 * Array list of the polygon figure, this contains the vertices but not in triangles.
+	 * Used for when creating a border of some kind
 	 */
 	private ArrayList<Vector2> mPolygon = new ArrayList<>();
 	/**
-	 * Triangle vertices. To easier render the shape. No optimization has been done to reduce the number of vertices.
+	 * Triangle vertices. To easier render the shape. No optimization has been done to
+	 * reduce the number of vertices.
 	 */
 	private ArrayList<Vector2> mVertices = new ArrayList<>();
 	/** True if shape is drawable/complete */
@@ -1226,6 +1239,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	protected float mFixtureChangeTime = 0;
 	/** Class structure revision */
 	protected final int CLASS_REVISION = 1;
+
+	// Fixture def values
+	private float mDensity = 0;
+	private float mElasticity = 0;
+	private float mFriction = 0;
 
 	/** Ear clipping triangulator for custom shapes */
 	private static EarClippingTriangulator mEarClippingTriangulator = new EarClippingTriangulator();

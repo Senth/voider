@@ -12,6 +12,8 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.menu.SelectDefScene;
@@ -119,12 +121,16 @@ public class ShipEditor extends ActorEditor {
 			mDef.setMouseJointForceMax(maxForce);
 		}
 		mMouseJointDef.maxForce = maxForce;
+		setUnsaved();
 	}
 
 	/**
 	 * @return maximum force of the mouse joint
 	 */
 	float getMaxForce() {
+		if (mDef != null) {
+			return mDef.getMouseJointForceMax();
+		}
 		return mMouseJointDef.maxForce;
 	}
 
@@ -424,4 +430,12 @@ public class ShipEditor extends ActorEditor {
 			return true;
 		}
 	};
+
+	// Initialize default values
+	{
+		IC_Ship.IC_Settings icSettings = ConfigIni.getInstance().editor.ship.settings;
+		mMouseJointDef.dampingRatio = icSettings.getDampeningDefault();
+		mMouseJointDef.frequencyHz = icSettings.getFrequencyDefault();
+		mMouseJointDef.maxForce = icSettings.getForceDefault();
+	}
 }

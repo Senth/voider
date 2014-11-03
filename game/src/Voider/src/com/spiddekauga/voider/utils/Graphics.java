@@ -88,14 +88,21 @@ public class Graphics {
 			if (!textureData.isPrepared()) {
 				textureData.prepare();
 			}
+			int regionX = region.getRegionX();
+			int regionY = region.getRegionY();
 			Pixmap pixmap = textureData.consumePixmap();
-			Vector2 startPos = getContourStartPos(pixmap, region.getRegionX(), region.getRegionY(), region.getRegionWidth(), region.getRegionHeight());
-			points = getRawContourPoints(pixmap, startPos, region.getRegionX(), region.getRegionY(), region.getRegionWidth(),
-					region.getRegionHeight());
+			Vector2 startPos = getContourStartPos(pixmap, regionX, regionY, region.getRegionWidth(), region.getRegionHeight());
+			points = getRawContourPoints(pixmap, startPos, regionX, regionY, region.getRegionWidth(), region.getRegionHeight());
 			pixmap.dispose();
 
 			// Remove points that have less or equal to angleMin degrees
 			Geometry.removeExcessivePoints(0, angleMin, points);
+
+			// Flip Y
+			Geometry.flipY(regionY, region.getRegionHeight(), points);
+
+			// Move points from lower left points in the pixel to the center.
+			Geometry.moveVertices(points, new Vector2(0.5f, 0.5f), false);
 
 			// Scale
 			if (scale != 1) {
@@ -106,10 +113,10 @@ public class Graphics {
 
 			// Center
 			Vector2 center = Geometry.calculateCenter(points);
-
+			//
 			// Set offset
 			if (offset != null) {
-				offset.set(center).sub(region.getRegionX(), region.getRegionY());
+				offset.set(center).sub(regionX, regionY);
 			}
 
 			// Update positions relative to the center

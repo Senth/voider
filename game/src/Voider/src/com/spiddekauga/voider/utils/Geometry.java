@@ -19,6 +19,59 @@ import com.spiddekauga.voider.Config;
  */
 public class Geometry {
 	/**
+	 * Flips X and Y positions
+	 * @param x start position of X
+	 * @param y start position of Y
+	 * @param width width of X-coordinates
+	 * @param height height of Y-coordinates
+	 * @param points all the points to flip
+	 * @see #flipX(float, float, Iterable) flips only X
+	 * @see #flipY(float, float, Iterable) flips only Y
+	 */
+	public static void flip(float x, float y, float width, float height, Iterable<Vector2> points) {
+		Vector2 max = new Vector2(x + width, y + height);
+		Vector2 diffPos = new Vector2();
+		for (Vector2 point : points) {
+			diffPos.set(point).sub(x, y);
+			point.set(max).sub(diffPos);
+		}
+	}
+
+	/**
+	 * Flips X positions
+	 * @param x start position of X
+	 * @param width width of X-coordinates, if 0 X isn't flipped
+	 * @param points all the points to flip
+	 * @see #flip(float, float, float, float, Iterable) flips both X and Y
+	 * @see #flipY(float, float, Iterable) flips Y
+	 */
+	public static void flipX(float x, float width, Iterable<Vector2> points) {
+		float max = x + width;
+		float diffPos = 0;
+		for (Vector2 point : points) {
+			diffPos = point.x - x;
+			point.x = max - diffPos;
+		}
+	}
+
+	/**
+	 * Flips X and Y positions
+	 * @param y start position of Y
+	 * @param height height of Y-coordinates, if 0 Y isn't flipped
+	 * @param points all the points to flip
+	 * @see #flip(float, float, float, float, Iterable) flips both X and Y
+	 * @see #flipX(float, float, Iterable) flips X
+	 */
+	public static void flipY(float y, float height, Iterable<Vector2> points) {
+		float max = y + height;
+		float diffPos = 0;
+		for (Vector2 point : points) {
+			diffPos = point.y - y;
+			point.y = max - diffPos;
+		}
+	}
+
+	/**
 	 * Calculate the center of all points
 	 * @param points the points to calculate the center of
 	 * @return center of all points
