@@ -117,10 +117,12 @@ public class ShipEditor extends ActorEditor {
 	 * @param maxForce
 	 */
 	void setMaxForce(float maxForce) {
+		float realForce = maxForce * 100;
+
 		if (mDef != null) {
-			mDef.setMouseJointForceMax(maxForce);
+			mDef.setMouseJointForceMax(realForce);
 		}
-		mMouseJointDef.maxForce = maxForce;
+		mMouseJointDef.maxForce = realForce;
 		setUnsaved();
 	}
 
@@ -129,9 +131,9 @@ public class ShipEditor extends ActorEditor {
 	 */
 	float getMaxForce() {
 		if (mDef != null) {
-			return mDef.getMouseJointForceMax();
+			return mDef.getMouseJointForceMax() / 100;
 		}
-		return mMouseJointDef.maxForce;
+		return mMouseJointDef.maxForce / 100;
 	}
 
 	/**

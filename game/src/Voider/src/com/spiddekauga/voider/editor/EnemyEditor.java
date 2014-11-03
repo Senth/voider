@@ -20,6 +20,7 @@ import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.editor.Editor.ImageSaveOnActor.Locations;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
 import com.spiddekauga.voider.game.CollisionResolver;
@@ -33,15 +34,18 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
@@ -62,6 +66,10 @@ public class EnemyEditor extends ActorEditor {
 	@Override
 	protected void onDeactivate() {
 		((EnemyEditorGui) mGui).clearCollisionBoxes();
+
+		Actor.setPlayerActor(null);
+
+		super.onDeactivate();
 	}
 
 	@Override
@@ -70,8 +78,11 @@ public class EnemyEditor extends ActorEditor {
 
 
 		mPlayerActor = new PlayerActor();
-		mPlayerActor.createBody();
-		resetPlayerPosition();
+		PlayerActorDef defaultShip = ResourceLocalRepo.getPlayerShipDefault();
+		if (defaultShip != null) {
+			mPlayerActor.setDef(defaultShip);
+		}
+
 		createExamplePaths();
 
 		mWorld.setContactListener(mCollisionResolver);
@@ -86,16 +97,22 @@ public class EnemyEditor extends ActorEditor {
 		createBorder();
 
 		// Create mouse joint
-		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
+		IC_Ship.IC_Settings icSettings = ConfigIni.getInstance().editor.ship.settings;
+		mMouseJointDef.frequencyHz = icSettings.getFrequencyDefault();
 		mMouseJointDef.bodyA = mWorld.createBody(new BodyDef());
-		mMouseJointDef.bodyB = mPlayerActor.getBody();
 		mMouseJointDef.collideConnected = true;
-		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
+		mMouseJointDef.maxForce = mPlayerActor.getDef(PlayerActorDef.class).getMouseJointForceMax();
 	}
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
+
+		if (!mPlayerActor.hasBody()) {
+			mPlayerActor.createBody();
+			resetPlayerPosition();
+			mMouseJointDef.bodyB = mPlayerActor.getBody();
+		}
 
 		Actor.setPlayerActor(mPlayerActor);
 
@@ -166,7 +183,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * @return selected bullet definition, null if none are selected, or if no weapon is available
+	 * @return selected bullet definition, null if none are selected, or if no weapon is
+	 *         available
 	 */
 	public BulletActorDef getSelectedBulletDef() {
 		BulletActorDef selectedBulletDef = null;
@@ -291,6 +309,12 @@ public class EnemyEditor extends ActorEditor {
 
 			mShapeRenderer.translate(0, 0, 1);
 			mShapeRenderer.pop();
+
+			// Sprites
+			mSpriteBatch.setProjectionMatrix(mCamera.combined);
+			mSpriteBatch.begin();
+			mPlayerActor.renderSprite(mSpriteBatch);
+			mSpriteBatch.end();
 		}
 	}
 
@@ -313,6 +337,7 @@ public class EnemyEditor extends ActorEditor {
 		super.loadResources();
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
 	}
 
 	@Override
@@ -332,7 +357,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Resets the player if necessary. This happens if the player gets stuck behind something.
+	 * Resets the player if necessary. This happens if the player gets stuck behind
+	 * something.
 	 */
 	private void checkAndResetPlayerPosition() {
 		// Skip if moving player
@@ -340,22 +366,20 @@ public class EnemyEditor extends ActorEditor {
 			return;
 		}
 
-
-		// Only test if player is still
-		// if (!mPlayerLastPosition.equals(mPlayerActor.getPosition())) {
-		// mPlayerLastPosition.set(mPlayerActor.getPosition());
-		// return;
-		// }
-
-
-		// Test hit UI
-		float playerRadius = mPlayerActor.getDef().getVisual().getBoundingRadius();
-		mWorld.QueryAABB(mCallbackUiHit, mPlayerLastPosition.x - playerRadius, mPlayerLastPosition.y - playerRadius, mPlayerLastPosition.x
-				+ playerRadius, mPlayerLastPosition.y + playerRadius);
-
-		// Player can be stuck -> Reset player position
-		if (mPlayerHitUi) {
+		// Player is outside of the screen
+		if (!Geometry.isPointWithinBox(mPlayerActor.getPosition(), getWorldMinCoordinates(), getWorldMaxCoordinates())) {
 			resetPlayerPosition();
+		}
+		// Test hit UI
+		else {
+			float playerRadius = mPlayerActor.getDef().getVisual().getBoundingRadius();
+			mWorld.QueryAABB(mCallbackUiHit, mPlayerLastPosition.x - playerRadius, mPlayerLastPosition.y - playerRadius, mPlayerLastPosition.x
+					+ playerRadius, mPlayerLastPosition.y + playerRadius);
+
+			// Player can be stuck -> Reset player position
+			if (mPlayerHitUi) {
+				resetPlayerPosition();
+			}
 		}
 	}
 
@@ -672,7 +696,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets if the enemy shall move randomly using the random spread set through #setRandomSpread(float).
+	 * Sets if the enemy shall move randomly using the random spread set through
+	 * #setRandomSpread(float).
 	 * @param moveRandomly true if the enemy shall move randomly.
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
@@ -696,7 +721,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum time that must have passed until the enemy will decide on another direction.
+	 * Sets the minimum time that must have passed until the enemy will decide on another
+	 * direction.
 	 * @param minTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -720,7 +746,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum time that must have passed until the enemy will decide on another direction.
+	 * Sets the maximum time that must have passed until the enemy will decide on another
+	 * direction.
 	 * @param maxTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -831,8 +858,9 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum weapon cooldown. If this is equal to the max value set through #setCooldownMax(float) it will
-	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
+	 * Sets the minimum weapon cooldown. If this is equal to the max value set through
+	 * #setCooldownMax(float) it will always have the same cooldown; if not it will get a
+	 * random cooldown between min and max time.
 	 * @param minCooldown minimum cooldown.
 	 */
 	void setCooldownMin(float minCooldown) {
@@ -855,8 +883,9 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum weapon cooldown. If this is equal to the min value set through #setCooldownMin(float) it will
-	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
+	 * Sets the maximum weapon cooldown. If this is equal to the min value set through
+	 * #setCooldownMin(float) it will always have the same cooldown; if not it will get a
+	 * random cooldown between min and max time.
 	 * @param maxCooldown maximum cooldown.
 	 */
 	void setCooldownMax(float maxCooldown) {

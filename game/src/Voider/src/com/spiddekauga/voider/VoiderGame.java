@@ -11,6 +11,7 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceChecker;
@@ -31,6 +32,7 @@ public class VoiderGame implements ApplicationListener {
 		Log.ERROR();
 
 		// Init various classes
+		ConfigIni.getInstance();
 		MessageGateway.getInstance();
 		Synchronizer.getInstance();
 		ResourceChecker.init();

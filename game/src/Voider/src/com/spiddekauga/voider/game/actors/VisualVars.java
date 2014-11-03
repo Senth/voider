@@ -50,6 +50,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	VisualVars(ActorTypes actorType) {
 		mActorType = actorType;
+
 		setDefaultValues();
 		createFixtureDef();
 	}
@@ -262,9 +263,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Clears (and possibly frees) the vertices of the shape.
 	 */
 	public void clearVertices() {
-		if (mVertices != null) {
-			mVertices = null;
-		}
+		mVertices.clear();
 		mPolygon.clear();
 	}
 
@@ -1052,7 +1051,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public void setDensity(float density) {
 		mDensity = density;
-		fixtureChanged();
+		updateFixtureDefs();
 	}
 
 	/**
@@ -1068,7 +1067,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public void setFriction(float friction) {
 		mFriction = friction;
-		fixtureChanged();
+		updateFixtureDefs();
 	}
 
 	/**
@@ -1084,7 +1083,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public void setElasticity(float elasticity) {
 		mElasticity = elasticity;
-		fixtureChanged();
+		updateFixtureDefs();
 	}
 
 	/**
@@ -1092,6 +1091,18 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public float getElasticity() {
 		return mElasticity;
+	}
+
+	/**
+	 * Updates the fixture information
+	 */
+	private void updateFixtureDefs() {
+		for (FixtureDef fixtureDef : mFixtureDefs) {
+			fixtureDef.density = mDensity;
+			fixtureDef.friction = mFriction;
+			fixtureDef.restitution = mElasticity;
+		}
+		fixtureChanged();
 	}
 
 	/**
@@ -1172,6 +1183,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		fixCustomShapeFixtures();
 
 		mImage = null;
+	}
+
+	/**
+	 * @return true if the actor has an image sprite
+	 */
+	public boolean hasImage() {
+		return mImageName != null;
 	}
 
 	/**

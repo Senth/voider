@@ -901,6 +901,34 @@ public class Geometry {
 	}
 
 	/**
+	 * Checks whether the specified point is within the specified box
+	 * @param point the point to test
+	 * @param min minimum point
+	 * @param max maximum point
+	 * @return true if the point is inside the box
+	 */
+	public static boolean isPointWithinBox(final Vector2 point, final Vector2 min, final Vector2 max) {
+		// Left
+		if (point.x < min.x) {
+			return false;
+		}
+		// Right
+		if (point.x > max.x) {
+			return false;
+		}
+		// Bottom
+		if (point.y < min.y) {
+			return false;
+		}
+		// Top
+		if (point.y > max.y) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Creates the border vertices for the corner
 	 * @param corners vertices for all the corners
 	 * @param inward set this to true if the border shall be inward, false if outwards

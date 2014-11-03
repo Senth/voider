@@ -532,7 +532,7 @@ public class Config {
 		 */
 		public static class MouseJoint {
 			/** Update frequency of the mouse joint */
-			public final static float FREQUENCY = 500;
+			@Deprecated public final static float FREQUENCY = 500;
 			/** Maximum force the mouse joint has */
 			@Deprecated public final static float FORCE_MAX = 10000;
 		}

@@ -41,6 +41,7 @@ import com.spiddekauga.voider.resources.IResourceHasDef;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourcePrepareWrite;
 import com.spiddekauga.voider.resources.IResourceRenderShape;
+import com.spiddekauga.voider.resources.IResourceRenderSprite;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
@@ -72,7 +73,7 @@ IResourceRevision, IResourceHasDef {
 		mGroupEnemiesSave = level.mGroupEnemiesSave;
 		mLevelDef = level.mLevelDef;
 		mResourceBinder = level.mResourceBinder;
-		mResourceRenders = level.mResourceRenders;
+		mRenderShapes = level.mRenderShapes;
 		mResourceUpdates = level.mResourceUpdates;
 		mRunning = level.mRunning;
 		mSpeed = level.mSpeed;
@@ -261,22 +262,45 @@ IResourceRevision, IResourceHasDef {
 	 * @param shapeRenderer shape renderer used for rendering
 	 */
 	public void render(ShapeRendererEx shapeRenderer) {
+		// Only get once if running
 		if (mRunning) {
-			if (mResourceRenders == null) {
-				mResourceRenders = mResourceBinder.getResources(IResourceRenderShape.class);
-			}
-			for (IResourceRenderShape resourceRender : mResourceRenders) {
-				resourceRender.renderShape(shapeRenderer);
+			if (mRenderShapes == null) {
+				mRenderShapes = mResourceBinder.getResources(IResourceRenderShape.class);
 			}
 		} else {
-			ArrayList<IResourceRenderShape> resourceRenders = mResourceBinder.getResources(IResourceRenderShape.class);
-			for (IResourceRenderShape resourceRender : resourceRenders) {
-				resourceRender.renderShape(shapeRenderer);
-			}
+			mRenderShapes = mResourceBinder.getResources(IResourceRenderShape.class);
+		}
+
+		// Render
+		for (IResourceRenderShape shapes : mRenderShapes) {
+			shapes.renderShape(shapeRenderer);
 		}
 
 		if (mPlayerActor != null) {
 			mPlayerActor.renderShape(shapeRenderer);
+		}
+	}
+
+	/**
+	 * Renders the sprites for the level
+	 * @param spriteBatch batch for rendering sprites
+	 */
+	public void renderSprite(SpriteBatch spriteBatch) {
+		if (mRunning) {
+			if (mRenderSprites == null) {
+				mRenderSprites = mResourceBinder.getResources(IResourceRenderSprite.class);
+			}
+		} else {
+			mRenderSprites = mResourceBinder.getResources(IResourceRenderSprite.class);
+		}
+
+		// Render
+		for (IResourceRenderSprite sprite : mRenderSprites) {
+			sprite.renderSprite(spriteBatch);
+		}
+
+		if (mPlayerActor != null) {
+			mPlayerActor.renderSprite(spriteBatch);
 		}
 	}
 
@@ -422,8 +446,8 @@ IResourceRevision, IResourceHasDef {
 			mResourceBinder = null;
 		}
 
-		if (mResourceRenders != null) {
-			mResourceRenders = null;
+		if (mRenderShapes != null) {
+			mRenderShapes = null;
 		}
 		if (mResourceUpdates != null) {
 			mResourceUpdates = null;
@@ -624,8 +648,10 @@ IResourceRevision, IResourceHasDef {
 	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
-	/** All resources that shall be rendered */
-	private ArrayList<IResourceRenderShape> mResourceRenders = null;
+	/** All shape resources that shall be rendered */
+	private ArrayList<IResourceRenderShape> mRenderShapes = null;
+	/** All sprite resources that shall be rendered */
+	private ArrayList<IResourceRenderSprite> mRenderSprites = null;
 	/** Current x coordinate (of the screen's left edge) */
 	@Tag(14) private float mXCoord = 0.0f;
 	/** Level definition for this level */

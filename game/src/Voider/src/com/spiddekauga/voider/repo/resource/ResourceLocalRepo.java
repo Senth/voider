@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.resources.Def;
@@ -398,6 +399,21 @@ public class ResourceLocalRepo {
 	static void setSyncedUserResource(UUID resourceId, int from, int to) {
 		mSqliteGateway.setSyncedUserResource(resourceId, from, to);
 	}
+
+	/**
+	 * @return default player ship definition, null if not loaded
+	 */
+	public static PlayerActorDef getPlayerShipDefault() {
+		if (ResourceCacheFacade.isLoaded(DEFAULT_PLAYER_SHIP)) {
+			PlayerActorDef shipDef = ResourceCacheFacade.get(DEFAULT_PLAYER_SHIP);
+			return shipDef;
+		}
+
+		return null;
+	}
+
+	/** Default player ship */
+	private static final UUID DEFAULT_PLAYER_SHIP = UUID.fromString("7e21267c-839d-4e6f-963a-a193d4d607d4");
 
 	/** File gateway */
 	private static ResourceFileGateway mFileGateway = new ResourceFileGateway();

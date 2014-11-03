@@ -59,10 +59,11 @@ import com.spiddekauga.voider.utils.Geometry;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
-IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRenderShape, IResourceRenderSprite, IResourceEditorRender,
-IResourceSelectable, IResourceCorner {
+		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRenderShape, IResourceRenderSprite, IResourceEditorRender,
+		IResourceSelectable, IResourceCorner {
 	/**
-	 * Sets the texture of the actor including the actor definition. Automatically creates a body for the actor.
+	 * Sets the texture of the actor including the actor definition. Automatically creates
+	 * a body for the actor.
 	 * @param def actor definition
 	 */
 	public Actor(ActorDef def) {
@@ -115,8 +116,8 @@ IResourceSelectable, IResourceCorner {
 	}
 
 	/**
-	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they have been changed since the actor
-	 * was created.
+	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they have
+	 * been changed since the actor was created.
 	 */
 	@Override
 	public void updateEditor() {
@@ -243,8 +244,8 @@ IResourceSelectable, IResourceCorner {
 	 * Returns the definition of the specified type
 	 * @param <DefType> derived definition type to get instead
 	 * @param defType the derived definition type to get instead of default ActorDef
-	 * @return if the actor's definition is an instance of type it will return this type instead, if not null is
-	 *         returned
+	 * @return if the actor's definition is an instance of type it will return this type
+	 *         instead, if not null is returned
 	 */
 	@SuppressWarnings("unchecked")
 	public <DefType> DefType getDef(Class<DefType> defType) {
@@ -294,6 +295,12 @@ IResourceSelectable, IResourceCorner {
 
 	@Override
 	public void renderShape(ShapeRendererEx shapeRenderer) {
+		// Skip if the actor is rendered with sprites
+		if (mDef.getVisual().hasImage()) {
+			return;
+		}
+
+
 		RenderOrders.offsetZValue(shapeRenderer, this);
 
 		Vector2 offsetPosition = getWorldOffset();
@@ -448,7 +455,8 @@ IResourceSelectable, IResourceCorner {
 
 	/**
 	 * Removes a colliding actor from this actor
-	 * @param actorDef the actor definition this actor is colliding with, but to now remove
+	 * @param actorDef the actor definition this actor is colliding with, but to now
+	 *        remove
 	 */
 	public void removeCollidingActor(ActorDef actorDef) {
 		boolean removeSuccess = mCollidingActors.remove(actorDef);
@@ -490,7 +498,8 @@ IResourceSelectable, IResourceCorner {
 
 	/**
 	 * Sets if the actor shall only draw its outline
-	 * @param drawOnlyOutline set to true if the actor shall only draw its shape's outline.
+	 * @param drawOnlyOutline set to true if the actor shall only draw its shape's
+	 *        outline.
 	 */
 	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
 		mDrawOnlyOutline = drawOnlyOutline;
@@ -701,6 +710,13 @@ IResourceSelectable, IResourceCorner {
 	}
 
 	/**
+	 * @return true if the actor has created a body
+	 */
+	public boolean hasBody() {
+		return mBody != null;
+	}
+
+	/**
 	 * @return true if the actor has a saved body
 	 */
 	public boolean hasSavedBody() {
@@ -757,7 +773,8 @@ IResourceSelectable, IResourceCorner {
 	}
 
 	/**
-	 * Disables the actor fully. Removes the body from the world and a level will not render it as it has been disposed.
+	 * Disables the actor fully. Removes the body from the world and a level will not
+	 * render it as it has been disposed.
 	 */
 	@Override
 	public void dispose() {
@@ -780,21 +797,15 @@ IResourceSelectable, IResourceCorner {
 	}
 
 	/**
-	 * Reload fixtures. This destroys all the existing fixtures and creates new fixtures from the actor definition. Does
-	 * nothing if the actor doesn't have a body. This also resets the body corners if we have any
+	 * Reload fixtures. This destroys all the existing fixtures and creates new fixtures
+	 * from the actor definition. Does nothing if the actor doesn't have a body. This also
+	 * resets the body corners if we have any
 	 */
 	public void reloadFixtures() {
 		if (mBody != null) {
-			Gdx.app.log("Actor.reloadFixtures()", "Fixtures before: " + mBody.getFixtureList().size);
 			destroyFixtures();
-			Gdx.app.log("Actor.reloadFixtures()", "After destroyed: " + mBody.getFixtureList().size);
-
 			calculateRotatedVertices(true);
-
-			Gdx.app.log("Actor.reloadFixtures()", "Def fixtures: " + mDef.getVisual().getFixtureDefs().size());
-
 			createFixtures();
-			Gdx.app.log("Actor.reloadFixtures()", "After created: " + mBody.getFixtureList().size);
 
 			// Do we have body corners? Reset those in that case
 			if (mHasBodyCorners) {
@@ -814,8 +825,9 @@ IResourceSelectable, IResourceCorner {
 	}
 
 	/**
-	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not handle the def. This is true for
-	 *         terrain actors, as there is only one actor per definition, defaults to false.
+	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not handle
+	 *         the def. This is true for terrain actors, as there is only one actor per
+	 *         definition, defaults to false.
 	 */
 	public boolean savesDef() {
 		return false;
@@ -856,7 +868,8 @@ IResourceSelectable, IResourceCorner {
 	}
 
 	/**
-	 * Creates body corners for the actor. Only applicable if actor is using a custom shape and in an editor.
+	 * Creates body corners for the actor. Only applicable if actor is using a custom
+	 * shape and in an editor.
 	 */
 	@Override
 	public void createBodyCorners() {
@@ -1069,8 +1082,8 @@ IResourceSelectable, IResourceCorner {
 	}
 
 	/**
-	 * Calculates the rotated vertices (both regular and border). Calls {@link #calculateRotatedVertices(boolean)} with
-	 * false.
+	 * Calculates the rotated vertices (both regular and border). Calls
+	 * {@link #calculateRotatedVertices(boolean)} with false.
 	 */
 	protected void calculateRotatedVertices() {
 		calculateRotatedVertices(false);
@@ -1233,7 +1246,7 @@ IResourceSelectable, IResourceCorner {
 	/** Body position, remember even when we don't have a body */
 	@Tag(4) private Vector2 mPosition = new Vector2();
 	/** Trigger informations */
-	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<>();
+	@Deprecated @Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<>();
 
 	// Kryo special variables
 	/** Revision of the actor */

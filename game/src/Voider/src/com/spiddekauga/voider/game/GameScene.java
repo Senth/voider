@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Filter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -19,13 +20,14 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.badlogic.gdx.utils.Array;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -43,6 +45,7 @@ import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -68,6 +71,7 @@ public class GameScene extends WorldScene {
 		mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
 		mSpriteBatch.enableBlending();
 		mSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		mProjectionMatrixDefault.set(mSpriteBatch.getProjectionMatrix());
 	}
 
 	@Override
@@ -253,7 +257,6 @@ public class GameScene extends WorldScene {
 	@Override
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
-		Actor.setEditorActive(false);
 
 		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			fixCamera();
@@ -303,6 +306,19 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
+	protected void onDeactivate() {
+		Actor.setPlayerActor(null);
+
+		// End of level, try to set player highscore
+		if (!mTesting && isPublished()) {
+			setNewHighscore();
+			updatePlayCount();
+		}
+
+		super.onDeactivate();
+	}
+
+	@Override
 	protected void onDispose() {
 		// Save the level
 		if (!mTesting) {
@@ -329,16 +345,8 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected void update(float deltaTime) {
-		// Make sure border maintains same speed as level
-		if (mBorderBody != null) {
-			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
-		}
-
-		// Update mouse position even when still
-		if (mMouseBody != null && mMovingPlayer) {
-			screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
-			mMouseJoint.setTarget(mCursorWorld);
-		}
+		updateBorderSpeed();
+		updateMousePosition();
 
 		updateBodyShepherdPositions();
 		mBodyShepherd.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
@@ -348,7 +356,57 @@ public class GameScene extends WorldScene {
 
 		updateCameraPosition();
 
-		// Is the player dead? Loose a life or game over
+		checkPlayerLives();
+		checkCompletedLevel();
+		mPlayerStats.updateScore(mLevel.getXCoord());
+		checkAndResetPlayerPosition();
+
+
+		// GUI
+		mGui.resetValues();
+	}
+
+	/**
+	 * Check and reset player position
+	 */
+	private void checkAndResetPlayerPosition() {
+		if (!Geometry.isPointWithinBox(mPlayerActor.getPosition(), getWorldMinCoordinates(), getWorldMaxCoordinates())) {
+			resetPlayerPosition();
+		}
+	}
+
+	/**
+	 * Update mouse position
+	 */
+	private void updateMousePosition() {
+		if (mMouseBody != null && mMovingPlayer) {
+			screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
+			mMouseJoint.setTarget(mCursorWorld);
+		}
+	}
+
+	/**
+	 * Update border speed
+	 */
+	private void updateBorderSpeed() {
+		if (mBorderBody != null) {
+			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
+		}
+	}
+
+	/**
+	 * Check if the player has completed the level
+	 */
+	private void checkCompletedLevel() {
+		if (mLevel.isCompletedLevel()) {
+			setOutcome(Outcomes.LEVEL_COMPLETED);
+		}
+	}
+
+	/**
+	 * Check if the player is dead
+	 */
+	private void checkPlayerLives() {
 		if (mPlayerActor.getHealth() <= 0 && !mInvulnerable) {
 			if (mPlayerStats.getExtraLives() > 0) {
 				mPlayerActor.resetLife();
@@ -358,22 +416,6 @@ public class GameScene extends WorldScene {
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 			}
 		}
-
-		// Have we reached the end of the level?
-		if (mLevel.isCompletedLevel()) {
-			setOutcome(Outcomes.LEVEL_COMPLETED);
-		}
-
-		mPlayerStats.updateScore(mLevel.getXCoord());
-
-		// End of level, try to set player highscore
-		if (isDone() && isPublished()) {
-			setNewHighscore();
-			updatePlayCount();
-		}
-
-		// GUI
-		mGui.resetValues();
 	}
 
 	/**
@@ -406,19 +448,26 @@ public class GameScene extends WorldScene {
 				mShapeRenderer.setShader(defaultShader);
 			}
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mSpriteBatch.setProjectionMatrix(mProjectionMatrixDefault);
 
-			// Render sprites
+			// Render Background
 			mSpriteBatch.begin();
 			mLevel.renderBackground(mSpriteBatch);
 			mSpriteBatch.end();
 
-			// Render actors
+			// Render shape actors
 			mShapeRenderer.push(ShapeType.Filled);
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 			mLevel.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
+
+			// Render sprite actors
+			mSpriteBatch.setProjectionMatrix(mCamera.combined);
+			mSpriteBatch.begin();
+			mLevel.renderSprite(mSpriteBatch);
+			mSpriteBatch.end();
 
 			if (mTakeScreenshot) {
 				takeScreenshotNow();
@@ -663,13 +712,16 @@ public class GameScene extends WorldScene {
 	 * Creates the mouse joint
 	 */
 	private void createMouseJoint() {
+		IC_Ship.IC_Settings icSettings = ConfigIni.getInstance().editor.ship.settings;
 		BodyDef bodyDef = new BodyDef();
 		mMouseBody = mWorld.createBody(bodyDef);
-		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
+		mMouseJointDef.frequencyHz = icSettings.getFrequencyDefault();
 		mMouseJointDef.bodyA = mMouseBody;
 		mMouseJointDef.bodyB = mPlayerActor.getBody();
 		mMouseJointDef.collideConnected = true;
-		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
+		if (mPlayerActor != null) {
+			mMouseJointDef.maxForce = mPlayerActor.getDef(PlayerActorDef.class).getMouseJointForceMax();
+		}
 	}
 
 	/**
@@ -678,21 +730,19 @@ public class GameScene extends WorldScene {
 	private void createPlayerShip() {
 		// Create a new ship when we're not resuming a game
 		if (mGameSaveDef == null) {
-			// Find first available player ship
-			ArrayList<PlayerActorDef> ships = ResourceCacheFacade.getAll(ExternalTypes.PLAYER_DEF);
-			if (ships.isEmpty()) {
-				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
-				ships = null;
+			// Find player ship
+			PlayerActorDef shipDefault = ResourceLocalRepo.getPlayerShipDefault();
+			if (shipDefault == null) {
+				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find default ships");
 				return;
 			}
 
-			mPlayerActor = new PlayerActor(ships.get(0));
+			mPlayerActor = new PlayerActor(shipDefault);
 			mPlayerActor.createBody();
 			resetPlayerPosition();
 
 			mPlayerStats = new PlayerStats(mLevel.getLevelDef().getStartXCoord(), mLevel.getSpeed(), mPlayerActor);
 			mLevel.addResource(mPlayerStats);
-			ships = null;
 		} else {
 			mPlayerActor.createBody();
 		}
@@ -720,14 +770,9 @@ public class GameScene extends WorldScene {
 			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
 			// Get radius of player and offset it with the width
-			Array<Fixture> playerFixtures = mPlayerActor.getBody().getFixtureList();
-
-			if (playerFixtures.size > 0) {
-				float radius = playerFixtures.get(0).getShape().getRadius();
-				playerPosition.x += radius * 2;
-
-				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
-			}
+			float boundingRadius = mPlayerActor.getDef().getVisual().getBoundingRadius();
+			playerPosition.x += boundingRadius * 2;
+			mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
 		}
 	}
 
@@ -743,55 +788,37 @@ public class GameScene extends WorldScene {
 		mBodyShepherdMaxPos.y += getWorldHeight();
 	}
 
-	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Bar height in world coordinates */
 	private float mBarHeight = -1;
-	/** Sprite renderer */
 	private SpriteBatch mSpriteBatch = null;
+	/** Default projection matrix for SpriteBatch */
+	private Matrix4 mProjectionMatrixDefault = new Matrix4();
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
-	/** Level to load */
 	private LevelDef mLevelToLoad = null;
-	/** Level to run */
 	private Level mLevelToRun = null;
-	/** The current level used in the game */
 	private Level mLevel = null;
-	/** If we're just testing the level */
 	private boolean mTesting = false;
-	/** Makes the player invulnerable, useful for testing */
 	private boolean mInvulnerable = false;
 	/** Resumed game save definition, will only be set if resumed a game */
 	private GameSaveDef mGameSaveDef = null;
 	/** Resumed game save, will only be set if resumed a game */
 	private GameSave mGameSave = null;
-	/** Player ship actor, plays the game */
 	private PlayerActor mPlayerActor;
-	/** Current pointer that moves the player */
 	private int mPlayerPointer = INVALID_POINTER;
-	/** If we're currently moving the player */
 	private boolean mMovingPlayer = false;
-	/** Handles collision between actors/bodies */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
-	/** Body shepherd, creates and destroys bodies */
 	private BodyShepherd mBodyShepherd = new BodyShepherd();
-	/** Body shepherd min position */
 	private Vector2 mBodyShepherdMinPos = new Vector2();
-	/** Body shepherd max position */
 	private Vector2 mBodyShepherdMaxPos = new Vector2();
-	/** Player score */
 	private PlayerStats mPlayerStats = null;
-	/** Take screenshot */
 	private boolean mTakeScreenshot = false;
 
 	// MOUSE JOINT
-	/** Screen coordinate for the cursor */
 	private Vector2 mCursorScreen = new Vector2();
-	/** Mouse joint definition */
 	private MouseJointDef mMouseJointDef = new MouseJointDef();
-	/** Mouse joint for player */
 	private MouseJoint mMouseJoint = null;
-	/** Body of the mouse, for mouse joint */
 	private Body mMouseBody = null;
 
 	/** Callback for "ray testing" */
@@ -809,6 +836,5 @@ public class GameScene extends WorldScene {
 	};
 
 	// Temporary variables
-	/** World coordinate for the cursor */
 	private Vector2 mCursorWorld = new Vector2();
 }
