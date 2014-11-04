@@ -15,6 +15,8 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 public class ConfigIni {
 	/** Editor options */
 	public IC_Editor editor = null;
+	/** Game options */
+	public IC_Game game = null;
 
 	/**
 	 * Private constructor to enforce singleton pattern
@@ -38,6 +40,7 @@ public class ConfigIni {
 		Ini ini = ResourceCacheFacade.get(mFileName);
 		IniClass.setJavaClassPrefix("IC_");
 		editor = new IC_Editor(ini, ini.get("Editor"));
+		game = new IC_Game(ini, ini.get("Game"));
 	}
 
 	/**

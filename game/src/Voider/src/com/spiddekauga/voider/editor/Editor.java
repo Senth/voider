@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IdentityMap;
 import com.spiddekauga.net.IOutstreamProgressListener;
@@ -64,6 +65,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
 		mSpriteBatch.enableBlending();
 		mSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		mProjectionMatrixDefault.set(mSpriteBatch.getProjectionMatrix());
 	}
 
 	/**
@@ -219,6 +221,10 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * Render the grid
 	 */
 	private void renderGrid() {
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+
 		// Offset
 		if (mGridRenderAboveResources) {
 			RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.GRID_ABOVE);
@@ -474,7 +480,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	/**
-	 * Creates a texture out of the specified actor definition and sets it for the actor definition.
+	 * Creates a texture out of the specified actor definition and sets it for the actor
+	 * definition.
 	 */
 	private void createActorDefTexture() {
 		float width = mSavingActorDef.getWidth();
@@ -568,8 +575,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	/**
-	 * Set the actor as saving. This will create an image of the actor. After the resource is saved the command will be
-	 * executed
+	 * Set the actor as saving. This will create an image of the actor. After the resource
+	 * is saved the command will be executed
 	 * @param actorDef the actor definition to save
 	 * @param actor a new empty actor to use for creating a screen shot
 	 * @param command the command to be executed after the resource has been saved
@@ -591,7 +598,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	/**
-	 * @return true if the editor is currently saving an actor. I.e. creating a texture file for it.
+	 * @return true if the editor is currently saving an actor. I.e. creating a texture
+	 *         file for it.
 	 */
 	public boolean isSaving() {
 		return mSaving;
@@ -620,6 +628,13 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	@Override
 	public boolean isJustCreated() {
 		return getDef() == null || !ResourceLocalRepo.exists(getDef().getId());
+	}
+
+	/**
+	 * @return default projection matrix
+	 */
+	protected Matrix4 getProjectionMatrixDefault() {
+		return mProjectionMatrixDefault;
 	}
 
 	/**
@@ -687,6 +702,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<>();
 	/** If collision boxes have been created */
 	private boolean mCollisionBoxesBeenCreated = false;
+	/** Default/Initial projection matrix */
+	private Matrix4 mProjectionMatrixDefault = new Matrix4();
 
 	/** Synchronizer */
 	protected static Synchronizer mSynchronizer = Synchronizer.getInstance();

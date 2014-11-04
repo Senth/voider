@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -18,6 +19,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Game;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
@@ -163,28 +166,99 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void render() {
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		super.render();
+		int srcFactor = GL20.GL_SRC_ALPHA;
+		int dstFactor = GL20.GL_ONE;
 
 		if (mLevel == null) {
 			return;
 		}
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(srcFactor, dstFactor);
+			renderBackground();
+		}
+
+		super.render();
+
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+
 			ShaderProgram defaultShader = ResourceCacheFacade.get(InternalNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(srcFactor, dstFactor);
 			mLevel.render(mShapeRenderer);
 			mLevel.renderEditor(mShapeRenderer);
-
+			mShapeRenderer.flush();
 			renderAboveBelowBorders();
-
 			mShapeRenderer.pop();
+
+
+			mSpriteBatch.setProjectionMatrix(mCamera.combined);
+			mSpriteBatch.begin();
+			mLevel.renderSprite(mSpriteBatch);
+			mSpriteBatch.end();
 		}
+	}
+
+	/**
+	 * Renders the background if it should
+	 */
+	private void renderBackground() {
+		if (mShowBackground) {
+			if (mBackgroundBottom == null) {
+				createBackground();
+			}
+
+			mSpriteBatch.setProjectionMatrix(mCamera.combined);
+			mSpriteBatch.begin();
+
+			IC_Game game = ConfigIni.getInstance().game;
+			renderBackground(mBackgroundBottom, game.getLayerBottomSpeed());
+			renderBackground(mBackgroundTop, game.getLayerTopSpeed());
+
+			mSpriteBatch.end();
+		}
+	}
+
+	/**
+	 * Render a specific background
+	 * @param background the background to render
+	 * @param layerSpeed relative speed of the background
+	 */
+	private void renderBackground(Texture background, float layerSpeed) {
+		// Offset in screen coordinates
+		float layerOffset = mCamera.position.x / getScreenToWorldScale() * layerSpeed;
+
+		// Get shown height
+		float renderHeightDefault = Gdx.graphics.getHeight() * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
+		float renderHeight = renderHeightDefault * getScreenToWorldScale();
+
+		// Texture scaling
+		float textureScale = renderHeightDefault / background.getHeight();
+		float width = Gdx.graphics.getWidth() / (background.getWidth() * textureScale) * mCamera.zoom;
+		float startX = layerOffset / background.getWidth();
+
+		// Position
+		float offsetY = (Gdx.graphics.getHeight() - renderHeightDefault) / 2;
+		float x = mCamera.position.x - mCamera.viewportWidth * mCamera.zoom / 2;
+		float y = -mCamera.viewportHeight / 2 + offsetY * getScreenToWorldScale();
+
+		// Draw
+		mSpriteBatch.draw(background, x, y, mCamera.viewportWidth * mCamera.zoom, renderHeight, startX, 0, startX + width, 1);
+	}
+
+	/**
+	 * Create level background
+	 */
+	private void createBackground() {
+		Themes currentTheme = mLevel.getLevelDef().getTheme();
+		mBackgroundBottom = ResourceCacheFacade.get(currentTheme.getBottomLayer());
+		mBackgroundTop = ResourceCacheFacade.get(currentTheme.getTopLayer());
 	}
 
 	@Override
@@ -483,7 +557,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Selects the specified pickup definition. This pickup will be used when adding new pickups
+	 * Selects the specified pickup definition. This pickup will be used when adding new
+	 * pickups
 	 * @param pickupId the pickup id to select
 	 * @return true if the pickup was selected successfully, false if unsuccessful
 	 */
@@ -620,7 +695,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/**
 	 * Checks if the tool should be available in the background
 	 * @param tool
-	 * @return true if the tool should be available when inactive (but with limited functionality)
+	 * @return true if the tool should be available when inactive (but with limited
+	 *         functionality)
 	 */
 	private boolean isAvailableWhenInactive(Tools tool) {
 		switch (tool) {
@@ -919,7 +995,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed before the level, empty string if no level is available
+	 * @return story that will be displayed before the level, empty string if no level is
+	 *         available
 	 */
 	String getPrologue() {
 		if (mLevel != null) {
@@ -941,7 +1018,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed after completing the level, empty string if no level is available
+	 * @return story that will be displayed after completing the level, empty string if no
+	 *         level is available
 	 */
 	String getEpilogue() {
 		if (mLevel != null) {
@@ -976,8 +1054,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return color of the selected terrain. If multiple terrains are selected and have different colors, null is
-	 *         returned. If no terrain is selected the default color is returned.
+	 * @return color of the selected terrain. If multiple terrains are selected and have
+	 *         different colors, null is returned. If no terrain is selected the default
+	 *         color is returned.
 	 */
 	Color getSelectedTerrainColor() {
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
@@ -1017,8 +1096,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return opacity of the selected terrain. -1 if multiple terrains are selected and have different opacity. The
-	 *         default opacity is return when no terrain is selected.
+	 * @return opacity of the selected terrain. -1 if multiple terrains are selected and
+	 *         have different opacity. The default opacity is return when no terrain is
+	 *         selected.
 	 */
 	float getSelectedTerrainOpacity() {
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
@@ -1243,7 +1323,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return spawn delay between actors in the same group, negative value if no group exist
+	 * @return spawn delay between actors in the same group, negative value if no group
+	 *         exist
 	 */
 	float getEnemySpawnDelay() {
 		if (getEnemyCount() > 1) {
@@ -1272,8 +1353,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return current path type. If several paths are selected and they have different path types null is return. If no
-	 *         path is selected null is also returned.
+	 * @return current path type. If several paths are selected and they have different
+	 *         path types null is return. If no path is selected null is also returned.
 	 */
 	PathTypes getPathType() {
 		int cOnce = 0;
@@ -1349,7 +1430,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the selected enemy has an activation trigger, false if not or if no enemy is selected
+	 * @return true if the selected enemy has an activation trigger, false if not or if no
+	 *         enemy is selected
 	 */
 	boolean hasSelectedEnemyActivateTrigger() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1365,7 +1447,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return delay of the activation trigger, negative if no activation trigger has been set.
+	 * @return delay of the activation trigger, negative if no activation trigger has been
+	 *         set.
 	 */
 	float getSelectedEnemyActivateTriggerDelay() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1408,7 +1491,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the selected enemy has an deactivation trigger, false if not or if no enemy is selected
+	 * @return true if the selected enemy has an deactivation trigger, false if not or if
+	 *         no enemy is selected
 	 */
 	boolean hasSelectedEnemyDeactivateTrigger() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1424,7 +1508,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return delay of the deactivation trigger, negative if no deactivation trigger has been set.
+	 * @return delay of the deactivation trigger, negative if no deactivation trigger has
+	 *         been set.
 	 */
 	float getSelectedEnemyDeactivateTriggerDelay() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1467,7 +1552,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Sets if enemies that will be used when test running the level from here should be highlighted.
+	 * Sets if enemies that will be used when test running the level from here should be
+	 * highlighted.
 	 * @param highlight set to true to highlight the enemies
 	 */
 	void setEnemyHighlight(boolean highlight) {
@@ -1475,11 +1561,26 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the enemy should be highlighted if the will be used when test running a level from the current
-	 *         position
+	 * @return true if the enemy should be highlighted if the will be used when test
+	 *         running a level from the current position
 	 */
 	public boolean isEnemyHighlightOn() {
 		return mEnemyHighlight;
+	}
+
+	/**
+	 * Sets if the level background should be rendered
+	 * @param show set to true to show the background
+	 */
+	void setShowBackground(boolean show) {
+		mShowBackground = show;
+	}
+
+	/**
+	 * @return true if the background is shown
+	 */
+	boolean isBackgroundShown() {
+		return mShowBackground;
 	}
 
 	/**
@@ -1638,6 +1739,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mLevel.getLevelDef().setTheme(theme);
 			setUnsaved();
 			((LevelEditorGui) mGui).resetTheme();
+			mBackgroundBottom = null;
+			mBackgroundTop = null;
 		}
 	}
 
@@ -1688,25 +1791,18 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		PICKUP,
 	}
 
-	/** PNG bytes before testing the level */
+	private Texture mBackgroundBottom = null;
+	private Texture mBackgroundTop = null;
 	private byte[] mPngBytesBeforeTest = null;
-	/** Enemies in the add enemy table */
+	private boolean mShowBackground = true;
 	private ArrayList<EnemyActorDef> mAddEnemies = new ArrayList<>();
-	/** Level we're currently editing */
 	private Level mLevel = null;
-	/** Which definition we're currently selecting */
 	private SelectionActions mSelectionAction = null;
-	/** Currently loading level */
 	private LevelDef mLoadingLevel = null;
-	/** The selection */
 	private ISelection mSelection = null;
-	/** Current selected tool */
 	private Tools mTool = Tools.SELECTION;
-	/** Zoom tool */
 	private ZoomTool mZoomTool = null;
-	/** If enemies should be highlighted if they will be used when test running the level */
 	private boolean mEnemyHighlight = true;
-	/** Default terrain color */
 	private Color mDefaultTerrainColor = new Color();
 	/** Resource repository */
 	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();

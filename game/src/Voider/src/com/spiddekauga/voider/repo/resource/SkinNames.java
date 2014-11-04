@@ -186,6 +186,8 @@ public class SkinNames {
 		SHIP_EDITOR_SELECTED,
 		/** Ship settings tab */
 		SHIP_SETTINGS,
+		/** Show background in level editor */
+		SHOW_BACKGROUND,
 		/** As {@link #ADD_MOVE_CORNER} but for terrain */
 		TERRAIN_ADD_MOVE_CORNER,
 		/** As {@link #DRAW_APPEND} but for terrain */
@@ -483,10 +485,7 @@ public class SkinNames {
 	 * Game Variables
 	 */
 	public enum GameVars implements ISkinNames {
-		/** Speed for the top layer of the level background */
-		TOP_LAYER_SPEED(Float.class),
-		/** Speed for the bottom layer of the level background */
-		BOTTOM_LAYER_SPEED(Float.class),
+
 
 		;
 

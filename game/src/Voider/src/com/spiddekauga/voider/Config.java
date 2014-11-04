@@ -527,16 +527,6 @@ public class Config {
 	 * Some general game settings
 	 */
 	public static class Game {
-		/**
-		 * Various mouse joint settings
-		 */
-		public static class MouseJoint {
-			/** Update frequency of the mouse joint */
-			@Deprecated public final static float FREQUENCY = 500;
-			/** Maximum force the mouse joint has */
-			@Deprecated public final static float FORCE_MAX = 10000;
-		}
-
 		/** Score multiplier, used to create a greater score */
 		@Deprecated public final static float SCORE_MULTIPLIER = 10;
 		/** Border threshold, when border is too out of sync, it will get synced */
@@ -578,8 +568,7 @@ public class Config {
 		 */
 		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
 		/** Amount of extra space that has been added to the level */
-		public final static float LEVEL_EDITOR_HEIGHT_SCALE_INVERT = (LEVEL_EDITOR_HEIGHT_SCALE - 1) / LEVEL_EDITOR_HEIGHT_SCALE;
-		/** The actual level scaling */
+		public final static float LEVEL_EDITOR_HEIGHT_SCALE_INVERT = 1 / LEVEL_EDITOR_HEIGHT_SCALE;
 		/** Level editor scale, this allows the player to see above and below the level */
 		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
 		/** Maximum frame time length */

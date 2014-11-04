@@ -205,6 +205,12 @@ public abstract class EditorGui extends Gui {
 			}
 		}
 
+		if (mShowBackground != null) {
+			if (mEditor instanceof LevelEditor) {
+				mShowBackground.setChecked(((LevelEditor) mEditor).isBackgroundShown());
+			}
+		}
+
 		// Name
 		resetName();
 
@@ -400,8 +406,19 @@ public abstract class EditorGui extends Gui {
 			};
 		}
 
-		// Run & Enemy highlight (for level editor)
+		// Level Editor -> Run & Enemy highlight
 		if (mEditor instanceof LevelEditor) {
+			// Background
+			button = mUiFactory.addImageButton(EditorIcons.SHOW_BACKGROUND, mEditMenu, null, null);
+			mTooltip.add(button, Messages.EditorTooltips.ACTION_SHOW_BACKGROUND);
+			mShowBackground = button;
+			new ButtonListener(button) {
+				@Override
+				protected void onChecked(Button button, boolean checked) {
+					((LevelEditor) mEditor).setShowBackground(checked);
+				}
+			};
+
 			// Highlight enemy if it will spawn when test running the level from
 			// the current position
 			button = mUiFactory.addImageButton(EditorIcons.ENEMY_SPAWN_HIGHLIGHT, mEditMenu, null, null);
@@ -865,6 +882,8 @@ public abstract class EditorGui extends Gui {
 	private Button mGridRender = null;
 	/** Grid above button */
 	private Button mGridRenderAbove = null;
+	/** Render level editor background */
+	private Button mShowBackground = null;
 	/** Editor scene */
 	protected Editor mEditor = null;
 	/** Editor menu table (upper left) */

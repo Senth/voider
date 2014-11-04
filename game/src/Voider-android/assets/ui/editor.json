@@ -253,6 +253,15 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: grid_above_disabled
 	},
 	
+	show_background:  {
+		imageUp: show_background,
+		imageOver: show_background_over,
+		imageDown: show_background_down,
+		imageChecked: show_background_checked,
+		imageCheckedOver: show_background_checked_over,
+		imageDisabled: show_background_disabled
+	},
+	
 	enemy_spawn_highlight:  {
 		imageUp: enemy_spawn_highlight,
 		imageOver: enemy_spawn_highlight_over,

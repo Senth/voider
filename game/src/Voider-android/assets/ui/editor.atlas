@@ -1249,6 +1249,13 @@ grid
   orig: 32, 32
   offset: 0, 0
   index: -1
+show_background
+  rotate: false
+  xy: 1275, 149
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 grid_above
   rotate: false
   xy: 1309, 183
@@ -1305,6 +1312,20 @@ grid_down
   orig: 32, 32
   offset: 0, 0
   index: -1
+show_background_checked
+  rotate: false
+  xy: 1409, 217
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+show_background_down
+  rotate: false
+  xy: 1409, 217
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 grid_checked_over
   rotate: false
   xy: 1343, 149
@@ -1319,7 +1340,28 @@ grid_over
   orig: 32, 32
   offset: 0, 0
   index: -1
+show_background_checked_over
+  rotate: false
+  xy: 1343, 149
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+show_background_over
+  rotate: false
+  xy: 1343, 149
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 grid_disabled
+  rotate: false
+  xy: 1377, 183
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+show_background_disabled
   rotate: false
   xy: 1377, 183
   size: 32, 32

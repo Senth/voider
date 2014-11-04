@@ -22,6 +22,8 @@ import com.spiddekauga.utils.kryo.KryoPostWrite;
 import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Game;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -30,9 +32,7 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
@@ -52,7 +52,7 @@ import com.spiddekauga.voider.resources.ResourceBinder;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-IResourceRevision, IResourceHasDef {
+		IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -96,10 +96,9 @@ IResourceRevision, IResourceHasDef {
 		}
 
 		// Set background speed
-		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GAME)) {
-			mBackgroundBottomSpeed = SkinNames.getResource(SkinNames.GameVars.BOTTOM_LAYER_SPEED);
-			mBackgroundTopSpeed = SkinNames.getResource(SkinNames.GameVars.TOP_LAYER_SPEED);
-		}
+		IC_Game icGame = ConfigIni.getInstance().game;
+		mBackgroundBottomSpeed = icGame.getLayerBottomSpeed();
+		mBackgroundTopSpeed = icGame.getLayerTopSpeed();
 	}
 
 	/**

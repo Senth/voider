@@ -32,14 +32,14 @@ import com.spiddekauga.voider.utils.Pool;
  * {@code
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
- *
+ * 
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
  * shapeRenderer.pop();
- *
+ * 
  * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);

@@ -8,6 +8,7 @@ java.lang.Float: {
 	//
 	// NOTE! Top layer speed should not be multiple of the bottom layer.
 	// E.g. Top: 0.45 Bottom 0.15 (multiple of 5). Top 0.46 is OK
+	// DEPRECATED
 	top_layer_speed: {value: 0.6},
 	bottom_layer_speed: {value: 0.29},
 },
