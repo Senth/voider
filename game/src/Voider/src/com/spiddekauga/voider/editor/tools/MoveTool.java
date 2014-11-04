@@ -133,8 +133,10 @@ public class MoveTool extends TouchTool {
 			Object userData = fixture.getBody().getUserData();
 
 			if (userData instanceof IResourcePosition) {
-				mHitResource = true;
-				return false;
+				if (mSelection.isSelected((IResource) userData)) {
+					mHitResource = true;
+					return false;
+				}
 			}
 
 			return true;
@@ -147,8 +149,10 @@ public class MoveTool extends TouchTool {
 		public boolean reportFixture(Fixture fixture) {
 			Object userData = fixture.getBody().getUserData();
 			if (userData instanceof Trigger) {
-				mHitResource = true;
-				return false;
+				if (mSelection.isSelected((IResource) userData)) {
+					mHitResource = true;
+					return false;
+				}
 			}
 			return true;
 		}

@@ -18,8 +18,10 @@ public class Selection implements ISelection {
 	public void selectResource(IResource resource) {
 		mSelectedResources.add(resource);
 
-		if (resource instanceof IResourceSelectable) {
-			((IResourceSelectable) resource).setSelected(true);
+		if (mSetAsSelected) {
+			if (resource instanceof IResourceSelectable) {
+				((IResourceSelectable) resource).setSelected(true);
+			}
 		}
 
 		for (ISelectionListener listener : mListeners) {
@@ -46,8 +48,10 @@ public class Selection implements ISelection {
 		boolean removed = mSelectedResources.remove(resource);
 
 		if (removed) {
-			if (resource instanceof IResourceSelectable) {
-				((IResourceSelectable) resource).setSelected(false);
+			if (mSetAsSelected) {
+				if (resource instanceof IResourceSelectable) {
+					((IResourceSelectable) resource).setSelected(false);
+				}
 			}
 
 			for (ISelectionListener listener : mListeners) {
@@ -197,10 +201,18 @@ public class Selection implements ISelection {
 		return mChangedDuringLastDown;
 	}
 
-	/** If selection was changed during a touch down */
+	@Override
+	public void setAsSelectedOnSelection(boolean setAsSelected) {
+		mSetAsSelected = setAsSelected;
+	}
+
+	@Override
+	public boolean isSetAsSelectedOnSelection() {
+		return mSetAsSelected;
+	}
+
+	private boolean mSetAsSelected = true;
 	private boolean mChangedDuringLastDown = false;
-	/** All listeners */
 	private ArrayList<ISelectionListener> mListeners = new ArrayList<ISelectionListener>();
-	/** Current resource selection */
 	private ArrayList<IResource> mSelectedResources = new ArrayList<IResource>();
 }

@@ -6,7 +6,6 @@ import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Contains the current selection
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface ISelection {
@@ -15,20 +14,23 @@ public interface ISelection {
 	 * @return true if the specified resource is selected
 	 */
 	boolean isSelected(IResource resource);
+
 	/**
 	 * @return all selected resources
 	 */
 	ArrayList<IResource> getSelectedResources();
 
 	/**
-	 * @return the most common type of selected resources, null if no resources are selected
+	 * @return the most common type of selected resources, null if no resources are
+	 *         selected
 	 */
 	Class<? extends IResource> getMostCommonSelectedResourceType();
 
 	/**
 	 * @param <ResourceType> type of resource to get
 	 * @param type what type of selected resources to get
-	 * @return all selected resources of the specified type. Don't forget to free the arraylist
+	 * @return all selected resources of the specified type. Don't forget to free the
+	 *         arraylist
 	 */
 	<ResourceType extends IResource> ArrayList<ResourceType> getSelectedResourcesOfType(Class<ResourceType> type);
 
@@ -41,7 +43,8 @@ public interface ISelection {
 	 * Gets the first resource of the specified type
 	 * @param <ResourceType> type of resource to get
 	 * @param type what type of selected resource to get
-	 * @return first resource of the specified type, null if no resource of this type was found
+	 * @return first resource of the specified type, null if no resource of this type was
+	 *         found
 	 */
 	<ResourceType extends IResource> ResourceType getFirstSelectedResourceOfType(Class<ResourceType> type);
 
@@ -71,15 +74,15 @@ public interface ISelection {
 
 	/**
 	 * Removes the resources from the selection
-	 * @param resources all resources to deselect. Resources inside this array
-	 * that aren't currently selected are just ignored
+	 * @param resources all resources to deselect. Resources inside this array that aren't
+	 *        currently selected are just ignored
 	 */
 	void deselectResources(ArrayList<IResource> resources);
 
 	/**
 	 * Removes the resources from the selection
-	 * @param resources all resources to deselect. Resources inside this array
-	 * that aren't currently selected are just ignored
+	 * @param resources all resources to deselect. Resources inside this array that aren't
+	 *        currently selected are just ignored
 	 */
 	void deselectResources(IResource[] resources);
 
@@ -98,8 +101,8 @@ public interface ISelection {
 	void removeListener(ISelectionListener listener);
 
 	/**
-	 * Sets if the selection was changed during a touch down() event. This should
-	 * always be called as setSelectionChangeDuringDown(false) after the up() event
+	 * Sets if the selection was changed during a touch down() event. This should always
+	 * be called as setSelectionChangeDuringDown(false) after the up() event
 	 * @param changed set to true if this was changed
 	 */
 	void setSelectionChangedDuringDown(boolean changed);
@@ -124,4 +127,17 @@ public interface ISelection {
 	 * @return the total number of selected resources
 	 */
 	int getSize();
+
+	/**
+	 * Sets whether the selected resource should be set as selected (if the resource is an
+	 * instance of IResourceSelectable)
+	 * @param setAsSelected true if the resource should be set as selected
+	 */
+	void setAsSelectedOnSelection(boolean setAsSelected);
+
+	/**
+	 * @return true if resources of type IResourceSelectable should be set as selected
+	 *         when the resource is selected.
+	 */
+	boolean isSetAsSelectedOnSelection();
 }

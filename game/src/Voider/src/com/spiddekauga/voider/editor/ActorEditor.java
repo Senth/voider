@@ -65,6 +65,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		IC_Visual icVisual = ((ActorGui) mGui).getVisualConfig();
 		mShapeImageAngleMin = icVisual.getImageAngleDefault();
 		mShapeImageDistMin = icVisual.getImageDistDefault();
+		mSelection.setAsSelectedOnSelection(false);
 	}
 
 	@Override
@@ -98,7 +99,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			return;
 		}
 
-		if (mDrawingActor != null && mActorDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM) {
+		if (mDrawingActor != null) {
 			mDrawingActor.updateEditor();
 		}
 
@@ -111,6 +112,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 		if (mDrawingActor != null && mDrawingActor.hasBody()) {
 			mDrawingActor.destroyBody();
+			mSelection.clearSelection();
+			mDrawingActor = null;
 		}
 	}
 
@@ -429,6 +432,10 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mInvoker.execute(new CActorEditorCenterReset(this));
 			break;
 
+		case NONE:
+			mActiveTool = tool;
+			break;
+
 		default:
 			// Does nothing
 			break;
@@ -459,6 +466,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.PAN.ordinal()], true)) {
 			mInputMultiplexer.addProcessor(mTools[Tools.PAN.ordinal()]);
 		}
+
+		// Create draw actor
+		if (mDrawingActor == null && mActorDef.getVisual().getCornerCount() > 0) {
+			mDrawingActor = newActor();
+			mDrawingActor.setDef(mActorDef);
+			mDrawingActor.createBody();
+			mSelection.selectResource(mDrawingActor);
+		}
 	}
 
 
@@ -481,6 +496,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mInputMultiplexer.removeProcessor(mTools[Tools.PAN.ordinal()]);
 			mInputMultiplexer.removeProcessor(mZoomTool);
 			resetZoom();
+
+			// Remove drawing actor
+			if (mDrawingActor != null) {
+				mDrawingActor.destroyBody();
+				mSelection.clearSelection();
+				mDrawingActor = null;
+			}
 		}
 	}
 
@@ -496,19 +518,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 
 		((DrawAppendTool) mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mActorDef);
-
-		if (mActorDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM) {
-			if (mDrawingActor == null) {
-				mDrawingActor = newActor();
-				mDrawingActor.createBody();
-				mSelection.selectResource(mDrawingActor);
-			}
-
-			mDrawingActor.setDef(mActorDef);
-			activateTools(Tools.MOVE);
-		} else {
-			deactivateTools();
-		}
 	}
 
 	@Override
@@ -524,7 +533,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public void onResourceAdded(IResource resource) {
 		if (resource instanceof Actor) {
 			mDrawingActor = (Actor) resource;
-
 			setUnsaved();
 		} else if (resource instanceof VectorBrush) {
 			mVectorBrush = (VectorBrush) resource;
