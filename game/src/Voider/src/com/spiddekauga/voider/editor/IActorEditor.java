@@ -185,6 +185,26 @@ public interface IActorEditor extends IEditor {
 	 */
 	Tools getActiveTool();
 
+	/**
+	 * Activates tools. Sets the previous active tool as active.
+	 * @see #activateTools(Tools) to activate all tools and use a specific tool
+	 */
+	void activateTools();
+
+	/**
+	 * Activate tools with specific option. If tools already is active it switches the
+	 * active tool. Same as calling switchTool()
+	 * @param activateTool which tool to activate
+	 * @see #activateTools() to activate the previous tool after
+	 *      {@link #deactivateTools()} has been called.
+	 */
+	void activateTools(Tools activateTool);
+
+	/**
+	 * Deactivate tools.
+	 */
+	void deactivateTools();
+
 	// --------------- Collision -----------------
 	/**
 	 * Sets colliding damage of the enemy

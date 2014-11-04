@@ -334,11 +334,13 @@ public abstract class ActorGui extends EditorGui {
 			@Override
 			protected void onShow() {
 				resetCollisionBoxes();
+				mActorEditor.activateTools();
 			}
 
 			@Override
 			protected void onHide() {
 				resetCollisionBoxes();
+				mActorEditor.deactivateTools();
 			}
 		});
 		customTab.setListener(new ButtonListener() {

@@ -106,6 +106,15 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	@Override
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
+
+		if (mDrawingActor != null && mDrawingActor.hasBody()) {
+			mDrawingActor.destroyBody();
+		}
+	}
+
+	@Override
 	protected void onResize(int width, int height) {
 		super.onResize(width, height);
 
@@ -173,18 +182,20 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			}
 		}
 
-		ActorShapeTypes previousShapeType = mActorDef.getVisual().getShapeType();
+		// ActorShapeTypes previousShapeType = mActorDef.getVisual().getShapeType();
 
 		mActorDef.getVisual().setShapeType(shapeType);
 
-		// Add tool to input multiplexer
-		if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType != ActorShapeTypes.CUSTOM) {
-			activateTools(Tools.DRAW_APPEND);
-		}
-		// Remove tool from input multiplexer
-		else if (shapeType != ActorShapeTypes.CUSTOM && previousShapeType == ActorShapeTypes.CUSTOM) {
-			deactivateTools();
-		}
+		// // Add tool to input multiplexer
+		// if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType !=
+		// ActorShapeTypes.CUSTOM) {
+		// activateTools(Tools.DRAW_APPEND);
+		// }
+		// // Remove tool from input multiplexer
+		// else if (shapeType != ActorShapeTypes.CUSTOM && previousShapeType ==
+		// ActorShapeTypes.CUSTOM) {
+		// deactivateTools();
+		// }
 
 		setUnsaved();
 	}
@@ -353,9 +364,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void switchTool(Tools tool) {
 		if (mZoomTool != null) {
-			if (mTools[tool.ordinal()] != null) {
-				deactivateCurrentTool();
-			}
+			deactivateCurrentTool();
 			activateTool(tool);
 		}
 	}
@@ -431,12 +440,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		return mActiveTool;
 	}
 
-	/**
-	 * Activate tools
-	 * @param activeTool which tool to set as activated
-	 */
-	private void activateTools(Tools activeTool) {
-		switchTool(activeTool);
+	@Override
+	public void activateTools(Tools activateTool) {
+		switchTool(activateTool);
 		((ActorGui) mGui).resetTools();
 
 		// Add delete tool
@@ -455,14 +461,27 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 	}
 
+
+	@Override
+	public void activateTools() {
+		if (mActiveTool == Tools.NONE) {
+			activateTools(mLastTool);
+		}
+	}
+
 	/**
 	 * Deactivate tools
 	 */
-	private void deactivateTools() {
-		switchTool(Tools.NONE);
-		mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
-		mInputMultiplexer.removeProcessor(mZoomTool);
-		resetZoom();
+	@Override
+	public void deactivateTools() {
+		if (mActiveTool != Tools.NONE) {
+			mLastTool = mActiveTool;
+			switchTool(Tools.NONE);
+			mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
+			mInputMultiplexer.removeProcessor(mTools[Tools.PAN.ordinal()]);
+			mInputMultiplexer.removeProcessor(mZoomTool);
+			resetZoom();
+		}
 	}
 
 	/**
@@ -776,24 +795,17 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		return false;
 	}
 
-	/** If the shape image should be updated continuously */
 	private boolean mShapeImageUpdate = false;
-	/** Minimum angle to save between actors */
 	private Float mShapeImageAngleMin;
-	/** Minimum distance between points */
 	private float mShapeImageDistMin;
-	/** Default shape image */
 	private static final IImageNames SHAPE_IMAGE_DEFAULT = GeneralImages.SHUTTLE_LARGE;
-	/** The actor type */
 	private Class<? extends Actor> mActorType;
-	/** Vector brush to render when drawing custom shapes */
 	private VectorBrush mVectorBrush = null;
-	/** The actor definition */
 	private ActorDef mActorDef = null;
-	/** Drawing actor */
 	private Actor mDrawingActor = null;
-	/** Active tool */
 	private TouchTool[] mTools = new TouchTool[Tools.values().length];
+	/** Last active after a deactivation */
+	private Tools mLastTool = Tools.MOVE;
 	/** Current tool state */
 	private Tools mActiveTool = Tools.NONE;
 	/** Current selection */
