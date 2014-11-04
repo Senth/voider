@@ -76,6 +76,11 @@ public abstract class WorldScene extends Scene {
 		fixCamera();
 		mShapeRenderer.setProjectionMatrix(mCamera.combined);
 		resetScreenToWorldScale();
+
+		// Update size of border
+		if (mBorderBody != null) {
+			createBorder();
+		}
 	}
 
 	/**
@@ -161,7 +166,8 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current scene isn't a world scene.
+	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current
+	 *         scene isn't a world scene.
 	 */
 	@Override
 	public Vector2 getWorldMinCoordinates() {
@@ -171,8 +177,8 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if current scene isn't a world
-	 *         scene.
+	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if
+	 *         current scene isn't a world scene.
 	 */
 	@Override
 	public Vector2 getWorldMaxCoordinates() {
@@ -240,7 +246,8 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * Called when creating a border. Can be overridden to specify other border dimensions.
+	 * Called when creating a border. Can be overridden to specify other border
+	 * dimensions.
 	 * @return all 4 border corners/vertices
 	 */
 	protected Vector2[] getBorderCorners() {

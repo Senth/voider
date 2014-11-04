@@ -20,19 +20,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Encrypts and decrypts objects
- * 
  * @author sherif http://stackoverflow.com/users/446552/sherif
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ObjectCrypter {
 	/**
 	 * Creates an AES crypter with the specified key
-	 * 
-	 * @param key
-	 *            the key to be used for the cipher
+	 * @param key the key to be used for the cipher
 	 */
-	public ObjectCrypter(
-			SecretKeySpec key) {
+	public ObjectCrypter(SecretKeySpec key) {
 		// create the cipher with the algorithm you choose
 		// see javadoc for Cipher class for more info, e.g.
 		try {
@@ -40,21 +36,16 @@ public class ObjectCrypter {
 			mDeCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 			mEnCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Encrypts an object to a byte array.
-	 * 
-	 * @param <EncryptType>
-	 *            encrypted type
-	 * @param obj
-	 *            the object to encrypt
+	 * @param <EncryptType> encrypted type
+	 * @param obj the object to encrypt
 	 * @return the encrypted object in bytes
 	 * @see #decrypt(byte[],Class)
 	 * @throws InvalidKeyException
@@ -65,12 +56,11 @@ public class ObjectCrypter {
 	 * @throws BadPaddingException
 	 */
 	public <EncryptType> byte[] encrypt(EncryptType obj) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException,
-	IllegalBlockSizeException, ShortBufferException, BadPaddingException {
+			IllegalBlockSizeException, ShortBufferException, BadPaddingException {
 		byte[] input = null;
 		if (!(obj instanceof byte[])) {
 			input = convertToByteArray(obj);
-		}
-		else {
+		} else {
 			input = (byte[]) obj;
 		}
 		mEnCipher.init(Cipher.ENCRYPT_MODE, mKey);
@@ -90,13 +80,9 @@ public class ObjectCrypter {
 
 	/**
 	 * Decrypts an array of bytes into an object.
-	 * 
-	 * @param <DecryptedType>
-	 *            the type to decrypt to, must be same as encrypted!
-	 * @param encrypted
-	 *            the encrypted byte array
-	 * @param decryptToType
-	 *            decrypts the message to this type
+	 * @param <DecryptedType> the type to decrypt to, must be same as encrypted!
+	 * @param encrypted the encrypted byte array
+	 * @param decryptToType decrypts the message to this type
 	 * @return The decrypted object
 	 * @see #encrypt(Object)
 	 * @throws InvalidKeyException
@@ -108,7 +94,7 @@ public class ObjectCrypter {
 	 */
 	@SuppressWarnings("unchecked")
 	public <DecryptedType> DecryptedType decrypt(byte[] encrypted, Class<DecryptedType> decryptToType) throws InvalidKeyException,
-	InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
+			InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
 		if (encrypted.length < IV_LENGTH) {
 			throw new IllegalArgumentException("No encryption found");
 		}
@@ -127,15 +113,13 @@ public class ObjectCrypter {
 
 		if (decryptToType == byte[].class) {
 			return (DecryptedType) decryptedMessage;
-		}
-		else {
+		} else {
 			return (DecryptedType) convertFromByteArray(decryptedMessage);
 		}
 	}
 
 	/**
 	 * Converts a byte array back to the original object
-	 * 
 	 * @param byteObject
 	 * @return object recreated from the byte array
 	 * @throws IOException
@@ -156,7 +140,6 @@ public class ObjectCrypter {
 
 	/**
 	 * Converts an object into a byte array
-	 * 
 	 * @param complexObject
 	 * @return byte array of the converted object
 	 * @throws IOException

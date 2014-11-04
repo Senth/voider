@@ -191,9 +191,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			if (!mGui.isMsgBoxActive()) {
 				((EditorGui) mGui).showExitConfirmDialog();
 				return true;
-			} else {
-				/** @todo close message box */
-				return true;
 			}
 		}
 

@@ -53,7 +53,5 @@ public class PrototypeScene extends Scene {
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
-
-		// TODO
 	}
 }

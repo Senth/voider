@@ -28,7 +28,7 @@ public enum ExternalTypes {
 	GAME_SAVE(UploadTypes.GAME_SAVE, GameSave.class),
 	GAME_SAVE_DEF(UploadTypes.GAME_SAVE_DEF, GameSaveDef.class),
 	BUG_REPORT(UploadTypes.BUG_REPORT, BugReportDef.class),
-	CAMPAIGN_DEF(UploadTypes.CAMPAIGN_DEF, null), // TODO
+	CAMPAIGN_DEF(UploadTypes.CAMPAIGN_DEF, null), // TODO add campaign
 
 	;
 	/**

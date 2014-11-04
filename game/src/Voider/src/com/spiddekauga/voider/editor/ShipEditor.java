@@ -89,7 +89,6 @@ public class ShipEditor extends ActorEditor {
 
 		mActor.updateEditor();
 		mActor.update(deltaTime);
-		createBorder();
 	}
 
 	@Override

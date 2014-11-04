@@ -251,7 +251,6 @@ public class GameScene extends WorldScene {
 	protected void onResize(int width, int height) {
 		super.onResize(width, height);
 		updateCameraPosition();
-		createBorder();
 	}
 
 	@Override

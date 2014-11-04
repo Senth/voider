@@ -72,12 +72,12 @@ public class CampaignEditor extends Editor {
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		// TODO
+		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public ArrayList<Def> getNonPublishedDependencies() {
-		// TODO
+		// TODO Auto-generated method stub
 		return ResourceRepo.getNonPublishedDependencies(null);
 	}
 

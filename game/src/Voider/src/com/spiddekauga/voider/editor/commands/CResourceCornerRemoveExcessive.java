@@ -12,9 +12,6 @@ import com.spiddekauga.voider.utils.Geometry.PointIndex;
  * difference between them. E.g. three corners > 0,0 -> 0,5 -> 0,10. In this case 0,5 does
  * not add anything to the shape, it will only make calculations slower... Also removes
  * corners that are too close.
- * @todo use
- *       {@link com.spiddekauga.voider.utils.Geometry#removeExcessivePoints(float, float, ArrayList)}
- *       instead of internal algorithm
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceCornerRemoveExcessive extends Command {

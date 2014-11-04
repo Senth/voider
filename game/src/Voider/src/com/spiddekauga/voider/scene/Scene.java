@@ -311,7 +311,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 *        any, else null.
 	 * @param message the outcome message provided with the outcome, null if none was
 	 *        provided.
-	 * @param loadingOutcome TODO
+	 * @param loadingOutcome outcome from a loading scene
 	 */
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		if (!mGui.isInitialized()) {

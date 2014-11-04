@@ -149,7 +149,7 @@ class LevelEditorGui extends EditorGui {
 			break;
 
 		case PICKUP_ADD:
-			// TODO
+			// TODO add pickup
 			break;
 
 		case REMOVE_CORNER:

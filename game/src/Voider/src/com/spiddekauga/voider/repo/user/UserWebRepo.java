@@ -144,7 +144,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param username checks if this username is registered already
 	 */
 	public void isUsernameExists(IResponseListener responseListener, String username) {
-		// TODO
+		// TODO username exists
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param email checks if this email is registered already
 	 */
 	public void isEmailExists(IResponseListener responseListener, String email) {
-		// TODO
+		// TODO email exists
 	}
 
 	/** Instance of this class */

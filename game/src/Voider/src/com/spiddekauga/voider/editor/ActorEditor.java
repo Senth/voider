@@ -185,20 +185,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			}
 		}
 
-		// ActorShapeTypes previousShapeType = mActorDef.getVisual().getShapeType();
-
 		mActorDef.getVisual().setShapeType(shapeType);
-
-		// // Add tool to input multiplexer
-		// if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType !=
-		// ActorShapeTypes.CUSTOM) {
-		// activateTools(Tools.DRAW_APPEND);
-		// }
-		// // Remove tool from input multiplexer
-		// else if (shapeType != ActorShapeTypes.CUSTOM && previousShapeType ==
-		// ActorShapeTypes.CUSTOM) {
-		// deactivateTools();
-		// }
 
 		setUnsaved();
 	}

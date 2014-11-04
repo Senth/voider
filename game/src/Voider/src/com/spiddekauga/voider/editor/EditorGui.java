@@ -31,6 +31,7 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
@@ -82,8 +83,26 @@ public abstract class EditorGui extends Gui {
 		mEditMenu.dispose();
 		mNameTable.dispose();
 
+		if (mSettingTabs != null) {
+			mSettingTabs.remove();
+		}
+		if (mTooltip != null) {
+			mTooltip.remove();
+		}
+
 		if (mBodies != null) {
 			clearCollisionBoxes();
+		}
+
+		// Remove top & bottom bar
+		ArrayList<Actor> barsToRemove = new ArrayList<>();
+		for (Actor actor : getStage().getActors()) {
+			if (actor instanceof Background) {
+				barsToRemove.add(actor);
+			}
+		}
+		for (Actor removeActor : barsToRemove) {
+			removeActor.remove();
 		}
 
 		super.dispose();
@@ -112,9 +131,9 @@ public abstract class EditorGui extends Gui {
 			mEditMenu.setName("EditMenu");
 			mFileMenu.setName("FileMenu");
 			mToolMenu.setName("ToolMenu");
-
-			initTooltipBar();
 		}
+
+		initTooltipBar();
 
 		mEditorMenu.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 		mEditMenu.setAlignTable(Horizontal.CENTER, Vertical.TOP);

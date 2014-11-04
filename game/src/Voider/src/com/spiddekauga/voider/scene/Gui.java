@@ -30,14 +30,14 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.commands.CBugReportSend;
 import com.spiddekauga.utils.commands.CGameQuit;
 import com.spiddekauga.utils.commands.CSyncFixConflict;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
+import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -76,6 +76,7 @@ public abstract class Gui implements Disposable {
 			dispose();
 			initGui();
 			if (mStage != null) {
+				mStage.getViewport().setWorldSize(width, height);
 				mStage.getViewport().update(width, height, true);
 				updateBackground();
 			}
@@ -100,7 +101,8 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Update background images. Should be called when setting a new background or resizing the window
+	 * Update background images. Should be called when setting a new background or
+	 * resizing the window
 	 */
 	private void updateBackground() {
 		if (mWidgets.background.drawable == null) {
@@ -188,8 +190,8 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Resets the GUI and adds the main table again. This will remove any actors that have been added manually through
-	 * #addActor(Actor)
+	 * Resets the GUI and adds the main table again. This will remove any actors that have
+	 * been added manually through #addActor(Actor)
 	 */
 	public void reset() {
 		mStage.clear();
@@ -290,8 +292,9 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Shows the specified message box. This will hide any active message box, remove the specified message box from the
-	 * inactive list, and then show the specified active box (once the currently active box has been fully hidden).
+	 * Shows the specified message box. This will hide any active message box, remove the
+	 * specified message box from the inactive list, and then show the specified active
+	 * box (once the currently active box has been fully hidden).
 	 * @param msgBox the message box to show
 	 */
 	public void showMsgBox(MsgBoxExecuter msgBox) {
@@ -543,7 +546,6 @@ public abstract class Gui implements Disposable {
 	public void initGui() {
 		if (mStage == null) {
 			mStage = new Stage();
-			resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			mStage.addActor(mMainTable);
 			mMainTable.setName("MainTable");
 			mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
@@ -772,7 +774,8 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Checks if a button is checked (from the event).
 	 * @param event checks if the target inside the event is a button and it's checked
-	 * @return checked button. If the target isn't a button or the button isn't checked it returns null.
+	 * @return checked button. If the target isn't a button or the button isn't checked it
+	 *         returns null.
 	 */
 	protected static Button getCheckedButton(Event event) {
 		if (event.getTarget() instanceof Button) {
