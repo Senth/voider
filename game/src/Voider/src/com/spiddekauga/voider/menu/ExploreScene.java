@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.GameScene;
@@ -145,13 +146,13 @@ public class ExploreScene extends Scene implements IResponseListener {
 		} else {
 			switch (response.status) {
 			case FAILED_CONNECTION:
-				mGui.showErrorMessage("Could not connect to the server");
+				mNotification.show(NotificationTypes.ERROR, "Could not connect to the server");
 				break;
 			case FAILED_DOWNLOAD:
-				mGui.showErrorMessage("Download failed, please retry");
+				mNotification.show(NotificationTypes.ERROR, "Download failed, please retry");
 				break;
 			case FAILED_SERVER_INTERAL:
-				mGui.showErrorMessage("Internal server error, please file a bug report");
+				mNotification.show(NotificationTypes.ERROR, "Internal server error, please file a bug report");
 				break;
 			default:
 				break;
@@ -261,7 +262,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 			gameScene.setLevelToLoad(levelDef);
 			SceneSwitcher.switchTo(gameScene);
 		} else {
-			mGui.showErrorMessage("Could not load level, please send a bug report :)");
+			mNotification.show(NotificationTypes.ERROR, "Could not load level, please send a bug report :)");
 		}
 	}
 
@@ -330,15 +331,15 @@ public class ExploreScene extends Scene implements IResponseListener {
 
 				switch (response.status) {
 				case FAILED_CONNECTION:
-					mGui.showErrorMessage("Failed to connect to the server");
+					mNotification.show(NotificationTypes.ERROR, "Failed to connect to the server");
 					break;
 
 				case FAILED_INTERNAL:
-					mGui.showErrorMessage("Internal server error");
+					mNotification.show(NotificationTypes.ERROR, "Internal server error");
 					break;
 
 				case FAILED_USER_NOT_LOGGED_IN:
-					mGui.showErrorMessage("You have been logged out");
+					mNotification.show(NotificationTypes.ERROR, "You have been logged out");
 					break;
 
 				case SUCCESS_FETCHED_ALL:
@@ -452,15 +453,15 @@ public class ExploreScene extends Scene implements IResponseListener {
 
 				switch (response.status) {
 				case FAILED_SERVER_CONNECTION:
-					mGui.showErrorMessage("Failed to connect to the server");
+					mNotification.show(NotificationTypes.ERROR, "Failed to connect to the server");
 					break;
 
 				case FAILED_SERVER_ERROR:
-					mGui.showErrorMessage("Internal server error");
+					mNotification.show(NotificationTypes.ERROR, "Internal server error");
 					break;
 
 				case FAILED_USER_NOT_LOGGED_IN:
-					mGui.showErrorMessage("You have been logged out");
+					mNotification.show(NotificationTypes.ERROR, "You have been logged out");
 					break;
 
 				case SUCCESS_FETCHED_ALL:

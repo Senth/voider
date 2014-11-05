@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -115,12 +116,12 @@ public class LoginScene extends Scene implements IResponseListener {
 		case FAILED_USERNAME_PASSWORD_MISMATCH:
 			if (mAutoLogin) {
 				mGui.hideWaitWindow();
-				mGui.showErrorMessage("Could not auto-login " + userInfo.getUsername());
+				mNotification.show(NotificationTypes.ERROR, "Could not auto-login " + userInfo.getUsername());
 				UserLocalRepo.removeLastUser();
 				mAutoLogin = false;
 				mUser.setOnline(false);
 			} else {
-				mGui.showErrorMessage("No username with that password exists");
+				mNotification.show(NotificationTypes.ERROR, "No username with that password exists");
 			}
 			((LoginGui) mGui).focusUsernameField();
 
@@ -165,13 +166,13 @@ public class LoginScene extends Scene implements IResponseListener {
 			} catch (GdxRuntimeException e) {
 				// Error with connection
 				if (e.getCause() instanceof SQLiteGdxException) {
-					mGui.showErrorMessage("Another instance with this user is already running");
+					mNotification.show(NotificationTypes.ERROR, "Another instance with this user is already running");
 				}
 				((LoginGui) mGui).focusUsernameField();
 			}
 		} else {
 			if (failMessage != null && !failMessage.isEmpty()) {
-				mGui.showErrorMessage(failMessage);
+				mNotification.show(NotificationTypes.ERROR, failMessage);
 			}
 			((LoginGui) mGui).focusUsernameField();
 		}

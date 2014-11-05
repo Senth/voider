@@ -33,16 +33,6 @@ public class Messages {
 	}
 
 	/**
-	 * Calculates the amount of time to show a specific message depending on its length
-	 * @param message the message to calculate how long time to display
-	 * @return seconds to display the message
-	 */
-	public static float calculateTimeToShowMessage(String message) {
-		return Config.Gui.MESSAGE_TIME_SHOWN_MIN;
-
-	}
-
-	/**
 	 * Enumeration of unsaved actions
 	 */
 	public enum UnsavedActions {

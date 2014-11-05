@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -150,7 +151,7 @@ public class BulletEditor extends ActorEditor {
 		int oldRevision = mDef.getRevision();
 
 		mResourceRepo.save(this, mDef);
-		mGui.showSuccessMessage(Messages.Info.SAVED);
+		mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
 		showSyncMessage();
 
 		// Saved first time? Then load it and use the loaded version

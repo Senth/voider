@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -11,7 +12,6 @@ import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
@@ -86,13 +86,13 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 
 				mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 			} catch (PolygonComplexException e) {
-				SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
+				mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
 				handleBadCornerPosition(null);
 			} catch (PolygonCornersTooCloseException e) {
 				Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
 				handleBadCornerPosition(null);
 			} catch (PolygonAreaTooSmallException e) {
-				SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_AREA_TOO_SMALL);
+				mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_AREA_TOO_SMALL);
 				handleBadCornerPosition(null);
 			}
 		}

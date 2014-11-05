@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
@@ -408,7 +409,7 @@ public class SelectDefScene extends Scene implements IEventListener {
 
 			setOutcome(Outcomes.DEF_SELECTED, resourceItem);
 		} else {
-			mGui.showErrorMessage("No resource selected");
+			mNotification.show(NotificationTypes.ERROR, "No resource selected");
 		}
 	}
 

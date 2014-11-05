@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
@@ -20,7 +21,6 @@ import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.Intersections;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
@@ -93,13 +93,13 @@ public class DrawEraseTool extends ActorTool {
 				try {
 					updateShapesForAllIntersectionActors(intersections);
 				} catch (PolygonComplexException e) {
-					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
+					mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
 					handleBadCornerPosition(null);
 				} catch (PolygonCornersTooCloseException e) {
 					Gdx.app.error("DrawEraseTool", "PolygonCornersTooClose! Should never happen!");
 					handleBadCornerPosition(null);
 				} catch (PolygonAreaTooSmallException e) {
-					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_AREA_TOO_SMALL);
+					mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_AREA_TOO_SMALL);
 					handleBadCornerPosition(null);
 				}
 			}

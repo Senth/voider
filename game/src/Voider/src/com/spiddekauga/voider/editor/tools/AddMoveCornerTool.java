@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -22,7 +23,6 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
@@ -113,7 +113,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 				try {
 					mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) mHitResource).getDef(), true), true);
 				} catch (PolygonComplexException e) {
-					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_ADD);
+					mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_COMPLEX_ADD);
 					handleBadCornerPosition(null);
 				} catch (PolygonCornersTooCloseException e) {
 					Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");

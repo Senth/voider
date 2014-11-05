@@ -25,6 +25,7 @@ import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -430,7 +431,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 */
 	protected void showSyncMessage() {
 		if (User.getGlobalUser().isOnline()) {
-			mGui.showMessage("Syncing...");
+			mNotification.show("Syncing...");
 		}
 	}
 
@@ -467,11 +468,11 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		if (response instanceof PublishMethodResponse) {
 			mGui.hideProgressBar();
 			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
-				mGui.showSuccessMessage("Publish successful!");
+				mNotification.show(NotificationTypes.SUCCESS, "Publish successful!");
 				mGui.resetValues();
 				mInvoker.dispose();
 			} else {
-				mGui.showErrorMessage("Publish failed!");
+				mNotification.show(NotificationTypes.ERROR, "Publish failed!");
 			}
 		}
 	}

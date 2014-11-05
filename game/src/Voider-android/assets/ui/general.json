@@ -28,6 +28,11 @@ com.badlogic.gdx.graphics.Color: {
 	
 	// Highlight color
 	highlight: turquoise,
+	// Success color
+	success: green,
+	// Error
+	error: red,
+	default: white,
 	// Color used as background for various widgets
 	widget_background_color: grey,
 	// Background color for some scenes
@@ -35,6 +40,8 @@ com.badlogic.gdx.graphics.Color: {
 	// Inner widget background color. I.e. if there is a table inside a widget.
 	// E.g. enemy list in level editor
 	widget_inner_background_color: grey_dark,
+	// Notification message background color
+	notification_background_color: {r: 1, g: 1, b: 1, a: 0.3},
 },
 
 java.lang.Float: {
@@ -100,6 +107,17 @@ java.lang.Float: {
 	// Default text button width
 	text_button_width: {value: 120},
 	
+	/** Notifications */
+	
+	// Notification messages
+	notification_width: right_panel_width,
+	// How long notification messages are shown, in seconds
+	notification_time: 7,
+	// Fade in duration, in seconds
+	notification_fade_in: 0.3,
+	// Fade out duration, in seconds
+	notification_fade_out: 1,
+	
 	
 	/** Score screen */
 	
@@ -124,6 +142,7 @@ java.lang.Float: {
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
 		font: default_font,
+		fontColor: default,
 	},
 	
 	highlight: {
@@ -133,12 +152,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	
 	error: {
 		font: default_font,
-		fontColor: red,
+		fontColor: error,
 	},
 	
 	success: {
 		font: default_font,
-		fontColor: green,
+		fontColor: success,
 	},
 	
 	panel_section: {
@@ -215,7 +234,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	// The error message in the section
 	error_section: {
 		font: default12,
-		fontColor: red,
+		fontColor: error,
 	},
 	
 	

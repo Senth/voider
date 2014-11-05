@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.TestUiScene;
@@ -136,10 +137,10 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		if (outcome == Outcomes.LOGGED_IN) {
 			// Synchronize
 			if (mUser.isOnline()) {
-				mGui.showSuccessMessage(mUser.getUsername() + " is now online!");
+				mNotification.show(NotificationTypes.SUCCESS, mUser.getUsername() + " is now online!");
 				Synchronizer.getInstance().synchronizeAll();
 			} else {
-				mGui.showHighlightMessage(mUser.getUsername() + " is now offline!");
+				mNotification.show(NotificationTypes.HIGHLIGHT, mUser.getUsername() + " is now offline!");
 			}
 
 			if (message instanceof LoginMethodResponse) {
@@ -175,7 +176,7 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 				SceneSwitcher.switchTo(new TestUiScene());
 			} else if (keycode == Input.Keys.F6) {
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
-				mGui.showMessage(message);
+				mNotification.show(message);
 			} else if (keycode == Input.Keys.F10) {
 				mGui.showConflictWindow();
 			} else if (keycode == Input.Keys.F11) {
@@ -329,7 +330,7 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 				newGui.setMenuScene(this);
 				newGui.initGui();
 				mInputMultiplexer.removeProcessor(mGui.getStage());
-				mGui.hideAllMessages();
+				// mGui.hideAllMessages();
 				mGui = newGui;
 				mGuiStack.push(newGui);
 				mInputMultiplexer.addProcessor(0, newGui.getStage());

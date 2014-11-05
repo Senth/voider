@@ -92,7 +92,7 @@ public class TestUiGui extends Gui {
 		IRatingListener listener = new IRatingListener() {
 			@Override
 			public void onRatingChange(int newRating) {
-				showMessage("Change rating to: " + newRating);
+				mNotification.show("Change rating to: " + newRating);
 			}
 		};
 		ratingWidget.addListener(listener);
@@ -241,7 +241,7 @@ public class TestUiGui extends Gui {
 		ScrollPaneListener listener = new ScrollPaneListener() {
 			@Override
 			public void hitEdge(ScrollPane scrollPane, Edge edge) {
-				showMessage(edge.toString());
+				mNotification.show(edge.toString());
 			}
 		};
 		scrollPane.addListener(listener);

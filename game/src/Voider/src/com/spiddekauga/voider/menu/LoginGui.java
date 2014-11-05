@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
@@ -168,7 +169,7 @@ public class LoginGui extends Gui {
 
 		if (errorMessage != null) {
 			if (showErrors) {
-				showErrorMessage(errorMessage);
+				mNotification.show(NotificationTypes.ERROR, errorMessage);
 			}
 			return false;
 		} else {

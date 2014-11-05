@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
@@ -495,7 +496,7 @@ public class EnemyEditor extends ActorEditor {
 		int oldRevision = mDef.getRevision();
 
 		mResourceRepo.save(mDef);
-		mGui.showSuccessMessage(Messages.Info.SAVED);
+		mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
 		showSyncMessage();
 
 		// Saved first time? Then load it and use the loaded resource

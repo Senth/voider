@@ -1796,21 +1796,28 @@ checkbox_on
   orig: 16, 16
   offset: 0, 0
   index: -1
-message_notification
+message_error
   rotate: false
   xy: 3919, 331
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-message_successful
+message_highlight
   rotate: false
   xy: 13, 13
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-message_unsuccessful
+message_info
+  rotate: false
+  xy: 13, 13
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+message_success
   rotate: false
   xy: 1259, 155
   size: 16, 16

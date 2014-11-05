@@ -18,6 +18,7 @@ import com.spiddekauga.utils.InputMultiplexerExceptionSnatcher;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -284,6 +285,10 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 			mGui.initGui();
 			mGui.resetValues();
 			mInputMultiplexer.addProcessor(mGui.getStage());
+
+			if (mGui.mNotification != null) {
+				mNotification = mGui.mNotification;
+			}
 		}
 
 		mInputMultiplexer.addProcessor(this);
@@ -326,7 +331,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 *       stack).
 	 */
 	protected void onDeactivate() {
-		mGui.hideAllMessages();
+		// mGui.hideAllMessages();
 	}
 
 	/**
@@ -622,6 +627,8 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	private Scene mNextScene = null;
 	/** If the scene has been initialized */
 	private boolean mInitialized = false;
+	/** Notification messages */
+	protected NotificationShower mNotification = null;
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */

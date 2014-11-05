@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Builds;
@@ -507,7 +508,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					((LevelEditorGui) mGui).resetEnemyAddTable();
 					return true;
 				} else {
-					mGui.showMessage("This enemy has already been added.");
+					mNotification.show("This enemy has already been added.");
 				}
 			}
 		}
@@ -796,7 +797,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			int oldRevision = mLevel.getRevision();
 			mResourceRepo.save(mLevel.getDef(), mLevel);
-			mGui.showSuccessMessage(Messages.Info.SAVED);
+			mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
 			showSyncMessage();
 
 			// Update latest resource if revision was changed by more than one

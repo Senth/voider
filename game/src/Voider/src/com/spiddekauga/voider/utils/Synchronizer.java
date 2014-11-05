@@ -9,6 +9,8 @@ import java.util.concurrent.Semaphore;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.net.IDownloadProgressListener;
+import com.spiddekauga.utils.scene.ui.NotificationShower;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
@@ -294,9 +296,9 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 */
 	private void handleStatSyncResponse(StatSyncMethodResponse response) {
 		if (response.isSuccessful()) {
-			SceneSwitcher.showSuccessMessage("Stats synced");
+			mNotification.show(NotificationTypes.SUCCESS, "Stats synced");
 		} else {
-			SceneSwitcher.showErrorMessage("Stat sync failed");
+			mNotification.show(NotificationTypes.ERROR, "Stat sync failed");
 		}
 	}
 
@@ -306,9 +308,9 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 */
 	private void handleSyncHighscoreResponse(HighscoreSyncMethodResponse response) {
 		if (response.isSuccessful()) {
-			SceneSwitcher.showSuccessMessage("Highscores synced");
+			mNotification.show(NotificationTypes.SUCCESS, "Highscores synced");
 		} else {
-			SceneSwitcher.showErrorMessage("Highscores sync failed");
+			mNotification.show(NotificationTypes.ERROR, "Highscores sync failed");
 		}
 	}
 
@@ -319,10 +321,10 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	private void handleSyncDownloadResponse(DownloadSyncMethodResponse response) {
 		if (response.isSuccessful()) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS));
-			SceneSwitcher.showSuccessMessage("Downloaded resources synced");
+			mNotification.show(NotificationTypes.SUCCESS, "Downloaded resources synced");
 		} else {
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD_FAILED));
-			SceneSwitcher.showErrorMessage("Downloaded resources sync failed");
+			mNotification.show(NotificationTypes.ERROR, "Downloaded resources sync failed");
 		}
 	}
 
@@ -337,15 +339,15 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		case FAILED_CONNECTION:
 		case FAILED_SERVER_ERROR:
 		case FAILED_USER_NOT_LOGGED_IN:
-			SceneSwitcher.showErrorMessage("Send saved bug reports");
+			mNotification.show(NotificationTypes.ERROR, "Send saved bug reports");
 			break;
 
 		case SUCCESS:
-			SceneSwitcher.showSuccessMessage("Sent saved bug reports");
+			mNotification.show(NotificationTypes.SUCCESS, "Sent saved bug reports");
 			break;
 
 		case SUCCESS_WITH_ERRORS:
-			SceneSwitcher.showHighlightMessage("Sent some bug reports?");
+			mNotification.show(NotificationTypes.HIGHLIGHT, "Sent some bug reports?");
 			break;
 		}
 
@@ -372,9 +374,9 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		case FAILED_INTERNAL:
 		case FAILED_USER_NOT_LOGGED_IN:
 			if (response.downloadStatus) {
-				SceneSwitcher.showErrorMessage("Downloaded player resources; failed to upload");
+				mNotification.show(NotificationTypes.ERROR, "Downloaded player resources; failed to upload");
 			} else {
-				SceneSwitcher.showErrorMessage("Player resources sync failed");
+				mNotification.show(NotificationTypes.ERROR, "Player resources sync failed");
 			}
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_FAILED));
 			break;
@@ -383,14 +385,14 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 			// No Conflicts
 			if (method.conflictKeepLocal == null) {
 				if (response.downloadStatus) {
-					SceneSwitcher.showSuccessMessage("Player resources synced");
+					mNotification.show(NotificationTypes.SUCCESS, "Player resources synced");
 				} else {
-					SceneSwitcher.showErrorMessage("Uploaded player resources; failed to download");
+					mNotification.show(NotificationTypes.ERROR, "Uploaded player resources; failed to download");
 				}
 			}
 			// Conflicts
 			else {
-				SceneSwitcher.showSuccessMessage("Conflicts resolved");
+				mNotification.show(NotificationTypes.SUCCESS, "Conflicts resolved");
 			}
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS));
 			break;
@@ -521,6 +523,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		}
 	};
 
+	private NotificationShower mNotification = NotificationShower.getInstance();
 	/** Syncing semaphore (so only one thing is synced at the same time) */
 	private Semaphore mSemaphore = new Semaphore(1);
 	/** Queue for what to synchronize */

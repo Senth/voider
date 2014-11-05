@@ -35,8 +35,8 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
-import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -555,12 +555,18 @@ public abstract class Gui implements Disposable {
 			mUiFactory.init();
 		}
 
-		// Message box and wait window
-		MsgBoxExecuter.fadeDuration = 0.01f;
-		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL) && mMessageShower == null) {
-			mMessageShower = new MessageShower(mStage);
 
+		MsgBoxExecuter.fadeDuration = 0.01f;
+
+		// Notification messages
+		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
+			mNotification = NotificationShower.getInstance();
+			mNotification.setStage(mStage);
+		}
+		if (mWidgets.waitWindow.window == null) {
 			initWaitWindow();
+		}
+		if (mWidgets.progressBar.window == null) {
 			initProgressBar();
 		}
 
@@ -651,68 +657,6 @@ public abstract class Gui implements Disposable {
 	 */
 	public boolean isWaitWindowActive() {
 		return mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null;
-	}
-
-	/**
-	 * Displays a message in the message window uses the default label style
-	 * @param message the message to display
-	 * @see #showMessage(String, LabelStyle)
-	 */
-	public synchronized void showMessage(String message) {
-		if (mMessageShower != null) {
-			mMessageShower.addMessage(message);
-		}
-	}
-
-	/**
-	 * Displays a message in the message window with the specified style
-	 * @param message the message to display
-	 * @param style the label style of the message
-	 * @see #showMessage(String)
-	 */
-	public synchronized void showMessage(String message, LabelStyle style) {
-		if (mMessageShower != null) {
-			mMessageShower.addMessage(message, style);
-		}
-	}
-
-	/**
-	 * Displays a highlighted message
-	 * @param message the message to display as highlighted
-	 */
-	public synchronized void showHighlightMessage(String message) {
-		if (mMessageShower != null) {
-			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
-		}
-	}
-
-	/**
-	 * Displays an error message
-	 * @param message the message to display as an error
-	 */
-	public synchronized void showErrorMessage(String message) {
-		if (mMessageShower != null) {
-			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
-		}
-	}
-
-	/**
-	 * Displays a successful message
-	 * @param message the message to display as successful
-	 */
-	public synchronized void showSuccessMessage(String message) {
-		if (mMessageShower != null) {
-			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
-		}
-	}
-
-	/**
-	 * Hide all messages
-	 */
-	public synchronized void hideAllMessages() {
-		if (mMessageShower != null) {
-			mMessageShower.removeAllMessages();
-		}
 	}
 
 	/**
@@ -810,10 +754,10 @@ public abstract class Gui implements Disposable {
 	protected AlignTable mMainTable = new AlignTable();
 	/** True if the GUI has been initialized */
 	protected boolean mInitialized = false;
+	/** Notification messages */
+	protected NotificationShower mNotification = null;
 	/** Stage for the GUI */
 	private Stage mStage = null;
-	/** Error message shower */
-	private MessageShower mMessageShower = null;
 	/** Active message boxes */
 	private Stack<MsgBoxExecuter> mActiveMsgBoxes = new Stack<>();
 	/** Inactive/free message boxes */

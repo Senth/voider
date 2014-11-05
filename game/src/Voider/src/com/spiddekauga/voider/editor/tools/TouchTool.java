@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -245,6 +246,8 @@ public abstract class TouchTool extends InputAdapter {
 		return true;
 	}
 
+	/** Send notifications */
+	protected NotificationShower mNotification = NotificationShower.getInstance();
 	/** If the player double clicked */
 	protected boolean mDoubleClick = false;
 	/** Last time the player clicked */

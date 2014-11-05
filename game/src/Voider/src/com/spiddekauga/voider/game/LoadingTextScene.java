@@ -5,13 +5,10 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.LoadingScene;
-import com.spiddekauga.voider.utils.Messages;
 
 /**
- * Loading scene that displays a text while loading. The text is automatically
- * calculates the amount of time to show the text depending on the length of the
- * text.
- * 
+ * Loading scene that displays a text while loading. The text is automatically calculates
+ * the amount of time to show the text depending on the length of the text.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LoadingTextScene extends LoadingScene {
@@ -22,7 +19,8 @@ public class LoadingTextScene extends LoadingScene {
 	public LoadingTextScene(String text) {
 		super(new LoadingTextSceneGui(text));
 
-		mDisplayTimeMax = Messages.calculateTimeToShowMessage(text);
+		// TODO change loading scene text time
+		mDisplayTimeMax = 7;
 	}
 
 	@Override
@@ -34,14 +32,14 @@ public class LoadingTextScene extends LoadingScene {
 			case DISPLAY:
 				mDisplayTimeCurrent += Gdx.graphics.getDeltaTime();
 				if (mDisplayTimeCurrent >= mDisplayTimeMax && !ResourceCacheFacade.isLoading()) {
-					((LoadingTextSceneGui)mGui).fadeOut();
+					((LoadingTextSceneGui) mGui).fadeOut();
 					mState = States.FADING;
 				}
 				break;
 
 
 			case FADING:
-				if (((LoadingTextSceneGui)mGui).hasFaded()) {
+				if (((LoadingTextSceneGui) mGui).hasFaded()) {
 					setOutcome(Outcomes.LOADING_SUCCEEDED);
 				}
 				break;

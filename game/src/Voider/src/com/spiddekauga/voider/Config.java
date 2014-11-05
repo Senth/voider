@@ -541,7 +541,7 @@ public class Config {
 		 * If we shall use debug_renderer to display graphics instead of sprites (where
 		 * applicable)
 		 */
-		public final static boolean USE_DEBUG_RENDERER = true;
+		public final static boolean USE_DEBUG_RENDERER = false;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Epsilon for box 2d */
@@ -792,11 +792,11 @@ public class Config {
 		/** Tooltip minimum width before wrap */
 		public final static int TOOLTIP_WIDTH_MIN = 200;
 		/** Fade in duration of the label and window for error messages */
-		public final static float MESSAGE_FADE_IN_DURATION = 0.3f;
+		@Deprecated public final static float MESSAGE_FADE_IN_DURATION = 0.3f;
 		/** Fade out duration of the label and window for error messages */
-		public final static float MESSAGE_FADE_OUT_DURATION = 1.0f;
+		@Deprecated public final static float MESSAGE_FADE_OUT_DURATION = 1.0f;
 		/** Minimum time shown */
-		public final static float MESSAGE_TIME_SHOWN_MIN = 7.0f;
+		@Deprecated public final static float MESSAGE_TIME_SHOWN_MIN = 7.0f;
 	}
 
 	/**

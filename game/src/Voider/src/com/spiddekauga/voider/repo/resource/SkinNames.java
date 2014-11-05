@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.repo.resource;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
@@ -606,6 +605,16 @@ public class SkinNames {
 		HIGHSCORE_SCREEN_WIDTH(Float.class),
 		/** Width for highscore placement */
 		HIGHSCORE_PLACEMENT_WIDTH(Float.class),
+		/** Width for notification messages */
+		NOTIFICATION_WIDTH(Float.class),
+		/** Notification background color */
+		NOTIFICATION_BACKGROUND_COLOR(Color.class),
+		/** How long notification messages are shown, in seconds */
+		NOTIFICATION_TIME(Float.class),
+		/** Fade in duration of notification messages, in seconds */
+		NOTIFICATION_FADE_IN(Float.class),
+		/** Fade out duration of notificaiton messages, in seconds */
+		NOTIFICATION_FADE_OUT(Float.class),
 
 		;
 
@@ -673,9 +682,13 @@ public class SkinNames {
 		/** Screenshot placeholder for levels */
 		SCREENSHOT_PLACEHOLDER,
 		/** Successful message */
-		MESSAGE_SUCCESSFUL,
+		MESSAGE_SUCCESS,
 		/** Failed message */
-		MESSAGE_UNSUCCESSFUL,
+		MESSAGE_ERROR,
+		/** Highlighted, important message */
+		MESSAGE_HIGHLIGHT,
+		/** Information message */
+		MESSAGE_INFO,
 		/** Space background */
 		BACKGROUND_SPACE,
 		/** Sync from cloud */
@@ -1104,59 +1117,6 @@ public class SkinNames {
 		InternalNames getSkinName();
 	}
 
-	/**
-	 * Theme names
-	 */
-	public enum Theme implements ISkinNames {
-		/** Bottom layer of the background */
-		BOTTOM_LAYER(Texture.class),
-		/** Top layer of the background */
-		TOP_LAYER(Texture.class),
-
-		;
-
-		/**
-		 * Creates a more user-friendly name for the enumeration
-		 * @param type the class type
-		 */
-		private Theme(Class<?> type) {
-			mType = type;
-			mName = super.toString().toLowerCase();
-		}
-
-		/**
-		 * Create a custom name for the enumeration
-		 * @param type the class type
-		 * @param jsonName name in the json-file
-		 */
-		private Theme(Class<?> type, String jsonName) {
-			mType = type;
-			mName = jsonName;
-		}
-
-		@Override
-		public Class<?> getClassType() {
-			return mType;
-		}
-
-		@Override
-		public InternalNames getSkinName() {
-			return null;
-		}
-
-		/**
-		 * @return name of the icon inside the skin
-		 */
-		@Override
-		public String toString() {
-			return mName;
-		}
-
-		/** skin name of the icon */
-		private String mName;
-		/** Class type */
-		private Class<?> mType;
-	}
 
 	/**
 	 * Method for getting drawables
@@ -1188,5 +1148,21 @@ public class SkinNames {
 	public static <ResourceType> ResourceType getResource(ISkinNames skinName) {
 		Skin skin = ResourceCacheFacade.get(skinName.getSkinName());
 		return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
+	}
+
+	/**
+	 * @param imageName
+	 * @return true if the specified resource has been loaded
+	 */
+	public static boolean isLoaded(IImageNames imageName) {
+		return ResourceCacheFacade.isLoaded(imageName.getSkinName());
+	}
+
+	/**
+	 * @param skinName
+	 * @return true if the specified resource has been loaded
+	 */
+	public static boolean isLoaded(ISkinNames skinName) {
+		return ResourceCacheFacade.isLoaded(skinName.getSkinName());
 	}
 }

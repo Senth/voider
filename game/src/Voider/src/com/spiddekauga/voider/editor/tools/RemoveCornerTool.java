@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
+import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
@@ -17,7 +18,6 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Messages;
@@ -72,7 +72,7 @@ public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 					try {
 						mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) mHitResource).getDef(), true), true);
 					} catch (PolygonComplexException e) {
-						SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_REMOVE);
+						mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_COMPLEX_REMOVE);
 						mInvoker.undo();
 						mInvoker.clearRedo();
 					} catch (PolygonCornersTooCloseException e) {
