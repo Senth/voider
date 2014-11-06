@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.spiddekauga.voider.Config.Debug;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -49,6 +51,10 @@ public class ResourceChecker implements IEventListener {
 	private void checkAndCreateResources() {
 		if (isMissingPlayerShips()) {
 			createPlayerShips();
+		} else if (Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE) && Debug.isBuildOrAbove(Builds.DEV_SERVER)) {
+			// Remove player ship than add it again... Added a wrong version first time
+			removePlayerShips();
+			createPlayerShips();
 		}
 	}
 
@@ -58,6 +64,13 @@ public class ResourceChecker implements IEventListener {
 	 */
 	private boolean isMissingPlayerShips() {
 		return !ResourceLocalRepo.exists(SHIP_FIGHTER_ID);
+	}
+
+	/**
+	 * Remove player ship
+	 */
+	private void removePlayerShips() {
+		ResourceLocalRepo.remove(SHIP_FIGHTER_ID);
 	}
 
 	/**

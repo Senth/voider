@@ -101,16 +101,6 @@ public class Graphics {
 			// Flip Y
 			Geometry.flipY(regionY, region.getRegionHeight(), points);
 
-			// Move points from lower left points in the pixel to the center.
-			Geometry.moveVertices(points, new Vector2(0.5f, 0.5f), false);
-
-			// Scale
-			if (scale != 1) {
-				for (Vector2 point : points) {
-					point.scl(scale);
-				}
-			}
-
 			// Center
 			Vector2 center = Geometry.calculateCenter(points);
 			//
@@ -122,6 +112,13 @@ public class Graphics {
 			// Update positions relative to the center
 			center.scl(-1);
 			Geometry.moveVertices(points, center, false);
+
+			// Scale
+			if (scale != 1) {
+				for (Vector2 point : points) {
+					point.scl(scale);
+				}
+			}
 		}
 
 		return points;

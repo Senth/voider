@@ -208,7 +208,7 @@ public class Config {
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_LOCAL;
+		public static final Builds BUILD = Builds.NIGHTLY_DEV;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */
@@ -583,6 +583,8 @@ public class Config {
 				WIDTH_START = WIDTH_DEFAULT;
 				HEIGHT_START = HEIGHT_DEFAULT;
 			} else {
+				// WIDTH_START = WIDTH_DEFAULT;
+				// HEIGHT_START = HEIGHT_DEFAULT;
 				WIDTH_START = 1280;
 				HEIGHT_START = 720;
 			}

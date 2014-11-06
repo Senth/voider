@@ -31,7 +31,6 @@ import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
@@ -1161,10 +1160,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				mImageOffset = new Vector2();
 			}
 			TextureRegion region = SkinNames.getRegion(mImageName);
-			mContourRaw = Graphics.getContour(region, mImageOffset);
+			mContourRaw = Graphics.getContour(region, 0.5f, 1.02f, mImageOffset);
 		}
-
-
 		ArrayList<Vector2> transformedContour = createCopy(mContourRaw);
 
 		// Remove excessive corners
@@ -1173,10 +1170,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 
 		// Scale
-		float scale = worldScale * mImageScale;
+		mImageScaleWorld = mImageScale * worldScale;
 		// float scale = worldScale;
 		for (Vector2 point : transformedContour) {
-			point.scl(scale);
+			point.scl(mImageScaleWorld);
 		}
 
 		addCorners(transformedContour);
@@ -1205,10 +1202,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			TextureRegion textureRegion = SkinNames.getRegion(mImageName);
 			mImage = new Sprite(textureRegion);
 			mImage.setOrigin(0, 0);
-			mImageScaleWorld = mImageScale / SceneSwitcher.getWorldScreenRatio();
 			mImageOffsetWorld.set(mImageOffset).scl(mImageScaleWorld);
 			mImage.setScale(mImageScaleWorld);
 		}
+
 
 		mImage.setPosition(pos.x - mImageOffsetWorld.x, pos.y - mImageOffsetWorld.y);
 
@@ -1227,14 +1224,14 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@Tag(63) private ArrayList<Vector2> mCorners = new ArrayList<>();
 	@Tag(126) private IImageNames mImageName = null;
 	@Tag(127) private Vector2 mImageOffset = new Vector2();
-	@Tag(128) private float mImageScale = 1;
+	@Tag(128) private float mImageScaleWorld = 1;
 
 	/** Temporary raw image contour points of the actor */
 	private ArrayList<Vector2> mContourRaw = null;
 	/** Image/Texture to draw as the actor */
 	private Sprite mImage = null;
 	/** Image scale in the world */
-	private float mImageScaleWorld = 1;
+	private float mImageScale = 1;
 	/** Scaled offset */
 	private Vector2 mImageOffsetWorld = new Vector2();
 	/**
