@@ -279,6 +279,7 @@ public class UiStyles {
 		LabelStyles.TOOLTIP.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP));
 		LabelStyles.HEADER.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER));
 		LabelStyles.TEXT_FIELD_DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TEXT_FIELD_DEFAULT));
+		LabelStyles.SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 
 
 		// Button styles

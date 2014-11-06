@@ -190,6 +190,9 @@ public class ExploreGui extends Gui {
 		mWidgets.sort.table.dispose();
 		mWidgets.tag.wrapper.dispose();
 		mWidgets.view.table.dispose();
+		mWidgets.topBar.remove();
+		mWidgets.tabWidget.remove();
+		mWidgets.actionTable.dispose();
 	}
 
 	/**
@@ -445,7 +448,7 @@ public class ExploreGui extends Gui {
 		table.setAlignTable(Horizontal.RIGHT, Vertical.BOTTOM);
 		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 		table.row().setFillWidth(true).setEqualCellSize(true);
-		table.setWidth(mWidgets.tabWidget.getWidth());
+		table.setWidth(mWidgets.tabWidget.getWidth() - mWidgets.tabWidget.getPadX());
 		table.setKeepWidth(true);
 		table.setName("action-table");
 		addActor(table);
@@ -678,7 +681,7 @@ public class ExploreGui extends Gui {
 			AlignTable levelTable = createLevelTable(level);
 
 			if (columnIndex == levelsPerRow) {
-				table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(paddingExplore).setPadRight(paddingExplore);
+				table.row().setPadTop(paddingExplore).setFillWidth(true).setEqualCellSize(true).setPadRight(paddingExplore);
 				columnIndex = 0;
 			}
 
@@ -689,16 +692,16 @@ public class ExploreGui extends Gui {
 		// }
 
 		// Set pad bottom for last row
-		Row lastRow = table.getRow();
-		if (lastRow != null) {
-			lastRow.setPadBottom(paddingExplore);
-		}
+		// Row lastRow = table.getRow();
+		// if (lastRow != null) {
+		// lastRow.setPadBottom(paddingExplore);
+		// }
 
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {
 			int columnsToPad = levelsPerRow - columnIndex;
 			for (int i = 0; i < columnsToPad; ++i) {
-				table.add().setFillWidth(true);
+				table.add();
 			}
 		}
 

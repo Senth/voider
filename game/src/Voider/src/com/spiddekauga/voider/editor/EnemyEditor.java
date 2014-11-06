@@ -454,7 +454,7 @@ public class EnemyEditor extends ActorEditor {
 		ImageSaveOnActor[] images = null;
 
 		// Different size depending on weapon
-		if (mDef.hasWeapon()) {
+		if (mDef.hasWeapon() && mDef.getWeaponDef().getBulletActorDef() != null) {
 			images = new ImageSaveOnActor[2];
 		} else {
 			images = new ImageSaveOnActor[1];

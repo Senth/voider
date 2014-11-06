@@ -791,12 +791,6 @@ public class Config {
 		public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
 		/** Tooltip minimum width before wrap */
 		public final static int TOOLTIP_WIDTH_MIN = 200;
-		/** Fade in duration of the label and window for error messages */
-		@Deprecated public final static float MESSAGE_FADE_IN_DURATION = 0.3f;
-		/** Fade out duration of the label and window for error messages */
-		@Deprecated public final static float MESSAGE_FADE_OUT_DURATION = 1.0f;
-		/** Minimum time shown */
-		@Deprecated public final static float MESSAGE_TIME_SHOWN_MIN = 7.0f;
 	}
 
 	/**

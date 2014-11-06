@@ -701,7 +701,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	@Override
 	public float getPrefHeight() {
 		if (getParent() instanceof ScrollPane) {
-			return getMinHeight();
+			return mActualHeight;
 		} else if (mKeepHeight || !mHasPreferredHeight) {
 			return getHeight();
 		} else {
@@ -711,7 +711,9 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 	@Override
 	public float getPrefWidth() {
-		if (mKeepWidth || !mHasPreferredWidth) {
+		if (getParent() instanceof ScrollPane) {
+			return mActualWidth;
+		} else if (mKeepWidth || !mHasPreferredWidth) {
 			return getWidth();
 		} else {
 			return mPrefWidth;
@@ -880,12 +882,12 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 	@Override
 	public float getHeight() {
-		return super.getHeight() + mPadding.top + mPadding.bottom;
+		return super.getHeight() + getPadY();
 	}
 
 	@Override
 	public float getWidth() {
-		return super.getWidth() + mPadding.left + mPadding.right;
+		return super.getWidth() + getPadX();
 	}
 
 	@Override
@@ -896,67 +898,14 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 			calculateActualSize();
 		}
 
-		float rowHeight = 0;
 		float rowWidthMax = super.getWidth();
-		int cRowFillHeight = 0;
-		boolean rowFillWidth = false;
 		for (Row row : mRows) {
-			rowHeight += row.getHeight();
 			if (row.getWidth() > rowWidthMax) {
 				rowWidthMax = row.getWidth();
 			}
-
-			if (row.shallFillHeight()) {
-				cRowFillHeight++;
-			}
-			if (row.shallfillWidth()) {
-				rowFillWidth = true;
-			}
 		}
 
-		// Set position of this table.
-		// If parent is an AlignTable it has already set the correct position for this
-		// table
-		if (!isParentSettingPosition() && !mPositionSetManually) {
-			Vector2 position = new Vector2();
-
-
-			// Set custom position if we don't have any table parent
-			// Horizontal offset
-			// If fill row, the x offset will always be the margin
-			if (rowFillWidth && !mKeepWidth) {
-				position.x = mMargin.left;
-			}
-			// Calculate offset depending on alignment
-			else {
-				if (mTableAlign.horizontal == Horizontal.LEFT) {
-					position.x = mMargin.left;
-				} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-					position.x = getAvailableWidth() - rowWidthMax + mMargin.left;
-				} else if (mTableAlign.horizontal == Horizontal.CENTER) {
-					position.x = getAvailableWidth() * 0.5f - rowWidthMax * 0.5f;
-				}
-			}
-
-			// Vertical
-			// If fill height, the y offset will always be margin bottom
-			if (cRowFillHeight > 0 && !mKeepHeight) {
-				position.y = mMargin.bottom;
-			}
-			// Calculate offset depending on alignment
-			else {
-				if (mTableAlign.vertical == Vertical.BOTTOM) {
-					position.y = mMargin.bottom;
-				} else if (mTableAlign.vertical == Vertical.TOP) {
-					position.y = getAvailableHeight() - rowHeight + mMargin.bottom;
-				} else if (mTableAlign.vertical == Vertical.MIDDLE) {
-					position.y = getAvailableHeight() * 0.5f - rowHeight * 0.5f;
-				}
-			}
-
-			super.setPosition((int) position.x, (int) position.y);
-		}
-
+		setPosition();
 
 		// Layout the rows
 		Vector2 offset = new Vector2();
@@ -1005,17 +954,85 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	public void setPosition(float x, float y) {
 		// Skip setting position if the height of this table is
 		if (getParent() instanceof ScrollPane) {
-			float xToUse = getX();
-			float yToUse = getY();
-			if (mActualHeight >= getParent().getHeight()) {
-				yToUse = y;
+			boolean useXParam = false;
+			boolean useYParam = false;
+			if (mActualHeight >= getParent().getHeight() || mPositionSetManually) {
+				useYParam = true;
 			}
-			if (mActualWidth >= getParent().getWidth()) {
-				xToUse = x;
+			if (mActualWidth >= getParent().getWidth() || mPositionSetManually) {
+				useXParam = true;
 			}
+
+			if (!useXParam || !useYParam) {
+				setPosition();
+			}
+
+			float xToUse = useXParam ? x : getX();
+			float yToUse = useYParam ? y : getY();
+
 			super.setPosition(xToUse, yToUse);
 		} else {
 			super.setPosition(x, y);
+		}
+	}
+
+	/**
+	 * Calculate the position of this table. Only works if the parent doesn't set the
+	 * position or the position is set manually
+	 */
+	public void setPosition() {
+		if (!isParentSettingPosition() && !mPositionSetManually) {
+			// Calculate spaces
+			int cRowFillHeight = 0;
+			boolean rowFillWidth = false;
+			for (Row row : mRows) {
+				if (row.shallFillHeight()) {
+					cRowFillHeight++;
+				}
+				if (row.shallfillWidth()) {
+					rowFillWidth = true;
+				}
+			}
+
+
+			// Set position
+			Vector2 position = new Vector2();
+
+
+			// Set custom position if we don't have any table parent
+			// Horizontal offset
+			// If fill row, the x offset will always be the margin
+			if (rowFillWidth && !mKeepWidth) {
+				position.x = mMargin.left;
+			}
+			// Calculate offset depending on alignment
+			else {
+				if (mTableAlign.horizontal == Horizontal.LEFT) {
+					position.x = mMargin.left;
+				} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
+					position.x = getAvailableWidth() - mActualWidth + mMargin.left;
+				} else if (mTableAlign.horizontal == Horizontal.CENTER) {
+					position.x = getAvailableWidth() * 0.5f - mActualWidth * 0.5f;
+				}
+			}
+
+			// Vertical
+			// If fill height, the y offset will always be margin bottom
+			if (cRowFillHeight > 0 && !mKeepHeight) {
+				position.y = mMargin.bottom;
+			}
+			// Calculate offset depending on alignment
+			else {
+				if (mTableAlign.vertical == Vertical.BOTTOM) {
+					position.y = mMargin.bottom;
+				} else if (mTableAlign.vertical == Vertical.TOP) {
+					position.y = getAvailableHeight() - mActualHeight + mMargin.bottom;
+				} else if (mTableAlign.vertical == Vertical.MIDDLE) {
+					position.y = getAvailableHeight() * 0.5f - mActualHeight * 0.5f;
+				}
+			}
+
+			super.setPosition((int) position.x, (int) position.y);
 		}
 	}
 
@@ -1062,7 +1079,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		} else if (getParent() instanceof TabWidget) {
 			availableHeight = getStage().getHeight();
 		} else if (getParent() instanceof ScrollPane) {
-			availableHeight = getMinHeight();
+			availableHeight = ((ScrollPane) getParent()).getHeight();
 		} else {
 			availableHeight = getHeight();
 		}

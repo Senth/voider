@@ -329,7 +329,6 @@ public class Row implements Poolable, IPadding<Row> {
 
 	/**
 	 * Sets if the row shall fill the remaining height of the table.
-	 * @todo fill height for row only works on one row per table.
 	 * @param fillHeight true if the row shall fill the remaining height of the table.
 	 * @return this row for chaining
 	 */
