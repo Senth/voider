@@ -17,11 +17,25 @@ public enum InternalDeps {
 	/** Tunnel theme */
 	THEME_TUNNEL(InternalNames.LEVEL_THEME_TUNNELS_BOTTOM, InternalNames.LEVEL_THEME_TUNNELS_TOP),
 
+	/** Music for space */
+	MUSIC_SPACE,
+	/** Music for surface */
+	MUSIC_SURFACE,
+	/** Music for tunnels */
+	MUSIC_TUNNELS,
+	/** Music for core */
+	MUSIC_CORE,
+
+	/** Easy access to all game music that needs to be loaded */
+	GAME_MUSIC(InternalNames.MUSIC_GAME_OVER, InternalNames.MUSIC_LEVEL_COMPLETED),
+	/** Easy access to all game sound effects that will be loaded */
+	GAME_SFX,
+
+
 	;
 
 	/**
-	 * Constructor which takes several internal dependencies which the dependency is
-	 * dependent on
+	 * Constructor which takes several internal dependencies which the dependency is dependent on
 	 * @param dependencies all dependencies
 	 */
 	private InternalDeps(InternalNames... dependencies) {

@@ -7,9 +7,8 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 
 /**
- * Config file for the ini. Inner classes start with IC (short for ini class). But they
- * use this naming schema mostly so they remain invisible for outside classes, or don't
- * conflict with their names.
+ * Config file for the ini. Inner classes start with IC (short for ini class). But they use this naming schema mostly so
+ * they remain invisible for outside classes, or don't conflict with their names.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ConfigIni {
@@ -17,6 +16,8 @@ public class ConfigIni {
 	public IC_Editor editor = null;
 	/** Game options */
 	public IC_Game game = null;
+	/** Sound and music options */
+	public IC_Sound sound = null;
 
 	/**
 	 * Private constructor to enforce singleton pattern
@@ -41,6 +42,7 @@ public class ConfigIni {
 		IniClass.setJavaClassPrefix("IC_");
 		editor = new IC_Editor(ini, ini.get("Editor"));
 		game = new IC_Game(ini, ini.get("Game"));
+		sound = new IC_Sound(ini, ini.get("Sound"));
 	}
 
 	/**

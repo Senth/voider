@@ -7,6 +7,7 @@ import org.ini4j.Ini;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -18,8 +19,7 @@ import com.spiddekauga.utils.Path;
 import com.spiddekauga.voider.Config.File;
 
 /**
- * All static resources. Name and a corresponding filename This includes: \li Textures \li
- * Music \li Sound
+ * All static resources. Name and a corresponding filename This includes: \li Textures \li Music \li Sound
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum InternalNames {
@@ -77,6 +77,22 @@ public enum InternalNames {
 	INI_CONFIG("config.ini", Ini.class),
 
 
+	// Music
+	/** Space music */
+	MUSIC_SPACE("space.mp3", Music.class),
+	/** Surface music */
+	MUSIC_SURFACE("surface.mp3", Music.class),
+	/** Tunnels music */
+	MUSIC_TUNNELS("tunnels.mp3", Music.class),
+	/** Core music */
+	MUSIC_CORE("core.mp3", Music.class),
+	/** Game over music */
+	MUSIC_GAME_OVER("game_over.mp3", Music.class),
+	/** Level success music */
+	MUSIC_LEVEL_COMPLETED("level_completed.mp3", Music.class),
+	/** Main theme */
+	MUSIC_THEME("main_theme.mp3", Music.class),
+
 	;
 
 	/**
@@ -125,7 +141,9 @@ public enum InternalNames {
 	/** Directory for all particle effects */
 	private static String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */
-	private static String SOUND_PATH = "sound/";
+	private static String SOUND_PATH = "sfx/";
+	/** Directory for all music */
+	private static String MUSIC_PATH = "music/";
 	/** Directory for all text/ini files */
 	private static String TEXT_PATH = "txt/";
 
@@ -145,6 +163,7 @@ public enum InternalNames {
 				PARTICLE_PATH = dir + PARTICLE_PATH;
 				SOUND_PATH = dir + SOUND_PATH;
 				TEXT_PATH = dir + TEXT_PATH;
+				MUSIC_PATH = dir + MUSIC_PATH;
 			}
 
 
@@ -154,6 +173,7 @@ public enum InternalNames {
 			mResourcePaths.put(Skin.class, UI_PATH);
 			mResourcePaths.put(Sound.class, SOUND_PATH);
 			mResourcePaths.put(Ini.class, TEXT_PATH);
+			mResourcePaths.put(Music.class, MUSIC_PATH);
 		}
 
 
