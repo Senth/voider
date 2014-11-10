@@ -1,11 +1,15 @@
 package com.spiddekauga.voider.repo.resource;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalDeps;
@@ -255,7 +259,15 @@ public class ResourceCacheFacade {
 	 * @param resourceName the name of the resource
 	 */
 	public static void unload(InternalNames resourceName) {
-		mAssetManager.unload(resourceName.getFilePath());
+		// Is this resource currently used?
+		IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resourceName.getClass());
+		if (unloadReadyMethod != null) {
+			mUnloadList.add(resourceName);
+		}
+		// Unload directly
+		else {
+			mAssetManager.unload(resourceName.getFilePath());
+		}
 	}
 
 	/**
@@ -277,8 +289,15 @@ public class ResourceCacheFacade {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void load(InternalNames resource) {
-		String fullPath = resource.getFilePath();
-		mAssetManager.load(fullPath, resource.type, resource.parameters);
+		// Remove from unload list if we're loading it again before it was unloaded
+		if (mUnloadList.contains(resource)) {
+			mUnloadList.remove(resource);
+		}
+		// Load it
+		else {
+			String fullPath = resource.getFilePath();
+			mAssetManager.load(fullPath, resource.type, resource.parameters);
+		}
 	}
 
 	/**
@@ -320,6 +339,18 @@ public class ResourceCacheFacade {
 			}
 		} catch (ResourceException e) {
 			throw e;
+		}
+
+		// Try to unload stuff
+		Iterator<InternalNames> unloadIt = mUnloadList.iterator();
+		while (unloadIt.hasNext()) {
+			InternalNames name = unloadIt.next();
+			String filepath = name.getFilePath();
+			Object resource = mAssetManager.get(filepath);
+			IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resource.getClass());
+			if (unloadReadyMethod.isReadyToUnload(resource)) {
+				mAssetManager.unload(filepath);
+			}
 		}
 
 		return fullyLoaded;
@@ -366,6 +397,13 @@ public class ResourceCacheFacade {
 	private ResourceCacheFacade() {
 	}
 
+	/** Resources that should be unloaded when they aren't used */
+	private static ArrayList<InternalNames> mUnloadList = new ArrayList<>();
+	/**
+	 * List of all methods for checking if a resource is still being used and should be
+	 * placed in the unload list
+	 */
+	private static Map<Class<?>, IResourceUnloadReady> mUnloadReadyMethods = new HashMap<>();
 	/** Handles loading all dependencies. */
 	private static ResourceDependencyLoader mDependencyLoader = new ResourceDependencyLoader();
 	/** Resource Loader */
@@ -387,4 +425,17 @@ public class ResourceCacheFacade {
 	 * asset manager have loaded everything and then load the instances from the queue.
 	 */
 	private static LinkedList<ResourceItem> mLoadQueue = new LinkedList<ResourceItem>();
+
+	// Create all unload ready methods
+	static {
+		mUnloadReadyMethods.put(Music.class, new IResourceUnloadReady() {
+			@Override
+			public boolean isReadyToUnload(Object resource) {
+				if (resource instanceof Music) {
+					return !((Music) resource).isPlaying();
+				}
+				return true;
+			};
+		});
+	}
 }

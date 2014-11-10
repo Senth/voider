@@ -18,5 +18,5 @@ public enum Music {
 	/** Game completed */
 	LEVEL_COMPLETED,
 	/** Main theme */
-	MAIN_THEME,
+	TITLE,
 }

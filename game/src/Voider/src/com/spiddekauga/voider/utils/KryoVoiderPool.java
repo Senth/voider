@@ -71,7 +71,8 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.sound.Music;
 
 /**
- * Pool for Kryo instances. When creating a new instance Kryo registers all necessary classes used by Voider.
+ * Pool for Kryo instances. When creating a new instance Kryo registers all necessary
+ * classes used by Voider.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class KryoVoiderPool extends Pool<Kryo> {
@@ -102,8 +103,9 @@ public class KryoVoiderPool extends Pool<Kryo> {
 	}
 
 	/**
-	 * Contains all classes that should be registered. Adding new classes shall only be done at the end of the
-	 * enumeration. If a class isn't used any longer, don't remove it but set it as null instead.
+	 * Contains all classes that should be registered. Adding new classes shall only be
+	 * done at the end of the enumeration. If a class isn't used any longer, don't remove
+	 * it but set it as null instead.
 	 */
 	private enum RegisterClasses {
 		/** Object[] */
@@ -259,19 +261,23 @@ public class KryoVoiderPool extends Pool<Kryo> {
 
 		/**
 		 * Creates a new type to be registered with Kryo using {@link #registerAll(Kryo)}
-		 * @param type the type to register, if null it won't register it. Setting to null is useful when the class
-		 *        isn't used anymore (doesn't exist) but we still need to keep the register order.
+		 * @param type the type to register, if null it won't register it. Setting to null
+		 *        is useful when the class isn't used anymore (doesn't exist) but we still
+		 *        need to keep the register order.
 		 */
 		private RegisterClasses(Class<?> type) {
 			mType = type;
 		}
 
 		/**
-		 * Creates a new type to be registered with Kryo using {@link #registerAll(Kryo)} and when
-		 * {@link #createSerializers(Kryo)} is called will created the specified serializer type
-		 * @param type the type to register, if null it won't register it. Setting to null is useful when the class
-		 *        isn't used anymore (doesn't exist) but we still need to keep the register order.
-		 * @param createSerializerType the type of serializer to create when {@link #createSerializers(Kryo)} is called.
+		 * Creates a new type to be registered with Kryo using {@link #registerAll(Kryo)}
+		 * and when {@link #createSerializers(Kryo)} is called will created the specified
+		 * serializer type
+		 * @param type the type to register, if null it won't register it. Setting to null
+		 *        is useful when the class isn't used anymore (doesn't exist) but we still
+		 *        need to keep the register order.
+		 * @param createSerializerType the type of serializer to create when
+		 *        {@link #createSerializers(Kryo)} is called.
 		 */
 		private RegisterClasses(Class<?> type, SerializerType createSerializerType) {
 			mType = type;
@@ -280,10 +286,11 @@ public class KryoVoiderPool extends Pool<Kryo> {
 
 		/**
 		 * Creates a new type to be registered with Kryo using {@link #registerAll(Kryo)}
-		 * @param type the type to register, if null it won't register it. Setting to null is useful when the class
-		 *        isn't used anymore (doesn't exist) but we still need to keep the register order.
-		 * @param serializer the serializer to use for the specified type, if null the default serializer will be used
-		 *        instead.
+		 * @param type the type to register, if null it won't register it. Setting to null
+		 *        is useful when the class isn't used anymore (doesn't exist) but we still
+		 *        need to keep the register order.
+		 * @param serializer the serializer to use for the specified type, if null the
+		 *        default serializer will be used instead.
 		 */
 		private RegisterClasses(Class<?> type, Serializer<?> serializer) {
 			mType = type;
@@ -291,30 +298,11 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		}
 
 		/**
-		 * Some classes needs a serializer that requires Kryo in the constructor. These serializers are created with
-		 * this method instead.
+		 * Some classes needs a serializer that requires Kryo in the constructor. These
+		 * serializers are created with this method instead.
 		 * @param kryo creates the serializers for this Kryo instance.
 		 */
 		private static void createSerializers(Kryo kryo) {
-			// // Vector2
-			// VECTOR_2.mSerializer = new FieldSerializer<Vector2>(kryo, Vector2.class) {
-			// @Override
-			// public Vector2 create(Kryo kryo, Input input, Class<Vector2> type) {
-			// return Pools.vector2.obtain();
-			// }
-			// };
-			//
-			// // ArrayList
-			// ARRAY_LIST.mSerializer = new CollectionSerializer() {
-			// @Override
-			// protected Collection create(Kryo kryo, Input input, Class<Collection> type)
-			// {
-			// ArrayList arrayList = Pools.arrayList.obtain();
-			// return arrayList;
-			// }
-			// };
-
-
 			// Create tagged or compatible serializers
 			for (RegisterClasses registerClass : RegisterClasses.values()) {
 				if (registerClass.mSerializerType != null) {
@@ -356,8 +344,8 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		/** Serializer to use, if null it uses the default serializer */
 		private Serializer<?> mSerializer = null;
 		/**
-		 * If a serializer of the specified type should be created for this class. If null, no serializer will be
-		 * created for this type.
+		 * If a serializer of the specified type should be created for this class. If
+		 * null, no serializer will be created for this type.
 		 */
 		private SerializerType mSerializerType = null;
 	}

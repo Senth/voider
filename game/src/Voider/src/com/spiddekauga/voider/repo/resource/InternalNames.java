@@ -19,7 +19,8 @@ import com.spiddekauga.utils.Path;
 import com.spiddekauga.voider.Config.File;
 
 /**
- * All static resources. Name and a corresponding filename This includes: \li Textures \li Music \li Sound
+ * All static resources. Name and a corresponding filename This includes: \li Textures \li
+ * Music \li Sound
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum InternalNames {
@@ -91,7 +92,7 @@ public enum InternalNames {
 	/** Level success music */
 	MUSIC_LEVEL_COMPLETED("level_completed.mp3", Music.class),
 	/** Main theme */
-	MUSIC_THEME("main_theme.mp3", Music.class),
+	MUSIC_TITLE("title_theme.mp3", Music.class),
 
 	;
 

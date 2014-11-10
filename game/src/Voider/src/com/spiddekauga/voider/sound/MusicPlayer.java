@@ -2,8 +2,8 @@ package com.spiddekauga.voider.sound;
 
 /**
  * Singleton class for playing music.
- * @note This class doesn't load the music, this must be done by the appropriate scene. If the music isn't loaded
- *       nothing will happen.
+ * @note This class doesn't load the music, this must be done by the appropriate scene. If
+ *       the music isn't loaded nothing will happen.
  * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
  */
 public class MusicPlayer {
@@ -25,8 +25,8 @@ public class MusicPlayer {
 	}
 
 	/**
-	 * Starts to play this music track. This is same as calling {@link #play(Music, Interpolations)} with play(music,
-	 * Interpolations.NONE)
+	 * Starts to play this music track. This is same as calling
+	 * {@link #play(Music, Interpolations)} with play(music, Interpolations.NONE)
 	 * @param music the music to start to play
 	 */
 	public void play(Music music) {
@@ -75,6 +75,12 @@ public class MusicPlayer {
 
 			if (done) {
 				mInterpolation = null;
+
+				// TODO unload current piece?
+
+				// Set next as current
+				mCurrent = mNext;
+				mNext = null;
 			}
 		}
 	}
