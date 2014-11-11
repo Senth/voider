@@ -78,6 +78,7 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
@@ -279,6 +280,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		boolean sameRevision = false;
 
 		boolean oldIsPublished = isPublished();
+
+		mBackgroundBottom = null;
+		mBackgroundTop = null;
 
 		if (mLevel != null) {
 			if (level != null && mLevel.equals(level.getId())) {
@@ -1753,6 +1757,29 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			return mLevel.getLevelDef().getTheme();
 		} else {
 			return Themes.SPACE;
+		}
+	}
+
+	/**
+	 * Sets the music for the level
+	 * @param music the music for the level
+	 */
+	void setMusic(Music music) {
+		if (mLevel != null) {
+			mLevel.getLevelDef().setMusic(music);
+			setUnsaved();
+			((LevelEditorGui) mGui).resetMusic();
+		}
+	}
+
+	/**
+	 * @return current music for the level
+	 */
+	Music getMusic() {
+		if (mLevel != null) {
+			return mLevel.getLevelDef().getMusic();
+		} else {
+			return Music.SPACE;
 		}
 	}
 

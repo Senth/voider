@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Strings;
+import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -43,10 +44,13 @@ public class VoiderGame implements ApplicationListener {
 
 		ShaderProgram.pedantic = false;
 
-		/** @TODO set splash screen as start screen */
+		if (Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
+			testLogin();
+		} else {
+			testSplashScreen();
+		}
 
-		testLogin();
-		// testSplashScreen();
+		mMusicPlayer = MusicPlayer.getInstance();
 	}
 
 	/**
@@ -66,7 +70,6 @@ public class VoiderGame implements ApplicationListener {
 	/**
 	 * Test splash screen
 	 */
-	@SuppressWarnings("unused")
 	private void testSplashScreen() {
 		SceneSwitcher.switchTo(new LoginScene(), new SplashScreen());
 	}
@@ -133,7 +136,7 @@ public class VoiderGame implements ApplicationListener {
 	public void resume() {
 	}
 
-	private MusicPlayer mMusicPlayer = MusicPlayer.getInstance();
+	private MusicPlayer mMusicPlayer = null;
 
 	/** Main thread id */
 	private static long mMainThreadId = 0;

@@ -1,23 +1,21 @@
 package com.spiddekauga.voider.repo.misc;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Sound;
-import com.spiddekauga.voider.repo.PrefsGateway;
 
 /**
- * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
+ * Game settings gateway
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class SettingPrefsGateway extends PrefsGateway {
+class SettingClientPrefsGateway {
 	/**
-	 * Private constructor to enforce singleton usage
+	 * Initializes the client preferences gateway
 	 */
-	SettingPrefsGateway() {
-		// Does nothing
-	}
-
-	@Override
-	protected String getPreferenceName() {
-		return "settings";
+	SettingClientPrefsGateway() {
+		mPreferences = Gdx.app.getPreferences(PREFERENCES_NAME);
 	}
 
 	/**
@@ -89,4 +87,8 @@ class SettingPrefsGateway extends PrefsGateway {
 	private static final String SOUND__UI_VOLUME = "sound_uiVolume";
 	private static final String SOUND__MUSIC_VOLUME = "sound_musicVolume";
 
+	/** Preferences */
+	private Preferences mPreferences;
+	/** Preferences name */
+	private static final String PREFERENCES_NAME = Config.File.PREFERENCE_PREFIX + "_setting";
 }

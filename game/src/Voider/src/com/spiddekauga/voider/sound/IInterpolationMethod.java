@@ -4,7 +4,7 @@ import com.badlogic.gdx.audio.Music;
 
 /**
  * Interface for interpolation
- * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 interface IInterpolationMethod {
 	/**

@@ -7,7 +7,7 @@ import com.spiddekauga.voider.config.IC_Sound.IC_Music;
 
 /**
  * All different interpolations for music and sound effects
- * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum Interpolations {
 	/** No interpolation */
@@ -109,8 +109,16 @@ public enum Interpolations {
 					}
 				}
 
+				// Start playing so it isn't unloaded
+				if (next != null) {
+					next.setVolume(0);
+					next.setLooping(true);
+					next.play();
+				}
+
 				// Next - Start playing
 				if (next != null && (current == null || !current.isPlaying())) {
+					next.stop();
 					next.setVolume(maxVolume);
 					next.setLooping(true);
 					next.play();
@@ -179,11 +187,18 @@ public enum Interpolations {
 					}
 				}
 
+				// Start playing so it isn't unloaded
+				if (next != null) {
+					next.setVolume(0);
+					next.setLooping(true);
+					next.play();
+				}
+
 				// Next - Start playing
 				if (next != null && (current == null || !current.isPlaying())) {
 					// Start playing
 					if (!next.isPlaying()) {
-						next.setVolume(0);
+						next.stop();
 						next.setLooping(true);
 						next.play();
 					}

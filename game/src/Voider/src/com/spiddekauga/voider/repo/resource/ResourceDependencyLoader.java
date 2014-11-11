@@ -109,7 +109,7 @@ class ResourceDependencyLoader implements Disposable {
 
 					// Internal
 					for (InternalNames dependency : def.getInternalDependencies()) {
-						mAssetManager.load(dependency.getFilePath(), dependency.type);
+						mAssetManager.load(dependency.getFilePath(), dependency.getType());
 					}
 				} else {
 					Gdx.app.debug("ResourceDependency", "Loaded resource " + resource.getClass().getSimpleName() + " does not have any dependencies.");

@@ -153,7 +153,7 @@ public class ResourceCacheFacade {
 			int cRefs = mAssetManager.getReferenceCount(filepath);
 			mAssetManager.setReferenceCount(filepath, 1);
 			mAssetManager.unload(filepath);
-			mAssetManager.load(filepath, resource.type);
+			mAssetManager.load(filepath, resource.getType());
 			mAssetManager.finishLoading();
 			mAssetManager.setReferenceCount(filepath, cRefs);
 		}
@@ -260,7 +260,7 @@ public class ResourceCacheFacade {
 	 */
 	public static void unload(InternalNames resourceName) {
 		// Is this resource currently used?
-		IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resourceName.getClass());
+		IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resourceName.getType());
 		if (unloadReadyMethod != null) {
 			mUnloadList.add(resourceName);
 		}
@@ -296,7 +296,7 @@ public class ResourceCacheFacade {
 		// Load it
 		else {
 			String fullPath = resource.getFilePath();
-			mAssetManager.load(fullPath, resource.type, resource.parameters);
+			mAssetManager.load(fullPath, resource.getType(), resource.getParameters());
 		}
 	}
 
@@ -310,7 +310,7 @@ public class ResourceCacheFacade {
 	public static <ResourceType> ResourceType get(InternalNames resource) {
 		if (isLoaded(resource)) {
 			String fullPath = resource.getFilePath();
-			return (ResourceType) mAssetManager.get(fullPath, resource.type);
+			return (ResourceType) mAssetManager.get(fullPath, resource.getType());
 		} else {
 			return null;
 		}
@@ -323,7 +323,7 @@ public class ResourceCacheFacade {
 	 */
 	public static boolean isLoaded(InternalNames resource) {
 		String fullPath = resource.getFilePath();
-		return mAssetManager.isLoaded(fullPath, resource.type);
+		return mAssetManager.isLoaded(fullPath, resource.getType());
 	}
 
 	/**
@@ -351,9 +351,10 @@ public class ResourceCacheFacade {
 			InternalNames name = unloadIt.next();
 			String filepath = name.getFilePath();
 			Object resource = mAssetManager.get(filepath);
-			IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resource.getClass());
+			IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(name.getType());
 			if (unloadReadyMethod.isReadyToUnload(resource)) {
 				mAssetManager.unload(filepath);
+				unloadIt.remove();
 			}
 		}
 

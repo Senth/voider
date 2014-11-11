@@ -8,6 +8,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.sound.Music;
 
 /**
  * Level definition of a level. I.e. this is the level's header information
@@ -21,6 +22,7 @@ public class LevelDef extends Def {
 		mLevelId = UUID.randomUUID();
 
 		setTheme(Themes.SPACE);
+		setMusic(Music.SPACE);
 	}
 
 	@Override
@@ -155,6 +157,29 @@ public class LevelDef extends Def {
 	}
 
 	/**
+	 * Set the music for the level
+	 * @param music the music the level should use
+	 */
+	public void setMusic(Music music) {
+		if (mMusic != null) {
+			removeDependency(mMusic.getDependency());
+		}
+
+		mMusic = music;
+
+		if (mMusic != null) {
+			addDependency(mMusic.getDependency());
+		}
+	}
+
+	/**
+	 * @return music of the level
+	 */
+	public Music getMusic() {
+		return mMusic;
+	}
+
+	/**
 	 * Set the theme for the level
 	 * @param theme the theme for the level
 	 */
@@ -234,6 +259,8 @@ public class LevelDef extends Def {
 	@Tag(84) private float mEndXCoord = 100;
 	/** Theme of the level */
 	@Tag(109) private Themes mTheme = null;
+	/** Music of the level */
+	@Tag(129) private Music mMusic = null;
 	/** Length of the level in seconds */
 	private float mLengthInTime = 0;
 

@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.repo.misc;
 
 /**
- * Local repository for settings
- * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
+ * Local repository for settings (both client settings and user settings)
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SettingLocalRepo {
 	/**
@@ -39,14 +39,14 @@ public class SettingLocalRepo {
 		 * @param volume in range [0,1]
 		 */
 		public void setMasterVolume(float volume) {
-			mPrefsGateway.setMasterVolume(volume);
+			mClientPrefsGateway.setMasterVolume(volume);
 		}
 
 		/**
 		 * @return master volume in range [0,1]
 		 */
 		public float getMasterVolume() {
-			return mPrefsGateway.getMasterVolume();
+			return mClientPrefsGateway.getMasterVolume();
 		}
 
 		/**
@@ -54,14 +54,14 @@ public class SettingLocalRepo {
 		 * @param volume in range [0,1]
 		 */
 		public void setEffectsVolume(float volume) {
-			mPrefsGateway.setEffectsVolume(volume);
+			mClientPrefsGateway.setEffectsVolume(volume);
 		}
 
 		/**
 		 * @return sound effects volume in range [0,1]
 		 */
 		public float getEffectsVolume() {
-			return mPrefsGateway.getEffectsVolume();
+			return mClientPrefsGateway.getEffectsVolume();
 		}
 
 		/**
@@ -77,14 +77,14 @@ public class SettingLocalRepo {
 		 * @param volume in range [0,1]
 		 */
 		public void setMusicVolume(float volume) {
-			mPrefsGateway.setMusicVolume(volume);
+			mClientPrefsGateway.setMusicVolume(volume);
 		}
 
 		/**
 		 * @return music volume in range [0,1]
 		 */
 		public float getMusicVolume() {
-			return mPrefsGateway.getMusicVolume();
+			return mClientPrefsGateway.getMusicVolume();
 		}
 
 		/**
@@ -100,14 +100,14 @@ public class SettingLocalRepo {
 		 * @param volume in range [0,1]
 		 */
 		public void setUiVolume(float volume) {
-			mPrefsGateway.setUiVolume(volume);
+			mClientPrefsGateway.setUiVolume(volume);
 		}
 
 		/**
 		 * @return UI effects volume in range [0,1]
 		 */
 		public float getUiVolume() {
-			return mPrefsGateway.getUiVolume();
+			return mClientPrefsGateway.getUiVolume();
 		}
 
 		/**
@@ -122,7 +122,7 @@ public class SettingLocalRepo {
 	/** Sound setting repository */
 	public SoundSettingLocalRepo sound = new SoundSettingLocalRepo();
 
-	private SettingPrefsGateway mPrefsGateway = new SettingPrefsGateway();
+	private SettingClientPrefsGateway mClientPrefsGateway = new SettingClientPrefsGateway();
 
 	private static SettingLocalRepo mInstance = null;
 }

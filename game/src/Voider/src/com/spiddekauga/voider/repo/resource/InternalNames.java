@@ -102,23 +102,38 @@ public enum InternalNames {
 	 * @param type the class type of resource
 	 */
 	private InternalNames(String filename, Class<?> type) {
-		this.filename = filename;
-		this.type = type;
+		this.mFilename = filename;
+		this.mType = type;
 	}
 
 	/**
 	 * @return file path of this resource
 	 */
 	public String getFilePath() {
-		return getDirPath(type) + filename;
+		return getDirPath(mType) + mFilename;
+	}
+
+	/**
+	 * @return stored type of the resource
+	 */
+	Class<?> getType() {
+		return mType;
+	}
+
+	/**
+	 * @return loading parameters
+	 */
+	@SuppressWarnings("rawtypes")
+	AssetLoaderParameters getParameters() {
+		return mParameters;
 	}
 
 	/** Optional parameters */
-	@SuppressWarnings("rawtypes") AssetLoaderParameters parameters = null;
+	private AssetLoaderParameters<?> mParameters = null;
 	/** Filename of the resource */
-	final String filename;
+	private final String mFilename;
 	/** The resource class type */
-	final Class<?> type;
+	private final Class<?> mType;
 
 
 	/**
@@ -187,7 +202,7 @@ public enum InternalNames {
 			textureParameter.wrapV = TextureWrap.Repeat;
 			textureParameter.minFilter = TextureFilter.MipMapLinearLinear;
 			InternalNames internalName = InternalNames.values()[i];
-			internalName.parameters = textureParameter;
+			internalName.mParameters = textureParameter;
 		}
 	}
 }

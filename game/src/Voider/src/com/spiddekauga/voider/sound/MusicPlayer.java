@@ -8,7 +8,7 @@ import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SoundSettingLocalRepo;
  * Singleton class for playing music.
  * @note This class doesn't load the music, this must be done by the appropriate scene. If
  *       the music isn't loaded nothing will happen.
- * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MusicPlayer {
 	/**
@@ -44,9 +44,20 @@ public class MusicPlayer {
 	 * @param interpolation type of interpolation
 	 */
 	public void play(Music music, Interpolations interpolation) {
-		if (music != mCurrent && mNext == null) {
+		mPaused = null;
+		if (music != mNext && (music != mCurrent || mInterpolation != null)) {
+			// Finish current interpolation before we start playing
+			if (mInterpolation != null) {
+				if (mCurrent != null && mCurrent.getTrack() != null) {
+					mCurrent.getTrack().stop();
+				}
+
+				mCurrent = mNext;
+			}
+
 			mNext = music;
 			mInterpolation = interpolation;
+			interpolate();
 		}
 	}
 
@@ -62,7 +73,31 @@ public class MusicPlayer {
 	 * @param interpolation the interpolation to use for stopping the music
 	 */
 	public void stop(Interpolations interpolation) {
-		play(null, interpolation);
+		if (mCurrent != null) {
+			mPaused = mCurrent;
+			play(null, interpolation);
+		}
+	}
+
+	/**
+	 * Resumes the stopped or paused music (if it's still loaded). Only does something if
+	 * {@link #stop()} has been called and {@link #play(Music)} hasn't been called after
+	 * that.
+	 */
+	public void resume() {
+		resume(Interpolations.NONE);
+	}
+
+	/**
+	 * Resumes the stopped or paused music (if it's still loaded). Only does something if
+	 * {@link #stop()} has been called and {@link #play(Music)} hasn't been called after
+	 * that.
+	 * @param interpolation the interpolation to start the track with
+	 */
+	public void resume(Interpolations interpolation) {
+		if (mPaused != null) {
+			play(mPaused, interpolation);
+		}
 	}
 
 	/**
@@ -98,6 +133,7 @@ public class MusicPlayer {
 	private Interpolations mInterpolation = null;
 	private Music mCurrent = null;
 	private Music mNext = null;
+	private Music mPaused = null;
 	private SoundSettingLocalRepo mSoundRepo = SettingLocalRepo.getInstance().sound;
 
 	private static MusicPlayer mInstance = null;

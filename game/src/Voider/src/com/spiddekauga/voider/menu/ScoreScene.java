@@ -70,7 +70,7 @@ public class ScoreScene extends Scene {
 			return true;
 		}
 
-		return false;
+		return super.onKeyDown(keycode);
 	}
 
 	/**

@@ -23,6 +23,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
+import com.spiddekauga.voider.sound.MusicPlayer;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes: Game, Menus,
@@ -610,6 +611,10 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	protected InputMultiplexerExceptionSnatcher mInputMultiplexer = null;
 	/** GUI for the scene */
 	protected Gui mGui = null;
+	/** Notification messages */
+	protected NotificationShower mNotification = null;
+	/** The music player */
+	protected MusicPlayer mMusicPlayer = MusicPlayer.getInstance();
 
 	/** If the current scene is loading */
 	private boolean mLoading = false;
@@ -627,8 +632,6 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	private Scene mNextScene = null;
 	/** If the scene has been initialized */
 	private boolean mInitialized = false;
-	/** Notification messages */
-	protected NotificationShower mNotification = null;
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */

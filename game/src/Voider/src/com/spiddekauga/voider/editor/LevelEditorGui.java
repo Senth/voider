@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
@@ -37,6 +38,7 @@ import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
+import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
@@ -56,6 +58,7 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -109,6 +112,8 @@ class LevelEditorGui extends EditorGui {
 		resetTools();
 		resetImage();
 		resetColor();
+		resetTheme();
+		resetMusic();
 	}
 
 	/**
@@ -730,6 +735,18 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
+		// Music
+		mUiFactory.text.addSection("Music", left, null);
+		left.row();
+		SelectBoxListener<Music> selectBoxListener = new SelectBoxListener<Music>(mInvoker) {
+			@Override
+			protected void onSelectionChanged(int itemIndex) {
+				Music music = mSelectBox.getSelected();
+				mLevelEditor.setMusic(music);
+			}
+		};
+		mWidgets.info.music = mUiFactory.addSelectBox("Music", Music.getLevelThemes(), selectBoxListener, left, null, null);
+
 		// Speed
 		mUiFactory.text.addSection("Level Speed", left, null);
 		SliderListener sliderListener = new SliderListener(mInvoker) {
@@ -809,6 +826,15 @@ class LevelEditorGui extends EditorGui {
 		Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
 		button.addLayer(bottomLayer);
 		button.addLayer(topLayer);
+	}
+
+	/**
+	 * Update music selection
+	 */
+	void resetMusic() {
+		SelectBox<Music> selectBox = mWidgets.info.music;
+		Music music = mLevelEditor.getMusic();
+		selectBox.setSelected(music);
 	}
 
 	/**
@@ -1283,6 +1309,7 @@ class LevelEditorGui extends EditorGui {
 			TextField epilogue = null;
 			Image image = null;
 			ImageScrollButton theme = null;
+			SelectBox<Music> music = null;
 		}
 
 		class PathOptionWidgets implements Disposable {

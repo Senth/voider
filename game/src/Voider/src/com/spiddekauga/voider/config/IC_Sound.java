@@ -7,7 +7,7 @@ import com.spiddekauga.utils.IniClass;
 
 /**
  * Sound/Music configuration values
- * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("javadoc")
 public class IC_Sound extends IniClass {

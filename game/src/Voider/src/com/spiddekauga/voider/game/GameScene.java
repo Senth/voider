@@ -42,9 +42,12 @@ import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.sound.Interpolations;
+import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.User;
 
@@ -291,6 +294,9 @@ public class GameScene extends WorldScene {
 				}
 			}
 
+			// Play music
+			mMusicPlayer.play(mLevel.getLevelDef().getMusic(), Interpolations.CROSSFADE);
+
 			createPlayerShip();
 			createMouseJoint();
 			mGui.resetValues();
@@ -399,6 +405,7 @@ public class GameScene extends WorldScene {
 	private void checkCompletedLevel() {
 		if (mLevel.isCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
+			mMusicPlayer.play(Music.LEVEL_COMPLETED, Interpolations.FADE_OUT);
 		}
 	}
 
@@ -413,6 +420,7 @@ public class GameScene extends WorldScene {
 				updateLives();
 			} else {
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
+				mMusicPlayer.play(Music.GAME_OVER, Interpolations.CROSSFADE);
 			}
 		}
 	}
@@ -557,6 +565,7 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.UI_GAME);
 		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
+		ResourceCacheFacade.load(InternalDeps.GAME_MUSIC);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
 		if (mTesting) {
 			ResourceCacheFacade.load(InternalNames.UI_EDITOR);
@@ -581,6 +590,7 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.UI_GAME);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
+		ResourceCacheFacade.unload(InternalDeps.GAME_MUSIC);
 
 		if (mTesting) {
 			ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
@@ -673,7 +683,7 @@ public class GameScene extends WorldScene {
 			}
 		}
 
-		return false;
+		return super.onKeyDown(keycode);
 	}
 
 	/**
