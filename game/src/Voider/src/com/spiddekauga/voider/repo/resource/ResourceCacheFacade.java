@@ -304,12 +304,16 @@ public class ResourceCacheFacade {
 	 * Get an internal resource of the specified type
 	 * @param <ResourceType> the type to be returned
 	 * @param resource the resource to return
-	 * @return the actual resource
+	 * @return the actual resource, null if not loaded
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ResourceType> ResourceType get(InternalNames resource) {
-		String fullPath = resource.getFilePath();
-		return (ResourceType) mAssetManager.get(fullPath, resource.type);
+		if (isLoaded(resource)) {
+			String fullPath = resource.getFilePath();
+			return (ResourceType) mAssetManager.get(fullPath, resource.type);
+		} else {
+			return null;
+		}
 	}
 
 	/**

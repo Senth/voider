@@ -1,5 +1,9 @@
 package com.spiddekauga.voider.sound;
 
+import com.badlogic.gdx.Gdx;
+import com.spiddekauga.voider.repo.misc.SettingLocalRepo;
+import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SoundSettingLocalRepo;
+
 /**
  * Singleton class for playing music.
  * @note This class doesn't load the music, this must be done by the appropriate scene. If
@@ -17,7 +21,7 @@ public class MusicPlayer {
 	/**
 	 * @return instance of this class
 	 */
-	public MusicPlayer getInstance() {
+	public static MusicPlayer getInstance() {
 		if (mInstance == null) {
 			mInstance = new MusicPlayer();
 		}
@@ -35,11 +39,15 @@ public class MusicPlayer {
 
 	/**
 	 * Starts to play this track with the specified interpolation
-	 * @param music the music to start to play, if null it will stop the music
+	 * @param music the music to start to play. If null it will stop the music. If same
+	 *        music piece as current nothing will happen.
 	 * @param interpolation type of interpolation
 	 */
 	public void play(Music music, Interpolations interpolation) {
-		// TODO Get next music piece
+		if (music != mCurrent && mNext == null) {
+			mNext = music;
+			mInterpolation = interpolation;
+		}
 	}
 
 	/**
@@ -70,25 +78,27 @@ public class MusicPlayer {
 	private void interpolate() {
 		if (mInterpolation != null) {
 			IInterpolationMethod method = mInterpolation.getMethod();
-			// TODO Get volume
-			boolean done = method.interpolate(mCurrent, mNext, 0.5f);
+			float volume = mSoundRepo.getMusicVolumeOut();
+			com.badlogic.gdx.audio.Music currentTrack = mCurrent != null ? mCurrent.getTrack() : null;
+			com.badlogic.gdx.audio.Music nextTrack = mNext != null ? mNext.getTrack() : null;
 
+			boolean done = method.interpolate(currentTrack, nextTrack, volume);
+
+			// Set next as current
 			if (done) {
 				mInterpolation = null;
-
-				// TODO unload current piece?
-
-				// Set next as current
 				mCurrent = mNext;
 				mNext = null;
+				Gdx.app.debug("MusicPlayer", "Interpolation done");
 			}
 		}
 	}
 
 	/** Current interpolation */
 	private Interpolations mInterpolation = null;
-	private com.badlogic.gdx.audio.Music mCurrent = null;
-	private com.badlogic.gdx.audio.Music mNext = null;
+	private Music mCurrent = null;
+	private Music mNext = null;
+	private SoundSettingLocalRepo mSoundRepo = SettingLocalRepo.getInstance().sound;
 
 	private static MusicPlayer mInstance = null;
 }

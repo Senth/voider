@@ -15,7 +15,7 @@ public class SettingLocalRepo {
 	/**
 	 * @return instance of this class
 	 */
-	public SettingLocalRepo getInstance() {
+	public static SettingLocalRepo getInstance() {
 		if (mInstance == null) {
 			mInstance = new SettingLocalRepo();
 		}

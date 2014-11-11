@@ -12,13 +12,22 @@ import com.spiddekauga.voider.config.IC_Sound.IC_Music;
 public enum Interpolations {
 	/** No interpolation */
 	NONE,
-	/** Fade in. If music is playing it will stop the music and fade in this. @see CROSSFADE */
+	/**
+	 * Fade in. If music is playing it will stop the music and fade in this. @see
+	 * CROSSFADE
+	 */
 	FADE_IN,
 	/** Fades out the currently playing music. Usually used together with stop. */
 	FADE_OUT,
-	/** Fades out the currently playing music/sound while fading in the new. @see FADE_OUT_FADE_IN */
+	/**
+	 * Fades out the currently playing music/sound while fading in the new. @see
+	 * FADE_OUT_FADE_IN
+	 */
 	CROSSFADE,
-	/** First fades out the currently playing music entirely and then fades in the new music @see CROSSFADE */
+	/**
+	 * First fades out the currently playing music entirely and then fades in the new
+	 * music @see CROSSFADE
+	 */
 	FADE_OUT_FADE_IN,
 
 	;
@@ -44,6 +53,7 @@ public enum Interpolations {
 				}
 
 				if (next != null && !next.isPlaying()) {
+					next.setLooping(true);
 					next.play();
 				}
 
@@ -65,6 +75,7 @@ public enum Interpolations {
 					// Start at 0 volume
 					if (!next.isPlaying()) {
 						next.setVolume(0);
+						next.setLooping(true);
 						next.play();
 					}
 					// Continue to fade in
@@ -101,6 +112,7 @@ public enum Interpolations {
 				// Next - Start playing
 				if (next != null && (current == null || !current.isPlaying())) {
 					next.setVolume(maxVolume);
+					next.setLooping(true);
 					next.play();
 				}
 
@@ -134,6 +146,7 @@ public enum Interpolations {
 					// Start playing
 					if (!next.isPlaying()) {
 						next.setVolume(0);
+						next.setLooping(true);
 						next.play();
 					}
 					// Continue to fade in
@@ -171,6 +184,7 @@ public enum Interpolations {
 					// Start playing
 					if (!next.isPlaying()) {
 						next.setVolume(0);
+						next.setLooping(true);
 						next.play();
 					}
 					// Continue to fade in
@@ -212,7 +226,7 @@ public enum Interpolations {
 	private static float getInterpolationValue(float maxVolume) {
 		IC_Music icMusic = ConfigIni.getInstance().sound.music;
 
-		float value = maxVolume * icMusic.getFadeTime() * Gdx.graphics.getDeltaTime();
+		float value = maxVolume / icMusic.getFadeTime() * Gdx.graphics.getDeltaTime();
 		return value;
 	}
 }

@@ -18,6 +18,7 @@ import com.spiddekauga.voider.repo.resource.ResourceChecker;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.MessageGateway;
+import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Synchronizer;
 
 /**
@@ -88,6 +89,7 @@ public class VoiderGame implements ApplicationListener {
 
 		try {
 			SceneSwitcher.update();
+			mMusicPlayer.update();
 		} catch (RuntimeException e) {
 			// Print where in the serialization it failed
 			if (Gdx.app.getType() == ApplicationType.Desktop && Config.Debug.isBuildOrAbove(Builds.NIGHTLY_DEV)) {
@@ -130,6 +132,8 @@ public class VoiderGame implements ApplicationListener {
 	@Override
 	public void resume() {
 	}
+
+	private MusicPlayer mMusicPlayer = MusicPlayer.getInstance();
 
 	/** Main thread id */
 	private static long mMainThreadId = 0;

@@ -30,6 +30,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
 import com.spiddekauga.voider.repo.user.UserWebRepo;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
@@ -58,6 +59,8 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	@Override
 	protected void loadResources() {
 		super.loadResources();
+		ResourceCacheFacade.load(InternalNames.MUSIC_TITLE);
+		ResourceCacheFacade.load(InternalDeps.GAME_MUSIC);
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
@@ -67,6 +70,8 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.MUSIC_TITLE);
+		ResourceCacheFacade.unload(InternalDeps.GAME_MUSIC);
 	}
 
 	@Override
@@ -177,6 +182,9 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 			} else if (keycode == Input.Keys.F6) {
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 				mNotification.show(message);
+			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
+			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
+			} else if (keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F10) {
 				mGui.showConflictWindow();
 			} else if (keycode == Input.Keys.F11) {

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input.Keys;
 
 /**
  * Helper functions for keys
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class KeyHelper {
@@ -28,11 +27,11 @@ public class KeyHelper {
 	}
 
 	/**
-	 * Checks if an undo button has been pressed. As of now this will
-	 * return true if Ctrl+Z.
+	 * Checks if an undo button has been pressed. As of now this will return true if
+	 * Ctrl+Z.
 	 * @param keycode the key to check
 	 * @return true if the undo key has been pressed, will return false if isRedoPressed()
-	 * returns true
+	 *         returns true
 	 */
 	public static boolean isUndoPressed(int keycode) {
 		// Undo - Ctrl + Z
@@ -46,8 +45,8 @@ public class KeyHelper {
 	}
 
 	/**
-	 * Checks if the redo button has bene pressed. As of now it will
-	 * return true if Ctrl+Shift+Z or Ctrl+Y.
+	 * Checks if the redo button has bene pressed. As of now it will return true if
+	 * Ctrl+Shift+Z or Ctrl+Y.
 	 * @param keycode the key to check
 	 * @return true if the redo key has been pressed
 	 */
@@ -73,6 +72,13 @@ public class KeyHelper {
 	 */
 	public static boolean isShiftPressed() {
 		return Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT);
+	}
+
+	/**
+	 * @return true if any alt key is pressed
+	 */
+	public static boolean isAltPressed() {
+		return Gdx.input.isKeyPressed(Keys.ALT_LEFT) || Gdx.input.isKeyPressed(Keys.ALT_RIGHT);
 	}
 
 	/**
