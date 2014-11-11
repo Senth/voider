@@ -23,6 +23,9 @@ public class IC_Editor extends IniClass {
 	public IC_Enemy enemy;
 	public IC_Ship ship;
 
+	/**
+	 * Common Actor Editor values
+	 */
 	public class IC_Actor extends IniClass {
 		public IC_Visual visual;
 		public IC_Collision collision;
@@ -244,6 +247,9 @@ public class IC_Editor extends IniClass {
 			}
 		}
 
+		/**
+		 * Collision options
+		 */
 		public class IC_Collision extends IniClass {
 			protected float damageMin;
 			protected float damageMax;
@@ -333,6 +339,9 @@ public class IC_Editor extends IniClass {
 		}
 	}
 
+	/**
+	 * Bullet Editor values
+	 */
 	public class IC_Bullet extends IniClass {
 		public IC_Visual visual;
 
@@ -352,6 +361,9 @@ public class IC_Editor extends IniClass {
 
 	}
 
+	/**
+	 * Enemy Editor values
+	 */
 	public class IC_Enemy extends IniClass {
 		public IC_Visual visual;
 		public IC_Movement movement;
@@ -530,6 +542,9 @@ public class IC_Editor extends IniClass {
 		}
 	}
 
+	/**
+	 * Ship Editor values
+	 */
 	public class IC_Ship extends IniClass {
 		public IC_Visual visual;
 		public IC_Settings settings;

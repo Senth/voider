@@ -6,13 +6,16 @@ import org.ini4j.Profile.Section;
 import com.spiddekauga.utils.IniClass;
 
 /**
- * Sound/Music settings
+ * Sound/Music configuration values
  * @author Matteus Magnusson <matteus.magnusso@spiddekauga.com>
  */
 @SuppressWarnings("javadoc")
 public class IC_Sound extends IniClass {
 	public IC_Music music;
 
+	/**
+	 * Internal music configuration values
+	 */
 	public class IC_Music extends IniClass {
 		protected float fadeTime;
 
