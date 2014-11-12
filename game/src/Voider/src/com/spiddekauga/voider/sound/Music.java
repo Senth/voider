@@ -27,6 +27,11 @@ public enum Music {
 
 	;
 
+	@Override
+	public String toString() {
+		return name().charAt(0) + name().substring(1).toLowerCase();
+	}
+
 	/**
 	 * Sets the internal resource this music uses
 	 * @param internalName the internal resource this music uses

@@ -44,7 +44,7 @@ public abstract class ButtonListener implements EventListener {
 					lastChecked.set(button.isChecked());
 
 					onChecked(button, button.isChecked());
-					if (button.isChecked()) {
+					if (button.getStyle().checked == null || button.isChecked()) {
 						onPressed(button);
 					}
 				}

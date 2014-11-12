@@ -30,6 +30,12 @@ public enum InternalDeps {
 	GAME_MUSIC(InternalNames.MUSIC_GAME_OVER, InternalNames.MUSIC_LEVEL_COMPLETED),
 	/** Easy access to all game sound effects that will be loaded */
 	GAME_SFX,
+	/** Easy load/unload access to all music themes */
+	MUSIC_LEVEL_THEMES(InternalNames.MUSIC_SPACE, InternalNames.MUSIC_SURFACE, InternalNames.MUSIC_TUNNELS, InternalNames.MUSIC_CORE),
+	/** Easy load/unload access to all background themes */
+	THEME_ALL(InternalNames.LEVEL_THEME_CORE_BOTTOM, InternalNames.LEVEL_THEME_CORE_TOP, InternalNames.LEVEL_THEME_SPACE_BOTTOM,
+			InternalNames.LEVEL_THEME_SPACE_TOP, InternalNames.LEVEL_THEME_SURFACE_BOTTOM, InternalNames.LEVEL_THEME_SURFACE_TOP,
+			InternalNames.LEVEL_THEME_TUNNELS_BOTTOM, InternalNames.LEVEL_THEME_TUNNELS_TOP),
 
 
 	;

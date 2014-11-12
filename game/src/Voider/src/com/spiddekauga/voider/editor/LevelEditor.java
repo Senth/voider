@@ -74,6 +74,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
@@ -367,22 +368,16 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PICKUP_DEF, true);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 
-		// Load all themes
-		for (Themes theme : Themes.values()) {
-			ResourceCacheFacade.load(theme.getTopLayer());
-			ResourceCacheFacade.load(theme.getBottomLayer());
-		}
+		ResourceCacheFacade.load(InternalDeps.MUSIC_LEVEL_THEMES);
+		ResourceCacheFacade.load(InternalDeps.THEME_ALL);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 
-		// Unload all themes
-		for (Themes theme : Themes.values()) {
-			ResourceCacheFacade.unload(theme.getTopLayer());
-			ResourceCacheFacade.unload(theme.getBottomLayer());
-		}
+		ResourceCacheFacade.unload(InternalDeps.MUSIC_LEVEL_THEMES);
+		ResourceCacheFacade.unload(InternalDeps.THEME_ALL);
 	}
 
 	@Override

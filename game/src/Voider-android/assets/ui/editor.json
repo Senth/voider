@@ -755,5 +755,19 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: youtube_down,
 		imageDisabled: youtube_disabled
 	},
+	
+	music_play: {
+		imageUp: music_play,
+		imageOver: music_play_over,
+		imageDown: music_play_down,
+		imageDisabled: music_play_disabled
+	},
+	
+	music_stop: {
+		imageUp: music_stop,
+		imageOver: music_stop_over,
+		imageDown: music_stop_down,
+		imageDisabled: music_stop_disabled
+	},
 }
 }

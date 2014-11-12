@@ -123,6 +123,10 @@ public class SkinNames {
 		MOVEMENT_PATH,
 		/** Stationary enemy */
 		MOVEMENT_STATIONARY,
+		/** Play music in level editor */
+		MUSIC_PLAY,
+		/** Stop music in level editor */
+		MUSIC_STOP,
 		/** Creates a new resource */
 		NEW,
 		/** Turn something off (e.g. enemy weapons or turn movement) */

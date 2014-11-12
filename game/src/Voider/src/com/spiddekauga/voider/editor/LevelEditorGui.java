@@ -58,7 +58,9 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.spiddekauga.voider.sound.Interpolations;
 import com.spiddekauga.voider.sound.Music;
+import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -736,7 +738,6 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Music
-		mUiFactory.text.addSection("Music", left, null);
 		left.row();
 		SelectBoxListener<Music> selectBoxListener = new SelectBoxListener<Music>(mInvoker) {
 			@Override
@@ -746,6 +747,30 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mWidgets.info.music = mUiFactory.addSelectBox("Music", Music.getLevelThemes(), selectBoxListener, left, null, null);
+
+		// Music - Play/Stop
+		float musicPadding = mUiFactory.getStyles().vars.paddingOuter;
+		Cell musicCell = left.getCell();
+		Button playButton = mUiFactory.addImageButton(SkinNames.EditorIcons.MUSIC_PLAY, left, null, null);
+		left.getCell().setPadLeft(musicPadding).setPadRight(musicPadding);
+		Button stopButton = mUiFactory.addImageButton(SkinNames.EditorIcons.MUSIC_STOP, left, null, null);
+		new ButtonListener(playButton) {
+			@Override
+			protected void onPressed(Button button) {
+				MusicPlayer.getInstance().play(mWidgets.info.music.getSelected(), Interpolations.CROSSFADE);
+			}
+		};
+		new ButtonListener(stopButton) {
+			@Override
+			protected void onPressed(Button button) {
+				MusicPlayer.getInstance().stop(Interpolations.FADE_OUT);
+			}
+		};
+
+
+		// Decrease selection box with the button width + padding
+		float decreaseWidth = (playButton.getWidth() + musicPadding) * 2;
+		musicCell.setWidth(musicCell.getWidth() - decreaseWidth);
 
 		// Speed
 		mUiFactory.text.addSection("Level Speed", left, null);

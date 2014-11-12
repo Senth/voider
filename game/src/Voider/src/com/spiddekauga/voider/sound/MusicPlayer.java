@@ -39,8 +39,8 @@ public class MusicPlayer {
 
 	/**
 	 * Starts to play this track with the specified interpolation
-	 * @param music the music to start to play. If null it will stop the music. If same
-	 *        music piece as current nothing will happen.
+	 * @param music the music to start to play. If same music piece as current or if null
+	 *        is passed nothing will happen.
 	 * @param interpolation type of interpolation
 	 */
 	public void play(Music music, Interpolations interpolation) {
@@ -65,7 +65,7 @@ public class MusicPlayer {
 	 * Stops / Pauses the current playing music
 	 */
 	public void stop() {
-		play(null, Interpolations.NONE);
+		stop(Interpolations.NONE);
 	}
 
 	/**
@@ -73,9 +73,17 @@ public class MusicPlayer {
 	 * @param interpolation the interpolation to use for stopping the music
 	 */
 	public void stop(Interpolations interpolation) {
+		if (mNext != null) {
+			if (mCurrent != null && mCurrent.getTrack() != null) {
+				mCurrent.getTrack().stop();
+			}
+			mCurrent = mNext;
+			mNext = null;
+		}
+
 		if (mCurrent != null) {
 			mPaused = mCurrent;
-			play(null, interpolation);
+			mInterpolation = interpolation;
 		}
 	}
 
