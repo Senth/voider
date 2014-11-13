@@ -67,6 +67,7 @@ public class UiStyles {
 		public float textFieldWidth = 0;
 		public float textButtonHeight = 0;
 		public float textButtonWidth = 0;
+		public float paddingParagraph = 0;
 		public float rightPanelWidth = 0;
 	}
 
@@ -99,6 +100,8 @@ public class UiStyles {
 		HIGHLIGHT,
 		SUCCESS,
 		TOOLTIP,
+		/** Names of the resources that will be publish */
+		PUBLISH_NAME,
 		/** Larger text */
 		HEADER,
 		/** Default text style for text fields */
@@ -257,6 +260,7 @@ public class UiStyles {
 		vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		vars.paddingExplore = SkinNames.getResource(SkinNames.GeneralVars.PADDING_EXPLORE);
 		vars.paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
+		vars.paddingParagraph = SkinNames.getResource(SkinNames.GeneralVars.PADDING_PARAGRAPH);
 		vars.paddingTransparentTextButton = SkinNames.getResource(SkinNames.GeneralVars.PADDING_TRANSPARENT_TEXT_BUTTON);
 		vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
@@ -280,6 +284,7 @@ public class UiStyles {
 		LabelStyles.HEADER.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER));
 		LabelStyles.TEXT_FIELD_DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TEXT_FIELD_DEFAULT));
 		LabelStyles.SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
+		LabelStyles.PUBLISH_NAME.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PUBLISH_NAME));
 
 
 		// Button styles

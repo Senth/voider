@@ -202,6 +202,8 @@ public abstract class Gui implements Disposable {
 	 * Updates the GUI
 	 */
 	public void update() {
+		mNotification.pushToFront();
+
 		// Remove active message box if it has been hidden
 		if (!mActiveMsgBoxes.isEmpty() && !isWaitOrProgressShowing()) {
 			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.peek();

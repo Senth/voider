@@ -153,7 +153,7 @@ public class NotificationShower {
 	/**
 	 * Push message to the front of the UI
 	 */
-	private void pushToFront() {
+	public void pushToFront() {
 		mOuterTable.setZIndex(Integer.MAX_VALUE);
 	}
 

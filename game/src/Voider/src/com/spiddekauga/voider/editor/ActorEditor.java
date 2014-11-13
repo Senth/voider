@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -619,11 +618,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 
 		return null;
-	}
-
-	@Override
-	public ArrayList<Def> getNonPublishedDependencies() {
-		return ResourceRepo.getNonPublishedDependencies(mActorDef);
 	}
 
 	@Override

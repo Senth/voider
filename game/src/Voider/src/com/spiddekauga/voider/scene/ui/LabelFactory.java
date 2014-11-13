@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
-import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.GuiHider;
+import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
 /**
@@ -76,11 +77,12 @@ public class LabelFactory {
 	/**
 	 * Create an error label.
 	 * @param labelText text to display before the error
-	 * @param labelIsSection set to true if the label is a section (different styles are used for true/false).
+	 * @param labelIsSection set to true if the label is a section (different styles are
+	 *        used for true/false).
 	 * @param table the table to add the error text to
 	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @return created error label. Can also be accessed via {@link #getLastCreatedErrorLabel()} directly after calling
-	 *         this method.
+	 * @return created error label. Can also be accessed via
+	 *         {@link #getLastCreatedErrorLabel()} directly after calling this method.
 	 */
 	public Label addError(String labelText, boolean labelIsSection, AlignTable table, ArrayList<Actor> createdActors) {
 		AlignTable wrapTable = new AlignTable();
@@ -169,6 +171,15 @@ public class LabelFactory {
 	 */
 	public Label add(String text, boolean wrap, AlignTable table) {
 		return add(text, wrap, table, LabelStyles.DEFAULT);
+	}
+
+	/**
+	 * Add a new paragraph, i.e. new row with correct top padding.
+	 * @param table the table to add the paragraph to
+	 * @return the added row
+	 */
+	public Row addParagraphRow(AlignTable table) {
+		return table.row().setPadTop(mStyles.vars.paddingParagraph);
 	}
 
 	/**

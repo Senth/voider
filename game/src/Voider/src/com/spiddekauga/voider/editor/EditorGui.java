@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
@@ -624,41 +623,58 @@ public abstract class EditorGui extends Gui {
 		msgBox.setTitle("Publish");
 
 		AlignTable content = new AlignTable();
-		Label label = mUiFactory.text.create("", LabelStyles.HIGHLIGHT);
-
+		content.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		float width = Gdx.graphics.getWidth() * 0.5f;
+		float imagePad = mUiFactory.getStyles().vars.paddingSeparator;
 
-		label.setWrap(true);
+		// Publish text
+		Label label = mUiFactory.text.add("You are about to publish your " + getResourceTypeName() + " '" + mEditor.getName() + "' online.", true,
+				content, LabelStyles.HIGHLIGHT);
 		label.setAlignment(Align.center);
-		label.setText("You are about to publish this " + getResourceTypeName() + " online. "
-				+ "This is irreversible! In addition all dependencies below will be publish.\n\n"
-				+ "Once published these cannot be changed or removed; they can however be "
-				+ "duplicated to allow you to continue on a next version.");
-		content.add(label).setWidth(width);
+		content.getCell().setWidth(width);
 
-		// Add external dependencies
-		content.row();
+		// Irreversible text
+		mUiFactory.text.addParagraphRow(content);
+		label = mUiFactory.text.add("This is irreversible and once publish the assets cannot be edited or removed.", content, LabelStyles.ERROR);
+		label.setAlignment(Align.center);
+
+		// More info
+		mUiFactory.text.addParagraphRow(content);
+		label = mUiFactory.text.add("All dependencies will also be published. Below is a list of everything that will be published.", true, content);
+		label.setAlignment(Align.center);
+		content.getCell().setWidth(width);
+
+
+		// Add all resources that will be published
+		mUiFactory.text.addParagraphRow(content);
 		AlignTable depTable = new AlignTable();
-		depTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		ArrayList<Def> dependencies = mEditor.getNonPublishedDependencies();
+		depTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		depTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
+		ArrayList<Def> dependencies = mEditor.getNonPublishedDependencies();
 		for (Def dependency : dependencies) {
-			depTable.row();
+			mUiFactory.text.addParagraphRow(depTable).setPadLeft(mUiFactory.getStyles().vars.paddingInner);
 
 			// Add image
 			if (dependency instanceof IResourceTexture) {
 				Image image = new Image(((IResourceTexture) dependency).getTextureRegionDrawable());
-				depTable.add(image).setSize(50, 50).setPadRight(mUiFactory.getStyles().vars.paddingInner);
+				depTable.add(image).setHeight(100).setKeepAspectRatio(true);
 			} else {
-				depTable.add().setPadRight(50 + mUiFactory.getStyles().vars.paddingInner);
+				depTable.add().setPadRight(100);
 			}
 
 			// Add name
-			label = mUiFactory.text.create(dependency.getName());
-			depTable.add(label);
+			mUiFactory.text.add(mEditor.getName(), depTable, LabelStyles.PUBLISH_NAME);
+			depTable.getCell().setPadLeft(imagePad);
 		}
 
-		ScrollPane scrollPane = new ScrollPane(depTable, (ScrollPaneStyle) SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND));
+		// Remove padding from first row
+		if (depTable.getRowCount() > 0) {
+			depTable.getRows().get(0).setPadTop(0);
+		}
+
+
+		ScrollPane scrollPane = new ScrollPane(depTable, mUiFactory.getStyles().scrollPane.windowBackground);
 		scrollPane.setTouchable(Touchable.enabled);
 		content.setTouchable(Touchable.childrenOnly);
 		content.add(scrollPane).setSize(width, Gdx.graphics.getHeight() * 0.4f);

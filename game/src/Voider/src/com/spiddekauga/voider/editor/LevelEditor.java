@@ -851,14 +851,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public ArrayList<Def> getNonPublishedDependencies() {
-		if (mLevel != null && mLevel.getDef() != null) {
-			return ResourceRepo.getNonPublishedDependencies(mLevel.getDef());
-		}
-		return null;
-	}
-
-	@Override
 	public void publishDef() {
 		if (mLevel != null) {
 			mGui.showProgressBar("Uploading...");

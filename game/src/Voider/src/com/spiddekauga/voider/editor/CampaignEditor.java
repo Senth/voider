@@ -1,9 +1,6 @@
 package com.spiddekauga.voider.editor;
 
-import java.util.ArrayList;
-
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
@@ -73,12 +70,6 @@ public class CampaignEditor extends Editor {
 		super.onActivate(outcome, message, loadingOutcome);
 
 		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public ArrayList<Def> getNonPublishedDependencies() {
-		// TODO Auto-generated method stub
-		return ResourceRepo.getNonPublishedDependencies(null);
 	}
 
 	@Override

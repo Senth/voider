@@ -73,6 +73,8 @@ java.lang.Float: {
 	// Transparent button padding (so text doesn't touch the borders)
 	// This is padding on all sides
 	padding_transparent_text_button: {value: 2},
+	// Top padding on a new paragraph
+	padding_paragraph: padding_inner,
 	
 	
 	/** Padding - Explore/Load */
@@ -106,6 +108,7 @@ java.lang.Float: {
 	text_button_height: {value: 40},
 	// Default text button width
 	text_button_width: {value: 120},
+	
 	
 	/** Notifications */
 	
@@ -207,6 +210,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	tooltip: {
 		font: default_font,
 		fontColor: grey_dark,
+	},
+	
+	// Label for the publish names 
+	publish_name: {
+		font: default_font,
+		fontColor: grey,
 	},
 	
 	

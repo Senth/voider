@@ -40,6 +40,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
@@ -563,6 +564,23 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 		// Set position
 		mSavingActor.setPosition(offset);
+	}
+
+	@Override
+	public final ArrayList<Def> getNonPublishedDependencies() {
+		Def def = getDef();
+		if (def != null) {
+			ArrayList<Def> resources = ResourceRepo.getNonPublishedDependencies(def);
+
+			// Add itself first
+			if (resources != null) {
+				resources.add(0, def);
+			}
+
+			return resources;
+		} else {
+			return new ArrayList<>();
+		}
 	}
 
 	/**

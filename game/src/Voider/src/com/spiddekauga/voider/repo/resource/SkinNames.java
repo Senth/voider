@@ -564,6 +564,8 @@ public class SkinNames {
 		 * on all sides
 		 */
 		PADDING_TRANSPARENT_TEXT_BUTTON(Float.class),
+		/** Top padding on a new paragraph row */
+		PADDING_PARAGRAPH(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/**
@@ -800,6 +802,8 @@ public class SkinNames {
 		LABEL_COMMENT_DATE(LabelStyle.class, "comment_date"),
 		/** A Comment */
 		LABEL_COMMENT(LabelStyle.class, "comment"),
+		/** Grey light label */
+		LABEL_PUBLISH_NAME(LabelStyle.class, "publish_name"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

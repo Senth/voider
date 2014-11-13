@@ -991,11 +991,11 @@ class LevelEditorGui extends EditorGui {
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
-		mWidgets.enemyAdd.scrollTable.setHasPreferredWidth(false).setHasPreferredHeight(false);
+		// mWidgets.enemyAdd.scrollTable.setHasPreferredWidth(false).setHasPreferredHeight(false);
 		mWidgets.enemyAdd.scrollTable.setName("scroll-table");
 		mWidgets.enemyAdd.scrollTable.setBackgroundImage(new Background(mUiFactory.getStyles().color.widgetInnerBackground));
 		AlignTable table = mWidgets.enemyAdd.table;
-		table.row().setFillHeight(true);
+
 
 		// Hiders
 		mWidgets.enemyAdd.hiderTab.setButton(mWidgets.tool.enemyAdd);
@@ -1003,10 +1003,11 @@ class LevelEditorGui extends EditorGui {
 		Button button;
 
 		// Scroll pane
+		table.row().setFillHeight(true);
 		mWidgets.enemyAdd.scrollTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		ScrollPane scrollPane = new ScrollPane(mWidgets.enemyAdd.scrollTable, mUiFactory.getStyles().scrollPane.noBackground);
 		mWidgets.enemyAdd.scrollPane = scrollPane;
-		table.add(scrollPane).setWidth(getInnerRightPanelWidth()).setFixedHeight(true);
+		table.add(scrollPane).setWidth(getInnerRightPanelWidth()).setFillHeight(true);
 
 		// Add enemy button
 		table.row().setAlign(Horizontal.RIGHT).setPadTop(mUiFactory.getStyles().vars.paddingInner);
