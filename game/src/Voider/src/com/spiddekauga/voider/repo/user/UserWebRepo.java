@@ -12,6 +12,7 @@ import com.spiddekauga.voider.network.entities.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
+import com.spiddekauga.voider.utils.User;
 
 
 /**
@@ -38,53 +39,36 @@ public class UserWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Tries to login the user
-	 * @param responseListener listens to the web response
-	 * @param username
-	 * @param password
+	 * Tries to login the user either with password or private key if it exists
+	 * @param user the user to try to login.
 	 * @param clientId unique client id
+	 * @param responseListeners listens to the web response
 	 */
-	public void login(IResponseListener responseListener, String username, String password, UUID clientId) {
+	public void login(User user, UUID clientId, IResponseListener... responseListeners) {
 		LoginMethod loginMethod = new LoginMethod();
-		loginMethod.password = password;
-		loginMethod.username = username;
 		loginMethod.clientId = clientId;
+		loginMethod.username = user.getUsername();
+		loginMethod.password = user.getPassword();
+		loginMethod.privateKey = user.getPrivateKey();
 
-		sendInNewThread(loginMethod, responseListener);
-	}
-
-	/**
-	 * Tries to login the user
-	 * @param responseListener listens to the web response
-	 * @param username
-	 * @param privateKey Uses the private key to login instead of a password
-	 * @param clientId unique client id
-	 */
-	public void login(IResponseListener responseListener, String username, UUID privateKey, UUID clientId) {
-		LoginMethod loginMethod = new LoginMethod();
-		loginMethod.privateKey = privateKey;
-		loginMethod.username = username;
-		loginMethod.clientId = clientId;
-
-		sendInNewThread(loginMethod, responseListener);
+		sendInNewThread(loginMethod, responseListeners);
 	}
 
 	/**
 	 * Tries to create a new user
-	 * @param responseListener listens to the web response
-	 * @param username
-	 * @param password
-	 * @param email
+	 * @param user all necessary user information. Needs username, password and email to
+	 *        continue.
 	 * @param clientId unique client id
+	 * @param responseListeners listens to the web response
 	 */
-	public void register(IResponseListener responseListener, String username, String password, String email, UUID clientId) {
+	public void register(User user, UUID clientId, IResponseListener... responseListeners) {
 		RegisterUserMethod registerMethod = new RegisterUserMethod();
-		registerMethod.email = email;
-		registerMethod.username = username;
-		registerMethod.password = password;
 		registerMethod.clientId = clientId;
+		registerMethod.email = user.getEmail();
+		registerMethod.username = user.getUsername();
+		registerMethod.password = user.getPassword();
 
-		sendInNewThread(registerMethod, responseListener);
+		sendInNewThread(registerMethod, responseListeners);
 	}
 
 	/**

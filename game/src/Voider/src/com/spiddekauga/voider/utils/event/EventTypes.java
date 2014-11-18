@@ -9,8 +9,14 @@ public enum EventTypes {
 	// --- USER ---
 	/** User logged in */
 	USER_LOGIN,
+	/** User gone online */
+	USER_CONNECTED,
+	/** User gone offline */
+	USER_DISCONNECTED,
 	/** User logged out */
 	USER_LOGOUT,
+	/** Failed to login user */
+	USER_LOGIN_FAILED,
 
 	// --- CAMERA ---
 	/** Camera zoom was changed */

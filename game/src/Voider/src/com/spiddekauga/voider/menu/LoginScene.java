@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.sql.SQLiteGdxException;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
@@ -15,7 +13,6 @@ import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
-import com.spiddekauga.voider.repo.user.UserWebRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.sound.Interpolations;
 import com.spiddekauga.voider.sound.Music;
@@ -73,7 +70,7 @@ public class LoginScene extends Scene implements IResponseListener {
 
 		}
 
-		return false;
+		return super.onKeyDown(keycode);
 	}
 
 	/**
@@ -85,7 +82,7 @@ public class LoginScene extends Scene implements IResponseListener {
 		if (userInfo != null && userInfo.isOnline()) {
 			mAutoLogin = true;
 			mLoggingInUser.set(userInfo);
-			mUserWebRepo.login(this, userInfo.getUsername(), userInfo.getPrivateKey(), UserLocalRepo.getClientId());
+			mLoggingInUser.login();
 			mGui.showWaitWindow("Auto logging in as " + userInfo.getUsername());
 		}
 		// Test offline
@@ -158,31 +155,31 @@ public class LoginScene extends Scene implements IResponseListener {
 		mGui.hideWaitWindow();
 	}
 
-	/**
-	 * Login offline (if available and after server response)
-	 * @param response
-	 * @param failMessage the message to cannot login offline
-	 */
-	private void loginOffline(LoginMethodResponse response, String failMessage) {
-		// Login offline if tried to auto-login
-		if (mAutoLogin) {
-			try {
-				mUser.login(mLoggingInUser.getUsername(), mLoggingInUser.getServerKey(), false);
-				setOutcome(Outcomes.LOGGED_IN, response);
-			} catch (GdxRuntimeException e) {
-				// Error with connection
-				if (e.getCause() instanceof SQLiteGdxException) {
-					mNotification.show(NotificationTypes.ERROR, "Another instance with this user is already running");
-				}
-				((LoginGui) mGui).focusUsernameField();
-			}
-		} else {
-			if (failMessage != null && !failMessage.isEmpty()) {
-				mNotification.show(NotificationTypes.ERROR, failMessage);
-			}
-			((LoginGui) mGui).focusUsernameField();
-		}
-	}
+	// /**
+	// * Login offline (if available and after server response)
+	// * @param response
+	// * @param failMessage the message to cannot login offline
+	// */
+	// private void loginOffline(LoginMethodResponse response, String failMessage) {
+	// // Login offline if tried to auto-login
+	// if (mAutoLogin) {
+	// try {
+	// setOutcome(Outcomes.NOT_APPLICAPLE, response);
+	// } catch (GdxRuntimeException e) {
+	// // Error with connection
+	// if (e.getCause() instanceof SQLiteGdxException) {
+	// mNotification.show(NotificationTypes.ERROR,
+	// "Another instance with this user is already running");
+	// }
+	// ((LoginGui) mGui).focusUsernameField();
+	// }
+	// } else {
+	// if (failMessage != null && !failMessage.isEmpty()) {
+	// mNotification.show(NotificationTypes.ERROR, failMessage);
+	// }
+	// ((LoginGui) mGui).focusUsernameField();
+	// }
+	// }
 
 	/**
 	 * Try to login with the specified username and password
@@ -192,7 +189,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	void login(String username, String password) {
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setPassword(password);
-		mUserWebRepo.login(this, username, password, UserLocalRepo.getClientId());
+		mLoggingInUser.login();
 		mGui.showWaitWindow("Logging in");
 	}
 
@@ -214,11 +211,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	void handleRegisterResponse(RegisterUserMethodResponse response) {
 		switch (response.status) {
 		case SUCCESS:
-			mUser.login(mLoggingInUser.getUsername(), response.userKey, true);
-			UserLocalRepo.setLastUser(mLoggingInUser.getUsername(), response.privateKey, response.userKey);
-			UserLocalRepo.setAsRegistered();
 			setOutcome(Outcomes.NOT_APPLICAPLE);
-
 			break;
 
 
@@ -258,7 +251,7 @@ public class LoginScene extends Scene implements IResponseListener {
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setEmail(email);
 		mLoggingInUser.setPassword(password);
-		mUserWebRepo.register(this, username, password, email, UserLocalRepo.getClientId());
+		mLoggingInUser.register(this);
 		mGui.showWaitWindow("Registering...");
 	}
 
@@ -269,10 +262,6 @@ public class LoginScene extends Scene implements IResponseListener {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		// Login
-		if (response instanceof LoginMethodResponse) {
-			handleLoginResopnse((LoginMethodResponse) response);
-		}
 		// Register
 		if (response instanceof RegisterUserMethodResponse) {
 			handleRegisterResponse((RegisterUserMethodResponse) response);
@@ -281,8 +270,6 @@ public class LoginScene extends Scene implements IResponseListener {
 
 	/** Global user */
 	private static final User mUser = User.getGlobalUser();
-	/** User web repository */
-	private UserWebRepo mUserWebRepo = UserWebRepo.getInstance();
 	/** Currently auto-logging in? */
 	private boolean mAutoLogin = false;
 	/** Logging in user */
