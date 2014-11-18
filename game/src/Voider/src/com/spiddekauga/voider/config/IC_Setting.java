@@ -12,6 +12,22 @@ import com.spiddekauga.utils.IniClass;
 @SuppressWarnings("javadoc")
 public class IC_Setting extends IniClass {
 	public IC_Sound sound;
+	public IC_Network network;
+
+	/**
+	 * Default network settings
+	 */
+	public class IC_Network extends IniClass {
+		protected boolean autoConnectByDefault;
+
+		private IC_Network(Ini ini, Section classSection) {
+			super(ini, classSection);
+		}
+
+		public boolean isAutoConnectByDefault() {
+			return autoConnectByDefault;
+		}
+	}
 
 	/**
 	 * Default user sound settings

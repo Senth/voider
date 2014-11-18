@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Setting.IC_Network;
 import com.spiddekauga.voider.config.IC_Setting.IC_Sound;
 
 /**
@@ -17,6 +18,29 @@ class SettingClientPrefsGateway {
 	SettingClientPrefsGateway() {
 		mPreferences = Gdx.app.getPreferences(PREFERENCES_NAME);
 	}
+
+	// -----------------------
+	// Network settings
+	// -----------------------
+	/**
+	 * Set if the client should auto-connect when it goes offline
+	 * @param autoConnect true if the client should auto connect when it goes offline
+	 */
+	void setAutoConnect(boolean autoConnect) {
+		mPreferences.putBoolean(NETWORK__AUTO_CONNECT, autoConnect);
+	}
+
+	/**
+	 * @return true if the client should auto connect when it goes offline
+	 */
+	boolean shouldAutoConnect() {
+		IC_Network network = ConfigIni.getInstance().setting.network;
+		return mPreferences.getBoolean(NETWORK__AUTO_CONNECT, network.isAutoConnectByDefault());
+	}
+
+	// -----------------------
+	// Sound settings
+	// -----------------------
 
 	/**
 	 * Set the master volume
@@ -86,6 +110,8 @@ class SettingClientPrefsGateway {
 	private static final String SOUND__EFFECTS_VOLUME = "sound_effectsVolume";
 	private static final String SOUND__UI_VOLUME = "sound_uiVolume";
 	private static final String SOUND__MUSIC_VOLUME = "sound_musicVolume";
+
+	private static final String NETWORK__AUTO_CONNECT = "network_autoConnect";
 
 	/** Preferences */
 	private Preferences mPreferences;

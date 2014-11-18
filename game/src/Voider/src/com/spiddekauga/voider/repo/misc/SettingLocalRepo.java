@@ -22,6 +22,33 @@ public class SettingLocalRepo {
 		return mInstance;
 	}
 
+	/**
+	 * Local repository for network settings
+	 */
+	public class NetworkSettingLocalRepo {
+		/**
+		 * Hidden constructor
+		 */
+		private NetworkSettingLocalRepo() {
+			// Does nothing
+		}
+
+		/**
+		 * Set if the client should auto-connect when it goes offline
+		 * @param autoConnect true if the client should auto connect when it goes offline
+		 */
+		public void setAutoConnect(boolean autoConnect) {
+			mClientPrefsGateway.setAutoConnect(autoConnect);
+		}
+
+		/**
+		 * @return true if the client should auto connect when it goes offline
+		 */
+		public boolean shouldAutoConnect() {
+			return mClientPrefsGateway.shouldAutoConnect();
+		}
+	}
+
 
 	/**
 	 * Local repository for the sound settings
@@ -121,6 +148,8 @@ public class SettingLocalRepo {
 
 	/** Sound setting repository */
 	public SoundSettingLocalRepo sound = new SoundSettingLocalRepo();
+	/** Network setting repostiory */
+	public NetworkSettingLocalRepo network = new NetworkSettingLocalRepo();
 
 	private SettingClientPrefsGateway mClientPrefsGateway = new SettingClientPrefsGateway();
 
