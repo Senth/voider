@@ -637,6 +637,8 @@ public abstract class Gui implements Disposable {
 	 */
 	public final synchronized void render() {
 		mStage.act(Gdx.graphics.getDeltaTime());
+		mStage.getSpriteBatch().enableBlending();
+		// mStage.getSpriteBatch().setBlendFunction(GL20.GL_ONE, GL20.GL_DST_ALPHA);
 		mStage.draw();
 	}
 

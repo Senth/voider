@@ -41,7 +41,7 @@ com.badlogic.gdx.graphics.Color: {
 	// E.g. enemy list in level editor
 	widget_inner_background_color: grey_dark,
 	// Notification message background color
-	notification_background_color: {r: 1, g: 1, b: 1, a: 0.3},
+	notification_background_color: {r: 0, g: 0, b: 0, a: 0.5},
 },
 
 java.lang.Float: {
