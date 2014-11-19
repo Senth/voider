@@ -364,7 +364,7 @@ public class LoginGui extends Gui {
 	 * @param newVersion new client version
 	 * @param changeLog
 	 */
-	void showUpdateNeeded(String newVersion, String changeLog) {
+	void showUpdateRequired(String newVersion, String changeLog) {
 		String message = Messages.Version.getRequiredUpdate(newVersion);
 		mUiFactory.createUpdateMessageBox(message, changeLog, this);
 	}

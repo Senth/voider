@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.TestUiScene;
@@ -21,7 +20,6 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
@@ -42,6 +40,7 @@ import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 import com.spiddekauga.voider.utils.event.IEventListener;
+import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * Main menu of the scene
@@ -143,26 +142,21 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		if (outcome == Outcomes.LOGGED_IN) {
 			// Synchronize
 			if (mUser.isOnline()) {
-				mNotification.show(NotificationTypes.SUCCESS, mUser.getUsername() + " is now online!");
 				Synchronizer.getInstance().synchronizeAll();
-			} else {
-				mNotification.show(NotificationTypes.HIGHLIGHT, mUser.getUsername() + " is now offline!");
 			}
 
-			if (message instanceof LoginMethodResponse) {
-				LoginMethodResponse response = (LoginMethodResponse) message;
-				switch (response.clientVersionStatus) {
-				case NEW_VERSION_AVAILABLE:
-					((MainMenuGui) mGui).showUpdateAvailable(response.latestClientVersion, response.changeLogMessage);
+			if (message instanceof UpdateEvent) {
+				UpdateEvent event = (UpdateEvent) message;
+				switch (event.type) {
+				case UPDATE_AVAILABLE:
+					((MainMenuGui) mGui).showUpdateAvailable(event.latestClientVersion, event.changeLog);
 					break;
 
 				case UPDATE_REQUIRED:
-					((MainMenuGui) mGui).showUpdateNeeded(response.latestClientVersion, response.changeLogMessage);
+					((MainMenuGui) mGui).showUpdateNeeded(event.latestClientVersion, event.changeLog);
 					break;
 
-				case UNKNOWN:
-				case UP_TO_DATE:
-					// Does nothing
+				default:
 					break;
 				}
 			}

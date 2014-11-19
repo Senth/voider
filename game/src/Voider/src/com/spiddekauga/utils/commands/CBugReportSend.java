@@ -11,16 +11,17 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
 import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
-import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
-import com.spiddekauga.voider.repo.user.UserWebRepo;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Sends a bug report to the server
@@ -36,8 +37,7 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * @param description text for the description
 	 * @param exception the exception that was thrown
 	 */
-	public CBugReportSend(
-			Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description, Exception exception) {
+	public CBugReportSend(Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description, Exception exception) {
 		mGui = gui;
 		mSubject = subject;
 		mLastAction = lastAction;
@@ -54,8 +54,7 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * @param secondLastAction text field for the second last action
 	 * @param description text field for the description
 	 */
-	public CBugReportSend(
-			Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description) {
+	public CBugReportSend(Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description) {
 		this(gui, subject, lastAction, secondLastAction, description, null);
 	}
 
@@ -120,25 +119,9 @@ public class CBugReportSend extends Command implements IResponseListener {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		// Login
-		if (response instanceof LoginMethodResponse) {
-			handleLoginResponse((LoginMethodResponse) response);
-		}
 		// Bug report
-		else if (response instanceof BugReportMethodResponse) {
+		if (response instanceof BugReportMethodResponse) {
 			handleBugReportResponse((BugReportMethodResponse) response);
-		}
-	}
-
-	/**
-	 * Handles the response from a login request
-	 * @param response server's method response
-	 */
-	private void handleLoginResponse(LoginMethodResponse response) {
-		if (response.status.isSuccessful()) {
-			sendBugReport();
-		} else {
-			saveBugReportLocally();
 		}
 	}
 
@@ -183,9 +166,13 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * Try to go online
 	 */
 	private void goOnline() {
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.USER_CONNECTED, mLoginListener);
+		eventDispatcher.connect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
+
 		mGui.setWaitWindowText("Going online");
 		User user = User.getGlobalUser();
-		UserWebRepo.getInstance().login(this, user.getUsername(), user.getPrivateKey(), UserLocalRepo.getClientId());
+		user.login();
 	}
 
 	/**
@@ -221,6 +208,29 @@ public class CBugReportSend extends Command implements IResponseListener {
 		// Does nothing
 		return true;
 	}
+
+	private IEventListener mLoginListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			switch (event.type) {
+			case USER_CONNECTED:
+				sendBugReport();
+				break;
+
+			case USER_LOGIN_FAILED:
+				saveBugReportLocally();
+				break;
+
+			default:
+				break;
+			}
+
+			EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+			eventDispatcher.disconnect(EventTypes.USER_CONNECTED, mLoginListener);
+			eventDispatcher.disconnect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
+		}
+	};
+
 
 	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();

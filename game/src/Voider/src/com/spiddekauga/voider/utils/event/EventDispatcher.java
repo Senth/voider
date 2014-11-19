@@ -1,10 +1,7 @@
 package com.spiddekauga.voider.utils.event;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 
 /**
  * Dispatches events to all listeners
@@ -17,7 +14,7 @@ public class EventDispatcher {
 	private EventDispatcher() {
 		for (@SuppressWarnings("unused")
 		EventTypes eventType : EventTypes.values()) {
-			mListeners.add(new HashSet<IEventListener>());
+			mListeners.add(new ArrayList<IEventListener>());
 		}
 	}
 
@@ -56,7 +53,7 @@ public class EventDispatcher {
 	 * @param event the event to fire
 	 */
 	public void fire(GameEvent event) {
-		HashSet<IEventListener> copy = new HashSet<>();
+		ArrayList<IEventListener> copy = new ArrayList<>();
 		copy.addAll(mListeners.get(event.type.ordinal()));
 
 		for (IEventListener listeners : copy) {
@@ -74,6 +71,6 @@ public class EventDispatcher {
 		return mInstance;
 	}
 
-	private List<Set<IEventListener>> mListeners = new ArrayList<>();
+	private List<List<IEventListener>> mListeners = new ArrayList<>();
 	private static EventDispatcher mInstance = null;
 }

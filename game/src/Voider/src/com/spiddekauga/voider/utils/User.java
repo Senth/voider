@@ -11,6 +11,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
+import com.spiddekauga.voider.network.entities.user.LoginMethodResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
@@ -18,6 +19,7 @@ import com.spiddekauga.voider.repo.user.UserWebRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * User information class
@@ -107,6 +109,9 @@ public class User {
 
 		if (online) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
+			mNotification.show(NotificationTypes.SUCCESS, username + " is now online!");
+		} else {
+			mNotification.show(NotificationTypes.HIGHLIGHT, username + " is now offline!");
 		}
 	}
 
@@ -283,7 +288,19 @@ public class User {
 		}
 
 		private void handleLoginResponse(LoginMethodResponse response) {
-			// TODO check client version
+			switch (response.clientVersionStatus) {
+			case NEW_VERSION_AVAILABLE:
+				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.latestClientVersion, response.changeLogMessage));
+				break;
+
+			case UPDATE_REQUIRED:
+				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_REQUIRED, response.latestClientVersion, response.changeLogMessage));
+				break;
+
+			case UNKNOWN:
+			case UP_TO_DATE:
+				break;
+			}
 
 			if (response.isSuccessful()) {
 				// Was already logged in -> Only connected
@@ -292,7 +309,14 @@ public class User {
 				}
 				// Logged in
 				else if (User.this != mGlobalUser) {
-					loginGlobalUser(mUsername, mServerKey, true);
+					// No update is required
+					if (response.clientVersionStatus != ClientVersionStatuses.UPDATE_REQUIRED) {
+						loginGlobalUser(mUsername, mServerKey, true);
+					}
+					// Update required login offline
+					else {
+						loginGlobalUser(mUsername, mServerKey, false);
+					}
 				}
 			}
 			// Send error message
@@ -327,15 +351,17 @@ public class User {
 		}
 
 		private void handleRegisterResponse(RegisterUserMethodResponse response) {
-			// TODO check client version
-
 			if (response.isSuccessful()) {
 				// Registered and logged in
 				if (User.this != mGlobalUser) {
-					UserLocalRepo.setLastUser(mUsername, mPrivateKey, response.userKey);
+					mPrivateKey = response.privateKey;
+					mServerKey = response.userKey;
+					UserLocalRepo.setLastUser(mUsername, response.privateKey, response.userKey);
 					UserLocalRepo.setAsRegistered();
-					loginGlobalUser(mUsername, response.userKey, true);
 				}
+				mNotification.show(NotificationTypes.SUCCESS, "User registered");
+			} else {
+				mNotification.show(NotificationTypes.ERROR, "Failed to register user");
 			}
 		}
 	};

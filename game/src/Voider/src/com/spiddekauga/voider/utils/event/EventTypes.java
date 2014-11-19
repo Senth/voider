@@ -15,7 +15,7 @@ public enum EventTypes {
 	USER_DISCONNECTED,
 	/** User logged out */
 	USER_LOGOUT,
-	/** Failed to login user */
+	/** Failed to login user or connect */
 	USER_LOGIN_FAILED,
 
 	// --- CAMERA ---
@@ -40,4 +40,11 @@ public enum EventTypes {
 	SYNC_COMMUNITY_DOWNLOAD_SUCCESS,
 	/** Failed to download community resources */
 	SYNC_COMMUNITY_DOWNLOAD_FAILED,
+
+
+	// --- CLIENT VERSION ---
+	/** Update is available, but not necessary */
+	UPDATE_AVAILABLE,
+	/** Update is required */
+	UPDATE_REQUIRED,
 }

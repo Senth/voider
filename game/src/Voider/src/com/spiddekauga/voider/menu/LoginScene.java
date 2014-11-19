@@ -2,12 +2,10 @@ package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
@@ -17,6 +15,11 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.sound.Interpolations;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
+import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * Login scene
@@ -52,9 +55,26 @@ public class LoginScene extends Scene implements IResponseListener {
 	public void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.USER_LOGIN, mLoginListener);
+		eventDispatcher.connect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
+		eventDispatcher.connect(EventTypes.UPDATE_AVAILABLE, mUpdateListener);
+		eventDispatcher.connect(EventTypes.UPDATE_REQUIRED, mUpdateListener);
+
 		mMusicPlayer.play(Music.TITLE, Interpolations.FADE_IN);
 
 		login();
+	}
+
+	@Override
+	protected void onDispose() {
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.disconnect(EventTypes.USER_LOGIN, mLoginListener);
+		eventDispatcher.disconnect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
+		eventDispatcher.disconnect(EventTypes.UPDATE_AVAILABLE, mUpdateListener);
+		eventDispatcher.disconnect(EventTypes.UPDATE_REQUIRED, mUpdateListener);
+
+		super.onDispose();
 	}
 
 	@Override
@@ -80,7 +100,6 @@ public class LoginScene extends Scene implements IResponseListener {
 		User userInfo = UserLocalRepo.getLastUser();
 
 		if (userInfo != null && userInfo.isOnline()) {
-			mAutoLogin = true;
 			mLoggingInUser.set(userInfo);
 			mLoggingInUser.login();
 			mGui.showWaitWindow("Auto logging in as " + userInfo.getUsername());
@@ -91,69 +110,74 @@ public class LoginScene extends Scene implements IResponseListener {
 		}
 	}
 
-	/**
-	 * Handles a login response
-	 * @param response the login response
-	 */
-	void handleLoginResopnse(LoginMethodResponse response) {
-		User userInfo = UserLocalRepo.getLastUser();
-
-		switch (response.status) {
-		case SUCCESS:
-			switch (response.clientVersionStatus) {
-			case NEW_VERSION_AVAILABLE:
-			case UP_TO_DATE:
-				UserLocalRepo.setLastUser(response.username, response.privateKey, response.userKey);
-				mUser.login(response.username, response.userKey, true);
-				setOutcome(Outcomes.LOGGED_IN, response);
-				break;
-
-			case UNKNOWN:
-			case UPDATE_REQUIRED:
-				loginOffline(response, "");
-				break;
-			}
-
-			break;
-
-		case FAILED_USERNAME_PASSWORD_MISMATCH:
-			if (mAutoLogin) {
-				mGui.hideWaitWindow();
-				mNotification.show(NotificationTypes.ERROR, "Could not auto-login " + userInfo.getUsername());
-				UserLocalRepo.removeLastUser();
-				mAutoLogin = false;
-				mUser.setOnline(false);
-			} else {
-				mNotification.show(NotificationTypes.ERROR, "No username with that password exists");
-			}
-			((LoginGui) mGui).focusUsernameField();
-
-			// Show update available windows
-			switch (response.clientVersionStatus) {
-			case NEW_VERSION_AVAILABLE:
-				((LoginGui) mGui).showUpdateAvailable(response.latestClientVersion, response.changeLogMessage);
-				break;
-
-			case UPDATE_REQUIRED:
-				((LoginGui) mGui).showUpdateNeeded(response.latestClientVersion, response.changeLogMessage);
-				break;
-
-			case UNKNOWN:
-			case UP_TO_DATE:
-				// Does nothing
-				break;
-			}
-			break;
-
-
-		case FAILED_SERVER_ERROR:
-		case FAILED_SERVER_CONNECTION:
-			loginOffline(response, "Could not connect to server");
-			break;
-		}
-
-		mGui.hideWaitWindow();
-	}
+	// /**
+	// * Handles a login response
+	// * @param response the login response
+	// */
+	// void handleLoginResopnse(LoginMethodResponse response) {
+	// User userInfo = UserLocalRepo.getLastUser();
+	//
+	// switch (response.status) {
+	// case SUCCESS:
+	// switch (response.clientVersionStatus) {
+	// case NEW_VERSION_AVAILABLE:
+	// case UP_TO_DATE:
+	// UserLocalRepo.setLastUser(response.username, response.privateKey,
+	// response.userKey);
+	// mUser.login(response.username, response.userKey, true);
+	// setOutcome(Outcomes.LOGGED_IN, response);
+	// break;
+	//
+	// case UNKNOWN:
+	// case UPDATE_REQUIRED:
+	// loginOffline(response, "");
+	// break;
+	// }
+	//
+	// break;
+	//
+	// case FAILED_USERNAME_PASSWORD_MISMATCH:
+	// if (mAutoLogin) {
+	// mGui.hideWaitWindow();
+	// mNotification.show(NotificationTypes.ERROR, "Could not auto-login " +
+	// userInfo.getUsername());
+	// UserLocalRepo.removeLastUser();
+	// mAutoLogin = false;
+	// mUser.setOnline(false);
+	// } else {
+	// mNotification.show(NotificationTypes.ERROR,
+	// "No username with that password exists");
+	// }
+	// ((LoginGui) mGui).focusUsernameField();
+	//
+	// // Show update available windows
+	// switch (response.clientVersionStatus) {
+	// case NEW_VERSION_AVAILABLE:
+	// ((LoginGui) mGui).showUpdateAvailable(response.latestClientVersion,
+	// response.changeLogMessage);
+	// break;
+	//
+	// case UPDATE_REQUIRED:
+	// ((LoginGui) mGui).showUpdateNeeded(response.latestClientVersion,
+	// response.changeLogMessage);
+	// break;
+	//
+	// case UNKNOWN:
+	// case UP_TO_DATE:
+	// // Does nothing
+	// break;
+	// }
+	// break;
+	//
+	//
+	// case FAILED_SERVER_ERROR:
+	// case FAILED_SERVER_CONNECTION:
+	// loginOffline(response, "Could not connect to server");
+	// break;
+	// }
+	//
+	// mGui.hideWaitWindow();
+	// }
 
 	// /**
 	// * Login offline (if available and after server response)
@@ -209,16 +233,16 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param response the register response
 	 */
 	void handleRegisterResponse(RegisterUserMethodResponse response) {
+		mGui.hideWaitWindow();
+
 		switch (response.status) {
 		case SUCCESS:
-			setOutcome(Outcomes.NOT_APPLICAPLE);
+			login();
 			break;
-
 
 		case FAIL_EMAIL_EXISTS:
 			((LoginGui) mGui).setRegisterEmailError("is already registered");
 			break;
-
 
 		case FAIL_USERNAME_EXISTS:
 			((LoginGui) mGui).setRegisterUsernameError("name is occupied");
@@ -238,7 +262,7 @@ public class LoginScene extends Scene implements IResponseListener {
 			break;
 		}
 
-		mGui.hideWaitWindow();
+
 	}
 
 	/**
@@ -268,10 +292,54 @@ public class LoginScene extends Scene implements IResponseListener {
 		}
 	}
 
-	/** Global user */
-	private static final User mUser = User.getGlobalUser();
-	/** Currently auto-logging in? */
-	private boolean mAutoLogin = false;
+	private IEventListener mLoginListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			switch (event.type) {
+			case USER_LOGIN:
+				mGui.hideWaitWindow();
+				setOutcome(Outcomes.LOGGED_IN, mUpdateInfo);
+				break;
+
+			case USER_LOGIN_FAILED:
+				mGui.hideWaitWindow();
+
+				// Show client update information
+				if (mUpdateInfo != null) {
+					switch (mUpdateInfo.type) {
+					case UPDATE_AVAILABLE:
+						((LoginGui) mGui).showUpdateAvailable(mUpdateInfo.latestClientVersion, mUpdateInfo.changeLog);
+						break;
+
+					case UPDATE_REQUIRED:
+						((LoginGui) mGui).showUpdateRequired(mUpdateInfo.latestClientVersion, mUpdateInfo.changeLog);
+						break;
+
+					default:
+						break;
+					}
+				}
+				break;
+
+			default:
+				// Does nothing
+				break;
+			}
+
+		}
+	};
+
+	private IEventListener mUpdateListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			if (event instanceof UpdateEvent) {
+				mUpdateInfo = (UpdateEvent) event;
+			}
+		}
+	};
+
+	/** Update information for outcome message */
+	private UpdateEvent mUpdateInfo = null;
 	/** Logging in user */
 	private User mLoggingInUser = new User();
 }
