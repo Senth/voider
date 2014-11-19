@@ -145,14 +145,14 @@ public class MessageGateway implements ChannelService {
 		GameEventListener() {
 			EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 
-			eventDispatcher.connect(EventTypes.USER_LOGIN, this);
+			eventDispatcher.connect(EventTypes.USER_CONNECTED, this);
 			eventDispatcher.connect(EventTypes.USER_LOGOUT, this);
 		}
 
 		@Override
 		public void handleEvent(GameEvent event) {
 			switch (event.type) {
-			case USER_LOGIN:
+			case USER_CONNECTED:
 				connect();
 				break;
 

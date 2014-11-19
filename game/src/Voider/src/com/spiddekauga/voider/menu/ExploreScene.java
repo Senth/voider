@@ -305,7 +305,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 * @param fetchMore if more should be fetched
 		 */
 		void fetch(boolean fetchMore) {
-			if (mSelectedLevel != null) {
+			if (mSelectedLevel != null && mUser.isOnline()) {
 				if (!fetchMore) {
 					((ExploreGui) mGui).resetComments();
 				}
@@ -320,7 +320,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 * @return true if more comments exist to fetch
 		 */
 		boolean hasMore() {
-			if (mIsFetching || mSelectedLevel == null) {
+			if (mIsFetching || mSelectedLevel == null || !mUser.isOnline()) {
 				return false;
 			}
 
@@ -372,7 +372,6 @@ public class ExploreScene extends Scene implements IResponseListener {
 			}
 		}
 
-		User mUser = User.getGlobalUser();
 		boolean mIsFetching = false;
 	}
 
@@ -385,6 +384,10 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 * @param searchString
 		 */
 		void fetch(String searchString) {
+			if (!mUser.isOnline()) {
+				return;
+			}
+
 			((ExploreGui) mGui).resetContent();
 
 			if (searchString != null && searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
@@ -403,6 +406,10 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 * @param tags
 		 */
 		void fetch(SortOrders sortOrder, ArrayList<Tags> tags) {
+			if (!mUser.isOnline()) {
+				return;
+			}
+
 			if (sortOrder != null) {
 				mIsFetching = true;
 				mSearchString = null;
@@ -419,7 +426,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 * Fetch more of same
 		 */
 		void fetchMore() {
-			if (!mIsFetching) {
+			if (!mIsFetching && mUser.isOnline()) {
 				// Search string
 				if (mSearchString != null) {
 					mResourceWebRepo.getLevels(mSearchString, true, ExploreScene.this);
@@ -435,7 +442,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 * @return true if more levels can be fetched
 		 */
 		boolean hasMore() {
-			if (mIsFetching) {
+			if (mIsFetching || !mUser.isOnline()) {
 				return false;
 			}
 
@@ -517,6 +524,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 		private ArrayList<Tags> mTags = new ArrayList<>();
 	}
 
+	private final User mUser = User.getGlobalUser();
 	private CommentFetch mCommentFetch = new CommentFetch();
 	private LevelFetch mLevelFetch = new LevelFetch();
 	private LevelInfoEntity mSelectedLevel = null;

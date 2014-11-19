@@ -126,6 +126,7 @@ public class User {
 			mGlobalUser.mOnline = true;
 
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
+			mNotification.show(NotificationTypes.SUCCESS, mGlobalUser.mUsername + " is now online!");
 		}
 	}
 
