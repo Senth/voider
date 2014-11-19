@@ -19,6 +19,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.Strings;
+import com.spiddekauga.utils.commands.CEventConnect;
+import com.spiddekauga.utils.commands.CSequence;
+import com.spiddekauga.utils.commands.CUserConnect;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -29,6 +33,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
@@ -43,6 +48,10 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * GUI for explore scene
@@ -770,6 +779,42 @@ public class ExploreGui extends Gui {
 		ratingWidget.setRating(level.stats.getIntRating());
 
 		return table;
+	}
+
+	/**
+	 * Show go online dialog
+	 */
+	void showGoOnlineDialog() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+		msgBox.setTitle("Go Online?");
+
+		Label label = mUiFactory.text.create("To use online features you need to connect to the server.");
+		msgBox.content(label);
+
+		IEventListener loginListener = new IEventListener() {
+			@Override
+			public void handleEvent(GameEvent event) {
+				EventDispatcher.getInstance().disconnect(EventTypes.USER_CONNECTED, this);
+
+				// Sort
+				if (mWidgets.sort.hider.isVisible()) {
+					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
+				}
+				// Search
+				else if (mWidgets.search.hider.isVisible()) {
+					mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
+				}
+			}
+		};
+
+		Command eventConnect = new CEventConnect(loginListener, EventTypes.USER_CONNECTED);
+		Command goOnline = new CUserConnect();
+
+		msgBox.addCancelButtonAndKeys();
+		msgBox.button("Go Online", new CSequence(eventConnect, goOnline));
+
+		showMsgBox(msgBox);
 	}
 
 	/**

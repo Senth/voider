@@ -5,12 +5,12 @@ package com.spiddekauga.utils.commands;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CommandSequence extends Command {
+public class CSequence extends Command {
 	/**
 	 * Creates a command sequence with the specified commands
 	 * @param commands the commands to be executed in order
 	 */
-	public CommandSequence(Command... commands) {
+	public CSequence(Command... commands) {
 		mCommands = commands;
 	}
 

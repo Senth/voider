@@ -22,9 +22,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
+import com.spiddekauga.utils.commands.CEventConnect;
 import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
 import com.spiddekauga.utils.commands.CSceneReturn;
 import com.spiddekauga.utils.commands.CSceneSwitch;
+import com.spiddekauga.utils.commands.CSequence;
+import com.spiddekauga.utils.commands.CUserConnect;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -60,6 +63,10 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Common methods for all editors
@@ -584,13 +591,23 @@ public abstract class EditorGui extends Gui {
 						showPublish = false;
 
 						MsgBoxExecuter msgBox = getFreeMsgBox(true);
-						msgBox.setTitle("Offline");
-						String text = "You need to go online to publish the level. Currently this is "
-								+ "only possible by either logging out and logging in or restarting " + "the game.";
-						Label label = mUiFactory.text.create(text, true);
+						msgBox.setTitle("Go Online?");
+						String text = "You need to go online to publish the level.";
+						Label label = mUiFactory.text.create(text, false);
+
+						final IEventListener loginListener = new IEventListener() {
+							@Override
+							public void handleEvent(GameEvent event) {
+								EventDispatcher.getInstance().disconnect(EventTypes.USER_CONNECTED, this);
+								showPublishDialog();
+							}
+						};
+						Command connectEvents = new CEventConnect(loginListener, EventTypes.USER_CONNECTED);
+						Command goOnline = new CUserConnect();
+
 						msgBox.content(label);
-						msgBox.addCancelButtonAndKeys("OK");
-						label.setWidth(Gdx.graphics.getWidth() * 0.5f);
+						msgBox.addCancelButtonAndKeys();
+						msgBox.button("Connect & Publish", new CSequence(connectEvents, goOnline));
 						showMsgBox(msgBox);
 					}
 

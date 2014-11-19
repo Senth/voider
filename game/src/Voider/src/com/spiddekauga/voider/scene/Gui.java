@@ -734,6 +734,10 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
+	 * Show a login dialog
+	 */
+
+	/**
 	 * Set the GUI as visible/invisible. I.e. if the GUI should be drawn or not.
 	 * @param visible set to true for visible, false for invisible.
 	 */

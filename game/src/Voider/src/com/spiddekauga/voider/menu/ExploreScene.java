@@ -54,6 +54,16 @@ public class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	@Override
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
+
+		// Ask to go online?
+		if (!User.getGlobalUser().isOnline()) {
+			((ExploreGui) mGui).showGoOnlineDialog();
+		}
+	}
+
+	@Override
 	public void onResize(int width, int height) {
 		super.onResize(width, height);
 

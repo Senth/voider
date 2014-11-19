@@ -93,11 +93,13 @@ public class User {
 	/**
 	 * Sets all necessary variables when logging in
 	 * @param username the username
+	 * @param privateKey used for auto login
 	 * @param serverKey user key on the server, can be null
 	 * @param online true if the user is online
 	 */
-	private static void loginGlobalUser(String username, String serverKey, boolean online) {
+	private static void loginGlobalUser(String username, UUID privateKey, String serverKey, boolean online) {
 		mGlobalUser.mUsername = username;
+		mGlobalUser.mPrivateKey = privateKey;
 		mGlobalUser.mServerKey = serverKey;
 		mGlobalUser.mOnline = online;
 		mGlobalUser.mLoggedIn = true;
@@ -108,6 +110,7 @@ public class User {
 		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN));
 
 		if (online) {
+			UserLocalRepo.setLastUser(username, privateKey, serverKey);
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
 			mNotification.show(NotificationTypes.SUCCESS, username + " is now online!");
 		} else {
@@ -305,17 +308,23 @@ public class User {
 			if (response.isSuccessful()) {
 				// Was already logged in -> Only connected
 				if (User.this == mGlobalUser && mLoggedIn) {
-					connectGlobalUser();
+					if (response.clientVersionStatus != ClientVersionStatuses.UPDATE_REQUIRED) {
+						connectGlobalUser();
+					} else {
+						mNotification.show(NotificationTypes.HIGHLIGHT, "Update required to go online");
+					}
 				}
 				// Logged in
 				else if (User.this != mGlobalUser) {
+					mPrivateKey = response.privateKey;
+					mServerKey = response.userKey;
 					// No update is required
 					if (response.clientVersionStatus != ClientVersionStatuses.UPDATE_REQUIRED) {
-						loginGlobalUser(mUsername, mServerKey, true);
+						loginGlobalUser(mUsername, mPrivateKey, mServerKey, true);
 					}
 					// Update required login offline
 					else {
-						loginGlobalUser(mUsername, mServerKey, false);
+						loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
 					}
 				}
 			}
@@ -326,7 +335,7 @@ public class User {
 				case FAILED_SERVER_ERROR:
 					// Login offline
 					if (User.this != mGlobalUser && mPrivateKey != null) {
-						loginGlobalUser(mUsername, mServerKey, false);
+						loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
 					} else {
 						mNotification.show(NotificationTypes.ERROR, "Could not connect to server");
 						mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
