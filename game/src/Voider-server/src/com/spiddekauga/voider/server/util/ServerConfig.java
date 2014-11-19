@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.server.util;
 
 
-
 /**
  * Server configuration
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
@@ -171,5 +170,7 @@ public class ServerConfig {
 		public static final int NAME_LENGTH_MIN = 3;
 		/** Minimum password length */
 		public static final int PASSWORD_LENGTH_MIN = 5;
+		/** Maximum number of tags per user per resource */
+		public static final int TAGS_MAX = 5;
 	}
 }

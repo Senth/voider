@@ -107,7 +107,14 @@ class StatSqliteGateway extends SqliteGateway {
 		Date tagDate = getOldDate();
 		DatabaseCursor cursor = rawQuery("SELECT NULL FROM level_tag WHERE uuid='" + id + "' AND date>" + tagDate.getTime() + ";");
 
-		return cursor.getCount() == 0;
+		// Date OK, check tag amount
+		if (cursor.getCount() == 0) {
+			cursor = rawQuery("SELECT NULL FROM level_tag WHERE uuid='" + id + "';");
+
+			return cursor.getCount() < Config.Community.TAGS_MAX_PER_RESOURCE;
+		}
+
+		return false;
 	}
 
 	/**

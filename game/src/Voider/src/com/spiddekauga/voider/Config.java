@@ -122,6 +122,8 @@ public class Config {
 		public static final int TAGS_TO_DISPLAY = 7;
 		/** Tags per row */
 		public static final int TAGS_PER_ROW = 2;
+		/** Maximum number of tags per user per resource */
+		public static final int TAGS_MAX_PER_RESOURCE = 5;
 	}
 
 	/**

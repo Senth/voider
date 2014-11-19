@@ -25,6 +25,7 @@ import com.spiddekauga.voider.network.entities.stat.StatSyncMethod;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
@@ -231,7 +232,8 @@ public class StatSync extends VoiderServlet {
 		FilterWrapper levelFilter = new FilterWrapper(CUserLevelStat.LEVEL_KEY, levelKey);
 		Entity userEntity = DatastoreUtils.getSingleEntity(T_USER_STAT, mUser.getKey(), levelFilter);
 
-		ArrayList<Integer> tagIds = Tags.toIdList(levelStat.tags);
+
+		ArrayList<Integer> tagIds = new ArrayList<>();
 		LevelStat oldStat = new LevelStat();
 
 		// No entity for this level exists yet
@@ -261,7 +263,22 @@ public class StatSync extends VoiderServlet {
 		userEntity.setUnindexedProperty(CUserLevelStat.BOOKMARK, levelStat.bookmark);
 		userEntity.setProperty(CUserLevelStat.UPDATED, mResponse.syncEntity.syncDate);
 
-		if (!tagIds.isEmpty()) {
+		// Add tags
+		if (!levelStat.tags.isEmpty()) {
+			Iterator<Tags> newTagIt = levelStat.tags.iterator();
+			while (newTagIt.hasNext()) {
+				Tags newTag = newTagIt.next();
+
+				// Tag limit OK
+				if (tagIds.size() < ServerConfig.UserInfo.TAGS_MAX) {
+					tagIds.add(newTag.getId());
+				}
+				// Too many tags, remove
+				else {
+					newTagIt.remove();
+				}
+			}
+
 			userEntity.setUnindexedProperty(CUserLevelStat.TAGS, tagIds);
 		}
 
