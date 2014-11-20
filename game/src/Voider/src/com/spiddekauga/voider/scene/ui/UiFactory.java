@@ -620,7 +620,7 @@ public class UiFactory {
 	}
 
 	/**
-	 * Adds a slider to a table
+	 * Adds a slider with a text field to a table
 	 * @param text optional text before the slider (if not null)
 	 * @param min minimum value of the slider
 	 * @param max maximum value of the slider
@@ -637,7 +637,7 @@ public class UiFactory {
 			throw new IllegalStateException("init() has not been called!");
 		}
 
-		table.row();
+		table.row().setFillWidth(true);
 
 		// Label
 		Label label = null;
@@ -647,17 +647,13 @@ public class UiFactory {
 		}
 
 		// Slider
-		float sliderWidth = mStyles.vars.sliderWidth;
-		if (text == null) {
-			sliderWidth += mStyles.vars.sliderLabelWidth;
-		}
 		Slider slider = new Slider(min, max, stepSize, false, mStyles.slider.standard);
-		table.add(slider).setWidth(sliderWidth);
+		table.add(slider).setFillWidth(true);
 
 		// Text field
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(calculateTextFieldCharacters(min, max, stepSize));
-		table.add(textField).setWidth(mStyles.vars.textFieldNumberWidth);
+		table.add(textField).setWidth(mStyles.vars.textFieldNumberWidth).setPadLeft(mStyles.vars.paddingInner);
 
 		// Set slider listener
 		sliderListener.init(slider, textField);
@@ -1009,10 +1005,6 @@ public class UiFactory {
 		table.add(checkBox);
 		group.add(checkBox);
 
-
-		// checkBox.getImageCell().padRight(pad);
-
-
 		if (listener != null) {
 			checkBox.addListener(listener);
 		}
@@ -1058,6 +1050,22 @@ public class UiFactory {
 	 */
 	public void endTabWidget() {
 		mTabWidget = null;
+	}
+
+	/**
+	 * Add a tab to a created tab widget
+	 * @param icon the image of the tab
+	 * @param table will show this table when this tab is selected
+	 * @param hider optional listens to the hider.
+	 * @param tabWidget the tab widget to add the tab to
+	 */
+	public void addTab(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
+		ImageButtonStyle style = SkinNames.getResource(icon);
+
+		if (hider == null) {
+			hider = new HideListener(true);
+		}
+		tabWidget.addTab(style, table, hider);
 	}
 
 	/**
@@ -1181,6 +1189,40 @@ public class UiFactory {
 	}
 
 	/**
+	 * Create settings tab window
+	 * @param header header information
+	 * @param table the main table to add the settings to
+	 * @return default settings tab window
+	 */
+	public TabWidget addSettingsWindow(String header, AlignTable table) {
+		table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
+
+		// Header
+		Label headerLabel = text.addHeader(header, table);
+		headerLabel.validate();
+		float headerHeight = headerLabel.getHeight();
+
+		// Tab widget
+		TabWidget tabWidget = new TabWidget();
+		table.row();
+		table.add(tabWidget);
+
+		tabWidget.setPad(mStyles.vars.paddingInner);
+		tabWidget.setTabPosition(Positions.LEFT);
+		tabWidget.setAlignTab(Vertical.TOP);
+		tabWidget.setContentWidth(mStyles.vars.settingsWidth);
+		tabWidget.setContentHeight(mStyles.vars.settingsHeight);
+
+		// Background for settings widget
+		tabWidget.setBackground(new Image(SkinNames.getDrawable(SkinNames.GeneralImages.WINDOW_SETTINGS)));
+
+		// Bottom padding so the settings window is in the middle of the screen
+		table.row().setHeight(headerHeight);
+
+		return tabWidget;
+	}
+
+	/**
 	 * Add actors to hider, add to created actors, or any combination.
 	 * @param hider add all actors to the hider (if not null)
 	 * @param createdActors add all actors to this list (if not null)
@@ -1230,6 +1272,22 @@ public class UiFactory {
 		RIGHT,
 		TOP,
 		BOTTOM,
+
+		;
+
+		/**
+		 * @return true if this position is either left or right
+		 */
+		public boolean isLeftOrRight() {
+			return this == LEFT || this == RIGHT;
+		}
+
+		/**
+		 * @return true if this position is either top or bottom
+		 */
+		public boolean isTopOrBottom() {
+			return this == TOP || this == BOTTOM;
+		}
 	}
 
 	/**

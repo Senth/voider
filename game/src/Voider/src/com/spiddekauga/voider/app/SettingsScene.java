@@ -1,0 +1,123 @@
+package com.spiddekauga.voider.app;
+
+import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.repo.misc.SettingLocalRepo;
+import com.spiddekauga.voider.scene.Scene;
+
+/**
+ * Scene for game settings
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ */
+public class SettingsScene extends Scene {
+	/**
+	 * Creates a settings scene
+	 */
+	public SettingsScene() {
+		super(new SettingsGui());
+
+		((SettingsGui) mGui).setScene(this);
+	}
+
+	@Override
+	protected boolean onKeyDown(int keycode) {
+		if (KeyHelper.isBackPressed(keycode)) {
+			setOutcome(Outcomes.NOT_APPLICAPLE);
+		}
+
+		return super.onKeyDown(keycode);
+	}
+
+	/**
+	 * Set master sound
+	 * @param volume
+	 */
+	void setMasterVolume(float volume) {
+		mSettingLocalRepo.sound.setMasterVolume(volume / 100f);
+	}
+
+	/**
+	 * @return get master volume
+	 */
+	float getMasterVolume() {
+		return mSettingLocalRepo.sound.getMasterVolume() * 100;
+	}
+
+	/**
+	 * Set music volume
+	 * @param volume
+	 */
+	void setMusicVolume(float volume) {
+		mSettingLocalRepo.sound.setMusicVolume(volume / 100f);
+	}
+
+	/**
+	 * @return get music volume
+	 */
+	float getMusicVolume() {
+		return mSettingLocalRepo.sound.getMusicVolume() * 100;
+	}
+
+	/**
+	 * Set game effects volume
+	 * @param volume
+	 */
+	void setGameVolume(float volume) {
+		mSettingLocalRepo.sound.setEffectsVolume(volume / 100f);
+	}
+
+	/**
+	 * @return game volume
+	 */
+	float getGameVolume() {
+		return mSettingLocalRepo.sound.getEffectsVolume() * 100;
+	}
+
+	/**
+	 * Set UI volume
+	 * @param volume
+	 */
+	void setUiVolume(float volume) {
+		mSettingLocalRepo.sound.setUiVolume(volume / 100f);
+	}
+
+	/**
+	 * @return UI / Button volume
+	 */
+	float getUiVolume() {
+		return mSettingLocalRepo.sound.getUiVolume() * 100;
+	}
+
+	/**
+	 * Set 24 hours format
+	 * @param time24h true if the time should be set to 24 hours format
+	 */
+	void set24HourFormat(boolean time24h) {
+		// TODO
+	}
+
+	/**
+	 * @return true if time is shown in 24 hours format
+	 */
+	boolean is24HourFormat() {
+		// TODO
+		return true;
+	}
+
+	/**
+	 * Set date format
+	 * @param dateFormat the date format
+	 */
+	void setDateFormat(String dateFormat) {
+
+	}
+
+	/**
+	 * @return current date format
+	 */
+	String getDateFormat() {
+		// TODO
+		return "yyyy-MM-dd";
+	}
+
+	private SettingLocalRepo mSettingLocalRepo = SettingLocalRepo.getInstance();
+}

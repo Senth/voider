@@ -85,13 +85,10 @@ java.lang.Float: {
 	
 	/** General UI sizes */
 	
+	// Width of the right panel in explore and editors
 	right_panel_width: {value: 240},
-	// NOTE: the three widths below (text field, slider, label) should add
-	// upp to right_panel_width for it to be shown correctly.
-	// Width of numeric text fields (e.g. after a slider)
+	// Text field for slider
 	text_field_number_width: {value: 48},
-	// Slider width
-	slider_width: {value: 122},
 	// Slider text width/max size
 	slider_label_width: {value: 70},
 	// Text field default width
@@ -108,6 +105,14 @@ java.lang.Float: {
 	text_button_height: {value: 40},
 	// Default text button width
 	text_button_width: {value: 120},
+	
+	
+	/** Settings */
+	
+	// Width of settings window
+	settings_width: {value: 420},
+	// Height of settings window
+	settings_height: {value: 315},
 	
 	
 	/** Notifications */
@@ -420,6 +425,61 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageOver: ship_editor_big_over,
 		imageUp: ship_editor_big
 	},
+	
+	
+	/** Menu - Settings */
+	
+	settings_interface: {
+		imageUp: settings_interface,
+		imageOver: settings_interface_over,
+		imageDown: settings_interface_down,
+		imageChecked: settings_interface_checked,
+		imageCheckedOver: settings_interface_checked_over,
+	},
+	
+	settings_resolution: {
+		imageUp: settings_resolution,
+		imageOver: settings_resolution_over,
+		imageDown: settings_resolution_down,
+		imageChecked: settings_resolution_checked,
+		imageCheckedOver: settings_resolution_checked_over,
+	},
+	
+	settings_sound: {
+		imageUp: settings_sound,
+		imageOver: settings_sound_over,
+		imageDown: settings_sound_down,
+		imageChecked: settings_sound_checked,
+		imageCheckedOver: settings_sound_checked_over,
+	},
+	
+	settings_network: {
+		imageUp: settings_network,
+		imageOver: settings_network_over,
+		imageDown: settings_network_down,
+		imageChecked: settings_network_checked,
+		imageCheckedOver: settings_network_checked_over,
+	},
+	
+	
+	/** Menu - User Settings */
+	
+	settings_account: {
+		imageUp: settings_account,
+		imageOver: settings_account_over,
+		imageDown: settings_account_down,
+		imageChecked: settings_account_checked,
+		imageCheckedOver: settings_account_checked_over,
+	},
+	
+	settings_statistics: {
+		imageUp: settings_statistics,
+		imageOver: settings_statistics_over,
+		imageDown: settings_statistics_down,
+		imageChecked: settings_statistics_checked,
+		imageCheckedOver: settings_statistics_checked_over,
+	},
+	
 	
 	/** Explore */
 	

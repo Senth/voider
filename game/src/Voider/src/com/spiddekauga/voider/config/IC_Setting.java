@@ -13,6 +13,22 @@ import com.spiddekauga.utils.IniClass;
 public class IC_Setting extends IniClass {
 	public IC_Sound sound;
 	public IC_Network network;
+	public IC_General general;
+
+	/**
+	 * General settings
+	 */
+	public class IC_General extends IniClass {
+		protected String[] dateTimeFormats;
+
+		private IC_General(Ini ini, Section classSection) {
+			super(ini, classSection);
+		}
+
+		public String[] getDateTimeFormats() {
+			return dateTimeFormats;
+		}
+	}
 
 	/**
 	 * Default network settings

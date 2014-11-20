@@ -446,12 +446,12 @@ public class Cell implements Poolable, IPadding<Cell> {
 	public float getPrefWidth() {
 		if (mActor instanceof Layout) {
 			if (mFixedWidth) {
-				return mActor.getWidth() + mPadding.left + mPadding.right;
+				return mActor.getWidth() + getPadX();
 			} else {
-				return ((Layout) mActor).getPrefWidth() + mPadding.left + mPadding.right;
+				return ((Layout) mActor).getPrefWidth() + getPadX();
 			}
 		} else {
-			return mPadding.left + mPadding.right;
+			return getPadX();
 		}
 	}
 
@@ -461,12 +461,12 @@ public class Cell implements Poolable, IPadding<Cell> {
 	public float getPrefHeight() {
 		if (mActor instanceof Layout) {
 			if (mFixedHeight) {
-				return mActor.getHeight() + mPadding.top + mPadding.bottom;
+				return mActor.getHeight() + getPadY();
 			} else {
-				return ((Layout) mActor).getPrefHeight() + mPadding.top + mPadding.bottom;
+				return ((Layout) mActor).getPrefHeight() + getPadY();
 			}
 		} else {
-			return mPadding.top + mPadding.bottom;
+			return getPadY();
 		}
 	}
 
@@ -645,7 +645,7 @@ public class Cell implements Poolable, IPadding<Cell> {
 		} else if (mAlign.vertical == Vertical.TOP) {
 			offset.y += availableSize.y - mActor.getHeight() - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y += (availableSize.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y += (availableSize.y - mActor.getHeight() - getPadY()) * 0.5f;
 			offset.y += getPadBottom();
 		}
 

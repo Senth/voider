@@ -9,6 +9,7 @@ import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.voider.app.SettingsScene;
 import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.CampaignEditor;
@@ -290,6 +291,8 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		EDITOR(EditorSelectionGui.class),
 		/** Credits */
 		CREDITS(CreditScene.class),
+		/** Game settings */
+		SETTINGS(SettingsScene.class),
 
 		;
 

@@ -595,8 +595,6 @@ public class SkinNames {
 		TEXT_FIELD_WIDTH(Float.class),
 		/** Width of right panel */
 		RIGHT_PANEL_WIDTH(Float.class),
-		/** Width of sliders */
-		SLIDER_WIDTH(Float.class),
 		/** Width of text/labels before sliders */
 		SLIDER_LABEL_WIDTH(Float.class),
 		/** Dark text */
@@ -621,6 +619,10 @@ public class SkinNames {
 		NOTIFICATION_FADE_IN(Float.class),
 		/** Fade out duration of notificaiton messages, in seconds */
 		NOTIFICATION_FADE_OUT(Float.class),
+		/** Width of settings window */
+		SETTINGS_WIDTH(Float.class),
+		/** Height of settings window */
+		SETTINGS_HEIGHT(Float.class),
 
 		;
 
@@ -705,6 +707,8 @@ public class SkinNames {
 		SHUTTLE_LARGE,
 		/** Smaller ship */
 		SHUTTLE_SMALL,
+		/** Background for window settings */
+		WINDOW_SETTINGS,
 
 		;
 
@@ -898,6 +902,18 @@ public class SkinNames {
 		EDITOR_CAMPAIGN_BIG(ImageButtonStyle.class, "campaign_editor_big"),
 		/** Ship editor icon in menus */
 		EDITOR_SHIP_BIG(ImageButtonStyle.class, "ship_editor_big"),
+		/** Account settings */
+		SETTINGS_ACCOUNT(ImageButtonStyle.class),
+		/** General settings */
+		SETTINGS_GENERAL(ImageButtonStyle.class, "settings_interface"),
+		/** Network settings */
+		SETTINGS_NETWORK(ImageButtonStyle.class),
+		/** Display settings */
+		SETTINGS_DISPLAY(ImageButtonStyle.class, "settings_resolution"),
+		/** Sound settings */
+		SETTINGS_SOUND(ImageButtonStyle.class),
+		/** Player statistics */
+		SETTINGS_STATISTICS(ImageButtonStyle.class),
 
 		;
 

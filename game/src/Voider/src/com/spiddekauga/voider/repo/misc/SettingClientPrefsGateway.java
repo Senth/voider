@@ -28,6 +28,7 @@ class SettingClientPrefsGateway {
 	 */
 	void setAutoConnect(boolean autoConnect) {
 		mPreferences.putBoolean(NETWORK__AUTO_CONNECT, autoConnect);
+		mPreferences.flush();
 	}
 
 	/**
@@ -48,6 +49,7 @@ class SettingClientPrefsGateway {
 	 */
 	void setMasterVolume(float volume) {
 		mPreferences.putFloat(SOUND__MASTER_VOLUME, volume);
+		mPreferences.flush();
 	}
 
 	/**
@@ -64,6 +66,7 @@ class SettingClientPrefsGateway {
 	 */
 	void setEffectsVolume(float volume) {
 		mPreferences.putFloat(SOUND__EFFECTS_VOLUME, volume);
+		mPreferences.flush();
 	}
 
 	/**
@@ -80,6 +83,7 @@ class SettingClientPrefsGateway {
 	 */
 	void setMusicVolume(float volume) {
 		mPreferences.putFloat(SOUND__MUSIC_VOLUME, volume);
+		mPreferences.flush();
 	}
 
 	/**
@@ -96,6 +100,7 @@ class SettingClientPrefsGateway {
 	 */
 	void setUiVolume(float volume) {
 		mPreferences.putFloat(SOUND__UI_VOLUME, volume);
+		mPreferences.flush();
 	}
 
 	/**
@@ -113,8 +118,6 @@ class SettingClientPrefsGateway {
 
 	private static final String NETWORK__AUTO_CONNECT = "network_autoConnect";
 
-	/** Preferences */
 	private Preferences mPreferences;
-	/** Preferences name */
 	private static final String PREFERENCES_NAME = Config.File.PREFERENCE_PREFIX + "_setting";
 }

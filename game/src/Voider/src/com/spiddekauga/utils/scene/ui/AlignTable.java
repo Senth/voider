@@ -604,6 +604,22 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	/**
+	 * Adds another row to the table with a specified layout. This does not set the
+	 * default row alignment.
+	 * @param alignment the alignment
+	 * @see #row() for adding a row with the default row alignment
+	 * @see #setAlignRow(Horizontal,Vertical) for setting the default row alignment
+	 * @return the created row
+	 */
+	public Row row(Align alignment) {
+		Row row = Pools.row.obtain();
+		row.setAlign(alignment);
+		row.setPad(mRowPaddingDefault);
+		mRows.add(row);
+		return row;
+	}
+
+	/**
 	 * Sets the preferences of this table from another table. Such as default cell padding
 	 * default row padding, table alignment, default row alignment.
 	 * @param preferencesTable the table to get all the preferences for.

@@ -1,5 +1,9 @@
 package com.spiddekauga.voider.repo.misc;
 
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+
 /**
  * Local repository for settings (both client settings and user settings)
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
@@ -67,6 +71,7 @@ public class SettingLocalRepo {
 		 */
 		public void setMasterVolume(float volume) {
 			mClientPrefsGateway.setMasterVolume(volume);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_MASTER_VOLUME_CHANGED));
 		}
 
 		/**
@@ -82,6 +87,7 @@ public class SettingLocalRepo {
 		 */
 		public void setEffectsVolume(float volume) {
 			mClientPrefsGateway.setEffectsVolume(volume);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_EFFECTS_VOLUME_CHANGED));
 		}
 
 		/**
@@ -105,6 +111,7 @@ public class SettingLocalRepo {
 		 */
 		public void setMusicVolume(float volume) {
 			mClientPrefsGateway.setMusicVolume(volume);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_MUSIC_VOLUME_CHANGED));
 		}
 
 		/**
@@ -128,6 +135,7 @@ public class SettingLocalRepo {
 		 */
 		public void setUiVolume(float volume) {
 			mClientPrefsGateway.setUiVolume(volume);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_UI_VOLUME_CHANGED));
 		}
 
 		/**
@@ -148,9 +156,10 @@ public class SettingLocalRepo {
 
 	/** Sound setting repository */
 	public SoundSettingLocalRepo sound = new SoundSettingLocalRepo();
-	/** Network setting repostiory */
+	/** Network setting repository */
 	public NetworkSettingLocalRepo network = new NetworkSettingLocalRepo();
 
+	private EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 	private SettingClientPrefsGateway mClientPrefsGateway = new SettingClientPrefsGateway();
 
 	private static SettingLocalRepo mInstance = null;

@@ -1467,126 +1467,168 @@ settings_interface_disabled
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_resolution
+settings_network
   rotate: false
   xy: 3409, 281
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_resolution_checked
-  rotate: false
-  xy: 3443, 315
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_resolution_down
-  rotate: false
-  xy: 3443, 315
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_resolution_checked_over
-  rotate: false
-  xy: 3443, 281
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_resolution_over
-  rotate: false
-  xy: 3443, 281
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_resolution_disabled
-  rotate: false
-  xy: 3477, 315
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_sound
-  rotate: false
-  xy: 3477, 281
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_sound_checked
-  rotate: false
-  xy: 3511, 315
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_sound_down
-  rotate: false
-  xy: 3511, 315
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_sound_checked_over
-  rotate: false
-  xy: 3511, 281
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_sound_over
-  rotate: false
-  xy: 3511, 281
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-settings_sound_disabled
-  rotate: false
-  xy: 3545, 315
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 settings_statistics
   rotate: false
-  xy: 3545, 281
+  xy: 3409, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_network_checked
+  rotate: false
+  xy: 3443, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_network_down
+  rotate: false
+  xy: 3443, 315
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 settings_statistics_checked
   rotate: false
-  xy: 3579, 315
+  xy: 3443, 315
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 settings_statistics_down
   rotate: false
-  xy: 3579, 315
+  xy: 3443, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_network_checked_over
+  rotate: false
+  xy: 3443, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_network_over
+  rotate: false
+  xy: 3443, 281
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 settings_statistics_checked_over
   rotate: false
-  xy: 3579, 281
+  xy: 3443, 281
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 settings_statistics_over
   rotate: false
-  xy: 3579, 281
+  xy: 3443, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_network_disabled
+  rotate: false
+  xy: 3477, 315
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 settings_statistics_disabled
+  rotate: false
+  xy: 3477, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_resolution
+  rotate: false
+  xy: 3477, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_resolution_checked
+  rotate: false
+  xy: 3511, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_resolution_down
+  rotate: false
+  xy: 3511, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_resolution_checked_over
+  rotate: false
+  xy: 3511, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_resolution_over
+  rotate: false
+  xy: 3511, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_resolution_disabled
+  rotate: false
+  xy: 3545, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_sound
+  rotate: false
+  xy: 3545, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_sound_checked
+  rotate: false
+  xy: 3579, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_sound_down
+  rotate: false
+  xy: 3579, 315
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_sound_checked_over
+  rotate: false
+  xy: 3579, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_sound_over
+  rotate: false
+  xy: 3579, 281
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_sound_disabled
   rotate: false
   xy: 3613, 315
   size: 32, 32
@@ -1926,6 +1968,14 @@ textfield
   size: 9, 9
   split: 4, 4, 4, 4
   orig: 9, 9
+  offset: 0, 0
+  index: -1
+window_settings
+  rotate: false
+  xy: 3157, 249
+  size: 5, 5
+  split: 2, 2, 2, 2
+  orig: 5, 5
   offset: 0, 0
   index: -1
 button_default_checked

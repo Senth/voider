@@ -3,6 +3,10 @@ package com.spiddekauga.voider.sound;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SoundSettingLocalRepo;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Singleton class for playing music.
@@ -15,7 +19,9 @@ public class MusicPlayer {
 	 * Private constructor to enforce singleton usage
 	 */
 	private MusicPlayer() {
-		// Does nothing
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.SOUND_MASTER_VOLUME_CHANGED, mVolumeChangeListener);
+		eventDispatcher.connect(EventTypes.SOUND_MUSIC_VOLUME_CHANGED, mVolumeChangeListener);
 	}
 
 	/**
@@ -136,6 +142,17 @@ public class MusicPlayer {
 			}
 		}
 	}
+
+	/** Listens to when the master or music volume is changed */
+	private IEventListener mVolumeChangeListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			if (mInterpolation == null && mCurrent != null) {
+				float volume = mSoundRepo.getMusicVolumeOut();
+				mCurrent.getTrack().setVolume(volume);
+			}
+		}
+	};
 
 	/** Current interpolation */
 	private Interpolations mInterpolation = null;

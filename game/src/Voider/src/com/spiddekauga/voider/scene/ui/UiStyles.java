@@ -51,7 +51,6 @@ public class UiStyles {
 	public static class Variables {
 		public float barUpperLowerHeight = 0;
 		public float textFieldNumberWidth = 0;
-		public float sliderWidth = 0;
 		public float sliderLabelWidth = 0;
 		public float paddingButton = 0;
 		public float paddingCheckBox = 0;
@@ -69,6 +68,8 @@ public class UiStyles {
 		public float textButtonWidth = 0;
 		public float paddingParagraph = 0;
 		public float rightPanelWidth = 0;
+		float settingsWidth = 0;
+		float settingsHeight = 0;
 	}
 
 	public static class Sliders {
@@ -264,7 +265,6 @@ public class UiStyles {
 		vars.paddingTransparentTextButton = SkinNames.getResource(SkinNames.GeneralVars.PADDING_TRANSPARENT_TEXT_BUTTON);
 		vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
-		vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
 		vars.sliderLabelWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_LABEL_WIDTH);
 		vars.rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ROW_HEIGHT);
 		vars.rowHeightSection = SkinNames.getResource(SkinNames.GeneralVars.ROW_HEIGHT_SECTION);
@@ -272,6 +272,8 @@ public class UiStyles {
 		vars.textButtonHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_HEIGHT);
 		vars.textButtonWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_WIDTH);
 		vars.rightPanelWidth = SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH);
+		vars.settingsWidth = SkinNames.getResource(SkinNames.GeneralVars.SETTINGS_WIDTH);
+		vars.settingsHeight = SkinNames.getResource(SkinNames.GeneralVars.SETTINGS_HEIGHT);
 
 		// Label styles
 		label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);

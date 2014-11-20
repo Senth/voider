@@ -1,5 +1,6 @@
 package com.spiddekauga.utils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -182,12 +183,45 @@ public abstract class IniClass {
 				Field field = vars.get(varName);
 
 				if (field != null) {
-					setVar(field, classSection, varName);
+					// Array
+					if (field.getType().isArray()) {
+						setArray(field, classSection, varName);
+					}
+					// Normal
+					else {
+						setVar(field, classSection, varName);
+					}
 					vars.remove(varName);
 				} else {
 					mLogger.warning("No field '" + varName + "' found in " + getFullSimpleName(getClass()));
 				}
 			}
+		}
+	}
+
+	/**
+	 * Sets the specified array variable
+	 * @param field the variable to set
+	 * @param section the section to fetch from
+	 * @param varName variable name in the section
+	 */
+	private void setArray(Field field, Section section, String varName) {
+		int size = section.getAll(varName).size();
+		Class<?> componentType = field.getType().getComponentType();
+		Object array = Array.newInstance(componentType, size);
+
+		for (int i = 0; i < size; ++i) {
+			Object value = section.fetch(varName, i, componentType);
+			Array.set(array, i, value);
+		}
+
+		try {
+			field.set(this, array);
+		} catch (IllegalArgumentException e) {
+			mLogger.severe("Could not set field '" + varName + "' as '" + getFullSimpleName(field.getType()) + "' in "
+					+ getFullSimpleName(getClass()));
+		} catch (IllegalAccessException e) {
+			mLogger.severe("No access to field '" + varName + "' in " + getFullSimpleName(getClass()));
 		}
 	}
 

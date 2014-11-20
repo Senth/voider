@@ -110,7 +110,7 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				// TODO go to options
+				mMenuScene.pushMenu(Menus.SETTINGS);
 			}
 		};
 

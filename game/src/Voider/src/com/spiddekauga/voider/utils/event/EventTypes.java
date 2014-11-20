@@ -47,4 +47,15 @@ public enum EventTypes {
 	UPDATE_AVAILABLE,
 	/** Update is required */
 	UPDATE_REQUIRED,
+
+
+	// --- SOUND ---
+	/** Master volume was changed */
+	SOUND_MASTER_VOLUME_CHANGED,
+	/** Music volume was changed */
+	SOUND_MUSIC_VOLUME_CHANGED,
+	/** Game effects volume was changed */
+	SOUND_EFFECTS_VOLUME_CHANGED,
+	/** UI volume was changed */
+	SOUND_UI_VOLUME_CHANGED,
 }
