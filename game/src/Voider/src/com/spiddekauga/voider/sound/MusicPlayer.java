@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.sound;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.voider.repo.misc.SettingLocalRepo;
-import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SoundSettingLocalRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingSoundRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -159,7 +159,7 @@ public class MusicPlayer {
 	private Music mCurrent = null;
 	private Music mNext = null;
 	private Music mPaused = null;
-	private SoundSettingLocalRepo mSoundRepo = SettingLocalRepo.getInstance().sound;
+	private SettingSoundRepo mSoundRepo = SettingRepo.getInstance().sound();
 
 	private static MusicPlayer mInstance = null;
 }

@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.app;
 
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.repo.misc.SettingLocalRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -32,14 +32,14 @@ public class SettingsScene extends Scene {
 	 * @param volume
 	 */
 	void setMasterVolume(float volume) {
-		mSettingLocalRepo.sound.setMasterVolume(volume / 100f);
+		mSettingRepo.sound().setMasterVolume(volume / 100f);
 	}
 
 	/**
 	 * @return get master volume
 	 */
 	float getMasterVolume() {
-		return mSettingLocalRepo.sound.getMasterVolume() * 100;
+		return mSettingRepo.sound().getMasterVolume() * 100;
 	}
 
 	/**
@@ -47,14 +47,14 @@ public class SettingsScene extends Scene {
 	 * @param volume
 	 */
 	void setMusicVolume(float volume) {
-		mSettingLocalRepo.sound.setMusicVolume(volume / 100f);
+		mSettingRepo.sound().setMusicVolume(volume / 100f);
 	}
 
 	/**
 	 * @return get music volume
 	 */
 	float getMusicVolume() {
-		return mSettingLocalRepo.sound.getMusicVolume() * 100;
+		return mSettingRepo.sound().getMusicVolume() * 100;
 	}
 
 	/**
@@ -62,14 +62,14 @@ public class SettingsScene extends Scene {
 	 * @param volume
 	 */
 	void setGameVolume(float volume) {
-		mSettingLocalRepo.sound.setEffectsVolume(volume / 100f);
+		mSettingRepo.sound().setEffectsVolume(volume / 100f);
 	}
 
 	/**
 	 * @return game volume
 	 */
 	float getGameVolume() {
-		return mSettingLocalRepo.sound.getEffectsVolume() * 100;
+		return mSettingRepo.sound().getEffectsVolume() * 100;
 	}
 
 	/**
@@ -77,14 +77,14 @@ public class SettingsScene extends Scene {
 	 * @param volume
 	 */
 	void setUiVolume(float volume) {
-		mSettingLocalRepo.sound.setUiVolume(volume / 100f);
+		mSettingRepo.sound().setUiVolume(volume / 100f);
 	}
 
 	/**
 	 * @return UI / Button volume
 	 */
 	float getUiVolume() {
-		return mSettingLocalRepo.sound.getUiVolume() * 100;
+		return mSettingRepo.sound().getUiVolume() * 100;
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class SettingsScene extends Scene {
 	 * @param dateFormat the date format
 	 */
 	void setDateFormat(String dateFormat) {
-
+		// TODO
 	}
 
 	/**
@@ -119,5 +119,5 @@ public class SettingsScene extends Scene {
 		return "yyyy-MM-dd";
 	}
 
-	private SettingLocalRepo mSettingLocalRepo = SettingLocalRepo.getInstance();
+	private SettingRepo mSettingRepo = SettingRepo.getInstance();
 }

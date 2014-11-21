@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -36,6 +35,15 @@ public class SettingsGui extends Gui {
 	}
 
 	@Override
+	public void dispose() {
+		super.dispose();
+
+		mWidgets.display.table.dispose();
+		mWidgets.general.table.dispose();
+		mWidgets.sound.table.dispose();
+	}
+
+	@Override
 	public void initGui() {
 		super.initGui();
 
@@ -45,7 +53,6 @@ public class SettingsGui extends Gui {
 		initTabs();
 		initGeneral();
 		initSound();
-		initNetwork();
 
 		if (Gdx.app.getType() == ApplicationType.Desktop) {
 			initDisplay();
@@ -63,8 +70,6 @@ public class SettingsGui extends Gui {
 			mUiFactory.addTab(SkinNames.General.SETTINGS_DISPLAY, mWidgets.display.table, null, tabWidget);
 		}
 		mUiFactory.addTab(SkinNames.General.SETTINGS_SOUND, mWidgets.sound.table, null, tabWidget);
-		// mUiFactory.addTab(SkinNames.General.SETTINGS_NETWORK, mWidgets.network.table,
-		// null, tabWidget);
 		mUiFactory.addTab(SkinNames.General.SETTINGS_GENERAL, mWidgets.general.table, null, tabWidget);
 	}
 
@@ -73,10 +78,6 @@ public class SettingsGui extends Gui {
 		initTable(table, "General");
 
 		mUiFactory.text.addSection("Date Format", table, null);
-
-		// Example
-		table.row();
-		mWidgets.general.example = mUiFactory.text.add("", table);
 
 		// Date format
 		IC_General general = ConfigIni.getInstance().setting.general;
@@ -148,11 +149,6 @@ public class SettingsGui extends Gui {
 		initTable(table, "Display");
 	}
 
-	private void initNetwork() {
-		AlignTable table = mWidgets.network.table;
-		initTable(table, "Network");
-	}
-
 	/**
 	 * Initializes the table with a header
 	 * @param table the table to initialize
@@ -175,7 +171,6 @@ public class SettingsGui extends Gui {
 		super.resetValues();
 
 		resetSound();
-		resetNetwork();
 		resetDisplay();
 		resetGeneral();
 	}
@@ -187,10 +182,6 @@ public class SettingsGui extends Gui {
 		mWidgets.sound.ui.setValue(mScene.getUiVolume());
 	}
 
-	private void resetNetwork() {
-
-	}
-
 	private void resetDisplay() {
 
 	}
@@ -198,20 +189,13 @@ public class SettingsGui extends Gui {
 	private void resetGeneral() {
 		mWidgets.general.dateFormat.setSelected(mScene.getDateFormat());
 		mWidgets.general.time24h.setChecked(mScene.is24HourFormat());
-		resetDateTimeExample();
 	}
-
-	private void resetDateTimeExample() {
-		// TODO
-	}
-
 
 	private static class InnerWidgets {
 		TabWidget tabWidget = null;
 		Sound sound = new Sound();
 		General general = new General();
 		Display display = new Display();
-		Network network = new Network();
 
 
 		class Sound {
@@ -224,16 +208,11 @@ public class SettingsGui extends Gui {
 
 		class General {
 			AlignTable table = new AlignTable();
-			Label example = null;
 			Button time24h = null;
 			SelectBox<String> dateFormat = null;
 		}
 
 		class Display {
-			AlignTable table = new AlignTable();
-		}
-
-		class Network {
 			AlignTable table = new AlignTable();
 		}
 	}

@@ -8,7 +8,7 @@ import com.spiddekauga.voider.utils.event.GameEvent;
  * Local repository for settings (both client settings and user settings)
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class SettingLocalRepo {
+class SettingLocalRepo {
 	/**
 	 * Private constructor to enforce singleton usage
 	 */
@@ -27,41 +27,40 @@ public class SettingLocalRepo {
 	}
 
 	/**
-	 * Local repository for network settings
+	 * General Settings
 	 */
-	public class NetworkSettingLocalRepo {
+	class SettingGeneralLocalRepo {
 		/**
 		 * Hidden constructor
 		 */
-		private NetworkSettingLocalRepo() {
+		private SettingGeneralLocalRepo() {
 			// Does nothing
 		}
 
 		/**
-		 * Set if the client should auto-connect when it goes offline
-		 * @param autoConnect true if the client should auto connect when it goes offline
+		 * Sets DateTime format that the user uses
+		 * @param dateTime format of the date time
 		 */
-		public void setAutoConnect(boolean autoConnect) {
-			mClientPrefsGateway.setAutoConnect(autoConnect);
+		void setDateTime(String dateTime) {
+			mUserPrefsGateway.setDateTime(dateTime);
 		}
 
 		/**
-		 * @return true if the client should auto connect when it goes offline
+		 * @return DateTime format the user uses.
 		 */
-		public boolean shouldAutoConnect() {
-			return mClientPrefsGateway.shouldAutoConnect();
+		String getDateTime() {
+			return mUserPrefsGateway.getDateTime();
 		}
 	}
 
-
 	/**
-	 * Local repository for the sound settings
+	 * Sound settings
 	 */
-	public class SoundSettingLocalRepo {
+	class SettingSoundLocalRepo {
 		/**
 		 * Hidden constructor
 		 */
-		private SoundSettingLocalRepo() {
+		private SettingSoundLocalRepo() {
 			// Does nothing
 		}
 
@@ -155,11 +154,12 @@ public class SettingLocalRepo {
 	}
 
 	/** Sound setting repository */
-	public SoundSettingLocalRepo sound = new SoundSettingLocalRepo();
-	/** Network setting repository */
-	public NetworkSettingLocalRepo network = new NetworkSettingLocalRepo();
+	SettingSoundLocalRepo sound = new SettingSoundLocalRepo();
+	/** general setting repository */
+	SettingGeneralLocalRepo general = new SettingGeneralLocalRepo();
 
 	private EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
+	private SettingUserPrefsGateway mUserPrefsGateway = new SettingUserPrefsGateway();
 	private SettingClientPrefsGateway mClientPrefsGateway = new SettingClientPrefsGateway();
 
 	private static SettingLocalRepo mInstance = null;
