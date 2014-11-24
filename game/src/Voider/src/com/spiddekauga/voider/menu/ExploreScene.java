@@ -26,6 +26,8 @@ import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
@@ -356,13 +358,13 @@ public class ExploreScene extends Scene implements IResponseListener {
 				case SUCCESS_MORE_EXISTS:
 					// Set user comment
 					if (response.userComment != null) {
-						String dateString = mUser.dateToString(response.userComment.date);
+						String dateString = mDateRepo.getDate(response.userComment.date);
 						((ExploreGui) mGui).setUserComment(response.userComment.comment, dateString);
 					}
 
 					// Add comments
 					for (ResourceCommentEntity commentEntity : response.comments) {
-						String dateString = mUser.dateToString(commentEntity.date);
+						String dateString = mDateRepo.getDate(commentEntity.date);
 						((ExploreGui) mGui).addComment(commentEntity.username, commentEntity.comment, dateString);
 					}
 
@@ -524,6 +526,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 		private ArrayList<Tags> mTags = new ArrayList<>();
 	}
 
+	private SettingDateRepo mDateRepo = SettingRepo.getInstance().date();
 	private final User mUser = User.getGlobalUser();
 	private CommentFetch mCommentFetch = new CommentFetch();
 	private LevelFetch mLevelFetch = new LevelFetch();

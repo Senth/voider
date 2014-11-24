@@ -3,6 +3,8 @@ package com.spiddekauga.voider.repo.misc;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.repo.Repo;
@@ -64,11 +66,50 @@ public class SettingRepo extends Repo {
 		}
 
 		/**
+		 * Sets the date time format if it has been changed, and updates the server
+		 * version.
+		 * @param format new date time format.
+		 */
+		private void setDateTimeFormat(String format) {
+			// Skip, not changed
+			if (mGeneralLocalRepo.getDateTime().equals(format)) {
+				return;
+			}
+
+			mGeneralLocalRepo.setDateTime(format);
+			// TODO sync to server
+		}
+
+		/**
+		 * Get first or second part of the date time string
+		 * @param datePart true if we want to get the date part
+		 * @return specific split part of the date time string
+		 */
+		private String getFormatPart(boolean datePart) {
+			String dateTime = mGeneralLocalRepo.getDateTime();
+			if (!dateTime.isEmpty()) {
+				int lastSpaceIndex = dateTime.lastIndexOf(' ');
+
+				if (lastSpaceIndex != -1) {
+					// Date part
+					if (datePart) {
+						return dateTime.substring(0, lastSpaceIndex - 1);
+					}
+					// Time part
+					else {
+						return dateTime.substring(lastSpaceIndex);
+					}
+				}
+			}
+
+			return "";
+		}
+
+		/**
 		 * @return time format
 		 */
 		private String getTimeFormat() {
-			// TODO
-			return null;
+			return getFormatPart(false);
 		}
 
 		/**
@@ -76,15 +117,14 @@ public class SettingRepo extends Repo {
 		 * @param format
 		 */
 		public void setDateFormat(String format) {
-			// TODO
+			setDateTimeFormat(format + " " + getTimeFormat());
 		}
 
 		/**
 		 * @return get date format
 		 */
 		public String getDateFormat() {
-			// TODO
-			return null;
+			return getFormatPart(true);
 		}
 
 		/**
@@ -92,15 +132,22 @@ public class SettingRepo extends Repo {
 		 * @param time24h true to use 24hr format, false to use AM/PM
 		 */
 		public void set24h(boolean time24h) {
-			// TODO
+			String timeFormat = null;
+			IC_General icGeneral = ConfigIni.getInstance().setting.general;
+			if (time24h) {
+				timeFormat = icGeneral.getTime24hFormat();
+			} else {
+				timeFormat = icGeneral.getTimeAmPmFormat();
+			}
+			setDateTimeFormat(getDateFormat() + " " + timeFormat);
 		}
 
 		/**
 		 * @return true if 24hr are used, false if AM/PM is used
 		 */
 		public boolean is24h() {
-			// TODO
-			return true;
+			IC_General icGeneral = ConfigIni.getInstance().setting.general;
+			return icGeneral.getTime24hFormat().equals(getTimeFormat());
 		}
 
 		/**
@@ -125,10 +172,14 @@ public class SettingRepo extends Repo {
 		 * @return human-readable date string
 		 */
 		public String getDate(Date date) {
+			if (date == null) {
+				return "";
+			}
+
 			if (mDateFormatter == null) {
-				mDateFormatter = new SimpleDateFormat(getDateFormat());
-			} else if (!mDateFormatter.toPattern().equals(getDateFormat())) {
-				mDateFormatter.applyPattern(getDateFormat());
+				mDateFormatter = new SimpleDateFormat(mGeneralLocalRepo.getDateTime());
+			} else if (!mDateFormatter.toPattern().equals(mGeneralLocalRepo.getDateTime())) {
+				mDateFormatter.applyPattern(mGeneralLocalRepo.getDateTime());
 			}
 
 			return mDateFormatter.format(date);

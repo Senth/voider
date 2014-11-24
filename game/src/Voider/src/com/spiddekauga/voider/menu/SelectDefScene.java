@@ -2,6 +2,7 @@ package com.spiddekauga.voider.menu;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -311,14 +312,14 @@ public class SelectDefScene extends Scene implements IEventListener {
 	}
 
 	/**
-	 * @return current date of the selected definition. An empty string if no definition
-	 *         has been selected
+	 * @return current date of the selected definition, null if no definition has been
+	 *         selected
 	 */
-	String getDate() {
+	Date getDate() {
 		if (mSelectedDef != null) {
-			return mSelectedDef.getDateString();
+			return mSelectedDef.getDate();
 		}
-		return "";
+		return null;
 	}
 
 	/**

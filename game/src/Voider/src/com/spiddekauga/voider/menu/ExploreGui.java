@@ -42,6 +42,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
@@ -84,7 +86,7 @@ public class ExploreGui extends Gui {
 
 		if (level != null) {
 			mWidgets.info.createdBy.setText(level.defEntity.originalCreator);
-			mWidgets.info.date.setText(User.getGlobalUser().dateToString(level.defEntity.date));
+			mWidgets.info.date.setText(mDateRepo.getDate(level.defEntity.date));
 			mWidgets.info.description.setText(level.defEntity.description);
 			mWidgets.info.name.setText(level.defEntity.name);
 			mWidgets.info.revisedBy.setText(level.defEntity.creator);
@@ -859,10 +861,9 @@ public class ExploreGui extends Gui {
 
 	/** If we're currently clearing the tags */
 	private boolean mClearingTags = false;
-	/** The explore scene */
 	private ExploreScene mExploreScene = null;
-	/** Widgets */
 	private Widgets mWidgets = null;
+	private SettingDateRepo mDateRepo = SettingRepo.getInstance().date();
 
 	/**
 	 * All widgets

@@ -19,14 +19,24 @@ public class IC_Setting extends IniClass {
 	 * General settings
 	 */
 	public class IC_General extends IniClass {
-		protected String[] dateTimeFormats;
+		protected String[] dateFormats;
+		protected String time24hFormat;
+		protected String timeAmPmFormat;
 
 		private IC_General(Ini ini, Section classSection) {
 			super(ini, classSection);
 		}
 
-		public String[] getDateTimeFormats() {
-			return dateTimeFormats;
+		public String[] getDateFormats() {
+			return dateFormats;
+		}
+
+		public String getTime24hFormat() {
+			return time24hFormat;
+		}
+
+		public String getTimeAmPmFormat() {
+			return timeAmPmFormat;
 		}
 	}
 

@@ -25,7 +25,7 @@ import com.spiddekauga.voider.utils.User;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Def extends Resource implements IResourceDependency, IResourceRevision, Disposable, IResourceTexture, IResourcePng,
-KryoPostRead {
+		KryoPostRead {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -182,15 +182,9 @@ KryoPostRead {
 	}
 
 	/**
-	 * @return date string
-	 */
-	public String getDateString() {
-		return User.getGlobalUser().dateToString(mDate);
-	}
-
-	/**
 	 * @return the revision of the level
 	 */
+	@Override
 	public int getRevision() {
 		return mRevision;
 	}
@@ -199,6 +193,7 @@ KryoPostRead {
 	 * Sets the revision of the resource
 	 * @param revision the new revision of the resource
 	 */
+	@Override
 	public void setRevision(int revision) {
 		mRevision = revision;
 	}

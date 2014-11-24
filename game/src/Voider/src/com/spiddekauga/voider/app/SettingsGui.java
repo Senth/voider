@@ -87,7 +87,7 @@ public class SettingsGui extends Gui {
 				mScene.setDateFormat(mSelectBox.getSelected());
 			}
 		};
-		mWidgets.general.dateFormat = mUiFactory.addSelectBox(null, general.getDateTimeFormats(), selectBoxListener, table, null, null);
+		mWidgets.general.dateFormat = mUiFactory.addSelectBox(null, general.getDateFormats(), selectBoxListener, table, null, null);
 
 		// 24 hours?
 		mUiFactory.text.addSection("Time Format", table, null);
@@ -99,7 +99,7 @@ public class SettingsGui extends Gui {
 			}
 		};
 		mWidgets.general.time24h = mUiFactory.addCheckBoxRow("24hr", CheckBoxStyles.RADIO, buttonListener, buttonGroup, table);
-		mUiFactory.addCheckBoxRow("AM/PM", CheckBoxStyles.RADIO, null, buttonGroup, table);
+		mWidgets.general.timeAmPm = mUiFactory.addCheckBoxRow("AM/PM", CheckBoxStyles.RADIO, null, buttonGroup, table);
 	}
 
 	private void initSound() {
@@ -188,7 +188,11 @@ public class SettingsGui extends Gui {
 
 	private void resetGeneral() {
 		mWidgets.general.dateFormat.setSelected(mScene.getDateFormat());
-		mWidgets.general.time24h.setChecked(mScene.is24HourFormat());
+		if (mScene.is24HourFormat()) {
+			mWidgets.general.time24h.setChecked(true);
+		} else {
+			mWidgets.general.timeAmPm.setChecked(true);
+		}
 	}
 
 	private static class InnerWidgets {
@@ -209,6 +213,7 @@ public class SettingsGui extends Gui {
 		class General {
 			AlignTable table = new AlignTable();
 			Button time24h = null;
+			Button timeAmPm = null;
 			SelectBox<String> dateFormat = null;
 		}
 

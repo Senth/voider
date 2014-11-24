@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
@@ -21,28 +23,27 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.menu.SelectDefScene.DefVisible;
 import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
-import com.spiddekauga.voider.utils.User;
 
 /**
- * GUI for Select Definition Scene. This creates a border at the top for filtering search, and an optionally checkbox
- * for only showing the player's own actors.
+ * GUI for Select Definition Scene. This creates a border at the top for filtering search,
+ * and an optionally checkbox for only showing the player's own actors.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectDefGui extends Gui {
 	/**
 	 * Creates the GUI (but does not init it) for the select actor
-	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox to only display one's own
-	 *        actors.
+	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox to
+	 *        only display one's own actors.
 	 * @param buttonText what text to display on load/play ?
 	 */
 	public SelectDefGui(boolean showMineOnlyCheckbox, String buttonText) {
@@ -464,10 +465,10 @@ public class SelectDefGui extends Gui {
 	 */
 	void resetInfo() {
 		mWidgets.info.createdBy.setText(mSelectDefScene.getOriginalCreator());
-		mWidgets.info.date.setText(mSelectDefScene.getDate());
 		mWidgets.info.description.setText(mSelectDefScene.getDescription());
 		mWidgets.info.name.setText(mSelectDefScene.getName());
 		mWidgets.info.revisedBy.setText(mSelectDefScene.getCreator());
+		mWidgets.info.date.setText(mDateRepo.getDate(mSelectDefScene.getDate()));
 
 		if (mWidgets.info.revision != null) {
 			mWidgets.info.revision.setText(mSelectDefScene.getRevisionString());
@@ -517,7 +518,7 @@ public class SelectDefGui extends Gui {
 			for (int i = 0; i < revisions.length; ++i) {
 				int revisionInt = revisions.length - 1 - i;
 				RevisionEntity revisionInfo = resourceRevisions.get(i);
-				String dateString = User.getGlobalUser().dateToString(revisionInfo.date);
+				String dateString = mDateRepo.getDate(revisionInfo.date);
 				revisions[revisionInt] = String.format("%0" + revisionStringLength + "d - %s", revisionInfo.revision, dateString);
 			}
 		} else {
@@ -543,11 +544,9 @@ public class SelectDefGui extends Gui {
 	private boolean mAddingContent = false;
 	/** If the checkbox that only shows one's own actors shall be shown */
 	private boolean mShowMineOnlyCheckbox;
-	/** SelectDefScene this GUI is bound to */
 	private SelectDefScene mSelectDefScene = null;
-	/** Text to display on play/load button */
 	private String mButtonText = "";
-	/** Inner widgets */
+	private SettingDateRepo mDateRepo = SettingRepo.getInstance().date();
 	private Widgets mWidgets = new Widgets();
 
 	private static class Widgets {

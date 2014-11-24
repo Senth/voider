@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.utils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -62,7 +60,6 @@ public class User {
 		mServerKey = null;
 		mLoggedIn = false;
 		mUsername = "(None)";
-		mDateFormat = DATE_FORMAT_DEFAULT;
 
 		// Update user path
 		if (this == mGlobalUser) {
@@ -86,7 +83,6 @@ public class User {
 			mServerKey = from.mServerKey;
 			mLoggedIn = from.mLoggedIn;
 			mUsername = from.mUsername;
-			mDateFormat = from.mDateFormat;
 		}
 	}
 
@@ -177,14 +173,6 @@ public class User {
 	}
 
 	/**
-	 * Sets the date format for the user
-	 * @param dateFormat preferred date format for the user
-	 */
-	public void setDateFormat(String dateFormat) {
-		mDateFormat = new SimpleDateFormat(dateFormat);
-	}
-
-	/**
 	 * Sets the user id on the server. Does not work for the global user.
 	 * @param serverKey user id of the server
 	 */
@@ -267,15 +255,6 @@ public class User {
 	 */
 	public UUID getPrivateKey() {
 		return mPrivateKey;
-	}
-
-	/**
-	 * Converts a date to the user's preferred date format
-	 * @param date the date to convert to string
-	 * @return date as string in the user's preferred date format
-	 */
-	public synchronized String dateToString(Date date) {
-		return mDateFormat.format(date);
 	}
 
 	private IResponseListener mResponseListener = new IResponseListener() {
@@ -379,10 +358,6 @@ public class User {
 	private final static NotificationShower mNotification = NotificationShower.getInstance();
 	private final static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 	private final static UserWebRepo mWebRepo = UserWebRepo.getInstance();
-	/** Default datetime format */
-	private final static SimpleDateFormat DATE_FORMAT_DEFAULT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-	/** Date to string format */
-	private SimpleDateFormat mDateFormat = DATE_FORMAT_DEFAULT;
 	/** Global user */
 	private static User mGlobalUser = new User();
 	private String mUsername = "(None)";

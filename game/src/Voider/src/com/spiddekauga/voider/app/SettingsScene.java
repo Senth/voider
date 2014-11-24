@@ -92,15 +92,14 @@ public class SettingsScene extends Scene {
 	 * @param time24h true if the time should be set to 24 hours format
 	 */
 	void set24HourFormat(boolean time24h) {
-		// TODO
+		mSettingRepo.date().set24h(time24h);
 	}
 
 	/**
 	 * @return true if time is shown in 24 hours format
 	 */
 	boolean is24HourFormat() {
-		// TODO
-		return true;
+		return mSettingRepo.date().is24h();
 	}
 
 	/**
@@ -108,15 +107,14 @@ public class SettingsScene extends Scene {
 	 * @param dateFormat the date format
 	 */
 	void setDateFormat(String dateFormat) {
-		// TODO
+		mSettingRepo.date().setDateFormat(dateFormat);
 	}
 
 	/**
 	 * @return current date format
 	 */
 	String getDateFormat() {
-		// TODO
-		return "yyyy-MM-dd";
+		return mSettingRepo.date().getDateFormat();
 	}
 
 	private SettingRepo mSettingRepo = SettingRepo.getInstance();
