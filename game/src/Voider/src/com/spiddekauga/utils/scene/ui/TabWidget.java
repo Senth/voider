@@ -36,8 +36,11 @@ public class TabWidget extends AlignTable {
 	public TabWidget() {
 		setAlign(Horizontal.LEFT, Vertical.TOP);
 		mTabTable.setAlign(TAB_ALIGN_TOP_BOTTOM_DEFAULT);
+		mTabTable.setName("tab-table");
 		mContentInnerTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		mContentInnerTable.setName("content-inner-table");
 		mContentOuterTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		mContentOuterTable.setName("content-outer-table");
 
 		mTabRow = super.row(TAB_ALIGN_TOP_BOTTOM_DEFAULT);
 		super.add(mTabTable);
@@ -54,6 +57,33 @@ public class TabWidget extends AlignTable {
 		mContentInnerTable.dispose(disposeActors);
 		mTabButtons.clear();
 		mTabTable.dispose();
+	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+
+		mContentInnerTable.invalidate();
+		mContentOuterTable.invalidate();
+		mTabTable.invalidate();
+	}
+
+	@Override
+	public void invalidateHierarchy() {
+		invalidate();
+		super.invalidateHierarchy();
+	}
+
+	@Override
+	public void layout() {
+		// Update visibility
+		if (isAllTabsHidden() && isVisible()) {
+			setVisible(false);
+		} else if (!isAllTabsHidden() && !isVisible()) {
+			setVisible(true);
+		}
+
+		super.layout();
 	}
 
 	/**
@@ -180,6 +210,7 @@ public class TabWidget extends AlignTable {
 		hider.setButton(button);
 		mContentInnerTable.add(addActor).setFillWidth(true).setFillHeight(true);
 		mContentInnerTable.getRow().setFillWidth(true).setFillHeight(true);
+		invalidateHierarchy();
 		return button;
 	}
 
@@ -359,7 +390,7 @@ public class TabWidget extends AlignTable {
 	public TabWidget setTabPosition(Positions position) {
 		// Skip if new position is same as old
 		if (position == mTabPosition) {
-			return this;
+			// return this;
 		}
 
 
@@ -369,7 +400,8 @@ public class TabWidget extends AlignTable {
 		Align tabAlign = getTabAlignment(mTabRow.getAlign(), mTabPosition, position);
 
 		// Remove Tab and Outer table
-		dispose();
+		mTabTable.remove();
+		mContentOuterTable.remove();
 
 		// Add Tab at right position
 		switch (position) {
@@ -412,6 +444,7 @@ public class TabWidget extends AlignTable {
 		layoutTabButtons(mTabPosition, position);
 
 		mTabPosition = position;
+		invalidate();
 
 		return this;
 	}

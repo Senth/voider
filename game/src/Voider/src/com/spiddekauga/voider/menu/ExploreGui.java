@@ -122,12 +122,15 @@ abstract class ExploreGui extends Gui {
 	 */
 	private void initLeftPanel() {
 		TabWidget tabWidget = mUiFactory.createRightPanel();
+		tabWidget.setName("left-panel");
 		addActor(tabWidget);
 		mLeftPanel = tabWidget;
 
+		tabWidget.setMarginRight(0).setPadRight(0);
 		tabWidget.setTabPosition(Positions.RIGHT);
-		tabWidget.setAlignTab(Vertical.TOP);
-		tabWidget.setAlign(Horizontal.LEFT, Vertical.TOP);
+		// tabWidget.setAlignTab(Horizontal.LEFT);
+		tabWidget.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		tabWidget.setMarginBottom(mRightPanel.getMarginBottom());
 	}
 
 	/**
@@ -135,6 +138,7 @@ abstract class ExploreGui extends Gui {
 	 */
 	private void initRightPanel() {
 		TabWidget tabWidget = mUiFactory.createRightPanel();
+		tabWidget.setName("right-panel");
 		addActor(tabWidget);
 		mRightPanel = tabWidget;
 
@@ -178,12 +182,11 @@ abstract class ExploreGui extends Gui {
 	/**
 	 * Reset content margins
 	 */
-	private void resetContentMargins() {
+	protected void resetContentMargins() {
 		if (mWidgets.content.scrollPane != null) {
 			float screenWidth = Gdx.graphics.getWidth();
 			float screenHeight = Gdx.graphics.getHeight();
-			// float marginLeft = mLeftPanel.isVisible() ? mLeftPanel.getWidth() : 0;
-			float marginLeft = mUiFactory.getStyles().vars.paddingOuter;
+			float marginLeft = mLeftPanel.isVisible() ? mLeftPanel.getWidth() : mUiFactory.getStyles().vars.paddingOuter;
 			float marginRight = mRightPanel.getWidth() - mRightPanel.getMarginLeft() - mRightPanel.getPadLeft();
 			float marginTop = mLeftPanel.getMarginTop();
 			float marginBottom = mUiFactory.getStyles().vars.paddingOuter;

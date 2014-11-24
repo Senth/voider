@@ -1188,7 +1188,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 				}
 			}
 
-			layout();
+			invalidate();
 		}
 
 		return removed;
