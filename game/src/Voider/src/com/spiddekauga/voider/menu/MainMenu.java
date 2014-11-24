@@ -240,7 +240,7 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	 * Goes to the explore screen
 	 */
 	void gotoExplore() {
-		SceneSwitcher.switchTo(new ExploreScene());
+		SceneSwitcher.switchTo(new ExploreLevelScene());
 	}
 
 	// -- Create/Editors --

@@ -1249,6 +1249,13 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	/**
+	 * @return true if this table doesn't contain any rows and thus no cells
+	 */
+	public boolean isEmpty() {
+		return getRowCount() == 0;
+	}
+
+	/**
 	 * Set a background image of the table
 	 * @param image background image of this table, null to remove an existing background
 	 *        image

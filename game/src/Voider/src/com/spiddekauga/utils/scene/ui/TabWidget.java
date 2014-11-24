@@ -49,6 +49,13 @@ public class TabWidget extends AlignTable {
 		mContentOuterTable.add(mContentInnerTable).setFillWidth(true).setFillHeight(true);
 	}
 
+	@Override
+	public void dispose(boolean disposeActors) {
+		mContentInnerTable.dispose(disposeActors);
+		mTabButtons.clear();
+		mTabTable.dispose();
+	}
+
 	/**
 	 * @deprecated no more rows can be added to TabWidget
 	 */

@@ -307,7 +307,6 @@ public class SkinNames {
 	/**
 	 * Editor variables
 	 */
-
 	public enum EditorVars implements ISkinNames {
 		/** Enemy will be activated when test running from here, line color */
 		ENEMY_ACTIVATE_ON_TEST_RUN_COLOR(Color.class),

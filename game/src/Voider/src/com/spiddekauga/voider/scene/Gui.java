@@ -75,6 +75,7 @@ public abstract class Gui implements Disposable {
 		if (isInitialized()) {
 			dispose();
 			initGui();
+			resetValues();
 			if (mStage != null) {
 				mStage.getViewport().setWorldSize(width, height);
 				mStage.getViewport().update(width, height, true);
