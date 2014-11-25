@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -50,6 +49,11 @@ public class TabWidget extends AlignTable {
 
 		mContentOuterTable.row().setFillWidth(true).setFillHeight(true);
 		mContentOuterTable.add(mContentInnerTable).setFillWidth(true).setFillHeight(true);
+
+		mActionTable.setKeepWidth(true);
+		super.row(Horizontal.LEFT, Vertical.MIDDLE);
+		super.add(mActionTable);
+		addActionButtonRow();
 	}
 
 	@Override
@@ -57,6 +61,7 @@ public class TabWidget extends AlignTable {
 		mContentInnerTable.dispose(disposeActors);
 		mTabButtons.clear();
 		mTabTable.dispose();
+		mActionTable.dispose();
 	}
 
 	@Override
@@ -83,6 +88,7 @@ public class TabWidget extends AlignTable {
 			setVisible(true);
 		}
 
+		updateActionButtonPadding();
 		super.layout();
 	}
 
@@ -187,6 +193,7 @@ public class TabWidget extends AlignTable {
 	private Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider, boolean scrollable) {
 		ImageButton button = new ImageButton(imageButtonStyle);
 		mButtonGroup.add(button);
+		mTabHiderLast = hider;
 
 		if (mTabPosition.isLeftOrRight()) {
 			mTabTable.row();
@@ -222,6 +229,118 @@ public class TabWidget extends AlignTable {
 	 */
 	public Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table) {
 		return addTab(imageButtonStyle, table, new HideListener(true));
+	}
+
+	/**
+	 * Adds an action button to the action table (usually below the content).
+	 * @pre a tab must have been added through any of the following methods as these
+	 *      action buttons are only visible for this tab
+	 *      {@link #addTab(ImageButtonStyle, AlignTable)},
+	 *      {@link #addTab(ImageButtonStyle, AlignTable, HideListener)},
+	 *      {@link #addTabScroll(ImageButtonStyle, AlignTable)}, or
+	 *      {@link #addTabScroll(ImageButtonStyle, AlignTable, HideListener)}
+	 * @param button the button to add
+	 * @see #addActionButtonGlobal(Button) to add a global action button
+	 */
+	public void addActionButton(Button button) {
+		if (mTabHiderLast == null) {
+			throw new IllegalStateException("No tab added yet.");
+		}
+		mTabHiderLast.addToggleActor(button);
+		addActionButtonCommon(button);
+	}
+
+	/**
+	 * Add a global action button. This button is shown all the time if not hidden by
+	 * another widget.
+	 * @param button the button to add
+	 * @see #addActionButton(Button) to add an action button to the last added tab
+	 */
+	public void addActionButtonGlobal(Button button) {
+		addActionButtonCommon(button);
+	}
+
+	private void addActionButtonCommon(Button button) {
+		button.addListener(mActionButtonVisibilityListener);
+
+		Cell cell = mActionTable.add(button);
+		cell.setFillWidth(true);
+		if (mActionButtonHeight != 0) {
+			cell.setHeight(mActionButtonHeight);
+		}
+	}
+
+	/**
+	 * Adds a row to the action button table
+	 */
+	public void addActionButtonRow() {
+		mActionTable.row().setFillWidth(true);
+	}
+
+	/**
+	 * Sets and updates the current action button padding
+	 * @param pad amount to pad between the buttons and between buttons and the content.
+	 */
+	public void setActionButtonPad(float pad) {
+		mActionButtonPadding = pad;
+		updateActionButtonPadding();
+	}
+
+	/**
+	 * Sets and updates the current action button height
+	 * @param height height of all action buttons. 0 will reset the height
+	 */
+	public void setActionButtonHeight(float height) {
+		mActionButtonHeight = height;
+
+		if (height != 0) {
+			for (Row row : mActionTable.getRows()) {
+				for (Cell cell : row.getCells()) {
+					cell.setHeight(mActionButtonHeight);
+				}
+			}
+		} else {
+			for (Row row : mActionTable.getRows()) {
+				for (Cell cell : row.getCells()) {
+					cell.resetHeight();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Update the width of the action button
+	 */
+	private void updateActionButtonWidth() {
+		mActionTable.setWidth(mContentOuterTable.getWidth());
+	}
+
+	/**
+	 * Update existing button padding
+	 */
+	private void updateActionButtonPadding() {
+		Padding rowPadding = new Padding();
+		if (mTabPosition != Positions.BOTTOM) {
+			rowPadding.top = mActionButtonPadding;
+		} else {
+			rowPadding.bottom = mActionButtonPadding;
+		}
+		for (Row row : mActionTable.getRows()) {
+			row.setPad(rowPadding);
+
+			// Set button padding for all except last visible button
+			Cell lastVisibleCell = null;
+			for (Cell cell : row.getCells()) {
+				if (cell.isVisible()) {
+					cell.setPadRight(mActionButtonPadding);
+					lastVisibleCell = cell;
+				}
+			}
+
+			if (lastVisibleCell != null) {
+				lastVisibleCell.setPadRight(0);
+			}
+		}
 	}
 
 	@Override
@@ -262,6 +381,7 @@ public class TabWidget extends AlignTable {
 	public TabWidget setContentWidth(float width) {
 		mContentOuterTable.setWidth(width);
 		mContentOuterTable.setKeepWidth(true);
+		updateActionButtonWidth();
 		return this;
 	}
 
@@ -279,30 +399,35 @@ public class TabWidget extends AlignTable {
 	@Override
 	public TabWidget setPad(float top, float right, float bottom, float left) {
 		mContentOuterTable.setPad(top, right, bottom, left);
+		updateActionButtonWidth();
 		return this;
 	}
 
 	@Override
 	public TabWidget setPad(float padding) {
 		mContentOuterTable.setPad(padding);
+		updateActionButtonWidth();
 		return this;
 	}
 
 	@Override
 	public TabWidget setPad(Padding padding) {
 		mContentOuterTable.setPad(padding);
+		updateActionButtonWidth();
 		return this;
 	}
 
 	@Override
 	public TabWidget setPadLeft(float paddingLeft) {
 		mContentOuterTable.setPadLeft(paddingLeft);
+		updateActionButtonWidth();
 		return this;
 	}
 
 	@Override
 	public TabWidget setPadRight(float paddingRight) {
 		mContentOuterTable.setPadRight(paddingRight);
+		updateActionButtonWidth();
 		return this;
 	}
 
@@ -390,7 +515,7 @@ public class TabWidget extends AlignTable {
 	public TabWidget setTabPosition(Positions position) {
 		// Skip if new position is same as old
 		if (position == mTabPosition) {
-			// return this;
+			return this;
 		}
 
 
@@ -402,10 +527,14 @@ public class TabWidget extends AlignTable {
 		// Remove Tab and Outer table
 		mTabTable.remove();
 		mContentOuterTable.remove();
+		mActionTable.remove();
 
 		// Add Tab at right position
 		switch (position) {
 		case BOTTOM:
+			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.add(mActionTable);
+
 			mContentOuterRow = super.row(Horizontal.LEFT, Vertical.TOP);
 			mContentOuterCell = super.add(mContentOuterTable);
 
@@ -419,6 +548,8 @@ public class TabWidget extends AlignTable {
 			mContentOuterRow = mTabRow;
 			super.add(mTabTable);
 			mContentOuterCell = super.add(mContentOuterTable);
+			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.add(mActionTable);
 
 			break;
 
@@ -427,6 +558,8 @@ public class TabWidget extends AlignTable {
 			mContentOuterRow = mTabRow;
 			mContentOuterCell = super.add(mContentOuterTable);
 			super.add(mTabTable);
+			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.add(mActionTable);
 
 			break;
 
@@ -436,6 +569,8 @@ public class TabWidget extends AlignTable {
 
 			mContentOuterRow = super.row(Horizontal.LEFT, Vertical.TOP);
 			mContentOuterCell = super.add(mContentOuterTable);
+			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.add(mActionTable);
 			break;
 		}
 
@@ -444,6 +579,8 @@ public class TabWidget extends AlignTable {
 		layoutTabButtons(mTabPosition, position);
 
 		mTabPosition = position;
+
+		updateActionButtonPadding();
 		invalidate();
 
 		return this;
@@ -588,28 +725,31 @@ public class TabWidget extends AlignTable {
 	/**
 	 * Listens to visibility change events for tab buttons. I.e. entire tabs are hidden
 	 */
-	private EventListener mTabVisibilityListener = new EventListener() {
+	private EventListener mTabVisibilityListener = new VisibilityChangeListener() {
 		@Override
-		public boolean handle(Event event) {
-			if (event instanceof VisibilityChangeEvent) {
-				if (event.getTarget() instanceof Button) {
-					handleVisibilityChange((Button) event.getTarget());
-				}
+		public void onVisibilyChange(VisibilityChangeEvent event, Actor actor) {
+			if (actor instanceof Button) {
+				handleVisibilityChange((Button) actor);
 			}
-			return false;
 		}
 	};
 
+	/**
+	 * Listens to visibility change events for action buttons
+	 */
+	private EventListener mActionButtonVisibilityListener = new VisibilityChangeListener() {
+		@Override
+		public void onVisibilyChange(VisibilityChangeEvent event, Actor actor) {
+			updateActionButtonPadding();
+		}
+	};
 
 	private static final Align TAB_ALIGN_TOP_BOTTOM_DEFAULT = new Align(Horizontal.LEFT, Vertical.MIDDLE);
 	private static final Align TAB_ALIGN_LEFT_RIGHT_DEFAULT = new Align(Horizontal.CENTER, Vertical.TOP);
-	/** Position of the tabs */
 	private Positions mTabPosition = Positions.TOP;
-	/** Current scroll pane style */
 	private ScrollPaneStyle mScrollPaneStyle = new ScrollPaneStyle();
 	/** Inner scroll pane */
 	private ArrayList<ScrollPane> mScrollPanes = new ArrayList<>();
-	/** All tab buttons */
 	private ArrayList<Button> mTabButtons = new ArrayList<>();
 	/** Tab row, for setting alignment */
 	private Row mTabRow = null;
@@ -619,10 +759,17 @@ public class TabWidget extends AlignTable {
 	private AlignTable mContentInnerTable = new AlignTable();
 	/** Content (outer with background) of the tabs */
 	private AlignTable mContentOuterTable = new AlignTable();
+	/** Action buttons (below the outer content) */
+	private AlignTable mActionTable = new AlignTable();
 	/** Row that contains the outer table */
 	private Row mContentOuterRow = null;
 	/** Cell that contains the outer table */
 	private Cell mContentOuterCell = null;
 	/** Tab button group */
 	private ButtonGroup mButtonGroup = new ButtonGroup();
+	/** The hider that is used for the last added tab */
+	private HideListener mTabHiderLast = null;
+	/** Button padding for the action buttons */
+	private float mActionButtonPadding = 0;
+	private float mActionButtonHeight = 0;
 }

@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent.Type;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.commands.CGuiTextField;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.VisibilityChangeListener.VisibilityChangeEvent;
 import com.spiddekauga.voider.Config.Gui;
 
 /**

@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.spiddekauga.utils.scene.ui.VisibilityChangeListener.VisibilityChangeEvent;
 
 /**
  * Calls the method {@link #onChecked(Button, boolean)} when the button becomes

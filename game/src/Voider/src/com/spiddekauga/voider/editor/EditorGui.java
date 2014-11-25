@@ -290,10 +290,10 @@ public abstract class EditorGui extends Gui {
 
 		// Campaign editor
 		// if (this.getClass() == CampaignEditorGui.class) {
-		// button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR_SELECTED,
+		// button = mUiFactory.button.addImageButton(EditorIcons.CAMPAIGN_EDITOR_SELECTED,
 		// mEditorMenu, null, null);
 		// } else {
-		// button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR, mEditorMenu,
+		// button = mUiFactory.button.addImageButton(EditorIcons.CAMPAIGN_EDITOR, mEditorMenu,
 		// null, null);
 		// }
 		// if (this.getClass() != CampaignEditorGui.class) {
@@ -310,9 +310,9 @@ public abstract class EditorGui extends Gui {
 
 		// Level editor
 		if (this.getClass() == LevelEditorGui.class) {
-			button = mUiFactory.addImageButton(EditorIcons.LEVEL_EDITOR_SELECTED, mEditorMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.LEVEL_EDITOR_SELECTED, mEditorMenu, null, null);
 		} else {
-			button = mUiFactory.addImageButton(EditorIcons.LEVEL_EDITOR, mEditorMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.LEVEL_EDITOR, mEditorMenu, null, null);
 		}
 		if (this.getClass() != LevelEditorGui.class) {
 			new ButtonListener(button) {
@@ -327,9 +327,9 @@ public abstract class EditorGui extends Gui {
 
 		// Enemy editor
 		if (this.getClass() == EnemyEditorGui.class) {
-			button = mUiFactory.addImageButton(EditorIcons.ENEMY_EDITOR_SELECTED, mEditorMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.ENEMY_EDITOR_SELECTED, mEditorMenu, null, null);
 		} else {
-			button = mUiFactory.addImageButton(EditorIcons.ENEMY_EDITOR, mEditorMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.ENEMY_EDITOR, mEditorMenu, null, null);
 		}
 		if (this.getClass() != EnemyEditorGui.class) {
 			new ButtonListener(button) {
@@ -344,9 +344,9 @@ public abstract class EditorGui extends Gui {
 
 		// Bullet editor
 		if (this.getClass() == BulletEditorGui.class) {
-			button = mUiFactory.addImageButton(EditorIcons.BULLET_EDITOR_SELECTED, mEditorMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.BULLET_EDITOR_SELECTED, mEditorMenu, null, null);
 		} else {
-			button = mUiFactory.addImageButton(EditorIcons.BULLET_EDITOR, mEditorMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.BULLET_EDITOR, mEditorMenu, null, null);
 		}
 		if (this.getClass() != BulletEditorGui.class) {
 			new ButtonListener(button) {
@@ -362,9 +362,9 @@ public abstract class EditorGui extends Gui {
 		// Ship editor
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
 			if (this.getClass() == ShipEditorGui.class) {
-				button = mUiFactory.addImageButton(EditorIcons.SHIP_EDITOR_SELECTED, mEditorMenu, null, null);
+				button = mUiFactory.button.addImage(EditorIcons.SHIP_EDITOR_SELECTED, mEditorMenu, null, null);
 			} else {
-				button = mUiFactory.addImageButton(EditorIcons.SHIP_EDITOR, mEditorMenu, null, null);
+				button = mUiFactory.button.addImage(EditorIcons.SHIP_EDITOR, mEditorMenu, null, null);
 			}
 			if (this.getClass() != ShipEditorGui.class) {
 				new ButtonListener(button) {
@@ -385,7 +385,7 @@ public abstract class EditorGui extends Gui {
 		Button button;
 
 		// Undo
-		button = mUiFactory.addImageButton(EditorIcons.UNDO, mEditMenu, null, mDisabledWhenPublished);
+		button = mUiFactory.button.addImage(EditorIcons.UNDO, mEditMenu, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.ACTION_UNDO);
 		new ButtonListener(button) {
 			@Override
@@ -395,7 +395,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Redo
-		button = mUiFactory.addImageButton(EditorIcons.REDO, mEditMenu, null, mDisabledWhenPublished);
+		button = mUiFactory.button.addImage(EditorIcons.REDO, mEditMenu, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.ACTION_REDO);
 		new ButtonListener(button) {
 			@Override
@@ -407,7 +407,7 @@ public abstract class EditorGui extends Gui {
 		// Grid stuff
 		if (getClass() != CampaignEditorGui.class) {
 			// Grid
-			button = mUiFactory.addImageButton(EditorIcons.GRID, mEditMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.GRID, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_TOGGLE);
 			mGridRender = button;
 			DisableListener disableListener = new DisableListener(button);
@@ -419,7 +419,7 @@ public abstract class EditorGui extends Gui {
 			};
 
 			// Grid above
-			button = mUiFactory.addImageButton(EditorIcons.GRID_ABOVE, mEditMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.GRID_ABOVE, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_ABOVE);
 			mGridRenderAbove = button;
 			disableListener.addToggleActor(button);
@@ -434,7 +434,7 @@ public abstract class EditorGui extends Gui {
 		// Level Editor -> Run & Enemy highlight
 		if (mEditor instanceof LevelEditor) {
 			// Background
-			button = mUiFactory.addImageButton(EditorIcons.SHOW_BACKGROUND, mEditMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.SHOW_BACKGROUND, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_SHOW_BACKGROUND);
 			mShowBackground = button;
 			new ButtonListener(button) {
@@ -446,7 +446,7 @@ public abstract class EditorGui extends Gui {
 
 			// Highlight enemy if it will spawn when test running the level from
 			// the current position
-			button = mUiFactory.addImageButton(EditorIcons.ENEMY_SPAWN_HIGHLIGHT, mEditMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.ENEMY_SPAWN_HIGHLIGHT, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_ENEMY_SPAWN);
 			mEnemyHighlight = button;
 			new ButtonListener(button) {
@@ -457,7 +457,7 @@ public abstract class EditorGui extends Gui {
 			};
 
 			// Run
-			button = mUiFactory.addImageButton(EditorIcons.RUN, mEditMenu, null, null);
+			button = mUiFactory.button.addImage(EditorIcons.RUN, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_PLAY);
 			new ButtonListener(button) {
 				@Override
@@ -504,7 +504,7 @@ public abstract class EditorGui extends Gui {
 		Button button;
 
 		// New
-		button = mUiFactory.addImageButton(EditorIcons.NEW, mFileMenu, null, null);
+		button = mUiFactory.button.addImage(EditorIcons.NEW, mFileMenu, null, null);
 		ITooltip tooltip = getFileNewTooltip();
 		if (tooltip != null) {
 			mTooltip.add(button, tooltip);
@@ -518,7 +518,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Duplicate
-		button = mUiFactory.addImageButton(EditorIcons.DUPLICATE, mFileMenu, null, null);
+		button = mUiFactory.button.addImage(EditorIcons.DUPLICATE, mFileMenu, null, null);
 		tooltip = getFileDuplicateTooltip();
 		if (tooltip != null) {
 			mTooltip.add(button, tooltip);
@@ -537,7 +537,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Save
-		button = mUiFactory.addImageButton(EditorIcons.SAVE, mFileMenu, null, mDisabledWhenPublished);
+		button = mUiFactory.button.addImage(EditorIcons.SAVE, mFileMenu, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.FILE_SAVE);
 		new ButtonListener(button) {
 			@Override
@@ -547,7 +547,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Load
-		button = mUiFactory.addImageButton(EditorIcons.LOAD, mFileMenu, null, null);
+		button = mUiFactory.button.addImage(EditorIcons.LOAD, mFileMenu, null, null);
 		mTooltip.add(button, Messages.EditorTooltips.FILE_OPEN);
 		new ButtonListener(button) {
 			@Override
@@ -559,7 +559,7 @@ public abstract class EditorGui extends Gui {
 
 		// Publish
 		if (!(this instanceof ShipEditorGui)) {
-			button = mUiFactory.addImageButton(EditorIcons.PUBLISH, mFileMenu, null, mDisabledWhenPublished);
+			button = mUiFactory.button.addImage(EditorIcons.PUBLISH, mFileMenu, null, mDisabledWhenPublished);
 			tooltip = getFilePublishTooltip();
 			if (tooltip != null) {
 				mTooltip.add(button, tooltip);
@@ -619,7 +619,7 @@ public abstract class EditorGui extends Gui {
 		}
 
 		// Info
-		button = mUiFactory.addImageButton(EditorIcons.INFO, mFileMenu, null, null);
+		button = mUiFactory.button.addImage(EditorIcons.INFO, mFileMenu, null, null);
 		tooltip = getFileInfoTooltip();
 		if (tooltip != null) {
 			mTooltip.add(button, tooltip);

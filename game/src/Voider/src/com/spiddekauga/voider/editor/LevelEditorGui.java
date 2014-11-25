@@ -469,7 +469,7 @@ class LevelEditorGui extends EditorGui {
 		// Select
 		mToolMenu.row();
 
-		mWidgets.tool.select = mUiFactory.addToolButton(EditorIcons.SELECT, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.select = mUiFactory.button.addTool(EditorIcons.SELECT, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.select, Messages.EditorTooltips.TOOL_SELECTION);
 		new ButtonListener(mWidgets.tool.select) {
 			@Override
@@ -481,7 +481,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Cancel
-		Button button = mUiFactory.addToolButton(EditorIcons.CANCEL, null, mToolMenu, mDisabledWhenPublished);
+		Button button = mUiFactory.button.addTool(EditorIcons.CANCEL, null, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_CLEAR_SELECTION);
 		new ButtonListener(button) {
 			@Override
@@ -492,12 +492,12 @@ class LevelEditorGui extends EditorGui {
 
 
 		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
+		mUiFactory.button.addToolSeparator(mToolMenu);
 
 
 		// Zoom in
 		mToolMenu.row();
-		mWidgets.tool.zoomIn = mUiFactory.addToolButton(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomIn = mUiFactory.button.addTool(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomIn, Messages.EditorTooltips.TOOL_ZOOM_IN_LEVEL);
 		new ButtonListener(mWidgets.tool.zoomIn) {
 			@Override
@@ -507,7 +507,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Zoom out
-		mWidgets.tool.zoomOut = mUiFactory.addToolButton(EditorIcons.ZOOM_OUT, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomOut = mUiFactory.button.addTool(EditorIcons.ZOOM_OUT, buttonGroup, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomOut, Messages.EditorTooltips.TOOL_ZOOM_OUT_LEVEL);
 		new ButtonListener(mWidgets.tool.zoomOut) {
 			@Override
@@ -518,7 +518,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Pan
 		mToolMenu.row();
-		mWidgets.tool.pan = mUiFactory.addToolButton(EditorIcons.PAN, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.pan = mUiFactory.button.addTool(EditorIcons.PAN, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.pan, Messages.EditorTooltips.TOOL_PAN_LEVEL);
 		new ButtonListener(mWidgets.tool.pan) {
 			@Override
@@ -530,7 +530,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Reset zoom
-		button = mUiFactory.addToolButton(EditorIcons.ZOOM_RESET, null, mToolMenu, null);
+		button = mUiFactory.button.addTool(EditorIcons.ZOOM_RESET, null, mToolMenu, null);
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_ZOOM_RESET_LEVEL);
 		new ButtonListener(button) {
 			@Override
@@ -541,12 +541,12 @@ class LevelEditorGui extends EditorGui {
 
 
 		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
+		mUiFactory.button.addToolSeparator(mToolMenu);
 
 
 		// Move
 		mToolMenu.row();
-		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.move = mUiFactory.button.addTool(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_LEVEL);
 		new ButtonListener(mWidgets.tool.move) {
 			@Override
@@ -558,7 +558,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Delete
-		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.delete = mUiFactory.button.addTool(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_LEVEL);
 		new ButtonListener(mWidgets.tool.delete) {
 			@Override
@@ -571,11 +571,11 @@ class LevelEditorGui extends EditorGui {
 
 
 		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
+		mUiFactory.button.addToolSeparator(mToolMenu);
 
 
 		// Terrain draw_append
-		mWidgets.tool.drawAppend = mUiFactory.addToolButton(EditorIcons.TERRAIN_DRAW_APPEND, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.drawAppend = mUiFactory.button.addTool(EditorIcons.TERRAIN_DRAW_APPEND, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.drawAppend, Messages.EditorTooltips.TOOL_DRAW_APPEND_TERRAIN);
 		new ButtonListener(mWidgets.tool.drawAppend) {
 			@Override
@@ -588,7 +588,7 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Terrain draw_erase
-		mWidgets.tool.drawErase = mUiFactory.addToolButton(EditorIcons.DRAW_ERASE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.drawErase = mUiFactory.button.addTool(EditorIcons.DRAW_ERASE, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.drawErase, Messages.EditorTooltips.TOOL_DRAW_ERASE_TERRAIN);
 		new ButtonListener(mWidgets.tool.drawErase) {
 			@Override
@@ -601,7 +601,7 @@ class LevelEditorGui extends EditorGui {
 
 		// add_move_corner
 		mToolMenu.row();
-		mWidgets.tool.cornerAdd = mUiFactory.addToolButton(EditorIcons.ADD_MOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.cornerAdd = mUiFactory.button.addTool(EditorIcons.ADD_MOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.cornerAdd, Messages.EditorTooltips.TOOL_DRAW_CORNER_ADD_TERRAIN);
 		new ButtonListener(mWidgets.tool.cornerAdd) {
 			@Override
@@ -613,7 +613,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// remove_corner
-		mWidgets.tool.cornerRemove = mUiFactory.addToolButton(EditorIcons.REMOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.cornerRemove = mUiFactory.button.addTool(EditorIcons.REMOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.cornerRemove, Messages.EditorTooltips.TOOL_DRAW_CORNER_REMOVE_TERRAIN);
 		new ButtonListener(mWidgets.tool.cornerRemove) {
 			@Override
@@ -626,11 +626,11 @@ class LevelEditorGui extends EditorGui {
 
 
 		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
+		mUiFactory.button.addToolSeparator(mToolMenu);
 
 
 		// Enemy add
-		mWidgets.tool.enemyAdd = mUiFactory.addToolButton(EditorIcons.ENEMY_ADD, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.enemyAdd = mUiFactory.button.addTool(EditorIcons.ENEMY_ADD, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.enemyAdd, Messages.EditorTooltips.TOOL_ENEMY_ADD);
 		new ButtonListener(mWidgets.tool.enemyAdd) {
 			@Override
@@ -642,7 +642,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Path add
-		mWidgets.tool.pathAdd = mUiFactory.addToolButton(EditorIcons.PATH_ADD, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.pathAdd = mUiFactory.button.addTool(EditorIcons.PATH_ADD, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.pathAdd, Messages.EditorTooltips.TOOL_PATH);
 		new ButtonListener(mWidgets.tool.pathAdd) {
 			@Override
@@ -656,7 +656,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Enemy - set activate trigger
 		mToolMenu.row();
-		mWidgets.tool.triggerActivate = mUiFactory.addToolButton(EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER, buttonGroup, mToolMenu,
+		mWidgets.tool.triggerActivate = mUiFactory.button.addTool(EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER, buttonGroup, mToolMenu,
 				mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.triggerActivate, Messages.EditorTooltips.TOOL_TRIGGER_ACTIVATE);
 		new ButtonListener(mWidgets.tool.triggerActivate) {
@@ -669,7 +669,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Enemy - set deactivate trigger
-		mWidgets.tool.triggerDeactivate = mUiFactory.addToolButton(EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER, buttonGroup, mToolMenu,
+		mWidgets.tool.triggerDeactivate = mUiFactory.button.addTool(EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER, buttonGroup, mToolMenu,
 				mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.triggerDeactivate, Messages.EditorTooltips.TOOL_TRIGGER_DEACTIVATE);
 		new ButtonListener(mWidgets.tool.triggerDeactivate) {
@@ -728,7 +728,7 @@ class LevelEditorGui extends EditorGui {
 		left.add().setFillWidth(true);
 		float buttonWidth = mUiFactory.getStyles().vars.textButtonWidth;
 		float buttonHeight = mUiFactory.getStyles().vars.textButtonHeight;
-		mWidgets.info.theme = mUiFactory.addImageScrollButton(ScrollWhen.NEVER, buttonWidth, buttonHeight, ButtonStyles.PRESS, left,
+		mWidgets.info.theme = mUiFactory.button.addImageScroll(ScrollWhen.NEVER, buttonWidth, buttonHeight, ButtonStyles.PRESS, left,
 				mDisabledWhenPublished);
 		new ButtonListener(mWidgets.info.theme) {
 			@Override
@@ -751,9 +751,9 @@ class LevelEditorGui extends EditorGui {
 		// Music - Play/Stop
 		float musicPadding = mUiFactory.getStyles().vars.paddingOuter;
 		Cell musicCell = left.getCell();
-		Button playButton = mUiFactory.addImageButton(SkinNames.EditorIcons.MUSIC_PLAY, left, null, null);
+		Button playButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_PLAY, left, null, null);
 		left.getCell().setPadLeft(musicPadding).setPadRight(musicPadding);
-		Button stopButton = mUiFactory.addImageButton(SkinNames.EditorIcons.MUSIC_STOP, left, null, null);
+		Button stopButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_STOP, left, null, null);
 		new ButtonListener(playButton) {
 			@Override
 			protected void onPressed(Button button) {
@@ -1011,7 +1011,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Add enemy button
 		table.row().setAlign(Horizontal.RIGHT).setPadTop(mUiFactory.getStyles().vars.paddingInner);
-		button = mUiFactory.addImageButton(SkinNames.EditorIcons.ENEMY_ADD_TO_LIST, table, null, mDisabledWhenPublished);
+		button = mUiFactory.button.addImage(SkinNames.EditorIcons.ENEMY_ADD_TO_LIST, table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.ENEMY_ADD_TO_LIST);
 		new ButtonListener(button) {
 			@Override
@@ -1117,7 +1117,8 @@ class LevelEditorGui extends EditorGui {
 		GuiCheckCommandCreator checkCommandCreator = new GuiCheckCommandCreator(mInvoker);
 
 		// Once
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_ONCE, "Once", Positions.RIGHT, null, table, null, mDisabledWhenPublished);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.EditorIcons.PATH_ONCE, "Once", Positions.RIGHT, null, table, null,
+				mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_ONCE);
 		mWidgets.path.once = button;
 		buttonGroup.add(button);
@@ -1132,7 +1133,8 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Loop
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_LOOP, "Loop", Positions.RIGHT, null, table, null, mDisabledWhenPublished);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.EditorIcons.PATH_LOOP, "Loop", Positions.RIGHT, null, table, null,
+				mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_LOOP);
 		mWidgets.path.loop = button;
 		buttonGroup.add(button);
@@ -1147,8 +1149,8 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Back and forth
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", Positions.RIGHT, null, table, null,
-				mDisabledWhenPublished);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", Positions.RIGHT, null, table,
+				null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_BACK_AND_FORTH);
 		mWidgets.path.backAndForth = button;
 		buttonGroup.add(button);

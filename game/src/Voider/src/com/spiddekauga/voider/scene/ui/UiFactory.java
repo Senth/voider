@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
@@ -60,7 +59,6 @@ import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
-import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * Factory for creating UI objects, more specifically combined UI objects. This factory
@@ -69,7 +67,9 @@ import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
  */
 public class UiFactory {
 	/** Create labels and text */
-	public LabelFactory text = null;
+	public LabelFactory text = new LabelFactory();
+	/** Create buttons */
+	public ButtonFactory button = new ButtonFactory();
 
 	/**
 	 * Creates an empty UI Factory. Call {@link #init()} to initialize all styles
@@ -162,23 +162,6 @@ public class UiFactory {
 	}
 
 	/**
-	 * Add an image button to the specified table
-	 * @param icon name of the image icon
-	 * @param table the table to add the image to
-	 * @param hider optional hider for the image
-	 * @param createdActors adds the image button to this list if not null
-	 * @return created image button
-	 */
-	public ImageButton addImageButton(ISkinNames icon, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
-		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
-		table.add(imageButton);
-
-		doExtraActionsOnActors(hider, createdActors, imageButton);
-
-		return imageButton;
-	}
-
-	/**
 	 * Add top, bottom, or both bars to the scene
 	 * @param barLocation where the bar should be located
 	 * @param stage the stage to add the bar to
@@ -241,99 +224,6 @@ public class UiFactory {
 		return window;
 	}
 
-	/**
-	 * Add an image scroll button to a table
-	 * @param scrollWhen when to scroll the images
-	 * @param width
-	 * @param height
-	 * @param style which button style to use
-	 * @param table the table to add the button to
-	 * @param createdActors optional adds the button ot this list (if not null)
-	 * @return created image scroll button
-	 */
-	public ImageScrollButton addImageScrollButton(ScrollWhen scrollWhen, float width, float height, ButtonStyles style, AlignTable table,
-			ArrayList<Actor> createdActors) {
-		ImageScrollButton imageScrollButton = new ImageScrollButton(style.getStyle(), scrollWhen);
-		table.add(imageScrollButton).setSize(width, height);
-
-		doExtraActionsOnActors(null, createdActors, imageScrollButton);
-
-		return imageScrollButton;
-	}
-
-	/**
-	 * Add a text button to a table and set it to the default size
-	 * @param text the text that should be shown in the text button
-	 * @param style which button style to use
-	 * @param table the table to add the text button to
-	 * @param listener optional button listener
-	 * @param hider optional GUI hider
-	 * @param createdActors optional adds the button to this list (if not null)
-	 * @return created text button cell
-	 */
-	public Cell addTextButton(String text, TextButtonStyles style, AlignTable table, ButtonListener listener, GuiHider hider,
-			ArrayList<Actor> createdActors) {
-		TextButton button = new TextButton(text, style.getStyle());
-
-		Cell cell = table.add(button);
-
-		// Special style properties
-		switch (style) {
-		// Default size
-		case FILLED_PRESS:
-		case FILLED_TOGGLE:
-			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
-			break;
-
-		// Slim fit to text
-		case LINK:
-			button.pack();
-			break;
-
-		// Fit to text (but with padding)
-		case TAG:
-		case TRANSPARENT_PRESS:
-		case TRANSPARENT_TOGGLE: {
-			button.layout();
-
-			// Set padding around text so it doesn't touch the border
-			float cellHeightDefault = cell.getPrefHeight();
-			float cellWidthDefault = cell.getPrefWidth();
-
-			float padding = mStyles.vars.paddingTransparentTextButton * 2;
-			cell.setSize(cellWidthDefault + padding, cellHeightDefault + padding);
-
-
-			// Height padding
-			if (style == TextButtonStyles.TRANSPARENT_PRESS || style == TextButtonStyles.TRANSPARENT_TOGGLE) {
-				float padHeight = (mStyles.vars.rowHeight - cellHeightDefault - padding) * 0.5f;
-
-				// Check for uneven height, then pad extra at the top
-				boolean padExtra = false;
-				if (padHeight != ((int) padHeight)) {
-					padExtra = true;
-					padHeight = (int) padHeight;
-				}
-
-				float padTop = padExtra ? padHeight + 1 : padHeight;
-				float padBottom = padHeight;
-
-				cell.setPadTop(padTop);
-				cell.setPadBottom(padBottom);
-			}
-			break;
-		}
-		}
-
-
-		if (listener != null) {
-			button.addListener(listener);
-		}
-
-		doExtraActionsOnActors(hider, createdActors, button);
-
-		return cell;
-	}
 
 	/**
 	 * Create a comment table
@@ -765,29 +655,6 @@ public class UiFactory {
 		return label;
 	}
 
-	/**
-	 * Add an image button with a label after the button
-	 * @param icon the icon to show
-	 * @param text text to display somewhere
-	 * @param textPosition location of the text relative to the button
-	 * @param textStyle optional text style, set to null to use default
-	 * @param table the table to add the icon to
-	 * @param hider optional hider for icon and label
-	 * @param createdActors all created actors
-	 * @return created button
-	 */
-	public ImageButton addImageButtonLabel(ISkinNames icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table,
-			GuiHider hider, ArrayList<Actor> createdActors) {
-		if (textPosition == Positions.LEFT || textPosition == Positions.RIGHT) {
-			table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		}
-
-		// Actors
-		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
-		addIconLabel(imageButton, text, textPosition, textStyle, table, hider, createdActors);
-
-		return imageButton;
-	}
 
 	/**
 	 * Add an image button with a label after the button
@@ -824,7 +691,7 @@ public class UiFactory {
 	 * @param createdActors all created actors
 	 * @return cell with the icon
 	 */
-	private Cell addIconLabel(Actor icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table, GuiHider hider,
+	Cell addIconLabel(Actor icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table, GuiHider hider,
 			ArrayList<Actor> createdActors) {
 		Cell cell = null;
 
@@ -893,166 +760,6 @@ public class UiFactory {
 	}
 
 	/**
-	 * Add button padding to the table
-	 * @param table table to add the button padding to
-	 */
-	public void addButtonPadding(AlignTable table) {
-		table.getCell().setPadRight(mStyles.vars.paddingButton);
-	}
-
-	/**
-	 * Add button padding between all the cells in a row
-	 * @param row the row to add padding to
-	 */
-	public void addButtonPadding(Row row) {
-		float padHalf = mStyles.vars.paddingButton * 0.5f;
-
-		for (Cell cell : row.getCells()) {
-			cell.setPadLeft(padHalf);
-			cell.setPadRight(padHalf);
-		}
-
-		// Remove padding for before first and after last buttons
-		if (row.getCellCount() > 0) {
-			row.getCells().get(0).setPadLeft(0);
-			row.getCell().setPadRight(0);
-		}
-	}
-
-	/**
-	 * Adds a tool icon to the specified table
-	 * @param icon icon for the tool
-	 * @param group the button group the tools belong to
-	 * @param table the table to add the tool to
-	 * @param createdActors optional adds the tool button to this list (if not null)
-	 * @return created tool icon button
-	 */
-	public ImageButton addToolButton(ISkinNames icon, ButtonGroup group, AlignTable table, ArrayList<Actor> createdActors) {
-		ImageButton button = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
-
-		if (group != null) {
-			group.add(button);
-		}
-		table.add(button);
-
-		doExtraActionsOnActors(null, createdActors, button);
-
-		return button;
-	}
-
-	/**
-	 * Adds a tool separator to the specified table
-	 * @param table add tool separator
-	 */
-	public void addToolSeparator(AlignTable table) {
-		table.row().setPadBottom(mStyles.vars.paddingOuter);
-		// table.add().setPadBottom(mStyles.vars.paddingOuter);
-		table.row();
-	}
-
-	/**
-	 * Adds checkbox padding for the newly added cell
-	 * @param table the table the checkbox was added to
-	 */
-	public void addCheckboxPadding(AlignTable table) {
-		table.getCell().setPadRight(mStyles.vars.paddingCheckBox);
-	}
-
-	/**
-	 * Adds a single checkbox with text before the checkbox
-	 * @param text the text to display before the checkbox
-	 * @param listener button listener that listens when it's checked etc
-	 * @param table the table to add the checkbox to
-	 * @param hider optional hider to add the elements to (if not null)
-	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @return created checkbox
-	 */
-	public CheckBox addPanelCheckBox(String text, ButtonListener listener, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
-
-		table.row().setFillWidth(true);
-		Label label = new Label(text, LabelStyles.DEFAULT.getStyle());
-		table.add(label);
-
-		table.add().setFillWidth(true);
-
-		CheckBox checkBox = new CheckBox("", CheckBoxStyles.CHECK_BOX.getStyle());
-		table.add(checkBox);
-
-		checkBox.addListener(listener);
-
-		doExtraActionsOnActors(hider, createdActors, label, checkBox);
-
-		return checkBox;
-	}
-
-	/**
-	 * Add a checkbox
-	 * @param text the text to display on the checkbox
-	 * @param style which checkbox style to use
-	 * @param listener listens when the checkbox is checked
-	 * @param group button group the checkbox belongs to
-	 * @param table the table to add the checkbox to
-	 * @return created checkbox
-	 */
-	public CheckBox addCheckBox(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
-		CheckBox checkBox = new CheckBox(text, style.getStyle());
-		float imageWidth = checkBox.getImage().getWidth();
-		checkBox.getImageCell().width(imageWidth);
-		checkBox.getLabelCell().padLeft(mStyles.vars.paddingCheckBoxText);
-		checkBox.layout();
-		checkBox.left();
-
-		table.add(checkBox);
-		group.add(checkBox);
-
-		if (listener != null) {
-			checkBox.addListener(listener);
-		}
-
-		return checkBox;
-	}
-
-	/**
-	 * Add a separate checkbox row
-	 * @param text the text to display on the checkbox
-	 * @param style which checkbox style to use
-	 * @param listener listens when the checkbox is checked
-	 * @param group button group the checkbox belongs to
-	 * @param table the table to add the checkbox to
-	 * @return created checkbox
-	 */
-	public CheckBox addCheckBoxRow(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
-		table.row();
-
-		CheckBox checkBox = addCheckBox(text, style, listener, group, table);
-		table.getCell().setHeight(mStyles.vars.rowHeight);
-
-		return checkBox;
-	}
-
-	/**
-	 * Add an empty tab widget. Lets you add tabs to widget by calling
-	 * @param table where to add the tab widget
-	 * @return the created tab widget
-	 */
-	public TabWidget startTabWidget(AlignTable table) {
-		table.row();
-		mTabWidget = new TabWidget();
-		mTabWidget.setFillHeight(true);
-		mTabWidget.setBackground(new Background(mStyles.color.widgetBackground));
-		mTabWidget.setContentWidth(mStyles.vars.rightPanelWidth);
-		table.add(mTabWidget);
-		return mTabWidget;
-	}
-
-	/**
-	 * Ends the current tab widget
-	 */
-	public void endTabWidget() {
-		mTabWidget = null;
-	}
-
-	/**
 	 * Add a tab to a created tab widget
 	 * @param icon the image of the tab
 	 * @param table will show this table when this tab is selected
@@ -1066,21 +773,6 @@ public class UiFactory {
 			hider = new HideListener(true);
 		}
 		tabWidget.addTab(style, table, hider);
-	}
-
-	/**
-	 * Add a tab to the created tab widget
-	 * @param icon the image of the tab
-	 * @param table will show this table when this tab is selected
-	 * @param hider optional listens to the hider.
-	 */
-	public void addTab(ISkinNames icon, AlignTable table, HideListener hider) {
-		ImageButtonStyle style = SkinNames.getResource(icon);
-
-		if (hider == null) {
-			hider = new HideListener(true);
-		}
-		mTabWidget.addTab(style, table, hider);
 	}
 
 	/**
@@ -1131,34 +823,6 @@ public class UiFactory {
 					cell.setPadRight(mStyles.vars.paddingCheckBox);
 				}
 			}
-		}
-	}
-
-	/**
-	 * Add button padding to the last cell
-	 * @param position where to add the padding
-	 * @param table the table to add the padding to
-	 */
-	public void addButtonPadding(AlignTable table, Positions position) {
-		Cell cell = table.getCell();
-		float padding = mStyles.vars.paddingButton;
-
-		switch (position) {
-		case BOTTOM:
-			cell.setPadBottom(padding);
-			break;
-
-		case LEFT:
-			cell.setPadLeft(padding);
-			break;
-
-		case RIGHT:
-			cell.setPadRight(padding);
-			break;
-
-		case TOP:
-			cell.setPadTop(padding);
-			break;
 		}
 	}
 
@@ -1260,7 +924,8 @@ public class UiFactory {
 		}
 
 		mStyles = new UiStyles();
-		text = new LabelFactory(mStyles);
+		text.init(mStyles);
+		button.init(mStyles);
 	}
 
 	/**
@@ -1460,9 +1125,6 @@ public class UiFactory {
 		return mStyles;
 	}
 
-
-	/** Current tab widget */
-	private TabWidget mTabWidget = null;
 
 	/** If the factory has been initialized */
 	private boolean mInitialized = false;

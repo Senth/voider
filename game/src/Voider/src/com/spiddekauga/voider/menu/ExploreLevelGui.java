@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.Strings;
@@ -40,6 +41,7 @@ import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -278,7 +280,7 @@ public class ExploreLevelGui extends ExploreGui {
 					}
 				}
 			};
-			CheckBox checkBox = mUiFactory.addCheckBox(sortOrder.toString(), CheckBoxStyles.RADIO, listener, buttonGroup, table);
+			CheckBox checkBox = mUiFactory.button.addCheckBox(sortOrder.toString(), CheckBoxStyles.RADIO, listener, buttonGroup, table);
 			mWidgets.sort.buttons[sortOrder.ordinal()] = checkBox;
 			table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 		}
@@ -424,56 +426,31 @@ public class ExploreLevelGui extends ExploreGui {
 	 */
 	private void initActions() {
 		// Menu
-		ButtonListener buttonListener = new ButtonListener() {
+		TextButton button = mUiFactory.button.createText("Menu", TextButtonStyles.FILLED_PRESS);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mExploreScene.gotoMainMenu();
 			}
 		};
-		addActionButton("Menu", buttonListener);
+		mRightPanel.addActionButtonGlobal(button);
 
 		// Play
-		buttonListener = new ButtonListener() {
+		button = mUiFactory.button.createText("Play", TextButtonStyles.FILLED_PRESS);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mExploreScene.play();
 			}
 		};
-		addActionButton("Play", buttonListener);
+		mRightPanel.addActionButtonGlobal(button);
 	}
 
 	/**
 	 * Initializes tags
 	 */
 	private void initTags() {
-		float topMargin = mUiFactory.getStyles().vars.barUpperLowerHeight;
-		topMargin += mUiFactory.getStyles().vars.paddingOuter;
-
-
-		// This table wraps the tag table with the tab table
-		AlignTable wrapper = mWidgets.tag.wrapper;
-		wrapper.setMargin(topMargin, mUiFactory.getStyles().vars.paddingOuter, mUiFactory.getStyles().vars.paddingOuter,
-				mUiFactory.getStyles().vars.paddingOuter);
-		wrapper.setAlign(Horizontal.LEFT, Vertical.TOP);
-		wrapper.setName("wrapper");
-		getStage().addActor(wrapper);
-		wrapper.row().setFillHeight(true);
-		mWidgets.sort.hider.addToggleActor(wrapper);
-
-
-		// Tags
-		// float tagTableWidth =
-		// SkinNames.getResource(SkinNames.GeneralVars.TAG_BAR_WIDTH);
 		AlignTable tagTable = new AlignTable();
-		// tagTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		// tagTable.setBackgroundImage(new
-		// Background(mUiFactory.getStyles().color.widgetBackground));
-		// tagTable.setPad(mUiFactory.getStyles().vars.paddingInner);
-		// tagTable.setName("tags");
-		// tagTable.setKeepWidth(true);
-		// tagTable.setWidth(tagTableWidth - mUiFactory.getStyles().vars.paddingInner *
-		// 2);
-		// wrapper.add(tagTable).setFillHeight(true);
 
 		// Filter results
 		mUiFactory.text.addPanelSection("Filter Results", tagTable, null);
@@ -489,13 +466,10 @@ public class ExploreLevelGui extends ExploreGui {
 			}
 		};
 		for (Tags tag : Tags.values()) {
-			CheckBox checkBox = mUiFactory.addCheckBoxRow(tag.toString(), CheckBoxStyles.CHECK_BOX, listener, mWidgets.tag.buttonGroup, tagTable);
+			CheckBox checkBox = mUiFactory.button.addCheckBoxRow(tag.toString(), CheckBoxStyles.CHECK_BOX, listener, mWidgets.tag.buttonGroup,
+					tagTable);
 			mWidgets.tag.buttonTag.put(checkBox, tag);
 		}
-
-		// Fill out the space
-		// tagTable.row().setFillHeight(true);
-
 
 		// Toggle image
 		ImageButtonStyle imageButtonStyle = (ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS);
@@ -503,32 +477,30 @@ public class ExploreLevelGui extends ExploreGui {
 		mWidgets.sort.hider.addChild(hideListener);
 		Button tagButton = mLeftPanel.addTab(imageButtonStyle, tagTable, hideListener);
 		mWidgets.sort.hider.addToggleActor(tagButton);
+
+
+		// Clear button
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				boolean tagsChanged = getSelectedTags().size() > 0;
+
+				mClearingTags = true;
+				mWidgets.tag.buttonGroup.uncheckAll();
+				mClearingTags = false;
+
+				if (tagsChanged) {
+					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
+				}
+			}
+		};
+		TextButton textButton = mUiFactory.button.createText("Clear Tags", TextButtonStyles.FILLED_PRESS);
+		textButton.addListener(buttonListener);
+		mLeftPanel.addActionButton(textButton);
+
 		mLeftPanel.invalidate();
 		mLeftPanel.layout();
 
-
-		// // Clear button
-		// ButtonListener buttonListener = new ButtonListener() {
-		// @Override
-		// protected void onPressed(Button button) {
-		// boolean tagsChanged = getSelectedTags().size() > 0;
-		//
-		// mClearingTags = true;
-		// mWidgets.tag.buttonGroup.uncheckAll();
-		// mClearingTags = false;
-		//
-		// if (tagsChanged) {
-		// mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
-		// }
-		// }
-		// };
-		// wrapper.row();
-		// mUiFactory.addTextButton("Clear Tags", TextButtonStyles.FILLED_PRESS, wrapper,
-		// buttonListener, hideListener, null);
-		// wrapper.getCell().setWidth(tagTableWidth).setPadRight(imageWidth);
-		// mUiFactory.addButtonPadding(wrapper, Positions.TOP);
-		//
-		// wrapper.layout();
 	}
 
 	@Override

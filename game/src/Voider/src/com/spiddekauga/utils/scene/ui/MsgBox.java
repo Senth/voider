@@ -274,7 +274,7 @@ public class MsgBox extends Dialog {
 	 */
 	@Override
 	public MsgBox button(String text, Object object) {
-		com.spiddekauga.utils.scene.ui.Cell cell = mUiFactory.addTextButton(text, TextButtonStyles.FILLED_PRESS, mButtonTable, null, null, null);
+		com.spiddekauga.utils.scene.ui.Cell cell = mUiFactory.button.addText(text, TextButtonStyles.FILLED_PRESS, mButtonTable, null, null, null);
 
 		// Pad every cell except first
 		if (mButtonTable.getRow().getCellCount() > 1) {

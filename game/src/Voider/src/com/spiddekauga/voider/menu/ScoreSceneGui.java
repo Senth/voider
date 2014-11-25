@@ -86,7 +86,7 @@ public class ScoreSceneGui extends Gui {
 			mMainTable.row().setFillWidth(true);
 			mUiFactory.text.add("Bookmark", mMainTable);
 			mMainTable.add().setFillWidth(true);
-			Button button = mUiFactory.addImageButton(SkinNames.General.BOOKMARK, mMainTable, null, null);
+			Button button = mUiFactory.button.addImage(SkinNames.General.BOOKMARK, mMainTable, null, null);
 			mWidgets.bookmark = button;
 			new ButtonListener(button) {
 				@Override
@@ -114,7 +114,7 @@ public class ScoreSceneGui extends Gui {
 		// -- Buttons --
 		// Replay
 		mMainTable.row().setAlign(Horizontal.CENTER).setPadTop(mUiFactory.getStyles().vars.rowHeight);
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.REPLAY, "Replay", Positions.BOTTOM, null, mMainTable, null, null);
+		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.REPLAY, "Replay", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -123,8 +123,8 @@ public class ScoreSceneGui extends Gui {
 		};
 
 		// Continue
-		mUiFactory.addButtonPadding(mMainTable);
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, null, mMainTable, null, null);
+		mUiFactory.button.addPadding(mMainTable);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {

@@ -485,7 +485,7 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDrawOnlyOutline(checked);
 			};
 		};
-		mWidgets.visual.imageDrawOutline = mUiFactory.addPanelCheckBox("Draw outline", buttonListener, table, imageHider, mDisabledWhenPublished);
+		mWidgets.visual.imageDrawOutline = mUiFactory.button.addPanelCheckBox("Draw outline", buttonListener, table, imageHider, mDisabledWhenPublished);
 
 		// Select image
 		SelectBoxListener<SkinNames.GeneralImages> selectBoxListener = new SelectBoxListener<SkinNames.GeneralImages>(mInvoker) {
@@ -541,7 +541,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Zoom in
 		mToolMenu.row();
-		mWidgets.tool.zoomIn = mUiFactory.addToolButton(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomIn = mUiFactory.button.addTool(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomIn, Messages.EditorTooltips.TOOL_ZOOM_IN_ACTOR);
 		new ButtonListener(mWidgets.tool.zoomIn) {
 			@Override
@@ -551,7 +551,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// Zoom out
-		mWidgets.tool.zoomOut = mUiFactory.addToolButton(EditorIcons.ZOOM_OUT, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomOut = mUiFactory.button.addTool(EditorIcons.ZOOM_OUT, buttonGroup, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomOut, Messages.EditorTooltips.TOOL_ZOOM_OUT_ACTOR);
 		new ButtonListener(mWidgets.tool.zoomOut) {
 			@Override
@@ -562,7 +562,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Pan
 		mToolMenu.row();
-		mWidgets.tool.pan = mUiFactory.addToolButton(EditorIcons.PAN, buttonGroup, mToolMenu, null);
+		mWidgets.tool.pan = mUiFactory.button.addTool(EditorIcons.PAN, buttonGroup, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.pan, Messages.EditorTooltips.TOOL_PAN_ACTOR);
 		new ButtonListener(mWidgets.tool.pan) {
 			@Override
@@ -572,7 +572,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// Reset zoom
-		Button button = mUiFactory.addToolButton(EditorIcons.ZOOM_RESET, null, mToolMenu, null);
+		Button button = mUiFactory.button.addTool(EditorIcons.ZOOM_RESET, null, mToolMenu, null);
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_ZOOM_RESET_ACTOR);
 		new ButtonListener(button) {
 			@Override
@@ -583,11 +583,11 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
+		mUiFactory.button.addToolSeparator(mToolMenu);
 
 
 		// Move
-		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.move = mUiFactory.button.addTool(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_ACTOR);
 		new ButtonListener(mWidgets.tool.move) {
 			@Override
@@ -597,7 +597,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// Delete
-		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.delete = mUiFactory.button.addTool(EditorIcons.DELETE, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_ACTOR);
 		new ButtonListener(mWidgets.tool.delete) {
 			@Override
@@ -608,11 +608,11 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
+		mUiFactory.button.addToolSeparator(mToolMenu);
 
 
 		// Terrain draw_append
-		mWidgets.tool.drawAppend = mUiFactory.addToolButton(EditorIcons.TERRAIN_DRAW_APPEND, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.drawAppend = mUiFactory.button.addTool(EditorIcons.TERRAIN_DRAW_APPEND, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.drawAppend, Messages.EditorTooltips.TOOL_DRAW_APPEND_ACTOR);
 		new ButtonListener(mWidgets.tool.drawAppend) {
 			@Override
@@ -623,7 +623,7 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Terrain draw_erase
-		mWidgets.tool.drawErase = mUiFactory.addToolButton(EditorIcons.DRAW_ERASE, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.drawErase = mUiFactory.button.addTool(EditorIcons.DRAW_ERASE, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.drawErase, Messages.EditorTooltips.TOOL_DRAW_ERASE_ACTOR);
 		new ButtonListener(mWidgets.tool.drawErase) {
 			@Override
@@ -634,7 +634,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// add_move_corner
 		mToolMenu.row();
-		mWidgets.tool.addMoveCorner = mUiFactory.addToolButton(EditorIcons.ADD_MOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.addMoveCorner = mUiFactory.button.addTool(EditorIcons.ADD_MOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.addMoveCorner, Messages.EditorTooltips.TOOL_DRAW_CORNER_ADD_ACTOR);
 		new ButtonListener(mWidgets.tool.addMoveCorner) {
 			@Override
@@ -644,7 +644,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// remove_corner
-		mWidgets.tool.removeCorner = mUiFactory.addToolButton(EditorIcons.REMOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.removeCorner = mUiFactory.button.addTool(EditorIcons.REMOVE_CORNER, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.removeCorner, Messages.EditorTooltips.TOOL_DRAW_CORNER_REMOVE_ACTOR);
 		new ButtonListener(mWidgets.tool.removeCorner) {
 			@Override
@@ -655,11 +655,11 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// --------- SEPARATOR -----------
-		mUiFactory.addToolSeparator(mToolMenu);
+		mUiFactory.button.addToolSeparator(mToolMenu);
 
 
 		// Set center
-		mWidgets.tool.setCenter = mUiFactory.addToolButton(EditorIcons.SET_CENTER, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.setCenter = mUiFactory.button.addTool(EditorIcons.SET_CENTER, buttonGroup, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(mWidgets.tool.setCenter, Messages.EditorTooltips.TOOL_CENTER_SET);
 		new ButtonListener(mWidgets.tool.setCenter) {
 			@Override
@@ -669,7 +669,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// Reset center
-		button = mUiFactory.addToolButton(EditorIcons.RESET_CENTER, null, mToolMenu, mDisabledWhenPublished);
+		button = mUiFactory.button.addTool(EditorIcons.RESET_CENTER, null, mToolMenu, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_CENTER_RESET);
 		new ButtonListener(button) {
 			@Override
@@ -706,7 +706,7 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};
-		mWidgets.collision.destroyOnCollide = mUiFactory.addPanelCheckBox("Destroy", buttonListener, mWidgets.collision.table, null, createdActors);
+		mWidgets.collision.destroyOnCollide = mUiFactory.button.addPanelCheckBox("Destroy", buttonListener, mWidgets.collision.table, null, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.COLLISION_DESTROY);
 		mDisabledWhenPublished.addAll(createdActors);
 	}

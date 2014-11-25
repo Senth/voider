@@ -1256,6 +1256,19 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	/**
+	 * @return true if any cell inside this table is visible. This includes empty cells
+	 */
+	public boolean hasVisibleCells() {
+		for (Row row : mRows) {
+			if (row.isVisible()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Set a background image of the table
 	 * @param image background image of this table, null to remove an existing background
 	 *        image

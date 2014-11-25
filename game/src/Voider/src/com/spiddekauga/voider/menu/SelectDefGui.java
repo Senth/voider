@@ -136,21 +136,21 @@ public class SelectDefGui extends Gui {
 		mUiFactory.addTextField(null, false, "Search", textFieldListener, table, null);
 		table.getRow().setFillWidth(true);
 		table.getCell().resetWidth().setFillWidth(true);
-		mUiFactory.addCheckboxPadding(table);
+		mUiFactory.button.addCheckBoxPadding(table);
 
 		if (mShowMineOnlyCheckbox) {
 			ButtonGroup buttonGroup = new ButtonGroup();
 
-			mUiFactory.addCheckBox("All", CheckBoxStyles.RADIO, null, buttonGroup, table);
-			mUiFactory.addCheckboxPadding(table);
+			mUiFactory.button.addCheckBox("All", CheckBoxStyles.RADIO, null, buttonGroup, table);
+			mUiFactory.button.addCheckBoxPadding(table);
 			ButtonListener buttonListener = new ButtonListener() {
 				@Override
 				protected void onChecked(Button button, boolean checked) {
 					mSelectDefScene.setShowMineOnly(checked);
 				}
 			};
-			mUiFactory.addCheckBox("Mine", CheckBoxStyles.RADIO, buttonListener, buttonGroup, table);
-			mUiFactory.addCheckboxPadding(table);
+			mUiFactory.button.addCheckBox("Mine", CheckBoxStyles.RADIO, buttonListener, buttonGroup, table);
+			mUiFactory.button.addCheckBoxPadding(table);
 		}
 	}
 
@@ -235,7 +235,7 @@ public class SelectDefGui extends Gui {
 					showSelectRevisionMsgBox();
 				}
 			};
-			mUiFactory.addTextButton("Load older version", TextButtonStyles.FILLED_PRESS, table, buttonListener, mWidgets.info.hider, null);
+			mUiFactory.button.addText("Load older version", TextButtonStyles.FILLED_PRESS, table, buttonListener, mWidgets.info.hider, null);
 			table.getCell().setFillWidth(true);
 		}
 
@@ -248,7 +248,7 @@ public class SelectDefGui extends Gui {
 				mSelectDefScene.cancel();
 			}
 		};
-		mUiFactory.addTextButton("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		mUiFactory.button.addText("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().resetWidth().setFillWidth(true);
 
 		// Load/Open
@@ -258,7 +258,7 @@ public class SelectDefGui extends Gui {
 				mSelectDefScene.loadDef();
 			}
 		};
-		mUiFactory.addTextButton(mButtonText, TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		mUiFactory.button.addText(mButtonText, TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().resetWidth().setFillWidth(true);
 	}
 

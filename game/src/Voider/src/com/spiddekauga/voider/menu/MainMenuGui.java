@@ -74,7 +74,7 @@ class MainMenuGui extends MenuGui {
 	private void initMainMenu() {
 		// Play
 		mMainTable.row();
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
+		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -84,29 +84,29 @@ class MainMenuGui extends MenuGui {
 
 
 		// Explore
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.EXPLORE, "Explore", Positions.BOTTOM, null, mMainTable, null, null);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EXPLORE, "Explore", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.gotoExplore();
 			}
 		};
-		mUiFactory.addButtonPadding(mMainTable);
+		mUiFactory.button.addPadding(mMainTable);
 
 
 		// Create
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.CREATE, "Create", Positions.BOTTOM, null, mMainTable, null, null);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.CREATE, "Create", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.pushMenu(Menus.EDITOR);
 			}
 		};
-		mUiFactory.addButtonPadding(mMainTable);
+		mUiFactory.button.addPadding(mMainTable);
 
 
 		// Options
-		button = mUiFactory.addImageButton(SkinNames.General.SETTINGS_BIG, mOptionTable, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.SETTINGS_BIG, mOptionTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -115,7 +115,7 @@ class MainMenuGui extends MenuGui {
 		};
 
 		// Player Info
-		button = mUiFactory.addImageButton(SkinNames.General.PLAYER_BIG, mPlayerInfoTable, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.PLAYER_BIG, mPlayerInfoTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -124,7 +124,7 @@ class MainMenuGui extends MenuGui {
 		};
 
 		// Spiddekauga Info
-		button = mUiFactory.addImageButton(SkinNames.General.SPIDDEKAUGA_INFO, mSpiddekaugaTable, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.SPIDDEKAUGA_INFO, mSpiddekaugaTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -133,7 +133,7 @@ class MainMenuGui extends MenuGui {
 		};
 
 		// Logout
-		button = mUiFactory.addImageButton(SkinNames.General.LOGOUT, mLogoutTable, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.LOGOUT, mLogoutTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {

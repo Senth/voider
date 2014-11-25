@@ -82,8 +82,8 @@ class ThemeSelectGui extends Gui {
 				mScene.cancel();
 			}
 		};
-		mUiFactory.addTextButton("Cancel", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
-		mUiFactory.addButtonPadding(mMainTable);
+		mUiFactory.button.addText("Cancel", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
+		mUiFactory.button.addPadding(mMainTable);
 
 		// Select
 		listener = new ButtonListener() {
@@ -92,7 +92,7 @@ class ThemeSelectGui extends Gui {
 				mScene.select();
 			}
 		};
-		mUiFactory.addTextButton("Select", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
+		mUiFactory.button.addText("Select", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
 
 		mMainTable.row().setHeight(mUiFactory.getStyles().vars.paddingSeparator);
 	}

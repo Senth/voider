@@ -13,7 +13,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
-import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
@@ -21,7 +20,6 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
-import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * Common GUI for all explore scenes
@@ -94,43 +92,18 @@ abstract class ExploreGui extends Gui {
 	}
 
 	/**
-	 * Add an action button
-	 * @param text button text
-	 * @param listener button listener
-	 */
-	protected void addActionButton(String text, ButtonListener listener) {
-		AlignTable table = mWidgets.actionTable;
-
-		// Add button padding
-		if (table.getRow() != null && table.getRow().getCellCount() != 0) {
-			mUiFactory.addButtonPadding(table);
-		}
-
-		mUiFactory.addTextButton(text, TextButtonStyles.FILLED_PRESS, table, listener, null, null);
-		table.getCell().resetWidth().setFillWidth(true);
-	}
-
-	/**
-	 * Add a new row for the action buttons
-	 */
-	protected void addActionButtonRow() {
-		mWidgets.actionTable.row().setPadTop(mUiFactory.getStyles().vars.paddingOuter).setFillWidth(true).setEqualCellSize(true);
-	}
-
-	/**
 	 * Initialize the left panel
 	 */
 	private void initLeftPanel() {
 		TabWidget tabWidget = mUiFactory.createRightPanel();
 		tabWidget.setName("left-panel");
-		addActor(tabWidget);
 		mLeftPanel = tabWidget;
 
 		tabWidget.setMarginRight(0).setPadRight(0);
 		tabWidget.setTabPosition(Positions.RIGHT);
-		// tabWidget.setAlignTab(Horizontal.LEFT);
 		tabWidget.setAlignTable(Horizontal.LEFT, Vertical.TOP);
-		tabWidget.setMarginBottom(mRightPanel.getMarginBottom());
+
+		initPanel(tabWidget);
 	}
 
 	/**
@@ -139,12 +112,21 @@ abstract class ExploreGui extends Gui {
 	private void initRightPanel() {
 		TabWidget tabWidget = mUiFactory.createRightPanel();
 		tabWidget.setName("right-panel");
-		addActor(tabWidget);
 		mRightPanel = tabWidget;
 
-		// Updated bottom margin as play/menu buttons will be available
-		float bottomMargin = mUiFactory.getStyles().vars.textButtonHeight + mUiFactory.getStyles().vars.paddingOuter * 2;
-		tabWidget.setMarginBottom(bottomMargin);
+		initPanel(tabWidget);
+	}
+
+	/**
+	 * Common initialization for left and right panel
+	 * @param tabWidget panel to initialize
+	 */
+	private void initPanel(TabWidget tabWidget) {
+		addActor(tabWidget);
+
+		tabWidget.setMarginBottom(mUiFactory.getStyles().vars.paddingOuter);
+		tabWidget.setActionButtonHeight(mUiFactory.getStyles().vars.textButtonHeight);
+		tabWidget.setActionButtonPad(mUiFactory.getStyles().vars.paddingButton);
 
 		tabWidget.layout();
 	}

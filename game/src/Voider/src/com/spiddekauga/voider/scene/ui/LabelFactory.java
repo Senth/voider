@@ -16,13 +16,12 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
  * Creates UI labels
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LabelFactory {
+public class LabelFactory extends BaseFactory {
 	/**
-	 * Only UiFactory should be able to create this class
-	 * @param uiStyles the uiStyles to use
+	 * Package constructor
 	 */
-	LabelFactory(UiStyles uiStyles) {
-		mStyles = uiStyles;
+	LabelFactory() {
+		// Does nothing
 	}
 
 	/**
@@ -247,5 +246,4 @@ public class LabelFactory {
 
 	/** Last created error label */
 	private Label mCreatedErrorLabelLast = null;
-	private UiStyles mStyles;
 }

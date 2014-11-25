@@ -34,7 +34,7 @@ class EditorSelectionGui extends MenuGui {
 	 * Initializes the menu
 	 */
 	private void initMenu() {
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.EDITOR_LEVEL_BIG, "Level", Positions.BOTTOM, null, mMainTable, null, null);
+		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_LEVEL_BIG, "Level", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -42,33 +42,33 @@ class EditorSelectionGui extends MenuGui {
 			}
 		};
 
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.EDITOR_ENEMY_BIG, "Enemy", Positions.BOTTOM, null, mMainTable, null, null);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_ENEMY_BIG, "Enemy", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.gotoEnemyEditor();
 			}
 		};
-		mUiFactory.addButtonPadding(mMainTable);
+		mUiFactory.button.addPadding(mMainTable);
 
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.EDITOR_BULLET_BIG, "Bullet", Positions.BOTTOM, null, mMainTable, null, null);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_BULLET_BIG, "Bullet", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.gotoBulletEditor();
 			}
 		};
-		mUiFactory.addButtonPadding(mMainTable);
+		mUiFactory.button.addPadding(mMainTable);
 
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
-			button = mUiFactory.addImageButtonLabel(SkinNames.General.EDITOR_SHIP_BIG, "Ship", Positions.BOTTOM, null, mMainTable, null, null);
+			button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_SHIP_BIG, "Ship", Positions.BOTTOM, null, mMainTable, null, null);
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed(Button button) {
 					mMenuScene.gotoShipEditor();
 				}
 			};
-			mUiFactory.addButtonPadding(mMainTable);
+			mUiFactory.button.addPadding(mMainTable);
 		}
 	}
 }

@@ -630,7 +630,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Bullet image
 		table.row();
-		ImageButton imageButton = mUiFactory.addImageButton(SkinNames.EditorIcons.BULLET_SELECT, table, onTab.getHider(), mDisabledWhenPublished);
+		ImageButton imageButton = mUiFactory.button.addImage(SkinNames.EditorIcons.BULLET_SELECT, table, onTab.getHider(), mDisabledWhenPublished);
 		new ButtonListener(imageButton) {
 			@Override
 			protected void onPressed(Button button) {

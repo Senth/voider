@@ -150,7 +150,7 @@ public class HighscoreSceneGui extends Gui {
 				mScene.continueToNextScene();
 			}
 		};
-		mUiFactory.addTextButton("Continue", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
+		mUiFactory.button.addText("Continue", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
 	}
 
 	/** Highscore scene */

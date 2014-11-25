@@ -44,7 +44,7 @@ class PlayMenuGui extends MenuGui {
 	 */
 	private void initMenu() {
 		// Resume
-		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Resume", Positions.BOTTOM, null, mMainTable, null, null);
+		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.GAME_CONTINUE, "Resume", Positions.BOTTOM, null, mMainTable, null, null);
 		mResumeButton = button;
 		new ButtonListener(button) {
 			@Override
@@ -54,14 +54,14 @@ class PlayMenuGui extends MenuGui {
 		};
 
 		// New Game
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_NEW, "New Game", Positions.BOTTOM, null, mMainTable, null, null);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.GAME_NEW, "New Game", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mMenuScene.newGame();
 			}
 		};
-		mUiFactory.addButtonPadding(mMainTable);
+		mUiFactory.button.addPadding(mMainTable);
 	}
 
 	/** Resume button */

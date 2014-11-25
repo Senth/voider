@@ -7,16 +7,15 @@ package com.spiddekauga.voider.scene.ui;
 abstract class BaseFactory {
 	/**
 	 * Sets the styles and return variable
-	 * @param createdActors wrapper class for created actors
 	 * @param styles all UI styles
 	 */
-	void init(CreatedActors createdActors, UiStyles styles) {
-		mCreatedActors = createdActors;
+	void init(UiStyles styles) {
 		mStyles = styles;
+		mUiFactory = UiFactory.getInstance();
 	}
 
-	/** Created actors */
-	protected CreatedActors mCreatedActors = null;
 	/** UI styles */
 	protected UiStyles mStyles = null;
+	/** UiFactory */
+	protected UiFactory mUiFactory = null;
 }

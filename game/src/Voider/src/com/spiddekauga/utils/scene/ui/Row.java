@@ -54,20 +54,11 @@ public class Row implements Poolable, IPadding<Row> {
 	}
 
 	/**
-	 * Sets the cells to equal size
+	 * Sets the cells to equal size. Uses the row alignment.
 	 * @param equalSize set to true to use equal spacing
-	 * @param useCellAlign set this to true if you want to use the cell's alignment
-	 *        instead of the row's alignment. With this you can accomplish a layout like
-	 *        this: \code |��������������������������������������������������������
-	 *        ����������������������������������������������������| |Left | Right| Center
-	 *        | |����������������������������
-	 *        ���������������������������������������������
-	 *        �����������������������������������| \endcode Only applicable if
-	 *        equalSpacing is set to true
-	 * @todo useCellAlign has not been implemented yet
 	 * @return This row for chaining
 	 */
-	public Row setEqualCellSize(boolean equalSize, boolean useCellAlign) {
+	public Row setEqualCellSize(boolean equalSize) {
 		mEqualSize = equalSize;
 
 		// Check if preferred width needs updating
@@ -83,17 +74,6 @@ public class Row implements Poolable, IPadding<Row> {
 			}
 		}
 
-		return this;
-	}
-
-	/**
-	 * Sets the cells to equal size. Uses the row alignment.
-	 * @param equalSize set to true to use equal spacing
-	 * @return This row for chaining
-	 * @see #setEqualCellSize(boolean,boolean) for using cell alignment instead
-	 */
-	public Row setEqualCellSize(boolean equalSize) {
-		setEqualCellSize(equalSize, false);
 		return this;
 	}
 
@@ -443,10 +423,16 @@ public class Row implements Poolable, IPadding<Row> {
 
 	/**
 	 * @return false if all cells are invisible. If a row exists without a cell or with an
-	 *         empty cell it still returs true if the cell is set as visible.
+	 *         empty cell it still returns true if the cell is set as visible.
 	 */
 	boolean isVisible() {
-		return mCells.isEmpty() || getVisibleCellCount() > 0;
+		for (Cell cell : mCells) {
+			if (cell.isVisible()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

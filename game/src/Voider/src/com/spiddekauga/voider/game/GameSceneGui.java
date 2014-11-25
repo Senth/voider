@@ -135,7 +135,7 @@ class GameSceneGui extends Gui {
 		// Create buttons
 		mOptionBar.setAlign(Horizontal.CENTER, Vertical.TOP);
 		mOptionBar.setMarginTop(mUiFactory.getStyles().vars.paddingOuter);
-		Button button = mUiFactory.addImageButton(SkinNames.EditorIcons.SCREENSHOT, mOptionBar, null, null);
+		Button button = mUiFactory.button.addImage(SkinNames.EditorIcons.SCREENSHOT, mOptionBar, null, null);
 		mWidgets.screenShot = button;
 		new ButtonListener(button) {
 			@Override

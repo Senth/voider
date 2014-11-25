@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.scene.ui.VisibilityChangeListener.VisibilityChangeEvent;
 import com.spiddekauga.voider.Config;
 
 /**

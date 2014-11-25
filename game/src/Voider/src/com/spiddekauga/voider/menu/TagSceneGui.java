@@ -56,7 +56,7 @@ class TagSceneGui extends Gui {
 					mScene.continueToNextScene();
 				}
 			};
-			mUiFactory.addTextButton(tag.toString(), TextButtonStyles.TAG, mMainTable, listener, null, null);
+			mUiFactory.button.addText(tag.toString(), TextButtonStyles.TAG, mMainTable, listener, null, null);
 		}
 	}
 
@@ -73,7 +73,7 @@ class TagSceneGui extends Gui {
 				mScene.continueToNextScene();
 			};
 		};
-		mUiFactory.addTextButton("Skip", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
+		mUiFactory.button.addText("Skip", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
 	}
 
 	/** Tag scene */

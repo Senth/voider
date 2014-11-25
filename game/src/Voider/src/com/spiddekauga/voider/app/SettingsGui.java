@@ -98,8 +98,8 @@ public class SettingsGui extends Gui {
 				mScene.set24HourFormat(checked);
 			}
 		};
-		mWidgets.general.time24h = mUiFactory.addCheckBoxRow("24hr", CheckBoxStyles.RADIO, buttonListener, buttonGroup, table);
-		mWidgets.general.timeAmPm = mUiFactory.addCheckBoxRow("AM/PM", CheckBoxStyles.RADIO, null, buttonGroup, table);
+		mWidgets.general.time24h = mUiFactory.button.addCheckBoxRow("24hr", CheckBoxStyles.RADIO, buttonListener, buttonGroup, table);
+		mWidgets.general.timeAmPm = mUiFactory.button.addCheckBoxRow("AM/PM", CheckBoxStyles.RADIO, null, buttonGroup, table);
 	}
 
 	private void initSound() {

@@ -93,7 +93,7 @@ public class LoginGui extends Gui {
 				/** @todo forgot password -> send to another GUI screen */
 			}
 		};
-		mUiFactory.addTextButton("Forgot Password", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
+		mUiFactory.button.addText("Forgot Password", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
 
 		// Register
 		if (mLoginScene.isRegisterAvailable()) {
@@ -105,7 +105,7 @@ public class LoginGui extends Gui {
 					mRegisterHider.show();
 				}
 			};
-			mUiFactory.addTextButton("Register", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
+			mUiFactory.button.addText("Register", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
 		}
 
 
@@ -124,7 +124,7 @@ public class LoginGui extends Gui {
 				Gdx.app.exit();
 			}
 		};
-		mUiFactory.addTextButton("Exit", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		mUiFactory.button.addText("Exit", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().setFixedWidth(false);
 
 		// Login
@@ -134,9 +134,9 @@ public class LoginGui extends Gui {
 				login();
 			}
 		};
-		mUiFactory.addTextButton("Login", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		mUiFactory.button.addText("Login", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().setFixedWidth(false);
-		mUiFactory.addButtonPadding(table.getRow());
+		mUiFactory.button.addPadding(table.getRow());
 		mWidgets.login.table.layout();
 
 		// Add to stage
@@ -325,7 +325,7 @@ public class LoginGui extends Gui {
 				mLoginHider.show();
 			}
 		};
-		mUiFactory.addTextButton("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		mUiFactory.button.addText("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().setFixedWidth(false);
 
 		// Register
@@ -335,9 +335,9 @@ public class LoginGui extends Gui {
 				register();
 			}
 		};
-		mUiFactory.addTextButton("Register", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		mUiFactory.button.addText("Register", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().setFixedWidth(false);
-		mUiFactory.addButtonPadding(table.getRow());
+		mUiFactory.button.addPadding(table.getRow());
 		mWidgets.register.table.row();
 		mWidgets.register.table.layout();
 
