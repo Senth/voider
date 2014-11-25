@@ -176,6 +176,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		return mLevelFetch.isFetching();
 	}
 
+	@Override
+	void repopulateContent() {
+		mLevelFetch.fetch();
+	}
+
 	/**
 	 * Fetch initial comments
 	 */
@@ -334,6 +339,24 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 */
 	private class LevelFetch {
 		/**
+		 * Fetch initial level again. Only does something if {@link #fetch(String)} or
+		 * {@link #fetch(SortOrders, ArrayList)} has been invoked before this method.
+		 */
+		void fetch() {
+			if (!mIsFetching && mUser.isOnline()) {
+				mIsFetching = true;
+
+				if (mSearchString != null) {
+					((ExploreLevelGui) mGui).resetContent();
+					mResourceWebRepo.getLevels(mSearchString, false, ExploreLevelScene.this);
+				} else if (mSortOrder != null) {
+					((ExploreLevelGui) mGui).resetContent();
+					mResourceWebRepo.getLevels(mSortOrder, mTags, false, ExploreLevelScene.this);
+				}
+			}
+		}
+
+		/**
 		 * Fetch levels from search string
 		 * @param searchString
 		 */
@@ -348,7 +371,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 				mIsFetching = true;
 				mSearchString = searchString;
 				mSortOrder = null;
-				mTags.clear();
+				mTags = null;
 
 				mResourceWebRepo.getLevels(searchString, false, ExploreLevelScene.this);
 			}

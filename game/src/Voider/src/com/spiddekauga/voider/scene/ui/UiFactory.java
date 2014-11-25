@@ -839,6 +839,8 @@ public class UiFactory {
 		tabWidget.setFillHeight(true);
 		tabWidget.setPad(mStyles.vars.paddingInner);
 		tabWidget.setContentWidth(mStyles.vars.rightPanelWidth);
+		tabWidget.setActionButtonHeight(mStyles.vars.textButtonHeight);
+		tabWidget.setActionButtonPad(mStyles.vars.paddingButton);
 
 		// Alignment
 		tabWidget.setAlignTab(Horizontal.RIGHT).setAlign(Horizontal.RIGHT, Vertical.TOP);

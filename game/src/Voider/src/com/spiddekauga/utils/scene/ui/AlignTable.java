@@ -916,8 +916,10 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 		float rowWidthMax = super.getWidth();
 		for (Row row : mRows) {
-			if (row.getWidth() > rowWidthMax) {
-				rowWidthMax = row.getWidth();
+			if (row.isVisible()) {
+				if (row.getWidth() > rowWidthMax) {
+					rowWidthMax = row.getWidth();
+				}
 			}
 		}
 

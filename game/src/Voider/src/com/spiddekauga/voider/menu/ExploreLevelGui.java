@@ -525,10 +525,12 @@ public class ExploreLevelGui extends ExploreGui {
 	 */
 	void addContent(ArrayList<LevelInfoEntity> levels) {
 		beginAddContent();
+		LevelInfoEntity selectedLevel = mExploreScene.getSelectedLevel();
 
 		// for (int i = 0; i < 5; ++i) {
 		for (LevelInfoEntity level : levels) {
-			addContent(createLevelTable(level));
+			boolean selected = selectedLevel == level;
+			addContent(createLevelTable(level, selected));
 		}
 		// }
 
@@ -538,9 +540,10 @@ public class ExploreLevelGui extends ExploreGui {
 	/**
 	 * Create level image table
 	 * @param level the level to create an image table for
+	 * @param selected true if it should be selected from the start
 	 * @return table with level image, name and rating
 	 */
-	private AlignTable createLevelTable(final LevelInfoEntity level) {
+	private AlignTable createLevelTable(final LevelInfoEntity level, boolean selected) {
 		AlignTable table = new AlignTable();
 		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
@@ -550,6 +553,7 @@ public class ExploreLevelGui extends ExploreGui {
 		imageButtonStyle.imageUp = (Drawable) level.defEntity.drawable;
 
 		Button button = new ImageButton(imageButtonStyle);
+		button.setChecked(selected);
 		table.row().setFillWidth(true);
 		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
 		new ButtonListener(button) {

@@ -71,6 +71,7 @@ public class TabWidget extends AlignTable {
 		mContentInnerTable.invalidate();
 		mContentOuterTable.invalidate();
 		mTabTable.invalidate();
+		mActionTable.invalidate();
 	}
 
 	@Override
@@ -213,6 +214,7 @@ public class TabWidget extends AlignTable {
 		}
 
 		button.addListener(mTabVisibilityListener);
+		button.addListener(mTabCheckListener);
 		hider.addToggleActor(addActor);
 		hider.setButton(button);
 		mContentInnerTable.add(addActor).setFillWidth(true).setFillHeight(true);
@@ -394,6 +396,27 @@ public class TabWidget extends AlignTable {
 		mContentOuterTable.setHeight(height);
 		mContentOuterTable.setKeepHeight(true);
 		return this;
+	}
+
+	/**
+	 * Set if content can be hidden by clicking on the active tab
+	 * @param hideable true if the content can be hidden
+	 * @return this for chaining
+	 */
+	public TabWidget setContentHideable(boolean hideable) {
+		mContentHideable = hideable;
+		mButtonGroup.setMinCheckCount(hideable ? 0 : 1);
+		if (mButtonGroup.getChecked() == null) {
+			setContentVisibility(false);
+		}
+		return this;
+	}
+
+	/**
+	 * @return true if the content can be hidden by clicking on the active tab
+	 */
+	public boolean isContentHideable() {
+		return mContentHideable;
 	}
 
 	@Override
@@ -723,6 +746,43 @@ public class TabWidget extends AlignTable {
 	}
 
 	/**
+	 * Sets the visibility of the content
+	 * @param visible true if visible
+	 */
+	private void setContentVisibility(boolean visible) {
+		mContentOuterTable.setVisible(visible);
+		mActionTable.setVisible(visible);
+		invalidate();
+		fire(new VisibilityChangeListener.VisibilityChangeEvent());
+	}
+
+	/**
+	 * @return true if the content is visible
+	 */
+	private boolean isContentVisible() {
+		return mContentOuterTable.isVisible();
+	}
+
+	/**
+	 * Listens to tab checked/unchecked events
+	 */
+	private EventListener mTabCheckListener = new ButtonListener() {
+		@Override
+		protected void onChecked(Button button, boolean checked) {
+			if (isContentHideable()) {
+				// Show if was hidden
+				if (checked && !isContentVisible()) {
+					setContentVisibility(true);
+				}
+				// Hide if no other tab was checked
+				else if (!checked && mButtonGroup.getChecked() == null) {
+					setContentVisibility(false);
+				}
+			}
+		}
+	};
+
+	/**
 	 * Listens to visibility change events for tab buttons. I.e. entire tabs are hidden
 	 */
 	private EventListener mTabVisibilityListener = new VisibilityChangeListener() {
@@ -772,4 +832,5 @@ public class TabWidget extends AlignTable {
 	/** Button padding for the action buttons */
 	private float mActionButtonPadding = 0;
 	private float mActionButtonHeight = 0;
+	private boolean mContentHideable = false;
 }

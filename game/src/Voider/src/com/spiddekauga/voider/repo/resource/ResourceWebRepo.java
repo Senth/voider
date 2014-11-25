@@ -618,12 +618,12 @@ public class ResourceWebRepo extends WebRepo {
 		SortWrapper sortCacheKey = new SortWrapper(sort, tags);
 		LevelCache cache = mSortCache.get(sortCacheKey);
 
-		if (cache != null) {
-			method.nextCursor = cache.serverCursor;
-		}
 
 		// Fetch more from server
 		if (cache == null || (fetchMore && !cache.fetchedAll)) {
+			if (cache != null) {
+				method.nextCursor = cache.serverCursor;
+			}
 			sendInNewThread(method, responseListeners);
 		}
 		// Use cache
@@ -648,13 +648,12 @@ public class ResourceWebRepo extends WebRepo {
 		// Get cache
 		LevelCache cache = mSearchCache.getCopy(searchString);
 
-		if (cache != null) {
-			method.nextCursor = cache.serverCursor;
-		}
-
 
 		// Fetch more from server
 		if (cache == null || (fetchMore && !cache.fetchedAll)) {
+			if (cache != null) {
+				method.nextCursor = cache.serverCursor;
+			}
 			sendInNewThread(method, responseListeners);
 		}
 		// Use cache

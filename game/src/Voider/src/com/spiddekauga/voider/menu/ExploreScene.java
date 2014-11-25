@@ -79,6 +79,11 @@ public abstract class ExploreScene extends Scene implements IResponseListener {
 	abstract void fetchMoreContent();
 
 	/**
+	 * Repopulate content
+	 */
+	abstract void repopulateContent();
+
+	/**
 	 * Handle synchronized web response. This method should be used instead of in
 	 * sub-classes.
 	 * @param method parameters to the server

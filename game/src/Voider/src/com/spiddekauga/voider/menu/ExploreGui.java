@@ -15,6 +15,7 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
+import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -43,7 +44,6 @@ abstract class ExploreGui extends Gui {
 		initRightPanel();
 		initLeftPanel();
 		initContent();
-		initActions();
 
 		getStage().setScrollFocus(mWidgets.content.scrollPane);
 	}
@@ -70,25 +70,10 @@ abstract class ExploreGui extends Gui {
 	void resetContent() {
 		mWidgets.content.table.dispose();
 		mWidgets.content.buttonGroup = new ButtonGroup();
-		resetContentMargins();
 
 		if (mExploreScene != null && mExploreScene.isFetchingContent()) {
 			addWaitIconToContent();
 		}
-	}
-
-	/**
-	 * Initialize actions table
-	 */
-	private void initActions() {
-		AlignTable table = mWidgets.actionTable;
-		table.setAlignTable(Horizontal.RIGHT, Vertical.BOTTOM);
-		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
-		table.row().setFillWidth(true).setEqualCellSize(true);
-		table.setWidth(mRightPanel.getWidth() - mRightPanel.getPadX());
-		table.setKeepWidth(true);
-		table.setName("action-table");
-		addActor(table);
 	}
 
 	/**
@@ -102,6 +87,18 @@ abstract class ExploreGui extends Gui {
 		tabWidget.setMarginRight(0).setPadRight(0);
 		tabWidget.setTabPosition(Positions.RIGHT);
 		tabWidget.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		tabWidget.setContentHideable(true);
+
+		VisibilityChangeListener visibilityListener = new VisibilityChangeListener() {
+			@Override
+			public void onVisibilyChange(VisibilityChangeEvent event, Actor actor) {
+				if (actor == mLeftPanel) {
+					mLeftPanel.layout();
+					resetContentMargins();
+				}
+			}
+		};
+		tabWidget.addListener(visibilityListener);
 
 		initPanel(tabWidget);
 	}
@@ -125,8 +122,6 @@ abstract class ExploreGui extends Gui {
 		addActor(tabWidget);
 
 		tabWidget.setMarginBottom(mUiFactory.getStyles().vars.paddingOuter);
-		tabWidget.setActionButtonHeight(mUiFactory.getStyles().vars.textButtonHeight);
-		tabWidget.setActionButtonPad(mUiFactory.getStyles().vars.paddingButton);
 
 		tabWidget.layout();
 	}
@@ -185,7 +180,11 @@ abstract class ExploreGui extends Gui {
 			mWidgets.content.table.invalidateHierarchy();
 			mWidgets.content.scrollPane.validate();
 
+			int cActorsPerRowOld = mActorsPerRow;
 			calculateActorsPerRow();
+			if (mActorsPerRow != cActorsPerRowOld) {
+				mExploreScene.repopulateContent();
+			}
 		}
 	}
 
@@ -331,7 +330,6 @@ abstract class ExploreGui extends Gui {
 
 	private class InnerWidgets implements Disposable {
 		Content content = new Content();
-		AlignTable actionTable = new AlignTable();
 
 		class Content implements Disposable {
 			AlignTable table = new AlignTable();
