@@ -28,7 +28,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Movement;
 import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Weapon;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
+import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;

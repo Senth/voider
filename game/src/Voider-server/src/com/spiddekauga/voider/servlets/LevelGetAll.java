@@ -19,6 +19,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
@@ -38,6 +39,8 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelSta
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
+import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
+import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
 import com.spiddekauga.voider.server.util.UserRepo;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -284,7 +287,6 @@ public class LevelGetAll extends VoiderServlet {
 		networkEntity.date = (Date) datastoreEntity.getProperty(CPublished.DATE);
 		networkEntity.description = (String) datastoreEntity.getProperty(CPublished.DESCRIPTION);
 		networkEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.LEVEL_ID);
-		networkEntity.levelLength = ((Double) datastoreEntity.getProperty(CPublished.LEVEL_LENGTH)).floatValue();
 		networkEntity.name = (String) datastoreEntity.getProperty(CPublished.NAME);
 		networkEntity.resourceId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.RESOURCE_ID);
 		networkEntity.png = DatastoreUtils.getByteArrayProperty(datastoreEntity, CPublished.PNG);
@@ -299,6 +301,13 @@ public class LevelGetAll extends VoiderServlet {
 		networkEntity.creator = UserRepo.getUsername(creatorKey);
 		networkEntity.originalCreator = UserRepo.getUsername(originalCreatorKey);
 
+
+		// FROM SEARCH
+		Document document = SearchUtils.getDocument(SearchTables.LEVEL, KeyFactory.keyToString(datastoreEntity.getKey()));
+		if (document != null) {
+			networkEntity.levelLength = SearchUtils.getFloat(document, SLevel.LEVEL_LENGTH);
+			networkEntity.levelSpeed = SearchUtils.getFloat(document, SLevel.LEVEL_SPEED);
+		}
 
 		// Skip dependencies, no need for the player to know about them
 

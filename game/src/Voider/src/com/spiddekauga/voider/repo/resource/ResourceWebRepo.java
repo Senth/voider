@@ -17,6 +17,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.BlobDownloadMethod;
@@ -211,8 +212,19 @@ public class ResourceWebRepo extends WebRepo {
 	private static void setEnemyDefEntity(EnemyActorDef enemyDef, EnemyDefEntity enemyEntity) {
 		setDefEntity(enemyDef, enemyEntity);
 
-		enemyEntity.enemyHasWeapon = enemyDef.hasWeapon();
-		enemyEntity.enemyMovementType = enemyDef.getMovementType();
+		// Weapon stuff
+		enemyEntity.hasWeapon = enemyDef.hasWeapon() && enemyDef.getWeaponDef().getBulletActorDef() != null;
+		if (enemyEntity.hasWeapon) {
+			enemyEntity.bulletSpeed = enemyDef.getWeaponDef().getBulletSpeed();
+			enemyEntity.bulletDamage = enemyDef.getWeaponDef().getDamage();
+			enemyEntity.aimType = enemyDef.getAimType();
+		}
+
+		enemyEntity.movementType = enemyDef.getMovementType();
+		if (enemyEntity.movementType != MovementTypes.STATIONARY) {
+			enemyEntity.movementSpeed = enemyDef.getSpeed();
+		}
+
 		enemyEntity.type = UploadTypes.ENEMY_DEF;
 	}
 
@@ -236,6 +248,7 @@ public class ResourceWebRepo extends WebRepo {
 		setDefEntity(levelDef, levelEntity);
 
 		levelEntity.levelLength = levelDef.getLengthInTime();
+		levelEntity.levelSpeed = levelDef.getBaseSpeed();
 		levelEntity.levelId = levelDef.getLevelId();
 		levelEntity.type = UploadTypes.LEVEL_DEF;
 	}

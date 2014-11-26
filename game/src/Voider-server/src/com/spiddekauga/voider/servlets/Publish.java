@@ -18,20 +18,25 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Document.Builder;
-import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
+import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.CampaignDefEntity;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
+import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
+import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.PublishMethod;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
@@ -43,6 +48,9 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublishe
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CSyncPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResourcesDeleted;
+import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SDef;
+import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SEnemy;
+import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -431,7 +439,13 @@ public class Publish extends VoiderServlet {
 	 * Undo added search documents
 	 */
 	private void undoSearchDocuments() {
-		// TODO
+		mLogger.fine("Removing search documents");
+
+		for (Entry<UploadTypes, ArrayList<Document>> entry : mSearchDocumentsToAdd.entrySet()) {
+			String typeName = entry.getKey().toString();
+			ArrayList<Document> documents = entry.getValue();
+			SearchUtils.deleteDocuments(typeName, documents);
+		}
 	}
 
 	/**
@@ -527,17 +541,14 @@ public class Publish extends VoiderServlet {
 	 * @param defEntity the def entity to append to the document builder
 	 */
 	private void appendDefEntity(Builder builder, DefEntity defEntity) {
-		String nameTokens = SearchUtils.tokenizeAutocomplete(defEntity.name.toLowerCase(), TokenSizes.RESOURCE);
-		builder.addField(Field.newBuilder().setName("name").setText(nameTokens).build());
-		builder.addField(Field.newBuilder().setName("published").setDate(defEntity.date).build());
+		SearchUtils.addField(builder, SDef.NAME, defEntity.name.toLowerCase(), TokenSizes.RESOURCE);
+		SearchUtils.addField(builder, SDef.DATE, defEntity.date);
 
 		// Add name of creators
 		String creatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.creatorKey));
-		String creatorNameTokens = SearchUtils.tokenizeAutocomplete(creatorName.toLowerCase(), TokenSizes.RESOURCE);
-		builder.addField(Field.newBuilder().setName("creator").setText(creatorNameTokens));
+		SearchUtils.addField(builder, SDef.CREATOR, creatorName, TokenSizes.RESOURCE);
 		String originalCreatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.originalCreatorKey));
-		String originalCreatorNameTokens = SearchUtils.tokenizeAutocomplete(originalCreatorName.toLowerCase(), TokenSizes.RESOURCE);
-		builder.addField(Field.newBuilder().setName("original_creator").setText(originalCreatorNameTokens));
+		SearchUtils.addField(builder, SDef.ORIGINAL_CREATOR, originalCreatorName, TokenSizes.RESOURCE);
 	}
 
 	/**
@@ -547,18 +558,6 @@ public class Publish extends VoiderServlet {
 	 * @return true if successful, false otherwise
 	 */
 	private boolean appendEnemyDefEntity(Entity datastoreEntity, EnemyDefEntity enemyDefEntity) {
-		if (enemyDefEntity.enemyMovementType != null) {
-			DatastoreUtils.setProperty(datastoreEntity, CPublished.ENEMY_MOVEMENT_TYPE, enemyDefEntity.enemyMovementType.getId());
-		} else {
-			mLogger.severe("MovementType is null for " + enemyDefEntity.resourceId);
-			return false;
-		}
-
-
-		// No-test properties
-		DatastoreUtils.setProperty(datastoreEntity, CPublished.ENEMY_HAS_WEAPON, enemyDefEntity.enemyHasWeapon);
-
-
 		return appendDefEntity(datastoreEntity, enemyDefEntity);
 	}
 
@@ -569,6 +568,42 @@ public class Publish extends VoiderServlet {
 	 */
 	private void appendEnemyDefEntity(Builder builder, EnemyDefEntity enemyDefEntity) {
 		appendDefEntity(builder, enemyDefEntity);
+
+		// Movement
+		SearchUtils.addFieldAtom(builder, SEnemy.MOVEMENT_TYPE, enemyDefEntity.movementType.getStringId());
+		if (enemyDefEntity.movementType != MovementTypes.STATIONARY) {
+			SearchUtils.addField(builder, SEnemy.MOVEMENT_SPEED, enemyDefEntity.movementSpeed);
+			EnemySpeedSearchRanges enemySpeedCat = EnemySpeedSearchRanges.getRange(enemyDefEntity.movementSpeed);
+			if (enemySpeedCat != null) {
+				SearchUtils.addFieldAtom(builder, SEnemy.MOVEMENT_SPEED_CAT, enemySpeedCat.getInternalName());
+			} else {
+				mLogger.severe("Enemy movement speed (" + enemyDefEntity.movementSpeed + ") is not in a valid search range");
+			}
+		}
+
+		// Weapon
+		SearchUtils.addField(builder, SEnemy.HAS_WEAPON, enemyDefEntity.hasWeapon);
+		if (enemyDefEntity.hasWeapon) {
+			SearchUtils.addField(builder, SEnemy.BULLET_SPEED, enemyDefEntity.bulletSpeed);
+			SearchUtils.addField(builder, SEnemy.BULLET_DAMAGE, enemyDefEntity.bulletDamage);
+			SearchUtils.addFieldAtom(builder, SEnemy.AIM_TYPE, enemyDefEntity.aimType.getStringId());
+
+			BulletSpeedSearchRanges bulletSpeedCat = BulletSpeedSearchRanges.getRange(enemyDefEntity.bulletSpeed);
+			if (bulletSpeedCat != null) {
+				SearchUtils.addFieldAtom(builder, SEnemy.BULLET_SPEED_CAT, bulletSpeedCat.getInternalName());
+			} else {
+				mLogger.severe("Enemy bullet speed (" + enemyDefEntity.bulletSpeed + ") is not in a valid range");
+			}
+
+			BulletDamageSearchRanges bulletDamageCat = BulletDamageSearchRanges.getRange(enemyDefEntity.bulletDamage);
+			if (bulletDamageCat != null) {
+				SearchUtils.addFieldAtom(builder, SEnemy.BULLET_DAMAGE_CAT, bulletDamageCat.getInternalName());
+			} else {
+				mLogger.severe("Enemy bullet damage (" + enemyDefEntity.bulletDamage + ") is not in a valid range");
+			}
+		}
+
+
 	}
 
 	/**
@@ -590,7 +625,6 @@ public class Publish extends VoiderServlet {
 
 		// No-test properties
 		DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.LEVEL_ID, LevelDefEntity.levelId);
-		DatastoreUtils.setProperty(datastoreEntity, CPublished.LEVEL_LENGTH, LevelDefEntity.levelLength);
 
 		return appendDefEntity(datastoreEntity, LevelDefEntity);
 	}
@@ -602,6 +636,23 @@ public class Publish extends VoiderServlet {
 	 */
 	private void appendLevelDefEntity(Builder builder, LevelDefEntity levelDefEntity) {
 		appendDefEntity(builder, levelDefEntity);
+
+		SearchUtils.addField(builder, SLevel.LEVEL_LENGTH, levelDefEntity.levelLength);
+		SearchUtils.addField(builder, SLevel.LEVEL_SPEED, levelDefEntity.levelSpeed);
+
+		LevelLengthSearchRanges lengthCat = LevelLengthSearchRanges.getRange(levelDefEntity.levelLength);
+		if (lengthCat != null) {
+			SearchUtils.addFieldAtom(builder, SLevel.LEVEL_LENGTH_CAT, lengthCat.getInternalName());
+		} else {
+			mLogger.severe("Level length (" + levelDefEntity.levelLength + ") isn't in a valid range");
+		}
+
+		LevelSpeedSearchRanges speedCat = LevelSpeedSearchRanges.getRange(levelDefEntity.levelSpeed);
+		if (speedCat != null) {
+			SearchUtils.addFieldAtom(builder, SLevel.LEVEL_SPEED_CAT, speedCat.getInternalName());
+		} else {
+			mLogger.severe("Level speed (" + levelDefEntity.levelSpeed + ") isn't in a valid range");
+		}
 	}
 
 	/**

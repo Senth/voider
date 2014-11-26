@@ -339,7 +339,7 @@ public class Config {
 			public final static float LEVEL_SPEED_MAX = 50;
 			/** Default level speed */
 			public final static float LEVEL_SPEED_DEFAULT = 15;
-			/** Step size of level speeed */
+			/** Step size of level speed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
 			/** Minimum zoom */
 			public final static float ZOOM_MIN = 0.2f;

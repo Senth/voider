@@ -287,23 +287,6 @@ public class EnemyActorDef extends ActorDef {
 		return mAimRotateVars.rotateSpeed;
 	}
 
-	/**
-	 * Enumeration for how to aim
-	 */
-	public enum AimTypes {
-		// !!!NEVER EVER remove or change order of these!!!
-		/** On the player */
-		ON_PLAYER,
-		/** In front of the player */
-		IN_FRONT_OF_PLAYER,
-		/** In the moving direction */
-		MOVE_DIRECTION,
-		/** Rotates */
-		ROTATE,
-		/** In a specific direction */
-		DIRECTION,
-	}
-
 	/** If the enemy has a weapon */
 	@Tag(53) private boolean mHasWeapon = false;
 	/** Weapon of the enemy */

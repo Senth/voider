@@ -52,13 +52,8 @@ public class ServerConfig {
 			public static final String RESOURCE_ID = "resource_id";
 
 			// Level specific
-			public static final String LEVEL_LENGTH = "level_length";
 			public static final String LEVEL_BLOB_KEY = "level_blob_key";
 			public static final String LEVEL_ID = "level_id";
-
-			// Enemy specific
-			public static final String ENEMY_HAS_WEAPON = "enemy_has_weapon";
-			public static final String ENEMY_MOVEMENT_TYPE = "enemy_movement_type";
 		}
 
 		// Dependency
@@ -142,6 +137,47 @@ public class ServerConfig {
 		 * Private constructor to enforce singleton usage
 		 */
 		private DatastoreTables() {
+		}
+	}
+
+	@SuppressWarnings("javadoc")
+	public static class SearchTables {
+		public static final String ENEMY = "enemy_def";
+		public static final String BULLET = "bullet_def";
+		public static final String LEVEL = "level_def";
+
+		// Common for all resources
+		public static class SDef {
+			public static final String CREATOR = "creator";
+			public static final String ORIGINAL_CREATOR = "original_creator";
+			public static final String NAME = "name";
+			public static final String DATE = "date";
+		}
+
+		// Enemy
+		public static class SEnemy extends SDef {
+			public static final String MOVEMENT_TYPE = "movement_type";
+			public static final String MOVEMENT_SPEED = "movement_speed";
+			public static final String MOVEMENT_SPEED_CAT = "movement_speed_cat";
+			public static final String HAS_WEAPON = "has_weapon";
+			public static final String BULLET_SPEED = "bullet_speed";
+			public static final String BULLET_SPEED_CAT = "bullet_speed_cat";
+			public static final String AIM_TYPE = "aim_type";
+			public static final String BULLET_DAMAGE = "bullet_damage";
+			public static final String BULLET_DAMAGE_CAT = "bullet_damage_cat";
+		}
+
+		// Bullet
+		public static class SBullet extends SDef {
+
+		}
+
+		// Level
+		public static class SLevel extends SDef {
+			public static final String LEVEL_LENGTH = "level_length";
+			public static final String LEVEL_LENGTH_CAT = "level_length_cat";
+			public static final String LEVEL_SPEED = "level_speed";
+			public static final String LEVEL_SPEED_CAT = "level_speed_cat";
 		}
 	}
 

@@ -913,9 +913,30 @@ browse_disabled
   orig: 32, 32
   offset: 0, 0
   index: -1
+browse_online
+  rotate: false
+  xy: 4049, 479
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 bugs
   rotate: false
   xy: 4049, 479
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+browse_online_checked
+  rotate: false
+  xy: 3171, 317
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+browse_online_down
+  rotate: false
+  xy: 3171, 317
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -934,6 +955,20 @@ bugs_down
   orig: 32, 32
   offset: 0, 0
   index: -1
+browse_online_checked_over
+  rotate: false
+  xy: 1225, 157
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+browse_online_over
+  rotate: false
+  xy: 1225, 157
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 bugs_checked_over
   rotate: false
   xy: 1225, 157
@@ -944,6 +979,13 @@ bugs_checked_over
 bugs_over
   rotate: false
   xy: 1225, 157
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+browse_online_disabled
+  rotate: false
+  xy: 3089, 235
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
