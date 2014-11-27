@@ -49,14 +49,30 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/resource-comment-get</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>LevelGetAll</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.LevelGetAll</servlet-class>
+		<servlet-name>LevelFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.LevelFetch</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>LevelGetAll</servlet-name>
-		<url-pattern>/level-get-all</url-pattern>
+		<servlet-name>LevelFetch</servlet-name>
+		<url-pattern>/level-fetch</url-pattern>
 	</servlet-mapping>
-		<servlet>
+	<servlet>
+		<servlet-name>EnemyFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.EnemyFetch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EnemyFetch</servlet-name>
+		<url-pattern>/enemy-fetch</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>BulletFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.BulletFetch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BulletFetch</servlet-name>
+		<url-pattern>/bullet-fetch</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>ResourceDownload</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.ResourceDownload</servlet-class>
 	</servlet>

@@ -12,9 +12,9 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
@@ -97,8 +97,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 	@Override
 	protected void onWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof LevelGetAllMethodResponse) {
-			mLevelFetch.handleWebResponse((LevelGetAllMethod) method, (LevelGetAllMethodResponse) response);
+		if (response instanceof LevelFetchMethodResponse) {
+			mLevelFetch.handleWebResponse((LevelFetchMethod) method, (LevelFetchMethodResponse) response);
 		} else if (response instanceof ResourceDownloadMethodResponse) {
 			handleResourceDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
 		} else if (response instanceof ResourceCommentGetMethodResponse) {
@@ -440,7 +440,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @param method
 		 * @param response
 		 */
-		void handleWebResponse(LevelGetAllMethod method, LevelGetAllMethodResponse response) {
+		void handleWebResponse(LevelFetchMethod method, LevelFetchMethodResponse response) {
 			// Only do something if this was the one we last called
 			if (isLastMethod(method)) {
 				mIsFetching = false;
@@ -472,7 +472,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @param method
 		 * @return true if this was the last method we called
 		 */
-		boolean isLastMethod(LevelGetAllMethod method) {
+		boolean isLastMethod(LevelFetchMethod method) {
 			// Search string
 			if (mSearchString != null && method.searchString != null) {
 				return mSearchString.equals(method.searchString);

@@ -1,0 +1,21 @@
+package com.spiddekauga.voider.network.entities.resource;
+
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
+
+/**
+ * Base class for all resource responses
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ */
+@SuppressWarnings("serial")
+public class ResourceFetchMethodResponse implements IEntity, ISuccessStatuses {
+	/** Datastore cursor to continue the query */
+	public String cursor = null;
+	/** Status of the response */
+	public FetchStatuses status = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
+}

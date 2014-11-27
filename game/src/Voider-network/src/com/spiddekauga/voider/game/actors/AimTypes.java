@@ -1,9 +1,13 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.HashMap;
+
+import com.spiddekauga.voider.network.util.ISearchStore;
+
 /**
  * Enumeration for how to aim
  */
-public enum AimTypes {
+public enum AimTypes implements ISearchStore {
 	// !!!NEVER EVER remove or change order of these!!!
 	/** On the player */
 	ON_PLAYER(1),
@@ -35,9 +39,40 @@ public enum AimTypes {
 	/**
 	 * @return search save id
 	 */
-	public String getStringId() {
+	@Override
+	public String getSearchId() {
 		return String.valueOf(mId);
 	}
 
+	/**
+	 * Get the enum with the specified id
+	 * @param id id of the enum to get
+	 * @return enum with the specified id, null if not found
+	 */
+	public static AimTypes fromId(int id) {
+		return mIdToEnum.get(id);
+	}
+
+	/**
+	 * Get the enum with the specified id
+	 * @param id id of the enum to get
+	 * @return enum with the specified id, null if not found
+	 */
+	public static AimTypes fromId(String id) {
+		try {
+			return mIdToEnum.get(Integer.valueOf(id));
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	/** Id for saving in datastore */
 	private int mId;
+	private static HashMap<Integer, AimTypes> mIdToEnum = new HashMap<>();
+
+	static {
+		for (AimTypes type : AimTypes.values()) {
+			mIdToEnum.put(type.mId, type);
+		}
+	}
 }

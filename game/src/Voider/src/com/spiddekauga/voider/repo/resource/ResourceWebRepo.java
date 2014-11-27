@@ -26,10 +26,11 @@ import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethod;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
@@ -41,7 +42,6 @@ import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
@@ -224,8 +224,6 @@ public class ResourceWebRepo extends WebRepo {
 		if (enemyEntity.movementType != MovementTypes.STATIONARY) {
 			enemyEntity.movementSpeed = enemyDef.getSpeed();
 		}
-
-		enemyEntity.type = UploadTypes.ENEMY_DEF;
 	}
 
 	/**
@@ -235,8 +233,6 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private static void setBulletDefEntity(BulletActorDef bulletDef, BulletDefEntity bulletEntity) {
 		setDefEntity(bulletDef, bulletEntity);
-
-		bulletEntity.type = UploadTypes.BULLET_DEF;
 	}
 
 	/**
@@ -250,7 +246,6 @@ public class ResourceWebRepo extends WebRepo {
 		levelEntity.levelLength = levelDef.getLengthInTime();
 		levelEntity.levelSpeed = levelDef.getBaseSpeed();
 		levelEntity.levelId = levelDef.getLevelId();
-		levelEntity.type = UploadTypes.LEVEL_DEF;
 	}
 
 	/**
@@ -289,8 +284,8 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		// Get Levels
-		else if (methodEntity instanceof LevelGetAllMethod) {
-			responseToSend = handleLevelGetResponse((LevelGetAllMethod) methodEntity, response);
+		else if (methodEntity instanceof LevelFetchMethod) {
+			responseToSend = handleLevelGetResponse((LevelFetchMethod) methodEntity, response);
 		}
 
 		// Download resources
@@ -492,7 +487,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param searchString
 	 * @param response
 	 */
-	private void cacheLevels(String searchString, LevelGetAllMethodResponse response) {
+	private void cacheLevels(String searchString, LevelFetchMethodResponse response) {
 		LevelCache cache = mSearchCache.get(searchString);
 
 		boolean newCache = false;
@@ -516,7 +511,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param tags
 	 * @param response
 	 */
-	private void cacheLevels(SortOrders sort, ArrayList<Tags> tags, LevelGetAllMethodResponse response) {
+	private void cacheLevels(SortOrders sort, ArrayList<Tags> tags, LevelFetchMethodResponse response) {
 		SortWrapper sortCacheKey = new SortWrapper(sort, tags);
 		LevelCache cache = mSortCache.get(sortCacheKey);
 
@@ -540,24 +535,24 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response server response, null if not valid
 	 * @return a correct response for getting levels
 	 */
-	private IEntity handleLevelGetResponse(LevelGetAllMethod methodEntity, IEntity response) {
+	private IEntity handleLevelGetResponse(LevelFetchMethod methodEntity, IEntity response) {
 		// Update cache
-		if (response instanceof LevelGetAllMethodResponse) {
-			if (((LevelGetAllMethodResponse) response).status.isSuccessful()) {
+		if (response instanceof LevelFetchMethodResponse) {
+			if (((LevelFetchMethodResponse) response).status.isSuccessful()) {
 				// Search string
 				if (methodEntity.searchString != null && !methodEntity.searchString.equals("")) {
-					cacheLevels(methodEntity.searchString, (LevelGetAllMethodResponse) response);
+					cacheLevels(methodEntity.searchString, (LevelFetchMethodResponse) response);
 				}
 				// Sorting with or without tags
 				else {
-					cacheLevels(methodEntity.sort, methodEntity.tagFilter, (LevelGetAllMethodResponse) response);
+					cacheLevels(methodEntity.sort, methodEntity.tagFilter, (LevelFetchMethodResponse) response);
 				}
 			}
 
 			return response;
 		} else {
-			LevelGetAllMethodResponse levelGetAllMethodResponse = new LevelGetAllMethodResponse();
-			levelGetAllMethodResponse.status = LevelGetAllMethodResponse.Statuses.FAILED_SERVER_CONNECTION;
+			LevelFetchMethodResponse levelGetAllMethodResponse = new LevelFetchMethodResponse();
+			levelGetAllMethodResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
 			return levelGetAllMethodResponse;
 		}
 	}
@@ -567,10 +562,10 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param levelCache
 	 * @param response the response from the server
 	 */
-	private static void updateLevelCache(LevelCache levelCache, LevelGetAllMethodResponse response) {
+	private static void updateLevelCache(LevelCache levelCache, LevelFetchMethodResponse response) {
 		levelCache.serverCursor = response.cursor;
 		levelCache.addLevels(response.levels);
-		levelCache.fetchedAll = response.status == LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+		levelCache.fetchedAll = response.status == FetchStatuses.SUCCESS_FETCHED_ALL;
 	}
 
 	/**
@@ -623,7 +618,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param responseListeners listens to the web response
 	 */
 	public void getLevels(SortOrders sort, ArrayList<Tags> tags, boolean fetchMore, IResponseListener... responseListeners) {
-		LevelGetAllMethod method = new LevelGetAllMethod();
+		LevelFetchMethod method = new LevelFetchMethod();
 		method.sort = sort;
 		method.tagFilter = tags;
 
@@ -641,9 +636,9 @@ public class ResourceWebRepo extends WebRepo {
 		}
 		// Use cache
 		else {
-			LevelGetAllMethodResponse response = new LevelGetAllMethodResponse();
+			LevelFetchMethodResponse response = new LevelFetchMethodResponse();
 			response.levels = cache.levels;
-			response.status = LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+			response.status = FetchStatuses.SUCCESS_FETCHED_ALL;
 			sendResponseToListeners(method, response, responseListeners);
 		}
 	}
@@ -655,7 +650,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param responseListeners the caller to send the response to
 	 */
 	public void getLevels(String searchString, boolean fetchMore, IResponseListener... responseListeners) {
-		LevelGetAllMethod method = new LevelGetAllMethod();
+		LevelFetchMethod method = new LevelFetchMethod();
 		method.searchString = searchString;
 
 		// Get cache
@@ -671,9 +666,9 @@ public class ResourceWebRepo extends WebRepo {
 		}
 		// Use cache
 		else {
-			LevelGetAllMethodResponse response = new LevelGetAllMethodResponse();
+			LevelFetchMethodResponse response = new LevelFetchMethodResponse();
 			response.levels = cache.levels;
-			response.status = LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+			response.status = FetchStatuses.SUCCESS_FETCHED_ALL;
 			sendResponseToListeners(method, response, responseListeners);
 		}
 	}

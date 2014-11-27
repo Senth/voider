@@ -51,7 +51,7 @@ public enum UploadTypes {
 	 * @return the correct def type for this id, null if invalid id
 	 */
 	public static UploadTypes fromId(int id) {
-		return mIdToDefType.get(id);
+		return mIdToEnum.get(id);
 	}
 
 	/** Id for saving in datastore */
@@ -59,11 +59,11 @@ public enum UploadTypes {
 	/** Human readable name for the type */
 	private String mName;
 	/** Map from id to def types */
-	private static HashMap<Integer, UploadTypes> mIdToDefType = new HashMap<>();
+	private static HashMap<Integer, UploadTypes> mIdToEnum = new HashMap<>();
 
 	static {
-		for (UploadTypes defType : UploadTypes.values()) {
-			mIdToDefType.put(defType.mId, defType);
+		for (UploadTypes type : UploadTypes.values()) {
+			mIdToEnum.put(type.mId, type);
 		}
 	}
 

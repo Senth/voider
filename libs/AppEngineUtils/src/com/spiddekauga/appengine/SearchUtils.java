@@ -26,28 +26,6 @@ import com.google.appengine.api.search.StatusCode;
  */
 public class SearchUtils {
 	/**
-	 * Get a float number from the specified field. If multiple fields exists with this
-	 * name the first valid field will be returned.
-	 * @param document the document to get the number from
-	 * @param fieldName name of the field
-	 * @return float value of the field, 0 if the field doesn't exist or isn't a number
-	 */
-	public static float getFloat(Document document, String fieldName) {
-		Iterable<Field> fields = document.getFields(fieldName);
-		if (fields != null) {
-			for (Field field : fields) {
-				if (field.getType() != null && field.getType() == FieldType.NUMBER) {
-					Double number = field.getNumber();
-					if (number != null) {
-						return number.floatValue();
-					}
-				}
-			}
-		}
-		return 0;
-	}
-
-	/**
 	 * Retrieve a document
 	 * @param indexName name of the index the document exists in
 	 * @param documentId id of the document to get
@@ -131,13 +109,11 @@ public class SearchUtils {
 		boolean retry = false;
 		do {
 			try {
-				index.put(document);
 				retry = false;
+				index.put(document);
 			} catch (PutException e) {
 				if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
 					retry = true;
-				} else {
-					return false;
 				}
 			}
 		} while (retry);
@@ -186,13 +162,11 @@ public class SearchUtils {
 		boolean retry = false;
 		do {
 			try {
-				index.put(documents);
 				retry = false;
+				index.put(documents);
 			} catch (PutException e) {
 				if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
 					retry = true;
-				} else {
-					return false;
 				}
 			}
 		} while (retry);
@@ -236,11 +210,17 @@ public class SearchUtils {
 		Query.Builder queryBuilder = Query.newBuilder().setOptions(optionsBuilder);
 
 		Results<ScoredDocument> foundDocuments = null;
-		try {
-			foundDocuments = index.search(queryBuilder.build(searchQuery));
-		} catch (SearchQueryException e) {
-			// Do nothing
-		}
+		boolean retry = false;
+		do {
+			try {
+				retry = false;
+				foundDocuments = index.search(queryBuilder.build(searchQuery));
+			} catch (SearchQueryException e) {
+				if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
+					retry = true;
+				}
+			}
+		} while (retry);
 
 		return foundDocuments;
 	}
@@ -288,7 +268,7 @@ public class SearchUtils {
 	 * @param value boolean value to convert
 	 * @return an atom string that represents the boolean value
 	 */
-	public static String getAtom(boolean value) {
+	private static String getAtom(boolean value) {
 		return value ? TRUE : FALSE;
 	}
 
@@ -297,7 +277,7 @@ public class SearchUtils {
 	 * @param atomBoolean the atom boolean value
 	 * @return java boolean value
 	 */
-	public static boolean getBoolean(String atomBoolean) {
+	private static boolean getBoolean(String atomBoolean) {
 		if (atomBoolean != null) {
 			if (atomBoolean.equals(TRUE)) {
 				return true;
@@ -305,6 +285,92 @@ public class SearchUtils {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get a boolean value from an atom field
+	 * @param document the document to get the number from
+	 * @param fieldName name of the field
+	 * @return value of the boolean, but will also return false if not found.
+	 */
+	public static boolean getBoolean(Document document, String fieldName) {
+		String atom = getValue(document, fieldName, FieldType.ATOM);
+		return getBoolean(atom);
+	}
+
+	/**
+	 * Get text either from a text, atom, or HTML field
+	 * @param document the document to get the text from
+	 * @param fieldName name of the field
+	 * @return text, null if the field doesn't exist or isn't a text, atom, or HTML field.
+	 */
+	public static String getText(Document document, String fieldName) {
+		return getValue(document, fieldName, FieldType.TEXT, FieldType.ATOM, FieldType.HTML);
+	}
+
+	/**
+	 * Get a float number from the specified field. If multiple fields exists with this
+	 * name the first valid field will be returned.
+	 * @param document the document to get the number from
+	 * @param fieldName name of the field
+	 * @return float value of the field, 0 if the field doesn't exist or isn't a number
+	 */
+	public static float getFloat(Document document, String fieldName) {
+		Double number = getValue(document, fieldName, FieldType.NUMBER);
+		if (number != null) {
+			return number.floatValue();
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * Get the first correct value from a field
+	 * @param <ObjectType> the type to get
+	 * @param document document to get the field from
+	 * @param fieldName name of the field
+	 * @param fieldTypes valid field types the value can be in
+	 * @return first valid field value, null if none was found
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ObjectType> ObjectType getValue(Document document, String fieldName, FieldType... fieldTypes) {
+		Iterable<Field> fields = document.getFields(fieldName);
+		if (fields != null) {
+			for (Field field : fields) {
+				if (field.getType() != null) {
+					for (FieldType fieldType : fieldTypes) {
+						if (field.getType() == fieldType) {
+							Object object = null;
+							switch (fieldType) {
+							case ATOM:
+								object = field.getAtom();
+								break;
+							case DATE:
+								object = field.getDate();
+								break;
+							case GEO_POINT:
+								object = field.getGeoPoint();
+								break;
+							case HTML:
+								object = field.getHTML();
+								break;
+							case NUMBER:
+								object = field.getNumber();
+								break;
+							case TEXT:
+								object = field.getText();
+								break;
+							}
+
+							if (object != null) {
+								return (ObjectType) object;
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -455,6 +521,291 @@ public class SearchUtils {
 	 */
 	public static void addFieldAtom(Document.Builder builder, String name, String atom) {
 		builder.addField(createFieldAtom(name, atom));
+	}
+
+	/**
+	 * Class for helping to build search strings
+	 */
+	public static class Builder {
+		/**
+		 * Push/Begin a parenthesis
+		 * @return this for chaining
+		 */
+		public Builder pushParenthesis() {
+			addSpace();
+			mStringBuilder.append("(");
+			mcParenthesises++;
+			return this;
+		}
+
+		/**
+		 * Pop/End a parenthesis
+		 * @return this for chaining
+		 */
+		public Builder popParenthesis() {
+			mStringBuilder.append(")");
+			mcParenthesises--;
+			return this;
+		}
+
+		/**
+		 * Adds an AND operator
+		 * @return this for chaining
+		 */
+		public Builder and() {
+			addSpace();
+			mStringBuilder.append(CombineOperators.AND);
+			return this;
+		}
+
+		/**
+		 * Adds an or operator
+		 * @return this for chaining
+		 */
+		public Builder or() {
+			addSpace();
+			mStringBuilder.append(CombineOperators.OR);
+			return this;
+		}
+
+		/**
+		 * Search for fields that are either true or false
+		 * @param fieldName the field to search for
+		 * @param value true or false
+		 * @return this for chaining
+		 */
+		public Builder bool(String fieldName, boolean value) {
+			if (value) {
+				return isTrue(fieldName);
+			} else {
+				return isFalse(fieldName);
+			}
+		}
+
+		/**
+		 * Search for fields with this name that are true
+		 * @param fieldName the field name to search for
+		 * @return this for chaining
+		 */
+		public Builder isTrue(String fieldName) {
+			addSpace();
+			mStringBuilder.append(FieldOperators.EQUAL.combine(fieldName, TRUE));
+			return this;
+		}
+
+		/**
+		 * Search for fields with this name that are false
+		 * @param fieldName the field name to search for
+		 * @return this for chaining
+		 */
+		public Builder isFalse(String fieldName) {
+			addSpace();
+			mStringBuilder.append(FieldOperators.EQUAL.combine(fieldName, FALSE));
+			return this;
+		}
+
+		/**
+		 * Adds text to search
+		 * @param text search for text
+		 * @return this for chaining
+		 */
+		public Builder text(String text) {
+			addSpace();
+			mStringBuilder.append(text);
+			return this;
+		}
+
+		/**
+		 * Search for a text in a specific field. Automatically adds quotation marks at
+		 * the beginning and end if none exists.
+		 * @param text search for this text. Automatically adds quotation marks at the
+		 *        beginning and end if none exists.
+		 * @param fieldName the field name to search in
+		 * @return this for chaining
+		 */
+		public Builder text(String text, String fieldName) {
+			addSpace();
+			mStringBuilder.append(FieldOperators.EQUAL.combine(fieldName, quote(text)));
+			return this;
+		}
+
+		/**
+		 * Search for a text in several specific fields. Automatically adds quotation
+		 * marks at the beginning and end if none exists
+		 * @param text search for this text. Automatically adds quotation marks at the
+		 *        beginning and end if none exists.
+		 * @param operator if searching in several fields use this operator between
+		 * @param fieldNames all fields to search for the text in
+		 * @return this for chaining
+		 */
+		public Builder text(String text, CombineOperators operator, String... fieldNames) {
+			if (fieldNames.length > 0) {
+				addSpace();
+				String quotedText = quote(text);
+
+				if (fieldNames.length > 1) {
+					pushParenthesis();
+				}
+
+				for (int i = 0; i < fieldNames.length; ++i) {
+					// Don't add operator before the first
+					if (i != 0) {
+						mStringBuilder.append(" ").append(operator);
+					}
+
+					// Add text field
+					text(quotedText, fieldNames[i]);
+				}
+
+				if (fieldNames.length > 1) {
+					popParenthesis();
+				}
+			}
+
+			return this;
+		}
+
+		/**
+		 * Search for different texts in the same field. Automatically adds quotation
+		 * marks at the beginning and end if none exists.
+		 * @param fieldName the field name to search in
+		 * @param texts Search for all these texts. Automatically adds quotation marks at
+		 *        the beginning and end if none exists.
+		 * @return this for chaining
+		 */
+		public Builder text(String fieldName, String... texts) {
+			if (texts.length > 0) {
+				addSpace();
+
+				if (texts.length > 1) {
+					pushParenthesis();
+				}
+
+				for (int i = 0; i < texts.length; ++i) {
+					// Don't add operator before the first
+					if (i != 0) {
+						or();
+					}
+
+					// Add text field
+					text(texts[i], fieldName);
+				}
+
+				if (texts.length > 1) {
+					popParenthesis();
+				}
+			}
+
+			return this;
+		}
+
+		/**
+		 * Quote the text to search for (if necessary)
+		 * @param text the text to quote
+		 * @return quoted text
+		 */
+		public String quote(String text) {
+			String newText = text;
+			if (text.contains(" ")) {
+				// Check front
+				if (!text.substring(0, 1).equals("\"")) {
+					newText = "\"" + text;
+				}
+				// Check back
+				if (!text.substring(text.length() - 1, text.length()).equals("\"")) {
+					newText += "\"";
+				}
+			}
+			return newText;
+		}
+
+		/**
+		 * Add space in front of the next thing if necessary
+		 */
+		private void addSpace() {
+			if (mStringBuilder.length() >= 1) {
+				String lastChar = mStringBuilder.substring(mStringBuilder.length() - 1, mStringBuilder.length());
+				if (!(lastChar.equals(" ") || lastChar.equals("("))) {
+					mStringBuilder.append(" ");
+				}
+			}
+		}
+
+		/**
+		 * Build the search string
+		 * @return compiled search string
+		 * @throws UnmatchedParenthesis if you didn't call {@link #pushParenthesis()} and
+		 *         {@link #popParenthesis()} the same amount of time.
+		 */
+		public String build() {
+			if (mcParenthesises != 0) {
+				throw new UnmatchedParenthesis();
+			}
+			return mStringBuilder.toString();
+		}
+
+
+		/**
+		 * Operators for the fields. Have skipped not as it should rather not be used
+		 */
+		@SuppressWarnings("javadoc")
+		public enum FieldOperators {
+			EQUAL(":"),
+			LESS("<"),
+			LESS_OR_EQUAL("<="),
+			GREATER(">"),
+			GREATER_OR_EQUAL(">="),
+
+			;
+
+			private FieldOperators(String textRepresentation) {
+				mTextRepresentation = textRepresentation;
+			}
+
+			@Override
+			public String toString() {
+				return mTextRepresentation;
+			}
+
+			/**
+			 * Create a full text representation with both field and values
+			 * @param fieldName name of the field
+			 * @param value the value of the field
+			 */
+			private String combine(String fieldName, String value) {
+				return fieldName + toString() + value;
+			}
+
+			private String mTextRepresentation;
+		}
+
+		/**
+		 * Combine operators
+		 */
+		@SuppressWarnings("javadoc")
+		public enum CombineOperators {
+			AND,
+			OR,
+
+			;
+
+			@Override
+			public String toString() {
+				return name();
+			}
+		}
+
+		/**
+		 * Thrown when the number of parenthesis are unmatched
+		 */
+		public static class UnmatchedParenthesis extends RuntimeException {
+
+
+			private static final long serialVersionUID = -1422426982731705689L;
+		}
+
+		private int mcParenthesises = 0;
+		private StringBuilder mStringBuilder = new StringBuilder();
 	}
 
 	/** True field value */

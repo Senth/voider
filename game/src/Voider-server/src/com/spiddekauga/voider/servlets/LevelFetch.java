@@ -2,7 +2,6 @@ package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -26,14 +25,16 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelStatsEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.server.util.ResourceFetch;
+import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
@@ -41,31 +42,29 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublishe
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
-import com.spiddekauga.voider.server.util.UserRepo;
-import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Get all levels with specified filters
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelGetAll extends VoiderServlet {
+public class LevelFetch extends ResourceFetch {
 	@Override
 	protected void onInit() {
-		mResponse = new LevelGetAllMethodResponse();
-		mResponse.status = Statuses.FAILED_SERVER_ERROR;
+		mResponse = new LevelFetchMethodResponse();
+		mResponse.status = FetchStatuses.FAILED_SERVER_ERROR;
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof LevelGetAllMethod) {
-				mParameters = (LevelGetAllMethod) methodEntity;
+			if (methodEntity instanceof LevelFetchMethod) {
+				mParameters = (LevelFetchMethod) methodEntity;
 
 				getAndSetLevelResponse();
 			}
 		} else {
-			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
 		}
 
 		return mResponse;
@@ -82,15 +81,15 @@ public class LevelGetAll extends VoiderServlet {
 		// Text search
 		else if (mParameters.searchString != null && !mParameters.searchString.equals("")) {
 			// Only search for 3 or more characters
-			if (mParameters.searchString.length() >= 3) {
+			if (mParameters.searchString.length() >= ServerConfig.SEARCH_TEXT_LENGTH_MIN) {
 				searchLevels();
 			}
 		}
 		// Just sort, i.e. get the levels
 		else {
 			mResponse.levels = getLevels(FetchSizes.LEVELS);
-			if (mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
-				mResponse.status = Statuses.SUCCESS_MORE_EXISTS;
+			if (mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
+				mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
 			}
 		}
 	}
@@ -167,7 +166,7 @@ public class LevelGetAll extends VoiderServlet {
 
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
 				infoEntity.defEntity = getLevelDefEntity(levelKey);
-				infoEntity.stats = convertDatastoreToLevelStatsEntity(statsEntity);
+				infoEntity.stats = datastoreToLevelStatsEntity(statsEntity);
 				infoEntity.tags = getLevelTags(levelKey);
 				levels.add(infoEntity);
 			}
@@ -175,7 +174,7 @@ public class LevelGetAll extends VoiderServlet {
 			for (Entity publishedEntity : queryResult) {
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
 
-				infoEntity.defEntity = convertDatastoreToLevelDefEntity(publishedEntity);
+				infoEntity.defEntity = datastoreToLevelDefEntity(publishedEntity);
 				infoEntity.stats = getLevelStatsEntity(publishedEntity.getKey());
 				infoEntity.tags = getLevelTags(publishedEntity.getKey());
 				levels.add(infoEntity);
@@ -189,7 +188,7 @@ public class LevelGetAll extends VoiderServlet {
 
 		// Did we fetch all?
 		if (levels.size() < limit) {
-			mResponse.status = Statuses.SUCCESS_FETCHED_ALL;
+			mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
 		}
 
 		return levels;
@@ -236,7 +235,7 @@ public class LevelGetAll extends VoiderServlet {
 		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_STAT, levelKey);
 
 		if (entity != null) {
-			return convertDatastoreToLevelStatsEntity(entity);
+			return datastoreToLevelStatsEntity(entity);
 		}
 
 		return null;
@@ -250,7 +249,7 @@ public class LevelGetAll extends VoiderServlet {
 	private static LevelDefEntity getLevelDefEntity(Key levelKey) {
 		Entity entity = DatastoreUtils.getEntity(levelKey);
 		if (entity != null) {
-			return convertDatastoreToLevelDefEntity(entity);
+			return datastoreToLevelDefEntity(entity);
 		}
 
 		return null;
@@ -261,7 +260,7 @@ public class LevelGetAll extends VoiderServlet {
 	 * @param datastoreEntity datastore entity to convert from
 	 * @return new level stats (network) entity
 	 */
-	private static LevelStatsEntity convertDatastoreToLevelStatsEntity(Entity datastoreEntity) {
+	private static LevelStatsEntity datastoreToLevelStatsEntity(Entity datastoreEntity) {
 		LevelStatsEntity levelStatsEntity = new LevelStatsEntity();
 
 		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty(CLevelStat.CLEAR_COUNT)).intValue();
@@ -279,37 +278,18 @@ public class LevelGetAll extends VoiderServlet {
 	 * @param datastoreEntity the datastore entity to convert from
 	 * @return new level def (network) entity
 	 */
-	private static LevelDefEntity convertDatastoreToLevelDefEntity(Entity datastoreEntity) {
-		LevelDefEntity networkEntity = new LevelDefEntity();
+	private static LevelDefEntity datastoreToLevelDefEntity(Entity datastoreEntity) {
+		LevelDefEntity networkEntity = datastoreToDefEntity(datastoreEntity, new LevelDefEntity());
 
-		networkEntity.copyParentId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.COPY_PARENT_ID);
-
-		networkEntity.date = (Date) datastoreEntity.getProperty(CPublished.DATE);
-		networkEntity.description = (String) datastoreEntity.getProperty(CPublished.DESCRIPTION);
+		// Datastore
 		networkEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.LEVEL_ID);
-		networkEntity.name = (String) datastoreEntity.getProperty(CPublished.NAME);
-		networkEntity.resourceId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.RESOURCE_ID);
-		networkEntity.png = DatastoreUtils.getByteArrayProperty(datastoreEntity, CPublished.PNG);
-		networkEntity.type = UploadTypes.LEVEL_DEF;
 
-
-		// Set creators
-		Key creatorKey = datastoreEntity.getParent();
-		Key originalCreatorKey = (Key) datastoreEntity.getProperty(CPublished.ORIGINAL_CREATOR_KEY);
-		networkEntity.creatorKey = KeyFactory.keyToString(creatorKey);
-		networkEntity.originalCreatorKey = KeyFactory.keyToString(originalCreatorKey);
-		networkEntity.creator = UserRepo.getUsername(creatorKey);
-		networkEntity.originalCreator = UserRepo.getUsername(originalCreatorKey);
-
-
-		// FROM SEARCH
+		// Search
 		Document document = SearchUtils.getDocument(SearchTables.LEVEL, KeyFactory.keyToString(datastoreEntity.getKey()));
 		if (document != null) {
 			networkEntity.levelLength = SearchUtils.getFloat(document, SLevel.LEVEL_LENGTH);
 			networkEntity.levelSpeed = SearchUtils.getFloat(document, SLevel.LEVEL_SPEED);
 		}
-
-		// Skip dependencies, no need for the player to know about them
 
 		return networkEntity;
 	}
@@ -320,7 +300,7 @@ public class LevelGetAll extends VoiderServlet {
 	private void filterByTags() {
 		ArrayList<LevelInfoEntity> foundLevelsWithTags = mResponse.levels;
 
-		while (foundLevelsWithTags.size() < FetchSizes.LEVELS && mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
+		while (foundLevelsWithTags.size() < FetchSizes.LEVELS && mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
 			int fetchLimit = (mParameters.tagFilter.size() + 1) * FetchSizes.LEVELS;
 			ArrayList<LevelInfoEntity> levels = getLevels(fetchLimit);
 
@@ -332,8 +312,8 @@ public class LevelGetAll extends VoiderServlet {
 			}
 		}
 
-		if (mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
-			mResponse.status = Statuses.SUCCESS_MORE_EXISTS;
+		if (mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
+			mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
 		}
 	}
 
@@ -355,11 +335,11 @@ public class LevelGetAll extends VoiderServlet {
 			cursor = com.google.appengine.api.search.Cursor.newBuilder().build(mParameters.nextCursor);
 		}
 
-		Results<ScoredDocument> foundDocuments = SearchUtils.search(UploadTypes.LEVEL_DEF.toString(), mParameters.searchString.toLowerCase(),
-				FetchSizes.LEVELS, cursor);
+		Results<ScoredDocument> foundDocuments = SearchUtils.search(SearchTables.LEVEL, mParameters.searchString.toLowerCase(), FetchSizes.LEVELS,
+				cursor);
 
 		if (foundDocuments == null || foundDocuments.getCursor() == null || foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
-			mResponse.status = Statuses.SUCCESS_FETCHED_ALL;
+			mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
 		}
 
 		if (foundDocuments != null) {
@@ -380,14 +360,14 @@ public class LevelGetAll extends VoiderServlet {
 				mResponse.cursor = foundDocuments.getCursor().toWebSafeString();
 			}
 
-			if (mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
-				mResponse.status = Statuses.SUCCESS_MORE_EXISTS;
+			if (mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
+				mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
 			}
 		}
 	}
 
 	/** Method parameters */
-	private LevelGetAllMethod mParameters = null;
+	private LevelFetchMethod mParameters = null;
 	/** Method response */
-	private LevelGetAllMethodResponse mResponse = null;
+	private LevelFetchMethodResponse mResponse = null;
 }

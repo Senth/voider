@@ -8,6 +8,13 @@ import java.util.UUID;
  */
 @SuppressWarnings("serial")
 public class LevelDefEntity extends DefEntity {
+	/**
+	 * Sets default variables
+	 */
+	public LevelDefEntity() {
+		type = UploadTypes.LEVEL_DEF;
+	}
+
 	/** Level length */
 	public float levelLength = 0;
 	/** Level speed */

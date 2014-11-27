@@ -196,9 +196,14 @@ public class ServerConfig {
 		public static final int COMMENTS = 20;
 		/** Number of levels to fetch */
 		public static final int LEVELS = 12;
+		/** Number of actors to fetch */
+		public static final int ACTORS = 20;
 		/** Number of tags to get */
 		public static final int TAGS = 5;
 	}
+
+	/** Minimum text length when searching for text */
+	public static final int SEARCH_TEXT_LENGTH_MIN = 3;
 
 	/** User information */
 	public static class UserInfo {

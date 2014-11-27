@@ -36,7 +36,7 @@ import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
+import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.resource.SkinNames;

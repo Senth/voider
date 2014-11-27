@@ -26,8 +26,12 @@ public abstract interface IMethodEntity extends IEntity {
 		// Resources
 		/** Synchronize downloaded resources */
 		DOWNLOAD_SYNC,
-		/** Get all levels */
-		LEVEL_GET_ALL,
+		/** Fetch levels definitions */
+		LEVEL_FETCH,
+		/** Fetch enemy definitions */
+		ENEMY_FETCH,
+		/** Fetch bullet definitions */
+		BULLET_FETCH,
 		/** Get level comments */
 		RESOURCE_COMMENT_GET,
 		/** Publish resources */

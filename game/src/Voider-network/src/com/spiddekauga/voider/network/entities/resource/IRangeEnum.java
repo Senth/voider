@@ -1,20 +1,12 @@
 package com.spiddekauga.voider.network.entities.resource;
 
+import com.spiddekauga.voider.network.util.ISearchStore;
+
 /**
  * Range enumeration / category for searches
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public interface IRangeEnum {
-	/**
-	 * @return human-readable display name
-	 */
-	String getDisplayName();
-
-	/**
-	 * @return internal storage name
-	 */
-	String getInternalName();
-
+public interface IRangeEnum extends ISearchStore {
 	/**
 	 * @return lowest possible value in this range category
 	 */

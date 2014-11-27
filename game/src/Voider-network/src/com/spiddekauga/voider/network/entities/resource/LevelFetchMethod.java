@@ -10,7 +10,7 @@ import com.spiddekauga.voider.network.entities.stat.Tags;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelGetAllMethod implements IMethodEntity {
+public class LevelFetchMethod implements IMethodEntity {
 	/** Sorting */
 	public SortOrders sort = null;
 	/** Cursor to continue from */
@@ -54,6 +54,6 @@ public class LevelGetAllMethod implements IMethodEntity {
 
 	@Override
 	public MethodNames getMethodName() {
-		return MethodNames.LEVEL_GET_ALL;
+		return MethodNames.LEVEL_FETCH;
 	}
 }

@@ -9,6 +9,13 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
  */
 @SuppressWarnings("serial")
 public class EnemyDefEntity extends DefEntity {
+	/**
+	 * Sets default variables
+	 */
+	public EnemyDefEntity() {
+		type = UploadTypes.ENEMY_DEF;
+	}
+
 	/** If the enemy uses a weapon */
 	public boolean hasWeapon = false;
 	/** Movement type */
