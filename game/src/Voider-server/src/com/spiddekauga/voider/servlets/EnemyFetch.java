@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import javax.servlet.ServletException;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Results;
+import com.google.appengine.api.search.ScoredDocument;
+import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
@@ -24,6 +28,7 @@ import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.util.ISearchStore;
 import com.spiddekauga.voider.server.util.ActorFetch;
 import com.spiddekauga.voider.server.util.ServerConfig;
+import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SEnemy;
 
@@ -86,6 +91,23 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 	 */
 	private void searchAndSetFoundEnemies() {
 		String searchString = buildSearchString();
+
+		Results<ScoredDocument> documents = SearchUtils.search(SearchTables.ENEMY, searchString, FetchSizes.ACTORS, mParameters.nextCursor);
+
+		// Convert all found documents to entities
+		for (ScoredDocument document : documents) {
+			EnemyDefEntity networkEntity = new EnemyDefEntity();
+			searchToNetworkEntity(document, networkEntity);
+
+			// Datastore
+			Key datastoreKey = KeyFactory.stringToKey(document.getId());
+			datastoreToDefEntity(DatastoreUtils.getEntity(datastoreKey), networkEntity);
+
+			mResponse.enemies.add(networkEntity);
+		}
+
+		// Did we fetch all
+		mResponse.status = getSuccessStatus(mResponse.enemies);
 	}
 
 	/**
@@ -154,11 +176,12 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 		mResponse.status = getFetchStatus();
 	}
 
-	@Override
-	protected void setAdditionalActorInformation(Entity publishedEntity, EnemyDefEntity networkEntity) {
-		// From search
-		String documentId = KeyFactory.keyToString(publishedEntity.getKey());
-		Document document = SearchUtils.getDocument(SearchTables.ENEMY, documentId);
+	/**
+	 * Set search document information to an enemy definition
+	 * @param document search document
+	 * @param networkEntity
+	 */
+	private void searchToNetworkEntity(Document document, EnemyDefEntity networkEntity) {
 		if (document != null) {
 			// Movement
 			String movementTypeId = SearchUtils.getText(document, SEnemy.MOVEMENT_TYPE);
@@ -182,6 +205,14 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void setAdditionalActorInformation(Entity publishedEntity, EnemyDefEntity networkEntity) {
+		// From search
+		String documentId = KeyFactory.keyToString(publishedEntity.getKey());
+		Document document = SearchUtils.getDocument(SearchTables.ENEMY, documentId);
+		searchToNetworkEntity(document, networkEntity);
 	}
 
 	@Override

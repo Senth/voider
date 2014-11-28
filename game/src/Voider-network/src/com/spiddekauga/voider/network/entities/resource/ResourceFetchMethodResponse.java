@@ -12,7 +12,7 @@ public class ResourceFetchMethodResponse implements IEntity, ISuccessStatuses {
 	/** Datastore cursor to continue the query */
 	public String cursor = null;
 	/** Status of the response */
-	public FetchStatuses status = null;
+	public FetchStatuses status = FetchStatuses.FAILED_SERVER_ERROR;
 
 	@Override
 	public boolean isSuccessful() {

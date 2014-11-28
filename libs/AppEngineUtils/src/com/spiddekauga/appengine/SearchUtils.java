@@ -190,6 +190,27 @@ public class SearchUtils {
 	 * @param indexName name of the index to search in
 	 * @param searchQuery the search string to use
 	 * @param limit maximum number of results
+	 * @param webSafeCursor continue the search from this cursor, if null does a new
+	 *        search
+	 * @return all found documents
+	 */
+	public static Results<ScoredDocument> search(String indexName, String searchQuery, int limit, String webSafeCursor) {
+		Cursor cursorToUse = null;
+		if (webSafeCursor != null) {
+			try {
+				cursorToUse = Cursor.newBuilder().build(webSafeCursor);
+			} catch (IllegalArgumentException e) {
+				// Does nothing
+			}
+		}
+		return search(indexName, searchQuery, limit, cursorToUse);
+	}
+
+	/**
+	 * Search for documents
+	 * @param indexName name of the index to search in
+	 * @param searchQuery the search string to use
+	 * @param limit maximum number of results
 	 * @param cursor continue the search from this cursor, if null does a new search
 	 * @return all found documents
 	 */

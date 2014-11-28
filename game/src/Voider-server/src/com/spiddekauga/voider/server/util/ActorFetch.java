@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.server.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
@@ -75,10 +76,20 @@ public abstract class ActorFetch<DefType extends DefEntity> extends ResourceFetc
 		mNextCursor = queryResult.getCursor().toWebSafeString();
 
 		// Did we fetch all?
-		if (actors.size() < FetchSizes.ACTORS) {
-			mFetchStatus = FetchStatuses.SUCCESS_FETCHED_ALL;
+		mFetchStatus = getSuccessStatus(queryResult);
+	}
+
+	/**
+	 * Checks if we fetched all and returns the correct success status
+	 * @param list the results from a query
+	 * @return SUCCESS_FETCHED_ALL or SUCCESS_MORE_EXISTS depending on the size of the
+	 *         list
+	 */
+	protected static FetchStatuses getSuccessStatus(List<?> list) {
+		if (list.size() < FetchSizes.ACTORS) {
+			return FetchStatuses.SUCCESS_FETCHED_ALL;
 		} else {
-			mFetchStatus = FetchStatuses.SUCCESS_MORE_EXISTS;
+			return FetchStatuses.SUCCESS_MORE_EXISTS;
 		}
 	}
 
