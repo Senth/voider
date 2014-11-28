@@ -3,6 +3,7 @@ package com.spiddekauga.voider.menu;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
@@ -15,12 +16,25 @@ import com.spiddekauga.voider.utils.Graphics;
  * Common class for all explore scenes
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class ExploreScene extends Scene implements IResponseListener {
+abstract class ExploreScene extends Scene implements IResponseListener {
 	/**
 	 * @param gui explore GUI
 	 */
 	protected ExploreScene(ExploreGui gui) {
 		super(gui);
+
+		((ExploreGui) mGui).setExploreScene(this);
+	}
+
+	@Override
+	protected boolean onKeyDown(int keycode) {
+
+		if (KeyHelper.isBackPressed(keycode)) {
+			setOutcome(Outcomes.NOT_APPLICAPLE);
+			return true;
+		}
+
+		return super.onKeyDown(keycode);
 	}
 
 	@Override

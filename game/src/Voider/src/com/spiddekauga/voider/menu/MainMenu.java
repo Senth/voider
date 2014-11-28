@@ -19,6 +19,7 @@ import com.spiddekauga.voider.editor.ShipEditor;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
@@ -174,7 +175,11 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		// Testing
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			if (keycode == Input.Keys.F5) {
-				SceneSwitcher.switchTo(new TestUiScene());
+				if (KeyHelper.isCtrlPressed()) {
+					SceneSwitcher.switchTo(new TestUiScene());
+				} else if (KeyHelper.isShiftPressed()) {
+					SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class));
+				}
 			} else if (keycode == Input.Keys.F6) {
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 				mNotification.show(message);
@@ -240,7 +245,7 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	 * Goes to the explore screen
 	 */
 	void gotoExplore() {
-		SceneSwitcher.switchTo(new ExploreLevelScene());
+		SceneSwitcher.switchTo(ExploreFactory.create(LevelDef.class));
 	}
 
 	// -- Create/Editors --

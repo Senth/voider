@@ -1,9 +1,12 @@
 package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
@@ -13,12 +16,15 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
+import com.spiddekauga.utils.scene.ui.Background;
+import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 
@@ -27,6 +33,13 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 abstract class ExploreGui extends Gui {
+	/**
+	 * Hidden constructor
+	 */
+	protected ExploreGui() {
+		// Does nothing
+	}
+
 	/**
 	 * Set the explore scene
 	 * @param exploreScene
@@ -44,6 +57,10 @@ abstract class ExploreGui extends Gui {
 		initRightPanel();
 		initLeftPanel();
 		initContent();
+		initView();
+
+		// Initialize last
+		initTopBar();
 
 		getStage().setScrollFocus(mWidgets.content.scrollPane);
 	}
@@ -74,6 +91,40 @@ abstract class ExploreGui extends Gui {
 		if (mExploreScene != null && mExploreScene.isFetchingContent()) {
 			addWaitIconToContent();
 		}
+	}
+
+	/**
+	 * Initializes the top bar
+	 */
+	private void initTopBar() {
+		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR));
+		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT));
+		mWidgets.topBar.setWidth(Gdx.graphics.getWidth());
+		getStage().addActor(mWidgets.topBar);
+		mWidgets.topBar.setZIndex(0);
+		mWidgets.topBar.setPosition(0, Gdx.graphics.getHeight() - mWidgets.topBar.getHeight());
+	}
+
+	/**
+	 * Initialize view table (for top left buttons)
+	 */
+	private void initView() {
+		AlignTable table = mWidgets.view.table;
+		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
+		table.setAlign(Horizontal.LEFT, Vertical.TOP);
+		addActor(table);
+	}
+
+	/**
+	 * Add a view button
+	 * @param iconName name of the button image
+	 * @param hideListener the hide listener that's called
+	 */
+	protected void addViewButton(ISkinNames iconName, HideListener hideListener) {
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(iconName));
+		mWidgets.view.table.add(button);
+		mWidgets.view.buttonGroup.add(button);
+		hideListener.setButton(button);
 	}
 
 	/**
@@ -330,6 +381,8 @@ abstract class ExploreGui extends Gui {
 
 	private class InnerWidgets implements Disposable {
 		Content content = new Content();
+		View view = new View();
+		Background topBar = null;
 
 		class Content implements Disposable {
 			AlignTable table = new AlignTable();
@@ -340,12 +393,25 @@ abstract class ExploreGui extends Gui {
 			@Override
 			public void dispose() {
 				table.dispose();
+				buttonGroup = new ButtonGroup();
+			}
+		}
+
+		class View implements Disposable {
+			AlignTable table = new AlignTable();
+			ButtonGroup buttonGroup = new ButtonGroup();
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				buttonGroup = new ButtonGroup();
 			}
 		}
 
 		@Override
 		public void dispose() {
 			content.dispose();
+			view.dispose();
 		}
 	}
 }

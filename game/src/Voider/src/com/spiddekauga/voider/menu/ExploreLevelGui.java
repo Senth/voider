@@ -3,8 +3,6 @@ package com.spiddekauga.voider.menu;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -18,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.CEventConnect;
 import com.spiddekauga.utils.commands.CSequence;
@@ -26,7 +25,6 @@ import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
@@ -53,13 +51,18 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ExploreLevelGui extends ExploreGui {
+	/**
+	 * Hidden constructor
+	 */
+	ExploreLevelGui() {
+		// Does nothing
+	}
 
 	/**
 	 * Sets the explore scene
 	 * @param exploreScene the explore scene
 	 */
 	void setExploreLevelScene(ExploreLevelScene exploreScene) {
-		setExploreScene(exploreScene);
 		mExploreScene = exploreScene;
 	}
 
@@ -167,7 +170,6 @@ public class ExploreLevelGui extends ExploreGui {
 		initInfo();
 		initTags();
 		initActions();
-		initTopBar();
 
 		resetContentMargins();
 		mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
@@ -176,57 +178,25 @@ public class ExploreLevelGui extends ExploreGui {
 	@Override
 	public void dispose() {
 		super.dispose();
-
-		mWidgets.comment.table.dispose();
-		mWidgets.info.table.dispose();
-		mWidgets.search.table.dispose();
-		mWidgets.sort.table.dispose();
-		mWidgets.tag.wrapper.dispose();
-		mWidgets.view.table.dispose();
-		mWidgets.topBar.remove();
-	}
-
-	/**
-	 * Initializes the top bar
-	 */
-	private void initTopBar() {
-		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR));
-		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT));
-		mWidgets.topBar.setWidth(Gdx.graphics.getWidth());
-		getStage().addActor(mWidgets.topBar);
-		mWidgets.topBar.setZIndex(0);
-		mWidgets.topBar.setPosition(0, Gdx.graphics.getHeight() - mWidgets.topBar.getHeight());
+		mWidgets.dispose();
 	}
 
 	/**
 	 * Initializes different view buttons
 	 */
 	private void initViewButtons() {
-		// Create button menu
-		AlignTable table = mWidgets.view.table;
-		table.dispose(true);
-		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
-		table.setAlign(Horizontal.LEFT, Vertical.TOP);
-		getStage().addActor(table);
-		ButtonGroup buttonGroup = new ButtonGroup();
-
-		// Sort
-		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.BROWSE));
-		table.add(button);
-		buttonGroup.add(button);
-		mWidgets.sort.hider = new HideListener(button, true) {
+		// Sort (online)
+		mWidgets.sort.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
 				mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 			}
 		};
+		addViewButton(SkinNames.General.BROWSE, mWidgets.sort.hider);
 
 
-		// Search
-		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.SEARCH));
-		table.add(button);
-		buttonGroup.add(button);
-		mWidgets.search.hider = new HideListener(button, true) {
+		// Search (online)
+		mWidgets.search.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
 				if (!mWidgets.search.field.getText().equals("Search")) {
@@ -236,6 +206,7 @@ public class ExploreLevelGui extends ExploreGui {
 				}
 			}
 		};
+		addViewButton(SkinNames.General.SEARCH, mWidgets.search.hider);
 	}
 
 	/**
@@ -378,10 +349,9 @@ public class ExploreLevelGui extends ExploreGui {
 		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", true, table, null);
 		mWidgets.info.tags.setWrap(true);
 
-
 		// Fill down
-		table.row().setFillHeight(true).setFillWidth(true);
-		table.add().setFillHeight(true).setFillWidth(true);
+		// table.row().setFillHeight(true).setFillWidth(true);
+		// table.add().setFillHeight(true).setFillWidth(true);
 	}
 
 	/**
@@ -660,38 +630,25 @@ public class ExploreLevelGui extends ExploreGui {
 	/**
 	 * All widgets
 	 */
-	private static class Widgets {
-		View view = new View();
+	private static class Widgets implements Disposable {
 		Sort sort = new Sort();
 		Info info = new Info();
 		Comments comment = new Comments();
 		Tag tag = new Tag();
 		Search search = new Search();
-		Background topBar = null;
 
-		// Content content = new Content();
-		// TabWidget tabWidget = null;
-
-		// AlignTable actionTable = new AlignTable();
-
-		// private static class Content {
-		// AlignTable table = new AlignTable();
-		// ScrollPane scrollPane = null;
-		// ButtonGroup buttonGroup = new ButtonGroup();
-		// Row waitIconRow = null;
-		// }
-
-		private static class View {
-			AlignTable table = new AlignTable();
-		}
-
-		private static class Sort {
+		class Sort implements Disposable {
 			Button[] buttons = new Button[SortOrders.values().length];
 			AlignTable table = new AlignTable();
 			HideListener hider = null;
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
 		}
 
-		private static class Info {
+		class Info implements Disposable {
 			AlignTable table = new AlignTable();
 			Label name = null;
 			Label description = null;
@@ -702,9 +659,14 @@ public class ExploreLevelGui extends ExploreGui {
 			Label plays = null;
 			Label bookmarks = null;
 			Label tags = null;
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
 		}
 
-		private static class Comments {
+		class Comments implements Disposable {
 			AlignTable table = new AlignTable();
 			HideListener hider = new HideListener(true);
 			AlignTable comments = new AlignTable();
@@ -716,9 +678,14 @@ public class ExploreLevelGui extends ExploreGui {
 			{
 				hider.addChild(userHider);
 			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
 		}
 
-		private static class Tag {
+		class Tag implements Disposable {
 			AlignTable wrapper = new AlignTable();
 			ButtonGroup buttonGroup = new ButtonGroup();
 			HashMap<Button, Tags> buttonTag = new HashMap<>();
@@ -727,12 +694,31 @@ public class ExploreLevelGui extends ExploreGui {
 				buttonGroup.setMinCheckCount(0);
 				buttonGroup.setMaxCheckCount(5);
 			}
+
+			@Override
+			public void dispose() {
+				wrapper.dispose();
+			}
 		}
 
-		private static class Search {
+		class Search implements Disposable {
 			TextField field = null;
 			AlignTable table = new AlignTable();
 			HideListener hider = null;
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
+		}
+
+		@Override
+		public void dispose() {
+			comment.dispose();
+			info.dispose();
+			search.dispose();
+			tag.dispose();
+			sort.dispose();
 		}
 	}
 }

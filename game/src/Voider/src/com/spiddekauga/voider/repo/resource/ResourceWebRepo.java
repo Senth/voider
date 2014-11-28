@@ -290,9 +290,19 @@ public class ResourceWebRepo extends WebRepo {
 			responseToSend = handlePublishResponse(response);
 		}
 
-		// Get Levels
+		// Fetch Levels
 		else if (methodEntity instanceof LevelFetchMethod) {
-			responseToSend = handleLevelGetResponse((LevelFetchMethod) methodEntity, response);
+			responseToSend = handleLevelFetchResponse((LevelFetchMethod) methodEntity, response);
+		}
+
+		// Fetch Enemies
+		else if (methodEntity instanceof EnemyFetchMethod) {
+			responseToSend = handleEnemyFetchResponse((EnemyFetchMethod) methodEntity, response);
+		}
+
+		// Fetch Bullets
+		else if (methodEntity instanceof BulletFetchMethod) {
+			responseToSend = handleBulletFetchResponse((BulletFetchMethod) methodEntity, response);
 		}
 
 		// Download resources
@@ -310,9 +320,9 @@ public class ResourceWebRepo extends WebRepo {
 			responseToSend = handleUserResourcesSyncResponse(response);
 		}
 
-		// Get comments
+		// Fetch comments
 		else if (methodEntity instanceof CommentFetchMethod) {
-			responseToSend = handleResourceCommentGetResponse((CommentFetchMethod) methodEntity, response);
+			responseToSend = handleCommentFetchResponse((CommentFetchMethod) methodEntity, response);
 		}
 
 		sendResponseToListeners(methodEntity, responseToSend, callerResponseListeners);
@@ -324,7 +334,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response
 	 * @return a correct response for getting comments
 	 */
-	private IEntity handleResourceCommentGetResponse(CommentFetchMethod method, IEntity response) {
+	private IEntity handleCommentFetchResponse(CommentFetchMethod method, IEntity response) {
 		if (response instanceof CommentFetchMethodResponse) {
 			if (((CommentFetchMethodResponse) response).isSuccessful()) {
 				cacheComments(method.resourceId, (CommentFetchMethodResponse) response);
@@ -357,8 +367,7 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		cache.comments.addAll(response.comments);
-		cache.fetchedAll = response.status == FetchStatuses.SUCCESS_FETCHED_ALL;
-		cache.serverCursor = response.cursor;
+		updateServerCache(cache, response);
 
 		mCommentCache.add(resourceId, cache);
 	}
@@ -542,7 +551,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response server response, null if not valid
 	 * @return a correct response for getting levels
 	 */
-	private IEntity handleLevelGetResponse(LevelFetchMethod methodEntity, IEntity response) {
+	private IEntity handleLevelFetchResponse(LevelFetchMethod methodEntity, IEntity response) {
 		// Update cache
 		if (response instanceof LevelFetchMethodResponse) {
 			if (((LevelFetchMethodResponse) response).status.isSuccessful()) {
@@ -570,9 +579,102 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response the response from the server
 	 */
 	private static void updateLevelCache(LevelCache levelCache, LevelFetchMethodResponse response) {
-		levelCache.serverCursor = response.cursor;
 		levelCache.addLevels(response.levels);
-		levelCache.fetchedAll = response.status == FetchStatuses.SUCCESS_FETCHED_ALL;
+		updateServerCache(levelCache, response);
+	}
+
+	/**
+	 * Update existing server cache
+	 * @param cache server cache
+	 * @param fetchResponse
+	 */
+	private static void updateServerCache(ServerCache<?> cache, FetchMethodResponse fetchResponse) {
+		cache.serverCursor = fetchResponse.cursor;
+		cache.fetchedAll = fetchResponse.status == FetchStatuses.SUCCESS_FETCHED_ALL;
+	}
+
+	/**
+	 * Handle response from fetching enemies
+	 * @param method parameters to the server
+	 * @param response server response, null if not valid
+	 * @return a correct server response
+	 */
+	private IEntity handleEnemyFetchResponse(EnemyFetchMethod method, IEntity response) {
+		// Update cache
+		if (response instanceof EnemyFetchMethodResponse) {
+			cacheEnemies(method, (EnemyFetchMethodResponse) response);
+			return response;
+		} else {
+			EnemyFetchMethodResponse fixedResponse = new EnemyFetchMethodResponse();
+			fixedResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
+			return fixedResponse;
+		}
+	}
+
+	/**
+	 * Cache new enemies
+	 * @param method search criteria
+	 * @param response response from the server
+	 */
+	private void cacheEnemies(EnemyFetchMethod method, EnemyFetchMethodResponse response) {
+		EnemyCache cache = mEnemyCache.get(method);
+
+		boolean newCache = false;
+
+		// Create new cache
+		if (cache == null) {
+			cache = new EnemyCache();
+			newCache = true;
+		}
+
+		cache.enemies.addAll(response.enemies);
+		updateServerCache(cache, response);
+
+		if (newCache) {
+			mEnemyCache.add(method, cache);
+		}
+	}
+
+	/**
+	 * Handle response from fetching bullets
+	 * @param method parameters to the server
+	 * @param response server response, null if not valid
+	 * @return a correct server response
+	 */
+	private IEntity handleBulletFetchResponse(BulletFetchMethod method, IEntity response) {
+		// Update cache
+		if (response instanceof BulletFetchMethodResponse) {
+			cacheBullets(method.searchString, (BulletFetchMethodResponse) response);
+			return response;
+		} else {
+			BulletFetchMethodResponse fixedResponse = new BulletFetchMethodResponse();
+			fixedResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
+			return fixedResponse;
+		}
+	}
+
+	/**
+	 * Cache new bullets
+	 * @param searchString search criteria
+	 * @param response server response
+	 */
+	private void cacheBullets(String searchString, BulletFetchMethodResponse response) {
+		BulletCache cache = mBulletCache.get(searchString);
+
+		boolean newCache = false;
+
+		// Create new cache
+		if (cache == null) {
+			cache = new BulletCache();
+			newCache = true;
+		}
+
+		cache.bullets.addAll(response.bullets);
+		updateServerCache(cache, response);
+
+		if (newCache) {
+			mBulletCache.add(searchString, cache);
+		}
 	}
 
 	/**
@@ -762,18 +864,12 @@ public class ResourceWebRepo extends WebRepo {
 		return hasMore(mBulletCache.get(searchString));
 	}
 
-	/** Instance of this class */
 	private static ResourceWebRepo mInstance = null;
 
-	/** Comment cache */
 	private Cache<UUID, CommentCacheEntity> mCommentCache = new Cache<>();
-	/** Level search cache */
 	private Cache<String, LevelCache> mSearchCache = new Cache<>();
-	/** Level sort cache */
 	private Cache<SortWrapper, LevelCache> mSortCache = new Cache<>();
-	/** Enemy cache */
 	private Cache<EnemyFetchMethod, EnemyCache> mEnemyCache = new Cache<>();
-	/** Bullet cache */
 	private Cache<String, BulletCache> mBulletCache = new Cache<>();
 
 	/** Last progress listener for sync download */

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Input;
-import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
@@ -12,15 +11,15 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.CommentEntity;
+import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
@@ -40,9 +39,9 @@ import com.spiddekauga.voider.utils.User;
  */
 public class ExploreLevelScene extends ExploreScene implements IResponseListener {
 	/**
-	 * Default constructor
+	 * Hidden constructor. Create from ExploreFactory
 	 */
-	public ExploreLevelScene() {
+	ExploreLevelScene() {
 		super(new ExploreLevelGui());
 
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
@@ -76,11 +75,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 	@Override
 	public boolean onKeyDown(int keycode) {
-		super.onKeyDown(keycode);
-
-		if (KeyHelper.isBackPressed(keycode)) {
-			setOutcome(Outcomes.NOT_APPLICAPLE);
-		}
 
 		// Testing - DEV_SERVER
 		if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
@@ -92,7 +86,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			}
 		}
 
-		return false;
+		return super.onKeyDown(keycode);
 	}
 
 	@Override
