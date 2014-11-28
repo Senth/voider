@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class ResourceFetchMethodResponse implements IEntity, ISuccessStatuses {
+public class FetchMethodResponse implements IEntity, ISuccessStatuses {
 	/** Datastore cursor to continue the query */
 	public String cursor = null;
 	/** Status of the response */

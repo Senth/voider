@@ -33,7 +33,7 @@ public abstract interface IMethodEntity extends IEntity {
 		/** Fetch bullet definitions */
 		BULLET_FETCH,
 		/** Get level comments */
-		RESOURCE_COMMENT_GET,
+		COMMENT_FETCH,
 		/** Publish resources */
 		PUBLISH,
 		/** Download a resources */

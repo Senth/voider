@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class EnemyFetchMethodResponse extends ResourceFetchMethodResponse {
+public class EnemyFetchMethodResponse extends FetchMethodResponse {
 	/** All enemies */
 	public ArrayList<EnemyDefEntity> enemies = new ArrayList<>();
 }

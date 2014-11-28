@@ -41,12 +41,12 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/publish</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ResourceCommentGet</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.ResourceCommentGet</servlet-class>
+		<servlet-name>CommentFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.CommentFetch</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>ResourceCommentGet</servlet-name>
-		<url-pattern>/resource-comment-get</url-pattern>
+		<servlet-name>CommentFetch</servlet-name>
+		<url-pattern>/comment-fetch</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>LevelFetch</servlet-name>

@@ -10,7 +10,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class ResourceCommentEntity implements IEntity {
+public class CommentEntity implements IEntity {
 	/** The actual comment */
 	public String comment;
 	/** Date of comment */

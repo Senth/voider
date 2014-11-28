@@ -18,10 +18,10 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
+import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
+import com.spiddekauga.voider.network.entities.stat.CommentEntity;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
@@ -34,24 +34,24 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class ResourceCommentGet extends VoiderServlet {
+public class CommentFetch extends VoiderServlet {
 
 	@Override
 	protected void onInit() {
-		mResponse = new ResourceCommentGetMethodResponse();
-		mResponse.status = Statuses.FAILED_INTERNAL;
+		mResponse = new CommentFetchMethodResponse();
+		mResponse.status = FetchStatuses.FAILED_SERVER_ERROR;
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
-			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof ResourceCommentGetMethod) {
-			UUID resourceId = ((ResourceCommentGetMethod) methodEntity).resourceId;
-			String cursor = ((ResourceCommentGetMethod) methodEntity).cursor;
+		if (methodEntity instanceof CommentFetchMethod) {
+			UUID resourceId = ((CommentFetchMethod) methodEntity).resourceId;
+			String cursor = ((CommentFetchMethod) methodEntity).nextCursor;
 
 			// Get level key
 			Key resourceKey = getResourceKey(resourceId);
@@ -66,9 +66,9 @@ public class ResourceCommentGet extends VoiderServlet {
 
 			// Fetched all
 			if (mResponse.comments.size() < ServerConfig.FetchSizes.COMMENTS || mResponse.cursor == null) {
-				mResponse.status = Statuses.SUCCESS_FETCHED_ALL;
+				mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
 			} else {
-				mResponse.status = Statuses.SUCCESS_MORE_EXISTS;
+				mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
 			}
 		}
 
@@ -116,7 +116,7 @@ public class ResourceCommentGet extends VoiderServlet {
 	private void addCommentsToResponse(QueryResultList<Entity> comments) {
 		// Convert to network entities
 		for (Entity comment : comments) {
-			ResourceCommentEntity networkEntity = createNetworkEntity(comment);
+			CommentEntity networkEntity = createNetworkEntity(comment);
 			mResponse.comments.add(networkEntity);
 		}
 
@@ -132,7 +132,7 @@ public class ResourceCommentGet extends VoiderServlet {
 	 * @param levelKey the level to get the user comment from
 	 * @return the user comment, null if not found.
 	 */
-	private ResourceCommentEntity getUserComment(Key levelKey) {
+	private CommentEntity getUserComment(Key levelKey) {
 		Entity entity = DatastoreUtils.getSingleEntity(T_COMMENT, levelKey, new FilterWrapper(CResourceComment.USERNAME, mUser.getUsername()));
 
 		if (entity != null) {
@@ -147,8 +147,8 @@ public class ResourceCommentGet extends VoiderServlet {
 	 * @param datastoreEntity the datastore entity
 	 * @return a level comment entity
 	 */
-	private ResourceCommentEntity createNetworkEntity(Entity datastoreEntity) {
-		ResourceCommentEntity networkEntity = new ResourceCommentEntity();
+	private CommentEntity createNetworkEntity(Entity datastoreEntity) {
+		CommentEntity networkEntity = new CommentEntity();
 		networkEntity.comment = (String) datastoreEntity.getProperty(CResourceComment.COMMENT);
 		networkEntity.date = (Date) datastoreEntity.getProperty(CResourceComment.DATE);
 		networkEntity.username = (String) datastoreEntity.getProperty(CResourceComment.USERNAME);
@@ -156,7 +156,7 @@ public class ResourceCommentGet extends VoiderServlet {
 		return networkEntity;
 	}
 
-	private ResourceCommentGetMethodResponse mResponse = null;
+	private CommentFetchMethodResponse mResponse = null;
 
 	// Tables
 	private static final String T_PUBLISHED = DatastoreTables.PUBLISHED;

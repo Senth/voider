@@ -2,7 +2,6 @@ package com.spiddekauga.voider.network.entities.resource;
 
 import java.util.ArrayList;
 
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 
 /**
@@ -10,11 +9,9 @@ import com.spiddekauga.voider.network.entities.stat.Tags;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelFetchMethod implements IMethodEntity {
+public class LevelFetchMethod extends FetchMethod {
 	/** Sorting */
 	public SortOrders sort = null;
-	/** Cursor to continue from */
-	public String nextCursor = null;
 	/** All tags that should be included, if empty all tags are used */
 	public ArrayList<Tags> tagFilter = null;
 	/** Search string or text filter, if null not used */

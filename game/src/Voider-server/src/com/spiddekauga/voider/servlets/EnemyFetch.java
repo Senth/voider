@@ -126,7 +126,9 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 		appendSearchEnumArray(SEnemy.MOVEMENT_TYPE, mParameters.movementTypes, MovementTypes.values().length, builder);
 
 		// Movement Speed
-		appendSearchEnumArray(SEnemy.MOVEMENT_SPEED_CAT, mParameters.movementSpeedRanges, EnemySpeedSearchRanges.values().length, builder);
+		if (mParameters.canUseMovementSpeed()) {
+			appendSearchEnumArray(SEnemy.MOVEMENT_SPEED_CAT, mParameters.movementSpeedRanges, EnemySpeedSearchRanges.values().length, builder);
+		}
 
 		// Weapon
 		if (mParameters.hasWeapon != null) {

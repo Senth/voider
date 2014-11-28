@@ -15,12 +15,12 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
-import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
+import com.spiddekauga.voider.network.entities.stat.CommentEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
@@ -101,8 +101,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			mLevelFetch.handleWebResponse((LevelFetchMethod) method, (LevelFetchMethodResponse) response);
 		} else if (response instanceof ResourceDownloadMethodResponse) {
 			handleResourceDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
-		} else if (response instanceof ResourceCommentGetMethodResponse) {
-			mCommentFetch.handleWebResponse((ResourceCommentGetMethod) method, (ResourceCommentGetMethodResponse) response);
+		} else if (response instanceof CommentFetchMethodResponse) {
+			mCommentFetch.handleWebResponse((CommentFetchMethod) method, (CommentFetchMethodResponse) response);
 		}
 	}
 
@@ -292,18 +292,18 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @param method
 		 * @param response
 		 */
-		void handleWebResponse(ResourceCommentGetMethod method, ResourceCommentGetMethodResponse response) {
+		void handleWebResponse(CommentFetchMethod method, CommentFetchMethodResponse response) {
 			// Only do something if it's comments for the currently selected level
 			if (mSelectedLevel != null && mSelectedLevel.defEntity.resourceId.equals(method.resourceId)) {
 				mIsFetching = false;
 				((ExploreLevelGui) mGui).commentWaitIconRemove();
 
 				switch (response.status) {
-				case FAILED_CONNECTION:
+				case FAILED_SERVER_CONNECTION:
 					mNotification.show(NotificationTypes.ERROR, "Failed to connect to the server");
 					break;
 
-				case FAILED_INTERNAL:
+				case FAILED_SERVER_ERROR:
 					mNotification.show(NotificationTypes.ERROR, "Internal server error");
 					break;
 
@@ -320,7 +320,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 					}
 
 					// Add comments
-					for (ResourceCommentEntity commentEntity : response.comments) {
+					for (CommentEntity commentEntity : response.comments) {
 						String dateString = mDateRepo.getDate(commentEntity.date);
 						((ExploreLevelGui) mGui).addComment(commentEntity.username, commentEntity.comment, dateString);
 					}

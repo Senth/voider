@@ -1,15 +1,12 @@
 package com.spiddekauga.voider.network.entities.resource;
 
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Fetches information about bullets
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BulletFetchMethod implements IMethodEntity {
-	/** Cursor to continue from */
-	public String nextCursor = null;
+public class BulletFetchMethod extends FetchMethod {
 	/** Search by text if not null */
 	public String searchString = null;
 

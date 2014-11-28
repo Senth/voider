@@ -3,6 +3,7 @@ package com.spiddekauga.voider.repo.resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,10 +23,18 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.BlobDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.entities.resource.BulletFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.BulletFetchMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethod;
+import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.FetchMethod;
+import com.spiddekauga.voider.network.entities.resource.FetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
@@ -35,8 +44,6 @@ import com.spiddekauga.voider.network.entities.resource.PublishMethod;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
@@ -44,8 +51,8 @@ import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEnti
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.stat.CommentEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
-import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
@@ -304,8 +311,8 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		// Get comments
-		else if (methodEntity instanceof ResourceCommentGetMethod) {
-			responseToSend = handleResourceCommentGetResponse((ResourceCommentGetMethod) methodEntity, response);
+		else if (methodEntity instanceof CommentFetchMethod) {
+			responseToSend = handleResourceCommentGetResponse((CommentFetchMethod) methodEntity, response);
 		}
 
 		sendResponseToListeners(methodEntity, responseToSend, callerResponseListeners);
@@ -317,16 +324,16 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response
 	 * @return a correct response for getting comments
 	 */
-	private IEntity handleResourceCommentGetResponse(ResourceCommentGetMethod method, IEntity response) {
-		if (response instanceof ResourceCommentGetMethodResponse) {
-			if (((ResourceCommentGetMethodResponse) response).isSuccessful()) {
-				cacheComments(method.resourceId, (ResourceCommentGetMethodResponse) response);
+	private IEntity handleResourceCommentGetResponse(CommentFetchMethod method, IEntity response) {
+		if (response instanceof CommentFetchMethodResponse) {
+			if (((CommentFetchMethodResponse) response).isSuccessful()) {
+				cacheComments(method.resourceId, (CommentFetchMethodResponse) response);
 			}
 
 			return response;
 		} else {
-			ResourceCommentGetMethodResponse validResponse = new ResourceCommentGetMethodResponse();
-			validResponse.status = ResourceCommentGetMethodResponse.Statuses.FAILED_CONNECTION;
+			CommentFetchMethodResponse validResponse = new CommentFetchMethodResponse();
+			validResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
 			return validResponse;
 		}
 	}
@@ -336,7 +343,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param resourceId
 	 * @param response
 	 */
-	private void cacheComments(UUID resourceId, ResourceCommentGetMethodResponse response) {
+	private void cacheComments(UUID resourceId, CommentFetchMethodResponse response) {
 		// Does the cache exist?
 		CommentCacheEntity cache = mCommentCache.getCopy(resourceId);
 
@@ -350,7 +357,7 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		cache.comments.addAll(response.comments);
-		cache.fetchedAll = response.status == ResourceCommentGetMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+		cache.fetchedAll = response.status == FetchStatuses.SUCCESS_FETCHED_ALL;
 		cache.serverCursor = response.cursor;
 
 		mCommentCache.add(resourceId, cache);
@@ -576,27 +583,15 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param responseListeners listens to the web response
 	 */
 	public void getComments(UUID resourceId, boolean fetchMore, IResponseListener... responseListeners) {
-		ResourceCommentGetMethod method = new ResourceCommentGetMethod();
+		CommentFetchMethod method = new CommentFetchMethod();
 		method.resourceId = resourceId;
-
-		CommentCacheEntity commentCache = mCommentCache.getCopy(resourceId);
-
-		if (commentCache != null) {
-			method.cursor = commentCache.serverCursor;
+		CommentCacheEntity cache = mCommentCache.getCopy(resourceId);
+		CommentFetchMethodResponse response = new CommentFetchMethodResponse();
+		if (cache != null) {
+			response.comments = cache.comments;
+			response.userComment = cache.userComment;
 		}
-
-		// Fetch more from server
-		if (commentCache == null || (fetchMore && !commentCache.fetchedAll)) {
-			sendInNewThread(method, responseListeners);
-		}
-		// Use cache
-		else {
-			ResourceCommentGetMethodResponse response = new ResourceCommentGetMethodResponse();
-			response.comments = commentCache.comments;
-			response.userComment = commentCache.userComment;
-			response.status = ResourceCommentGetMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
-			sendResponseToListeners(method, response, responseListeners);
-		}
+		fetch(method, cache, fetchMore, responseListeners, response);
 	}
 
 	/**
@@ -626,27 +621,14 @@ public class ResourceWebRepo extends WebRepo {
 		SortWrapper sortCacheKey = new SortWrapper(sort, tags);
 		LevelCache cache = mSortCache.get(sortCacheKey);
 
-
-		// Fetch more from server
-		if (cache == null || (fetchMore && !cache.fetchedAll)) {
-			if (cache != null) {
-				method.nextCursor = cache.serverCursor;
-			}
-			sendInNewThread(method, responseListeners);
-		}
-		// Use cache
-		else {
-			LevelFetchMethodResponse response = new LevelFetchMethodResponse();
-			response.levels = cache.levels;
-			response.status = FetchStatuses.SUCCESS_FETCHED_ALL;
-			sendResponseToListeners(method, response, responseListeners);
-		}
+		getLevels(method, cache, fetchMore, responseListeners);
 	}
 
 	/**
 	 * Get levels by text search
 	 * @param searchString the string to search for in the levels
-	 * @param fetchMore set to true to always fetch more levels
+	 * @param fetchMore set to true to always fetch more levels, false to use cache if the
+	 *        cache exists
 	 * @param responseListeners the caller to send the response to
 	 */
 	public void getLevels(String searchString, boolean fetchMore, IResponseListener... responseListeners) {
@@ -656,7 +638,35 @@ public class ResourceWebRepo extends WebRepo {
 		// Get cache
 		LevelCache cache = mSearchCache.getCopy(searchString);
 
+		getLevels(method, cache, fetchMore, responseListeners);
+	}
 
+	/**
+	 * Get levels
+	 * @param method the level fetch method
+	 * @param cache the cache to get levels from
+	 * @param fetchMore if we should fetch more, false to use cache if the cache exists
+	 * @param responseListeners the caller to send the response to
+	 */
+	private void getLevels(LevelFetchMethod method, LevelCache cache, boolean fetchMore, IResponseListener[] responseListeners) {
+		LevelFetchMethodResponse response = new LevelFetchMethodResponse();
+		if (cache != null) {
+			response.levels = cache.levels;
+		}
+		fetch(method, cache, fetchMore, responseListeners, response);
+	}
+
+	/**
+	 * Get any resource
+	 * @param method the method to send
+	 * @param cache the cache to maybe use
+	 * @param fetchMore true if we should fetch more, false to use the cache (if it
+	 *        exists)
+	 * @param responseListeners callers to send the response to
+	 * @param response response to use if cache was used
+	 */
+	private void fetch(FetchMethod method, ServerCache<?> cache, boolean fetchMore, IResponseListener[] responseListeners,
+			FetchMethodResponse response) {
 		// Fetch more from server
 		if (cache == null || (fetchMore && !cache.fetchedAll)) {
 			if (cache != null) {
@@ -666,9 +676,7 @@ public class ResourceWebRepo extends WebRepo {
 		}
 		// Use cache
 		else {
-			LevelFetchMethodResponse response = new LevelFetchMethodResponse();
-			response.levels = cache.levels;
-			response.status = FetchStatuses.SUCCESS_FETCHED_ALL;
+			response.status = cache.fetchedAll ? FetchStatuses.SUCCESS_FETCHED_ALL : FetchStatuses.SUCCESS_MORE_EXISTS;
 			sendResponseToListeners(method, response, responseListeners);
 		}
 	}
@@ -680,8 +688,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return true if the server has more levels
 	 */
 	public boolean hasMoreLevels(SortOrders sort, ArrayList<Tags> tags) {
-		LevelCache levelCache = mSortCache.get(new SortWrapper(sort, tags));
-		return levelCache != null && !levelCache.fetchedAll;
+		return hasMore(mSortCache.get(new SortWrapper(sort, tags)));
 	}
 
 	/**
@@ -690,8 +697,69 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return true if the server has more levels
 	 */
 	public boolean hasMoreLevels(String searchString) {
-		LevelCache levelCache = mSearchCache.get(searchString);
-		return levelCache != null && !levelCache.fetchedAll;
+		return hasMore(mSearchCache.get(searchString));
+	}
+
+	/**
+	 * Check if more things can be fetched from the server
+	 * @param cache the cache to check
+	 * @return true if the server has more things to fetch
+	 */
+	private boolean hasMore(ServerCache<?> cache) {
+		return cache != null && !cache.fetchedAll;
+	}
+
+	/**
+	 * Get enemies from the server or cache
+	 * @param method fetch enemy method with all parameters what to search for
+	 * @param fetchMore true if we should fetch more, false to use cache if the cache
+	 *        exists
+	 * @param responseListeners callers to send the response to
+	 */
+	public void getEnemies(EnemyFetchMethod method, boolean fetchMore, IResponseListener... responseListeners) {
+		EnemyFetchMethod fetchMethod = method.copy();
+		EnemyCache cache = mEnemyCache.get(fetchMethod);
+		EnemyFetchMethodResponse response = new EnemyFetchMethodResponse();
+		if (cache != null) {
+			response.enemies = cache.enemies;
+		}
+		fetch(fetchMethod, cache, fetchMore, responseListeners, response);
+	}
+
+	/**
+	 * Check if the server has more enemies to fetch for this search criteria
+	 * @param method search criteria
+	 * @return true if the server has more enemies to fetch
+	 */
+	public boolean hasMoreEnemies(EnemyFetchMethod method) {
+		return hasMore(mEnemyCache.get(method));
+	}
+
+	/**
+	 * Get bullets from the server or cache
+	 * @param searchString the string to search for
+	 * @param fetchMore true if we should fetch more, false to use cache if the cache
+	 *        exists
+	 * @param responseListeners callers to send the response to
+	 */
+	public void getBullets(String searchString, boolean fetchMore, IResponseListener... responseListeners) {
+		BulletFetchMethod method = new BulletFetchMethod();
+		method.searchString = searchString;
+		BulletCache cache = mBulletCache.get(searchString);
+		BulletFetchMethodResponse response = new BulletFetchMethodResponse();
+		if (cache != null) {
+			response.bullets = cache.bullets;
+		}
+		fetch(method, cache, fetchMore, responseListeners, response);
+	}
+
+	/**
+	 * Check if the server has more bullets to fetch for this search criteria
+	 * @param searchString what to search for
+	 * @return true if the server has more bullets to fetch
+	 */
+	public boolean hasMoreBullets(String searchString) {
+		return hasMore(mBulletCache.get(searchString));
 	}
 
 	/** Instance of this class */
@@ -703,6 +771,10 @@ public class ResourceWebRepo extends WebRepo {
 	private Cache<String, LevelCache> mSearchCache = new Cache<>();
 	/** Level sort cache */
 	private Cache<SortWrapper, LevelCache> mSortCache = new Cache<>();
+	/** Enemy cache */
+	private Cache<EnemyFetchMethod, EnemyCache> mEnemyCache = new Cache<>();
+	/** Bullet cache */
+	private Cache<String, BulletCache> mBulletCache = new Cache<>();
 
 	/** Last progress listener for sync download */
 	private IDownloadProgressListener mSyncDownloadProgressListener = null;
@@ -765,10 +837,110 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
+	 * Common cache class
+	 * @param <EntityType>
+	 */
+	private abstract class ServerCache<EntityType extends ServerCache<?>> extends CacheEntity<EntityType> {
+		/**
+		 * @param outdated how long time the cache should be used
+		 */
+		protected ServerCache(long outdated) {
+			super(outdated);
+		}
+
+		@Override
+		public void copy(EntityType copy) {
+			super.copy(copy);
+			copy.fetchedAll = fetchedAll;
+			copy.serverCursor = serverCursor;
+		}
+
+		boolean fetchedAll = false;
+		String serverCursor = null;
+	}
+
+	/**
+	 * Common cache for actors
+	 * @param <EntityType>
+	 */
+	private abstract class ActorCache<EntityType extends ActorCache<?>> extends ServerCache<EntityType> implements Disposable {
+		/**
+		 * Create actor cache with default cache time
+		 */
+		protected ActorCache() {
+			super(Config.Cache.RESOURCE_BROWSE_TIME);
+		}
+
+		@Override
+		public void dispose() {
+			List<? extends DefEntity> actors = getActors();
+			if (actors != null) {
+				for (DefEntity actor : actors) {
+					if (actor.drawable instanceof TextureRegionDrawable) {
+						((TextureRegionDrawable) actor.drawable).getRegion().getTexture().dispose();
+					}
+				}
+			}
+		}
+
+		protected abstract List<? extends DefEntity> getActors();
+	}
+
+	/**
+	 * Enemy cache when getting enemies
+	 */
+	private class EnemyCache extends ActorCache<EnemyCache> {
+		@Override
+		public EnemyCache copy() {
+			EnemyCache copy = new EnemyCache();
+			copy(copy);
+			return copy;
+		}
+
+		@Override
+		public synchronized void copy(EnemyCache copy) {
+			super.copy(copy);
+			copy.enemies.addAll(enemies);
+		}
+
+		@Override
+		protected List<? extends DefEntity> getActors() {
+			return enemies;
+		}
+
+		ArrayList<EnemyDefEntity> enemies = new ArrayList<>();
+	}
+
+	/**
+	 * Bullet cache when getting bullets
+	 */
+	private class BulletCache extends ActorCache<BulletCache> {
+		@Override
+		public BulletCache copy() {
+			BulletCache copy = new BulletCache();
+			copy(copy);
+			return copy;
+		}
+
+		@Override
+		public void copy(BulletCache copy) {
+			super.copy(copy);
+			copy.bullets.addAll(bullets);
+		}
+
+		@Override
+		protected List<? extends DefEntity> getActors() {
+			return bullets;
+		}
+
+		ArrayList<BulletDefEntity> bullets = new ArrayList<>();
+	}
+
+	/**
 	 * Level cache when getting levels
 	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
 	 */
-	private class LevelCache extends CacheEntity<LevelCache> implements Disposable {
+	private class LevelCache extends ServerCache<LevelCache> implements Disposable {
 		/**
 		 * Create level cache with default cache time
 		 */
@@ -786,8 +958,6 @@ public class ResourceWebRepo extends WebRepo {
 		@Override
 		public synchronized void copy(LevelCache copy) {
 			super.copy(copy);
-			copy.fetchedAll = fetchedAll;
-			copy.serverCursor = serverCursor;
 			copy.levels.addAll(levels);
 		}
 
@@ -813,14 +983,12 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		ArrayList<LevelInfoEntity> levels = new ArrayList<>();
-		String serverCursor = null;
-		boolean fetchedAll = false;
 	}
 
 	/**
 	 * Comment cache
 	 */
-	private class CommentCacheEntity extends CacheEntity<CommentCacheEntity> {
+	private class CommentCacheEntity extends ServerCache<CommentCacheEntity> {
 		/**
 		 * Create cache with default cache time
 		 */
@@ -838,19 +1006,13 @@ public class ResourceWebRepo extends WebRepo {
 		@Override
 		public void copy(CommentCacheEntity copy) {
 			super.copy(copy);
-			copy.fetchedAll = fetchedAll;
 			copy.userComment = userComment;
-			copy.serverCursor = serverCursor;
 			copy.comments.addAll(comments);
 		}
 
 		/** All comments */
-		ArrayList<ResourceCommentEntity> comments = new ArrayList<>();
+		ArrayList<CommentEntity> comments = new ArrayList<>();
 		/** User comment */
-		ResourceCommentEntity userComment = null;
-		/** Server cursor to continue the cache with */
-		String serverCursor = null;
-		/** True if we have fetched all */
-		boolean fetchedAll = false;
+		CommentEntity userComment = null;
 	}
 }

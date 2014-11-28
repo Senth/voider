@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BulletFetchMethodResponse extends ResourceFetchMethodResponse {
+public class BulletFetchMethodResponse extends FetchMethodResponse {
 	/** All bullets */
 	public ArrayList<BulletDefEntity> bullets = new ArrayList<>();
 }
