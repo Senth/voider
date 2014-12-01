@@ -165,6 +165,9 @@ public class ServerConfig {
 			public static final String AIM_TYPE = "aim_type";
 			public static final String BULLET_DAMAGE = "bullet_damage";
 			public static final String BULLET_DAMAGE_CAT = "bullet_damage_cat";
+			public static final String DESTROY_ON_COLLIDE = "destroy_on_collide";
+			public static final String COLLISION_DAMAGE = "collision_damage";
+			public static final String COLLISION_DAMAGE_CAT = "collision_damage_cat";
 		}
 
 		// Bullet

@@ -26,6 +26,10 @@ public class EnemyFetchMethod extends FetchMethod {
 	public ArrayList<BulletDamageSearchRanges> bulletDamageRanges = new ArrayList<>();
 	/** Search by aim type, only available if hasWeapon is set to true */
 	public ArrayList<AimTypes> aimTypes = new ArrayList<>();
+	/** Search if enemy is destroyed on collide */
+	public Boolean destroyOnCollide = null;
+	/** Collision damage categories */
+	public ArrayList<CollisionDamageSearchRanges> collisionDamageRanges = new ArrayList<>();
 
 
 	/**
@@ -46,6 +50,8 @@ public class EnemyFetchMethod extends FetchMethod {
 			copy.bulletDamageRanges.addAll(bulletDamageRanges);
 			copy.aimTypes.addAll(aimTypes);
 		}
+		copy.destroyOnCollide = destroyOnCollide;
+		copy.collisionDamageRanges.addAll(collisionDamageRanges);
 		return copy;
 	}
 
@@ -59,6 +65,10 @@ public class EnemyFetchMethod extends FetchMethod {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+
+		result = prime * result + getListHashCode(collisionDamageRanges, CollisionDamageSearchRanges.values().length);
+		result = prime * result + ((destroyOnCollide == null) ? 0 : destroyOnCollide.hashCode());
+
 		// Only check bullet stuff if weapon has been turned on
 		if (hasWeapon != null && hasWeapon) {
 			result = prime * result + getListHashCode(aimTypes, AimTypes.values().length);
@@ -148,6 +158,17 @@ public class EnemyFetchMethod extends FetchMethod {
 			return false;
 		}
 		EnemyFetchMethod other = (EnemyFetchMethod) obj;
+
+		if (!isListEquals(collisionDamageRanges, other.collisionDamageRanges, CollisionDamageSearchRanges.values().length)) {
+			return false;
+		}
+		if (destroyOnCollide == null) {
+			if (other.destroyOnCollide != null) {
+				return false;
+			}
+		} else if (!destroyOnCollide.equals(other.destroyOnCollide)) {
+
+		}
 		if (hasWeapon != null && hasWeapon) {
 			if (!isListEquals(aimTypes, other.aimTypes, AimTypes.values().length)) {
 				return false;

@@ -11,19 +11,26 @@ import com.spiddekauga.voider.network.util.ISearchStore;
 public enum MovementTypes implements ISearchStore {
 	// NEVER EVER remove or change the order of these!
 	/** Uses variable values to behave in a certain manner */
-	AI(1),
+	AI(1, "AI"),
 	/** Follows a path */
-	PATH(2),
+	PATH(2, "Path"),
 	/** Stationary, cannot move */
-	STATIONARY(3),
+	STATIONARY(3, "Stationary"),
 
 	;
 	/**
 	 * Id for saving in datastore
 	 * @param id the id saved in datastore
+	 * @param displayName what to show when {@link #toString()} is called
 	 */
-	private MovementTypes(int id) {
+	private MovementTypes(int id, String displayName) {
 		mId = id;
+		mDisplayName = displayName;
+	}
+
+	@Override
+	public String toString() {
+		return mDisplayName;
 	}
 
 	/**
@@ -66,6 +73,7 @@ public enum MovementTypes implements ISearchStore {
 
 	/** Id for saving in datastore */
 	private int mId;
+	private String mDisplayName = null;
 	private static HashMap<Integer, MovementTypes> mIdToEnum = new HashMap<>();
 
 	static {

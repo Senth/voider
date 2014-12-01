@@ -40,7 +40,7 @@ import com.spiddekauga.voider.utils.Geometry;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender,
-		IResourceSelectable, KryoPostRead {
+IResourceSelectable, KryoPostRead {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -363,7 +363,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (DRAW_COLOR.equals(INITAL_COLOR)) {
-			Color color = SkinNames.getResource(SkinNames.EditorVars.PATH_COLOR);
+			Color color = SkinNames.getResource(SkinNames.GeneralVars.PATH_COLOR);
 			DRAW_COLOR.set(color);
 		}
 

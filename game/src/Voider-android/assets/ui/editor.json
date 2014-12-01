@@ -53,7 +53,7 @@ com.badlogic.gdx.graphics.Color: {
 	selected_color_actor: {r: 0.75, g: 1, b: 0.75, a: 0.65},
 	// Overlay for selected utilities
 	selected_color_utility: {r: 1, g: 1, b: 1, a: 0.45},
-	// Color of the path
+	// DEPRECATED!!! Moved to general.json instead
 	path_color: green,
 	
 	

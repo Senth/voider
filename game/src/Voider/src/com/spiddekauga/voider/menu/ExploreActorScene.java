@@ -1,7 +1,8 @@
 package com.spiddekauga.voider.menu;
 
-import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
+import java.util.List;
+
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 
 /**
  * Can be used separately or be derived and used as a base class for tailoring this scene.
@@ -28,32 +29,57 @@ public class ExploreActorScene extends ExploreScene {
 
 	@Override
 	boolean isFetchingContent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	boolean hasMoreContent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	void fetchMoreContent() {
-		// TODO Auto-generated method stub
-
+		// Does nothings
 	}
 
 	@Override
 	void repopulateContent() {
-		// TODO Auto-generated method stub
-
+		// Does nothing
 	}
 
-	@Override
-	protected void onWebResponse(IMethodEntity method, IEntity response) {
-		// TODO Auto-generated method stub
-
+	/**
+	 * Create drawables for all actors
+	 * @param actors all actors to create drawables for
+	 */
+	protected void createDrawables(List<? extends DefEntity> actors) {
+		for (DefEntity defEntity : actors) {
+			createDrawable(defEntity);
+		}
 	}
 
+	/**
+	 * @param <ActorType> type of actor that is selected
+	 * @return the selected actor
+	 */
+	@SuppressWarnings("unchecked")
+	protected <ActorType extends DefEntity> ActorType getSelectedActor() {
+		return (ActorType) mSelected;
+	}
+
+	/**
+	 * Sets the selected actor
+	 * @param actor the selected actor
+	 */
+	protected void setSelectedActor(DefEntity actor) {
+		mSelected = actor;
+	}
+
+	/**
+	 * Called when an actor has been selected and pressed again. I.e. default action
+	 */
+	protected void onSelectAction() {
+		// TODO
+	}
+
+	private DefEntity mSelected = null;
 }

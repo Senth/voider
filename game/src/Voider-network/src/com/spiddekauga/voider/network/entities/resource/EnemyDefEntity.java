@@ -28,4 +28,8 @@ public class EnemyDefEntity extends DefEntity {
 	public AimTypes aimType = null;
 	/** Bullet damage */
 	public float bulletDamage = 0;
+	/** If the enemy will be destroyed when it collides with the player */
+	public boolean destroyOnCollide = false;
+	/** Amount of damage the enemy does on the player when colliding */
+	public float collisionDamage = 0;
 }

@@ -205,7 +205,10 @@ abstract class ExploreGui extends Gui {
 	/**
 	 * Called when more content should be fetched.
 	 */
-	protected abstract void onFetchMoreContent();
+	protected void onFetchMoreContent() {
+		mExploreScene.fetchMoreContent();
+		addWaitIconToContent();
+	}
 
 	/**
 	 * Reset content margins
@@ -323,6 +326,19 @@ abstract class ExploreGui extends Gui {
 	 */
 	protected void addContentButton(Button button) {
 		mWidgets.content.buttonGroup.add(button);
+	}
+
+	/**
+	 * Helper method for getting the correct string for enum ranges
+	 * @param enumObject enumeration range, can be null
+	 * @return correct string to display for the enum
+	 */
+	protected String getEnumString(Enum<?> enumObject) {
+		if (enumObject != null) {
+			return enumObject.toString();
+		} else {
+			return "Not Found";
+		}
 	}
 
 	/**

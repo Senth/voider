@@ -19,6 +19,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
+import com.spiddekauga.voider.network.entities.resource.CollisionDamageSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse;
@@ -148,6 +149,15 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 			}
 		}
 
+		// Destroy on collide
+		if (mParameters.destroyOnCollide != null) {
+			builder.bool(SEnemy.DESTROY_ON_COLLIDE, mParameters.destroyOnCollide);
+		}
+
+		// Collision damage
+		appendSearchEnumArray(SEnemy.COLLISION_DAMAGE_CAT, mParameters.collisionDamageRanges, CollisionDamageSearchRanges.values().length, builder);
+
+
 		return builder.build();
 	}
 
@@ -206,6 +216,10 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 					networkEntity.aimType = AimTypes.fromId(aimTypeId);
 				}
 			}
+
+			// Collision
+			networkEntity.destroyOnCollide = SearchUtils.getBoolean(document, SEnemy.DESTROY_ON_COLLIDE);
+			networkEntity.collisionDamage = SearchUtils.getFloat(document, SEnemy.COLLISION_DAMAGE);
 		}
 	}
 

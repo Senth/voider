@@ -31,6 +31,7 @@ import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges
 import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.CampaignDefEntity;
+import com.spiddekauga.voider.network.entities.resource.CollisionDamageSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
@@ -545,7 +546,7 @@ public class Publish extends VoiderServlet {
 		SearchUtils.addField(builder, SDef.DATE, defEntity.date);
 
 		// Add name of creators
-		String creatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.creatorKey));
+		String creatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.revisedByKey));
 		SearchUtils.addField(builder, SDef.CREATOR, creatorName, TokenSizes.RESOURCE);
 		String originalCreatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.originalCreatorKey));
 		SearchUtils.addField(builder, SDef.ORIGINAL_CREATOR, originalCreatorName, TokenSizes.RESOURCE);
@@ -603,6 +604,14 @@ public class Publish extends VoiderServlet {
 			}
 		}
 
+		// Collision
+		SearchUtils.addField(builder, SEnemy.DESTROY_ON_COLLIDE, enemyDefEntity.destroyOnCollide);
+		SearchUtils.addField(builder, SEnemy.COLLISION_DAMAGE, enemyDefEntity.collisionDamage);;
+
+		CollisionDamageSearchRanges collisionDamageCat = CollisionDamageSearchRanges.getRange(enemyDefEntity.collisionDamage);
+		if (collisionDamageCat != null) {
+			SearchUtils.addFieldAtom(builder, SEnemy.COLLISION_DAMAGE_CAT, collisionDamageCat.getSearchId());
+		}
 
 	}
 

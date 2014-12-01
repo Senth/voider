@@ -42,6 +42,8 @@ com.badlogic.gdx.graphics.Color: {
 	widget_inner_background_color: grey_dark,
 	// Notification message background color
 	notification_background_color: {r: 0, g: 0, b: 0, a: 0.5},
+	// Path color
+	path_color: green,
 },
 
 java.lang.Float: {
@@ -221,6 +223,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	publish_name: {
 		font: default_font,
 		fontColor: grey,
+	},
+	
+	path: {
+		font: default_font,
+		fontColor: path_color,
 	},
 	
 	

@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.commands.CGuiCheck;
@@ -202,8 +201,7 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the path labels
 	 */
 	private void initPathLabels() {
-		LabelStyle labelStyle = new LabelStyle(LabelStyles.DEFAULT.getStyle());
-		labelStyle.fontColor = SkinNames.getResource(SkinNames.EditorVars.PATH_COLOR);
+		LabelStyles labelStyle = LabelStyles.PATH;
 
 		mUiFactory.addIconLabel(SkinNames.EditorImages.PATH_BACK_AND_FORTH, "Back and Forth", Positions.BOTTOM, labelStyle, mWidgets.path.backForth,
 				null, null);
@@ -417,7 +415,8 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	/**
-	 * Initializes standard movement variables such as speed and turning for the specified table
+	 * Initializes standard movement variables such as speed and turning for the specified
+	 * table
 	 * @param movementType which table to add the movement UI elements to
 	 */
 	private void createMovementUi(final MovementTypes movementType) {

@@ -85,7 +85,7 @@ public class ExploreLevelGui extends ExploreGui {
 			mWidgets.info.date.setText(mDateRepo.getDate(level.defEntity.date));
 			mWidgets.info.description.setText(level.defEntity.description);
 			mWidgets.info.name.setText(level.defEntity.name);
-			mWidgets.info.revisedBy.setText(level.defEntity.creator);
+			mWidgets.info.revisedBy.setText(level.defEntity.revisedBy);
 
 			mWidgets.info.bookmarks.setText(String.valueOf(level.stats.cBookmarks));
 			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
@@ -471,12 +471,6 @@ public class ExploreLevelGui extends ExploreGui {
 		mLeftPanel.invalidate();
 		mLeftPanel.layout();
 
-	}
-
-	@Override
-	protected void onFetchMoreContent() {
-		mExploreScene.fetchMoreContent();
-		addWaitIconToContent();
 	}
 
 	/**

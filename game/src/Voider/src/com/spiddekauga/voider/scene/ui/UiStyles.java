@@ -107,6 +107,8 @@ public class UiStyles {
 		HEADER,
 		/** Default text style for text fields */
 		TEXT_FIELD_DEFAULT,
+		/** Text style for paths */
+		PATH,
 
 
 		;
@@ -287,6 +289,7 @@ public class UiStyles {
 		LabelStyles.TEXT_FIELD_DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TEXT_FIELD_DEFAULT));
 		LabelStyles.SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 		LabelStyles.PUBLISH_NAME.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PUBLISH_NAME));
+		LabelStyles.PATH.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PATH));
 
 
 		// Button styles

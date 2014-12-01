@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -87,7 +86,7 @@ public class ButtonFactory extends BaseFactory {
 	 * @param createdActors all created actors
 	 * @return created button
 	 */
-	public ImageButton addImageWithLabel(ISkinNames icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table,
+	public ImageButton addImageWithLabel(ISkinNames icon, String text, Positions textPosition, LabelStyles textStyle, AlignTable table,
 			GuiHider hider, ArrayList<Actor> createdActors) {
 		if (textPosition == Positions.LEFT || textPosition == Positions.RIGHT) {
 			table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);

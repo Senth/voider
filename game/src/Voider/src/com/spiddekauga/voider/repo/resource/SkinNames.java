@@ -336,8 +336,6 @@ public class SkinNames {
 		THEME_BOTTOM_LAYER_SPEED(Float.class),
 		/** How much wider the theme button is than the height */
 		THEME_DISPLAY_RATIO(Float.class),
-		/** Path color */
-		PATH_COLOR(Color.class),
 
 		// Actor colors
 		/** Color picking values for terrain */
@@ -622,6 +620,8 @@ public class SkinNames {
 		SETTINGS_WIDTH(Float.class),
 		/** Height of settings window */
 		SETTINGS_HEIGHT(Float.class),
+		/** Color for paths in the editor */
+		PATH_COLOR(Color.class),
 
 		;
 
@@ -807,6 +807,8 @@ public class SkinNames {
 		LABEL_COMMENT(LabelStyle.class, "comment"),
 		/** Grey light label */
 		LABEL_PUBLISH_NAME(LabelStyle.class, "publish_name"),
+		/** Labels for path */
+		LABEL_PATH(LabelStyle.class, "path"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

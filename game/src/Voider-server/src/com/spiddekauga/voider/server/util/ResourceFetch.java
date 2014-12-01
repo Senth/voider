@@ -34,9 +34,9 @@ public abstract class ResourceFetch extends VoiderServlet {
 		// Set creators
 		Key creatorKey = datastoreEntity.getParent();
 		Key originalCreatorKey = (Key) datastoreEntity.getProperty(CPublished.ORIGINAL_CREATOR_KEY);
-		networkEntity.creatorKey = KeyFactory.keyToString(creatorKey);
+		networkEntity.revisedByKey = KeyFactory.keyToString(creatorKey);
 		networkEntity.originalCreatorKey = KeyFactory.keyToString(originalCreatorKey);
-		networkEntity.creator = UserRepo.getUsername(creatorKey);
+		networkEntity.revisedBy = UserRepo.getUsername(creatorKey);
 		networkEntity.originalCreator = UserRepo.getUsername(originalCreatorKey);
 
 		// Skip dependencies, no need for the player to know about them

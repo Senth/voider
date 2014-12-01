@@ -10,23 +10,30 @@ import com.spiddekauga.voider.network.util.ISearchStore;
 public enum AimTypes implements ISearchStore {
 	// !!!NEVER EVER remove or change order of these!!!
 	/** On the player */
-	ON_PLAYER(1),
+	ON_PLAYER(1, "On player"),
 	/** In front of the player */
-	IN_FRONT_OF_PLAYER(2),
+	IN_FRONT_OF_PLAYER(2, "In front of player"),
 	/** In the moving direction */
-	MOVE_DIRECTION(3),
+	MOVE_DIRECTION(3, "Enemy direction"),
 	/** Rotates */
-	ROTATE(4),
+	ROTATE(4, "Rotates"),
 	/** In a specific direction */
-	DIRECTION(5),
+	DIRECTION(5, "Specific direction"),
 
 	;
 	/**
 	 * Id for saving in datastore
 	 * @param id the id saved in datastore
+	 * @param displayName name to display when {@link #toString()} is called
 	 */
-	private AimTypes(int id) {
+	private AimTypes(int id, String displayName) {
 		mId = id;
+		mDisplayName = displayName;
+	}
+
+	@Override
+	public String toString() {
+		return mDisplayName;
 	}
 
 	/**
@@ -68,6 +75,7 @@ public enum AimTypes implements ISearchStore {
 
 	/** Id for saving in datastore */
 	private int mId;
+	private String mDisplayName;
 	private static HashMap<Integer, AimTypes> mIdToEnum = new HashMap<>();
 
 	static {

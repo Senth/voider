@@ -1,11 +1,11 @@
 package com.spiddekauga.voider.network.entities.resource;
 
 /**
- * Search ranges for bullet damage
+ * Search ranges for actor collision damage
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("javadoc")
-public enum BulletDamageSearchRanges implements IRangeEnum {
+public enum CollisionDamageSearchRanges implements IRangeEnum {
 	// !!! IF YOU CHANGE THESE -> Be sure to update the search ranges
 	LOW("Low", "1-2", 1, 2),
 	NORMAL("Normal", "2-5", 2, 5),
@@ -23,7 +23,7 @@ public enum BulletDamageSearchRanges implements IRangeEnum {
 	 * @param low lowest possible value
 	 * @param high highest possible value
 	 */
-	private BulletDamageSearchRanges(String displayName, String internalName, float low, float high) {
+	private CollisionDamageSearchRanges(String displayName, String internalName, float low, float high) {
 		mDisplayName = displayName;
 		mLow = low;
 		mHigh = high;
@@ -36,8 +36,8 @@ public enum BulletDamageSearchRanges implements IRangeEnum {
 	 * @param value the value to get a category for
 	 * @return the value this category uses. Null if the value doesn't belong to a range
 	 */
-	public static BulletDamageSearchRanges getRange(float value) {
-		for (BulletDamageSearchRanges range : values()) {
+	public static CollisionDamageSearchRanges getRange(float value) {
+		for (CollisionDamageSearchRanges range : values()) {
 			if (range.mLow <= value && value <= range.mHigh) {
 				return range;
 			}

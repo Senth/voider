@@ -667,7 +667,7 @@ public class UiFactory {
 	 * @param createdActors all created actors
 	 * @return created icon
 	 */
-	public Image addIconLabel(IImageNames icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table, GuiHider hider,
+	public Image addIconLabel(IImageNames icon, String text, Positions textPosition, LabelStyles textStyle, AlignTable table, GuiHider hider,
 			ArrayList<Actor> createdActors) {
 		if (textPosition == Positions.LEFT || textPosition == Positions.RIGHT) {
 			table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
@@ -691,13 +691,13 @@ public class UiFactory {
 	 * @param createdActors all created actors
 	 * @return cell with the icon
 	 */
-	Cell addIconLabel(Actor icon, String text, Positions textPosition, LabelStyle textStyle, AlignTable table, GuiHider hider,
+	Cell addIconLabel(Actor icon, String text, Positions textPosition, LabelStyles textStyle, AlignTable table, GuiHider hider,
 			ArrayList<Actor> createdActors) {
 		Cell cell = null;
 
 		Label label;
 		if (textStyle != null) {
-			label = new Label(text, textStyle);
+			label = new Label(text, textStyle.getStyle());
 		} else {
 			label = new Label(text, LabelStyles.DEFAULT.getStyle());
 		}

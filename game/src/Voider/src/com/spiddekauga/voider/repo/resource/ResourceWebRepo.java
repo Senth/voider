@@ -219,7 +219,7 @@ public class ResourceWebRepo extends WebRepo {
 	private static void setEnemyDefEntity(EnemyActorDef enemyDef, EnemyDefEntity enemyEntity) {
 		setDefEntity(enemyDef, enemyEntity);
 
-		// Weapon stuff
+		// Weapon
 		enemyEntity.hasWeapon = enemyDef.hasWeapon() && enemyDef.getWeaponDef().getBulletActorDef() != null;
 		if (enemyEntity.hasWeapon) {
 			enemyEntity.bulletSpeed = enemyDef.getWeaponDef().getBulletSpeed();
@@ -227,10 +227,15 @@ public class ResourceWebRepo extends WebRepo {
 			enemyEntity.aimType = enemyDef.getAimType();
 		}
 
+		// Movement
 		enemyEntity.movementType = enemyDef.getMovementType();
 		if (enemyEntity.movementType != MovementTypes.STATIONARY) {
 			enemyEntity.movementSpeed = enemyDef.getSpeed();
 		}
+
+		// Collision
+		enemyEntity.collisionDamage = enemyDef.getCollisionDamage();
+		enemyEntity.destroyOnCollide = enemyDef.isDestroyedOnCollide();
 	}
 
 	/**
@@ -262,13 +267,13 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private static void setDefEntity(Def def, DefEntity defEntity) {
 		defEntity.name = def.getName();
-		defEntity.creator = def.getRevisedBy();
+		defEntity.revisedBy = def.getRevisedBy();
 		defEntity.originalCreator = def.getOriginalCreator();
 		defEntity.description = def.getDescription();
 		defEntity.copyParentId = def.getCopyParentId();
 		defEntity.resourceId = def.getId();
 		defEntity.date = def.getDate();
-		defEntity.creatorKey = def.getRevisedByKey();
+		defEntity.revisedByKey = def.getRevisedByKey();
 		defEntity.originalCreatorKey = def.getOriginalCreatorKey();
 
 		if (def instanceof IResourcePng) {

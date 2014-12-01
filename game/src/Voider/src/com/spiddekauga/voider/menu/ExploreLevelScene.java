@@ -16,8 +16,6 @@ import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodRespon
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.CommentEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
@@ -93,37 +91,16 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	protected void onWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof LevelFetchMethodResponse) {
 			mLevelFetch.handleWebResponse((LevelFetchMethod) method, (LevelFetchMethodResponse) response);
-		} else if (response instanceof ResourceDownloadMethodResponse) {
-			handleResourceDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
 		} else if (response instanceof CommentFetchMethodResponse) {
 			mCommentFetch.handleWebResponse((CommentFetchMethod) method, (CommentFetchMethodResponse) response);
+		} else {
+			super.onWebResponse(method, response);
 		}
 	}
 
-	/**
-	 * Handles a response from downloading a level
-	 * @param method parameters to the server method that was called
-	 * @param response server response
-	 */
-	private void handleResourceDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
-		mGui.hideWaitWindow();
-		if (response.status.isSuccessful()) {
-			runLevel();
-		} else {
-			switch (response.status) {
-			case FAILED_CONNECTION:
-				mNotification.show(NotificationTypes.ERROR, "Could not connect to the server");
-				break;
-			case FAILED_DOWNLOAD:
-				mNotification.show(NotificationTypes.ERROR, "Download failed, please retry");
-				break;
-			case FAILED_SERVER_INTERAL:
-				mNotification.show(NotificationTypes.ERROR, "Internal server error, please file a bug report");
-				break;
-			default:
-				break;
-			}
-		}
+	@Override
+	protected void onResourceDownloaded() {
+		runLevel();
 	}
 
 	/**
@@ -292,21 +269,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 				mIsFetching = false;
 				((ExploreLevelGui) mGui).commentWaitIconRemove();
 
-				switch (response.status) {
-				case FAILED_SERVER_CONNECTION:
-					mNotification.show(NotificationTypes.ERROR, "Failed to connect to the server");
-					break;
-
-				case FAILED_SERVER_ERROR:
-					mNotification.show(NotificationTypes.ERROR, "Internal server error");
-					break;
-
-				case FAILED_USER_NOT_LOGGED_IN:
-					mNotification.show(NotificationTypes.ERROR, "You have been logged out");
-					break;
-
-				case SUCCESS_FETCHED_ALL:
-				case SUCCESS_MORE_EXISTS:
+				if (response.isSuccessful()) {
 					// Set user comment
 					if (response.userComment != null) {
 						String dateString = mDateRepo.getDate(response.userComment.date);
@@ -318,9 +281,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 						String dateString = mDateRepo.getDate(commentEntity.date);
 						((ExploreLevelGui) mGui).addComment(commentEntity.username, commentEntity.comment, dateString);
 					}
-
-					break;
-
+				} else {
+					handleFailedStatus(response.status);
 				}
 			}
 		}
@@ -338,12 +300,12 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 */
 		void fetch() {
 			if (!mIsFetching && mUser.isOnline()) {
-				mIsFetching = true;
-
 				if (mSearchString != null) {
+					mIsFetching = true;
 					((ExploreLevelGui) mGui).resetContent();
 					mResourceWebRepo.getLevels(mSearchString, false, ExploreLevelScene.this);
 				} else if (mSortOrder != null) {
+					mIsFetching = true;
 					((ExploreLevelGui) mGui).resetContent();
 					mResourceWebRepo.getLevels(mSortOrder, mTags, false, ExploreLevelScene.this);
 				}
@@ -439,24 +401,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			if (isLastMethod(method)) {
 				mIsFetching = false;
 
-				switch (response.status) {
-				case FAILED_SERVER_CONNECTION:
-					mNotification.show(NotificationTypes.ERROR, "Failed to connect to the server");
-					break;
-
-				case FAILED_SERVER_ERROR:
-					mNotification.show(NotificationTypes.ERROR, "Internal server error");
-					break;
-
-				case FAILED_USER_NOT_LOGGED_IN:
-					mNotification.show(NotificationTypes.ERROR, "You have been logged out");
-					break;
-
-				case SUCCESS_FETCHED_ALL:
-				case SUCCESS_MORE_EXISTS:
+				if (response.isSuccessful()) {
 					createDrawables(response.levels);
 					((ExploreLevelGui) mGui).addContent(response.levels);
-					break;
+				} else {
+					handleFailedStatus(response.status);
 				}
 			}
 		}
@@ -502,6 +451,4 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	private LevelInfoEntity mSelectedLevel = null;
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
-
-
 }
