@@ -881,12 +881,6 @@ public class SkinNames {
 		TAG(ImageButtonStyle.class),
 		/** Like button */
 		BOOKMARK(ImageButtonStyle.class),
-		/** Featured big (explore) */
-		FEATURED_BIG(ImageButtonStyle.class),
-		/** Search (explore) */
-		SEARCH_BIG(ImageButtonStyle.class),
-		/** Browse big (explore) */
-		BROWSE_BIG(ImageButtonStyle.class),
 		/** Featured (explore) */
 		FEATURED(ImageButtonStyle.class),
 		/** Search (explore) */
@@ -915,6 +909,8 @@ public class SkinNames {
 		SETTINGS_SOUND(ImageButtonStyle.class),
 		/** Player statistics */
 		SETTINGS_STATISTICS(ImageButtonStyle.class),
+		/** Search filter options in explore */
+		SEARCH_FILTER(ImageButtonStyle.class),
 
 		;
 

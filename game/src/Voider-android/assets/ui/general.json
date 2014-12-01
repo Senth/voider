@@ -490,15 +490,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	/** Explore */
 	
-	featured_big: {
-		imageUp: featured_big,
-		imageOver: featured_big_over,
-		imageDown: featured_big_down,
-		imageChecked: featured_big_checked,
-		imageCheckedOver: featured_big_checked_over,
-		imageDisabled: featured_big_disabled 
-	},
-	
 	featured: {
 		imageUp: featured,
 		imageOver: featured_over,
@@ -506,15 +497,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: featured_checked,
 		imageCheckedOver: featured_checked_over,
 		imageDisabled: featured_disabled
-	},
-	
-	browse_big: {
-		imageUp: browse_big,
-		imageOver: browse_big_over,
-		imageDown: browse_big_down,
-		imageChecked: browse_big_checked,
-		imageCheckedOver: browse_big_checked_over,
-		imageDisabled: browse_big_disabled 
 	},
 	
 	browse: {
@@ -526,15 +508,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: browse_disabled
 	},
 	
-	search_big: {
-		imageUp: search_big,
-		imageOver: search_big_over,
-		imageDown: search_big_down,
-		imageChecked: search_big_checked,
-		imageCheckedOver: search_big_checked_over,
-		imageDisabled: search_big_disabled 
-	},
-	
 	search: {
 		imageUp: search,
 		imageOver: search_over,
@@ -544,16 +517,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: search_disabled
 	},
 	
-	/** Score */
 	
-	replay: {
-		imageUp: replay,
-		imageOver: replay_over,
-		imageDown: replay_down,
-		imageDisabled: replay_disabled
-	},
-	
-	/** Tabs */
+	/** Explore - Tabs */
 	
 	comments: {
 		imageUp: comments,
@@ -561,7 +526,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: comments_down,
 		imageChecked: comments_checked,
 		imageCheckedOver: comments_checked_over,
-		imageDisabled: comments_disabled
 	},
 	
 	images: {
@@ -570,7 +534,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: images_down,
 		imageChecked: images_checked,
 		imageCheckedOver: images_checked_over,
-		imageDisabled: images_disabled
 	},
 	
 	overview: {
@@ -579,7 +542,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: overview_down,
 		imageChecked: overview_checked,
 		imageCheckedOver: overview_checked_over,
-		imageDisabled: overview_disabled
 	},
 	
 	tags: {
@@ -588,7 +550,23 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: tags_down,
 		imageChecked: tags_checked,
 		imageCheckedOver: tags_checked_over,
-		imageDisabled: tags_disabled
+	},
+	
+	search_filter: {
+		imageUp: search_filter,
+		imageOver: search_filter_over,
+		imageDown: search_filter_down,
+		imageChecked: search_filter_checked,
+	},
+	
+	
+	/** Score */
+	
+	replay: {
+		imageUp: replay,
+		imageOver: replay_over,
+		imageDown: replay_down,
+		imageDisabled: replay_disabled
 	},
 	
 	/** Icons */

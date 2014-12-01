@@ -85,7 +85,14 @@ public class ExploreLevelGui extends ExploreGui {
 			mWidgets.info.date.setText(mDateRepo.getDate(level.defEntity.date));
 			mWidgets.info.description.setText(level.defEntity.description);
 			mWidgets.info.name.setText(level.defEntity.name);
-			mWidgets.info.revisedBy.setText(level.defEntity.revisedBy);
+
+			// Revised by
+			if (!level.defEntity.originalCreatorKey.equals(level.defEntity.revisedByKey)) {
+				mWidgets.info.revisedHider.show();
+				mWidgets.info.revisedBy.setText(level.defEntity.revisedBy);
+			} else {
+				mWidgets.info.revisedHider.hide();
+			}
 
 			mWidgets.info.bookmarks.setText(String.valueOf(level.stats.cBookmarks));
 			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
@@ -99,11 +106,11 @@ public class ExploreLevelGui extends ExploreGui {
 			mWidgets.info.date.setText("");
 			mWidgets.info.description.setText("");
 			mWidgets.info.name.setText("");
-			mWidgets.info.revisedBy.setText("");
 			mWidgets.info.bookmarks.setText("");
 			mWidgets.info.plays.setText("");
 			mWidgets.info.rating.setRating(0);
 			mWidgets.info.tags.setText("");
+			mWidgets.info.revisedHider.hide();
 		}
 	}
 
@@ -300,7 +307,7 @@ public class ExploreLevelGui extends ExploreGui {
 	 */
 	private void initRightPanel() {
 		// Info
-		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, null, mRightPanel);
+		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
 
 		// Comments
 		// mUiFactory.addTab(SkinNames.General.COMMENTS, mWidgets.comment.table, null,
@@ -333,8 +340,8 @@ public class ExploreLevelGui extends ExploreGui {
 		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Revised by
-		mUiFactory.text.addPanelSection("Revised by", table, null);
-		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
+		mUiFactory.text.addPanelSection("Revised by", table, mWidgets.info.revisedHider);
+		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, mWidgets.info.revisedHider);
 
 		// Date
 		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", false, table, null);
@@ -348,10 +355,6 @@ public class ExploreLevelGui extends ExploreGui {
 		// Tags
 		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", true, table, null);
 		mWidgets.info.tags.setWrap(true);
-
-		// Fill down
-		// table.row().setFillHeight(true).setFillWidth(true);
-		// table.add().setFillHeight(true).setFillWidth(true);
 	}
 
 	/**
@@ -644,6 +647,7 @@ public class ExploreLevelGui extends ExploreGui {
 
 		class Info implements Disposable {
 			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
 			Label name = null;
 			Label description = null;
 			RatingWidget rating = null;
@@ -653,10 +657,21 @@ public class ExploreLevelGui extends ExploreGui {
 			Label plays = null;
 			Label bookmarks = null;
 			Label tags = null;
+			HideManual revisedHider = new HideManual();
+
+			private Info() {
+				init();
+			}
 
 			@Override
 			public void dispose() {
 				table.dispose();
+				revisedHider.dispose();
+				hider.dispose();
+			}
+
+			private void init() {
+				hider.addChild(revisedHider);
 			}
 		}
 

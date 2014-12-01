@@ -12,6 +12,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
@@ -36,7 +37,7 @@ public class ExploreActorGui extends ExploreGui {
 		super.initGui();
 
 		initRightPanel();
-		initInfo(mWidgets.info.table);
+		initInfo(mWidgets.info.table, mWidgets.info.hider);
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class ExploreActorGui extends ExploreGui {
 	 */
 	private void initRightPanel() {
 		// Info
-		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, null, mRightPanel);
+		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
 
 		mRightPanel.layout();
 	}
@@ -136,8 +137,9 @@ public class ExploreActorGui extends ExploreGui {
 	 * Initialize the information table in the right panel. This populates the table with
 	 * the default information. Override this table to add more information to it
 	 * @param table information table
+	 * @param hider info hider
 	 */
-	protected void initInfo(AlignTable table) {
+	protected void initInfo(AlignTable table, HideListener hider) {
 		// Name
 		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
 		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
@@ -219,6 +221,7 @@ public class ExploreActorGui extends ExploreGui {
 
 		class Info implements Disposable {
 			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
 			Label name = null;
 			Label description = null;
 			Label createbBy = null;
@@ -226,10 +229,20 @@ public class ExploreActorGui extends ExploreGui {
 			Label date = null;
 			HideManual revisedHider = new HideManual();
 
+			private Info() {
+				init();
+			}
+
 			@Override
 			public void dispose() {
 				table.dispose();
 				revisedHider.dispose();
+				hider.dispose();
+				init();
+			}
+
+			private void init() {
+				hider.addChild(revisedHider);
 			}
 		}
 

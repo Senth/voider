@@ -1,10 +1,12 @@
 package com.spiddekauga.voider.menu;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
+import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
@@ -59,8 +61,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	}
 
 	@Override
-	protected void initInfo(AlignTable table) {
-		super.initInfo(table);
+	protected void initInfo(AlignTable table, HideListener hider) {
+		super.initInfo(table, hider);
 
 		// Movement type
 		mUiFactory.text.addPanelSection("Movement Type", table, null);
@@ -105,6 +107,11 @@ public class ExploreEnemyGui extends ExploreActorGui {
 		table.row();
 		mWidgets.info.aimType = mUiFactory.text.add("", table);
 		mWidgets.info.weaponHider.addToggleActor(mWidgets.info.aimType);
+
+
+		// Hiders
+		hider.addChild(mWidgets.info.movementHider);
+		hider.addChild(mWidgets.info.weaponHider);
 	}
 
 	@Override
@@ -163,7 +170,7 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	 * Initialize left panel
 	 */
 	private void initLeftPanel() {
-		// TODO
+		mUiFactory.addTabScroll(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.hider, mLeftPanel);
 
 		mLeftPanel.layout();
 	}
@@ -172,7 +179,35 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	 * Initialize filter options
 	 */
 	private void initSearchFilters() {
-		// TODO
+		AlignTable table = mWidgets.search.table;
+
+		mUiFactory.text.addPanelSection("Search Filter", table, null);
+
+		// Movement Type
+		mUiFactory.text.addPanelSection("Movement Type", table, null);
+
+
+		// Movement Speed
+		mUiFactory.text.addPanelSection("Movement Speed", table, mWidgets.search.movementHider);
+
+		// Collision Damage
+		mUiFactory.text.addPanelSection("Collision Damage", table, null);
+
+		// Destroy on Collide
+		mUiFactory.text.addPanelSection("Destroy on Collide", table, null);
+
+		// Has weapon
+		mUiFactory.text.addPanelSection("Weapon", table, null);
+
+		// Bullet Speed
+		mUiFactory.text.addPanelSection("Bullet Speed", table, mWidgets.search.weaponHider);
+
+		// Bullet Damage
+		mUiFactory.text.addPanelSection("Bullet Damage", table, mWidgets.search.weaponHider);
+
+		// Aim Types
+		mUiFactory.text.addPanelSection("Aim Type", table, mWidgets.search.weaponHider);
+		// Clear button
 	}
 
 
@@ -213,11 +248,37 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 		class Search implements Disposable {
 			AlignTable table = new AlignTable();
-			HideListener hider = null;
+			HideListener hider = new HideListener(true);
+			HideManual movementHider = new HideManual();
+			HideManual weaponHider = new HideManual();
+			Button movementTypes[] = new Button[MovementTypes.values().length];
+			Button movementSpeeds[] = new Button[EnemySpeedSearchRanges.values().length];
+			Button weaponSkip = null;
+			Button weaponOn = null;
+			Button weaponOff = null;
+			Button bulletSpeeds[] = new Button[BulletSpeedSearchRanges.values().length];
+			Button bulletDamages[] = new Button[BulletDamageSearchRanges.values().length];
+			Button aimTypes[] = new Button[AimTypes.values().length];
+			Button collisionDamages[] = new Button[CollisionDamageSearchRanges.values().length];
+			Button destroyOnCollideSkip = null;
+			Button destroyOnCollideTrue = null;
+			Button destroyOnCollideFalse = null;
+
+			private Search() {
+				init();
+			}
 
 			@Override
 			public void dispose() {
 				table.dispose();
+				hider.dispose();
+				movementHider.dispose();
+				weaponHider.dispose();
+			}
+
+			private void init() {
+				hider.addChild(movementHider);
+				hider.addChild(weaponHider);
 			}
 		}
 

@@ -776,6 +776,22 @@ public class UiFactory {
 	}
 
 	/**
+	 * Add a scrollable tab to a created tab widget
+	 * @param icon the image of the tab
+	 * @param table will show this table when this tab is selected
+	 * @param hider optional listens to the hider.
+	 * @param tabWidget the tab widget to add the tab to
+	 */
+	public void addTabScroll(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
+		ImageButtonStyle style = SkinNames.getResource(icon);
+
+		if (hider == null) {
+			hider = new HideListener(true);
+		}
+		tabWidget.addTabScroll(style, table, hider);
+	}
+
+	/**
 	 * Create generic tabs for a table.
 	 * @param table adds the tabs to this table
 	 * @param parentHider parent hider for all tab hiders
