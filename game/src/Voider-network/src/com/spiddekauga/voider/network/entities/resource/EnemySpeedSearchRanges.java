@@ -9,7 +9,7 @@ public enum EnemySpeedSearchRanges implements IRangeEnum {
 	// !!! IF YOU CHANGE THESE -> Be sure to fix update the search ranges
 	SLOWER("Turtle", "1-5", 1, 5),
 	SLOW("Slow", "5-10", 5, 10),
-	NORMAL("Normal", "10-20", 10, 20),
+	NORMAL("Medium", "10-20", 10, 20),
 	FAST("Fast", "20-30", 20, 30),
 	FASTER("Ultra Fast", "30+", 30, 1000),
 

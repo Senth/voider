@@ -22,7 +22,6 @@ import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
@@ -55,20 +54,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		if (!User.getGlobalUser().isOnline()) {
 			((ExploreLevelGui) mGui).showGoOnlineDialog();
 		}
-	}
-
-	@Override
-	protected void loadResources() {
-		super.loadResources();
-
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 	}
 
 	@Override

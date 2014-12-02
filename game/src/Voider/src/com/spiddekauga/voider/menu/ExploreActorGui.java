@@ -54,6 +54,13 @@ public class ExploreActorGui extends ExploreGui {
 		mWidgets.dispose();
 	}
 
+	@Override
+	void resetContent() {
+		super.resetContent();
+
+		resetInfo();
+	}
+
 	/**
 	 * Initialize right panel
 	 */

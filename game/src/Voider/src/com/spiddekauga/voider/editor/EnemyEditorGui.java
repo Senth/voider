@@ -30,10 +30,10 @@ import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Weapon;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.scene.ui.ButtonFactory.TabImageWrapper;
+import com.spiddekauga.voider.scene.ui.ButtonFactory.TabWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.SliderMinMaxWrapper;
-import com.spiddekauga.voider.scene.ui.UiFactory.TabImageWrapper;
-import com.spiddekauga.voider.scene.ui.UiFactory.TabWrapper;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -362,7 +362,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// ON/OFF tabs
 		// ON
-		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+		TabImageWrapper onTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.ON);
 		onTab.setListener(new ButtonListener() {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -376,13 +376,13 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// OFF
-		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
+		TabImageWrapper offTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
 		ArrayList<TabWrapper> tabs = new ArrayList<>();
 		tabs.add(onTab);
 		tabs.add(offTab);
-		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.button.addTabs(table, hider, false, mDisabledWhenPublished, mInvoker, tabs);
 		tabs = null;
 
 		// Set buttons
@@ -455,16 +455,16 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Create ON/OFF tabs
 		// ON
-		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+		TabImageWrapper onTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.ON);
 
 		// OFF
-		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
+		TabImageWrapper offTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
 		ArrayList<TabWrapper> tabs = new ArrayList<>();
 		tabs.add(onTab);
 		tabs.add(offTab);
-		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.button.addTabs(table, hider, false, mDisabledWhenPublished, mInvoker, tabs);
 		tabs = null;
 
 		// Set buttons
@@ -529,7 +529,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Create radio tabs
 		// Path
-		TabImageWrapper pathTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_PATH);
+		TabImageWrapper pathTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_PATH);
 		pathTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -541,7 +541,7 @@ public class EnemyEditorGui extends ActorGui {
 		mPathHider = pathTab.getHider();
 
 		// Stationary
-		TabImageWrapper stationaryTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_STATIONARY);
+		TabImageWrapper stationaryTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_STATIONARY);
 		stationaryTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -553,7 +553,7 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// AI
-		TabImageWrapper aiTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_AI);
+		TabImageWrapper aiTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_AI);
 		aiTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -569,7 +569,7 @@ public class EnemyEditorGui extends ActorGui {
 		tabs.add(pathTab);
 		tabs.add(aiTab);
 		tabs.add(stationaryTab);
-		mUiFactory.addTabs(mMovementTable, mMovementHider, tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.button.addTabs(mMovementTable, mMovementHider, false, mDisabledWhenPublished, mInvoker, tabs);
 
 		mMovementTable.row().setHeight(mUiFactory.getStyles().vars.rowHeightSection).setAlign(Vertical.MIDDLE);
 		mWidgets.movement.currentType = mUiFactory.text.add("Path", mMovementTable);
@@ -601,7 +601,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Toggle weapon ON/OFF
 		// ON
-		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+		TabImageWrapper onTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.ON);
 		onTab.setListener(new ButtonListener() {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -610,13 +610,13 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// OFF
-		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
+		TabImageWrapper offTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 
 		// Create tabs
 		ArrayList<TabWrapper> tabs = new ArrayList<>();
 		tabs.add(onTab);
 		tabs.add(offTab);
-		mUiFactory.addTabs(table, mWeaponHider, tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.button.addTabs(table, mWeaponHider, false, mDisabledWhenPublished, mInvoker, tabs);
 		tabs = null;
 
 		// Set buttons
@@ -685,7 +685,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// -- Aim Tabs --
 		// On Player
-		TabImageWrapper onPlayerTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_ON_PLAYER);
+		TabImageWrapper onPlayerTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.AIM_ON_PLAYER);
 		onPlayerTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -694,7 +694,7 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// In front of player
-		TabImageWrapper inFrontPlayerTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER);
+		TabImageWrapper inFrontPlayerTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER);
 		inFrontPlayerTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -703,7 +703,7 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// Movement direction
-		TabImageWrapper moveDirTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_MOVEMENT);
+		TabImageWrapper moveDirTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.AIM_MOVEMENT);
 		moveDirTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -712,7 +712,7 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// Direction
-		TabImageWrapper directionTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_DIRECTION);
+		TabImageWrapper directionTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.AIM_DIRECTION);
 		directionTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -721,7 +721,7 @@ public class EnemyEditorGui extends ActorGui {
 		});
 
 		// Rotate
-		TabImageWrapper rotateTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.AIM_ROTATE);
+		TabImageWrapper rotateTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.AIM_ROTATE);
 		rotateTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -736,7 +736,7 @@ public class EnemyEditorGui extends ActorGui {
 		tabs.add(moveDirTab);
 		tabs.add(directionTab);
 		tabs.add(rotateTab);
-		mUiFactory.addTabs(table, onTab.getHider(), tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.button.addTabs(table, onTab.getHider(), false, mDisabledWhenPublished, mInvoker, tabs);
 
 		// Set buttons
 		mWidgets.weapon.aimOnPlayer = onPlayerTab.getButton();

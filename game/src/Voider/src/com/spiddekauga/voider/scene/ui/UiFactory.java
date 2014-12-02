@@ -11,9 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -29,8 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.Maths.MagnitudeWrapper;
-import com.spiddekauga.utils.commands.GuiCheckCommandCreator;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -57,7 +53,6 @@ import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
-import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
 /**
@@ -765,14 +760,15 @@ public class UiFactory {
 	 * @param table will show this table when this tab is selected
 	 * @param hider optional listens to the hider.
 	 * @param tabWidget the tab widget to add the tab to
+	 * @return created tab button
 	 */
-	public void addTab(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
+	public Button addTab(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
 		ImageButtonStyle style = SkinNames.getResource(icon);
 
 		if (hider == null) {
 			hider = new HideListener(true);
 		}
-		tabWidget.addTab(style, table, hider);
+		return tabWidget.addTab(style, table, hider);
 	}
 
 	/**
@@ -781,65 +777,15 @@ public class UiFactory {
 	 * @param table will show this table when this tab is selected
 	 * @param hider optional listens to the hider.
 	 * @param tabWidget the tab widget to add the tab to
+	 * @return created tab button
 	 */
-	public void addTabScroll(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
+	public Button addTabScroll(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
 		ImageButtonStyle style = SkinNames.getResource(icon);
 
 		if (hider == null) {
 			hider = new HideListener(true);
 		}
-		tabWidget.addTabScroll(style, table, hider);
-	}
-
-	/**
-	 * Create generic tabs for a table.
-	 * @param table adds the tabs to this table
-	 * @param parentHider parent hider for all tab hiders
-	 * @param tabs tab information for all tabs to create, will set the button for these
-	 * @param createdActors optional adds all tabs to this list (if not null)
-	 * @param invoker optional ability to undo which tab is selected (if not null)
-	 */
-	public void addTabs(AlignTable table, GuiHider parentHider, ArrayList<TabWrapper> tabs, ArrayList<Actor> createdActors, Invoker invoker) {
-		GuiCheckCommandCreator checkCommandCreator = null;
-		if (invoker != null) {
-			checkCommandCreator = new GuiCheckCommandCreator(invoker);
-		}
-		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.setMinCheckCount(1);
-		buttonGroup.setMaxCheckCount(1);
-
-		table.row();
-
-		for (TabWrapper tab : tabs) {
-			tab.createButton();
-			Cell cell = table.add(tab.mButton);
-			buttonGroup.add(tab.mButton);
-			parentHider.addToggleActor(tab.mButton);
-			tab.mHider.setButton(tab.mButton);
-			parentHider.addChild(tab.mHider);
-
-			if (tab.mButtonListener != null) {
-				tab.mButton.addListener(tab.mButtonListener);
-			}
-
-			if (checkCommandCreator != null) {
-				tab.mButton.addListener(checkCommandCreator);
-			}
-
-			if (createdActors != null) {
-				createdActors.add(tab.mButton);
-			}
-
-
-			// Special tab handling
-			// Radio button - padding
-			if (tab instanceof TabRadioWrapper) {
-				// Add padding if not last button
-				if (tabs.indexOf(tab) != tabs.size() - 1) {
-					cell.setPadRight(mStyles.vars.paddingCheckBox);
-				}
-			}
-		}
+		return tabWidget.addTabScroll(style, table, hider);
 	}
 
 	/**
@@ -997,25 +943,6 @@ public class UiFactory {
 
 	}
 
-
-	/**
-	 * Creates a radio tab button
-	 * @param text text to display on the radio button
-	 * @return a new radio tab wrapper instance
-	 */
-	public TabRadioWrapper createTabRadioWrapper(String text) {
-		return new TabRadioWrapper(text);
-	}
-
-	/**
-	 * Creates a tab button with an image
-	 * @param imageName name of the button image
-	 * @return a new image tab wrapper instance
-	 */
-	public TabImageWrapper createTabImageWrapper(ISkinNames imageName) {
-		return new TabImageWrapper(imageName);
-	}
-
 	/**
 	 * Wrapper for a theme and label. Used in theme list selector
 	 */
@@ -1047,96 +974,6 @@ public class UiFactory {
 	}
 
 	/**
-	 * Interface for creating tab-like buttons
-	 */
-	public abstract class TabWrapper {
-		/**
-		 * Creates the button for the tab.
-		 */
-		abstract void createButton();
-
-		/**
-		 * @return tab button
-		 */
-		public Button getButton() {
-			return mButton;
-		}
-
-		/**
-		 * @return hider
-		 */
-		public HideListener getHider() {
-			return mHider;
-		}
-
-		/**
-		 * Set the hide listener. Useful when you want to use something else than the
-		 * default hider
-		 * @param hider
-		 */
-		public void setHider(HideListener hider) {
-			mHider = hider;
-		}
-
-		/**
-		 * Sets a button listener
-		 * @param buttonListener listens to the button
-		 */
-		public void setListener(ButtonListener buttonListener) {
-			mButtonListener = buttonListener;
-		}
-
-		/** Optional button listener */
-		private ButtonListener mButtonListener = null;
-		/** Tab button */
-		protected Button mButton = null;
-		/** Hider for the tab */
-		private HideListener mHider = new HideListener(true);
-	}
-
-	/**
-	 * Tab information wrapper
-	 */
-	public class TabImageWrapper extends TabWrapper {
-		/**
-		 * Sets the image for the tab
-		 * @param imageName name of the image
-		 */
-		private TabImageWrapper(ISkinNames imageName) {
-			mImageName = imageName;
-		}
-
-		@Override
-		public void createButton() {
-			mButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(mImageName));
-		}
-
-		/** Image name */
-		private ISkinNames mImageName = null;
-	}
-
-	/**
-	 * Radio button information wrapper
-	 */
-	public class TabRadioWrapper extends TabWrapper {
-		/**
-		 * Sets the text for the radio button
-		 * @param text text to display
-		 */
-		private TabRadioWrapper(String text) {
-			mText = text;
-		}
-
-		@Override
-		public void createButton() {
-			mButton = new CheckBox(mText, CheckBoxStyles.RADIO.getStyle());
-		}
-
-		/** Button text */
-		private String mText = null;
-	}
-
-	/**
 	 * @return UiStyles
 	 */
 	public UiStyles getStyles() {
@@ -1147,6 +984,6 @@ public class UiFactory {
 	/** If the factory has been initialized */
 	private boolean mInitialized = false;
 	/** Contains all styles */
-	private UiStyles mStyles = null;
+	UiStyles mStyles = null;
 	private static UiFactory mInstance = null;
 }

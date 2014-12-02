@@ -30,8 +30,8 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
 import com.spiddekauga.voider.repo.resource.SkinNames.GeneralImages;
-import com.spiddekauga.voider.scene.ui.UiFactory.TabImageWrapper;
-import com.spiddekauga.voider.scene.ui.UiFactory.TabWrapper;
+import com.spiddekauga.voider.scene.ui.ButtonFactory.TabImageWrapper;
+import com.spiddekauga.voider.scene.ui.ButtonFactory.TabWrapper;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -296,7 +296,7 @@ public abstract class ActorGui extends EditorGui {
 		mUiFactory.text.addPanelSection("Shape", table, null);
 
 		// Circle
-		TabImageWrapper circleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.CIRCLE_SHAPE);
+		TabImageWrapper circleTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.CIRCLE_SHAPE);
 		circleTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -307,7 +307,7 @@ public abstract class ActorGui extends EditorGui {
 		tabs.add(circleTab);
 
 		// Rectangle
-		TabImageWrapper rectangleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.RECTANGLE_SHAPE);
+		TabImageWrapper rectangleTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.RECTANGLE_SHAPE);
 		rectangleTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -318,7 +318,7 @@ public abstract class ActorGui extends EditorGui {
 		tabs.add(rectangleTab);
 
 		// Triangle
-		TabImageWrapper triangleTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.TRIANGLE_SHAPE);
+		TabImageWrapper triangleTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.TRIANGLE_SHAPE);
 		triangleTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
@@ -329,7 +329,7 @@ public abstract class ActorGui extends EditorGui {
 		tabs.add(triangleTab);
 
 		// Custom (draw)
-		TabImageWrapper customTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE);
+		TabImageWrapper customTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE);
 		customTab.setHider(new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -356,7 +356,7 @@ public abstract class ActorGui extends EditorGui {
 		// Shape from image
 		TabImageWrapper imageTab = null;
 		if (getClass() == ShipEditorGui.class) {
-			imageTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.SHAPE_FROM_IMAGE);
+			imageTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.SHAPE_FROM_IMAGE);
 			imageTab.setListener(new ButtonListener() {
 				@Override
 				protected void onPressed(Button button) {
@@ -368,7 +368,7 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Create tabs
-		mUiFactory.addTabs(table, mWidgets.visual.hider, tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.button.addTabs(table, mWidgets.visual.hider, false, mDisabledWhenPublished, mInvoker, tabs);
 
 		// Set buttons
 		mWidgets.visual.shapeCircle = circleTab.getButton();
@@ -460,7 +460,7 @@ public abstract class ActorGui extends EditorGui {
 		// Update
 		mUiFactory.text.addPanelSection("Update Continuously", table, imageHider);
 		ArrayList<TabWrapper> tabs = new ArrayList<>();
-		TabImageWrapper onTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.ON);
+		TabImageWrapper onTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.ON);
 		onTab.setListener(new ButtonListener() {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -469,10 +469,10 @@ public abstract class ActorGui extends EditorGui {
 		});
 		tabs.add(onTab);
 
-		TabImageWrapper offTab = mUiFactory.createTabImageWrapper(SkinNames.EditorIcons.OFF);
+		TabImageWrapper offTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.OFF);
 		tabs.add(offTab);
 
-		mUiFactory.addTabs(table, imageHider, tabs, mDisabledWhenPublished, mInvoker);
+		mUiFactory.button.addTabs(table, imageHider, false, mDisabledWhenPublished, mInvoker, tabs);
 		tabs = null;
 
 		mWidgets.visual.imageUpdateOn = onTab.getButton();
@@ -485,7 +485,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDrawOnlyOutline(checked);
 			};
 		};
-		mWidgets.visual.imageDrawOutline = mUiFactory.button.addPanelCheckBox("Draw outline", buttonListener, table, imageHider, mDisabledWhenPublished);
+		mWidgets.visual.imageDrawOutline = mUiFactory.button.addPanelCheckBox("Draw outline", buttonListener, table, imageHider,
+				mDisabledWhenPublished);
 
 		// Select image
 		SelectBoxListener<SkinNames.GeneralImages> selectBoxListener = new SelectBoxListener<SkinNames.GeneralImages>(mInvoker) {
@@ -706,7 +707,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};
-		mWidgets.collision.destroyOnCollide = mUiFactory.button.addPanelCheckBox("Destroy", buttonListener, mWidgets.collision.table, null, createdActors);
+		mWidgets.collision.destroyOnCollide = mUiFactory.button.addPanelCheckBox("Destroy", buttonListener, mWidgets.collision.table, null,
+				createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.COLLISION_DESTROY);
 		mDisabledWhenPublished.addAll(createdActors);
 	}

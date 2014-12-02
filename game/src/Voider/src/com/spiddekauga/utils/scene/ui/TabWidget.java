@@ -210,6 +210,7 @@ public class TabWidget extends AlignTable {
 			ScrollPane scrollPane = new ScrollPane(table, mScrollPaneStyle);
 			scrollPane.setScrollingDisabled(true, false);
 			scrollPane.setCancelTouchFocus(false);
+			table.setFillParentWidth(true);
 			addActor = scrollPane;
 		}
 

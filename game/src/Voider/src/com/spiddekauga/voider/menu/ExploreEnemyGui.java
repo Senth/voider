@@ -1,9 +1,15 @@
 package com.spiddekauga.voider.menu;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.ButtonEnumListener;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.voider.game.actors.AimTypes;
@@ -14,6 +20,8 @@ import com.spiddekauga.voider.network.entities.resource.CollisionDamageSearchRan
 import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * GUI for finding or loading enemies
@@ -31,19 +39,25 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	public void initGui() {
 		super.initGui();
 
-
-		initLeftPanel();
-		initViewButtons();
 		initSearchFilters();
+		initViewButtons();
 
-		mScene.fetchDefault();
+		resetContentMargins();
+		mScene.repopulateContent();
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+
+		mWidgets.dispose();
 	}
 
 	@Override
 	public void resetValues() {
 		super.resetValues();
 
-
+		resetSearchFilters();
 	}
 
 	/**
@@ -51,13 +65,13 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	 */
 	private void initViewButtons() {
 		// Search online
-		mWidgets.search.hider = new HideListener(true) {
+		ButtonListener listener = new ButtonListener() {
 			@Override
-			protected void onShow() {
-				// TODO Fetch initial enemies
+			protected void onPressed(Button button) {
+				mScene.setSearchOnline(true);
 			}
 		};
-		addViewButton(SkinNames.General.SEARCH, mWidgets.search.hider);
+		addViewButton(SkinNames.General.SEARCH, listener);
 	}
 
 	@Override
@@ -167,49 +181,225 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	}
 
 	/**
-	 * Initialize left panel
+	 * Initialize filter options
 	 */
-	private void initLeftPanel() {
-		mUiFactory.addTabScroll(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.hider, mLeftPanel);
+	private void initSearchFilters() {
+		Button button = mUiFactory.addTabScroll(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.contentHider, mLeftPanel);
+		mWidgets.search.tabButtonHider.addToggleActor(button);
+
+		AlignTable table = mWidgets.search.table;
+		table.setName("search-filters");
+		mUiFactory.text.addPanelSection("Search Filter", table, null);
+		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
+		table.getCell();
+
+
+		// Movement Type
+		mUiFactory.text.addPanelSection("Movement Type", table, null);
+		table.row();
+		mUiFactory.button.addEnumButton(MovementTypes.PATH, SkinNames.EditorIcons.MOVEMENT_PATH, null, table, mWidgets.search.movementTypes);
+		mUiFactory.button.addEnumButton(MovementTypes.STATIONARY, SkinNames.EditorIcons.MOVEMENT_STATIONARY, null, table,
+				mWidgets.search.movementTypes);
+		mUiFactory.button.addEnumButton(MovementTypes.AI, SkinNames.EditorIcons.MOVEMENT_AI, null, table, mWidgets.search.movementTypes);
+		new ButtonEnumListener<MovementTypes>(mWidgets.search.movementTypes, MovementTypes.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setMovementType(getChecked());
+			}
+		};
+
+
+		// Movement Speed
+		mUiFactory.text.addPanelSection("Movement Speed", table, mWidgets.search.movementHider);
+		mUiFactory.button.addEnumCheckboxes(EnemySpeedSearchRanges.values(), mWidgets.search.movementHider, null, true, table,
+				mWidgets.search.movementSpeeds);
+		new ButtonEnumListener<EnemySpeedSearchRanges>(mWidgets.search.movementSpeeds, EnemySpeedSearchRanges.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setMovementSpeeds(getChecked());
+			}
+		};
+
+
+		// Collision Damage
+		mUiFactory.text.addPanelSection("Collision Damage", table, null);
+		mUiFactory.button.addEnumCheckboxes(CollisionDamageSearchRanges.values(), null, null, true, table, mWidgets.search.collisionDamages);
+		new ButtonEnumListener<CollisionDamageSearchRanges>(mWidgets.search.collisionDamages, CollisionDamageSearchRanges.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setCollisionDamages(getChecked());
+			}
+		};
+
+
+		// Destroy on Collide
+		mUiFactory.text.addPanelSection("Destroy on Collide", table, null);
+		TabRadioWrapper anyTab = mUiFactory.button.createTabRadioWrapper("Any");
+		anyTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setDestroyOnCollide(null);
+			}
+		});
+
+		TabRadioWrapper onTab = mUiFactory.button.createTabRadioWrapper("Destroyed on collision");
+		onTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setDestroyOnCollide(true);
+			}
+		});
+
+		TabRadioWrapper offTab = mUiFactory.button.createTabRadioWrapper("Never destroyed");
+		offTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setDestroyOnCollide(false);
+			}
+		});
+
+		mUiFactory.button.addTabs(table, mWidgets.search.contentHider, true, null, null, anyTab, onTab, offTab);
+		mWidgets.search.destroyOnCollideAny = anyTab.getButton();
+		mWidgets.search.destroyOnCollideTrue = onTab.getButton();
+		mWidgets.search.destroyOnCollideFalse = offTab.getButton();
+
+
+		// Has weapon
+		mUiFactory.text.addPanelSection("Weapon", table, null);
+
+		anyTab = mUiFactory.button.createTabRadioWrapper("Any");
+		anyTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setHasWeapon(null);
+			}
+		});
+
+		onTab = mUiFactory.button.createTabRadioWrapper("Has Weapon");
+		onTab.setHider(mWidgets.search.weaponHider);
+		onTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setHasWeapon(true);
+			}
+		});
+
+		offTab = mUiFactory.button.createTabRadioWrapper("No Weapon");
+		offTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setHasWeapon(false);
+			}
+		});
+
+		mUiFactory.button.addTabs(table, mWidgets.search.contentHider, true, null, null, anyTab, onTab, offTab);
+		mWidgets.search.weaponAny = anyTab.getButton();
+		mWidgets.search.weaponOn = onTab.getButton();
+		mWidgets.search.weaponOff = offTab.getButton();
+
+
+		// Bullet Speed
+		mUiFactory.text.addPanelSection("Bullet Speed", table, mWidgets.search.weaponHider);
+		mUiFactory.button.addEnumCheckboxes(BulletSpeedSearchRanges.values(), mWidgets.search.weaponHider, null, true, table,
+				mWidgets.search.bulletSpeeds);
+		new ButtonEnumListener<BulletSpeedSearchRanges>(mWidgets.search.bulletSpeeds, BulletSpeedSearchRanges.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setBulletSpeeds(getChecked());
+			}
+		};
+
+
+		// Bullet Damage
+		mUiFactory.text.addPanelSection("Bullet Damage", table, mWidgets.search.weaponHider);
+		mUiFactory.button.addEnumCheckboxes(BulletDamageSearchRanges.values(), mWidgets.search.weaponHider, null, true, table,
+				mWidgets.search.bulletDamages);
+		new ButtonEnumListener<BulletDamageSearchRanges>(mWidgets.search.bulletDamages, BulletDamageSearchRanges.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setBulletDamages(getChecked());
+			}
+		};
+
+
+		// Aim Types
+		mUiFactory.text.addPanelSection("Aim Type", table, mWidgets.search.weaponHider);
+		table.row();
+		mUiFactory.button.addEnumButton(AimTypes.ON_PLAYER, SkinNames.EditorIcons.AIM_ON_PLAYER, mWidgets.search.weaponHider, table,
+				mWidgets.search.aimTypes);
+		mUiFactory.button.addEnumButton(AimTypes.IN_FRONT_OF_PLAYER, SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER, mWidgets.search.weaponHider, table,
+				mWidgets.search.aimTypes);
+		mUiFactory.button.addEnumButton(AimTypes.MOVE_DIRECTION, SkinNames.EditorIcons.AIM_MOVEMENT, mWidgets.search.weaponHider, table,
+				mWidgets.search.aimTypes);
+		mUiFactory.button.addEnumButton(AimTypes.DIRECTION, SkinNames.EditorIcons.AIM_DIRECTION, mWidgets.search.weaponHider, table,
+				mWidgets.search.aimTypes);
+		mUiFactory.button.addEnumButton(AimTypes.ROTATE, SkinNames.EditorIcons.AIM_ROTATE, mWidgets.search.weaponHider, table,
+				mWidgets.search.aimTypes);
+		new ButtonEnumListener<AimTypes>(mWidgets.search.aimTypes, AimTypes.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setAimTypes(getChecked());
+			}
+		};
+
+
+		// Clear button
+		button = mUiFactory.button.createText("Clear Filters", TextButtonStyles.FILLED_PRESS);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.resetSearchCriteria();
+				resetSearchFilters();
+			}
+		};
+		mLeftPanel.addActionButton(button);
 
 		mLeftPanel.layout();
 	}
 
 	/**
-	 * Initialize filter options
+	 * Reset search filters
 	 */
-	private void initSearchFilters() {
-		AlignTable table = mWidgets.search.table;
-
-		mUiFactory.text.addPanelSection("Search Filter", table, null);
-
-		// Movement Type
-		mUiFactory.text.addPanelSection("Movement Type", table, null);
-
-
-		// Movement Speed
-		mUiFactory.text.addPanelSection("Movement Speed", table, mWidgets.search.movementHider);
-
-		// Collision Damage
-		mUiFactory.text.addPanelSection("Collision Damage", table, null);
+	private void resetSearchFilters() {
+		resetEnumButtons(mWidgets.search.movementTypes, mScene.getMovementTypes());
+		resetEnumButtons(mWidgets.search.movementSpeeds, mScene.getMovementSpeeds());
+		resetEnumButtons(mWidgets.search.collisionDamages, mScene.getCollisionDamages());
+		resetEnumButtons(mWidgets.search.bulletSpeeds, mScene.getBulletSpeeds());
+		resetEnumButtons(mWidgets.search.bulletDamages, mScene.getBulletDamages());
 
 		// Destroy on Collide
-		mUiFactory.text.addPanelSection("Destroy on Collide", table, null);
+		if (mScene.getDestroyOnCollide() == null) {
+			mWidgets.search.destroyOnCollideAny.setChecked(true);
+		} else if (mScene.getDestroyOnCollide()) {
+			mWidgets.search.destroyOnCollideTrue.setChecked(true);
+		} else {
+			mWidgets.search.destroyOnCollideFalse.setChecked(true);
+		}
 
-		// Has weapon
-		mUiFactory.text.addPanelSection("Weapon", table, null);
-
-		// Bullet Speed
-		mUiFactory.text.addPanelSection("Bullet Speed", table, mWidgets.search.weaponHider);
-
-		// Bullet Damage
-		mUiFactory.text.addPanelSection("Bullet Damage", table, mWidgets.search.weaponHider);
-
-		// Aim Types
-		mUiFactory.text.addPanelSection("Aim Type", table, mWidgets.search.weaponHider);
-		// Clear button
+		// Weapon
+		if (mScene.getHasWeapon() == null) {
+			mWidgets.search.weaponAny.setChecked(true);
+		} else if (mScene.getHasWeapon()) {
+			mWidgets.search.weaponOn.setChecked(true);
+		} else {
+			mWidgets.search.weaponOff.setChecked(true);
+		}
 	}
 
+	/**
+	 * Reset enumeration buttons
+	 * @param buttons all the buttons
+	 * @param checkedEnums all enumerations that should be checked
+	 */
+	private void resetEnumButtons(Button[] buttons, ArrayList<? extends Enum<?>> checkedEnums) {
+		for (Button button : buttons) {
+			button.setChecked(false);
+		}
+
+		for (Enum<?> enumeration : checkedEnums) {
+			buttons[enumeration.ordinal()].setChecked(true);
+		}
+	}
 
 	/**
 	 * Sets the explore scene
@@ -248,19 +438,20 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 		class Search implements Disposable {
 			AlignTable table = new AlignTable();
-			HideListener hider = new HideListener(true);
+			HideListener tabButtonHider = new HideListener(true);
+			HideListener contentHider = new HideListener(true);
 			HideManual movementHider = new HideManual();
-			HideManual weaponHider = new HideManual();
+			HideListener weaponHider = new HideListener(true);
 			Button movementTypes[] = new Button[MovementTypes.values().length];
 			Button movementSpeeds[] = new Button[EnemySpeedSearchRanges.values().length];
-			Button weaponSkip = null;
+			Button weaponAny = null;
 			Button weaponOn = null;
 			Button weaponOff = null;
 			Button bulletSpeeds[] = new Button[BulletSpeedSearchRanges.values().length];
 			Button bulletDamages[] = new Button[BulletDamageSearchRanges.values().length];
 			Button aimTypes[] = new Button[AimTypes.values().length];
 			Button collisionDamages[] = new Button[CollisionDamageSearchRanges.values().length];
-			Button destroyOnCollideSkip = null;
+			Button destroyOnCollideAny = null;
 			Button destroyOnCollideTrue = null;
 			Button destroyOnCollideFalse = null;
 
@@ -271,14 +462,18 @@ public class ExploreEnemyGui extends ExploreActorGui {
 			@Override
 			public void dispose() {
 				table.dispose();
-				hider.dispose();
+				tabButtonHider.dispose();
+				contentHider.dispose();
 				movementHider.dispose();
 				weaponHider.dispose();
+
+				init();
 			}
 
 			private void init() {
-				hider.addChild(movementHider);
-				hider.addChild(weaponHider);
+				contentHider.addChild(movementHider);
+				contentHider.addChild(weaponHider);
+				tabButtonHider.addChild(contentHider);
 			}
 		}
 

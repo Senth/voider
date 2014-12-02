@@ -17,7 +17,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
-import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
@@ -118,13 +118,13 @@ abstract class ExploreGui extends Gui {
 	/**
 	 * Add a view button
 	 * @param iconName name of the button image
-	 * @param hideListener the hide listener that's called
+	 * @param listener button listener for this button
 	 */
-	protected void addViewButton(ISkinNames iconName, HideListener hideListener) {
+	protected void addViewButton(ISkinNames iconName, ButtonListener listener) {
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(iconName));
 		mWidgets.view.table.add(button);
 		mWidgets.view.buttonGroup.add(button);
-		hideListener.setButton(button);
+		button.addListener(listener);
 	}
 
 	/**
@@ -237,9 +237,17 @@ abstract class ExploreGui extends Gui {
 			int cActorsPerRowOld = mActorsPerRow;
 			calculateActorsPerRow();
 			if (mActorsPerRow != cActorsPerRowOld) {
-				mExploreScene.repopulateContent();
+				repopulateContent();
 			}
 		}
+	}
+
+	/**
+	 * Repopulate contents
+	 */
+	private void repopulateContent() {
+		resetContent();
+		mExploreScene.repopulateContent();
 	}
 
 	/**

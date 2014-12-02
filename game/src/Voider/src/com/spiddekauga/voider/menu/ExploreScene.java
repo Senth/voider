@@ -13,6 +13,8 @@ import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
+import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Graphics;
 
@@ -29,6 +31,21 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 
 		((ExploreGui) mGui).setExploreScene(this);
 	}
+
+	@Override
+	protected void loadResources() {
+		super.loadResources();
+
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+	}
+
+	@Override
+	protected void unloadResources() {
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+
+		super.unloadResources();
+	}
+
 
 	@Override
 	protected boolean onKeyDown(int keycode) {

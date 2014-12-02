@@ -776,6 +776,20 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		mMinHeight += getPadY() + getMarginY();
 		mMinWidth += getPadX() + getMarginX();
 
+		// Override with fill parent
+		if (mFillParentHeight && getParent() != null) {
+			Actor parent = getParent();
+			mPrefHeight = parent.getHeight();
+			mMinHeight = parent.getHeight();
+			height = parent.getHeight();
+		}
+		if (mFillParentWidth && getParent() != null) {
+			Actor parent = getParent();
+			mPrefWidth = parent.getWidth();
+			mMinWidth = parent.getWidth();
+			width = parent.getWidth();
+		}
+
 
 		// Change size of table to fit the content
 		if (!mKeepWidth) {
@@ -806,6 +820,18 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 		mActualHeight = height;
 		mActualWidth = width;
+
+		// Override with fill parent
+		if (mFillParentHeight && getParent() != null) {
+			Actor parent = getParent();
+			mActualHeight = parent.getHeight();
+			height = parent.getHeight();
+		}
+		if (mFillParentWidth && getParent() != null) {
+			Actor parent = getParent();
+			mActualWidth = parent.getWidth();
+			width = parent.getWidth();
+		}
 
 		// Change size of table to fit the content
 		if (!mKeepWidth) {
@@ -838,7 +864,9 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		}
 
 		if (height == -1) {
-			if (mKeepHeight) {
+			if (mFillParentHeight && getParent() != null) {
+				height = getParent().getHeight();
+			} else if (mKeepHeight) {
 				height = getHeight();
 			} else {
 				height = getAvailableHeight();
@@ -848,7 +876,9 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		}
 
 		if (width == -1) {
-			if (mKeepWidth) {
+			if (mFillParentWidth && getParent() != null) {
+				width = getParent().getWidth();
+			} else if (mKeepWidth) {
 				width = getWidth();
 			} else {
 				width = getAvailableWidth();
@@ -1307,6 +1337,42 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		}
 	}
 
+	/**
+	 * Fills the width of the parent's width. Usually this is done by filling rows and
+	 * cells in AlignTable if the parent of the AlignTable is something else (e.g.
+	 * ScrollPane) this allows the table to fill the width of that ScrollPane.
+	 * @param fillWidth true to fill the width of the parent actor
+	 */
+	public void setFillParentWidth(boolean fillWidth) {
+		mFillParentWidth = fillWidth;
+		invalidate();
+	}
+
+	/**
+	 * Fills the height of the parent's height. Usually this is done by filling rows and
+	 * cells in AlignTable if the parent of the AlignTable is something else (e.g.
+	 * ScrollPane) this allows the table to fill the height of that ScrollPane.
+	 * @param fillHeight true to fill the height of the parent actor
+	 */
+	public void setFillParentHeight(boolean fillHeight) {
+		mFillParentHeight = fillHeight;
+		invalidate();
+	}
+
+	/**
+	 * Fills the width and height of the parent's width and height. Usually this is done
+	 * by filling rows and cells in AlignTable if the parent of the AlignTable is
+	 * something else (e.g. Stage) this allows the table to fill the width and height of
+	 * that Stage
+	 * @param fillParent true to fill the both the width and the height of the parent
+	 *        actor
+	 */
+	@Override
+	public void setFillParent(boolean fillParent) {
+		setFillParentHeight(fillParent);
+		setFillParentWidth(fillParent);
+	}
+
 	/** Background image */
 	private Image mBackground = null;
 	/** Valid cell sizes */
@@ -1361,6 +1427,10 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	private Padding mMargin = new Padding();
 	/** Inside margin for this table */
 	private Padding mPadding = new Padding();
+	/** Fill parent height */
+	private boolean mFillParentHeight = false;
+	/** Fill parent width */
+	private boolean mFillParentWidth = false;
 	/** Private accessor to width */
 	private Field mfWidth = null;
 	/** Private accessor to height */

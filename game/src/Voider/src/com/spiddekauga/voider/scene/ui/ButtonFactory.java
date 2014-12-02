@@ -3,18 +3,22 @@ package com.spiddekauga.voider.scene.ui;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.spiddekauga.utils.commands.GuiCheckCommandCreator;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.GuiHider;
+import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.Row;
@@ -134,12 +138,12 @@ public class ButtonFactory extends BaseFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-			// Slim fit to text
+		// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-			// Fit to text (but with padding)
+		// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -306,6 +310,23 @@ public class ButtonFactory extends BaseFactory {
 	}
 
 	/**
+	 * Create a checkbox button
+	 * @param text the text to display on the chekbox
+	 * @param style which checkbox style to use
+	 * @return created chcck box
+	 */
+	public CheckBox createCheckBox(String text, CheckBoxStyles style) {
+		CheckBox checkBox = new CheckBox(text, style.getStyle());
+		float imageWidth = checkBox.getImage().getWidth();
+		checkBox.getImageCell().width(imageWidth);
+		checkBox.getLabelCell().padLeft(mStyles.vars.paddingCheckBoxText);
+		checkBox.layout();
+		checkBox.left();
+
+		return checkBox;
+	}
+
+	/**
 	 * Add a checkbox
 	 * @param text the text to display on the checkbox
 	 * @param style which checkbox style to use
@@ -315,15 +336,12 @@ public class ButtonFactory extends BaseFactory {
 	 * @return created checkbox
 	 */
 	public CheckBox addCheckBox(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
-		CheckBox checkBox = new CheckBox(text, style.getStyle());
-		float imageWidth = checkBox.getImage().getWidth();
-		checkBox.getImageCell().width(imageWidth);
-		checkBox.getLabelCell().padLeft(mStyles.vars.paddingCheckBoxText);
-		checkBox.layout();
-		checkBox.left();
+		CheckBox checkBox = createCheckBox(text, style);
 
 		table.add(checkBox);
-		group.add(checkBox);
+		if (group != null) {
+			group.add(checkBox);
+		}
 
 		if (listener != null) {
 			checkBox.addListener(listener);
@@ -348,5 +366,235 @@ public class ButtonFactory extends BaseFactory {
 		table.getCell().setHeight(mStyles.vars.rowHeight);
 
 		return checkBox;
+	}
+
+	/**
+	 * Adds checkboxes for all enumerations
+	 * @param enumerations display name of checkbox and place in array
+	 * @param hider optional hider
+	 * @param group optional button group
+	 * @param vertical true for the checkboxes to be in a vertical layout, false for
+	 *        horizontal
+	 * @param table where to add the buttons
+	 * @param buttons empty checkbox array, created button is added to this array
+	 */
+	public void addEnumCheckboxes(Enum<?>[] enumerations, GuiHider hider, ButtonGroup group, boolean vertical, AlignTable table, Button[] buttons) {
+		if (buttons.length != enumerations.length) {
+			throw new RuntimeException("Enumeration doesn't have same length as buttons. Enums:\n " + enumerations.toString());
+		}
+
+		for (int i = 0; i < enumerations.length; i++) {
+			Enum<?> enumeration = enumerations[i];
+			Button button = null;
+			if (vertical) {
+				button = addCheckBoxRow(enumeration.toString(), CheckBoxStyles.CHECK_BOX, null, group, table);
+			} else {
+				button = addCheckBox(enumeration.toString(), CheckBoxStyles.CHECK_BOX, null, group, table);
+			}
+			if (hider != null) {
+				hider.addToggleActor(button);
+			}
+			buttons[i] = button;
+		}
+	}
+
+	/**
+	 * Add and set an enumeration image button to the specified table
+	 * @param enumeration for determining place in array
+	 * @param image button image
+	 * @param hider optional hider
+	 * @param table where to add the button
+	 * @param buttons the button array, created button is added to this array
+	 */
+	public void addEnumButton(Enum<?> enumeration, ISkinNames image, GuiHider hider, AlignTable table, Button[] buttons) {
+		buttons[enumeration.ordinal()] = mUiFactory.button.addImage(image, table, hider, null);
+	}
+
+	/**
+	 * Create generic tabs for a table.
+	 * @param table adds the tabs to this table
+	 * @param parentHider parent hider for all tab hiders
+	 * @param vertical true if the tabs should be vertically aligned
+	 * @param createdActors optional adds all tabs to this list (if not null)
+	 * @param invoker optional ability to undo which tab is selected (if not null)
+	 * @param tabs tab information for all tabs to create, will set the button for these
+	 */
+	public void addTabs(AlignTable table, GuiHider parentHider, boolean vertical, ArrayList<Actor> createdActors, Invoker invoker, TabWrapper... tabs) {
+		GuiCheckCommandCreator checkCommandCreator = null;
+		if (invoker != null) {
+			checkCommandCreator = new GuiCheckCommandCreator(invoker);
+		}
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.setMinCheckCount(1);
+		buttonGroup.setMaxCheckCount(1);
+
+		if (!vertical) {
+			table.row();
+		}
+
+		for (int i = 0; i < tabs.length; i++) {
+			TabWrapper tab = tabs[i];
+			tab.createButton();
+			if (vertical) {
+				table.row();
+			}
+			table.add(tab.mButton);
+			buttonGroup.add(tab.mButton);
+			parentHider.addToggleActor(tab.mButton);
+			tab.mHider.setButton(tab.mButton);
+			parentHider.addChild(tab.mHider);
+
+			if (tab.mButtonListener != null) {
+				tab.mButton.addListener(tab.mButtonListener);
+			}
+
+			if (checkCommandCreator != null) {
+				tab.mButton.addListener(checkCommandCreator);
+			}
+
+			if (createdActors != null) {
+				createdActors.add(tab.mButton);
+			}
+
+
+			// Special tab handling
+			// Radio button - padding
+			if (tab instanceof TabRadioWrapper) {
+				// Vertical
+				if (vertical) {
+					table.getRow().setHeight(mStyles.vars.rowHeight);
+				}
+				// Horizontal - Add padding between checkboxes
+				else {
+					if (i != tabs.length - 1) {
+						addCheckBoxPadding(table);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Create generic tabs for a table.
+	 * @param table adds the tabs to this table
+	 * @param parentHider parent hider for all tab hiders
+	 * @param vertical true if the tabs should be vertically aligned
+	 * @param createdActors optional adds all tabs to this list (if not null)
+	 * @param invoker optional ability to undo which tab is selected (if not null)
+	 * @param tabs tab information for all tabs to create, will set the button for these
+	 */
+	public void addTabs(AlignTable table, GuiHider parentHider, boolean vertical, ArrayList<Actor> createdActors, Invoker invoker,
+			ArrayList<? extends TabWrapper> tabs) {
+		TabWrapper[] array = new TabWrapper[tabs.size()];
+		tabs.toArray(array);
+		addTabs(table, parentHider, vertical, createdActors, invoker, array);
+	}
+
+	/**
+	 * Creates a tab button with an image
+	 * @param imageName name of the button image
+	 * @return a new image tab wrapper instance
+	 */
+	public TabImageWrapper createTabImageWrapper(ISkinNames imageName) {
+		return new TabImageWrapper(imageName);
+	}
+
+	/**
+	 * Creates a radio tab button
+	 * @param text text to display on the radio button
+	 * @return a new radio tab wrapper instance
+	 */
+	public TabRadioWrapper createTabRadioWrapper(String text) {
+		return new TabRadioWrapper(text);
+	}
+
+	/**
+	 * Interface for creating tab-like buttons
+	 */
+	public abstract class TabWrapper {
+		/**
+		 * Creates the button for the tab.
+		 */
+		abstract void createButton();
+
+		/**
+		 * @return tab button
+		 */
+		public Button getButton() {
+			return mButton;
+		}
+
+		/**
+		 * @return hider
+		 */
+		public HideListener getHider() {
+			return mHider;
+		}
+
+		/**
+		 * Set the hide listener. Useful when you want to use something else than the
+		 * default hider
+		 * @param hider
+		 */
+		public void setHider(HideListener hider) {
+			mHider = hider;
+		}
+
+		/**
+		 * Sets a button listener
+		 * @param buttonListener listens to the button
+		 */
+		public void setListener(ButtonListener buttonListener) {
+			mButtonListener = buttonListener;
+		}
+
+		/** Optional button listener */
+		private ButtonListener mButtonListener = null;
+		/** Tab button */
+		protected Button mButton = null;
+		/** Hider for the tab */
+		private HideListener mHider = new HideListener(true);
+	}
+
+	/**
+	 * Tab information wrapper
+	 */
+	public class TabImageWrapper extends TabWrapper {
+		/**
+		 * Sets the image for the tab
+		 * @param imageName name of the image
+		 */
+		private TabImageWrapper(ISkinNames imageName) {
+			mImageName = imageName;
+		}
+
+		@Override
+		public void createButton() {
+			mButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(mImageName));
+		}
+
+		/** Image name */
+		private ISkinNames mImageName = null;
+	}
+
+	/**
+	 * Radio button information wrapper
+	 */
+	public class TabRadioWrapper extends TabWrapper {
+		/**
+		 * Sets the text for the radio button
+		 * @param text text to display
+		 */
+		private TabRadioWrapper(String text) {
+			mText = text;
+		}
+
+		@Override
+		public void createButton() {
+			mButton = createCheckBox(mText, CheckBoxStyles.RADIO);
+		}
+
+		/** Button text */
+		private String mText = null;
 	}
 }
