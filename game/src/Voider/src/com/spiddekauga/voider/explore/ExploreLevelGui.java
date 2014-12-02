@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.menu;
+package com.spiddekauga.voider.explore;
 
 import java.util.ArrayList;
 import java.util.HashMap;

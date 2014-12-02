@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.menu;
+package com.spiddekauga.voider.explore;
 
 import java.util.ArrayList;
 
@@ -44,11 +44,6 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
 
 		super.unloadResources();
-	}
-
-	@Override
-	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-		super.onActivate(outcome, message, loadingOutcome);
 	}
 
 	@Override
@@ -307,16 +302,14 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		 * @param searchCriteria
 		 */
 		void fetch(EnemyFetchMethod searchCriteria) {
-			if (!mUser.isOnline()) {
-				return;
+			if (mUser.isOnline()) {
+				setSelectedActor(null);
+				((ExploreEnemyGui) mGui).resetContent();
+
+				mIsFetching = true;
+				mLastFetch = searchCriteria.copy();
+				mResourceWebRepo.getEnemies(searchCriteria, false, ExploreEnemyScene.this);
 			}
-
-			setSelectedActor(null);
-			((ExploreEnemyGui) mGui).resetContent();
-
-			mIsFetching = true;
-			mLastFetch = searchCriteria.copy();
-			mResourceWebRepo.getEnemies(searchCriteria, false, ExploreEnemyScene.this);
 		}
 
 		/**
@@ -332,11 +325,12 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		 * @return true if more enemies can be fetched
 		 */
 		boolean hasMore() {
-			if (mIsFetching || mUser.isOnline() || mLastFetch == null) {
-				return false;
+			if (!mIsFetching && mUser.isOnline() && mLastFetch != null) {
+				return mResourceWebRepo.hasMoreEnemies(mLastFetch);
 			}
 
-			return mResourceWebRepo.hasMoreEnemies(mLastFetch);
+			return false;
+
 		}
 
 		/**
@@ -369,7 +363,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		}
 
 		/**
-		 * @return true if is fetching levels
+		 * @return true if is fetching enemies
 		 */
 		boolean isFetching() {
 			return mIsFetching;

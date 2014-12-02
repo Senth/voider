@@ -1,7 +1,8 @@
-package com.spiddekauga.voider.menu;
+package com.spiddekauga.voider.explore;
 
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.resources.Def;
 
@@ -24,7 +25,9 @@ public class ExploreFactory {
 			if (EnemyActorDef.class == defType) {
 				return new ExploreEnemyScene();
 			}
-			// TODO Bullet
+			if (BulletActorDef.class == defType) {
+				return new ExploreBulletScene();
+			}
 
 			return new ExploreActorScene();
 		}

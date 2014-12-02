@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.menu;
+package com.spiddekauga.voider.explore;
 
 import java.util.ArrayList;
 
@@ -406,7 +406,6 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	 * @param exploreScene
 	 */
 	void setExploreEnemyScene(ExploreEnemyScene exploreScene) {
-		setExploreScene(exploreScene);
 		mScene = exploreScene;
 	}
 

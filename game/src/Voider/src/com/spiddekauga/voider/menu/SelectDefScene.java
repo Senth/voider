@@ -34,6 +34,7 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  *          for the select \li DEF_SELECT_CANCEL canceled the selection.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
+@Deprecated
 public class SelectDefScene extends Scene implements IEventListener {
 	/**
 	 * Private common constructor
