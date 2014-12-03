@@ -12,8 +12,8 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
  */
 @SuppressWarnings("serial")
 public class EnemyFetchMethod extends FetchMethod {
-	/** Search by text if not null */
-	public String searchString = null;
+	/** Search by text if not empty */
+	public String searchString = "";
 	/** Search by movement type if not null */
 	public ArrayList<MovementTypes> movementTypes = new ArrayList<>();
 	/** Search by a movement speed categories, only available for PATH & AI movement types */

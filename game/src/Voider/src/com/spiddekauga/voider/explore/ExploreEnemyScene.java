@@ -121,8 +121,10 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	void setSearchString(String searchString) {
 		if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
 			mSearchCriteriaTemp.searchString = searchString;
-			updateSearchCriteria();
+		} else {
+			mSearchCriteriaTemp.searchString = "";
 		}
+		updateSearchCriteria();
 	}
 
 	/**

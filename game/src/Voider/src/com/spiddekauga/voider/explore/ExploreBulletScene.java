@@ -86,8 +86,12 @@ public class ExploreBulletScene extends ExploreActorScene {
 	 * @param searchString
 	 */
 	void fetch(String searchString) {
-		if (mOnlineSearch && searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
-			mBulletFetch.fetch(searchString);
+		if (mOnlineSearch) {
+			if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
+				mBulletFetch.fetch(searchString);
+			} else {
+				mBulletFetch.fetch("");
+			}
 		} else {
 			// TODO
 		}
@@ -119,7 +123,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 		 * @param searchCriteria
 		 */
 		void fetch(String searchCriteria) {
-			if (mUser.isOnline()) {
+			if (mUser.isOnline() && !mLastSearch.equals(searchCriteria)) {
 				setSelectedActor(null);
 				((ExploreBulletGui) mGui).resetContent();
 
