@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.app;
+package com.spiddekauga.voider.menu;
 
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.repo.misc.SettingRepo;

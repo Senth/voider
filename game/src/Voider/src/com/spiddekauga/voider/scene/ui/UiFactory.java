@@ -522,7 +522,7 @@ public class UiFactory {
 			throw new IllegalStateException("init() has not been called!");
 		}
 
-		table.row().setFillWidth(true);
+		table.row().setFillWidth(true).setHeight(mStyles.vars.rowHeight);
 
 		// Label
 		Label label = null;
@@ -826,9 +826,11 @@ public class UiFactory {
 		table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
 
 		// Header
+		float headerPad = mStyles.vars.paddingParagraph;
 		Label headerLabel = text.addHeader(header, table);
+		table.getCell().setPadBottom(headerPad);
 		headerLabel.validate();
-		float headerHeight = headerLabel.getHeight();
+		float headerHeight = headerLabel.getHeight() + headerPad;
 
 		// Tab widget
 		TabWidget tabWidget = new TabWidget();

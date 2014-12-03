@@ -63,8 +63,8 @@ public class LabelFactory extends BaseFactory {
 	public Label addSection(String text, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
 		if (text != null) {
 			Label label = new Label(text, LabelStyles.DEFAULT.getStyle());
-			table.row();
-			table.add(label).setHeight(mStyles.vars.rowHeight);
+			table.row().setHeight(mStyles.vars.rowHeight);
+			table.add(label);
 
 			UiFactory.doExtraActionsOnActors(hider, createdActors, label);
 			return label;

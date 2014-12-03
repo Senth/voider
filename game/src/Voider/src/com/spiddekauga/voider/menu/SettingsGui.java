@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.app;
+package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -91,6 +91,8 @@ public class SettingsGui extends Gui {
 
 		// 24 hours?
 		mUiFactory.text.addSection("Time Format", table, null);
+		table.getRow().setAlign(Vertical.BOTTOM);
+		table.getCell().setAlign(Vertical.BOTTOM);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
@@ -156,6 +158,7 @@ public class SettingsGui extends Gui {
 	 */
 	private static void initTable(AlignTable table, String header) {
 		table.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		table.setName(header);
 
 		float paddingRow = mUiFactory.getStyles().vars.paddingOuter;
 		table.row().setAlign(Vertical.TOP).setFillWidth(true).setPadBottom(mUiFactory.getStyles().vars.paddingInner);
@@ -163,7 +166,7 @@ public class SettingsGui extends Gui {
 		mUiFactory.text.add(header, table, LabelStyles.HIGHLIGHT);
 		table.add().setFillWidth(true);
 
-		table.setPaddingRowDefault(paddingRow, 0, 0, 0);
+		table.setPaddingRowDefault(0, 0, 0, 0);
 	}
 
 	@Override

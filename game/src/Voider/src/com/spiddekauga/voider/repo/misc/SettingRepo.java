@@ -93,11 +93,11 @@ public class SettingRepo extends Repo {
 				if (lastSpaceIndex != -1) {
 					// Date part
 					if (datePart) {
-						return dateTime.substring(0, lastSpaceIndex - 1);
+						return dateTime.substring(0, lastSpaceIndex);
 					}
 					// Time part
 					else {
-						return dateTime.substring(lastSpaceIndex);
+						return dateTime.substring(lastSpaceIndex + 1);
 					}
 				}
 			}
