@@ -559,9 +559,9 @@ public class Config {
 		/** Default height of the graphics */
 		public final static int HEIGHT_DEFAULT = 480;
 		/** Starting width */
-		public final static int WIDTH_START;
+		@Deprecated public final static int WIDTH_START;
 		/** Starting height */
-		public final static int HEIGHT_START;
+		@Deprecated public final static int HEIGHT_START;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/**

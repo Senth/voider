@@ -3,11 +3,13 @@ package com.spiddekauga.voider.repo.misc;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.repo.Repo;
+import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingDisplayLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingGeneralLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingSoundLocalRepo;
 
@@ -315,7 +317,37 @@ public class SettingRepo extends Repo {
 	 * Display settings
 	 */
 	public class SettingDisplayRepo {
+		/**
+		 * Sets if game should start in fullscreen mode
+		 * @param fullscreen true for fullscreen
+		 */
+		public void setFullscreen(boolean fullscreen) {
+			mLocalRepo.setFullscreen(fullscreen);
+		}
 
+		/**
+		 * @return true if game should start in fullscreen mode
+		 */
+		public boolean isFullscreen() {
+			return mLocalRepo.isFullscreen();
+		}
+
+		/**
+		 * Sets the startup resolution of the game
+		 * @param resolution
+		 */
+		public void setResolution(Resolution resolution) {
+			mLocalRepo.setResolution(resolution);
+		}
+
+		/**
+		 * @return startup resolution of the game
+		 */
+		public Resolution getResolution() {
+			return mLocalRepo.getResolution();
+		}
+
+		private SettingDisplayLocalRepo mLocalRepo = SettingLocalRepo.getInstance().display;
 	}
 
 	private SettingDisplayRepo mDisplay = new SettingDisplayRepo();

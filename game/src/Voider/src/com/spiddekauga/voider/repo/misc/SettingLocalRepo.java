@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo.misc;
 
+import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -68,7 +69,7 @@ class SettingLocalRepo {
 		 * Set the master volume
 		 * @param volume in range [0,1]
 		 */
-		public void setMasterVolume(float volume) {
+		void setMasterVolume(float volume) {
 			mClientPrefsGateway.setMasterVolume(volume);
 			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_MASTER_VOLUME_CHANGED));
 		}
@@ -76,7 +77,7 @@ class SettingLocalRepo {
 		/**
 		 * @return master volume in range [0,1]
 		 */
-		public float getMasterVolume() {
+		float getMasterVolume() {
 			return mClientPrefsGateway.getMasterVolume();
 		}
 
@@ -84,7 +85,7 @@ class SettingLocalRepo {
 		 * Set the sound effects volume
 		 * @param volume in range [0,1]
 		 */
-		public void setEffectsVolume(float volume) {
+		void setEffectsVolume(float volume) {
 			mClientPrefsGateway.setEffectsVolume(volume);
 			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_EFFECTS_VOLUME_CHANGED));
 		}
@@ -92,7 +93,7 @@ class SettingLocalRepo {
 		/**
 		 * @return sound effects volume in range [0,1]
 		 */
-		public float getEffectsVolume() {
+		float getEffectsVolume() {
 			return mClientPrefsGateway.getEffectsVolume();
 		}
 
@@ -100,7 +101,7 @@ class SettingLocalRepo {
 		 * Get the real sound effects out volume.
 		 * @return sound effects volume multiplied with the master volume
 		 */
-		public float getEffectsVolumeOut() {
+		float getEffectsVolumeOut() {
 			return getEffectsVolume() * getMasterVolume();
 		}
 
@@ -108,7 +109,7 @@ class SettingLocalRepo {
 		 * Set the music volume
 		 * @param volume in range [0,1]
 		 */
-		public void setMusicVolume(float volume) {
+		void setMusicVolume(float volume) {
 			mClientPrefsGateway.setMusicVolume(volume);
 			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_MUSIC_VOLUME_CHANGED));
 		}
@@ -116,7 +117,7 @@ class SettingLocalRepo {
 		/**
 		 * @return music volume in range [0,1]
 		 */
-		public float getMusicVolume() {
+		float getMusicVolume() {
 			return mClientPrefsGateway.getMusicVolume();
 		}
 
@@ -124,7 +125,7 @@ class SettingLocalRepo {
 		 * Get the real music out volume
 		 * @return music volume multiplied with the master volume
 		 */
-		public float getMusicVolumeOut() {
+		float getMusicVolumeOut() {
 			return getMusicVolume() * getMasterVolume();
 		}
 
@@ -132,7 +133,7 @@ class SettingLocalRepo {
 		 * Set the UI effects volume
 		 * @param volume in range [0,1]
 		 */
-		public void setUiVolume(float volume) {
+		void setUiVolume(float volume) {
 			mClientPrefsGateway.setUiVolume(volume);
 			mEventDispatcher.fire(new GameEvent(EventTypes.SOUND_UI_VOLUME_CHANGED));
 		}
@@ -140,7 +141,7 @@ class SettingLocalRepo {
 		/**
 		 * @return UI effects volume in range [0,1]
 		 */
-		public float getUiVolume() {
+		float getUiVolume() {
 			return mClientPrefsGateway.getUiVolume();
 		}
 
@@ -148,11 +149,48 @@ class SettingLocalRepo {
 		 * Get the real UI out volume
 		 * @return UI volume multiplied with the master volume
 		 */
-		public float getUiVolumeOut() {
+		float getUiVolumeOut() {
 			return getUiVolume() * getMasterVolume();
 		}
 	}
 
+	/**
+	 * Display settings
+	 */
+	class SettingDisplayLocalRepo {
+		/**
+		 * Sets if game should start in fullscreen mode
+		 * @param fullscreen true for fullscreen
+		 */
+		void setFullscreen(boolean fullscreen) {
+			mClientPrefsGateway.setFullscreen(fullscreen);
+		}
+
+		/**
+		 * @return true if game should start in fullscreen mode
+		 */
+		boolean isFullscreen() {
+			return mClientPrefsGateway.isFullscreen();
+		}
+
+		/**
+		 * Sets the startup resolution of the game
+		 * @param resolution
+		 */
+		void setResolution(Resolution resolution) {
+			mClientPrefsGateway.setResolution(resolution);
+		}
+
+		/**
+		 * @return startup resolution of the game
+		 */
+		Resolution getResolution() {
+			return mClientPrefsGateway.getResolution();
+		}
+	}
+
+	/** Display setting repository */
+	SettingDisplayLocalRepo display = new SettingDisplayLocalRepo();
 	/** Sound setting repository */
 	SettingSoundLocalRepo sound = new SettingSoundLocalRepo();
 	/** general setting repository */

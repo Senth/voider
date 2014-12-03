@@ -14,6 +14,32 @@ public class IC_Setting extends IniClass {
 	public IC_Sound sound;
 	public IC_Network network;
 	public IC_General general;
+	public IC_Display display;
+
+	/**
+	 * Display settings
+	 */
+	public class IC_Display extends IniClass {
+		protected boolean fullscreen;
+		protected int resolutionWidth;
+		protected int resolutionHeight;
+
+		private IC_Display(Ini ini, Section classSection) {
+			super(ini, classSection);
+		}
+
+		public boolean isFullscreen() {
+			return fullscreen;
+		}
+
+		public int getResolutionWidth() {
+			return resolutionWidth;
+		}
+
+		public int getResolutionHeight() {
+			return resolutionHeight;
+		}
+	}
 
 	/**
 	 * General settings

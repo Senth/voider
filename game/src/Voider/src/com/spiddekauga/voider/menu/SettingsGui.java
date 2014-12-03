@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -151,6 +152,14 @@ public class SettingsGui extends Gui {
 		initTable(table, "Display");
 
 		// Resolution
+		SelectBoxListener<Resolution> selectBoxListener = new SelectBoxListener<Resolution>() {
+			@Override
+			protected void onSelectionChanged(int itemIndex) {
+				mScene.setResolution(mSelectBox.getSelected());
+			}
+		};
+		mWidgets.display.resolution = mUiFactory.addSelectBox("Resolution", Resolution.getAvailableResolutions(), selectBoxListener, table, null,
+				null);
 
 		// Fullscreen
 		table.row();
@@ -195,7 +204,8 @@ public class SettingsGui extends Gui {
 	}
 
 	private void resetDisplay() {
-
+		mWidgets.display.fullscreen.setChecked(mScene.isFullscreen());
+		mWidgets.display.resolution.setSelected(mScene.getResolution());
 	}
 
 	private void resetGeneral() {
@@ -231,7 +241,7 @@ public class SettingsGui extends Gui {
 
 		private class Display {
 			AlignTable table = new AlignTable();
-			SelectBox<?> resolution = null;
+			SelectBox<Resolution> resolution = null;
 			Button fullscreen = null;
 		}
 	}
