@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.repo.misc;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Preferences;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.Config;
@@ -45,18 +46,17 @@ class SettingClientPrefsGateway {
 	 * Sets the startup resolution of the game
 	 * @param resolution
 	 */
-	void setResolution(Resolution resolution) {
-		mPreferences.putString(DISPLAY__RESOLUTION, resolution.toString());
+	void setResolutionWindowed(Resolution resolution) {
+		mPreferences.putString(DISPLAY__RESOLUTION_WINDOWED, resolution.toString());
 		mPreferences.flush();
 	}
 
 	/**
 	 * @return startup resolution of the game
 	 */
-	Resolution getResolution() {
-		IC_Display icDisplay = ConfigIni.getInstance().setting.display;
+	Resolution getResolutionWindowed() {
 		Resolution resolution = null;
-		String resolutionString = mPreferences.getString(DISPLAY__RESOLUTION);
+		String resolutionString = mPreferences.getString(DISPLAY__RESOLUTION_WINDOWED);
 		if (resolutionString != null) {
 			try {
 				resolution = new Resolution(resolutionString);
@@ -67,12 +67,44 @@ class SettingClientPrefsGateway {
 
 		// Use default resolution
 		if (resolution == null) {
+			IC_Display icDisplay = ConfigIni.getInstance().setting.display;
 			resolution = new Resolution(icDisplay.getResolutionWidth(), icDisplay.getResolutionHeight());
 		}
 
 		return resolution;
 	}
 
+	/**
+	 * Sets the fullscreen resolution of the game
+	 * @param resolution
+	 */
+	void setResolutionFullscreen(Resolution resolution) {
+		mPreferences.putString(DISPLAY__RESOLUTION_FULLSCREEN, resolution.toString());
+		mPreferences.flush();
+	}
+
+	/**
+	 * @return fullscreen resolution of the game
+	 */
+	Resolution getResolutionFullscreen() {
+		Resolution resolution = null;
+		String resolutionString = mPreferences.getString(DISPLAY__RESOLUTION_FULLSCREEN);
+		if (resolutionString != null) {
+			try {
+				resolution = new Resolution(resolutionString);
+			} catch (IllegalArgumentException e) {
+				// Does nothing
+			}
+		}
+
+		// Get default resolution
+		if (resolution == null) {
+			DisplayMode displayMode = Gdx.graphics.getDesktopDisplayMode();
+			resolution = new Resolution(displayMode);
+		}
+
+		return resolution;
+	}
 
 	// -----------------------
 	// Network settings
@@ -166,7 +198,8 @@ class SettingClientPrefsGateway {
 		return mPreferences.getFloat(SOUND__UI_VOLUME, icSound.getUi());
 	}
 
-	private static final String DISPLAY__RESOLUTION = "display_resolution";
+	private static final String DISPLAY__RESOLUTION_WINDOWED = "display_resolutionWindowed";
+	private static final String DISPLAY__RESOLUTION_FULLSCREEN = "display_resolutionFullscreen";
 	private static final String DISPLAY__FULLSCREEN = "display_fullscreen";
 
 	private static final String SOUND__MASTER_VOLUME = "sound_masterVolume";

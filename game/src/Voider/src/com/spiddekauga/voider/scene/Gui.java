@@ -120,6 +120,7 @@ public abstract class Gui implements Disposable {
 			updateWrappedBackground();
 		} else {
 			Image image = new Image(mWidgets.background.drawable);
+			mWidgets.background.images.add(image);
 			image.setPosition(0, 0);
 			image.setWidth(Gdx.graphics.getWidth());
 			image.setHeight(Gdx.graphics.getHeight());
@@ -175,6 +176,7 @@ public abstract class Gui implements Disposable {
 		for (int x = 0; x < cRepeatX; ++x) {
 			for (int y = 0; y < cRepeatY; ++y) {
 				Image image = new Image(mWidgets.background.drawable);
+				mWidgets.background.images.add(image);
 				image.setPosition(x * backgroundWidth, lowYStart + (y * backgroundHeight));
 				addActor(image);
 				image.setZIndex(0);

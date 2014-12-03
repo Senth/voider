@@ -8,12 +8,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.menu.LoginScene;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDisplayRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceChecker;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
@@ -39,6 +42,8 @@ public class VoiderGame implements ApplicationListener {
 		Synchronizer.getInstance();
 		ResourceChecker.init();
 
+		updateResolution();
+
 		// Set main thread id
 		mMainThreadId = Thread.currentThread().getId();
 
@@ -51,6 +56,23 @@ public class VoiderGame implements ApplicationListener {
 		}
 
 		mMusicPlayer = MusicPlayer.getInstance();
+	}
+
+	/**
+	 * Set correct resolution for desktop
+	 */
+	private void updateResolution() {
+		if (Gdx.app.getType() == ApplicationType.Desktop) {
+			SettingDisplayRepo displayRepo = SettingRepo.getInstance().display();
+			Resolution resolution = null;
+			boolean fullscreen = displayRepo.isFullscreen();
+			if (fullscreen) {
+				resolution = displayRepo.getResolutionFullscreen();
+			} else {
+				resolution = displayRepo.getResolutionWindowed();
+			}
+			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), fullscreen);
+		}
 	}
 
 	/**

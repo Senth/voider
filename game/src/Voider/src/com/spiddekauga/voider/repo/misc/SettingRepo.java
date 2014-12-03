@@ -333,18 +333,33 @@ public class SettingRepo extends Repo {
 		}
 
 		/**
-		 * Sets the startup resolution of the game
+		 * Sets the startup resolution of the game (in windowed mode)
 		 * @param resolution
 		 */
-		public void setResolution(Resolution resolution) {
-			mLocalRepo.setResolution(resolution);
+		public void setResolutionWindowed(Resolution resolution) {
+			mLocalRepo.setResolutionWindowed(resolution);
 		}
 
 		/**
-		 * @return startup resolution of the game
+		 * @return startup resolution of the game (in windowed mode)
 		 */
-		public Resolution getResolution() {
-			return mLocalRepo.getResolution();
+		public Resolution getResolutionWindowed() {
+			return mLocalRepo.getResolutionWindowed();
+		}
+
+		/**
+		 * Sets the fullscreen resolution of the game
+		 * @param resolution
+		 */
+		public void setResolutionFullscreen(Resolution resolution) {
+			mLocalRepo.setResolutionFullscreen(resolution);
+		}
+
+		/**
+		 * @return fullscreen resolution of the game
+		 */
+		public Resolution getResolutionFullscreen() {
+			return mLocalRepo.getResolutionFullscreen();
 		}
 
 		private SettingDisplayLocalRepo mLocalRepo = SettingLocalRepo.getInstance().display;

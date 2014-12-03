@@ -6,11 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TabWidget;
@@ -39,9 +41,7 @@ public class SettingsGui extends Gui {
 	public void dispose() {
 		super.dispose();
 
-		mWidgets.display.table.dispose();
-		mWidgets.general.table.dispose();
-		mWidgets.sound.table.dispose();
+		mWidgets.dispose();
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class SettingsGui extends Gui {
 		TabWidget tabWidget = mWidgets.tabWidget;
 
 		if (Gdx.app.getType() == ApplicationType.Desktop) {
-			mUiFactory.addTab(SkinNames.General.SETTINGS_DISPLAY, mWidgets.display.table, null, tabWidget);
+			mUiFactory.addTab(SkinNames.General.SETTINGS_DISPLAY, mWidgets.display.table, mWidgets.display.hider, tabWidget);
 		}
 		mUiFactory.addTab(SkinNames.General.SETTINGS_SOUND, mWidgets.sound.table, null, tabWidget);
 		mUiFactory.addTab(SkinNames.General.SETTINGS_GENERAL, mWidgets.general.table, null, tabWidget);
@@ -151,15 +151,26 @@ public class SettingsGui extends Gui {
 		AlignTable table = mWidgets.display.table;
 		initTable(table, "Display");
 
-		// Resolution
+		// Windowed Resolution
 		SelectBoxListener<Resolution> selectBoxListener = new SelectBoxListener<Resolution>() {
 			@Override
 			protected void onSelectionChanged(int itemIndex) {
-				mScene.setResolution(mSelectBox.getSelected());
+				mScene.setResolutionWindowed(mSelectBox.getSelected());
 			}
 		};
-		mWidgets.display.resolution = mUiFactory.addSelectBox("Resolution", Resolution.getAvailableResolutions(), selectBoxListener, table, null,
-				null);
+		mWidgets.display.resolutionWindowed = mUiFactory.addSelectBox("Window Resolution", Resolution.getWindowedResolutions(), selectBoxListener,
+				table, mWidgets.display.showWindowedResolution, null);
+
+		// Fullscreen resolution
+		selectBoxListener = new SelectBoxListener<Resolution>() {
+			@Override
+			protected void onSelectionChanged(int itemIndex) {
+				mScene.setResolutionFullscreen(mSelectBox.getSelected());
+			}
+		};
+		mWidgets.display.resolutionFullscreen = mUiFactory.addSelectBox("Window Resolution", Resolution.getFullscreenResolutions(),
+				selectBoxListener, table, mWidgets.display.showFullscreenResolution, null);
+
 
 		// Fullscreen
 		table.row();
@@ -169,7 +180,9 @@ public class SettingsGui extends Gui {
 				mScene.setFullscreen(checked);
 			}
 		};
-		mWidgets.display.fullscreen = mUiFactory.button.addCheckBox("Fullscreen", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
+		mWidgets.display.fullscreen = mUiFactory.button.addCheckBoxRow("Fullscreen", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
+		mWidgets.display.showFullscreenResolution.setButton(mWidgets.display.fullscreen);
+		mWidgets.display.showWindowedResolution.setButton(mWidgets.display.fullscreen);
 	}
 
 	/**
@@ -205,7 +218,8 @@ public class SettingsGui extends Gui {
 
 	private void resetDisplay() {
 		mWidgets.display.fullscreen.setChecked(mScene.isFullscreen());
-		mWidgets.display.resolution.setSelected(mScene.getResolution());
+		mWidgets.display.resolutionFullscreen.setSelected(mScene.getResolutionFullscreen());
+		mWidgets.display.resolutionWindowed.setSelected(mScene.getResolutionWindowed());
 	}
 
 	private void resetGeneral() {
@@ -217,32 +231,72 @@ public class SettingsGui extends Gui {
 		}
 	}
 
-	private class Widgets {
+	private class Widgets implements Disposable {
 		TabWidget tabWidget = null;
 		Sound sound = new Sound();
 		General general = new General();
 		Display display = new Display();
 
 
-		private class Sound {
+		private class Sound implements Disposable {
 			AlignTable table = new AlignTable();
 			Slider master = null;
 			Slider ui = null;
 			Slider game = null;
 			Slider music = null;
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
 		}
 
-		private class General {
+		private class General implements Disposable {
 			AlignTable table = new AlignTable();
 			Button time24h = null;
 			Button timeAmPm = null;
 			SelectBox<String> dateFormat = null;
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
 		}
 
-		private class Display {
+		private class Display implements Disposable {
 			AlignTable table = new AlignTable();
-			SelectBox<Resolution> resolution = null;
+			HideListener hider = new HideListener(true);
+			HideListener showFullscreenResolution = new HideListener(true);
+			HideListener showWindowedResolution = new HideListener(false);
+			SelectBox<Resolution> resolutionFullscreen = null;
+			SelectBox<Resolution> resolutionWindowed = null;
 			Button fullscreen = null;
+
+			private Display() {
+				init();
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hider.dispose();
+				showFullscreenResolution.dispose();
+				showWindowedResolution.dispose();
+
+				init();
+			}
+
+			private void init() {
+				hider.addChild(showFullscreenResolution);
+				hider.addChild(showWindowedResolution);
+			}
+		}
+
+		@Override
+		public void dispose() {
+			display.dispose();
+			sound.dispose();
+			general.dispose();
 		}
 	}
 

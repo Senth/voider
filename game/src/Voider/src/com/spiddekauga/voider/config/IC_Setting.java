@@ -23,6 +23,7 @@ public class IC_Setting extends IniClass {
 		protected boolean fullscreen;
 		protected int resolutionWidth;
 		protected int resolutionHeight;
+		protected String[] customWindowResolutions;
 
 		private IC_Display(Ini ini, Section classSection) {
 			super(ini, classSection);
@@ -38,6 +39,10 @@ public class IC_Setting extends IniClass {
 
 		public int getResolutionHeight() {
 			return resolutionHeight;
+		}
+
+		public String[] getCustomWindowResolutions() {
+			return customWindowResolutions;
 		}
 	}
 

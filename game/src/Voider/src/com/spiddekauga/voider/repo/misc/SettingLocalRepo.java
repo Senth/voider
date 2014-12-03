@@ -177,16 +177,32 @@ class SettingLocalRepo {
 		 * Sets the startup resolution of the game
 		 * @param resolution
 		 */
-		void setResolution(Resolution resolution) {
-			mClientPrefsGateway.setResolution(resolution);
+		void setResolutionWindowed(Resolution resolution) {
+			mClientPrefsGateway.setResolutionWindowed(resolution);
 		}
 
 		/**
 		 * @return startup resolution of the game
 		 */
-		Resolution getResolution() {
-			return mClientPrefsGateway.getResolution();
+		Resolution getResolutionWindowed() {
+			return mClientPrefsGateway.getResolutionWindowed();
 		}
+
+		/**
+		 * Sets the fullscreen resolution of the game
+		 * @param resolution
+		 */
+		void setResolutionFullscreen(Resolution resolution) {
+			mClientPrefsGateway.setResolutionFullscreen(resolution);
+		}
+
+		/**
+		 * @return fullscreen resolution of the game
+		 */
+		Resolution getResolutionFullscreen() {
+			return mClientPrefsGateway.getResolutionFullscreen();
+		}
+
 	}
 
 	/** Display setting repository */

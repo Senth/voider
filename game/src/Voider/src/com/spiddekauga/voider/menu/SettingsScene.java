@@ -136,27 +136,51 @@ public class SettingsScene extends Scene {
 	}
 
 	/**
-	 * Sets the resolution of the game
+	 * Sets the fullscreen resolution of the game
 	 * @param resolution
 	 */
-	void setResolution(Resolution resolution) {
-		mSettingRepo.display().setResolution(resolution);
+	void setResolutionFullscreen(Resolution resolution) {
+		mSettingRepo.display().setResolutionFullscreen(resolution);
 		updateScreenSize();
 	}
 
 	/**
-	 * @return current resolution of the game
+	 * @return fullscreen resolution of the game
 	 */
-	Resolution getResolution() {
-		return mSettingRepo.display().getResolution();
+	Resolution getResolutionFullscreen() {
+		return mSettingRepo.display().getResolutionFullscreen();
+	}
+
+	/**
+	 * Sets the windowed resolution of the game
+	 * @param resolution
+	 */
+	void setResolutionWindowed(Resolution resolution) {
+		mSettingRepo.display().setResolutionWindowed(resolution);
+		updateScreenSize();
+	}
+
+	/**
+	 * @return windowed resolution of the game
+	 */
+	Resolution getResolutionWindowed() {
+		return mSettingRepo.display().getResolutionWindowed();
 	}
 
 	/**
 	 * Update screen size
 	 */
 	private void updateScreenSize() {
-		Resolution resolution = getResolution();
-		Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), isFullscreen());
+		// Fullscreen
+		if (isFullscreen()) {
+			Resolution resolution = getResolutionFullscreen();
+			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), true);
+		}
+		// Windowed
+		else {
+			Resolution resolution = getResolutionWindowed();
+			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), false);
+		}
 	}
 
 
