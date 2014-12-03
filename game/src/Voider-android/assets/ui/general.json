@@ -94,7 +94,7 @@ java.lang.Float: {
 	// Slider text width/max size
 	slider_label_width: {value: 70},
 	// Text field default width
-	text_field_width: {value: 240},
+	text_field_width: right_panel_width,
 	// Text area height
 	text_area_height: {value: 80},
 	// Standard icon and row height

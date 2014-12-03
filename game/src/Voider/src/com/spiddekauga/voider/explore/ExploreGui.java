@@ -18,6 +18,7 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
@@ -119,12 +120,17 @@ abstract class ExploreGui extends Gui {
 	 * Add a view button
 	 * @param iconName name of the button image
 	 * @param listener button listener for this button
+	 * @param hideListeners hide listeners for this button
 	 */
-	protected void addViewButton(ISkinNames iconName, ButtonListener listener) {
+	protected void addViewButton(ISkinNames iconName, ButtonListener listener, HideListener... hideListeners) {
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(iconName));
 		mWidgets.view.table.add(button);
 		mWidgets.view.buttonGroup.add(button);
 		button.addListener(listener);
+
+		for (HideListener hideListener : hideListeners) {
+			hideListener.setButton(button);
+		}
 	}
 
 	/**
@@ -135,7 +141,6 @@ abstract class ExploreGui extends Gui {
 		tabWidget.setName("left-panel");
 		mLeftPanel = tabWidget;
 
-		tabWidget.setMarginRight(0).setPadRight(0);
 		tabWidget.setTabPosition(Positions.RIGHT);
 		tabWidget.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 		tabWidget.setContentHideable(true);
@@ -218,8 +223,8 @@ abstract class ExploreGui extends Gui {
 			float screenWidth = Gdx.graphics.getWidth();
 			float screenHeight = Gdx.graphics.getHeight();
 			float marginLeft = mLeftPanel.isVisible() ? mLeftPanel.getWidth() : mUiFactory.getStyles().vars.paddingOuter;
-			float marginRight = mRightPanel.getWidth() - mRightPanel.getMarginLeft() - mRightPanel.getPadLeft();
-			float marginTop = mLeftPanel.getMarginTop();
+			float marginRight = mRightPanel.getWidth();
+			float marginTop = mUiFactory.getStyles().vars.barUpperLowerHeight;
 			float marginBottom = mUiFactory.getStyles().vars.paddingOuter;
 
 
@@ -236,7 +241,7 @@ abstract class ExploreGui extends Gui {
 
 			int cActorsPerRowOld = mActorsPerRow;
 			calculateActorsPerRow();
-			if (mActorsPerRow != cActorsPerRowOld) {
+			if (mActorsPerRow != cActorsPerRowOld && cActorsPerRowOld != 0) {
 				repopulateContent();
 			}
 		}

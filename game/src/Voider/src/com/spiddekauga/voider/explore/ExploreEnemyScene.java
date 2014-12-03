@@ -2,6 +2,7 @@ package com.spiddekauga.voider.explore;
 
 import java.util.ArrayList;
 
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -111,6 +112,24 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	 */
 	boolean isSearchingOnline() {
 		return mOnlineSearch;
+	}
+
+	/**
+	 * Set the search string to search after
+	 * @param searchString
+	 */
+	void setSearchString(String searchString) {
+		if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
+			mSearchCriteriaTemp.searchString = searchString;
+			updateSearchCriteria();
+		}
+	}
+
+	/**
+	 * @return current search string we're searching for
+	 */
+	String getSearchString() {
+		return mSearchCriteriaTemp.searchString;
 	}
 
 	/**

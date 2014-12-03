@@ -502,6 +502,16 @@ public class TabWidget extends AlignTable {
 		return mContentOuterTable.getPadY();
 	}
 
+	@Override
+	public float getWidth() {
+		return getWidthNoPadding();
+	}
+
+	@Override
+	public float getHeight() {
+		return getHeightNoPadding();
+	}
+
 	/**
 	 * Set tab alignment (when tab position is top or bottom)
 	 * @param horizontal horizontal alignment
@@ -712,7 +722,9 @@ public class TabWidget extends AlignTable {
 			// Show and select tab
 			if (!isVisible()) {
 				setVisible(true);
-				tab.setChecked(true);
+				if (!mContentHideable) {
+					tab.setChecked(true);
+				}
 			}
 		}
 		// Hidden

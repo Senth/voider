@@ -199,7 +199,7 @@ public class ExploreLevelGui extends ExploreGui {
 				mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 			}
 		};
-		addViewButton(SkinNames.General.BROWSE, listener);
+		addViewButton(SkinNames.General.BROWSE, listener, mWidgets.sort.viewHider);
 
 
 		// Search (online)
@@ -213,7 +213,7 @@ public class ExploreLevelGui extends ExploreGui {
 				}
 			}
 		};
-		addViewButton(SkinNames.General.SEARCH, listener);
+		addViewButton(SkinNames.General.SEARCH, listener, mWidgets.search.viewHider);
 	}
 
 	/**
@@ -243,7 +243,6 @@ public class ExploreLevelGui extends ExploreGui {
 		table.row().setPadRight(mUiFactory.getStyles().vars.paddingOuter);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
-		mWidgets.sort.hider.addToggleActor(table);
 		getStage().addActor(table);
 
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -289,7 +288,6 @@ public class ExploreLevelGui extends ExploreGui {
 		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		getStage().addActor(table);
-		mWidgets.search.hider.addToggleActor(table);
 
 		TextField textField = new TextField("", mUiFactory.getStyles().textField.standard);
 		table.add(textField).setSize(infoWidth, height);
@@ -447,9 +445,9 @@ public class ExploreLevelGui extends ExploreGui {
 		// Toggle image
 		ImageButtonStyle imageButtonStyle = (ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS);
 		HideListener hideListener = new HideListener(true);
-		mWidgets.sort.hider.addChild(hideListener);
+		mWidgets.sort.viewHider.addChild(hideListener);
 		Button tagButton = mLeftPanel.addTab(imageButtonStyle, tagTable, hideListener);
-		mWidgets.sort.hider.addToggleActor(tagButton);
+		mWidgets.sort.viewHider.addToggleActor(tagButton);
 
 
 		// Clear button
@@ -578,11 +576,11 @@ public class ExploreLevelGui extends ExploreGui {
 				EventDispatcher.getInstance().disconnect(EventTypes.USER_CONNECTED, this);
 
 				// Sort
-				if (mWidgets.sort.hider.isVisible()) {
+				if (mWidgets.sort.viewHider.isVisible()) {
 					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 				}
 				// Search
-				else if (mWidgets.search.hider.isVisible()) {
+				else if (mWidgets.search.viewHider.isVisible()) {
 					mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
 				}
 			}
@@ -627,26 +625,41 @@ public class ExploreLevelGui extends ExploreGui {
 	/**
 	 * All widgets
 	 */
-	private static class Widgets implements Disposable {
+	private class Widgets implements Disposable {
 		Sort sort = new Sort();
 		Info info = new Info();
 		Comments comment = new Comments();
 		Tag tag = new Tag();
 		Search search = new Search();
 
-		class Sort implements Disposable {
+		private class Sort implements Disposable {
 			Button[] buttons = new Button[SortOrders.values().length];
 			AlignTable table = new AlignTable();
-			HideListener hider = new HideListener(true);
+			HideListener viewHider = new HideListener(true) {
+				@Override
+				protected void onShow() {
+					resetContentMargins();
+				}
+			};
+
+			private Sort() {
+				init();
+			}
 
 			@Override
 			public void dispose() {
 				table.dispose();
-				hider.dispose();
+				viewHider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				viewHider.addToggleActor(table);
 			}
 		}
 
-		class Info implements Disposable {
+		private class Info implements Disposable {
 			AlignTable table = new AlignTable();
 			HideListener hider = new HideListener(true);
 			Label name = null;
@@ -676,7 +689,7 @@ public class ExploreLevelGui extends ExploreGui {
 			}
 		}
 
-		class Comments implements Disposable {
+		private class Comments implements Disposable {
 			AlignTable table = new AlignTable();
 			HideListener hider = new HideListener(true);
 			AlignTable comments = new AlignTable();
@@ -695,31 +708,46 @@ public class ExploreLevelGui extends ExploreGui {
 			}
 		}
 
-		class Tag implements Disposable {
-			AlignTable wrapper = new AlignTable();
+		private class Tag implements Disposable {
+			AlignTable table = new AlignTable();
 			ButtonGroup buttonGroup = new ButtonGroup();
 			HashMap<Button, Tags> buttonTag = new HashMap<>();
 
-			{
+			private Tag() {
 				buttonGroup.setMinCheckCount(0);
 				buttonGroup.setMaxCheckCount(5);
 			}
 
 			@Override
 			public void dispose() {
-				wrapper.dispose();
+				table.dispose();
 			}
 		}
 
-		class Search implements Disposable {
+		private class Search implements Disposable {
 			TextField field = null;
 			AlignTable table = new AlignTable();
-			HideListener hider = new HideListener(true);
+			HideListener viewHider = new HideListener(true) {
+				@Override
+				protected void onShow() {
+					resetContentMargins();
+				}
+			};
+
+			private Search() {
+				init();
+			}
 
 			@Override
 			public void dispose() {
 				table.dispose();
-				hider.dispose();
+				viewHider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				viewHider.addToggleActor(table);
 			}
 		}
 

@@ -694,14 +694,14 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 * @return table width including horizontal margin
 	 */
 	public float getWidthWithMargin() {
-		return getWidth() + mMargin.left + mMargin.right;
+		return getWidth() + getMarginX();
 	}
 
 	/**
 	 * @return table height including vertical margin
 	 */
 	public float getHeightWithMargin() {
-		return getHeight() + mMargin.top + mMargin.bottom;
+		return getHeight() + getMarginY();
 	}
 
 	@Override
@@ -934,6 +934,20 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	@Override
 	public float getWidth() {
 		return super.getWidth() + getPadX();
+	}
+
+	/**
+	 * @return width with no padding
+	 */
+	public float getWidthNoPadding() {
+		return super.getWidth();
+	}
+
+	/**
+	 * @return height with no padding
+	 */
+	public float getHeightNoPadding() {
+		return super.getHeight();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.explore;
 
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.BulletFetchMethod;
@@ -85,7 +86,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 	 * @param searchString
 	 */
 	void fetch(String searchString) {
-		if (mOnlineSearch) {
+		if (mOnlineSearch && searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
 			mBulletFetch.fetch(searchString);
 		} else {
 			// TODO

@@ -20,6 +20,7 @@ import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -176,10 +177,12 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		// Testing
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			if (keycode == Input.Keys.F5) {
-				if (KeyHelper.isCtrlPressed()) {
-					SceneSwitcher.switchTo(new TestUiScene());
+				if (KeyHelper.isAltPressed()) {
+					SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class));
 				} else if (KeyHelper.isShiftPressed()) {
 					SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class));
+				} else {
+					SceneSwitcher.switchTo(new TestUiScene());
 				}
 			} else if (keycode == Input.Keys.F6) {
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";

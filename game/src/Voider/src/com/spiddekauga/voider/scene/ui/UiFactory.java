@@ -342,13 +342,13 @@ public class UiFactory {
 	/**
 	 * Adds a text field with an optional label header
 	 * @param sectionText optional text for the label, if null no label is added
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @param defaultText default text in the text field
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
-	 * @param errorLabel set to true to create an error label (only works if sectionText
-	 *        isn't null). This label can be accessed by calling
-	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
 	public TextField addTextField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
