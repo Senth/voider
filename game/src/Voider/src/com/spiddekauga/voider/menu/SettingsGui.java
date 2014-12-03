@@ -149,6 +149,18 @@ public class SettingsGui extends Gui {
 	private void initDisplay() {
 		AlignTable table = mWidgets.display.table;
 		initTable(table, "Display");
+
+		// Resolution
+
+		// Fullscreen
+		table.row();
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setFullscreen(checked);
+			}
+		};
+		mWidgets.display.fullscreen = mUiFactory.button.addCheckBox("Fullscreen", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
 	}
 
 	/**
@@ -160,13 +172,10 @@ public class SettingsGui extends Gui {
 		table.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		table.setName(header);
 
-		float paddingRow = mUiFactory.getStyles().vars.paddingOuter;
 		table.row().setAlign(Vertical.TOP).setFillWidth(true).setPadBottom(mUiFactory.getStyles().vars.paddingInner);
 		table.add().setFillWidth(true);
 		mUiFactory.text.add(header, table, LabelStyles.HIGHLIGHT);
 		table.add().setFillWidth(true);
-
-		table.setPaddingRowDefault(0, 0, 0, 0);
 	}
 
 	@Override
@@ -198,14 +207,14 @@ public class SettingsGui extends Gui {
 		}
 	}
 
-	private static class InnerWidgets {
+	private class Widgets {
 		TabWidget tabWidget = null;
 		Sound sound = new Sound();
 		General general = new General();
 		Display display = new Display();
 
 
-		class Sound {
+		private class Sound {
 			AlignTable table = new AlignTable();
 			Slider master = null;
 			Slider ui = null;
@@ -213,18 +222,20 @@ public class SettingsGui extends Gui {
 			Slider music = null;
 		}
 
-		class General {
+		private class General {
 			AlignTable table = new AlignTable();
 			Button time24h = null;
 			Button timeAmPm = null;
 			SelectBox<String> dateFormat = null;
 		}
 
-		class Display {
+		private class Display {
 			AlignTable table = new AlignTable();
+			SelectBox<?> resolution = null;
+			Button fullscreen = null;
 		}
 	}
 
-	private InnerWidgets mWidgets = new InnerWidgets();
+	private Widgets mWidgets = new Widgets();
 	private SettingsScene mScene = null;
 }

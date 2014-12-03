@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.menu;
 
+import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.scene.Scene;
@@ -115,6 +116,23 @@ public class SettingsScene extends Scene {
 	 */
 	String getDateFormat() {
 		return mSettingRepo.date().getDateFormat();
+	}
+
+	/**
+	 * Sets if the screen should be in fullscreen
+	 * @param fullscreen
+	 */
+	void setFullscreen(boolean fullscreen) {
+		// TODO
+		Gdx.graphics.setDisplayMode(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), fullscreen);
+	}
+
+	/**
+	 * @return true if fullscreen
+	 */
+	boolean isFullscreen() {
+		// TODO
+		return false;
 	}
 
 	private SettingRepo mSettingRepo = SettingRepo.getInstance();

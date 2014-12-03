@@ -55,6 +55,13 @@ public class SettingRepo extends Repo {
 	}
 
 	/**
+	 * @return display settings
+	 */
+	public SettingDisplayRepo display() {
+		return mDisplay;
+	}
+
+	/**
 	 * Date setting repository. Access through SettingRepo,
 	 */
 	public class SettingDateRepo {
@@ -304,6 +311,14 @@ public class SettingRepo extends Repo {
 		private SettingSoundLocalRepo mSoundLocalRepo = SettingLocalRepo.getInstance().sound;
 	}
 
+	/**
+	 * Display settings
+	 */
+	public class SettingDisplayRepo {
+
+	}
+
+	private SettingDisplayRepo mDisplay = new SettingDisplayRepo();
 	private SettingDateRepo mDate = new SettingDateRepo();
 	private SettingSoundRepo mSound = new SettingSoundRepo();
 	private static SettingRepo mInstance = null;
