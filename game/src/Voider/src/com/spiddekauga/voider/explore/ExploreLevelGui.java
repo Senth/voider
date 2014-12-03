@@ -176,7 +176,6 @@ public class ExploreLevelGui extends ExploreGui {
 		initComments();
 		initInfo();
 		initTags();
-		initActions();
 
 		resetContentMargins();
 		mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
@@ -393,31 +392,6 @@ public class ExploreLevelGui extends ExploreGui {
 	}
 
 	/**
-	 * Initializes action buttons
-	 */
-	private void initActions() {
-		// Menu
-		TextButton button = mUiFactory.button.createText("Menu", TextButtonStyles.FILLED_PRESS);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mExploreScene.gotoMainMenu();
-			}
-		};
-		mRightPanel.addActionButtonGlobal(button);
-
-		// Play
-		button = mUiFactory.button.createText("Play", TextButtonStyles.FILLED_PRESS);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mExploreScene.play();
-			}
-		};
-		mRightPanel.addActionButtonGlobal(button);
-	}
-
-	/**
 	 * Initializes tags
 	 */
 	private void initTags() {
@@ -537,7 +511,7 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			protected void onUp(Button button) {
 				if (mWasCheckedOnDown) {
-					mExploreScene.play();
+					mExploreScene.selectAction();
 				}
 			}
 

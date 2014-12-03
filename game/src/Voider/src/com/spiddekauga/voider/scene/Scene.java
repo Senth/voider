@@ -92,6 +92,14 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	}
 
 	/**
+	 * Ends the scene. If a next scene isn't set this will be the same as going back. Same
+	 * as calling {@link #setOutcome(Outcomes)} with NOT_APPLICABLE.
+	 */
+	public void endScene() {
+		setOutcome(Outcomes.NOT_APPLICAPLE);
+	}
+
+	/**
 	 * Called when a key was released if no message box is active.
 	 * @param keycode the key that was released
 	 * @return true if handled, otherwise false

@@ -28,6 +28,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * Common GUI for all explore scenes
@@ -166,6 +167,43 @@ abstract class ExploreGui extends Gui {
 		TabWidget tabWidget = mUiFactory.createRightPanel();
 		tabWidget.setName("right-panel");
 		mRightPanel = tabWidget;
+
+
+		// Add actions
+		// Revision
+		if (mExploreScene.getSelectedAction() == ExploreActions.LOAD) {
+			Button button = mUiFactory.button.createText("Select Revision", TextButtonStyles.FILLED_PRESS);
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed(Button button) {
+					// TODO select revision
+				}
+			};
+			// tabWidget.addActionButtonGlobal(button);
+			// tabWidget.addActionButtonRow();
+
+			// TODO create appropriate hiders
+		}
+
+		// Back
+		Button button = mUiFactory.button.createText("Back", TextButtonStyles.FILLED_PRESS);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mExploreScene.endScene();
+			}
+		};
+		tabWidget.addActionButtonGlobal(button);
+
+		// The action
+		button = mUiFactory.button.createText(mExploreScene.getSelectedAction().toString(), TextButtonStyles.FILLED_PRESS);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mExploreScene.selectAction();
+			}
+		};
+		tabWidget.addActionButtonGlobal(button);
 
 		initPanel(tabWidget);
 	}

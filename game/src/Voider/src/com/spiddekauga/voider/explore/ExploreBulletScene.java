@@ -15,9 +15,10 @@ import com.spiddekauga.voider.utils.User;
 public class ExploreBulletScene extends ExploreActorScene {
 	/**
 	 * Hidden constructor. Create from ExploreFactory
+	 * @param action the action to do when a bullet is selected
 	 */
-	ExploreBulletScene() {
-		super(new ExploreBulletGui());
+	ExploreBulletScene(ExploreActions action) {
+		super(new ExploreBulletGui(), action);
 
 		((ExploreBulletGui) mGui).setExploreBulletScene(this);
 	}
@@ -74,11 +75,6 @@ public class ExploreBulletScene extends ExploreActorScene {
 		} else {
 			// TODO
 		}
-	}
-
-	@Override
-	protected void onSelectAction() {
-		// TODO Auto-generated method stub
 	}
 
 	/**

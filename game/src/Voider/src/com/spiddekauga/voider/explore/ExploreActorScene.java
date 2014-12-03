@@ -2,6 +2,7 @@ package com.spiddekauga.voider.explore;
 
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 
 /**
@@ -12,17 +13,19 @@ public class ExploreActorScene extends ExploreScene {
 
 	/**
 	 * Hidden constructor. Create from ExploreFactory
+	 * @param action the action to do when the resource is selected
 	 */
-	ExploreActorScene() {
-		this(new ExploreActorGui());
+	ExploreActorScene(ExploreActions action) {
+		this(new ExploreActorGui(), action);
 	}
 
 	/**
 	 * This constructor should be called if it's a super class
 	 * @param gui
+	 * @param action the action to do when the resource is selected
 	 */
-	protected ExploreActorScene(ExploreActorGui gui) {
-		super(gui);
+	protected ExploreActorScene(ExploreActorGui gui, ExploreActions action) {
+		super(gui, action);
 
 		((ExploreActorGui) mGui).setActorScene(this);
 	}
@@ -74,11 +77,33 @@ public class ExploreActorScene extends ExploreScene {
 		mSelected = actor;
 	}
 
-	/**
-	 * Called when an actor has been selected and pressed again. I.e. default action
-	 */
-	protected void onSelectAction() {
-		// TODO
+	@Override
+	protected void onSelectAction(ExploreActions action) {
+		switch (action) {
+		case PLAY:
+			Gdx.app.error("ExploreActorScene", "ExploreAction.PLAY is not valid for ExploreActorScene");
+			endScene();
+			break;
+
+		case LOAD:
+		case SELECT:
+			downloadResource(mSelected);
+			break;
+
+		}
+	}
+
+	@Override
+	protected void onResourceDownloaded(ExploreActions action) {
+		switch (action) {
+		case LOAD:
+		case SELECT:
+			setOutcome(Outcomes.DEF_SELECTED, mSelected);
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	private DefEntity mSelected = null;

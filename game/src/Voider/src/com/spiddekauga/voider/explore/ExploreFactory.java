@@ -14,22 +14,23 @@ public class ExploreFactory {
 	/**
 	 * Create an explore scene depending on the definition to explore
 	 * @param defType what to explore
+	 * @param action the action to do when the resource is selected
 	 * @return correct explore scene for this type, null if no explore scene exists for
 	 *         this type
 	 */
-	public static ExploreScene create(Class<? extends Def> defType) {
+	public static ExploreScene create(Class<? extends Def> defType, ExploreActions action) {
 		if (LevelDef.class == defType) {
-			return new ExploreLevelScene();
+			return new ExploreLevelScene(action);
 		}
 		if (ActorDef.class.isAssignableFrom(defType)) {
 			if (EnemyActorDef.class == defType) {
-				return new ExploreEnemyScene();
+				return new ExploreEnemyScene(action);
 			}
 			if (BulletActorDef.class == defType) {
-				return new ExploreBulletScene();
+				return new ExploreBulletScene(action);
 			}
 
-			return new ExploreActorScene();
+			return new ExploreActorScene(action);
 		}
 
 		return null;

@@ -123,7 +123,7 @@ public class ExploreActorGui extends ExploreGui {
 			@Override
 			protected void onUp(Button button) {
 				if (mWasCheckedOnDown) {
-					mScene.onSelectAction();
+					mScene.selectAction();
 				}
 			}
 

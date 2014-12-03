@@ -15,6 +15,8 @@ import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Graphics;
 
@@ -25,10 +27,12 @@ import com.spiddekauga.voider.utils.Graphics;
 abstract class ExploreScene extends Scene implements IResponseListener {
 	/**
 	 * @param gui explore GUI
+	 * @param action the action to do when the resource is selected
 	 */
-	protected ExploreScene(ExploreGui gui) {
+	protected ExploreScene(ExploreGui gui, ExploreActions action) {
 		super(gui);
 
+		mAction = action;
 		((ExploreGui) mGui).setExploreScene(this);
 	}
 
@@ -51,7 +55,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	protected boolean onKeyDown(int keycode) {
 
 		if (KeyHelper.isBackPressed(keycode)) {
-			setOutcome(Outcomes.NOT_APPLICAPLE);
+			endScene();
 			return true;
 		}
 
@@ -167,7 +171,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	private void handleResourceDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
 		mGui.hideWaitWindow();
 		if (response.status.isSuccessful()) {
-			onResourceDownloaded();
+			onResourceDownloaded(mAction);
 		} else {
 			switch (response.status) {
 			case FAILED_CONNECTION:
@@ -187,11 +191,48 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 
 	/**
 	 * Called when a resource has been successfully downloaded. Override this method
+	 * @param action the action to do when the resource was downloaded
 	 */
-	protected void onResourceDownloaded() {
+	protected void onResourceDownloaded(ExploreActions action) {
 		// Does nothing
 	}
 
+	/**
+	 * Call this when #onSelectAction should be called with the correct action
+	 */
+	final void selectAction() {
+		onSelectAction(mAction);
+	}
+
+	/**
+	 * Download the specified resource if needed. If already downloaded
+	 * {@link #onResourceDownloaded(ExploreActions)} will be called.
+	 * @param defEntity the resource to download
+	 */
+	protected void downloadResource(DefEntity defEntity) {
+		if (!ResourceLocalRepo.exists(defEntity.resourceId)) {
+			mResourceRepo.download(this, defEntity.resourceId);
+			mGui.showWaitWindow("Downloading " + defEntity.name);
+		} else {
+			onResourceDownloaded(mAction);
+		}
+	}
+
+	/**
+	 * Called when an actor has been selected and pressed again. I.e. default action
+	 * @param action the action to take
+	 */
+	protected abstract void onSelectAction(ExploreActions action);
+
+	/**
+	 * @return action to do when a resource has been selected
+	 */
+	protected ExploreActions getSelectedAction() {
+		return mAction;
+	}
+
+	private ExploreActions mAction;
 	/** Synchronized web responses */
 	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<WebWrapper>();
+	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 }

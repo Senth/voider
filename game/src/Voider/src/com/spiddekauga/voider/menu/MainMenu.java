@@ -16,6 +16,7 @@ import com.spiddekauga.voider.editor.CampaignEditor;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.ShipEditor;
+import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
@@ -178,9 +179,9 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			if (keycode == Input.Keys.F5) {
 				if (KeyHelper.isAltPressed()) {
-					SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class));
+					SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.SELECT));
 				} else if (KeyHelper.isShiftPressed()) {
-					SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class));
+					SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class, ExploreActions.SELECT));
 				} else {
 					SceneSwitcher.switchTo(new TestUiScene());
 				}
@@ -249,7 +250,7 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	 * Goes to the explore screen
 	 */
 	void gotoExplore() {
-		SceneSwitcher.switchTo(ExploreFactory.create(LevelDef.class));
+		SceneSwitcher.switchTo(ExploreFactory.create(LevelDef.class, ExploreActions.PLAY));
 	}
 
 	// -- Create/Editors --

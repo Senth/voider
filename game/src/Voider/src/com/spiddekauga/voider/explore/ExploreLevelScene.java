@@ -23,8 +23,6 @@ import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
-import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
@@ -37,9 +35,10 @@ import com.spiddekauga.voider.utils.User;
 public class ExploreLevelScene extends ExploreScene implements IResponseListener {
 	/**
 	 * Hidden constructor. Create from ExploreFactory
+	 * @param action the action to do when a level is selected
 	 */
-	ExploreLevelScene() {
-		super(new ExploreLevelGui());
+	ExploreLevelScene(ExploreActions action) {
+		super(new ExploreLevelGui(), action);
 
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 
@@ -81,11 +80,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		} else {
 			super.onWebResponse(method, response);
 		}
-	}
-
-	@Override
-	protected void onResourceDownloaded() {
-		runLevel();
 	}
 
 	/**
@@ -160,18 +154,22 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		setOutcome(Outcomes.NOT_APPLICAPLE);
 	}
 
-	/**
-	 * Play the selected level
-	 */
-	void play() {
-		if (mSelectedLevel != null) {
-			// Already exists just start playing
-			if (ResourceLocalRepo.exists(mSelectedLevel.defEntity.resourceId)) {
-				runLevel();
-			} else {
-				mResourceRepo.download(this, mSelectedLevel.defEntity.resourceId);
-				mGui.showWaitWindow("Downloading level...");
-			}
+	@Override
+	protected void onSelectAction(ExploreActions action) {
+		downloadResource(mSelectedLevel.defEntity);
+	}
+
+	@Override
+	protected void onResourceDownloaded(ExploreActions action) {
+		switch (action) {
+		case PLAY:
+			runLevel();
+			break;
+
+		case LOAD:
+		case SELECT:
+			setOutcome(Outcomes.DEF_SELECTED, mSelectedLevel.defEntity);
+			break;
 		}
 	}
 
@@ -435,5 +433,4 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	private LevelFetch mLevelFetch = new LevelFetch();
 	private LevelInfoEntity mSelectedLevel = null;
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
-	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 }

@@ -15,7 +15,6 @@ import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse
 import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.utils.User;
 
@@ -26,9 +25,10 @@ import com.spiddekauga.voider.utils.User;
 public class ExploreEnemyScene extends ExploreActorScene {
 	/**
 	 * Hidden constructor. Create from ExploreFactory
+	 * @param action the action to do when an enemy is selected
 	 */
-	ExploreEnemyScene() {
-		super(new ExploreEnemyGui());
+	ExploreEnemyScene(ExploreActions action) {
+		super(new ExploreEnemyGui(), action);
 
 		((ExploreEnemyGui) mGui).setExploreEnemyScene(this);
 	}
@@ -295,11 +295,6 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		}
 	}
 
-	@Override
-	protected void onSelectAction() {
-		// TODO
-	}
-
 	/**
 	 * Class for fetching Enemies online
 	 */
@@ -398,7 +393,6 @@ public class ExploreEnemyScene extends ExploreActorScene {
 
 	private boolean mNewSearchCriteria = false;
 	private boolean mOnlineSearch = true;
-	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	private EnemyFetch mEnemyFetch = new EnemyFetch();
 	/** For comparing with search criteria */
 	private EnemyFetchMethod mSearchCriteriaTemp = new EnemyFetchMethod();
