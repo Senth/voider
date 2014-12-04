@@ -869,16 +869,16 @@ public class Config {
 			// END URL WITH A SLASH /
 			switch (build) {
 			case RELEASE:
-				SERVER_HOST = "http://voider-game.com/";
+				SERVER_HOST = "https://voider-thegame.appspot.com/";
 				break;
 
 			case BETA:
-				SERVER_HOST = "http://voider-beta.appspot.com/";
+				SERVER_HOST = "https://voider-beta.appspot.com/";
 				break;
 
 			case NIGHTLY_DEV:
 			case NIGHTLY_RELEASE:
-				SERVER_HOST = "http://voider-nightly.appspot.com/";
+				SERVER_HOST = "https://voider-nightly.appspot.com/";
 				break;
 
 			case DEV_SERVER:

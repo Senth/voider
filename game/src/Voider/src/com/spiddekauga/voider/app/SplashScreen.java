@@ -7,7 +7,6 @@ import com.spiddekauga.voider.scene.LoadingScene;
 
 /**
  * Splash screen, displays Spiddekauga Logo
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SplashScreen extends LoadingScene {
@@ -18,7 +17,7 @@ public class SplashScreen extends LoadingScene {
 	public SplashScreen() {
 		super(new SplashScreenGui());
 
-		setClearColor(1, 1, 1, 0);
+		setClearColor(0, 0, 0, 0);
 	}
 
 	@Override
@@ -41,14 +40,14 @@ public class SplashScreen extends LoadingScene {
 		case DISPLAY:
 			mDisplayTime += deltaTime;
 			if (mDisplayTime >= Config.Menu.SPLASH_SCREEN_TIME && !ResourceCacheFacade.isLoading()) {
-				((SplashScreenGui)mGui).fadeOut();
+				((SplashScreenGui) mGui).fadeOut();
 				mState = States.FADING;
 			}
 			break;
 
 
 		case FADING:
-			if (((SplashScreenGui)mGui).hasFaded()) {
+			if (((SplashScreenGui) mGui).hasFaded()) {
 				setOutcome(Outcomes.LOADING_SUCCEEDED);
 			}
 			break;
