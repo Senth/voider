@@ -269,8 +269,7 @@ public class ButtonFactory extends BaseFactory {
 	 * @param table add tool separator
 	 */
 	public void addToolSeparator(AlignTable table) {
-		table.row().setPadBottom(mStyles.vars.paddingOuter);
-		// table.add().setPadBottom(mStyles.vars.paddingOuter);
+		table.row().setHeight(mStyles.vars.paddingOuter);
 		table.row();
 	}
 

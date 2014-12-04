@@ -554,14 +554,14 @@ public class Config {
 		public final static float EDGE_LENGTH_MIN_SQUARED = EDGE_LENGTH_MIN * EDGE_LENGTH_MIN;
 		/** Minimum area of a polygon shape */
 		public final static float POLYGON_AREA_MIN = EPSILON * 100f;
-		/** Default width of the graphics */
+		/** Default width of the graphics, also minimum */
 		public final static int WIDTH_DEFAULT = 800;
-		/** Default height of the graphics */
-		public final static int HEIGHT_DEFAULT = 480;
+		/** Default height of the graphics, also minimum */
+		public final static int HEIGHT_DEFAULT = 600;
 		/** Starting width */
-		@Deprecated public final static int WIDTH_START;
+		public final static int WIDTH_START = 1280;
 		/** Starting height */
-		@Deprecated public final static int HEIGHT_START;
+		public final static int HEIGHT_START = 720;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/**
@@ -579,18 +579,6 @@ public class Config {
 		public final static float DEPTH_STEP_SIZE = 0.001f;
 		/** Widescreen ratio */
 		public final static float WIDESCREEN_RATIO = 1.6f / 0.9f;
-
-		static {
-			if (Debug.BUILD == Builds.NIGHTLY_DEV) {
-				WIDTH_START = WIDTH_DEFAULT;
-				HEIGHT_START = HEIGHT_DEFAULT;
-			} else {
-				// WIDTH_START = WIDTH_DEFAULT;
-				// HEIGHT_START = HEIGHT_DEFAULT;
-				WIDTH_START = 1280;
-				HEIGHT_START = 720;
-			}
-		}
 
 		/**
 		 * Z-value for rendering objects. The further up the enumeration is located the

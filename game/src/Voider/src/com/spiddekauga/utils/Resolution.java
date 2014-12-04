@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 
 /**
@@ -84,9 +85,12 @@ public class Resolution implements Comparable<Resolution> {
 	public static Resolution[] getFullscreenResolutions() {
 		Set<Resolution> resolutionSet = new HashSet<>();
 
-		// Only add the resolution once
+		// Only add the resolution once (skip too low resolutions)
 		for (DisplayMode displayMode : Gdx.graphics.getDisplayModes()) {
-			resolutionSet.add(new Resolution(displayMode));
+			Resolution resolution = new Resolution(displayMode);
+			if (resolution.getWidth() >= Config.Graphics.WIDTH_DEFAULT && resolution.getHeight() >= Config.Graphics.HEIGHT_DEFAULT) {
+				resolutionSet.add(resolution);
+			}
 		}
 
 		// Sort by resolution
@@ -110,13 +114,15 @@ public class Resolution implements Comparable<Resolution> {
 		// Only add the resolution once
 		for (DisplayMode displayMode : Gdx.graphics.getDisplayModes()) {
 			Resolution resolution = new Resolution(displayMode);
-			resolutionSet.add(resolution);
+			if (resolution.getWidth() >= Config.Graphics.WIDTH_DEFAULT && resolution.getHeight() >= Config.Graphics.HEIGHT_DEFAULT) {
+				resolutionSet.add(resolution);
 
-			if (resolution.getWidth() > maxWidth) {
-				maxWidth = resolution.getWidth();
-			}
-			if (resolution.getHeight() > maxHeight) {
-				maxHeight = resolution.getHeight();
+				if (resolution.getWidth() > maxWidth) {
+					maxWidth = resolution.getWidth();
+				}
+				if (resolution.getHeight() > maxHeight) {
+					maxHeight = resolution.getHeight();
+				}
 			}
 		}
 

@@ -426,10 +426,14 @@ public class Row implements Poolable, IPadding<Row> {
 	 *         empty cell it still returns true if the cell is set as visible.
 	 */
 	boolean isVisible() {
-		for (Cell cell : mCells) {
-			if (cell.isVisible()) {
-				return true;
+		if (!mCells.isEmpty()) {
+			for (Cell cell : mCells) {
+				if (cell.isVisible()) {
+					return true;
+				}
 			}
+		} else {
+			return true;
 		}
 
 		return false;

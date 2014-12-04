@@ -29,8 +29,8 @@ public class Main {
 		// config.width = resolution.getWidth();
 		// config.height = resolution.getHeight();
 		// } catch (IllegalArgumentException e) {
-		config.width = Config.Graphics.WIDTH_DEFAULT;
-		config.height = Config.Graphics.HEIGHT_DEFAULT;
+		config.width = Config.Graphics.WIDTH_START;
+		config.height = Config.Graphics.HEIGHT_START;
 		// }
 		// }
 
