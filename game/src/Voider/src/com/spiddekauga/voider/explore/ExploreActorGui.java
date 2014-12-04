@@ -36,6 +36,7 @@ public class ExploreActorGui extends ExploreGui {
 	public void initGui() {
 		super.initGui();
 
+		initViewButtons();
 		initRightPanel();
 		initInfo(mWidgets.info.table, mWidgets.info.hider);
 	}
@@ -77,7 +78,7 @@ public class ExploreActorGui extends ExploreGui {
 	 */
 	protected void addContent(List<? extends DefEntity> actors) {
 		beginAddContent();
-		DefEntity selectedActor = mScene.getSelectedActor();
+		DefEntity selectedActor = mScene.getSelected();
 
 		for (DefEntity actor : actors) {
 			boolean selected = selectedActor == actor;
@@ -110,7 +111,7 @@ public class ExploreActorGui extends ExploreGui {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
-					mScene.setSelectedActor(actor);
+					mScene.setSelected(actor);
 					resetInfo();
 				}
 			}
@@ -171,7 +172,7 @@ public class ExploreActorGui extends ExploreGui {
 	 * Resets the values of info
 	 */
 	protected void resetInfo() {
-		DefEntity actor = mScene.getSelectedActor();
+		DefEntity actor = mScene.getSelected();
 
 		if (actor != null) {
 			// Has created UI elements
@@ -252,6 +253,7 @@ public class ExploreActorGui extends ExploreGui {
 				hider.addChild(revisedHider);
 			}
 		}
+
 
 		@Override
 		public void dispose() {

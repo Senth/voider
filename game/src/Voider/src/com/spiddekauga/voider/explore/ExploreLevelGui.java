@@ -34,6 +34,7 @@ import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
@@ -190,21 +191,28 @@ public class ExploreLevelGui extends ExploreGui {
 	/**
 	 * Initializes different view buttons
 	 */
-	private void initViewButtons() {
+	@Override
+	protected void initViewButtons() {
+		super.initViewButtons();
+
 		// Sort (online)
 		ButtonListener listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
+				mExploreScene.setView(ExploreViews.ONLINE_BROWSE);
+				// REMOVE
 				mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 			}
 		};
-		addViewButton(SkinNames.General.BROWSE, listener, mWidgets.sort.viewHider);
+		addViewButton(SkinNames.General.EXPLORE_ONLINE, listener, mWidgets.sort.viewHider);
 
 
 		// Search (online)
 		listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
+				mExploreScene.setView(ExploreViews.ONLINE_SEARCH);
+				// REMOVE
 				if (!mWidgets.search.field.getText().equals("Search")) {
 					mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
 				} else {
@@ -212,7 +220,7 @@ public class ExploreLevelGui extends ExploreGui {
 				}
 			}
 		};
-		addViewButton(SkinNames.General.SEARCH, listener, mWidgets.search.viewHider);
+		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, mWidgets.search.viewHider);
 	}
 
 	/**

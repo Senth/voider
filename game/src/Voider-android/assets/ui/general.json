@@ -490,6 +490,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	/** Explore */
 	
+	// DEPRECATED
 	featured: {
 		imageUp: featured,
 		imageOver: featured_over,
@@ -499,6 +500,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: featured_disabled
 	},
 	
+	// DEPRECATED
 	browse: {
 		imageUp: browse,
 		imageOver: browse_over,
@@ -508,6 +510,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: browse_disabled
 	},
 	
+	// DEPRECATED
 	search: {
 		imageUp: search,
 		imageOver: search_over,
@@ -515,6 +518,33 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: search_checked,
 		imageCheckedOver: search_checked_over,
 		imageDisabled: search_disabled
+	},
+	
+	explore_local: {
+		imageUp: explore_local,
+		imageOver: explore_local_over,
+		imageDown: explore_local_down,
+		imageChecked: explore_local_checked,
+		imageCheckedOver: explore_local_checked_over,
+		imageDisabled: explore_local_disabled
+	},
+	
+	explore_online: {
+		imageUp: explore_online,
+		imageOver: explore_online_over,
+		imageDown: explore_online_down,
+		imageChecked: explore_online_checked,
+		imageCheckedOver: explore_online_checked_over,
+		imageDisabled: explore_online_disabled
+	},
+	
+	explore_online_search: {
+		imageUp: explore_online_search,
+		imageOver: explore_online_search_over,
+		imageDown: explore_online_search_down,
+		imageChecked: explore_online_search_checked,
+		imageCheckedOver: explore_online_search_checked_over,
+		imageDisabled: explore_online_search_disabled
 	},
 	
 	

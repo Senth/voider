@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -18,16 +19,22 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
+import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
+import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
+import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
@@ -47,7 +54,7 @@ abstract class ExploreGui extends Gui {
 	 * @param exploreScene
 	 */
 	void setExploreScene(ExploreScene exploreScene) {
-		mExploreScene = exploreScene;
+		mScene = exploreScene;
 	}
 
 	@Override
@@ -60,6 +67,7 @@ abstract class ExploreGui extends Gui {
 		initLeftPanel();
 		initContent();
 		initView();
+		initSearchFilters(mWidgets.search.table, mWidgets.search.contentHider);
 
 		// Initialize last
 		initTopBar();
@@ -81,6 +89,7 @@ abstract class ExploreGui extends Gui {
 		super.resetValues();
 
 		resetContent();
+		resetSearchFilters();
 	}
 
 	/**
@@ -90,7 +99,7 @@ abstract class ExploreGui extends Gui {
 		mWidgets.content.table.dispose();
 		mWidgets.content.buttonGroup = new ButtonGroup();
 
-		if (mExploreScene != null && mExploreScene.isFetchingContent()) {
+		if (mScene != null && mScene.isFetchingContent()) {
 			addWaitIconToContent();
 		}
 	}
@@ -161,6 +170,128 @@ abstract class ExploreGui extends Gui {
 	}
 
 	/**
+	 * Initialize view buttons
+	 */
+	protected void initViewButtons() {
+		ButtonListener listener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setView(ExploreViews.LOCAL);
+			}
+		};
+		addViewButton(SkinNames.General.EXPLORE_LOCAL, listener, mWidgets.search.viewHider);
+	}
+
+	/**
+	 * Initialize search filters tab
+	 * @param table content table
+	 * @param contentHider
+	 */
+	protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
+		// Tab
+		Button button = mUiFactory.addTab(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.contentHider, mLeftPanel);
+		mWidgets.search.viewHider.addToggleActor(button);
+
+		table.setName("search-filters");
+		mUiFactory.text.addPanelSection("Search Filter", table, null);
+		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
+		table.getCell();
+
+
+		// Search Field
+		TextFieldListener textFieldListener = new TextFieldListener() {
+			@Override
+			protected void onChange(String newText) {
+				mScene.setSearchString(newText);
+			}
+		};
+		mUiFactory.text.addPanelSection("Free-text Search", table, null);
+		mWidgets.search.searchText = mUiFactory.addTextField(null, false, "Name or Creator", textFieldListener, table, null);
+
+
+		// Published
+		mUiFactory.text.addPanelSection("Published?", table, mWidgets.search.publishedHider);
+		TabRadioWrapper anyTab = mUiFactory.button.createTabRadioWrapper("Any");
+		anyTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setPublished(null);
+				mWidgets.search.onlyMineHider.show();
+			}
+		});
+
+		TabRadioWrapper onTab = mUiFactory.button.createTabRadioWrapper("Only Published");
+		onTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setPublished(true);
+				mWidgets.search.onlyMineHider.show();
+			}
+		});
+
+		TabRadioWrapper offTab = mUiFactory.button.createTabRadioWrapper("Not published");
+		offTab.setListener(new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setPublished(false);
+				mWidgets.search.onlyMineHider.hide();
+			}
+		});
+
+		mUiFactory.button.addTabs(table, contentHider, true, null, null, anyTab, onTab, offTab);
+		mWidgets.search.publishedAny = anyTab.getButton();
+		mWidgets.search.publishedYes = onTab.getButton();
+		mWidgets.search.publishedNo = offTab.getButton();
+
+
+		// Only mine
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setOnlyMine(checked);
+			}
+		};
+		mWidgets.search.onlyMine = mUiFactory.button.addCheckBoxRow("Only mine", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
+
+
+		// Clear button
+		button = mUiFactory.button.createText("Clear Filters", TextButtonStyles.FILLED_PRESS);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				resetSearchFilters();
+			}
+		};
+
+		mLeftPanel.addActionButton(button);
+		mLeftPanel.layout();
+	}
+
+	/**
+	 * Reset search filters
+	 */
+	protected void resetSearchFilters() {
+		mWidgets.search.searchText.setText(mScene.getSearchString());
+		mWidgets.search.onlyMine.setChecked(mScene.isOnlyMine());
+
+		// Published
+		if (mScene.isPublished() == null) {
+			mWidgets.search.publishedAny.setChecked(true);
+		} else if (mScene.isPublished()) {
+			mWidgets.search.publishedYes.setChecked(true);
+		} else {
+			mWidgets.search.publishedNo.setChecked(true);
+		}
+	}
+
+	/**
+	 * @return search filters hider
+	 */
+	protected HideListener getSearchFilterHider() {
+		return mWidgets.search.viewHider;
+	}
+
+	/**
 	 * Initialize the right panel
 	 */
 	private void initRightPanel() {
@@ -171,7 +302,7 @@ abstract class ExploreGui extends Gui {
 
 		// Add actions
 		// Revision
-		if (mExploreScene.getSelectedAction() == ExploreActions.LOAD) {
+		if (mScene.getSelectedAction() == ExploreActions.LOAD) {
 			Button button = mUiFactory.button.createText("Select Revision", TextButtonStyles.FILLED_PRESS);
 			new ButtonListener(button) {
 				@Override
@@ -190,17 +321,17 @@ abstract class ExploreGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mExploreScene.endScene();
+				mScene.endScene();
 			}
 		};
 		tabWidget.addActionButtonGlobal(button);
 
 		// The action
-		button = mUiFactory.button.createText(mExploreScene.getSelectedAction().toString(), TextButtonStyles.FILLED_PRESS);
+		button = mUiFactory.button.createText(mScene.getSelectedAction().toString(), TextButtonStyles.FILLED_PRESS);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mExploreScene.selectAction();
+				mScene.selectAction();
 			}
 		};
 		tabWidget.addActionButtonGlobal(button);
@@ -235,7 +366,7 @@ abstract class ExploreGui extends Gui {
 			@Override
 			public void hitEdge(ScrollPane scrollPane, Edge edge) {
 				if (edge == Edge.BOTTOM) {
-					if (mExploreScene.isFetchingContent() && mExploreScene.hasMoreContent()) {
+					if (mScene.isFetchingContent() && mScene.hasMoreContent()) {
 						onFetchMoreContent();
 					}
 				}
@@ -249,7 +380,7 @@ abstract class ExploreGui extends Gui {
 	 * Called when more content should be fetched.
 	 */
 	protected void onFetchMoreContent() {
-		mExploreScene.fetchMoreContent();
+		mScene.fetchMoreContent();
 		addWaitIconToContent();
 	}
 
@@ -290,7 +421,7 @@ abstract class ExploreGui extends Gui {
 	 */
 	private void repopulateContent() {
 		resetContent();
-		mExploreScene.repopulateContent();
+		mScene.repopulateContent();
 	}
 
 	/**
@@ -412,7 +543,7 @@ abstract class ExploreGui extends Gui {
 		mWidgets.content.scrollPane.layout();
 
 		// Fetch more content if view isn't full
-		if (mExploreScene.hasMoreContent() && mWidgets.content.table.getHeight() < mWidgets.content.scrollPane.getHeight()) {
+		if (mScene.hasMoreContent() && mWidgets.content.table.getHeight() < mWidgets.content.scrollPane.getHeight()) {
 			onFetchMoreContent();
 		}
 	}
@@ -435,7 +566,7 @@ abstract class ExploreGui extends Gui {
 
 	private boolean mAddingContent = false;
 	private int mActorsPerRow = 0;
-	private ExploreScene mExploreScene = null;
+	private ExploreScene mScene = null;
 
 	/** Left panel tab widget */
 	protected TabWidget mLeftPanel = null;
@@ -449,6 +580,7 @@ abstract class ExploreGui extends Gui {
 	private class InnerWidgets implements Disposable {
 		Content content = new Content();
 		View view = new View();
+		Search search = new Search();
 		Background topBar = null;
 
 		class Content implements Disposable {
@@ -475,10 +607,50 @@ abstract class ExploreGui extends Gui {
 			}
 		}
 
+		private class Search implements Disposable {
+			AlignTable table = new AlignTable();
+			HideListener viewHider = new HideListener(true) {
+				@Override
+				protected void onShow() {
+					resetContentMargins();
+				}
+			};
+			HideListener publishedHider = new HideListener(true);
+			HideListener contentHider = new HideListener(true);
+			Button publishedAny = null;
+			Button publishedYes = null;
+			Button publishedNo = null;
+			HideManual onlyMineHider = new HideManual();
+			Button onlyMine = null;
+			TextField searchText = null;
+
+			private Search() {
+				init();
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				contentHider.dispose();
+				publishedHider.dispose();
+				viewHider.dispose();
+				onlyMineHider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				viewHider.addChild(contentHider);
+				contentHider.addChild(publishedHider);
+				publishedHider.addChild(onlyMineHider);
+			}
+		}
+
 		@Override
 		public void dispose() {
 			content.dispose();
 			view.dispose();
+			search.dispose();
 		}
 	}
 }

@@ -61,7 +61,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	}
 
 	@Override
-	boolean isFetchingContent() {
+	protected boolean isFetchingContent() {
 		if (mOnlineSearch) {
 			return mEnemyFetch.isFetching();
 		} else {
@@ -70,7 +70,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	}
 
 	@Override
-	boolean hasMoreContent() {
+	protected boolean hasMoreContent() {
 		if (mOnlineSearch) {
 			return mEnemyFetch.hasMore();
 		} else {
@@ -79,7 +79,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	}
 
 	@Override
-	void fetchMoreContent() {
+	protected void fetchMoreContent() {
 		if (mOnlineSearch) {
 			mEnemyFetch.fetchMore();
 		} else {
@@ -88,11 +88,11 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	}
 
 	@Override
-	void repopulateContent() {
+	protected void repopulateContent() {
 		if (mOnlineSearch) {
 			mEnemyFetch.fetch();
 		} else {
-			// TODO
+			super.repopulateContent();
 		}
 	}
 
@@ -118,7 +118,8 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	 * Set the search string to search after
 	 * @param searchString
 	 */
-	void setSearchString(String searchString) {
+	@Override
+	protected void setSearchString(String searchString) {
 		if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
 			mSearchCriteriaTemp.searchString = searchString;
 		} else {
@@ -130,7 +131,8 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	/**
 	 * @return current search string we're searching for
 	 */
-	String getSearchString() {
+	@Override
+	protected String getSearchString() {
 		return mSearchCriteriaTemp.searchString;
 	}
 
@@ -304,7 +306,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		 */
 		void fetch() {
 			if (!mIsFetching && mUser.isOnline()) {
-				setSelectedActor(null);
+				setSelected(null);
 				if (mLastFetch == null) {
 					mLastFetch = mSearchCriteria.copy();
 				}
@@ -319,7 +321,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		 */
 		void fetch(EnemyFetchMethod searchCriteria) {
 			if (mUser.isOnline()) {
-				setSelectedActor(null);
+				setSelected(null);
 				((ExploreEnemyGui) mGui).resetContent();
 
 				mIsFetching = true;

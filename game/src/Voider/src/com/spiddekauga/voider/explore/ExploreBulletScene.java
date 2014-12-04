@@ -23,27 +23,9 @@ public class ExploreBulletScene extends ExploreActorScene {
 		((ExploreBulletGui) mGui).setExploreBulletScene(this);
 	}
 
-	/**
-	 * Sets if we should search online or offline
-	 * @param online true for online
-	 */
-	void setSearchOnline(boolean online) {
-		if (mOnlineSearch != online) {
-			mOnlineSearch = online;
-			repopulateContent();
-		}
-	}
-
-	/**
-	 * @return true if we should search online
-	 */
-	boolean isSearchingOnline() {
-		return mOnlineSearch;
-	}
-
 	@Override
-	boolean isFetchingContent() {
-		if (mOnlineSearch) {
+	protected boolean isFetchingContent() {
+		if (getView().isOnline()) {
 			return mBulletFetch.isFetching();
 		} else {
 			return false;
@@ -51,8 +33,8 @@ public class ExploreBulletScene extends ExploreActorScene {
 	}
 
 	@Override
-	boolean hasMoreContent() {
-		if (mOnlineSearch) {
+	protected boolean hasMoreContent() {
+		if (getView().isOnline()) {
 			return mBulletFetch.hasMore();
 		} else {
 			return false;
@@ -60,8 +42,8 @@ public class ExploreBulletScene extends ExploreActorScene {
 	}
 
 	@Override
-	void fetchMoreContent() {
-		if (mOnlineSearch) {
+	protected void fetchMoreContent() {
+		if (getView().isOnline()) {
 			mBulletFetch.fetchMore();
 		} else {
 			// Does nothing
@@ -69,11 +51,11 @@ public class ExploreBulletScene extends ExploreActorScene {
 	}
 
 	@Override
-	void repopulateContent() {
-		if (mOnlineSearch) {
+	protected void repopulateContent() {
+		if (getView().isOnline()) {
 			mBulletFetch.fetch();
 		} else {
-			// TODO
+			super.repopulateContent();
 		}
 	}
 
@@ -82,14 +64,12 @@ public class ExploreBulletScene extends ExploreActorScene {
 	 * @param searchString
 	 */
 	void fetch(String searchString) {
-		if (mOnlineSearch) {
+		if (getView().isOnline()) {
 			if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
 				mBulletFetch.fetch(searchString);
 			} else {
 				mBulletFetch.fetch("");
 			}
-		} else {
-			// TODO
 		}
 	}
 
@@ -108,7 +88,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 		 */
 		void fetch() {
 			if (!mIsFetching && mUser.isOnline()) {
-				setSelectedActor(null);
+				setSelected(null);
 			}
 			mIsFetching = true;
 			mResourceWebRepo.getBullets(mLastSearch, false, ExploreBulletScene.this);
@@ -120,7 +100,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 		 */
 		void fetch(String searchCriteria) {
 			if (mUser.isOnline() && !mLastSearch.equals(searchCriteria)) {
-				setSelectedActor(null);
+				setSelected(null);
 				((ExploreBulletGui) mGui).resetContent();
 
 				mIsFetching = true;
@@ -192,5 +172,4 @@ public class ExploreBulletScene extends ExploreActorScene {
 	}
 
 	private BulletFetch mBulletFetch = new BulletFetch();
-	private boolean mOnlineSearch = true;
 }

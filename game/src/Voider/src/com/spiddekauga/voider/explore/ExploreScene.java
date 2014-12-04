@@ -134,22 +134,28 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	/**
 	 * @return true if we're currently fetching content
 	 */
-	abstract boolean isFetchingContent();
+	protected abstract boolean isFetchingContent();
 
 	/**
 	 * @return true if we have more content to fetch
 	 */
-	abstract boolean hasMoreContent();
+	protected abstract boolean hasMoreContent();
 
 	/**
 	 * Fetch more content
 	 */
-	abstract void fetchMoreContent();
+	protected abstract void fetchMoreContent();
 
 	/**
 	 * Repopulate content
 	 */
-	abstract void repopulateContent();
+	protected void repopulateContent() {
+		if (getView().isLocal()) {
+
+		} else {
+			mNotification.show(NotificationTypes.ERROR, "Online functionality not implemented");
+		}
+	}
 
 	/**
 	 * Handle synchronized web response. This method should be used instead of in
@@ -231,6 +237,115 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 		return mAction;
 	}
 
+	/**
+	 * Filter only by published
+	 * @param published true to only search for published, false for not published, null
+	 *        for any
+	 */
+	protected void setPublished(Boolean published) {
+
+	}
+
+	/**
+	 * @return true if only filtered by published
+	 */
+	protected Boolean isPublished() {
+		return null;
+	}
+
+	/**
+	 * Set if we should only search for my own
+	 * @param onlyMine search only for player's own actors
+	 */
+	protected void setOnlyMine(boolean onlyMine) {
+
+	}
+
+	/**
+	 * @return true if only mine should be searched
+	 */
+	protected boolean isOnlyMine() {
+		return false;
+	}
+
+	/**
+	 * Set search string to filter by
+	 * @param searchString what to search for
+	 */
+	protected void setSearchString(String searchString) {
+
+	}
+
+	/**
+	 * @return search string
+	 */
+	protected String getSearchString() {
+		return null;
+	}
+
+	/**
+	 * Sets the active view
+	 * @param view the new active view
+	 */
+	protected void setView(ExploreViews view) {
+		mView = view;
+	}
+
+	/**
+	 * @return current view
+	 */
+	protected ExploreViews getView() {
+		return mView;
+	}
+
+	/**
+	 * Different possible views
+	 */
+	enum ExploreViews {
+		/** Browse and Search locally */
+		LOCAL,
+		/** Browse online */
+		ONLINE_BROWSE,
+		/** Search online */
+		ONLINE_SEARCH,
+
+		;
+
+		/**
+		 * @return true if online is required
+		 */
+		boolean isOnline() {
+			return name().contains("ONLINE");
+		}
+
+		/**
+		 * @return true if local
+		 */
+		boolean isLocal() {
+			return !isOnline();
+		}
+	}
+
+	/**
+	 * @param <ActorType> type of actor that is selected
+	 * @return the selected actor
+	 */
+	@SuppressWarnings("unchecked")
+	protected <ActorType extends DefEntity> ActorType getSelected() {
+		return (ActorType) mSelected;
+	}
+
+	/**
+	 * Sets the selected resource
+	 * @param def the selected resource
+	 */
+	protected void setSelected(DefEntity def) {
+		mSelected = def;
+	}
+
+	private DefEntity mSelected = null;
+
+	private ExploreViews mView = ExploreViews.LOCAL;
 	private ExploreActions mAction;
 	/** Synchronized web responses */
 	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<WebWrapper>();

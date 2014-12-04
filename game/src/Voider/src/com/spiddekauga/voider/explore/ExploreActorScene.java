@@ -31,24 +31,20 @@ public class ExploreActorScene extends ExploreScene {
 	}
 
 	@Override
-	boolean isFetchingContent() {
+	protected boolean isFetchingContent() {
 		return false;
 	}
 
 	@Override
-	boolean hasMoreContent() {
+	protected boolean hasMoreContent() {
 		return false;
 	}
 
 	@Override
-	void fetchMoreContent() {
+	protected void fetchMoreContent() {
 		// Does nothings
 	}
 
-	@Override
-	void repopulateContent() {
-		// Does nothing
-	}
 
 	/**
 	 * Create drawables for all actors
@@ -60,22 +56,6 @@ public class ExploreActorScene extends ExploreScene {
 		}
 	}
 
-	/**
-	 * @param <ActorType> type of actor that is selected
-	 * @return the selected actor
-	 */
-	@SuppressWarnings("unchecked")
-	protected <ActorType extends DefEntity> ActorType getSelectedActor() {
-		return (ActorType) mSelected;
-	}
-
-	/**
-	 * Sets the selected actor
-	 * @param actor the selected actor
-	 */
-	protected void setSelectedActor(DefEntity actor) {
-		mSelected = actor;
-	}
 
 	@Override
 	protected void onSelectAction(ExploreActions action) {
@@ -87,7 +67,7 @@ public class ExploreActorScene extends ExploreScene {
 
 		case LOAD:
 		case SELECT:
-			downloadResource(mSelected);
+			downloadResource(getSelected());
 			break;
 
 		}
@@ -98,13 +78,11 @@ public class ExploreActorScene extends ExploreScene {
 		switch (action) {
 		case LOAD:
 		case SELECT:
-			setOutcome(Outcomes.DEF_SELECTED, mSelected);
+			setOutcome(Outcomes.DEF_SELECTED, getSelected());
 			break;
 
 		default:
 			break;
 		}
 	}
-
-	private DefEntity mSelected = null;
 }

@@ -93,13 +93,21 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	}
 
 	@Override
-	boolean hasMoreContent() {
-		return mLevelFetch.hasMore();
+	protected boolean hasMoreContent() {
+		if (getView().isOnline()) {
+			return mLevelFetch.hasMore();
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	void fetchMoreContent() {
-		mLevelFetch.fetchMore();
+	protected void fetchMoreContent() {
+		if (getView().isOnline()) {
+			mLevelFetch.fetchMore();
+		} else {
+			// Does nothing
+		}
 	}
 
 	/**
@@ -122,13 +130,21 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	}
 
 	@Override
-	boolean isFetchingContent() {
-		return mLevelFetch.isFetching();
+	protected boolean isFetchingContent() {
+		if (getView().isOnline()) {
+			return mLevelFetch.isFetching();
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	void repopulateContent() {
-		mLevelFetch.fetch();
+	protected void repopulateContent() {
+		if (getView().isOnline()) {
+			mLevelFetch.fetch();
+		} else {
+			super.repopulateContent();
+		}
 	}
 
 	/**

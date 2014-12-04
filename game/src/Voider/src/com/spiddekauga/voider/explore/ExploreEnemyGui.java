@@ -4,16 +4,14 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonEnumListener;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
-import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
@@ -23,7 +21,6 @@ import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
-import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * GUI for finding or loading enemies
@@ -41,9 +38,6 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	public void initGui() {
 		super.initGui();
 
-		initSearchFilters();
-		initViewButtons();
-
 		resetContentMargins();
 		mScene.repopulateContent();
 	}
@@ -56,24 +50,19 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	}
 
 	@Override
-	public void resetValues() {
-		super.resetValues();
+	protected void initViewButtons() {
+		super.initViewButtons();
 
-		resetSearchFilters();
-	}
-
-	/**
-	 * Initialize view buttons (top left)
-	 */
-	private void initViewButtons() {
 		// Search online
 		ButtonListener listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
+				mScene.setView(ExploreViews.ONLINE_SEARCH);
+				// REMOVE
 				mScene.setSearchOnline(true);
 			}
 		};
-		addViewButton(SkinNames.General.SEARCH, listener, mWidgets.search.viewHider);
+		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
 	}
 
 	@Override
@@ -134,7 +123,7 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	protected void resetInfo() {
 		super.resetInfo();
 
-		EnemyDefEntity enemy = mScene.getSelectedActor();
+		EnemyDefEntity enemy = mScene.getSelected();
 
 		if (enemy != null) {
 			// Has created UI elements
@@ -182,32 +171,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 		}
 	}
 
-	/**
-	 * Initialize filter options
-	 */
-	private void initSearchFilters() {
-		// Tab
-		Button button = mUiFactory.addTabScroll(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.contentHider, mLeftPanel);
-		mWidgets.search.viewHider.addToggleActor(button);
-
-		AlignTable table = mWidgets.search.table;
-		table.setName("search-filters");
-		mUiFactory.text.addPanelSection("Search Filter", table, null);
-		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
-		table.getCell();
-
-
-		// Search Field
-		TextFieldListener textFieldListener = new TextFieldListener() {
-			@Override
-			protected void onChange(String newText) {
-				mScene.setSearchString(newText);
-			}
-		};
-		mUiFactory.text.addPanelSection("Free-text Search", table, null);
-		mWidgets.search.search = mUiFactory.addTextField(null, false, "Name or Creator", textFieldListener, table, null);
-
-
+	@Override
+	protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
 		// Movement Type
 		mUiFactory.text.addPanelSection("Movement Type", table, null);
 		table.row();
@@ -272,7 +237,7 @@ public class ExploreEnemyGui extends ExploreActorGui {
 			}
 		});
 
-		mUiFactory.button.addTabs(table, mWidgets.search.contentHider, true, null, null, anyTab, onTab, offTab);
+		mUiFactory.button.addTabs(table, contentHider, true, null, null, anyTab, onTab, offTab);
 		mWidgets.search.destroyOnCollideAny = anyTab.getButton();
 		mWidgets.search.destroyOnCollideTrue = onTab.getButton();
 		mWidgets.search.destroyOnCollideFalse = offTab.getButton();
@@ -306,7 +271,7 @@ public class ExploreEnemyGui extends ExploreActorGui {
 			}
 		});
 
-		mUiFactory.button.addTabs(table, mWidgets.search.contentHider, true, null, null, anyTab, onTab, offTab);
+		mUiFactory.button.addTabs(table, contentHider, true, null, null, anyTab, onTab, offTab);
 		mWidgets.search.weaponAny = anyTab.getButton();
 		mWidgets.search.weaponOn = onTab.getButton();
 		mWidgets.search.weaponOff = offTab.getButton();
@@ -357,16 +322,10 @@ public class ExploreEnemyGui extends ExploreActorGui {
 		};
 
 
-		// Clear button
-		button = mUiFactory.button.createText("Clear Filters", TextButtonStyles.FILLED_PRESS);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.resetSearchCriteria();
-				resetSearchFilters();
-			}
-		};
-		mLeftPanel.addActionButton(button);
+		// Hiders
+		contentHider.addChild(mWidgets.search.movementHider);
+		contentHider.addChild(mWidgets.search.weaponHider);
+
 
 		mLeftPanel.layout();
 	}
@@ -374,8 +333,9 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	/**
 	 * Reset search filters
 	 */
-	private void resetSearchFilters() {
-		mWidgets.search.search.setText(mScene.getSearchString());
+	@Override
+	protected void resetSearchFilters() {
+		super.resetSearchFilters();
 
 		resetEnumButtons(mWidgets.search.movementTypes, mScene.getMovementTypes());
 		resetEnumButtons(mWidgets.search.movementSpeeds, mScene.getMovementSpeeds());
@@ -453,16 +413,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 		private class Search implements Disposable {
 			AlignTable table = new AlignTable();
-			HideListener viewHider = new HideListener(true) {
-				@Override
-				protected void onShow() {
-					resetContentMargins();
-				}
-			};
-			HideListener contentHider = new HideListener(true);
 			HideManual movementHider = new HideManual();
 			HideListener weaponHider = new HideListener(true);
-			TextField search = null;
 			Button movementTypes[] = new Button[MovementTypes.values().length];
 			Button movementSpeeds[] = new Button[EnemySpeedSearchRanges.values().length];
 			Button weaponAny = null;
@@ -476,25 +428,11 @@ public class ExploreEnemyGui extends ExploreActorGui {
 			Button destroyOnCollideTrue = null;
 			Button destroyOnCollideFalse = null;
 
-			private Search() {
-				init();
-			}
-
 			@Override
 			public void dispose() {
 				table.dispose();
-				viewHider.dispose();
-				contentHider.dispose();
 				movementHider.dispose();
 				weaponHider.dispose();
-
-				init();
-			}
-
-			private void init() {
-				contentHider.addChild(movementHider);
-				contentHider.addChild(weaponHider);
-				viewHider.addChild(contentHider);
 			}
 		}
 

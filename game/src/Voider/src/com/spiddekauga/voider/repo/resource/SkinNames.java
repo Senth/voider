@@ -881,12 +881,12 @@ public class SkinNames {
 		TAG(ImageButtonStyle.class),
 		/** Like button */
 		BOOKMARK(ImageButtonStyle.class),
-		/** Featured (explore) */
-		FEATURED(ImageButtonStyle.class),
-		/** Search (explore) */
-		SEARCH(ImageButtonStyle.class),
-		/** Browse (explore) */
-		BROWSE(ImageButtonStyle.class),
+		/** Browse resources locally */
+		EXPLORE_LOCAL(ImageButtonStyle.class),
+		/** Search for resources online */
+		EXPLORE_ONLINE_SEARCH(ImageButtonStyle.class),
+		/** Browse resource online */
+		EXPLORE_ONLINE(ImageButtonStyle.class),
 		/** Bullet editor icon in menus */
 		EDITOR_BULLET_BIG(ImageButtonStyle.class, "bullet_editor_big"),
 		/** Enemy editor icon in menus */
