@@ -52,7 +52,7 @@ public class KeyHelper {
 	 */
 	public static boolean isRedoPressed(int keycode) {
 		// Redo - Ctrl + Shift + Z || Ctrl + Y
-		if (keycode == Keys.Z && isCtrlPressed() && isShiftPressed()) {
+		if (keycode == Keys.Z && isCtrlShiftPressed()) {
 			return true;
 		} else if (keycode == Keys.Y && isCtrlPressed()) {
 			return true;
@@ -61,24 +61,92 @@ public class KeyHelper {
 	}
 
 	/**
-	 * @return true if any control key is pressed
+	 * @return true if any control key is pressed (but not shift or alt)
 	 */
 	public static boolean isCtrlPressed() {
-		return Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT);
+		return isCtrl() && !isShift() && !isAlt() && !isCtrlAlt();
+	}
+
+	/**
+	 * @return true if any shift key is pressed (but not ctrl or alt)
+	 */
+	public static boolean isShiftPressed() {
+		return isShift() && !isCtrl() && !isAlt() && !isCtrlAlt();
+	}
+
+	/**
+	 * @return true if any alt key is pressed (but not ctrl or shift)
+	 */
+	public static boolean isAltPressed() {
+		return isAlt() && !isCtrl() && !isShift() && !isCtrlAlt();
+	}
+
+	/**
+	 * @return true if both control + shift is pressed (but not alt)
+	 */
+	public static boolean isCtrlShiftPressed() {
+		return isCtrl() && isShift() && !isAlt() && !isCtrlAlt();
+	}
+
+	/**
+	 * @return true if both control + alt is pressed (but not shift)
+	 */
+	public static boolean isCtrlAltPressed() {
+		return isCtrlAlt() && !isShift();
+	}
+
+	/**
+	 * @return true if both shift + alt is pressed (but not control)
+	 */
+	public static boolean isShiftAltPressed() {
+		return isShift() && isAlt() && !isCtrl() && !isCtrlAlt();
+	}
+
+	/**
+	 * @return true if control + alt + shift is pressed
+	 */
+	public static boolean isCtrlAltShiftPressed() {
+		if (isShift() && isCtrlAlt()) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @return true if any control key is pressed
+	 */
+	private static boolean isCtrl() {
+		return isKeyPressed(Keys.CONTROL_LEFT) || isKeyPressed(Keys.CONTROL_RIGHT);
 	}
 
 	/**
 	 * @return true if any shift key is pressed
 	 */
-	public static boolean isShiftPressed() {
-		return Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT);
+	private static boolean isShift() {
+		return isKeyPressed(Keys.SHIFT_LEFT) || isKeyPressed(Keys.SHIFT_RIGHT);
 	}
 
 	/**
 	 * @return true if any alt key is pressed
 	 */
-	public static boolean isAltPressed() {
-		return Gdx.input.isKeyPressed(Keys.ALT_LEFT) || Gdx.input.isKeyPressed(Keys.ALT_RIGHT);
+	private static boolean isAlt() {
+		return isKeyPressed(Keys.ALT_LEFT);
+	}
+
+	/**
+	 * @return true if ctrl + alt is pressed (or Alt Gr)
+	 */
+	private static boolean isCtrlAlt() {
+		return (isCtrl() && isAlt()) || isKeyPressed(Keys.ALT_RIGHT);
+	}
+
+	/**
+	 * If a keys is pressed
+	 * @param keycode the keycode to check
+	 * @return true if key is pressed
+	 */
+	private static boolean isKeyPressed(int keycode) {
+		return Gdx.input.isKeyPressed(keycode);
 	}
 
 	/**

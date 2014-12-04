@@ -2,6 +2,7 @@ package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -23,6 +24,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.sound.MusicPlayer;
 
 /**
@@ -75,6 +77,11 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @return true if handled, otherwise false
 	 */
 	protected boolean onKeyDown(int keycode) {
+		// Toggle fullscreen on desktop
+		if (Gdx.app.getType() == ApplicationType.Desktop && KeyHelper.isAltPressed() && keycode == Input.Keys.ENTER) {
+			SettingRepo.getInstance().display().toggleFullscreen();
+		}
+
 		// Testing
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			// UI - reload

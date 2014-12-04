@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.menu;
 
-import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
@@ -125,7 +124,6 @@ public class SettingsScene extends Scene {
 	 */
 	void setFullscreen(boolean fullscreen) {
 		mSettingRepo.display().setFullscreen(fullscreen);
-		updateScreenSize();
 	}
 
 	/**
@@ -141,7 +139,6 @@ public class SettingsScene extends Scene {
 	 */
 	void setResolutionFullscreen(Resolution resolution) {
 		mSettingRepo.display().setResolutionFullscreen(resolution);
-		updateScreenSize();
 	}
 
 	/**
@@ -157,7 +154,6 @@ public class SettingsScene extends Scene {
 	 */
 	void setResolutionWindowed(Resolution resolution) {
 		mSettingRepo.display().setResolutionWindowed(resolution);
-		updateScreenSize();
 	}
 
 	/**
@@ -166,23 +162,6 @@ public class SettingsScene extends Scene {
 	Resolution getResolutionWindowed() {
 		return mSettingRepo.display().getResolutionWindowed();
 	}
-
-	/**
-	 * Update screen size
-	 */
-	private void updateScreenSize() {
-		// Fullscreen
-		if (isFullscreen()) {
-			Resolution resolution = getResolutionFullscreen();
-			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), true);
-		}
-		// Windowed
-		else {
-			Resolution resolution = getResolutionWindowed();
-			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), false);
-		}
-	}
-
 
 	private SettingRepo mSettingRepo = SettingRepo.getInstance();
 }

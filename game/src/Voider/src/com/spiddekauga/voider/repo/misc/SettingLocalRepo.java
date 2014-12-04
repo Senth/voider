@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo.misc;
 
+import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -164,6 +165,7 @@ class SettingLocalRepo {
 		 */
 		void setFullscreen(boolean fullscreen) {
 			mClientPrefsGateway.setFullscreen(fullscreen);
+			updateScreenSize();
 		}
 
 		/**
@@ -179,6 +181,7 @@ class SettingLocalRepo {
 		 */
 		void setResolutionWindowed(Resolution resolution) {
 			mClientPrefsGateway.setResolutionWindowed(resolution);
+			updateScreenSize();
 		}
 
 		/**
@@ -194,6 +197,7 @@ class SettingLocalRepo {
 		 */
 		void setResolutionFullscreen(Resolution resolution) {
 			mClientPrefsGateway.setResolutionFullscreen(resolution);
+			updateScreenSize();
 		}
 
 		/**
@@ -203,6 +207,29 @@ class SettingLocalRepo {
 			return mClientPrefsGateway.getResolutionFullscreen();
 		}
 
+		/**
+		 * Toggles fullscreen mode
+		 */
+		void toggleFullscreen() {
+			mClientPrefsGateway.setFullscreen(!mClientPrefsGateway.isFullscreen());
+			updateScreenSize();
+		}
+
+		/**
+		 * Update screen size
+		 */
+		private void updateScreenSize() {
+			// Fullscreen
+			if (isFullscreen()) {
+				Resolution resolution = getResolutionFullscreen();
+				Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), true);
+			}
+			// Windowed
+			else {
+				Resolution resolution = getResolutionWindowed();
+				Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), false);
+			}
+		}
 	}
 
 	/** Display setting repository */

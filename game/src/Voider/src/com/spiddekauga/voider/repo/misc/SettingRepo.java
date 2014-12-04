@@ -362,6 +362,13 @@ public class SettingRepo extends Repo {
 			return mLocalRepo.getResolutionFullscreen();
 		}
 
+		/**
+		 * Toggles fullscreen mode
+		 */
+		public void toggleFullscreen() {
+			mLocalRepo.toggleFullscreen();
+		}
+
 		private SettingDisplayLocalRepo mLocalRepo = SettingLocalRepo.getInstance().display;
 	}
 
