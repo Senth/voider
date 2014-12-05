@@ -3,18 +3,13 @@ package com.spiddekauga.voider.explore;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.HideListener;
-import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 
 /**
@@ -28,46 +23,6 @@ public class ExploreActorGui extends ExploreGui {
 	 */
 	protected ExploreActorGui() {
 		// Does nothing
-	}
-
-	@Override
-	public void initGui() {
-		super.initGui();
-
-		initViewButtons();
-		initRightPanel();
-		initInfo(mWidgets.info.table, mWidgets.info.hider);
-	}
-
-	@Override
-	public void resetValues() {
-		super.resetValues();
-
-		resetInfo();
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-
-		mWidgets.dispose();
-	}
-
-	@Override
-	void resetContent() {
-		super.resetContent();
-
-		resetInfo();
-	}
-
-	/**
-	 * Initialize right panel
-	 */
-	private void initRightPanel() {
-		// Info
-		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
-
-		mRightPanel.layout();
 	}
 
 	/**
@@ -95,7 +50,6 @@ public class ExploreActorGui extends ExploreGui {
 			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mScene.setSelected(actor);
-					resetInfo();
 				}
 			}
 
@@ -125,67 +79,6 @@ public class ExploreActorGui extends ExploreGui {
 	}
 
 	/**
-	 * Initialize the information table in the right panel. This populates the table with
-	 * the default information. Override this table to add more information to it
-	 * @param table information table
-	 * @param hider info hider
-	 */
-	protected void initInfo(AlignTable table, HideListener hider) {
-		// Name
-		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
-		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
-
-		// Description
-		table.row(Horizontal.CENTER, Vertical.TOP);
-		mWidgets.info.description = mUiFactory.text.add("", true, table);
-
-		// Created by
-		mUiFactory.text.addPanelSection("Created By", table, null);
-		mWidgets.info.createbBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
-
-		// Revised by
-		mUiFactory.text.addPanelSection("Revised By", table, mWidgets.info.revisedHider);
-		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, mWidgets.info.revisedHider);
-
-		// Date
-		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", false, table, null);
-	}
-
-	/**
-	 * Resets the values of info
-	 */
-	protected void resetInfo() {
-		DefEntity actor = mScene.getSelected();
-
-		if (actor != null) {
-			// Has created UI elements
-			if (mWidgets.info.name != null) {
-				mWidgets.info.createbBy.setText(actor.originalCreator);
-				mWidgets.info.date.setText(mSettingRepo.date().getDate(actor.date));
-				mWidgets.info.description.setText(actor.description);
-				mWidgets.info.name.setText(actor.name);
-
-				// Revised by another person
-				if (!actor.originalCreatorKey.equals(actor.revisedByKey)) {
-					mWidgets.info.revisedHider.show();
-					mWidgets.info.revisedBy.setText(actor.revisedBy);
-				} else {
-					mWidgets.info.revisedHider.hide();
-				}
-			}
-		} else {
-			// Has created UI elements
-			if (mWidgets.info.name != null) {
-				mWidgets.info.createbBy.setText("");
-				mWidgets.info.date.setText("");
-				mWidgets.info.description.setText("");
-				mWidgets.info.name.setText("");
-				mWidgets.info.revisedHider.hide();
-			}
-		}
-	}
-
-	/**
 	 * Sets the actor scene
 	 * @param scene
 	 */
@@ -204,43 +97,4 @@ public class ExploreActorGui extends ExploreGui {
 	}
 
 	private ExploreActorScene mScene = null;
-	private Widgets mWidgets = new Widgets();
-	private SettingRepo mSettingRepo = SettingRepo.getInstance();
-
-	private class Widgets implements Disposable {
-		Info info = new Info();
-
-		class Info implements Disposable {
-			AlignTable table = new AlignTable();
-			HideListener hider = new HideListener(true);
-			Label name = null;
-			Label description = null;
-			Label createbBy = null;
-			Label revisedBy = null;
-			Label date = null;
-			HideManual revisedHider = new HideManual();
-
-			private Info() {
-				init();
-			}
-
-			@Override
-			public void dispose() {
-				table.dispose();
-				revisedHider.dispose();
-				hider.dispose();
-				init();
-			}
-
-			private void init() {
-				hider.addChild(revisedHider);
-			}
-		}
-
-
-		@Override
-		public void dispose() {
-			info.dispose();
-		}
-	}
 }

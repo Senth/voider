@@ -7,40 +7,32 @@ import java.util.HashMap;
  * All tags
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
+@SuppressWarnings("javadoc")
 public enum Tags {
-	/** Easy */
 	EASY(1),
 	/** Challenging to play */
 	CHALLENGING(2),
 	/** Contains some sort of story */
 	STORY(3),
-	/** Complicated */
 	COMPLICATED(4),
 	/** Artistically made */
 	ARTISTIC(5),
-	/** Bullet storm */
 	BULLET_STORM(6),
-	/** No enemies */
 	ENEMYLESS(7, "Enemy-less"),
-	/** Short */
 	SHORT(8),
-	/** Long */
 	LONG(9),
-	/** Lots of colors */
 	COLORFUL(10),
-	/** Narrow terrain */
 	NARROW(11),
 	/** Surprises */
 	SURPRISE(12, "Surprise!"),
-	/** Weird */
 	WEIRD(13),
-	/** Boring */
 	BORING(14),
-	/** Fun */
 	FUN(15),
+	/** Unfinished level */
+	UNFINISHED(16),
 
 
-	// NEXT ID TO USE =>
+	// NEXT ID TO USE => 17
 
 	;
 	/**

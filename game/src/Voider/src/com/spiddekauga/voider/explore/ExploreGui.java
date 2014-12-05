@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
@@ -25,14 +27,17 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
@@ -65,13 +70,18 @@ abstract class ExploreGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mWidgets = new InnerWidgets();
+		mWidgets = new Widgets();
 
 		initRightPanel();
+		initInfo(mWidgets.info.table, mWidgets.info.hider);
 		initLeftPanel();
 		initContent();
 		initView();
+		initViewButtons();
 		initSearchFilters(mWidgets.search.table, mWidgets.search.contentHider);
+		if (mScene.getSelectedAction() == ExploreActions.LOAD) {
+			initSelectRevision();
+		}
 
 		// Initialize last
 		initTopBar();
@@ -93,6 +103,7 @@ abstract class ExploreGui extends Gui {
 		super.resetValues();
 
 		resetSearchFilters();
+		resetInfo();
 	}
 
 	/**
@@ -198,6 +209,21 @@ abstract class ExploreGui extends Gui {
 	protected abstract Actor createContentActor(final DefEntity defEntity, boolean selected);
 
 	/**
+	 * Selected definition was changed
+	 * @param defEntity the definition that was changed
+	 */
+	protected void onSelectionChanged(DefEntity defEntity) {
+		resetInfo();
+
+		// Shall we show or hide the Select Revision?
+		if (defEntity != null && mScene.getView().isLocal() && !ResourceLocalRepo.isPublished(defEntity.resourceId)) {
+			mWidgets.selectRevisionHider.show();
+		} else {
+			mWidgets.selectRevisionHider.hide();
+		}
+	}
+
+	/**
 	 * Initialize view buttons
 	 */
 	protected void initViewButtons() {
@@ -207,7 +233,7 @@ abstract class ExploreGui extends Gui {
 				mScene.setView(ExploreViews.LOCAL);
 			}
 		};
-		addViewButton(SkinNames.General.EXPLORE_LOCAL, listener, mWidgets.search.viewHider);
+		addViewButton(SkinNames.General.EXPLORE_LOCAL, listener, mWidgets.search.viewHider, mWidgets.search.publishedHider);
 	}
 
 	/**
@@ -216,8 +242,8 @@ abstract class ExploreGui extends Gui {
 	 * @param contentHider
 	 */
 	protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
-		// Tab
-		Button button = mUiFactory.addTab(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.contentHider, mLeftPanel);
+		// Tab Button
+		Button button = mUiFactory.addTabScroll(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.contentHider, mLeftPanel);
 		mWidgets.search.viewHider.addToggleActor(button);
 
 		table.setName("search-filters");
@@ -286,7 +312,7 @@ abstract class ExploreGui extends Gui {
 			}
 		};
 		mWidgets.search.onlyMine = mUiFactory.button.addCheckBoxRow("Only mine", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
-		mWidgets.search.publishedHider.addToggleActor(mWidgets.search.onlyMine);
+		mWidgets.search.onlyMineHider.addToggleActor(mWidgets.search.onlyMine);
 
 
 		// Clear button
@@ -345,6 +371,8 @@ abstract class ExploreGui extends Gui {
 		tabWidget.setName("right-panel");
 		mRightPanel = tabWidget;
 
+		// Info
+		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
 
 		// Add actions
 		// Revision
@@ -353,13 +381,12 @@ abstract class ExploreGui extends Gui {
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed(Button button) {
-					// TODO select revision
+					showSelectRevisionMsgBox();
 				}
 			};
-			// tabWidget.addActionButtonGlobal(button);
-			// tabWidget.addActionButtonRow();
-
-			// TODO create appropriate hiders
+			tabWidget.addActionButtonGlobal(button);
+			tabWidget.addActionButtonRow();
+			mWidgets.selectRevisionHider.addToggleActor(button);
 		}
 
 		// Back
@@ -383,6 +410,64 @@ abstract class ExploreGui extends Gui {
 		tabWidget.addActionButtonGlobal(button);
 
 		initPanel(tabWidget);
+	}
+
+	/**
+	 * Show select revision message box
+	 */
+	private void showSelectRevisionMsgBox() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+		msgBox.setTitle("Select another revision");
+		msgBox.content(mWidgets.revision.scrollPane);
+
+		mWidgets.revision.scrollPane.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
+
+		updateRevisionList();
+
+		// Get latest revision number
+		int latestRevision = mWidgets.revision.list.getItems().size;
+
+		// TODO Set Commands
+		msgBox.addCancelButtonAndKeys();
+		msgBox.button("Latest");
+		msgBox.button("Select");
+
+		showMsgBox(msgBox);
+		getStage().setScrollFocus(mWidgets.revision.list);
+	}
+
+	/**
+	 * Update the revision list
+	 */
+	private void updateRevisionList() {
+		ArrayList<RevisionEntity> resourceRevisions = mScene.getSelectedResourceRevisions();
+
+		String[] revisions = new String[resourceRevisions.size()];
+
+		// Calculate number length
+		String latestRevision = String.valueOf(revisions.length);
+		int revisionStringLength = latestRevision.length();
+
+		// Latest revision is at the top
+		for (int i = 0; i < revisions.length; ++i) {
+			int arrayPos = revisions.length - 1 - i;
+			RevisionEntity revisionInfo = resourceRevisions.get(i);
+			String dateString = mDateRepo.getDate(revisionInfo.date);
+			revisions[arrayPos] = String.format("%0" + revisionStringLength + "d - %s", revisionInfo.revision, dateString);
+		}
+
+		mWidgets.revision.list.setItems(revisions);
+	}
+
+	/**
+	 * Initialize select revision
+	 */
+	private void initSelectRevision() {
+		com.badlogic.gdx.scenes.scene2d.ui.List<String> list = new com.badlogic.gdx.scenes.scene2d.ui.List<>(
+				(ListStyle) SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
+		mWidgets.revision.list = list;
+		mWidgets.revision.scrollPane = new ScrollPane(list, mUiFactory.getStyles().scrollPane.noBackground);
 	}
 
 	/**
@@ -595,6 +680,67 @@ abstract class ExploreGui extends Gui {
 	}
 
 	/**
+	 * Initialize the information table in the right panel. This populates the table with
+	 * the default information. Override this table to add more information to it
+	 * @param table information table
+	 * @param hider info hider
+	 */
+	protected void initInfo(AlignTable table, HideListener hider) {
+		// Name
+		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
+		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
+
+		// Description
+		table.row(Horizontal.CENTER, Vertical.TOP);
+		mWidgets.info.description = mUiFactory.text.add("", true, table);
+
+		// Created by
+		mUiFactory.text.addPanelSection("Created By", table, null);
+		mWidgets.info.createbBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
+
+		// Revised by
+		mUiFactory.text.addPanelSection("Revised By", table, mWidgets.info.revisedHider);
+		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, mWidgets.info.revisedHider);
+
+		// Date
+		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", false, table, null);
+	}
+
+	/**
+	 * Resets the values of info
+	 */
+	protected void resetInfo() {
+		DefEntity actor = mScene.getSelected();
+
+		if (actor != null) {
+			// Has created UI elements
+			if (mWidgets.info.name != null) {
+				mWidgets.info.createbBy.setText(actor.originalCreator);
+				mWidgets.info.date.setText(mDateRepo.getDate(actor.date));
+				mWidgets.info.description.setText(actor.description);
+				mWidgets.info.name.setText(actor.name);
+
+				// Revised by another person
+				if (!actor.originalCreatorKey.equals(actor.revisedByKey)) {
+					mWidgets.info.revisedHider.show();
+					mWidgets.info.revisedBy.setText(actor.revisedBy);
+				} else {
+					mWidgets.info.revisedHider.hide();
+				}
+			}
+		} else {
+			// Has created UI elements
+			if (mWidgets.info.name != null) {
+				mWidgets.info.createbBy.setText("");
+				mWidgets.info.date.setText("");
+				mWidgets.info.description.setText("");
+				mWidgets.info.name.setText("");
+				mWidgets.info.revisedHider.hide();
+			}
+		}
+	}
+
+	/**
 	 * Add a wait icon to a new row for the specified table
 	 * @param table the table to add the animation wait widget to
 	 * @return row of the wait icon (so it can be removed)
@@ -636,23 +782,57 @@ abstract class ExploreGui extends Gui {
 	private boolean mAddingContent = false;
 	private int mActorsPerRow = 0;
 	private ExploreScene mScene = null;
-
-	/** Left panel tab widget */
+	/** Left panel, search options, tags, etc. */
 	protected TabWidget mLeftPanel = null;
-	/** Right panel tab widget */
+	/** Right panel, selected info, comments, etc */
 	protected TabWidget mRightPanel = null;
-	/** For getting correct date */
+	/** Repository for printing in the correct date format */
 	protected SettingDateRepo mDateRepo = SettingRepo.getInstance().date();
 
-	private InnerWidgets mWidgets = null;
+	private Widgets mWidgets = null;
 
-	private class InnerWidgets implements Disposable {
+	private class Widgets implements Disposable {
 		Content content = new Content();
 		View view = new View();
 		Search search = new Search();
 		Background topBar = null;
+		Info info = new Info();
+		Revision revision = new Revision();
+		HideManual selectRevisionHider = new HideManual();
 
-		class Content implements Disposable {
+		private class Revision {
+			com.badlogic.gdx.scenes.scene2d.ui.List<String> list = null;
+			ScrollPane scrollPane = null;
+		}
+
+		private class Info implements Disposable {
+			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
+			Label name = null;
+			Label description = null;
+			Label createbBy = null;
+			Label revisedBy = null;
+			Label date = null;
+			HideManual revisedHider = new HideManual();
+
+			private Info() {
+				init();
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				revisedHider.dispose();
+				hider.dispose();
+				init();
+			}
+
+			private void init() {
+				hider.addChild(revisedHider);
+			}
+		}
+
+		private class Content implements Disposable {
 			AlignTable table = new AlignTable();
 			ScrollPane scrollPane = null;
 			ButtonGroup buttonGroup = new ButtonGroup();
@@ -665,7 +845,7 @@ abstract class ExploreGui extends Gui {
 			}
 		}
 
-		class View implements Disposable {
+		private class View implements Disposable {
 			AlignTable table = new AlignTable();
 			ButtonGroup buttonGroup = new ButtonGroup();
 
@@ -720,6 +900,7 @@ abstract class ExploreGui extends Gui {
 			content.dispose();
 			view.dispose();
 			search.dispose();
+			info.dispose();
 		}
 	}
 }

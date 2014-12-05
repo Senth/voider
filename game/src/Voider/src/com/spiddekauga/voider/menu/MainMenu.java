@@ -178,9 +178,9 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			if (keycode == Input.Keys.F5) {
 				if (KeyHelper.isAltPressed()) {
-					SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.SELECT));
+					SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.LOAD));
 				} else if (KeyHelper.isShiftPressed()) {
-					SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class, ExploreActions.SELECT));
+					SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class, ExploreActions.LOAD));
 				} else {
 					SceneSwitcher.switchTo(new TestUiScene());
 				}

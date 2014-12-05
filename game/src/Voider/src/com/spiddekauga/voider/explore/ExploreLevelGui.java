@@ -79,7 +79,10 @@ public class ExploreLevelGui extends ExploreGui {
 	/**
 	 * Reset info panel
 	 */
-	void resetInfo() {
+	@Override
+	protected void resetInfo() {
+		super.resetInfo();
+
 		LevelInfoEntity level = mExploreScene.getSelectedLevel();
 
 		if (level != null) {
@@ -176,7 +179,6 @@ public class ExploreLevelGui extends ExploreGui {
 		initSort();
 		initSearchBar();
 		initComments();
-		initInfo();
 		initTags();
 
 		resetContentMargins();
@@ -288,6 +290,7 @@ public class ExploreLevelGui extends ExploreGui {
 	 * Initializes search bar
 	 */
 	private void initSearchBar() {
+		// REMOVE
 		float infoWidth = mUiFactory.getStyles().vars.rightPanelWidth + 2 * mUiFactory.getStyles().vars.paddingInner;
 		float height = mUiFactory.getStyles().vars.rowHeight;
 
@@ -312,9 +315,6 @@ public class ExploreLevelGui extends ExploreGui {
 	 * Initialize the right panel
 	 */
 	private void initRightPanel() {
-		// Info
-		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
-
 		// Comments
 		// mUiFactory.addTab(SkinNames.General.COMMENTS, mWidgets.comment.table, null,
 		// mRightPanel);
@@ -322,12 +322,8 @@ public class ExploreLevelGui extends ExploreGui {
 		mRightPanel.layout();
 	}
 
-	/**
-	 * Initializes info panel
-	 */
-	private void initInfo() {
-		AlignTable table = mWidgets.info.table;
-		table.setName("info");
+	protected void initInfo(AlignTable table, GuiHider hider) {
+		// TODO Make use of ExploreScene.initInfo(...)
 
 		// Name
 		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
@@ -361,6 +357,10 @@ public class ExploreLevelGui extends ExploreGui {
 		// Tags
 		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", true, table, null);
 		mWidgets.info.tags.setWrap(true);
+
+		// TODO Level Length
+
+		// TODO Level Speed
 	}
 
 	/**

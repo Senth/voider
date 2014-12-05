@@ -9,8 +9,13 @@ package com.spiddekauga.voider;
 public enum ClientVersions {
 	// @formatter:off
 	V0_4_0("Initial version."),
+	V0_4_1(true,
+			"Explore has been merged into Play as Explore essentially was play online.",
+			"The same Play/Explore screen is now used for loading and selecting levels, enemies, and bullets both online and locally",
+			"Enemies and bullets can be loaded from online. This means that you can easily search for specific enemies for your level",
+			"Searching for levels have new filters: level length and level speed. Levels can now also be filtered by tags in search options"),
 
-	;
+			;
 	// @formatter:on
 
 	/**

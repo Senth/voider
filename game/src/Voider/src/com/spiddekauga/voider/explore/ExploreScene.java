@@ -13,6 +13,7 @@ import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
@@ -398,7 +399,10 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param def the selected resource
 	 */
 	protected void setSelected(DefEntity def) {
-		mSelected = def;
+		if (mSelected != def) {
+			mSelected = def;
+			((ExploreGui) mGui).onSelectionChanged(def);
+		}
 	}
 
 	/**
@@ -413,6 +417,17 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 			return true;
 		} else {
 			return list.contains(object);
+		}
+	}
+
+	/**
+	 * @return All revisions of the selected definition, empty if not N/A
+	 */
+	ArrayList<RevisionEntity> getSelectedResourceRevisions() {
+		if (mSelected != null) {
+			return ResourceLocalRepo.getRevisions(mSelected.resourceId);
+		} else {
+			return new ArrayList<>();
 		}
 	}
 
