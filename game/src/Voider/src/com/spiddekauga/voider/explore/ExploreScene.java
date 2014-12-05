@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.explore;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,12 +15,15 @@ import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
+import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Graphics;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Common class for all explore scenes
@@ -28,10 +33,12 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	/**
 	 * @param gui explore GUI
 	 * @param action the action to do when the resource is selected
+	 * @param defType the definition type to browse/load
 	 */
-	protected ExploreScene(ExploreGui gui, ExploreActions action) {
+	protected ExploreScene(ExploreGui gui, ExploreActions action, Class<? extends Def> defType) {
 		super(gui);
 
+		mLocalType = ExternalTypes.fromType(defType);
 		mAction = action;
 		((ExploreGui) mGui).setExploreScene(this);
 	}
@@ -41,6 +48,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 		super.loadResources();
 
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.loadAllOf(this, mLocalType, false);
 	}
 
 	@Override
@@ -49,7 +57,6 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 
 		super.unloadResources();
 	}
-
 
 	@Override
 	protected boolean onKeyDown(int keycode) {
@@ -150,10 +157,46 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * Repopulate content
 	 */
 	protected void repopulateContent() {
+		((ExploreGui) mGui).resetContent();
 		if (getView().isLocal()) {
+			updateLocalContent();
+		}
+	}
 
-		} else {
-			mNotification.show(NotificationTypes.ERROR, "Online functionality not implemented");
+	/**
+	 * Update local content
+	 */
+	private void updateLocalContent() {
+		getAndSetAllResources();
+
+		// Filter
+		mFilteredResults.clear();
+
+		for (DefEntity defEntity : mAllLocalDefs) {
+			if (defPassesFilter(defEntity)) {
+				mFilteredResults.add(defEntity);
+			}
+		}
+
+		((ExploreGui) mGui).addContent(mFilteredResults);
+	}
+
+	/**
+	 * Get and set all resources
+	 */
+	private void getAndSetAllResources() {
+		// Already set -> skip
+		if (mAllLocalDefs != null) {
+			return;
+		}
+
+		mAllLocalDefs = new ArrayList<>();
+
+		ArrayList<Def> defs = ResourceCacheFacade.getAll(mLocalType);
+
+		// Convert to defEntity
+		for (Def def : defs) {
+			mAllLocalDefs.add(def.toDefEntity(false));
 		}
 	}
 
@@ -243,14 +286,15 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 *        for any
 	 */
 	protected void setPublished(Boolean published) {
-
+		mFilter.published = published;
+		repopulateContent();
 	}
 
 	/**
 	 * @return true if only filtered by published
 	 */
 	protected Boolean isPublished() {
-		return null;
+		return mFilter.published;
 	}
 
 	/**
@@ -258,14 +302,15 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param onlyMine search only for player's own actors
 	 */
 	protected void setOnlyMine(boolean onlyMine) {
-
+		mFilter.onlyMine = onlyMine;
+		repopulateContent();
 	}
 
 	/**
 	 * @return true if only mine should be searched
 	 */
 	protected boolean isOnlyMine() {
-		return false;
+		return mFilter.onlyMine;
 	}
 
 	/**
@@ -273,28 +318,32 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param searchString what to search for
 	 */
 	protected void setSearchString(String searchString) {
-
+		mFilter.searchString = searchString;
+		repopulateContent();
 	}
 
 	/**
 	 * @return search string
 	 */
 	protected String getSearchString() {
-		return null;
+		return mFilter.searchString;
 	}
 
 	/**
 	 * Sets the active view
 	 * @param view the new active view
 	 */
-	protected void setView(ExploreViews view) {
+	protected final void setView(ExploreViews view) {
 		mView = view;
+		((ExploreGui) mGui).resetContent();
+		((ExploreGui) mGui).resetContentMargins();
+		repopulateContent();
 	}
 
 	/**
 	 * @return current view
 	 */
-	protected ExploreViews getView() {
+	protected final ExploreViews getView() {
 		return mView;
 	}
 
@@ -327,6 +376,15 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	/**
+	 * Filter a resource definition through local search
+	 * @param defEntity the definition to filter
+	 * @return true if the definition passes the filter
+	 */
+	protected boolean defPassesFilter(DefEntity defEntity) {
+		return mFilter.defPassesFilter(defEntity);
+	}
+
+	/**
 	 * @param <ActorType> type of actor that is selected
 	 * @return the selected actor
 	 */
@@ -343,6 +401,23 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 		mSelected = def;
 	}
 
+	/**
+	 * Checks if an object exists in an array, but only if the array isn't empty. Helper
+	 * method for filtering
+	 * @param list the list to check
+	 * @param object checks if this is in the list
+	 * @return true if the object is in the list or the list is empty
+	 */
+	protected static boolean isObjectInFilterList(List<?> list, Object object) {
+		if (list.isEmpty()) {
+			return true;
+		} else {
+			return list.contains(object);
+		}
+	}
+
+	private ArrayList<DefEntity> mAllLocalDefs = null;
+	private ArrayList<DefEntity> mFilteredResults = new ArrayList<>();
 	private DefEntity mSelected = null;
 
 	private ExploreViews mView = ExploreViews.LOCAL;
@@ -350,4 +425,62 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	/** Synchronized web responses */
 	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<WebWrapper>();
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
+	private SearchFilter mFilter = new SearchFilter();
+	private ExternalTypes mLocalType;
+
+	/**
+	 * Class for filtering local searches
+	 */
+	private class SearchFilter {
+		String searchString = "";
+		boolean onlyMine = false;
+		Boolean published = null;
+
+		/**
+		 * Filters a resource definition
+		 * @param def
+		 * @return true if we should keep this definition (i.e. it passes the filter)
+		 */
+		boolean defPassesFilter(DefEntity def) {
+			// Search String
+			String searchStringLower = searchString.toLowerCase();
+
+			// Search String - Name
+			if (!def.name.toLowerCase().contains(searchStringLower)) {
+				// Search String - Original creator
+				if (!def.originalCreator.toLowerCase().contains(searchStringLower)) {
+					// Search String - Revised by
+					if (!def.revisedBy.toLowerCase().contains(searchStringLower)) {
+						return false;
+					}
+				}
+			}
+
+
+			// Only mine
+			if (onlyMine) {
+				if (!def.revisedByKey.equals(User.getGlobalUser().getServerKey())) {
+					return false;
+				}
+			}
+
+			// Published
+			if (published != null) {
+				// Only published
+				if (published) {
+					if (!ResourceLocalRepo.isPublished(def.resourceId)) {
+						return false;
+					}
+				}
+				// Not published
+				else {
+					if (ResourceLocalRepo.isPublished(def.resourceId)) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+	}
 }

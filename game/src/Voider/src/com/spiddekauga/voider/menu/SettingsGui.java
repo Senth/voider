@@ -181,8 +181,8 @@ public class SettingsGui extends Gui {
 			}
 		};
 		mWidgets.display.fullscreen = mUiFactory.button.addCheckBoxRow("Fullscreen", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
-		mWidgets.display.showFullscreenResolution.setButton(mWidgets.display.fullscreen);
-		mWidgets.display.showWindowedResolution.setButton(mWidgets.display.fullscreen);
+		mWidgets.display.showFullscreenResolution.addButton(mWidgets.display.fullscreen);
+		mWidgets.display.showWindowedResolution.addButton(mWidgets.display.fullscreen);
 	}
 
 	/**

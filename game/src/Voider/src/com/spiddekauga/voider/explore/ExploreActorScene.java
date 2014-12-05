@@ -3,6 +3,7 @@ package com.spiddekauga.voider.explore;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 
 /**
@@ -14,18 +15,20 @@ public class ExploreActorScene extends ExploreScene {
 	/**
 	 * Hidden constructor. Create from ExploreFactory
 	 * @param action the action to do when the resource is selected
+	 * @param actorDefType the actor definition type browse
 	 */
-	ExploreActorScene(ExploreActions action) {
-		this(new ExploreActorGui(), action);
+	ExploreActorScene(ExploreActions action, Class<? extends ActorDef> actorDefType) {
+		this(new ExploreActorGui(), action, actorDefType);
 	}
 
 	/**
 	 * This constructor should be called if it's a super class
 	 * @param gui
 	 * @param action the action to do when the resource is selected
+	 * @param actorDefType the actor definition type to browse
 	 */
-	protected ExploreActorScene(ExploreActorGui gui, ExploreActions action) {
-		super(gui, action);
+	protected ExploreActorScene(ExploreActorGui gui, ExploreActions action, Class<? extends ActorDef> actorDefType) {
+		super(gui, action, actorDefType);
 
 		((ExploreActorGui) mGui).setActorScene(this);
 	}
@@ -45,7 +48,6 @@ public class ExploreActorScene extends ExploreScene {
 		// Does nothings
 	}
 
-
 	/**
 	 * Create drawables for all actors
 	 * @param actors all actors to create drawables for
@@ -55,7 +57,6 @@ public class ExploreActorScene extends ExploreScene {
 			createDrawable(defEntity);
 		}
 	}
-
 
 	@Override
 	protected void onSelectAction(ExploreActions action) {

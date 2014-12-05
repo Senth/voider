@@ -6,6 +6,8 @@ import java.util.List;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -13,7 +15,10 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.search.Results;
+import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
@@ -107,6 +112,41 @@ public abstract class ActorFetch<DefType extends DefEntity> extends ResourceFetc
 	 */
 	protected FetchStatuses getFetchStatus() {
 		return mFetchStatus;
+	}
+
+	/**
+	 * Builds a search string to search for
+	 * @return search string to use when searching
+	 */
+	protected abstract String buildSearchString();
+
+	/**
+	 * Search and set the enemies as a response
+	 * @param searchTable name of the table to search in
+	 * @param nextCursor
+	 * @param actors the actors to set
+	 * @return fetchStatus of the search
+	 */
+	protected FetchStatuses searchAndSetFoundActors(String searchTable, String nextCursor, ArrayList<DefType> actors) {
+		String searchString = buildSearchString();
+
+		Results<ScoredDocument> documents = SearchUtils.search(searchTable, searchString, FetchSizes.ACTORS, nextCursor);
+
+		// Convert all found documents to entities
+		for (ScoredDocument document : documents) {
+			DefType networkEntity = newActorDef();
+
+			// Datastore
+			Key datastoreKey = KeyFactory.stringToKey(document.getId());
+			Entity datastoreEntity = DatastoreUtils.getEntity(datastoreKey);
+			datastoreToDefEntity(datastoreEntity, networkEntity);
+
+			setAdditionalActorInformation(datastoreEntity, networkEntity);
+			actors.add(networkEntity);
+		}
+
+		// Did we fetch all
+		return getSuccessStatus(actors);
 	}
 
 	/**

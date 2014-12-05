@@ -37,6 +37,5 @@ public class GameSaveDef extends Def {
 	}
 
 	/** Associated GameSave resource */
-	@Tag(77)
-	private UUID mGameSaveId = null;
+	@Tag(77) private UUID mGameSaveId = null;
 }

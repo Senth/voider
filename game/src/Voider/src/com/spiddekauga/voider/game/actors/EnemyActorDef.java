@@ -8,6 +8,9 @@ import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Collision;
 import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Movement;
 import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
+import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
@@ -42,6 +45,34 @@ public class EnemyActorDef extends ActorDef {
 		mMovementType = def.mMovementType;
 		mMovementVars = def.mMovementVars;
 		mWeapon = def.mWeapon;
+	}
+
+	@Override
+	protected void setNewDefEntity(DefEntity defEntity, boolean toOnline) {
+		super.setNewDefEntity(defEntity, toOnline);
+
+		EnemyDefEntity enemyDefEntity = (EnemyDefEntity) defEntity;
+		enemyDefEntity.hasWeapon = mHasWeapon && mWeapon.getBulletActorDef() != null;
+		enemyDefEntity.collisionDamage = getCollisionDamage();
+		enemyDefEntity.destroyOnCollide = isDestroyedOnCollide();
+		enemyDefEntity.movementType = mMovementType;
+
+		// Movement
+		if (mMovementType != MovementTypes.STATIONARY) {
+			enemyDefEntity.movementSpeed = mMovementVars.speed;
+		}
+
+		// Weapon
+		if (enemyDefEntity.hasWeapon) {
+			enemyDefEntity.aimType = mAimType;
+			enemyDefEntity.bulletDamage = mWeapon.getDamage();
+			enemyDefEntity.bulletSpeed = mWeapon.getBulletSpeed();
+		}
+	}
+
+	@Override
+	protected DefEntity newDefEntity() {
+		return new BulletDefEntity();
 	}
 
 	/**

@@ -998,7 +998,7 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Hiders
-		mWidgets.enemyAdd.hiderTab.setButton(mWidgets.tool.enemyAdd);
+		mWidgets.enemyAdd.hiderTab.addButton(mWidgets.tool.enemyAdd);
 
 		Button button;
 

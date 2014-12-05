@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.explore;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
@@ -330,9 +328,6 @@ public class ExploreEnemyGui extends ExploreActorGui {
 		mLeftPanel.layout();
 	}
 
-	/**
-	 * Reset search filters
-	 */
 	@Override
 	protected void resetSearchFilters() {
 		super.resetSearchFilters();
@@ -362,20 +357,20 @@ public class ExploreEnemyGui extends ExploreActorGui {
 		}
 	}
 
-	/**
-	 * Reset enumeration buttons
-	 * @param buttons all the buttons
-	 * @param checkedEnums all enumerations that should be checked
-	 */
-	private void resetEnumButtons(Button[] buttons, ArrayList<? extends Enum<?>> checkedEnums) {
-		for (Button button : buttons) {
-			button.setChecked(false);
-		}
+	@Override
+	protected void clearSearchFilters() {
+		super.clearSearchFilters();
 
-		for (Enum<?> enumeration : checkedEnums) {
-			buttons[enumeration.ordinal()].setChecked(true);
-		}
+		clearButtons(mWidgets.search.movementTypes);
+		clearButtons(mWidgets.search.movementSpeeds);
+		clearButtons(mWidgets.search.collisionDamages);
+		clearButtons(mWidgets.search.bulletSpeeds);
+		clearButtons(mWidgets.search.bulletDamages);
+
+		mWidgets.search.destroyOnCollideAny.setChecked(true);
+		mWidgets.search.weaponAny.setChecked(true);
 	}
+
 
 	/**
 	 * Sets the explore scene

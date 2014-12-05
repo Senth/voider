@@ -217,7 +217,7 @@ public class TabWidget extends AlignTable {
 		button.addListener(mTabVisibilityListener);
 		button.addListener(mTabCheckListener);
 		hider.addToggleActor(addActor);
-		hider.setButton(button);
+		hider.addButton(button);
 		mContentInnerTable.add(addActor).setFillWidth(true).setFillHeight(true);
 		mContentInnerTable.getRow().setFillWidth(true).setFillHeight(true);
 		invalidateHierarchy();

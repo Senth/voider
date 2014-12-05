@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.explore;
 
-import java.util.List;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
@@ -73,28 +71,13 @@ public class ExploreActorGui extends ExploreGui {
 	}
 
 	/**
-	 * Add actors to the content table
-	 * @param actors all actors to append to the content table
-	 */
-	protected void addContent(List<? extends DefEntity> actors) {
-		beginAddContent();
-		DefEntity selectedActor = mScene.getSelected();
-
-		for (DefEntity actor : actors) {
-			boolean selected = selectedActor == actor;
-			addContent(createActorTable(actor, selected));
-		}
-
-		endAddContent();
-	}
-
-	/**
 	 * Creates actor content table
 	 * @param actor the actor to create
 	 * @param selected true if the actor is selected
 	 * @return table with actor image and name
 	 */
-	protected AlignTable createActorTable(final DefEntity actor, boolean selected) {
+	@Override
+	protected AlignTable createContentActor(final DefEntity actor, boolean selected) {
 		AlignTable table = new AlignTable();
 		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 

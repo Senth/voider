@@ -4,12 +4,15 @@ import java.util.ArrayList;
 
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.AimTypes;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.CollisionDamageSearchRanges;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
@@ -28,7 +31,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	 * @param action the action to do when an enemy is selected
 	 */
 	ExploreEnemyScene(ExploreActions action) {
-		super(new ExploreEnemyGui(), action);
+		super(new ExploreEnemyGui(), action, EnemyActorDef.class);
 
 		((ExploreEnemyGui) mGui).setExploreEnemyScene(this);
 	}
@@ -91,9 +94,64 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	protected void repopulateContent() {
 		if (mOnlineSearch) {
 			mEnemyFetch.fetch();
-		} else {
-			super.repopulateContent();
 		}
+
+		super.repopulateContent();
+	}
+
+	@Override
+	protected boolean defPassesFilter(DefEntity defEntity) {
+		EnemyDefEntity enemyDefEntity = (EnemyDefEntity) defEntity;
+
+		// Movement type
+		if (!isObjectInFilterList(mSearchCriteria.movementTypes, enemyDefEntity.movementType)) {
+			return false;
+		}
+
+		// Movement Speed
+		if (enemyDefEntity.movementType != MovementTypes.STATIONARY) {
+			if (!isObjectInFilterList(mSearchCriteria.movementSpeedRanges, EnemySpeedSearchRanges.getRange(enemyDefEntity.movementSpeed))) {
+				return false;
+			}
+		}
+
+		// Weapon
+		if (mSearchCriteria.hasWeapon != null) {
+			// Has weapon
+			if (mSearchCriteria.hasWeapon != enemyDefEntity.hasWeapon) {
+				return false;
+			}
+
+			// Only if we have any weapon
+			if (mSearchCriteria.hasWeapon) {
+				// Bullet speed
+				if (!isObjectInFilterList(mSearchCriteria.bulletSpeedRanges, BulletSpeedSearchRanges.getRange(enemyDefEntity.bulletSpeed))) {
+					return false;
+				}
+
+				// Bullet damage
+				if (!isObjectInFilterList(mSearchCriteria.bulletDamageRanges, BulletDamageSearchRanges.getRange(enemyDefEntity.bulletDamage))) {
+					return false;
+				}
+
+				// Aim type
+				if (!isObjectInFilterList(mSearchCriteria.aimTypes, enemyDefEntity.aimType)) {
+					return false;
+				}
+			}
+		}
+
+		// Destroy on collide
+		if (mSearchCriteria.destroyOnCollide != null && mSearchCriteria.destroyOnCollide != enemyDefEntity.destroyOnCollide) {
+			return false;
+		}
+
+		// Collision damage
+		if (!isObjectInFilterList(mSearchCriteria.collisionDamageRanges, CollisionDamageSearchRanges.getRange(enemyDefEntity.collisionDamage))) {
+			return false;
+		}
+
+		return super.defPassesFilter(defEntity);
 	}
 
 	/**

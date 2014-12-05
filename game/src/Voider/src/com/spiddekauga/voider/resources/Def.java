@@ -15,6 +15,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.User;
@@ -51,6 +54,52 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		mRevision = def.mRevision;
 		mRevisedByKey = def.mRevisedByKey;
 		mOriginalCreatorKey = def.mOriginalCreatorKey;
+	}
+
+	/**
+	 * Creates a DefEntity from this definition.
+	 * @param toOnline if this is set to true some of the variables will be set other will
+	 *        not. These will be set <b>Online:</b> png, dependencies;
+	 *        <b>Offline:</b>drawable.
+	 * @return this definition converted to a def entity
+	 */
+	public final DefEntity toDefEntity(boolean toOnline) {
+		DefEntity defEntity = newDefEntity();
+		setNewDefEntity(defEntity, toOnline);
+		return defEntity;
+	}
+
+	/**
+	 * Sets the def entity. Called from {@link #toDefEntity(boolean)}
+	 * @param defEntity the def entity to set
+	 * @param toOnline
+	 */
+	protected void setNewDefEntity(DefEntity defEntity, boolean toOnline) {
+		defEntity.copyParentId = mCopyParentId;
+		defEntity.date = mDate;
+		defEntity.description = mDescription;
+		defEntity.name = mName;
+		defEntity.originalCreator = mOriginalCreator;
+		defEntity.originalCreatorKey = mOriginalCreatorKey;
+		defEntity.resourceId = mUniqueId;
+		defEntity.revisedBy = mRevisedBy;
+		defEntity.revisedByKey = mRevisedByKey;
+		defEntity.type = UploadTypes.fromId(ExternalTypes.fromType(this.getClass()).getId());
+
+		if (toOnline) {
+			defEntity.dependencies.addAll(mExternalDependencies.keySet());
+			defEntity.png = mPngBytes;
+		} else {
+			defEntity.drawable = getTextureRegionDrawable();
+		}
+	}
+
+	/**
+	 * Creates a def entity
+	 * @return new empty defEntity
+	 */
+	protected DefEntity newDefEntity() {
+		return new DefEntity();
 	}
 
 	@Override

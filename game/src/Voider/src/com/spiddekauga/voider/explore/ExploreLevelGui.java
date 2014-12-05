@@ -35,6 +35,7 @@ import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
@@ -474,30 +475,42 @@ public class ExploreLevelGui extends ExploreGui {
 		beginAddContent();
 		LevelInfoEntity selectedLevel = mExploreScene.getSelectedLevel();
 
-		// for (int i = 0; i < 5; ++i) {
 		for (LevelInfoEntity level : levels) {
 			boolean selected = selectedLevel == level;
 			addContent(createLevelTable(level, selected));
 		}
-		// }
 
 		endAddContent();
 	}
 
-	/**
-	 * Create level image table
-	 * @param level the level to create an image table for
-	 * @param selected true if it should be selected from the start
-	 * @return table with level image, name and rating
-	 */
-	private AlignTable createLevelTable(final LevelInfoEntity level, boolean selected) {
+	@Override
+	protected Actor createContentActor(DefEntity defEntity, boolean selected) {
+		return createTable(defEntity, selected);
+	}
+
+	private AlignTable createTable(Object entity, boolean selected) {
 		AlignTable table = new AlignTable();
 		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+
+		int rating = -1;
+		final DefEntity defEntity;
+		final LevelInfoEntity levelInfoEntity;
+		if (entity instanceof DefEntity) {
+			defEntity = (DefEntity) entity;
+			levelInfoEntity = null;
+		} else if (entity instanceof LevelInfoEntity) {
+			levelInfoEntity = (LevelInfoEntity) entity;
+			defEntity = levelInfoEntity.defEntity;
+			rating = levelInfoEntity.stats.getIntRating();
+		} else {
+			defEntity = null;
+			levelInfoEntity = null;
+		}
 
 		// Image button
 		ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
 		ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
-		imageButtonStyle.imageUp = (Drawable) level.defEntity.drawable;
+		imageButtonStyle.imageUp = (Drawable) defEntity.drawable;
 
 		Button button = new ImageButton(imageButtonStyle);
 		button.setChecked(selected);
@@ -507,7 +520,11 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
-					mExploreScene.setSelectedLevel(level);
+					if (levelInfoEntity != null) {
+						mExploreScene.setSelectedLevel(levelInfoEntity);
+					}
+					mExploreScene.setSelected(defEntity);
+					resetInfo();
 				}
 			}
 
@@ -530,15 +547,21 @@ public class ExploreLevelGui extends ExploreGui {
 
 		// Level name
 		table.row();
-		mUiFactory.text.add(level.defEntity.name, table);
+		mUiFactory.text.add(defEntity.name, table);
 		table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 
 		// Rating
-		table.row();
-		RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.disabled, table, null);
-		ratingWidget.setRating(level.stats.getIntRating());
+		if (rating != -1) {
+			table.row();
+			RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.disabled, table, null);
+			ratingWidget.setRating(rating);
+		}
 
 		return table;
+	}
+
+	private AlignTable createLevelTable(LevelInfoEntity level, boolean selected) {
+		return createTable(level, selected);
 	}
 
 	/**

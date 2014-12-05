@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.explore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,6 +30,7 @@ import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -88,7 +92,6 @@ abstract class ExploreGui extends Gui {
 	public void resetValues() {
 		super.resetValues();
 
-		resetContent();
 		resetSearchFilters();
 	}
 
@@ -135,11 +138,11 @@ abstract class ExploreGui extends Gui {
 	protected void addViewButton(ISkinNames iconName, ButtonListener listener, HideListener... hideListeners) {
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(iconName));
 		mWidgets.view.table.add(button);
-		mWidgets.view.buttonGroup.add(button);
 		button.addListener(listener);
+		mWidgets.view.buttonGroup.add(button);
 
 		for (HideListener hideListener : hideListeners) {
-			hideListener.setButton(button);
+			hideListener.addButton(button);
 		}
 	}
 
@@ -168,6 +171,31 @@ abstract class ExploreGui extends Gui {
 
 		initPanel(tabWidget);
 	}
+
+	/**
+	 * Add definitions to the content table
+	 * @param defs all definitions to add to the content
+	 */
+	protected final void addContent(List<? extends DefEntity> defs) {
+		beginAddContent();
+
+		DefEntity selectedDef = mScene.getSelected();
+
+		for (DefEntity def : defs) {
+			boolean selected = selectedDef == def;
+			addContent(createContentActor(def, selected));
+		}
+
+		endAddContent();
+	}
+
+	/**
+	 * Creates the content UI actor to display inside the content from a definition
+	 * @param defEntity the definition to create the content from
+	 * @param selected if the current definition is selected
+	 * @return actor to be added to the content
+	 */
+	protected abstract Actor createContentActor(final DefEntity defEntity, boolean selected);
 
 	/**
 	 * Initialize view buttons
@@ -242,6 +270,12 @@ abstract class ExploreGui extends Gui {
 		mWidgets.search.publishedAny = anyTab.getButton();
 		mWidgets.search.publishedYes = onTab.getButton();
 		mWidgets.search.publishedNo = offTab.getButton();
+		mWidgets.search.publishedHider.addToggleActor(anyTab.getButton());
+		mWidgets.search.publishedHider.addToggleActor(onTab.getButton());
+		mWidgets.search.publishedHider.addToggleActor(offTab.getButton());
+		mWidgets.search.publishedHider.addChild(anyTab.getHider());
+		mWidgets.search.publishedHider.addChild(onTab.getHider());
+		mWidgets.search.publishedHider.addChild(offTab.getHider());
 
 
 		// Only mine
@@ -252,6 +286,7 @@ abstract class ExploreGui extends Gui {
 			}
 		};
 		mWidgets.search.onlyMine = mUiFactory.button.addCheckBoxRow("Only mine", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
+		mWidgets.search.publishedHider.addToggleActor(mWidgets.search.onlyMine);
 
 
 		// Clear button
@@ -269,6 +304,7 @@ abstract class ExploreGui extends Gui {
 
 	/**
 	 * Reset search filters
+	 * @see #clearSearchFilters() to set to default values
 	 */
 	protected void resetSearchFilters() {
 		mWidgets.search.searchText.setText(mScene.getSearchString());
@@ -282,6 +318,16 @@ abstract class ExploreGui extends Gui {
 		} else {
 			mWidgets.search.publishedNo.setChecked(true);
 		}
+	}
+
+	/**
+	 * Clear search filters
+	 * @see #resetSearchFilters()
+	 */
+	protected void clearSearchFilters() {
+		mWidgets.search.searchText.setText("");
+		mWidgets.search.onlyMine.setChecked(false);
+		mWidgets.search.publishedAny.setChecked(true);
 	}
 
 	/**
@@ -562,6 +608,29 @@ abstract class ExploreGui extends Gui {
 		table.invalidate();
 
 		return row;
+	}
+
+	/**
+	 * Reset enumeration buttons
+	 * @param buttons all the buttons
+	 * @param checkedEnums all enumerations that should be checked
+	 */
+	protected static void resetEnumButtons(Button[] buttons, ArrayList<? extends Enum<?>> checkedEnums) {
+		clearButtons(buttons);
+
+		for (Enum<?> enumeration : checkedEnums) {
+			buttons[enumeration.ordinal()].setChecked(true);
+		}
+	}
+
+	/**
+	 * Clear all buttons
+	 * @param buttons all buttons to set as unchecked
+	 */
+	protected static void clearButtons(Button[] buttons) {
+		for (Button button : buttons) {
+			button.setChecked(false);
+		}
 	}
 
 	private boolean mAddingContent = false;

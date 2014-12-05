@@ -18,6 +18,7 @@ public class ExploreFactory {
 	 * @return correct explore scene for this type, null if no explore scene exists for
 	 *         this type
 	 */
+	@SuppressWarnings("unchecked")
 	public static ExploreScene create(Class<? extends Def> defType, ExploreActions action) {
 		if (LevelDef.class == defType) {
 			return new ExploreLevelScene(action);
@@ -30,7 +31,7 @@ public class ExploreFactory {
 				return new ExploreBulletScene(action);
 			}
 
-			return new ExploreActorScene(action);
+			return new ExploreActorScene(action, (Class<? extends ActorDef>) defType);
 		}
 
 		return null;

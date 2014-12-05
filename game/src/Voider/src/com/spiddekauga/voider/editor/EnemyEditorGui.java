@@ -585,7 +585,7 @@ public class EnemyEditorGui extends ActorGui {
 		mTooltip.add(stationaryTab.getButton(), Messages.EditorTooltips.MOVEMENT_STATIONARY);
 
 		// Hider for path labels
-		HideListener pathLabelHider = new HideListener(pathTab.getButton(), true);
+		HideListener pathLabelHider = new HideListener(true, pathTab.getButton());
 		pathLabelHider.addToggleActor(mWidgets.path.backForth);
 		pathLabelHider.addToggleActor(mWidgets.path.once);
 		pathLabelHider.addToggleActor(mWidgets.path.loop);

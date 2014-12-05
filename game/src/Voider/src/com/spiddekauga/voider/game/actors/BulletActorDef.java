@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 
 /**
  * Bullet actor definition, does nothing more than specify that the actor is a bullet
@@ -16,5 +18,10 @@ public class BulletActorDef extends ActorDef {
 		getBodyDef().type = BodyType.DynamicBody;
 
 		setDestroyOnCollide(true);
+	}
+
+	@Override
+	protected DefEntity newDefEntity() {
+		return new BulletDefEntity();
 	}
 }

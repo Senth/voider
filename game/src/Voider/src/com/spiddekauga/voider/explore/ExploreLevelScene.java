@@ -13,6 +13,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
@@ -38,7 +39,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 * @param action the action to do when a level is selected
 	 */
 	ExploreLevelScene(ExploreActions action) {
-		super(new ExploreLevelGui(), action);
+		super(new ExploreLevelGui(), action, LevelDef.class);
 
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 
@@ -142,9 +143,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	protected void repopulateContent() {
 		if (getView().isOnline()) {
 			mLevelFetch.fetch();
-		} else {
-			super.repopulateContent();
 		}
+		super.repopulateContent();
 	}
 
 	/**
@@ -163,11 +163,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		}
 	}
 
-	/**
-	 * Go back to main menu
-	 */
-	void gotoMainMenu() {
-		setOutcome(Outcomes.NOT_APPLICAPLE);
+	@Override
+	protected boolean defPassesFilter(DefEntity defEntity) {
+		// TODO
+
+		return super.defPassesFilter(defEntity);
 	}
 
 	@Override
@@ -218,8 +218,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 */
 	void setSelectedLevel(LevelInfoEntity level) {
 		mSelectedLevel = level;
-
-		((ExploreLevelGui) mGui).resetInfo();
 
 		// Get comments
 		mCommentFetch.fetch(false);

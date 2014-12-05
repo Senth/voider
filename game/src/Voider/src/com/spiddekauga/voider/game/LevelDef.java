@@ -5,6 +5,8 @@ import java.util.UUID;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
@@ -39,6 +41,21 @@ public class LevelDef extends Def {
 		mStartXCoord = def.mStartXCoord;
 		mTheme = def.mTheme;
 		mLengthInTime = def.mLengthInTime;
+	}
+
+	@Override
+	protected void setNewDefEntity(DefEntity defEntity, boolean toOnline) {
+		super.setNewDefEntity(defEntity, toOnline);
+
+		LevelDefEntity levelDefEntity = (LevelDefEntity) defEntity;
+		levelDefEntity.levelId = mLevelId;
+		levelDefEntity.levelSpeed = mSpeed;
+		levelDefEntity.levelLength = mLengthInTime;
+	}
+
+	@Override
+	protected DefEntity newDefEntity() {
+		return new LevelDefEntity();
 	}
 
 	@Override

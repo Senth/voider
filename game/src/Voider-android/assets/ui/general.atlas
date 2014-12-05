@@ -1130,6 +1130,13 @@ explore_online_search_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
+explore_online_search_over
+  rotate: false
+  xy: 2207, 201
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 search_checked_over
   rotate: false
   xy: 2207, 201

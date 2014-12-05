@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -15,10 +14,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.net.IDownloadProgressListener;
 import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.actors.BulletActorDef;
-import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.BlobDownloadMethod;
@@ -36,7 +31,6 @@ import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse
 import com.spiddekauga.voider.network.entities.resource.FetchMethod;
 import com.spiddekauga.voider.network.entities.resource.FetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
-import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
@@ -61,7 +55,6 @@ import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.repo.WebRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.IResourcePng;
 
 /**
  * Web repository for resources
@@ -165,7 +158,7 @@ public class ResourceWebRepo extends WebRepo {
 
 		for (IResource resource : resources) {
 			if (resource instanceof Def) {
-				DefEntity defEntity = createDefEntity((Def) resource);
+				DefEntity defEntity = ((Def) resource).toDefEntity(true);
 
 				if (defEntity != null) {
 					method.defs.add(defEntity);
@@ -176,115 +169,6 @@ public class ResourceWebRepo extends WebRepo {
 		return method;
 	}
 
-	/**
-	 * Creates Entities from definitions
-	 * @param def the definition to convert from an entity
-	 * @return DefEntity for the specified definition
-	 */
-	private static DefEntity createDefEntity(Def def) {
-		DefEntity entity = null;
-
-		// Bullet
-		if (def instanceof BulletActorDef) {
-			BulletDefEntity bulletEntity = new BulletDefEntity();
-			setBulletDefEntity((BulletActorDef) def, bulletEntity);
-			entity = bulletEntity;
-		}
-		// Enemy
-		else if (def instanceof EnemyActorDef) {
-			EnemyDefEntity enemyEntity = new EnemyDefEntity();
-			setEnemyDefEntity((EnemyActorDef) def, enemyEntity);
-			entity = enemyEntity;
-		}
-		// Level
-		else if (def instanceof LevelDef) {
-			LevelDefEntity levelEntity = new LevelDefEntity();
-			setLevelDefEntity((LevelDef) def, levelEntity);
-			entity = levelEntity;
-		}
-		// TODO Campaign
-		// Else unknown
-		else {
-			Gdx.app.error("ResourceWebRepo", "Unknown Def type: " + def.getClass().getSimpleName());
-		}
-
-		return entity;
-	}
-
-	/**
-	 * Converts an EnemyActorDef to EnemyDefEntity
-	 * @param enemyDef the enemy definition to convert
-	 * @param enemyEntity the enemy entity to set
-	 */
-	private static void setEnemyDefEntity(EnemyActorDef enemyDef, EnemyDefEntity enemyEntity) {
-		setDefEntity(enemyDef, enemyEntity);
-
-		// Weapon
-		enemyEntity.hasWeapon = enemyDef.hasWeapon() && enemyDef.getWeaponDef().getBulletActorDef() != null;
-		if (enemyEntity.hasWeapon) {
-			enemyEntity.bulletSpeed = enemyDef.getWeaponDef().getBulletSpeed();
-			enemyEntity.bulletDamage = enemyDef.getWeaponDef().getDamage();
-			enemyEntity.aimType = enemyDef.getAimType();
-		}
-
-		// Movement
-		enemyEntity.movementType = enemyDef.getMovementType();
-		if (enemyEntity.movementType != MovementTypes.STATIONARY) {
-			enemyEntity.movementSpeed = enemyDef.getSpeed();
-		}
-
-		// Collision
-		enemyEntity.collisionDamage = enemyDef.getCollisionDamage();
-		enemyEntity.destroyOnCollide = enemyDef.isDestroyedOnCollide();
-	}
-
-	/**
-	 * Converts a BulletActorDef to BulletDefEntity
-	 * @param bulletDef bullet definition to convert from
-	 * @param bulletEntity bullet entity to set
-	 */
-	private static void setBulletDefEntity(BulletActorDef bulletDef, BulletDefEntity bulletEntity) {
-		setDefEntity(bulletDef, bulletEntity);
-	}
-
-	/**
-	 * Converts a LevelDef to LevelDefEntity
-	 * @param levelDef the level definition to convert
-	 * @param levelEntity level entity to set
-	 */
-	private static void setLevelDefEntity(LevelDef levelDef, LevelDefEntity levelEntity) {
-		setDefEntity(levelDef, levelEntity);
-
-		levelEntity.levelLength = levelDef.getLengthInTime();
-		levelEntity.levelSpeed = levelDef.getBaseSpeed();
-		levelEntity.levelId = levelDef.getLevelId();
-	}
-
-	/**
-	 * Converts a Def to DefEntity
-	 * @param def the definition to convert
-	 * @param defEntity the entity to set
-	 */
-	private static void setDefEntity(Def def, DefEntity defEntity) {
-		defEntity.name = def.getName();
-		defEntity.revisedBy = def.getRevisedBy();
-		defEntity.originalCreator = def.getOriginalCreator();
-		defEntity.description = def.getDescription();
-		defEntity.copyParentId = def.getCopyParentId();
-		defEntity.resourceId = def.getId();
-		defEntity.date = def.getDate();
-		defEntity.revisedByKey = def.getRevisedByKey();
-		defEntity.originalCreatorKey = def.getOriginalCreatorKey();
-
-		if (def instanceof IResourcePng) {
-			defEntity.png = ((IResourcePng) def).getPngImage();
-		}
-
-		// Set dependencies
-		for (Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
-			defEntity.dependencies.add(entry.getKey());
-		}
-	}
 
 	@Override
 	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] callerResponseListeners) {

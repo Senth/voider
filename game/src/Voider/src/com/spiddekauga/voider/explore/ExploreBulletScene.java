@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.explore;
 
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.BulletFetchMethod;
@@ -18,7 +19,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 	 * @param action the action to do when a bullet is selected
 	 */
 	ExploreBulletScene(ExploreActions action) {
-		super(new ExploreBulletGui(), action);
+		super(new ExploreBulletGui(), action, BulletActorDef.class);
 
 		((ExploreBulletGui) mGui).setExploreBulletScene(this);
 	}
@@ -54,22 +55,34 @@ public class ExploreBulletScene extends ExploreActorScene {
 	protected void repopulateContent() {
 		if (getView().isOnline()) {
 			mBulletFetch.fetch();
-		} else {
-			super.repopulateContent();
 		}
+
+		super.repopulateContent();
 	}
 
 	/**
 	 * Fetches new bullets with this search string
 	 * @param searchString
 	 */
-	void fetch(String searchString) {
+	@Override
+	protected void setSearchString(String searchString) {
 		if (getView().isOnline()) {
 			if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
 				mBulletFetch.fetch(searchString);
 			} else {
 				mBulletFetch.fetch("");
 			}
+		} else {
+			super.setSearchString(searchString);
+		}
+	}
+
+	@Override
+	protected String getSearchString() {
+		if (getView().isOnline()) {
+			return mBulletFetch.mLastSearch;
+		} else {
+			return super.getSearchString();
 		}
 	}
 

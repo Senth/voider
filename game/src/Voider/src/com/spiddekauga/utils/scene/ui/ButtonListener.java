@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener.VisibilityChangeEvent;
 
@@ -45,7 +46,15 @@ public abstract class ButtonListener implements EventListener {
 					lastChecked.set(button.isChecked());
 
 					onChecked(button, button.isChecked());
-					if (button.getStyle().checked == null || button.isChecked()) {
+					boolean hasCheckedImage = false;
+					if (button.getStyle().checked != null) {
+						hasCheckedImage = true;
+					} else if (button.getStyle() instanceof ImageButtonStyle) {
+						if (((ImageButtonStyle) button.getStyle()).imageChecked != null) {
+							hasCheckedImage = true;
+						}
+					}
+					if (!hasCheckedImage || button.isChecked()) {
 						onPressed(button);
 					}
 				}

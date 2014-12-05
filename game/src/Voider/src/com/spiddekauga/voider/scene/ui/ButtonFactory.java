@@ -440,7 +440,7 @@ public class ButtonFactory extends BaseFactory {
 			table.add(tab.mButton);
 			buttonGroup.add(tab.mButton);
 			parentHider.addToggleActor(tab.mButton);
-			tab.mHider.setButton(tab.mButton);
+			tab.mHider.addButton(tab.mButton);
 			parentHider.addChild(tab.mHider);
 
 			if (tab.mButtonListener != null) {
