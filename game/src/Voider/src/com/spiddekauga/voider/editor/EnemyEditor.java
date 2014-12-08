@@ -24,6 +24,8 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.editor.Editor.ImageSaveOnActor.Locations;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
+import com.spiddekauga.voider.explore.ExploreActions;
+import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -36,13 +38,13 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.menu.SelectDefScene;
+import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
@@ -117,35 +119,24 @@ public class EnemyEditor extends ActorEditor {
 
 		Actor.setPlayerActor(mPlayerActor);
 
-		if (outcome == Outcomes.DEF_SELECTED) {
-			if (message instanceof ResourceItem) {
-				switch (mSelectionAction) {
-				case BULLET_TYPE:
-					mInvoker.execute(new CEnemyBulletDefSelect(((ResourceItem) message).id, this));
-					break;
-
-				case LOAD_ENEMY: {
-					ResourceItem resourceItem = (ResourceItem) message;
-
-					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
-						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
-						ResourceCacheFacade.finishLoading();
-					}
-
-					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(resourceItem.id, resourceItem.revision));
-					setMovementType(mDef.getMovementType());
-					mGui.resetValues();
-					setSaved();
-					break;
-				}
-				}
-
-
-			} else {
-				Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
+		if (outcome == Outcomes.EXPLORE_SELECT) {
+			if (message instanceof BulletDefEntity) {
+				mInvoker.execute(new CEnemyBulletDefSelect(((BulletDefEntity) message).resourceId, this));
 			}
+		} else if (outcome == Outcomes.EXPLORE_LOAD) {
+			if (message instanceof EnemyActorDef) {
+				EnemyDefEntity enemyDefEntity = (EnemyDefEntity) message;
 
-			mSelectionAction = null;
+				if (!ResourceCacheFacade.isLoaded(enemyDefEntity.resourceId, enemyDefEntity.revision)) {
+					ResourceCacheFacade.load(this, enemyDefEntity.resourceId, true, enemyDefEntity.revision);
+					ResourceCacheFacade.finishLoading();
+				}
+
+				setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(enemyDefEntity.resourceId, enemyDefEntity.revision));
+				setMovementType(mDef.getMovementType());
+				mGui.resetValues();
+				setSaved();
+			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 		}
@@ -988,10 +979,8 @@ public class EnemyEditor extends ActorEditor {
 		if (mDef == null) {
 			return;
 		}
-		mSelectionAction = SelectionActions.BULLET_TYPE;
 
-		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, "Select", false, false, false);
-		SceneSwitcher.switchTo(selectionScene);
+		SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.SELECT));
 	}
 
 
@@ -1000,10 +989,7 @@ public class EnemyEditor extends ActorEditor {
 	 */
 	@Override
 	public void loadDef() {
-		mSelectionAction = SelectionActions.LOAD_ENEMY;
-
-		Scene selectionScene = new SelectDefScene(ExternalTypes.ENEMY_DEF, "Load", true, true, true);
-		SceneSwitcher.switchTo(selectionScene);
+		SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class, ExploreActions.LOAD));
 	}
 
 	/**
@@ -1260,19 +1246,6 @@ public class EnemyEditor extends ActorEditor {
 		setEnemyDef(null);
 	}
 
-	/**
-	 * Which selection action we're currently using (when a SelectDefScene is active)
-	 */
-	private enum SelectionActions {
-		/** Bullet type for the weapon */
-		BULLET_TYPE,
-		/** Load an existing enemy */
-		LOAD_ENEMY,
-	}
-
-
-	/** Current selection action, null if none */
-	private SelectionActions mSelectionAction = null;
 	/** Current enemy actor */
 	private EnemyActor mEnemyActor = new EnemyActor();
 	/** Enemy actor for path once */

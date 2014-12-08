@@ -8,16 +8,16 @@ import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.explore.ExploreActions;
+import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
-import com.spiddekauga.voider.menu.SelectDefScene;
+import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -50,26 +50,20 @@ public class BulletEditor extends ActorEditor {
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		if (outcome == Outcomes.DEF_SELECTED) {
-			switch (mSelectionAction) {
-			case LOAD_BULLET:
-				if (message instanceof ResourceItem) {
-					ResourceItem resourceItem = (ResourceItem) message;
+		if (outcome == Outcomes.EXPLORE_LOAD) {
+			if (message instanceof BulletDefEntity) {
+				BulletDefEntity bulletDefEntity = (BulletDefEntity) message;
 
-					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
-						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
-						ResourceCacheFacade.finishLoading();
-					}
-
-					BulletActorDef bulletDef = ResourceCacheFacade.get(resourceItem.id, resourceItem.revision);
-					setDef(bulletDef);
-					mGui.resetValues();
-					setSaved();
-					mInvoker.dispose();
-				} else {
-					Gdx.app.error("BulletEditor", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
+				if (!ResourceCacheFacade.isLoaded(bulletDefEntity.resourceId, bulletDefEntity.revision)) {
+					ResourceCacheFacade.load(this, bulletDefEntity.resourceId, true, bulletDefEntity.revision);
+					ResourceCacheFacade.finishLoading();
 				}
-				break;
+
+				BulletActorDef bulletDef = ResourceCacheFacade.get(bulletDefEntity.resourceId, bulletDefEntity.revision);
+				setDef(bulletDef);
+				mGui.resetValues();
+				setSaved();
+				mInvoker.dispose();
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
@@ -172,10 +166,7 @@ public class BulletEditor extends ActorEditor {
 
 	@Override
 	public void loadDef() {
-		mSelectionAction = SelectionActions.LOAD_BULLET;
-
-		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, "Load", true, true, true);
-		SceneSwitcher.switchTo(selectionScene);
+		SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.LOAD));
 	}
 
 	@Override
@@ -247,13 +238,6 @@ public class BulletEditor extends ActorEditor {
 		}
 	}
 
-	/**
-	 * Enumeration for what we're currently selecting from a selection scene
-	 */
-	private enum SelectionActions {
-		/** Loading another bullet */
-		LOAD_BULLET
-	}
 
 	/**
 	 * Sets a new definition for the bullet
@@ -289,8 +273,6 @@ public class BulletEditor extends ActorEditor {
 	private Weapon mWeapon = new Weapon();
 	/** Current bullet definition */
 	private BulletActorDef mDef = null;
-	/** Current selection scene */
-	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
 	private final static Vector2 SHOOT_DIRECTION = new Vector2(1, 0);
 }

@@ -15,14 +15,14 @@ import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
+import com.spiddekauga.voider.explore.ExploreActions;
+import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.menu.SelectDefScene;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -54,26 +54,20 @@ public class ShipEditor extends ActorEditor {
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		if (outcome == Outcomes.DEF_SELECTED) {
-			switch (mSelectionAction) {
-			case LOAD_SHIP:
-				if (message instanceof ResourceItem) {
-					ResourceItem resourceItem = (ResourceItem) message;
+		if (outcome == Outcomes.EXPLORE_LOAD) {
+			if (message instanceof DefEntity) {
+				DefEntity defEntity = (DefEntity) message;
 
-					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
-						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
-						ResourceCacheFacade.finishLoading();
-					}
-
-					PlayerActorDef playerDef = ResourceCacheFacade.get(resourceItem.id, resourceItem.revision);
-					setDef(playerDef);
-					mGui.resetValues();
-					setSaved();
-					mInvoker.dispose();
-				} else {
-					Gdx.app.error("BulletEditor", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
+				if (!ResourceCacheFacade.isLoaded(defEntity.resourceId, defEntity.revision)) {
+					ResourceCacheFacade.load(this, defEntity.resourceId, true, defEntity.revision);
+					ResourceCacheFacade.finishLoading();
 				}
-				break;
+
+				PlayerActorDef playerDef = ResourceCacheFacade.get(defEntity.resourceId, defEntity.revision);
+				setDef(playerDef);
+				mGui.resetValues();
+				setSaved();
+				mInvoker.dispose();
 			}
 		}
 	}
@@ -303,10 +297,7 @@ public class ShipEditor extends ActorEditor {
 
 	@Override
 	public void loadDef() {
-		mSelectionAction = SelectionActions.LOAD_SHIP;
-
-		Scene selectionScene = new SelectDefScene(ExternalTypes.PLAYER_DEF, "Load", false, true, true);
-		SceneSwitcher.switchTo(selectionScene);
+		SceneSwitcher.switchTo(ExploreFactory.create(PlayerActorDef.class, ExploreActions.LOAD));
 	}
 
 	@Override
@@ -349,14 +340,6 @@ public class ShipEditor extends ActorEditor {
 		}
 
 		setSaved();
-	}
-
-	/**
-	 * Enumeration for what we're currently selecting
-	 */
-	private enum SelectionActions {
-		/** Load a ship */
-		LOAD_SHIP,
 	}
 
 	@Override
@@ -410,7 +393,6 @@ public class ShipEditor extends ActorEditor {
 
 
 	private PlayerActor mActor = new PlayerActor();
-	private SelectionActions mSelectionAction = null;
 	private PlayerActorDef mDef = null;
 	private MouseJointDef mMouseJointDef = new MouseJointDef();
 	private static final int INVALID_POINTER = -1;

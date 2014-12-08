@@ -72,19 +72,8 @@ class MainMenuGui extends MenuGui {
 	 * Initializes the main menu
 	 */
 	private void initMainMenu() {
-		// Play
-		mMainTable.row();
-		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mMenuScene.pushMenu(Menus.PLAY);
-			}
-		};
-
-
 		// Explore
-		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EXPLORE, "Explore", Positions.BOTTOM, null, mMainTable, null, null);
+		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {

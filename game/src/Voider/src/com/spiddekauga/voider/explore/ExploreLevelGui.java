@@ -322,7 +322,8 @@ public class ExploreLevelGui extends ExploreGui {
 		mRightPanel.layout();
 	}
 
-	protected void initInfo(AlignTable table, GuiHider hider) {
+	@Override
+	protected void initInfo(AlignTable table, HideListener hider) {
 		// TODO Make use of ExploreScene.initInfo(...)
 
 		// Name

@@ -237,14 +237,6 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		}
 	}
 
-	/**
-	 * Goes to new game
-	 */
-	void newGame() {
-		SelectDefScene selectLevelScene = new SelectDefScene(ExternalTypes.LEVEL_DEF, "Play", false, true, false);
-		SceneSwitcher.switchTo(selectLevelScene);
-	}
-
 	// -- Explore --
 	/**
 	 * Goes to the explore screen
@@ -295,8 +287,6 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	enum Menus {
 		/** Main menu, or first menu the player sees */
 		MAIN(MainMenuGui.class),
-		/** Play menu, visible after clicking play in main menu */
-		PLAY(PlayMenuGui.class),
 		/** Editor menu */
 		EDITOR(EditorSelectionGui.class),
 		/** Credits */

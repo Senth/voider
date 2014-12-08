@@ -23,7 +23,6 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Game;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
-import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.ActorAddTool;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
@@ -42,6 +41,8 @@ import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.editor.tools.TriggerSetTool;
 import com.spiddekauga.voider.editor.tools.ZoomTool;
+import com.spiddekauga.voider.explore.ExploreActions;
+import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -60,9 +61,10 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
-import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
@@ -75,7 +77,6 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -423,53 +424,39 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
 			}
-		} else if (loadingOutcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
-			/** @todo loading failed, load backup? */
-			mLoadingLevel = null;
-		} else if (loadingOutcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
-			/** @todo loading failed, missing file */
-			mLoadingLevel = null;
-		} else if (outcome == Outcomes.DEF_SELECTED) {
+		} else if (outcome == Outcomes.EXPLORE_SELECT) {
+			// mInvoker.execute(new CLevelPickupDefSelect(((ResourceItem) message).id,
+			// this));
+
+			if (message instanceof EnemyDefEntity) {
+				mInvoker.execute(new CLevelEnemyDefAdd(((EnemyDefEntity) message).resourceId, this));
+			}
+		} else if (outcome == Outcomes.EXPLORE_LOAD) {
 			mGui.hideMsgBoxes();
 
-			if (message instanceof ResourceItem) {
-				switch (mSelectionAction) {
-				case LEVEL:
-					ResourceItem resourceItem = (ResourceItem) message;
+			if (message instanceof LevelDefEntity) {
+				LevelDefEntity levelDefEntity = (LevelDefEntity) message;
 
-					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
-						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
-						ResourceCacheFacade.finishLoading();
-					}
-
-					mLoadingLevel = ResourceCacheFacade.get(resourceItem.id, resourceItem.revision);
-
-					// Only load level if it's not the current level we selected, or
-					// another revision
-					if (mLoadingLevel != null) {
-						if (mLevel == null || !mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
-							ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), resourceItem.revision);
-							Scene scene = getLoadingScene();
-							if (scene != null) {
-								SceneSwitcher.switchTo(scene);
-							}
-						} else {
-							mLoadingLevel = null;
-						}
-					}
-
-					break;
-
-				case PICKUP:
-					mInvoker.execute(new CLevelPickupDefSelect(((ResourceItem) message).id, this));
-					break;
-
-				case ENEMY:
-					mInvoker.execute(new CLevelEnemyDefAdd(((ResourceItem) message).id, this));
-					break;
+				if (!ResourceCacheFacade.isLoaded(levelDefEntity.resourceId, levelDefEntity.revision)) {
+					ResourceCacheFacade.load(this, levelDefEntity.resourceId, true, levelDefEntity.revision);
+					ResourceCacheFacade.finishLoading();
 				}
-			} else {
-				Gdx.app.error(getClass().getSimpleName(), "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
+
+				mLoadingLevel = ResourceCacheFacade.get(levelDefEntity.resourceId, levelDefEntity.revision);
+
+				// Only load level if it's not the current level we selected, or
+				// another revision
+				if (mLoadingLevel != null) {
+					if (mLevel == null || !mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
+						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), levelDefEntity.revision);
+						Scene scene = getLoadingScene();
+						if (scene != null) {
+							SceneSwitcher.switchTo(scene);
+						}
+					} else {
+						mLoadingLevel = null;
+					}
+				}
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
@@ -823,11 +810,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void loadDef() {
-		mSelectionAction = SelectionActions.LEVEL;
-
-		Scene scene = new SelectDefScene(ExternalTypes.LEVEL_DEF, "Load", true, true, true);
-		SceneSwitcher.switchTo(scene);
-
+		SceneSwitcher.switchTo(ExploreFactory.create(LevelDef.class, ExploreActions.LOAD));
 		setSaved();
 	}
 
@@ -1402,23 +1385,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Select pickup
-	 */
-	void selectPickup() {
-		mSelectionAction = SelectionActions.PICKUP;
-
-		Scene scene = new SelectDefScene(ExternalTypes.PICKUP_DEF, "Select", false, false, false);
-		SceneSwitcher.switchTo(scene);
-	}
-
-	/**
 	 * Select enemy
 	 */
 	void addEnemyToList() {
-		mSelectionAction = SelectionActions.ENEMY;
-
-		Scene scene = new SelectDefScene(ExternalTypes.ENEMY_DEF, "Select", false, true, false);
-		SceneSwitcher.switchTo(scene);
+		SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class, ExploreActions.SELECT));
 	}
 
 	/**
@@ -1794,25 +1764,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		return null;
 	}
 
-	/**
-	 * All definition selection actions
-	 */
-	private enum SelectionActions {
-		/** Select an enemy */
-		ENEMY,
-		/** Loads a level */
-		LEVEL,
-		/** Selects a pickup */
-		PICKUP,
-	}
-
 	private Texture mBackgroundBottom = null;
 	private Texture mBackgroundTop = null;
 	private byte[] mPngBytesBeforeTest = null;
 	private boolean mShowBackground = true;
 	private ArrayList<EnemyActorDef> mAddEnemies = new ArrayList<>();
 	private Level mLevel = null;
-	private SelectionActions mSelectionAction = null;
 	private LevelDef mLoadingLevel = null;
 	private ISelection mSelection = null;
 	private Tools mTool = Tools.SELECTION;

@@ -183,8 +183,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			break;
 
 		case LOAD:
+			setOutcome(Outcomes.EXPLORE_LOAD, mSelectedLevel.defEntity);
+			break;
+
 		case SELECT:
-			setOutcome(Outcomes.DEF_SELECTED, mSelectedLevel.defEntity);
+			setOutcome(Outcomes.EXPLORE_SELECT, mSelectedLevel.defEntity);
 			break;
 		}
 	}
