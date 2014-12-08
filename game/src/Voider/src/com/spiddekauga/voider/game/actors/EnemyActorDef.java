@@ -8,7 +8,6 @@ import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Collision;
 import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Movement;
 import com.spiddekauga.voider.config.IC_Editor.IC_Enemy.IC_Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
-import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.resources.Resource;
@@ -72,7 +71,7 @@ public class EnemyActorDef extends ActorDef {
 
 	@Override
 	protected DefEntity newDefEntity() {
-		return new BulletDefEntity();
+		return new EnemyDefEntity();
 	}
 
 	/**

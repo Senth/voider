@@ -519,7 +519,7 @@ public class SelectDefGui extends Gui {
 				int revisionInt = revisions.length - 1 - i;
 				RevisionEntity revisionInfo = resourceRevisions.get(i);
 				String dateString = mDateRepo.getDate(revisionInfo.date);
-				revisions[revisionInt] = String.format("%0" + revisionStringLength + "d - %s", revisionInfo.revision, dateString);
+				revisions[revisionInt] = String.format("%0" + revisionStringLength + "d  -  %s", revisionInfo.revision, dateString);
 			}
 		} else {
 			revisions = new String[0];

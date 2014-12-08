@@ -73,14 +73,16 @@ public abstract class Gui implements Disposable {
 	 */
 	public void resize(int width, int height) {
 		if (isInitialized()) {
+			mIsResizing = true;
 			dispose();
-			initGui();
-			resetValues();
 			if (mStage != null) {
 				mStage.getViewport().setWorldSize(width, height);
 				mStage.getViewport().update(width, height, true);
 				updateBackground();
 			}
+			initGui();
+			resetValues();
+			mIsResizing = false;
 		}
 	}
 
@@ -564,7 +566,7 @@ public abstract class Gui implements Disposable {
 		MsgBoxExecuter.fadeDuration = 0.01f;
 
 		// Notification messages
-		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
+		if (!mIsResizing && ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
 			mNotification = NotificationShower.getInstance();
 			mNotification.setStage(mStage);
 		}
@@ -755,6 +757,7 @@ public abstract class Gui implements Disposable {
 		return mVisible;
 	}
 
+	private boolean mIsResizing = false;
 	/** UI Factory for creating UI elements */
 	protected static UiFactory mUiFactory = UiFactory.getInstance();
 	/** If the GUI is visible */

@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -176,6 +177,9 @@ public class SceneSwitcher {
 	public static void resize(int width, int height) {
 		for (Scene scene : mScenes) {
 			scene.onResize(width, height);
+		}
+		if (!mScenes.isEmpty()) {
+			NotificationShower.getInstance().resetPosition();
 		}
 	}
 

@@ -427,9 +427,13 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 */
 	protected enum Outcomes {
 		/** Selected a definition */
-		DEF_SELECTED,
+		@Deprecated DEF_SELECTED,
 		/** Canceled definition selection */
-		DEF_SELECT_CANCEL,
+		@Deprecated DEF_SELECT_CANCEL,
+		/** A resource to be loaded was selected */
+		EXPLORE_LOAD,
+		/** A resource was selected */
+		EXPLORE_SELECT,
 		/** Level was successfully completed */
 		LEVEL_COMPLETED,
 		/** Player died during the level */

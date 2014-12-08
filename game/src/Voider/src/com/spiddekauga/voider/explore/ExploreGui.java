@@ -333,16 +333,18 @@ abstract class ExploreGui extends Gui {
 	 * @see #clearSearchFilters() to set to default values
 	 */
 	protected void resetSearchFilters() {
-		mWidgets.search.searchText.setText(mScene.getSearchString());
-		mWidgets.search.onlyMine.setChecked(mScene.isOnlyMine());
+		if (mWidgets.search.searchText != null) {
+			mWidgets.search.searchText.setText(mScene.getSearchString());
+			mWidgets.search.onlyMine.setChecked(mScene.isOnlyMine());
 
-		// Published
-		if (mScene.isPublished() == null) {
-			mWidgets.search.publishedAny.setChecked(true);
-		} else if (mScene.isPublished()) {
-			mWidgets.search.publishedYes.setChecked(true);
-		} else {
-			mWidgets.search.publishedNo.setChecked(true);
+			// Published
+			if (mScene.isPublished() == null) {
+				mWidgets.search.publishedAny.setChecked(true);
+			} else if (mScene.isPublished()) {
+				mWidgets.search.publishedYes.setChecked(true);
+			} else {
+				mWidgets.search.publishedNo.setChecked(true);
+			}
 		}
 	}
 
@@ -425,13 +427,9 @@ abstract class ExploreGui extends Gui {
 
 		updateRevisionList();
 
-		// Get latest revision number
-		int latestRevision = mWidgets.revision.list.getItems().size;
-
 		// TODO Set Commands
 		msgBox.addCancelButtonAndKeys();
-		msgBox.button("Latest");
-		msgBox.button("Select");
+		msgBox.button("Load Revision", new CExploreLoadRevision(mScene, this));
 
 		showMsgBox(msgBox);
 		getStage().setScrollFocus(mWidgets.revision.list);
@@ -454,7 +452,7 @@ abstract class ExploreGui extends Gui {
 			int arrayPos = revisions.length - 1 - i;
 			RevisionEntity revisionInfo = resourceRevisions.get(i);
 			String dateString = mDateRepo.getDate(revisionInfo.date);
-			revisions[arrayPos] = String.format("%0" + revisionStringLength + "d - %s", revisionInfo.revision, dateString);
+			revisions[arrayPos] = String.format("%0" + revisionStringLength + "d  -  %s", revisionInfo.revision, dateString);
 		}
 
 		mWidgets.revision.list.setItems(revisions);
@@ -777,6 +775,27 @@ abstract class ExploreGui extends Gui {
 		for (Button button : buttons) {
 			button.setChecked(false);
 		}
+	}
+
+	/**
+	 * @return selected revision
+	 */
+	int getSelectedRevision() {
+		if (mWidgets.revision.list != null) {
+			String revisionDateString = mWidgets.revision.list.getSelection().getLastSelected();
+
+			if (revisionDateString != null) {
+				String revisionString[] = revisionDateString.split("  ");
+
+				if (revisionString.length == 3) {
+					return Integer.parseInt(revisionString[0]);
+				} else {
+					Gdx.app.error("CSelectDefSetRevision", "Could not split revision string properly: " + revisionDateString);
+				}
+			}
+		}
+
+		return -1;
 	}
 
 	private boolean mAddingContent = false;

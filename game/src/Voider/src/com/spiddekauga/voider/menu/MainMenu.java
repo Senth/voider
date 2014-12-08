@@ -24,6 +24,7 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
@@ -120,11 +121,11 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 
 		mMusicPlayer.play(Music.TITLE, Interpolations.FADE_IN);
 
-		if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
-			/** @todo handle corrupt file */
-		} else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
-			/** @todo handle missing file */
-		} else if (outcome == Outcomes.DEF_SELECTED) {
+		if (outcome == Outcomes.EXPLORE_LOAD) {
+			if (message instanceof DefEntity) {
+				DefEntity defEntity = (DefEntity) message;
+				defEntity.revision = 0;
+			}
 			if (message instanceof ResourceItem) {
 				GameScene gameScene = new GameScene(false, false);
 				ResourceCacheFacade.load(gameScene, ((ResourceItem) message).id, false);

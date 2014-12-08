@@ -78,8 +78,11 @@ public class ExploreActorScene extends ExploreScene {
 	protected void onResourceDownloaded(ExploreActions action) {
 		switch (action) {
 		case LOAD:
+			setOutcome(Outcomes.EXPLORE_LOAD, getSelected());
+			break;
+
 		case SELECT:
-			setOutcome(Outcomes.DEF_SELECTED, getSelected());
+			setOutcome(Outcomes.EXPLORE_SELECT, getSelected());
 			break;
 
 		default:

@@ -92,6 +92,13 @@ public class NotificationShower {
 	}
 
 	/**
+	 * Reset the position of the notifications
+	 */
+	public void resetPosition() {
+		mOuterTable.invalidate();
+	}
+
+	/**
 	 * Remove all messages directly
 	 */
 	public void removeAllMessages() {

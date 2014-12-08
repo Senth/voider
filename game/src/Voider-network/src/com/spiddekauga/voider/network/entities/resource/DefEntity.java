@@ -38,4 +38,8 @@ public class DefEntity implements IEntity {
 	public Date date = null;
 	/** All dependencies */
 	public ArrayList<UUID> dependencies = new ArrayList<>();
+
+	// Other temporary variables (never used between networks)
+	/** Revision to load */
+	public int revision = -1;
 }

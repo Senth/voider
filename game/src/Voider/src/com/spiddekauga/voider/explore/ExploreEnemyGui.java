@@ -171,6 +171,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 	@Override
 	protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
+		super.initSearchFilters(table, contentHider);
+
 		// Movement Type
 		mUiFactory.text.addPanelSection("Movement Type", table, null);
 		table.row();

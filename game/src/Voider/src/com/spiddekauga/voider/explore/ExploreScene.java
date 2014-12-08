@@ -406,6 +406,16 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	/**
+	 * Set the revision to load instead of the current one (if applicable)
+	 * @param revision the revision to load
+	 */
+	void setRevision(int revision) {
+		if (mSelected != null) {
+			mSelected.revision = revision;
+		}
+	}
+
+	/**
 	 * Checks if an object exists in an array, but only if the array isn't empty. Helper
 	 * method for filtering
 	 * @param list the list to check
