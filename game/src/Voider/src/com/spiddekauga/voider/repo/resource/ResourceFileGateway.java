@@ -64,7 +64,7 @@ class ResourceFileGateway {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			Gdx.app.error("ResourceFileGateway", "Could not save the resource!\n" + Strings.stackTraceToString(e));
+			Gdx.app.error("ResourceFileGateway", "Could not save the resource!\n" + Strings.exceptionToString(e));
 			success = false;
 		}
 		Pools.kryo.free(kryo);
@@ -119,7 +119,8 @@ class ResourceFileGateway {
 	/**
 	 * Delete the specified file
 	 * @param filePath the file to delete
-	 * @return true if the file was deleted successfully, will return true even if the file does not exist
+	 * @return true if the file was deleted successfully, will return true even if the
+	 *         file does not exist
 	 */
 	boolean remove(String filePath) {
 		FileHandle deleteFile = Gdx.files.external(filePath);

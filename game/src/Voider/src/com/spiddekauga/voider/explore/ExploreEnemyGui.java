@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.explore;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Disposable;
@@ -56,8 +58,6 @@ public class ExploreEnemyGui extends ExploreActorGui {
 			@Override
 			protected void onPressed(Button button) {
 				mScene.setView(ExploreViews.ONLINE_SEARCH);
-				// REMOVE
-				mScene.setSearchOnline(true);
 			}
 		};
 		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
@@ -184,6 +184,14 @@ public class ExploreEnemyGui extends ExploreActorGui {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
 				mScene.setMovementType(getChecked());
+
+				// Hide movement speed if only stationary is active
+				ArrayList<MovementTypes> movementTypes = mScene.getMovementTypes();
+				if (movementTypes.size() == 1 && movementTypes.contains(MovementTypes.STATIONARY)) {
+					mWidgets.search.movementHider.hide();
+				} else {
+					mWidgets.search.movementHider.show();
+				}
 			}
 		};
 

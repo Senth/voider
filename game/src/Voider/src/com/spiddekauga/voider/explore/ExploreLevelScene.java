@@ -3,10 +3,8 @@ package com.spiddekauga.voider.explore;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -17,6 +15,8 @@ import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
+import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.stat.CommentEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
@@ -54,22 +54,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		if (!User.getGlobalUser().isOnline()) {
 			((ExploreLevelGui) mGui).showGoOnlineDialog();
 		}
-	}
-
-	@Override
-	public boolean onKeyDown(int keycode) {
-
-		// Testing - DEV_SERVER
-		if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
-			if (keycode == Input.Keys.F5) {
-				((ExploreLevelGui) mGui).addComment("Senth", "This is a very very long test comment to see how it is shown in the panel",
-						"2014-09-18 11:24");
-			} else if (keycode == Input.Keys.F4) {
-				((ExploreLevelGui) mGui).resetComments();
-			}
-		}
-
-		return super.onKeyDown(keycode);
 	}
 
 	@Override
@@ -116,6 +100,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 * @param sort sorting order to get levels by
 	 * @param tags selected tags
 	 */
+	@Deprecated
 	void fetchInitialLevels(SortOrders sort, ArrayList<Tags> tags) {
 		mSelectedLevel = null;
 		mLevelFetch.fetch(sort, tags);
@@ -125,6 +110,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 * Fetch levels from the server by the specified search string
 	 * @param searchString the text to search for
 	 */
+	@Deprecated
 	void fetchInitialLevels(String searchString) {
 		mSelectedLevel = null;
 		mLevelFetch.fetch(searchString);
@@ -161,6 +147,38 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		if (mCommentFetch.hasMore()) {
 			mCommentFetch.fetch(true);
 		}
+	}
+
+	/**
+	 * Set level speed category search filter
+	 * @param levelSpeeds
+	 */
+	void setLevelSpeeds(ArrayList<LevelSpeedSearchRanges> levelSpeeds) {
+		// TODO
+	}
+
+	/**
+	 * @return selected level speed search categories
+	 */
+	ArrayList<LevelSpeedSearchRanges> getLevelSpeeds() {
+		// TODO
+		return new ArrayList<>();
+	}
+
+	/**
+	 * Set level length category search filters
+	 * @param levelLengths
+	 */
+	void setLevelLengths(ArrayList<LevelLengthSearchRanges> levelLengths) {
+		// TODO
+	}
+
+	/**
+	 * @return selected level length search categories
+	 */
+	ArrayList<LevelLengthSearchRanges> getLevelLengths() {
+		// TODO
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -439,11 +457,15 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		}
 
 		private boolean mIsFetching = false;
-		private String mSearchString = null;
-		private SortOrders mSortOrder = null;
-		private ArrayList<Tags> mTags = new ArrayList<>();
+		private LevelFetchMethod mLastFetch = null;
+		@Deprecated private String mSearchString = null;
+		@Deprecated private SortOrders mSortOrder = null;
+		@Deprecated private ArrayList<Tags> mTags = new ArrayList<>();
 	}
 
+	private boolean mNewSearchCriteria = false;
+	private LevelFetchMethod mSearchCriteriaTemp = new LevelFetchMethod();
+	private LevelFetchMethod mSearchCriteria = new LevelFetchMethod();
 	private SettingDateRepo mDateRepo = SettingRepo.getInstance().date();
 	private final User mUser = User.getGlobalUser();
 	private CommentFetch mCommentFetch = new CommentFetch();

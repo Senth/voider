@@ -14,14 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Strings;
-import com.spiddekauga.utils.commands.CEventConnect;
-import com.spiddekauga.utils.commands.CSequence;
-import com.spiddekauga.utils.commands.CUserConnect;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -29,24 +24,20 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
-import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
+import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
+import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.User;
-import com.spiddekauga.voider.utils.event.EventDispatcher;
-import com.spiddekauga.voider.utils.event.EventTypes;
-import com.spiddekauga.voider.utils.event.GameEvent;
-import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * GUI for explore level scene
@@ -86,36 +77,26 @@ public class ExploreLevelGui extends ExploreGui {
 		LevelInfoEntity level = mExploreScene.getSelectedLevel();
 
 		if (level != null) {
-			mWidgets.info.createdBy.setText(level.defEntity.originalCreator);
-			mWidgets.info.date.setText(mDateRepo.getDate(level.defEntity.date));
-			mWidgets.info.description.setText(level.defEntity.description);
-			mWidgets.info.name.setText(level.defEntity.name);
-
-			// Revised by
-			if (!level.defEntity.originalCreatorKey.equals(level.defEntity.revisedByKey)) {
-				mWidgets.info.revisedHider.show();
-				mWidgets.info.revisedBy.setText(level.defEntity.revisedBy);
-			} else {
-				mWidgets.info.revisedHider.hide();
-			}
-
 			mWidgets.info.bookmarks.setText(String.valueOf(level.stats.cBookmarks));
 			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
 			mWidgets.info.rating.setRating((level.stats.getIntRating()));
+			mWidgets.info.length.setText(Strings.secondsToTimeString((int) level.defEntity.levelLength));
+
+			LevelSpeedSearchRanges levelSpeedSearchRange = LevelSpeedSearchRanges.getRange(level.defEntity.levelSpeed);
+			if (levelSpeedSearchRange != null) {
+				mWidgets.info.speed.setText(levelSpeedSearchRange.toString());
+			} else {
+				mWidgets.info.speed.setText("Unknown");
+			}
 
 			// Set tags
 			String tagList = Strings.toStringList(level.tags, ", ");
 			mWidgets.info.tags.setText(tagList);
 		} else {
-			mWidgets.info.createdBy.setText("");
-			mWidgets.info.date.setText("");
-			mWidgets.info.description.setText("");
-			mWidgets.info.name.setText("");
 			mWidgets.info.bookmarks.setText("");
 			mWidgets.info.plays.setText("");
 			mWidgets.info.rating.setRating(0);
 			mWidgets.info.tags.setText("");
-			mWidgets.info.revisedHider.hide();
 		}
 	}
 
@@ -172,12 +153,8 @@ public class ExploreLevelGui extends ExploreGui {
 	public void initGui() {
 		super.initGui();
 
-		mWidgets = new Widgets();
-
 		initRightPanel();
-		initViewButtons();
 		initSort();
-		initSearchBar();
 		initComments();
 		initTags();
 
@@ -203,8 +180,6 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			protected void onPressed(Button button) {
 				mExploreScene.setView(ExploreViews.ONLINE_BROWSE);
-				// REMOVE
-				mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 			}
 		};
 		addViewButton(SkinNames.General.EXPLORE_ONLINE, listener, mWidgets.sort.viewHider);
@@ -215,15 +190,9 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			protected void onPressed(Button button) {
 				mExploreScene.setView(ExploreViews.ONLINE_SEARCH);
-				// REMOVE
-				if (!mWidgets.search.field.getText().equals("Search")) {
-					mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
-				} else {
-					mExploreScene.fetchInitialLevels("");
-				}
 			}
 		};
-		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, mWidgets.search.viewHider);
+		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
 	}
 
 	/**
@@ -287,31 +256,6 @@ public class ExploreLevelGui extends ExploreGui {
 	}
 
 	/**
-	 * Initializes search bar
-	 */
-	private void initSearchBar() {
-		// REMOVE
-		float infoWidth = mUiFactory.getStyles().vars.rightPanelWidth + 2 * mUiFactory.getStyles().vars.paddingInner;
-		float height = mUiFactory.getStyles().vars.rowHeight;
-
-		AlignTable table = mWidgets.search.table;
-		table.dispose(true);
-		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
-		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		getStage().addActor(table);
-
-		TextField textField = new TextField("", mUiFactory.getStyles().textField.standard);
-		table.add(textField).setSize(infoWidth, height);
-		mWidgets.search.field = textField;
-		new TextFieldListener(textField, "Search", null) {
-			@Override
-			protected void onChange(String newText) {
-				mExploreScene.fetchInitialLevels(newText);
-			}
-		};
-	}
-
-	/**
 	 * Initialize the right panel
 	 */
 	private void initRightPanel() {
@@ -324,44 +268,35 @@ public class ExploreLevelGui extends ExploreGui {
 
 	@Override
 	protected void initInfo(AlignTable table, HideListener hider) {
-		// TODO Make use of ExploreScene.initInfo(...)
+		super.initInfo(table, hider);
 
-		// Name
-		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
-		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
+		HideListener onlineHider = mWidgets.info.onlineHider;
 
-		// Rating
-		table.row(Horizontal.CENTER, Vertical.TOP);
-		mWidgets.info.rating = mUiFactory.addRatingWidget(Touchable.disabled, table, null);
-
-		// Description
-		table.row(Horizontal.CENTER, Vertical.TOP);
-		mWidgets.info.description = mUiFactory.text.add("", true, table);
-
-		// Created by
-		mUiFactory.text.addPanelSection("Created by", table, null);
-		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
-
-		// Revised by
-		mUiFactory.text.addPanelSection("Revised by", table, mWidgets.info.revisedHider);
-		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, mWidgets.info.revisedHider);
-
-		// Date
-		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", false, table, null);
+		// Insert Rating after name
+		table.row(1, Horizontal.CENTER, Vertical.TOP);
+		mWidgets.info.rating = mUiFactory.createRatingWidget(Touchable.disabled);
+		onlineHider.addToggleActor(mWidgets.info.rating);
+		table.add(mWidgets.info.rating);
 
 		// Plays
-		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", false, table, null);
+		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", false, table, onlineHider);
 
 		// Likes
-		mWidgets.info.bookmarks = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", false, table, null);
+		mWidgets.info.bookmarks = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", false, table, onlineHider);
 
 		// Tags
-		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", true, table, null);
+		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", true, table, onlineHider);
 		mWidgets.info.tags.setWrap(true);
 
-		// TODO Level Length
+		// Level Length
+		mUiFactory.text.addPanelSection("Level Length", table, null);
+		table.row();
+		mWidgets.info.length = mUiFactory.text.add("", table);
 
-		// TODO Level Speed
+		// Level Speed
+		mUiFactory.text.addPanelSection("Level Speed", table, null);
+		table.row();
+		mWidgets.info.speed = mUiFactory.text.add("", table);
 	}
 
 	/**
@@ -455,7 +390,20 @@ public class ExploreLevelGui extends ExploreGui {
 
 		mLeftPanel.invalidate();
 		mLeftPanel.layout();
+	}
 
+	@Override
+	protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
+		super.initSearchFilters(table, contentHider);
+
+		// Level Length
+		mUiFactory.text.addPanelSection("Level Length", table, null);
+		mUiFactory.button.addEnumCheckboxes(LevelLengthSearchRanges.values(), null, null, true, table, mWidgets.search.levelLengths);
+
+
+		// Level Speed
+		mUiFactory.text.addPanelSection("Level Speed", table, null);
+		mUiFactory.button.addEnumCheckboxes(LevelSpeedSearchRanges.values(), null, null, true, table, mWidgets.search.levelSpeeds);
 	}
 
 	/**
@@ -569,36 +517,39 @@ public class ExploreLevelGui extends ExploreGui {
 	 * Show go online dialog
 	 */
 	void showGoOnlineDialog() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-		msgBox.setTitle("Go Online?");
-
-		Label label = mUiFactory.text.create("To use online features you need to connect to the server.");
-		msgBox.content(label);
-
-		IEventListener loginListener = new IEventListener() {
-			@Override
-			public void handleEvent(GameEvent event) {
-				EventDispatcher.getInstance().disconnect(EventTypes.USER_CONNECTED, this);
-
-				// Sort
-				if (mWidgets.sort.viewHider.isVisible()) {
-					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
-				}
-				// Search
-				else if (mWidgets.search.viewHider.isVisible()) {
-					mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
-				}
-			}
-		};
-
-		Command eventConnect = new CEventConnect(loginListener, EventTypes.USER_CONNECTED);
-		Command goOnline = new CUserConnect();
-
-		msgBox.addCancelButtonAndKeys();
-		msgBox.button("Go Online", new CSequence(eventConnect, goOnline));
-
-		showMsgBox(msgBox);
+		// TODO Move?
+		// MsgBoxExecuter msgBox = getFreeMsgBox(true);
+		//
+		// msgBox.setTitle("Go Online?");
+		//
+		// Label label =
+		// mUiFactory.text.create("To use online features you need to connect to the server.");
+		// msgBox.content(label);
+		//
+		// IEventListener loginListener = new IEventListener() {
+		// @Override
+		// public void handleEvent(GameEvent event) {
+		// EventDispatcher.getInstance().disconnect(EventTypes.USER_CONNECTED, this);
+		//
+		// // Sort
+		// if (mWidgets.sort.viewHider.isVisible()) {
+		// mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
+		// }
+		// // Search
+		// else if (mWidgets.search.viewHider.isVisible()) {
+		// mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
+		// }
+		// }
+		// };
+		//
+		// Command eventConnect = new CEventConnect(loginListener,
+		// EventTypes.USER_CONNECTED);
+		// Command goOnline = new CUserConnect();
+		//
+		// msgBox.addCancelButtonAndKeys();
+		// msgBox.button("Go Online", new CSequence(eventConnect, goOnline));
+		//
+		// showMsgBox(msgBox);
 	}
 
 	/**
@@ -626,7 +577,7 @@ public class ExploreLevelGui extends ExploreGui {
 	/** If we're currently clearing the tags */
 	private boolean mClearingTags = false;
 	private ExploreLevelScene mExploreScene = null;
-	private Widgets mWidgets = null;
+	private Widgets mWidgets = new Widgets();
 
 	/**
 	 * All widgets
@@ -667,31 +618,18 @@ public class ExploreLevelGui extends ExploreGui {
 
 		private class Info implements Disposable {
 			AlignTable table = new AlignTable();
-			HideListener hider = new HideListener(true);
-			Label name = null;
-			Label description = null;
+			HideListener onlineHider = new HideListener(true);
 			RatingWidget rating = null;
-			Label revisedBy = null;
-			Label createdBy = null;
-			Label date = null;
 			Label plays = null;
 			Label bookmarks = null;
 			Label tags = null;
-			HideManual revisedHider = new HideManual();
-
-			private Info() {
-				init();
-			}
+			Label length = null;
+			Label speed = null;
 
 			@Override
 			public void dispose() {
 				table.dispose();
-				revisedHider.dispose();
-				hider.dispose();
-			}
-
-			private void init() {
-				hider.addChild(revisedHider);
+				onlineHider.dispose();
 			}
 		}
 
@@ -704,13 +642,21 @@ public class ExploreLevelGui extends ExploreGui {
 			HideManual userHider = new HideManual();
 			Row waitIconRow = null;
 
-			{
-				hider.addChild(userHider);
+			private Comments() {
+				init();
 			}
 
 			@Override
 			public void dispose() {
 				table.dispose();
+				hider.dispose();
+				userHider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				hider.addChild(userHider);
 			}
 		}
 
@@ -727,33 +673,19 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			public void dispose() {
 				table.dispose();
+				buttonTag.clear();
+				buttonGroup = new ButtonGroup();
 			}
 		}
 
 		private class Search implements Disposable {
-			TextField field = null;
 			AlignTable table = new AlignTable();
-			HideListener viewHider = new HideListener(true) {
-				@Override
-				protected void onShow() {
-					resetContentMargins();
-				}
-			};
-
-			private Search() {
-				init();
-			}
+			Button[] levelLengths = new Button[LevelLengthSearchRanges.values().length];
+			Button[] levelSpeeds = new Button[LevelSpeedSearchRanges.values().length];
 
 			@Override
 			public void dispose() {
 				table.dispose();
-				viewHider.dispose();
-
-				init();
-			}
-
-			private void init() {
-				viewHider.addToggleActor(table);
 			}
 		}
 

@@ -138,12 +138,12 @@ public class ButtonFactory extends BaseFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-		// Slim fit to text
+			// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-		// Fit to text (but with padding)
+			// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -362,7 +362,7 @@ public class ButtonFactory extends BaseFactory {
 		table.row();
 
 		CheckBox checkBox = addCheckBox(text, style, listener, group, table);
-		table.getCell().setHeight(mStyles.vars.rowHeight);
+		table.getRow().setHeight(mStyles.vars.rowHeight);
 
 		return checkBox;
 	}

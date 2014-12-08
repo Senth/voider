@@ -57,15 +57,17 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		if (mNewSearchCriteria) {
 			mNewSearchCriteria = false;
 
-			if (mOnlineSearch) {
+			if (getView().isOnline()) {
 				mEnemyFetch.fetch(mSearchCriteria);
+			} else {
+				super.repopulateContent();
 			}
 		}
 	}
 
 	@Override
 	protected boolean isFetchingContent() {
-		if (mOnlineSearch) {
+		if (getView().isOnline()) {
 			return mEnemyFetch.isFetching();
 		} else {
 			return false;
@@ -74,7 +76,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 
 	@Override
 	protected boolean hasMoreContent() {
-		if (mOnlineSearch) {
+		if (getView().isOnline()) {
 			return mEnemyFetch.hasMore();
 		} else {
 			return false;
@@ -83,7 +85,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 
 	@Override
 	protected void fetchMoreContent() {
-		if (mOnlineSearch) {
+		if (getView().isOnline()) {
 			mEnemyFetch.fetchMore();
 		} else {
 			// Does nothing
@@ -92,7 +94,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 
 	@Override
 	protected void repopulateContent() {
-		if (mOnlineSearch) {
+		if (getView().isOnline()) {
 			mEnemyFetch.fetch();
 		}
 
@@ -152,24 +154,6 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		}
 
 		return super.defPassesFilter(defEntity);
-	}
-
-	/**
-	 * Sets if we should search online or offline
-	 * @param online true for online
-	 */
-	void setSearchOnline(boolean online) {
-		if (mOnlineSearch != online) {
-			mOnlineSearch = online;
-			repopulateContent();
-		}
-	}
-
-	/**
-	 * @return true if we should search online
-	 */
-	boolean isSearchingOnline() {
-		return mOnlineSearch;
 	}
 
 	/**
@@ -452,7 +436,6 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	}
 
 	private boolean mNewSearchCriteria = false;
-	private boolean mOnlineSearch = true;
 	private EnemyFetch mEnemyFetch = new EnemyFetch();
 	/** For comparing with search criteria */
 	private EnemyFetchMethod mSearchCriteriaTemp = new EnemyFetchMethod();

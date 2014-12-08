@@ -10,10 +10,13 @@ public enum ClientVersions {
 	// @formatter:off
 	V0_4_0("Initial version."),
 	V0_4_1(true,
-			"Explore has been merged into Play as Explore essentially was play online.",
-			"The same Play/Explore screen is now used for loading and selecting levels, enemies, and bullets both online and locally",
-			"Enemies and bullets can be loaded from online. This means that you can easily search for specific enemies for your level",
-			"Searching for levels have new filters: level length and level speed. Levels can now also be filtered by tags in search options"),
+			"Play/Explore",
+			"	Explore has been merged into Play as Explore essentially was play online.",
+			"	The same Play/Explore screen is now used for loading and selecting levels, enemies, and bullets both online and locally.",
+			"	Enemies and bullets can be loaded from online. This means that you can easily search for specific enemies for your level.",
+			"	Searching for levels have new filters: level length and level speed. Levels can now also be filtered by tags in search options.",
+			"Various Bug Fixes",
+			"	Notifications are now displayed correctly after rezising the window."),
 
 			;
 	// @formatter:on
@@ -33,8 +36,20 @@ public enum ClientVersions {
 				stringBuilder.append("\n");
 			}
 
+			// For every tab at the front of the point, indent the point
+			int index = 0;
+			boolean foundAllTabs = false;
+			do {
+				if (point.charAt(index) == '\t') {
+					stringBuilder.append("\t");
+				} else {
+					foundAllTabs = true;
+				}
+				index++;
+			} while (index < point.length() && !foundAllTabs);
+
 			stringBuilder.append("* ");
-			stringBuilder.append(point);
+			stringBuilder.append(point.trim());
 		}
 
 		mChangeLog = stringBuilder.toString();

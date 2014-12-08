@@ -63,6 +63,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 			}
 			mRows.clear();
 		}
+		mLastCreatedRow = null;
 		mDisposing = false;
 	}
 
@@ -496,7 +497,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 */
 	public Cell add(Actor actor) {
 		// Add a row if none exists
-		if (mRows.isEmpty()) {
+		if (mLastCreatedRow == null) {
 			row();
 		}
 
@@ -507,8 +508,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		Cell newCell = Pools.cell.obtain().setActor(actor);
 		newCell.setPad(mCellPaddingDefault);
 
-		Row row = mRows.get(mRows.size() - 1);
-		row.add(newCell);
+		mLastCreatedRow.add(newCell);
 
 		if (actor != null) {
 			super.addActor(actor);
@@ -583,7 +583,40 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 * @return the created row
 	 */
 	public Row row() {
-		return row(mRowAlign.horizontal, mRowAlign.vertical);
+		return row(mRows.size());
+	}
+
+	/**
+	 * Adds a row at the specified location. Uses the default row alignment
+	 * @param index the row index to add the row to. 0 Always adds it to the start. If
+	 *        index equals to the current amount of rows, the new row will be added to the
+	 *        back. I.e. same as calling {@link #row()}.
+	 * @return the created row
+	 * @throws IndexOutOfBoundsException if index less than 0, or greater than the number
+	 *         of rows
+	 */
+	public Row row(int index) {
+		return row(index, mRowAlign.horizontal, mRowAlign.vertical);
+	}
+
+	/**
+	 * Adds a row at the specified location
+	 * @param index the row index to add the row to. 0 Always adds it to the start. If
+	 *        index equals to the current amount of rows, the new row will be added to the
+	 *        back. I.e. same as calling {@link #row(Horizontal, Vertical)}.
+	 * @param horizontal horizontal alignment for this new row
+	 * @param vertical vertical alignment for this new row
+	 * @return the created row
+	 * @throws IndexOutOfBoundsException if index less than 0, or greater than the number
+	 *         of rows
+	 */
+	public Row row(int index, Horizontal horizontal, Vertical vertical) {
+		Row row = Pools.row.obtain();
+		row.setAlign(horizontal, vertical);
+		row.setPad(mRowPaddingDefault);
+		mRows.add(index, row);
+		mLastCreatedRow = row;
+		return row;
 	}
 
 	/**
@@ -596,11 +629,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 * @return the created row
 	 */
 	public Row row(Horizontal horizontal, Vertical vertical) {
-		Row row = Pools.row.obtain();
-		row.setAlign(horizontal, vertical);
-		row.setPad(mRowPaddingDefault);
-		mRows.add(row);
-		return row;
+		return row(mRows.size(), horizontal, vertical);
 	}
 
 	/**
@@ -612,11 +641,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 * @return the created row
 	 */
 	public Row row(Align alignment) {
-		Row row = Pools.row.obtain();
-		row.setAlign(alignment);
-		row.setPad(mRowPaddingDefault);
-		mRows.add(row);
-		return row;
+		return row(alignment.horizontal, alignment.vertical);
 	}
 
 	/**
@@ -1248,6 +1273,15 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	public void removeRow(Row row, boolean disposeActors) {
 		mRows.remove(row);
 		row.dispose(disposeActors);
+
+		if (mLastCreatedRow == row) {
+			if (!mRows.isEmpty()) {
+				mLastCreatedRow = mRows.get(mRows.size() - 1);
+			} else {
+				mLastCreatedRow = null;
+			}
+		}
+
 		Pools.row.free(row);
 	}
 
@@ -1263,10 +1297,12 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 * @return get last added row, null if no row has been added
 	 */
 	public Row getRow() {
-		if (!mRows.isEmpty()) {
-			return mRows.get(mRows.size() - 1);
-		}
-		return null;
+		return mLastCreatedRow;
+		// if (!mRows.isEmpty()) {
+		// return mRows.get(mRows.size() - 1);
+		// } else {
+		// return null;
+		// }
 	}
 
 	/**
@@ -1387,33 +1423,19 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		setFillParentWidth(fillParent);
 	}
 
-	/** Background image */
 	private Image mBackground = null;
-	/** Valid cell sizes */
 	private boolean mValidCellSizes = true;
-	/** Layout is valid, false if the table needs to call layout() */
 	private boolean mValidLayout = true;
-	/** All the rows of the table */
 	private ArrayList<Row> mRows = new ArrayList<Row>();
-	/** Table alignment (not cell alignment) */
 	private Align mTableAlign = new Align();
-	/** Standard row alignment */
 	private Align mRowAlign = new Align();
-	/** Preferred width of the actors, this is set to the row with highest preferred width */
 	private float mPrefWidth = 0;
-	/** Preferred height of the table, adds all rows preferred width */
 	private float mPrefHeight = 0;
-	/** Minimum width, equals all non-scalable cells' width */
 	private float mMinWidth = 0;
-	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
-	/** Actual height of table */
 	private float mActualHeight = 0;
-	/** Actual width of table */
 	private float mActualWidth = 0;
-	/** Maximum height */
 	private float mMaxHeight = 0;
-	/** Maximum width */
 	private float mMaxWidth = 0;
 	/**
 	 * True if the table shall keep it's width after layout, false if it shall resize
@@ -1433,21 +1455,18 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	private boolean mHasPreferredWidth = true;
 	/** If this table's position is set manually */
 	private boolean mPositionSetManually = false;
-	/** Default cell padding */
 	private Padding mCellPaddingDefault = new Padding();
-	/** Default row padding */
 	private Padding mRowPaddingDefault = new Padding();
 	/** Outside margin for this table */
 	private Padding mMargin = new Padding();
 	/** Inside margin for this table */
 	private Padding mPadding = new Padding();
-	/** Fill parent height */
 	private boolean mFillParentHeight = false;
-	/** Fill parent width */
 	private boolean mFillParentWidth = false;
 	/** Private accessor to width */
 	private Field mfWidth = null;
 	/** Private accessor to height */
 	private Field mfHeight = null;
+	private Row mLastCreatedRow = null;
 
 }

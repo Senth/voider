@@ -8,7 +8,7 @@ package com.spiddekauga.voider.network.entities.resource;
 public enum BulletDamageSearchRanges implements IRangeEnum {
 	// !!! IF YOU CHANGE THESE -> Be sure to update the search ranges
 	LOW("Low", "1-2", 1, 2),
-	NORMAL("Normal", "2-5", 2, 5),
+	MEDIUM("Medium", "2-5", 2, 5),
 	HIGH("High", "5-10", 5, 10),
 	HIGHER("Higher", "10-20", 10, 20),
 	HIGHEST("Ultra High", "20-50", 20, 50),

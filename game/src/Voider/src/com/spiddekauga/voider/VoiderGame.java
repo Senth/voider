@@ -118,7 +118,7 @@ public class VoiderGame implements ApplicationListener {
 		} catch (RuntimeException e) {
 			// Print where in the serialization it failed
 			if (Gdx.app.getType() == ApplicationType.Desktop && Config.Debug.isBuildOrAbove(Builds.NIGHTLY_DEV)) {
-				String stackTrace = Strings.stackTraceToString(e);
+				String stackTrace = Strings.exceptionToString(e);
 
 				// File error
 				int fileIndexStart = stackTrace.indexOf("Error reading file: ");

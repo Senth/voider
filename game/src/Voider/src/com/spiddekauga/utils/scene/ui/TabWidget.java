@@ -41,17 +41,17 @@ public class TabWidget extends AlignTable {
 		mContentOuterTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		mContentOuterTable.setName("content-outer-table");
 
-		mTabRow = super.row(TAB_ALIGN_TOP_BOTTOM_DEFAULT);
+		mTabRow = super.row(getRowCount(), TAB_ALIGN_TOP_BOTTOM_DEFAULT.horizontal, TAB_ALIGN_TOP_BOTTOM_DEFAULT.vertical);
 		super.add(mTabTable);
 
-		mContentOuterRow = super.row(Horizontal.LEFT, Vertical.TOP);
+		mContentOuterRow = super.row(getRowCount(), Horizontal.LEFT, Vertical.TOP);
 		mContentOuterCell = super.add(mContentOuterTable);
 
 		mContentOuterTable.row().setFillWidth(true).setFillHeight(true);
 		mContentOuterTable.add(mContentInnerTable).setFillWidth(true).setFillHeight(true);
 
 		mActionTable.setKeepWidth(true);
-		super.row(Horizontal.LEFT, Vertical.MIDDLE);
+		super.row(getRowCount(), Horizontal.LEFT, Vertical.MIDDLE);
 		super.add(mActionTable);
 		addActionButtonRow();
 	}
@@ -108,6 +108,24 @@ public class TabWidget extends AlignTable {
 	@Deprecated
 	@Override
 	public Row row(Horizontal horizontal, Vertical vertical) {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
+	}
+
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
+	public Row row(int index) {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
+	}
+
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
+	public Row row(int index, Horizontal horizontal, Vertical vertical) {
 		throw new UnsupportedOperationException("Use TabWidget#addTab()");
 	}
 
@@ -567,44 +585,44 @@ public class TabWidget extends AlignTable {
 		// Add Tab at right position
 		switch (position) {
 		case BOTTOM:
-			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.row(getRowCount(), Horizontal.LEFT, Vertical.TOP);
 			super.add(mActionTable);
 
 			mContentOuterRow = super.row(Horizontal.LEFT, Vertical.TOP);
 			mContentOuterCell = super.add(mContentOuterTable);
 
-			mTabRow = super.row(tabAlign);
+			mTabRow = super.row(getRowCount(), tabAlign.horizontal, tabAlign.vertical);
 			super.add(mTabTable);
 
 			break;
 
 		case LEFT:
-			mTabRow = super.row(tabAlign);
+			mTabRow = super.row(getRowCount(), tabAlign.horizontal, tabAlign.vertical);
 			mContentOuterRow = mTabRow;
 			super.add(mTabTable);
 			mContentOuterCell = super.add(mContentOuterTable);
-			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.row(getRowCount(), Horizontal.LEFT, Vertical.TOP);
 			super.add(mActionTable);
 
 			break;
 
 		case RIGHT:
-			mTabRow = super.row(tabAlign);
+			mTabRow = super.row(getRowCount(), tabAlign.horizontal, tabAlign.vertical);
 			mContentOuterRow = mTabRow;
 			mContentOuterCell = super.add(mContentOuterTable);
 			super.add(mTabTable);
-			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.row(getRowCount(), Horizontal.LEFT, Vertical.TOP);
 			super.add(mActionTable);
 
 			break;
 
 		case TOP:
-			mTabRow = super.row(tabAlign);
+			mTabRow = super.row(getRowCount(), tabAlign.horizontal, tabAlign.vertical);
 			super.add(mTabTable);
 
 			mContentOuterRow = super.row(Horizontal.LEFT, Vertical.TOP);
 			mContentOuterCell = super.add(mContentOuterTable);
-			super.row(Horizontal.LEFT, Vertical.TOP);
+			super.row(getRowCount(), Horizontal.LEFT, Vertical.TOP);
 			super.add(mActionTable);
 			break;
 		}

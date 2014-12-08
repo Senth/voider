@@ -615,13 +615,22 @@ public class UiFactory {
 	 * @return created rating widget
 	 */
 	public RatingWidget addRatingWidget(Touchable touchable, AlignTable table, GuiHider hider) {
-		RatingWidget rating = new RatingWidget(mStyles.rating.stars, 5, touchable);
+		RatingWidget rating = createRatingWidget(touchable);
 
 		table.add(rating);
 
 		doExtraActionsOnActors(hider, null, rating);
 
 		return rating;
+	}
+
+	/**
+	 * Creates a rating widget
+	 * @param touchable if the rating can be changed
+	 * @return created rating widget
+	 */
+	public RatingWidget createRatingWidget(Touchable touchable) {
+		return new RatingWidget(mStyles.rating.stars, 5, touchable);
 	}
 
 

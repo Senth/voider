@@ -790,7 +790,7 @@ abstract class ExploreGui extends Gui {
 				if (revisionString.length == 3) {
 					return Integer.parseInt(revisionString[0]);
 				} else {
-					Gdx.app.error("CSelectDefSetRevision", "Could not split revision string properly: " + revisionDateString);
+					Gdx.app.error("ExploreGui", "Could not split revision string properly: " + revisionDateString);
 				}
 			}
 		}

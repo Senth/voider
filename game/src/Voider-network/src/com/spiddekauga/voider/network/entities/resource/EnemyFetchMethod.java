@@ -167,7 +167,7 @@ public class EnemyFetchMethod extends FetchMethod {
 				return false;
 			}
 		} else if (!destroyOnCollide.equals(other.destroyOnCollide)) {
-
+			return false;
 		}
 		if (hasWeapon != null && hasWeapon) {
 			if (!isListEquals(aimTypes, other.aimTypes, AimTypes.values().length)) {
