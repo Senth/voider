@@ -308,8 +308,8 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	}
 
 	/**
-	 * Updates the search criteria from the temporary criteria if they differ. Also
-	 * fetches new results
+	 * Updates the search criteria from the temporary criteria if they differ. New results
+	 * will be fetched in the next update
 	 */
 	private void updateSearchCriteria() {
 		if (!mSearchCriteriaTemp.equals(mSearchCriteria)) {

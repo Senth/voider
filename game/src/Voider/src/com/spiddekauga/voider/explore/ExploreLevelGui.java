@@ -159,7 +159,6 @@ public class ExploreLevelGui extends ExploreGui {
 		initTags();
 
 		resetContentMargins();
-		mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 	}
 
 	@Override
@@ -227,6 +226,7 @@ public class ExploreLevelGui extends ExploreGui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Create buttons
+		// TODO use enum checkboxes
 		for (final SortOrders sortOrder : SortOrders.values()) {
 			ButtonListener listener = new ButtonListener() {
 				@Override
@@ -240,6 +240,8 @@ public class ExploreLevelGui extends ExploreGui {
 			mWidgets.sort.buttons[sortOrder.ordinal()] = checkBox;
 			table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 		}
+
+
 	}
 
 	/**
@@ -347,6 +349,7 @@ public class ExploreLevelGui extends ExploreGui {
 		tagTable.getRow().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
 		// Add tags
+		// TODO Use enum checkboxes
 		ButtonListener listener = new ButtonListener() {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -373,15 +376,7 @@ public class ExploreLevelGui extends ExploreGui {
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				boolean tagsChanged = getSelectedTags().size() > 0;
-
-				mClearingTags = true;
 				mWidgets.tag.buttonGroup.uncheckAll();
-				mClearingTags = false;
-
-				if (tagsChanged) {
-					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
-				}
 			}
 		};
 		TextButton textButton = mUiFactory.button.createText("Clear Tags", TextButtonStyles.FILLED_PRESS);

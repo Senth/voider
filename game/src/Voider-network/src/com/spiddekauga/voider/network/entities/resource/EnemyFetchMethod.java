@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.network.entities.resource;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
@@ -100,52 +99,6 @@ public class EnemyFetchMethod extends FetchMethod {
 		return false;
 	}
 
-	/**
-	 * Get the hash code for a specific array list. If the list is the maximum size an
-	 * empty list hash will instead be used
-	 * @param list the list to check
-	 * @param maxSize maximum size of the list
-	 * @return hash code for the list
-	 */
-	private static int getListHashCode(List<?> list, int maxSize) {
-		if (list != null) {
-			if (list.size() != maxSize) {
-				return list.hashCode();
-			} else {
-				return EMPTY_LIST_HASH;
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * Test equals on a list for a specific array. If any of the lists are of maximum
-	 * sizes they will be treated as an empty list
-	 * @param thisList
-	 * @param otherList
-	 * @param maxSize
-	 * @return true if the lists are equal
-	 */
-	private static boolean isListEquals(List<?> thisList, List<?> otherList, int maxSize) {
-		if (thisList == null) {
-			if (otherList != null) {
-				return false;
-			}
-		} else {
-			if (otherList == null) {
-				return false;
-			} else if (!thisList.equals(otherList)) {
-				// Check for max size
-				if (!((thisList.isEmpty() || thisList.size() == maxSize) && (otherList.isEmpty() || otherList.size() == maxSize))) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -204,7 +157,4 @@ public class EnemyFetchMethod extends FetchMethod {
 		}
 		return true;
 	}
-
-	/** Empty list for testing equal and getting hash */
-	private static final int EMPTY_LIST_HASH = new ArrayList<>().hashCode();
 }

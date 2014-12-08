@@ -75,7 +75,7 @@ public class LevelFetch extends ResourceFetch {
 	 */
 	private void getAndSetLevelResponse() {
 		// Tag filter
-		if (mParameters.tagFilter != null && !mParameters.tagFilter.isEmpty()) {
+		if (mParameters.tags != null && !mParameters.tags.isEmpty()) {
 			filterByTags();
 		}
 		// Text search
@@ -301,7 +301,7 @@ public class LevelFetch extends ResourceFetch {
 		ArrayList<LevelInfoEntity> foundLevelsWithTags = mResponse.levels;
 
 		while (foundLevelsWithTags.size() < FetchSizes.LEVELS && mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
-			int fetchLimit = (mParameters.tagFilter.size() + 1) * FetchSizes.LEVELS;
+			int fetchLimit = (mParameters.tags.size() + 1) * FetchSizes.LEVELS;
 			ArrayList<LevelInfoEntity> levels = getLevels(fetchLimit);
 
 			// Add OK tags
@@ -323,7 +323,7 @@ public class LevelFetch extends ResourceFetch {
 	 * @return true if it has all the required tags
 	 */
 	private boolean hasRequiredTags(LevelInfoEntity level) {
-		return level.tags.containsAll(mParameters.tagFilter);
+		return level.tags.containsAll(mParameters.tags);
 	}
 
 	/**

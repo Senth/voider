@@ -95,27 +95,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		}
 	}
 
-	/**
-	 * Fetch initial levels from the server by the specified sort
-	 * @param sort sorting order to get levels by
-	 * @param tags selected tags
-	 */
-	@Deprecated
-	void fetchInitialLevels(SortOrders sort, ArrayList<Tags> tags) {
-		mSelectedLevel = null;
-		mLevelFetch.fetch(sort, tags);
-	}
-
-	/**
-	 * Fetch levels from the server by the specified search string
-	 * @param searchString the text to search for
-	 */
-	@Deprecated
-	void fetchInitialLevels(String searchString) {
-		mSelectedLevel = null;
-		mLevelFetch.fetch(searchString);
-	}
-
 	@Override
 	protected boolean isFetchingContent() {
 		if (getView().isOnline()) {
@@ -150,19 +129,73 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	}
 
 	/**
+	 * Update the search criteria from the temporary search criteria if they differ. New
+	 * results will be fetched in the next update
+	 */
+	private void updateSearchCriteria() {
+		if (!mSearchCriteriaTemp.equals(mSearchCriteria)) {
+			mSearchCriteria = mSearchCriteriaTemp.copy();
+			mNewSearchCriteria = true;
+		}
+	}
+
+	/**
+	 * Set sort order
+	 * @param sort sorting order to get levels by
+	 */
+	void setSortOrder(SortOrders sort) {
+		mSearchCriteriaTemp.sort = sort;
+		updateSearchCriteria();
+	}
+
+	/**
 	 * Set level speed category search filter
 	 * @param levelSpeeds
 	 */
 	void setLevelSpeeds(ArrayList<LevelSpeedSearchRanges> levelSpeeds) {
-		// TODO
+		mSearchCriteriaTemp.levelSpeeds = levelSpeeds;
+		updateSearchCriteria();
+	}
+
+	@Override
+	protected void setSearchString(String searchString) {
+		if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
+			mSearchCriteriaTemp.searchString = searchString;
+		} else {
+			mSearchCriteriaTemp.searchString = "";
+		}
+		updateSearchCriteria();
+	}
+
+	/**
+	 * @return current search string we're searching for
+	 */
+	@Override
+	protected String getSearchString() {
+		return mSearchCriteriaTemp.searchString;
+	}
+
+	/**
+	 * Set all tags we should filter by
+	 * @param tags
+	 */
+	void setTags(ArrayList<Tags> tags) {
+		mSearchCriteriaTemp.tags = tags;
+		updateSearchCriteria();
+	}
+
+	/**
+	 * @return all tags we should filter by
+	 */
+	ArrayList<Tags> getTags() {
+		return mSearchCriteriaTemp.tags;
 	}
 
 	/**
 	 * @return selected level speed search categories
 	 */
 	ArrayList<LevelSpeedSearchRanges> getLevelSpeeds() {
-		// TODO
-		return new ArrayList<>();
+		return mSearchCriteriaTemp.levelSpeeds;
 	}
 
 	/**
@@ -170,15 +203,15 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 * @param levelLengths
 	 */
 	void setLevelLengths(ArrayList<LevelLengthSearchRanges> levelLengths) {
-		// TODO
+		mSearchCriteriaTemp.levelLengths = levelLengths;
+		updateSearchCriteria();
 	}
 
 	/**
 	 * @return selected level length search categories
 	 */
 	ArrayList<LevelLengthSearchRanges> getLevelLengths() {
-		// TODO
-		return new ArrayList<>();
+		return mSearchCriteriaTemp.levelLengths;
 	}
 
 	@Override
@@ -434,19 +467,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @return true if this was the last method we called
 		 */
 		boolean isLastMethod(LevelFetchMethod method) {
-			// Search string
-			if (mSearchString != null && method.searchString != null) {
-				return mSearchString.equals(method.searchString);
-			}
-			// Sort order and tags
-			if (mSortOrder != null && method.sort != null) {
-				if (mSortOrder == method.sort) {
-					// Check tags
-					return mTags.equals(method.tagFilter);
-				}
-			}
-
-			return false;
+			return method.equals(mLastFetch);
 		}
 
 		/**
@@ -458,9 +479,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 		private boolean mIsFetching = false;
 		private LevelFetchMethod mLastFetch = null;
-		@Deprecated private String mSearchString = null;
-		@Deprecated private SortOrders mSortOrder = null;
-		@Deprecated private ArrayList<Tags> mTags = new ArrayList<>();
 	}
 
 	private boolean mNewSearchCriteria = false;
