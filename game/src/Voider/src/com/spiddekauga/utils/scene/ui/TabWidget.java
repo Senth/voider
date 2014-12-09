@@ -741,8 +741,10 @@ public class TabWidget extends AlignTable {
 			// Show and select tab
 			if (!isVisible()) {
 				setVisible(true);
-				if (!mContentHideable) {
+				if (!isContentHideable()) {
 					tab.setChecked(true);
+				} else if (tab.isChecked()) {
+					setContentVisibility(true);
 				}
 			}
 		}
@@ -751,9 +753,13 @@ public class TabWidget extends AlignTable {
 			// Hide entire widget
 			if (isAllTabsHidden()) {
 				setVisible(false);
+
+				if (isContentHideable()) {
+					setContentVisibility(false);
+				}
 			}
 			// Select another tab
-			else {
+			else if (!isContentHideable()) {
 				for (Button button : mTabButtons) {
 					if (button.isVisible()) {
 						button.setChecked(true);

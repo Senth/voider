@@ -263,7 +263,7 @@ public class User {
 	 * @param ask true if we should ask, false to not ask
 	 */
 	public void setAskToGoOnline(boolean ask) {
-		mAskToGoOnline = true;
+		mAskToGoOnline = ask;
 	}
 
 	/**

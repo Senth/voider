@@ -275,7 +275,18 @@ abstract class ExploreGui extends Gui {
 				mScene.setView(ExploreViews.LOCAL);
 			}
 		};
-		addViewButton(SkinNames.General.EXPLORE_LOCAL, listener, mWidgets.search.viewHider, mWidgets.search.publishedHider);
+		mWidgets.view.local = addViewButton(SkinNames.General.EXPLORE_LOCAL, listener, mWidgets.search.viewHider, mWidgets.search.publishedHider);
+	}
+
+	/**
+	 * Resets the view buttons
+	 */
+	protected void resetViewButtons() {
+		if (mWidgets.view.local != null) {
+			if (mScene.getView() == ExploreViews.LOCAL) {
+				mWidgets.view.local.setChecked(true);
+			}
+		}
 	}
 
 	/**
@@ -469,7 +480,6 @@ abstract class ExploreGui extends Gui {
 
 		updateRevisionList();
 
-		// TODO Set Commands
 		msgBox.addCancelButtonAndKeys();
 		msgBox.button("Load Revision", new CExploreLoadRevision(mScene, this));
 
@@ -925,6 +935,7 @@ abstract class ExploreGui extends Gui {
 		private class View implements Disposable {
 			AlignTable table = new AlignTable();
 			ButtonGroup buttonGroup = new ButtonGroup();
+			Button local = null;
 
 			@Override
 			public void dispose() {

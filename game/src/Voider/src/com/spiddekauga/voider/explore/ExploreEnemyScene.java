@@ -37,6 +37,15 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	}
 
 	@Override
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
+
+		if (!User.getGlobalUser().isOnline()) {
+			mGui.showGoOnlineDialog();
+		}
+	}
+
+	@Override
 	protected void loadResources() {
 		super.loadResources();
 

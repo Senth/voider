@@ -1,5 +1,6 @@
-package com.spiddekauga.utils.commands;
+package com.spiddekauga.voider.utils.commands;
 
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.utils.Synchronizer;
 
 /**

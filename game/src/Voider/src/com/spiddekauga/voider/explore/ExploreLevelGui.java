@@ -209,6 +209,19 @@ class ExploreLevelGui extends ExploreGui {
 	}
 
 	@Override
+	protected void resetViewButtons() {
+		super.resetViewButtons();
+
+		if (mWidgets.view.sort != null) {
+			if (mScene.getView() == ExploreViews.ONLINE_BROWSE) {
+				mWidgets.view.sort.setChecked(true);
+			} else if (mScene.getView() == ExploreViews.ONLINE_SEARCH) {
+				mWidgets.view.search.setChecked(true);
+			}
+		}
+	}
+
+	@Override
 	protected void onUserOnline() {
 		if (mWidgets.view.sort != null) {
 			mWidgets.view.sort.setDisabled(false);
@@ -508,45 +521,6 @@ class ExploreLevelGui extends ExploreGui {
 
 	private AlignTable createLevelTable(LevelInfoEntity level, boolean selected) {
 		return createTable(level, selected);
-	}
-
-	/**
-	 * Show go online dialog
-	 */
-	void showGoOnlineDialog() {
-		// TODO Move?
-		// MsgBoxExecuter msgBox = getFreeMsgBox(true);
-		//
-		// msgBox.setTitle("Go Online?");
-		//
-		// Label label =
-		// mUiFactory.text.create("To use online features you need to connect to the server.");
-		// msgBox.content(label);
-		//
-		// IEventListener loginListener = new IEventListener() {
-		// @Override
-		// public void handleEvent(GameEvent event) {
-		// EventDispatcher.getInstance().disconnect(EventTypes.USER_CONNECTED, this);
-		//
-		// // Sort
-		// if (mWidgets.sort.viewHider.isVisible()) {
-		// mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
-		// }
-		// // Search
-		// else if (mWidgets.search.viewHider.isVisible()) {
-		// mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
-		// }
-		// }
-		// };
-		//
-		// Command eventConnect = new CEventConnect(loginListener,
-		// EventTypes.USER_CONNECTED);
-		// Command goOnline = new CUserConnect();
-		//
-		// msgBox.addCancelButtonAndKeys();
-		// msgBox.button("Go Online", new CSequence(eventConnect, goOnline));
-		//
-		// showMsgBox(msgBox);
 	}
 
 	/**

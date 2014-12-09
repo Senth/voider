@@ -29,7 +29,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.commands.CBugReportSend;
 import com.spiddekauga.utils.commands.CGameQuit;
-import com.spiddekauga.utils.commands.CSyncFixConflict;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -45,6 +44,10 @@ import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
+import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.commands.CSyncFixConflict;
+import com.spiddekauga.voider.utils.commands.CUserConnect;
+import com.spiddekauga.voider.utils.commands.CUserSetAskGoOnline;
 
 /**
  * Base class for all GUI containing windows
@@ -756,6 +759,28 @@ public abstract class Gui implements Disposable {
 	public boolean isVisible() {
 		return mVisible;
 	}
+
+	/**
+	 * Shows the go online dialog (if it should be shown)
+	 */
+	public void showGoOnlineDialog() {
+		if (User.getGlobalUser().isAskToGoOnline()) {
+			MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+			msgBox.setTitle("Go Online?");
+
+			Label label = mUiFactory.text.create("To use online features you need to connect to the server.");
+			msgBox.content(label);
+
+			msgBox.addCancelButtonAndKeys("Cancel");
+			msgBox.button("Cancel and don't ask again this session", new CUserSetAskGoOnline(false));
+			msgBox.getButtonCell().resetWidth().setPadRight(mUiFactory.getStyles().vars.paddingInner);
+			msgBox.button("Connect", new CUserConnect());
+
+			showMsgBox(msgBox);
+		}
+	}
+
 
 	private boolean mIsResizing = false;
 	/** UI Factory for creating UI elements */

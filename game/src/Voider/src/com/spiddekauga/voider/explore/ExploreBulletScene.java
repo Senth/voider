@@ -25,6 +25,15 @@ public class ExploreBulletScene extends ExploreActorScene {
 	}
 
 	@Override
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
+
+		if (!User.getGlobalUser().isOnline()) {
+			mGui.showGoOnlineDialog();
+		}
+	}
+
+	@Override
 	protected boolean isFetchingContent() {
 		if (getView().isOnline()) {
 			return mBulletFetch.isFetching();

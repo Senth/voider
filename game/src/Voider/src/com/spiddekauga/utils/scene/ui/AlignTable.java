@@ -660,6 +660,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
+		fire(new VisibilityChangeListener.VisibilityChangeEvent());
 
 		invalidateHierarchy();
 	}

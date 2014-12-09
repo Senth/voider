@@ -191,12 +191,10 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
+				mGui.showGoOnlineDialog();
 			} else if (keycode == Input.Keys.F10) {
-				mGui.showConflictWindow();
 			} else if (keycode == Input.Keys.F11) {
-				User.getGlobalUser().makeOffline();
 			} else if (keycode == Input.Keys.F12) {
-				handleException(new RuntimeException());
 			} else if (KeyHelper.isDeletePressed(keycode) && KeyHelper.isCtrlPressed()) {
 				ResourceLocalRepo.removeAll(ExternalTypes.LEVEL);
 				ResourceLocalRepo.removeAll(ExternalTypes.BULLET_DEF);
@@ -208,7 +206,7 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 				ResourceLocalRepo.setSyncDownloadDate(new Date(0));
 				ResourceLocalRepo.setSyncUserResourceDate(new Date(0));
 			} else if (keycode == Input.Keys.HOME) {
-				mSynchronizer.synchronizeAll();
+
 			}
 		}
 		return super.onKeyDown(keycode);
