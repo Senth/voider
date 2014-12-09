@@ -337,6 +337,8 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		if (!mGui.isInitialized()) {
 			Gdx.app.error("Scene", "Failed to load scene!");
+		} else {
+			mGui.resetValues();
 		}
 	}
 
@@ -347,7 +349,6 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 *       stack).
 	 */
 	protected void onDeactivate() {
-		// mGui.hideAllMessages();
 	}
 
 	/**

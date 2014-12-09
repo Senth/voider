@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -24,6 +25,7 @@ import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
+import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -42,6 +44,21 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		super(new ExploreLevelGui(), action, LevelDef.class);
 
 		((ExploreLevelGui) mGui).setExploreLevelScene(this);
+	}
+
+	@Override
+	protected void loadResources() {
+		super.loadResources();
+
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
+	}
+
+	@Override
+	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
+		super.reloadResourcesOnActivate(outcome, message);
+
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
+		ResourceCacheFacade.finishLoading();
 	}
 
 	@Override
@@ -291,6 +308,26 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		case SELECT:
 			setOutcome(Outcomes.EXPLORE_SELECT, mSelectedLevel.defEntity);
 			break;
+		}
+	}
+
+	/**
+	 * @return true if we can resume a level
+	 */
+	boolean hasResumeLevel() {
+		return !ResourceCacheFacade.getAll(ExternalTypes.GAME_SAVE_DEF).isEmpty();
+	}
+
+	/**
+	 * Resumes a previously started level
+	 */
+	void resumeLevel() {
+		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(ExternalTypes.GAME_SAVE_DEF);
+		if (!gameSaves.isEmpty()) {
+			GameSaveDef gameSaveDef = gameSaves.get(0);
+			GameScene gameScene = new GameScene(false, false);
+			gameScene.setGameToResume(gameSaveDef);
+			SceneSwitcher.switchTo(gameScene);
 		}
 	}
 

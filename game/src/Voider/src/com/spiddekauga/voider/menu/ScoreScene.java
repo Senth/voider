@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.menu;
 
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.explore.ExploreLevelScene;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
@@ -81,7 +82,7 @@ public class ScoreScene extends Scene {
 			mSynchronizer.synchronize(SyncTypes.STATS);
 		}
 
-		SceneSwitcher.returnTo(MainMenu.class);
+		SceneSwitcher.returnTo(ExploreLevelScene.class);
 	}
 
 	/**

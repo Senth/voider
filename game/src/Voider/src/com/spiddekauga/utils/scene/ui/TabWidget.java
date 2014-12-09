@@ -134,6 +134,15 @@ public class TabWidget extends AlignTable {
 	 */
 	@Deprecated
 	@Override
+	public Row row(Align alignment) {
+		throw new UnsupportedOperationException("Use TabWidget#addTab()");
+	}
+
+	/**
+	 * @deprecated no more rows can be added to TabWidget
+	 */
+	@Deprecated
+	@Override
 	public Cell add() {
 		throw new UnsupportedOperationException("Use TabWidget#addTab()");
 	}
@@ -290,6 +299,13 @@ public class TabWidget extends AlignTable {
 		if (mActionButtonHeight != 0) {
 			cell.setHeight(mActionButtonHeight);
 		}
+	}
+
+	/**
+	 * Adds a top row to the action button table
+	 */
+	public void addActionButtonRowTop() {
+		mActionTable.row(0).setFillWidth(true);
 	}
 
 	/**

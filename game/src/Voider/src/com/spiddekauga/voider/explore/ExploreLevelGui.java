@@ -65,6 +65,7 @@ class ExploreLevelGui extends ExploreGui {
 
 		resetComments();
 		resetContent();
+		resetRightPanel();
 	}
 
 	/**
@@ -273,7 +274,36 @@ class ExploreLevelGui extends ExploreGui {
 		// mUiFactory.addTab(SkinNames.General.COMMENTS, mWidgets.comment.table, null,
 		// mRightPanel);
 
+		// Resume level action
+		if (mScene.getSelectedAction() == ExploreActions.PLAY) {
+			mRightPanel.addActionButtonRowTop();
+			Button button = mUiFactory.button.createText("Resume Last Level", TextButtonStyles.FILLED_PRESS);
+			mRightPanel.addActionButtonGlobal(button);
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed(Button button) {
+					mScene.resumeLevel();
+				}
+			};
+			mWidgets.action.resumeLevelHider.addToggleActor(button);
+
+			if (!mScene.hasResumeLevel()) {
+				mWidgets.action.resumeLevelHider.hide();
+			}
+		}
+
 		mRightPanel.layout();
+	}
+
+	/**
+	 * Resets the right panel
+	 */
+	private void resetRightPanel() {
+		if (mScene.hasResumeLevel()) {
+			mWidgets.action.resumeLevelHider.show();
+		} else {
+			mWidgets.action.resumeLevelHider.hide();
+		}
 	}
 
 	@Override
@@ -560,6 +590,16 @@ class ExploreLevelGui extends ExploreGui {
 		Tag tag = new Tag();
 		Search search = new Search();
 		View view = new View();
+		Action action = new Action();
+
+		private class Action implements Disposable {
+			HideManual resumeLevelHider = new HideManual();
+
+			@Override
+			public void dispose() {
+				resumeLevelHider.dispose();
+			}
+		}
 
 		private class View {
 			Button sort = null;

@@ -52,7 +52,7 @@ import com.spiddekauga.voider.resources.ResourceBinder;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-IResourceRevision, IResourceHasDef {
+		IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -586,7 +586,7 @@ IResourceRevision, IResourceHasDef {
 
 		// Set correct base speed if this isn't a save file
 		if (mClassVersion >= 2) {
-			if (!mRunning) {
+			if (mXCoord == mLevelDef.getStartXCoord()) {
 				mSpeed = mLevelDef.getBaseSpeed();
 			}
 		}
