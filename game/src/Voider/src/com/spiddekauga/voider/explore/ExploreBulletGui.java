@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for finding or loading bullets
@@ -36,7 +37,25 @@ public class ExploreBulletGui extends ExploreActorGui {
 				mScene.setView(ExploreViews.ONLINE_SEARCH);
 			}
 		};
-		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
+		mViewButton = addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
+
+		if (!User.getGlobalUser().isOnline()) {
+			mViewButton.setDisabled(true);
+		}
+	}
+
+	@Override
+	protected void onUserOnline() {
+		if (mViewButton != null) {
+			mViewButton.setDisabled(false);
+		}
+	}
+
+	@Override
+	protected void onUserOffline() {
+		if (mViewButton != null) {
+			mViewButton.setDisabled(true);
+		}
 	}
 
 	/**
@@ -48,4 +67,5 @@ public class ExploreBulletGui extends ExploreActorGui {
 	}
 
 	private ExploreBulletScene mScene = null;
+	private Button mViewButton = null;
 }

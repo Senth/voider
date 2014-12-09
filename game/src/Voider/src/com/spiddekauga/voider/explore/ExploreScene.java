@@ -23,6 +23,7 @@ import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.User;
 
@@ -38,6 +39,8 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 */
 	protected ExploreScene(ExploreGui gui, ExploreActions action, Class<? extends Def> defType) {
 		super(gui);
+
+		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 
 		mLocalType = ExternalTypes.fromType(defType);
 		mAction = action;
@@ -177,6 +180,11 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 			if (defPassesFilter(defEntity)) {
 				mFilteredResults.add(defEntity);
 			}
+		}
+		if (!mFilteredResults.isEmpty()) {
+			setSelected(mFilteredResults.get(0));
+		} else {
+			setSelected(null);
 		}
 
 		((ExploreGui) mGui).addContent(mFilteredResults);
@@ -334,7 +342,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * Sets the active view
 	 * @param view the new active view
 	 */
-	protected final void setView(ExploreViews view) {
+	protected void setView(ExploreViews view) {
 		mView = view;
 		((ExploreGui) mGui).resetContent();
 		((ExploreGui) mGui).resetContentMargins();
@@ -344,7 +352,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	/**
 	 * @return current view
 	 */
-	protected final ExploreViews getView() {
+	protected ExploreViews getView() {
 		return mView;
 	}
 

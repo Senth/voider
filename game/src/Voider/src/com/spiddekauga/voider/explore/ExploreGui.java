@@ -45,6 +45,10 @@ import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Common GUI for all explore scenes
@@ -72,6 +76,7 @@ abstract class ExploreGui extends Gui {
 
 		mWidgets = new Widgets();
 
+		connectUserListeners();
 		initRightPanel();
 		initInfo(mWidgets.info.table, mWidgets.info.hider);
 		initLeftPanel();
@@ -95,6 +100,8 @@ abstract class ExploreGui extends Gui {
 		mLeftPanel.dispose();
 		mRightPanel.dispose();
 
+		disconnectUserListeners();
+
 		super.dispose();
 	}
 
@@ -104,6 +111,38 @@ abstract class ExploreGui extends Gui {
 
 		resetSearchFilters();
 		resetInfo();
+	}
+
+	/**
+	 * Creates user connected/disconnect events
+	 */
+	private void connectUserListeners() {
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.USER_CONNECTED, mUserListener);
+		eventDispatcher.connect(EventTypes.USER_DISCONNECTED, mUserListener);
+	}
+
+	/**
+	 * Disconnect user listeners
+	 */
+	private void disconnectUserListeners() {
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.disconnect(EventTypes.USER_CONNECTED, mUserListener);
+		eventDispatcher.disconnect(EventTypes.USER_DISCONNECTED, mUserListener);
+	}
+
+	/**
+	 * Called when the user has gone online
+	 */
+	protected void onUserOnline() {
+
+	}
+
+	/**
+	 * Called when the user has gone offline
+	 */
+	protected void onUserOffline() {
+
 	}
 
 	/**
@@ -145,8 +184,9 @@ abstract class ExploreGui extends Gui {
 	 * @param iconName name of the button image
 	 * @param listener button listener for this button
 	 * @param hideListeners hide listeners for this button
+	 * @return the created button
 	 */
-	protected void addViewButton(ISkinNames iconName, ButtonListener listener, HideListener... hideListeners) {
+	protected Button addViewButton(ISkinNames iconName, ButtonListener listener, HideListener... hideListeners) {
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(iconName));
 		mWidgets.view.table.add(button);
 		button.addListener(listener);
@@ -155,6 +195,8 @@ abstract class ExploreGui extends Gui {
 		for (HideListener hideListener : hideListeners) {
 			hideListener.addButton(button);
 		}
+
+		return button;
 	}
 
 	/**
@@ -520,8 +562,8 @@ abstract class ExploreGui extends Gui {
 		if (mWidgets.content.scrollPane != null) {
 			float screenWidth = Gdx.graphics.getWidth();
 			float screenHeight = Gdx.graphics.getHeight();
-			float marginLeft = mLeftPanel.isVisible() ? mLeftPanel.getWidth() : mUiFactory.getStyles().vars.paddingOuter;
-			float marginRight = mRightPanel.getWidth();
+			float marginLeft = mLeftPanel.isVisible() ? mLeftPanel.getWidthWithMargin() : mUiFactory.getStyles().vars.paddingOuter;
+			float marginRight = mRightPanel.getWidthWithMargin();
 			float marginTop = mUiFactory.getStyles().vars.barUpperLowerHeight;
 			float marginBottom = mUiFactory.getStyles().vars.paddingOuter;
 
@@ -797,6 +839,22 @@ abstract class ExploreGui extends Gui {
 
 		return -1;
 	}
+
+	private IEventListener mUserListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			switch (event.type) {
+			case USER_CONNECTED:
+				onUserOnline();
+
+			case USER_DISCONNECTED:
+				onUserOffline();
+
+			default:
+				break;
+			}
+		}
+	};
 
 	private boolean mAddingContent = false;
 	private int mActorsPerRow = 0;

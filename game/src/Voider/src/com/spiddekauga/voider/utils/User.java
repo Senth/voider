@@ -161,6 +161,7 @@ public class User {
 	 */
 	public void makeOffline() {
 		mOnline = false;
+		mAskToGoOnline = true;
 
 		mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
 	}
@@ -255,6 +256,21 @@ public class User {
 	 */
 	public UUID getPrivateKey() {
 		return mPrivateKey;
+	}
+
+	/**
+	 * Sets if we should ask to go online this session
+	 * @param ask true if we should ask, false to not ask
+	 */
+	public void setAskToGoOnline(boolean ask) {
+		mAskToGoOnline = true;
+	}
+
+	/**
+	 * @return true if we should ask the player to go online again
+	 */
+	public boolean isAskToGoOnline() {
+		return mAskToGoOnline;
 	}
 
 	private IResponseListener mResponseListener = new IResponseListener() {
@@ -370,4 +386,5 @@ public class User {
 	/** Private login key */
 	private UUID mPrivateKey = null;
 	private boolean mLoggedIn = false;
+	private boolean mAskToGoOnline = true;
 }

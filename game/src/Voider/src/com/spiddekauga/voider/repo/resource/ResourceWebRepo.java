@@ -32,7 +32,6 @@ import com.spiddekauga.voider.network.entities.resource.FetchMethod;
 import com.spiddekauga.voider.network.entities.resource.FetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethod;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
@@ -47,7 +46,6 @@ import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.CommentEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
-import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -388,12 +386,12 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Cache a new search level
-	 * @param searchString
-	 * @param response
+	 * Cache a level
+	 * @param method parameters to the server (or search parameters)
+	 * @param response server response
 	 */
-	private void cacheLevels(String searchString, LevelFetchMethodResponse response) {
-		LevelCache cache = mSearchCache.get(searchString);
+	private void cacheLevels(LevelFetchMethod method, LevelFetchMethodResponse response) {
+		LevelCache cache = mLevelCache.get(method);
 
 		boolean newCache = false;
 
@@ -406,31 +404,7 @@ public class ResourceWebRepo extends WebRepo {
 		updateLevelCache(cache, response);
 
 		if (newCache) {
-			mSearchCache.add(searchString, cache);
-		}
-	}
-
-	/**
-	 * Cache a new sort level
-	 * @param sort
-	 * @param tags
-	 * @param response
-	 */
-	private void cacheLevels(SortOrders sort, ArrayList<Tags> tags, LevelFetchMethodResponse response) {
-		SortWrapper sortCacheKey = new SortWrapper(sort, tags);
-		LevelCache cache = mSortCache.get(sortCacheKey);
-
-		boolean newCache = false;
-
-		if (cache == null) {
-			cache = new LevelCache();
-			newCache = true;
-		}
-
-		updateLevelCache(cache, response);
-
-		if (newCache) {
-			mSortCache.add(sortCacheKey, cache);
+			mLevelCache.add(method, cache);
 		}
 	}
 
@@ -444,14 +418,7 @@ public class ResourceWebRepo extends WebRepo {
 		// Update cache
 		if (response instanceof LevelFetchMethodResponse) {
 			if (((LevelFetchMethodResponse) response).status.isSuccessful()) {
-				// Search string
-				if (methodEntity.searchString != null && !methodEntity.searchString.equals("")) {
-					cacheLevels(methodEntity.searchString, (LevelFetchMethodResponse) response);
-				}
-				// Sorting with or without tags
-				else {
-					cacheLevels(methodEntity.sort, methodEntity.tagFilter, (LevelFetchMethodResponse) response);
-				}
+				cacheLevels(methodEntity, (LevelFetchMethodResponse) response);
 			}
 
 			return response;
@@ -596,55 +563,20 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Get levels by sorting and specified tags (only definitions)
-	 * @param sort sorting order of the levels to get
-	 * @param tags all tags the levels have to have
+	 * Get levels either by sorting or searching
+	 * @param method parameters to the server
 	 * @param fetchMore set to true to always fetch more levels from the server (if
 	 *        available)
-	 * @param responseListeners listens to the web response
+	 * @param responseListeners listens to the server response
 	 */
-	public void getLevels(SortOrders sort, ArrayList<Tags> tags, boolean fetchMore, IResponseListener... responseListeners) {
-		LevelFetchMethod method = new LevelFetchMethod();
-		method.sort = sort;
-		method.tagFilter = tags;
-
-		// Get cache
-		SortWrapper sortCacheKey = new SortWrapper(sort, tags);
-		LevelCache cache = mSortCache.get(sortCacheKey);
-
-		getLevels(method, cache, fetchMore, responseListeners);
-	}
-
-	/**
-	 * Get levels by text search
-	 * @param searchString the string to search for in the levels
-	 * @param fetchMore set to true to always fetch more levels, false to use cache if the
-	 *        cache exists
-	 * @param responseListeners the caller to send the response to
-	 */
-	public void getLevels(String searchString, boolean fetchMore, IResponseListener... responseListeners) {
-		LevelFetchMethod method = new LevelFetchMethod();
-		method.searchString = searchString;
-
-		// Get cache
-		LevelCache cache = mSearchCache.getCopy(searchString);
-
-		getLevels(method, cache, fetchMore, responseListeners);
-	}
-
-	/**
-	 * Get levels
-	 * @param method the level fetch method
-	 * @param cache the cache to get levels from
-	 * @param fetchMore if we should fetch more, false to use cache if the cache exists
-	 * @param responseListeners the caller to send the response to
-	 */
-	private void getLevels(LevelFetchMethod method, LevelCache cache, boolean fetchMore, IResponseListener[] responseListeners) {
+	public void getLevels(LevelFetchMethod method, boolean fetchMore, IResponseListener... responseListeners) {
+		LevelFetchMethod levelFetchMethod = method.copy();
 		LevelFetchMethodResponse response = new LevelFetchMethodResponse();
+		LevelCache cache = mLevelCache.getCopy(levelFetchMethod);
 		if (cache != null) {
 			response.levels = cache.levels;
 		}
-		fetch(method, cache, fetchMore, responseListeners, response);
+		fetch(levelFetchMethod, null, fetchMore, responseListeners, response);
 	}
 
 	/**
@@ -673,22 +605,12 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Check if the server has more levels for this sort order and these tags.
-	 * @param sort sort order to get cached levels from
-	 * @param tags all tags that are checked
+	 * Check if the server has more levels
+	 * @param method parameters to the server
 	 * @return true if the server has more levels
 	 */
-	public boolean hasMoreLevels(SortOrders sort, ArrayList<Tags> tags) {
-		return hasMore(mSortCache.get(new SortWrapper(sort, tags)));
-	}
-
-	/**
-	 * Check if the server has more levels for this search string
-	 * @param searchString the string to search for
-	 * @return true if the server has more levels
-	 */
-	public boolean hasMoreLevels(String searchString) {
-		return hasMore(mSearchCache.get(searchString));
+	public boolean hasMoreLevels(LevelFetchMethod method) {
+		return hasMore(mLevelCache.get(method));
 	}
 
 	/**
@@ -709,7 +631,7 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	public void getEnemies(EnemyFetchMethod method, boolean fetchMore, IResponseListener... responseListeners) {
 		EnemyFetchMethod fetchMethod = method.copy();
-		EnemyCache cache = mEnemyCache.get(fetchMethod);
+		EnemyCache cache = mEnemyCache.getCopy(fetchMethod);
 		EnemyFetchMethodResponse response = new EnemyFetchMethodResponse();
 		if (cache != null) {
 			response.enemies = cache.enemies;
@@ -736,7 +658,7 @@ public class ResourceWebRepo extends WebRepo {
 	public void getBullets(String searchString, boolean fetchMore, IResponseListener... responseListeners) {
 		BulletFetchMethod method = new BulletFetchMethod();
 		method.searchString = searchString;
-		BulletCache cache = mBulletCache.get(searchString);
+		BulletCache cache = mBulletCache.getCopy(searchString);
 		BulletFetchMethodResponse response = new BulletFetchMethodResponse();
 		if (cache != null) {
 			response.bullets = cache.bullets;
@@ -756,10 +678,9 @@ public class ResourceWebRepo extends WebRepo {
 	private static ResourceWebRepo mInstance = null;
 
 	private Cache<UUID, CommentCacheEntity> mCommentCache = new Cache<>();
-	private Cache<String, LevelCache> mSearchCache = new Cache<>();
-	private Cache<SortWrapper, LevelCache> mSortCache = new Cache<>();
 	private Cache<EnemyFetchMethod, EnemyCache> mEnemyCache = new Cache<>();
 	private Cache<String, BulletCache> mBulletCache = new Cache<>();
+	private Cache<LevelFetchMethod, LevelCache> mLevelCache = new Cache<>();
 
 	/** Last progress listener for sync download */
 	private IDownloadProgressListener mSyncDownloadProgressListener = null;
@@ -786,39 +707,6 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		private ResourceBlobEntity mResourceInfo;
-	}
-
-	/**
-	 * The key for LevelCache when getting by sort order and tags.
-	 */
-	private class SortWrapper {
-		private SortWrapper(SortOrders sort, ArrayList<Tags> tags) {
-			this.sort = sort;
-			this.tags = tags;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			SortWrapper other = (SortWrapper) obj;
-			return sort == other.sort && tags.equals(other.tags);
-		}
-
-		@Override
-		public int hashCode() {
-			return sort.hashCode() + tags.hashCode();
-		}
-
-		private SortOrders sort;
-		private ArrayList<Tags> tags;
 	}
 
 	/**

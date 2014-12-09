@@ -34,7 +34,6 @@ import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelStatsEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.server.util.ResourceFetch;
-import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
@@ -74,16 +73,13 @@ public class LevelFetch extends ResourceFetch {
 	 * Get and set the levels to send back in response
 	 */
 	private void getAndSetLevelResponse() {
-		// Tag filter
-		if (mParameters.tags != null && !mParameters.tags.isEmpty()) {
-			filterByTags();
+		// Search filter
+		if (mParameters.search) {
+			searchLevels();
 		}
-		// Text search
-		else if (mParameters.searchString != null && !mParameters.searchString.equals("")) {
-			// Only search for 3 or more characters
-			if (mParameters.searchString.length() >= ServerConfig.SEARCH_TEXT_LENGTH_MIN) {
-				searchLevels();
-			}
+		// Tag filter
+		else if (mParameters.tags != null && !mParameters.tags.isEmpty()) {
+			filterByTags();
 		}
 		// Just sort, i.e. get the levels
 		else {

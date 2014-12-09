@@ -7,11 +7,11 @@ package com.spiddekauga.voider.network.entities.resource;
 @SuppressWarnings("javadoc")
 public enum LevelLengthSearchRanges implements IRangeEnum {
 	// !!! IF YOU CHANGE THESE -> Be sure to fix update the search ranges
-	SHORT("0-1 min", "0-1", 0, 1),
-	NORMAL("1-3 min", "1-3", 1, 3),
-	LONG("3-5 min", "3-5", 3, 5),
-	LONGER("5-10 min", "5-10", 5, 10),
-	LONGEST("10+ min", "10+", 10, 3600),
+	SHORT("0-1 min", "0-1", 0, 60),
+	NORMAL("1-3 min", "1-3", 60, 180),
+	LONG("3-5 min", "3-5", 180, 300),
+	LONGER("5-10 min", "5-10", 300, 600),
+	LONGEST("10+ min", "10+", 600, 86400),
 
 	;
 

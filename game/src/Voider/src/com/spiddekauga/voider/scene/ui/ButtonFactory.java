@@ -138,12 +138,12 @@ public class ButtonFactory extends BaseFactory {
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
 			break;
 
-			// Slim fit to text
+		// Slim fit to text
 		case LINK:
 			button.pack();
 			break;
 
-			// Fit to text (but with padding)
+		// Fit to text (but with padding)
 		case TAG:
 		case TRANSPARENT_PRESS:
 		case TRANSPARENT_TOGGLE: {
@@ -370,6 +370,7 @@ public class ButtonFactory extends BaseFactory {
 	/**
 	 * Adds checkboxes for all enumerations
 	 * @param enumerations display name of checkbox and place in array
+	 * @param style TODO
 	 * @param hider optional hider
 	 * @param group optional button group
 	 * @param vertical true for the checkboxes to be in a vertical layout, false for
@@ -377,7 +378,8 @@ public class ButtonFactory extends BaseFactory {
 	 * @param table where to add the buttons
 	 * @param buttons empty checkbox array, created button is added to this array
 	 */
-	public void addEnumCheckboxes(Enum<?>[] enumerations, GuiHider hider, ButtonGroup group, boolean vertical, AlignTable table, Button[] buttons) {
+	public void addEnumCheckboxes(Enum<?>[] enumerations, CheckBoxStyles style, GuiHider hider, ButtonGroup group, boolean vertical,
+			AlignTable table, Button[] buttons) {
 		if (buttons.length != enumerations.length) {
 			throw new RuntimeException("Enumeration doesn't have same length as buttons. Enums:\n " + enumerations.toString());
 		}
@@ -386,9 +388,9 @@ public class ButtonFactory extends BaseFactory {
 			Enum<?> enumeration = enumerations[i];
 			Button button = null;
 			if (vertical) {
-				button = addCheckBoxRow(enumeration.toString(), CheckBoxStyles.CHECK_BOX, null, group, table);
+				button = addCheckBoxRow(enumeration.toString(), style, null, group, table);
 			} else {
-				button = addCheckBox(enumeration.toString(), CheckBoxStyles.CHECK_BOX, null, group, table);
+				button = addCheckBox(enumeration.toString(), style, null, group, table);
 			}
 			if (hider != null) {
 				hider.addToggleActor(button);

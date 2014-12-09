@@ -21,6 +21,8 @@ import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
+import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for finding or loading enemies
@@ -60,7 +62,25 @@ public class ExploreEnemyGui extends ExploreActorGui {
 				mScene.setView(ExploreViews.ONLINE_SEARCH);
 			}
 		};
-		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
+		mWidgets.view.search = addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
+
+		if (!User.getGlobalUser().isOnline()) {
+			mWidgets.view.search.setDisabled(true);
+		}
+	}
+
+	@Override
+	protected void onUserOnline() {
+		if (mWidgets.view.search != null) {
+			mWidgets.view.search.setDisabled(false);
+		}
+	}
+
+	@Override
+	protected void onUserOffline() {
+		if (mWidgets.view.search != null) {
+			mWidgets.view.search.setDisabled(true);
+		}
 	}
 
 	@Override
@@ -198,8 +218,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 		// Movement Speed
 		mUiFactory.text.addPanelSection("Movement Speed", table, mWidgets.search.movementHider);
-		mUiFactory.button.addEnumCheckboxes(EnemySpeedSearchRanges.values(), mWidgets.search.movementHider, null, true, table,
-				mWidgets.search.movementSpeeds);
+		mUiFactory.button.addEnumCheckboxes(EnemySpeedSearchRanges.values(), CheckBoxStyles.CHECK_BOX, mWidgets.search.movementHider, null, true,
+				table, mWidgets.search.movementSpeeds);
 		new ButtonEnumListener<EnemySpeedSearchRanges>(mWidgets.search.movementSpeeds, EnemySpeedSearchRanges.values()) {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -210,7 +230,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 		// Collision Damage
 		mUiFactory.text.addPanelSection("Collision Damage", table, null);
-		mUiFactory.button.addEnumCheckboxes(CollisionDamageSearchRanges.values(), null, null, true, table, mWidgets.search.collisionDamages);
+		mUiFactory.button.addEnumCheckboxes(CollisionDamageSearchRanges.values(), CheckBoxStyles.CHECK_BOX, null, null, true, table,
+				mWidgets.search.collisionDamages);
 		new ButtonEnumListener<CollisionDamageSearchRanges>(mWidgets.search.collisionDamages, CollisionDamageSearchRanges.values()) {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -287,8 +308,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 		// Bullet Speed
 		mUiFactory.text.addPanelSection("Bullet Speed", table, mWidgets.search.weaponHider);
-		mUiFactory.button.addEnumCheckboxes(BulletSpeedSearchRanges.values(), mWidgets.search.weaponHider, null, true, table,
-				mWidgets.search.bulletSpeeds);
+		mUiFactory.button.addEnumCheckboxes(BulletSpeedSearchRanges.values(), CheckBoxStyles.CHECK_BOX, mWidgets.search.weaponHider, null, true,
+				table, mWidgets.search.bulletSpeeds);
 		new ButtonEnumListener<BulletSpeedSearchRanges>(mWidgets.search.bulletSpeeds, BulletSpeedSearchRanges.values()) {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -299,8 +320,8 @@ public class ExploreEnemyGui extends ExploreActorGui {
 
 		// Bullet Damage
 		mUiFactory.text.addPanelSection("Bullet Damage", table, mWidgets.search.weaponHider);
-		mUiFactory.button.addEnumCheckboxes(BulletDamageSearchRanges.values(), mWidgets.search.weaponHider, null, true, table,
-				mWidgets.search.bulletDamages);
+		mUiFactory.button.addEnumCheckboxes(BulletDamageSearchRanges.values(), CheckBoxStyles.CHECK_BOX, mWidgets.search.weaponHider, null, true,
+				table, mWidgets.search.bulletDamages);
 		new ButtonEnumListener<BulletDamageSearchRanges>(mWidgets.search.bulletDamages, BulletDamageSearchRanges.values()) {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
@@ -396,6 +417,11 @@ public class ExploreEnemyGui extends ExploreActorGui {
 	private class Widgets implements Disposable {
 		Search search = new Search();
 		Info info = new Info();
+		View view = new View();
+
+		private class View {
+			Button search = null;
+		}
 
 		private class Info implements Disposable {
 			Label movementType = null;

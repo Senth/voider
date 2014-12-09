@@ -52,7 +52,7 @@ import com.spiddekauga.voider.resources.ResourceBinder;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-		IResourceRevision, IResourceHasDef {
+IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -583,6 +583,13 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			}
 			addEnemies = null;
 		}
+
+		// Set correct base speed if this isn't a save file
+		if (mClassVersion >= 2) {
+			if (!mRunning) {
+				mSpeed = mLevelDef.getBaseSpeed();
+			}
+		}
 	}
 
 	@Override
@@ -598,7 +605,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	@SuppressWarnings("unused")
 	@Override
 	public void read(Kryo kryo, Input input) {
-		int classRevision = input.readInt(true);
+		mClassVersion = input.readInt(true);
 
 		// LevelDef
 		UUID levelDefId = kryo.readObject(input, UUID.class);
@@ -663,9 +670,11 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	private boolean mRunning = false;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
+	/** Read class version */
+	private int mClassVersion = CLASS_REVISION;
 	/** Multiple enemies in a group, but just save the leader and number of enemies */
 	@Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
 
-	/** Revision of the actor */
-	protected static final int CLASS_REVISION = 1;
+	/** Revision this class structure */
+	protected static final int CLASS_REVISION = 2;
 }

@@ -15,11 +15,13 @@ public class LevelFetchMethod extends FetchMethod {
 	/** All tags that should be included, if empty all tags are used */
 	public ArrayList<Tags> tags = new ArrayList<>();
 	/** Search string or text filter, if null not used */
-	public String searchString = null;
+	public String searchString = "";
 	/** Level length categories to search for */
 	public ArrayList<LevelLengthSearchRanges> levelLengths = new ArrayList<>();
 	/** Level speeds to search for */
 	public ArrayList<LevelSpeedSearchRanges> levelSpeeds = new ArrayList<>();
+	/** If we should search and use the various filters, or sort (with tag filters) */
+	public boolean search = false;
 
 	/**
 	 * Creates a copy of this method
@@ -28,6 +30,7 @@ public class LevelFetchMethod extends FetchMethod {
 	public LevelFetchMethod copy() {
 		LevelFetchMethod copy = new LevelFetchMethod();
 
+		copy.search = search;
 		copy.sort = sort;
 		copy.tags.addAll(tags);
 		copy.searchString = searchString;
@@ -78,6 +81,7 @@ public class LevelFetchMethod extends FetchMethod {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (search ? 1 : 0);
 		result = prime * result + getListHashCode(levelLengths, LevelLengthSearchRanges.values().length);
 		result = prime * result + getListHashCode(levelSpeeds, LevelSpeedSearchRanges.values().length);
 		result = prime * result + ((searchString == null) ? 0 : searchString.hashCode());
@@ -98,6 +102,9 @@ public class LevelFetchMethod extends FetchMethod {
 			return false;
 		}
 		LevelFetchMethod other = (LevelFetchMethod) obj;
+		if (search != other.search) {
+			return false;
+		}
 		if (!isListEquals(levelLengths, other.levelLengths, LevelLengthSearchRanges.values().length)) {
 			return false;
 		}

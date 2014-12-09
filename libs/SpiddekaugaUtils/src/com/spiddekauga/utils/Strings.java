@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 /**
  * String utilities
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Strings {
@@ -33,18 +32,6 @@ public class Strings {
 	 */
 	public static <T> String padLeft(T message, int n) {
 		return String.format("%1$" + n + "s", message);
-	}
-
-	/**
-	 * Stack trace to string
-	 * @param exception the exception to get the stack trace from
-	 * @return stack trace in a string
-	 */
-	public static String stackTraceToString(Exception exception) {
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter);
-		exception.printStackTrace(printWriter);
-		return stringWriter.toString();
 	}
 
 	/**
@@ -85,7 +72,7 @@ public class Strings {
 	 * Create a string list of a list
 	 * @param list the list to create a string list from
 	 * @param delimiter how to delimit the elements
-	 * @return string list seperated by the delimiter
+	 * @return string list separated by the delimiter
 	 */
 	public static String toStringList(List<?> list, String delimiter) {
 		String stringList = "";
@@ -100,6 +87,26 @@ public class Strings {
 		}
 
 		return stringList;
+	}
+
+	/**
+	 * Display number of seconds in minutes
+	 * @param seconds number of seconds
+	 * @return string time in minutes
+	 */
+	public static String secondsToTimeString(int seconds) {
+		String minuteString = String.valueOf(seconds / 60);
+		String secondString = String.valueOf(seconds % 60);
+
+		// Append zeroes
+		if (minuteString.length() == 1) {
+			minuteString = "0" + minuteString;
+		}
+		if (secondString.length() == 1) {
+			secondString = "0" + secondString;
+		}
+
+		return minuteString + ":" + secondString;
 	}
 
 	/** Vowel pattern */

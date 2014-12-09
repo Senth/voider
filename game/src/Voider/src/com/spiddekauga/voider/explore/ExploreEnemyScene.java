@@ -390,7 +390,6 @@ public class ExploreEnemyScene extends ExploreActorScene {
 			}
 
 			return false;
-
 		}
 
 		/**

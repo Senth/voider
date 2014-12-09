@@ -1,13 +1,11 @@
 package com.spiddekauga.voider.explore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -20,6 +18,7 @@ import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.ButtonEnumListener;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
@@ -29,6 +28,7 @@ import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
@@ -43,7 +43,7 @@ import com.spiddekauga.voider.utils.User;
  * GUI for explore level scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class ExploreLevelGui extends ExploreGui {
+class ExploreLevelGui extends ExploreGui {
 	/**
 	 * Hidden constructor
 	 */
@@ -56,7 +56,7 @@ public class ExploreLevelGui extends ExploreGui {
 	 * @param exploreScene the explore scene
 	 */
 	void setExploreLevelScene(ExploreLevelScene exploreScene) {
-		mExploreScene = exploreScene;
+		mScene = exploreScene;
 	}
 
 	@Override
@@ -74,29 +74,36 @@ public class ExploreLevelGui extends ExploreGui {
 	protected void resetInfo() {
 		super.resetInfo();
 
-		LevelInfoEntity level = mExploreScene.getSelectedLevel();
-
-		if (level != null) {
-			mWidgets.info.bookmarks.setText(String.valueOf(level.stats.cBookmarks));
-			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
-			mWidgets.info.rating.setRating((level.stats.getIntRating()));
-			mWidgets.info.length.setText(Strings.secondsToTimeString((int) level.defEntity.levelLength));
-
-			LevelSpeedSearchRanges levelSpeedSearchRange = LevelSpeedSearchRanges.getRange(level.defEntity.levelSpeed);
-			if (levelSpeedSearchRange != null) {
-				mWidgets.info.speed.setText(levelSpeedSearchRange.toString());
-			} else {
-				mWidgets.info.speed.setText("Unknown");
-			}
+		// Statistics from online
+		LevelInfoEntity levelInfo = mScene.getSelectedLevel();
+		if (levelInfo != null) {
+			mWidgets.info.bookmarks.setText(String.valueOf(levelInfo.stats.cBookmarks));
+			mWidgets.info.plays.setText(String.valueOf(levelInfo.stats.cPlayed));
+			mWidgets.info.rating.setRating((levelInfo.stats.getIntRating()));
 
 			// Set tags
-			String tagList = Strings.toStringList(level.tags, ", ");
+			String tagList = Strings.toStringList(levelInfo.tags, ", ");
 			mWidgets.info.tags.setText(tagList);
 		} else {
 			mWidgets.info.bookmarks.setText("");
 			mWidgets.info.plays.setText("");
 			mWidgets.info.rating.setRating(0);
 			mWidgets.info.tags.setText("");
+		}
+
+		// Other level information
+		LevelDefEntity levelDef = mScene.getSelected();
+		if (levelDef != null) {
+			LevelSpeedSearchRanges levelSpeedSearchRange = LevelSpeedSearchRanges.getRange(levelDef.levelSpeed);
+			if (levelSpeedSearchRange != null) {
+				mWidgets.info.speed.setText(levelSpeedSearchRange.toString());
+			} else {
+				mWidgets.info.speed.setText("Unknown");
+			}
+			mWidgets.info.length.setText(Strings.secondsToTimeString((int) levelDef.levelLength));
+		} else {
+			mWidgets.info.speed.setText("");
+			mWidgets.info.length.setText("");
 		}
 	}
 
@@ -178,35 +185,43 @@ public class ExploreLevelGui extends ExploreGui {
 		ButtonListener listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				mExploreScene.setView(ExploreViews.ONLINE_BROWSE);
+				mScene.setView(ExploreViews.ONLINE_BROWSE);
 			}
 		};
-		addViewButton(SkinNames.General.EXPLORE_ONLINE, listener, mWidgets.sort.viewHider);
+		mWidgets.view.sort = addViewButton(SkinNames.General.EXPLORE_ONLINE, listener, mWidgets.sort.viewHider, mWidgets.info.onlineHider);
 
 
 		// Search (online)
 		listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				mExploreScene.setView(ExploreViews.ONLINE_SEARCH);
+				mScene.setView(ExploreViews.ONLINE_SEARCH);
 			}
 		};
-		addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider());
+		mWidgets.view.search = addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider(), mWidgets.info.onlineHider);
+
+
+		// Disable view buttons if offline
+		if (!User.getGlobalUser().isOnline()) {
+			mWidgets.view.sort.setDisabled(true);
+			mWidgets.view.search.setDisabled(true);
+		}
 	}
 
-	/**
-	 * @return selected sort order
-	 */
-	private SortOrders getSelectedSortOrder() {
-		for (SortOrders sortOrder : SortOrders.values()) {
-			if (mWidgets.sort.buttons[sortOrder.ordinal()] != null) {
-				if (mWidgets.sort.buttons[sortOrder.ordinal()].isChecked()) {
-					return sortOrder;
-				}
-			}
+	@Override
+	protected void onUserOnline() {
+		if (mWidgets.view.sort != null) {
+			mWidgets.view.sort.setDisabled(false);
+			mWidgets.view.search.setDisabled(false);
 		}
+	}
 
-		return null;
+	@Override
+	protected void onUserOffline() {
+		if (mWidgets.view.sort != null) {
+			mWidgets.view.sort.setDisabled(true);
+			mWidgets.view.search.setDisabled(true);
+		}
 	}
 
 	/**
@@ -218,43 +233,23 @@ public class ExploreLevelGui extends ExploreGui {
 		AlignTable table = mWidgets.sort.table;
 		table.dispose(true);
 		table.setPaddingCellDefault(0, 0, 0, paddingSeparator);
-		table.row().setPadRight(mUiFactory.getStyles().vars.paddingOuter);
-		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		table.row().setHeight(mUiFactory.getStyles().vars.rowHeight);
+		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		table.setAlignRow(Horizontal.RIGHT, Vertical.MIDDLE);
 		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
+		table.setMarginRight(mUiFactory.getStyles().vars.paddingInner);
 		getStage().addActor(table);
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Create buttons
-		// TODO use enum checkboxes
-		for (final SortOrders sortOrder : SortOrders.values()) {
-			ButtonListener listener = new ButtonListener() {
-				@Override
-				protected void onChecked(Button button, boolean checked) {
-					if (checked) {
-						mExploreScene.fetchInitialLevels(sortOrder, getSelectedTags());
-					}
-				}
-			};
-			CheckBox checkBox = mUiFactory.button.addCheckBox(sortOrder.toString(), CheckBoxStyles.RADIO, listener, buttonGroup, table);
-			mWidgets.sort.buttons[sortOrder.ordinal()] = checkBox;
-			table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
-		}
-
-
-	}
-
-	/**
-	 * @return all selected tags
-	 */
-	private ArrayList<Tags> getSelectedTags() {
-		ArrayList<Tags> tags = new ArrayList<>();
-
-		for (Button selectedButton : mWidgets.tag.buttonGroup.getAllChecked()) {
-			tags.add(mWidgets.tag.buttonTag.get(selectedButton));
-		}
-
-		return tags;
+		mUiFactory.button.addEnumCheckboxes(SortOrders.values(), CheckBoxStyles.RADIO, null, buttonGroup, false, table, mWidgets.sort.buttons);
+		new ButtonEnumListener<SortOrders>(mWidgets.sort.buttons, SortOrders.values()) {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.setSortOrder(getCheckedFirst());
+			}
+		};
 	}
 
 	/**
@@ -331,7 +326,7 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			public void hitEdge(ScrollPane scrollPane, Edge edge) {
 				if (edge == Edge.BOTTOM) {
-					mExploreScene.fetchMoreComments();
+					mScene.fetchMoreComments();
 				}
 			}
 		};
@@ -342,33 +337,29 @@ public class ExploreLevelGui extends ExploreGui {
 	 * Initializes tags
 	 */
 	private void initTags() {
-		AlignTable tagTable = new AlignTable();
+		AlignTable table = new AlignTable();
 
 		// Filter results
-		mUiFactory.text.addPanelSection("Filter Results", tagTable, null);
-		tagTable.getRow().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mUiFactory.text.addPanelSection("Filter Results", table, null);
+		table.getRow().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
 		// Add tags
-		// TODO Use enum checkboxes
-		ButtonListener listener = new ButtonListener() {
+		mUiFactory.button.addEnumCheckboxes(Tags.values(), CheckBoxStyles.CHECK_BOX, null, mWidgets.tag.buttonGroup, true, table,
+				mWidgets.tag.buttons);
+		new ButtonEnumListener<Tags>(mWidgets.tag.buttons, Tags.values()) {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
 				if (!mClearingTags) {
-					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
+					mScene.setTags(getChecked());
 				}
 			}
 		};
-		for (Tags tag : Tags.values()) {
-			CheckBox checkBox = mUiFactory.button.addCheckBoxRow(tag.toString(), CheckBoxStyles.CHECK_BOX, listener, mWidgets.tag.buttonGroup,
-					tagTable);
-			mWidgets.tag.buttonTag.put(checkBox, tag);
-		}
 
 		// Toggle image
 		ImageButtonStyle imageButtonStyle = (ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS);
 		HideListener hideListener = new HideListener(true);
 		mWidgets.sort.viewHider.addChild(hideListener);
-		Button tagButton = mLeftPanel.addTab(imageButtonStyle, tagTable, hideListener);
+		Button tagButton = mLeftPanel.addTab(imageButtonStyle, table, hideListener);
 		mWidgets.sort.viewHider.addToggleActor(tagButton);
 
 
@@ -393,12 +384,26 @@ public class ExploreLevelGui extends ExploreGui {
 
 		// Level Length
 		mUiFactory.text.addPanelSection("Level Length", table, null);
-		mUiFactory.button.addEnumCheckboxes(LevelLengthSearchRanges.values(), null, null, true, table, mWidgets.search.levelLengths);
+		mUiFactory.button.addEnumCheckboxes(LevelLengthSearchRanges.values(), CheckBoxStyles.CHECK_BOX, null, null, true, table,
+				mWidgets.search.levelLengths);
+		new ButtonEnumListener<LevelLengthSearchRanges>(mWidgets.search.levelLengths, LevelLengthSearchRanges.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setLevelLengths(getChecked());
+			}
+		};
 
 
 		// Level Speed
 		mUiFactory.text.addPanelSection("Level Speed", table, null);
-		mUiFactory.button.addEnumCheckboxes(LevelSpeedSearchRanges.values(), null, null, true, table, mWidgets.search.levelSpeeds);
+		mUiFactory.button.addEnumCheckboxes(LevelSpeedSearchRanges.values(), CheckBoxStyles.CHECK_BOX, null, null, true, table,
+				mWidgets.search.levelSpeeds);
+		new ButtonEnumListener<LevelSpeedSearchRanges>(mWidgets.search.levelSpeeds, LevelSpeedSearchRanges.values()) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setLevelSpeeds(getChecked());
+			}
+		};
 	}
 
 	/**
@@ -417,7 +422,7 @@ public class ExploreLevelGui extends ExploreGui {
 	 */
 	void addContent(ArrayList<LevelInfoEntity> levels) {
 		beginAddContent();
-		LevelInfoEntity selectedLevel = mExploreScene.getSelectedLevel();
+		LevelInfoEntity selectedLevel = mScene.getSelectedLevel();
 
 		for (LevelInfoEntity level : levels) {
 			boolean selected = selectedLevel == level;
@@ -464,11 +469,8 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
-					if (levelInfoEntity != null) {
-						mExploreScene.setSelectedLevel(levelInfoEntity);
-					}
-					mExploreScene.setSelected(defEntity);
-					resetInfo();
+					mScene.setSelectedLevel(levelInfoEntity);
+					mScene.setSelected(defEntity);
 				}
 			}
 
@@ -480,7 +482,7 @@ public class ExploreLevelGui extends ExploreGui {
 			@Override
 			protected void onUp(Button button) {
 				if (mWasCheckedOnDown) {
-					mExploreScene.selectAction();
+					mScene.selectAction();
 				}
 			}
 
@@ -571,7 +573,7 @@ public class ExploreLevelGui extends ExploreGui {
 
 	/** If we're currently clearing the tags */
 	private boolean mClearingTags = false;
-	private ExploreLevelScene mExploreScene = null;
+	private ExploreLevelScene mScene = null;
 	private Widgets mWidgets = new Widgets();
 
 	/**
@@ -583,6 +585,12 @@ public class ExploreLevelGui extends ExploreGui {
 		Comments comment = new Comments();
 		Tag tag = new Tag();
 		Search search = new Search();
+		View view = new View();
+
+		private class View {
+			Button sort = null;
+			Button search = null;
+		}
 
 		private class Sort implements Disposable {
 			Button[] buttons = new Button[SortOrders.values().length];
@@ -658,18 +666,23 @@ public class ExploreLevelGui extends ExploreGui {
 		private class Tag implements Disposable {
 			AlignTable table = new AlignTable();
 			ButtonGroup buttonGroup = new ButtonGroup();
-			HashMap<Button, Tags> buttonTag = new HashMap<>();
+			Button[] buttons = new Button[Tags.values().length];
 
 			private Tag() {
-				buttonGroup.setMinCheckCount(0);
-				buttonGroup.setMaxCheckCount(5);
+				init();
 			}
 
 			@Override
 			public void dispose() {
 				table.dispose();
-				buttonTag.clear();
 				buttonGroup = new ButtonGroup();
+
+				init();
+			}
+
+			private void init() {
+				buttonGroup.setMinCheckCount(0);
+				buttonGroup.setMaxCheckCount(5);
 			}
 		}
 

@@ -12,6 +12,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
@@ -26,7 +27,6 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -41,8 +41,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	ExploreLevelScene(ExploreActions action) {
 		super(new ExploreLevelGui(), action, LevelDef.class);
 
-		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
-
 		((ExploreLevelGui) mGui).setExploreLevelScene(this);
 	}
 
@@ -50,9 +48,26 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
+		User user = User.getGlobalUser();
+
 		// Ask to go online?
-		if (!User.getGlobalUser().isOnline()) {
+		if (!user.isOnline()) {
 			((ExploreLevelGui) mGui).showGoOnlineDialog();
+		}
+	}
+
+	@Override
+	protected void update(float deltaTime) {
+		super.update(deltaTime);
+
+		if (mNewSearchCriteria) {
+			mNewSearchCriteria = false;
+
+			if (getView().isOnline()) {
+				mLevelFetch.fetch(mSearchCriteria);
+			} else {
+				super.repopulateContent();
+			}
 		}
 	}
 
@@ -126,6 +141,20 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		if (mCommentFetch.hasMore()) {
 			mCommentFetch.fetch(true);
 		}
+	}
+
+	@Override
+	protected void setView(ExploreViews view) {
+		if (view == ExploreViews.ONLINE_BROWSE) {
+			mSearchCriteriaTemp.search = false;
+			mSearchCriteria.search = false;
+		} else {
+			mSearchCriteriaTemp.search = true;
+			mSearchCriteria.search = true;
+		}
+		mLevelFetch.mLastFetch = mSearchCriteria.copy();
+
+		super.setView(view);
 	}
 
 	/**
@@ -216,14 +245,24 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 	@Override
 	protected boolean defPassesFilter(DefEntity defEntity) {
-		// TODO
+		LevelDefEntity levelDefEntity = (LevelDefEntity) defEntity;
+
+		// Level length
+		if (!isObjectInFilterList(mSearchCriteria.levelLengths, LevelLengthSearchRanges.getRange(levelDefEntity.levelLength))) {
+			return false;
+		}
+
+		// Level speed
+		if (!isObjectInFilterList(mSearchCriteria.levelSpeeds, LevelSpeedSearchRanges.getRange(levelDefEntity.levelSpeed))) {
+			return false;
+		}
 
 		return super.defPassesFilter(defEntity);
 	}
 
 	@Override
 	protected void onSelectAction(ExploreActions action) {
-		downloadResource(mSelectedLevel.defEntity);
+		downloadResource(getSelected());
 	}
 
 	@Override
@@ -248,9 +287,9 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 */
 	private void runLevel() {
 		GameScene gameScene = new GameScene(false, false);
-		ResourceCacheFacade.load(gameScene, mSelectedLevel.defEntity.resourceId, false);
+		ResourceCacheFacade.load(gameScene, getSelected().resourceId, false);
 		ResourceCacheFacade.finishLoading();
-		LevelDef levelDef = ResourceCacheFacade.get(mSelectedLevel.defEntity.resourceId);
+		LevelDef levelDef = ResourceCacheFacade.get(getSelected().resourceId);
 		if (levelDef != null) {
 			gameScene.setLevelToLoad(levelDef);
 			SceneSwitcher.switchTo(gameScene);
@@ -346,63 +385,32 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 */
 	private class LevelFetch {
 		/**
-		 * Fetch initial level again. Only does something if {@link #fetch(String)} or
-		 * {@link #fetch(SortOrders, ArrayList)} has been invoked before this method.
+		 * Fetch initial levels (again).
 		 */
 		void fetch() {
 			if (!mIsFetching && mUser.isOnline()) {
-				if (mSearchString != null) {
-					mIsFetching = true;
-					((ExploreLevelGui) mGui).resetContent();
-					mResourceWebRepo.getLevels(mSearchString, false, ExploreLevelScene.this);
-				} else if (mSortOrder != null) {
-					mIsFetching = true;
-					((ExploreLevelGui) mGui).resetContent();
-					mResourceWebRepo.getLevels(mSortOrder, mTags, false, ExploreLevelScene.this);
+				if (mLastFetch == null) {
+					mLastFetch = mSearchCriteria.copy();
 				}
+				fetch(mLastFetch);
 			}
 		}
 
 		/**
-		 * Fetch levels from search string
-		 * @param searchString
+		 * Fetch levels from the search or sort criteria
+		 * @param searchSortCriteria
 		 */
-		void fetch(String searchString) {
-			if (!mUser.isOnline()) {
-				return;
-			}
+		void fetch(LevelFetchMethod searchSortCriteria) {
+			if (mUser.isOnline()) {
+				if (mLastFetch != searchSortCriteria) {
+					mLastFetch = searchSortCriteria.copy();
+				}
 
-			((ExploreLevelGui) mGui).resetContent();
-
-			if (searchString != null && searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
-				mIsFetching = true;
-				mSearchString = searchString;
-				mSortOrder = null;
-				mTags = null;
-
-				mResourceWebRepo.getLevels(searchString, false, ExploreLevelScene.this);
-			}
-		}
-
-		/**
-		 * Fetch levels from sort order and tags
-		 * @param sortOrder
-		 * @param tags
-		 */
-		void fetch(SortOrders sortOrder, ArrayList<Tags> tags) {
-			if (!mUser.isOnline()) {
-				return;
-			}
-
-			if (sortOrder != null) {
-				mIsFetching = true;
-				mSearchString = null;
-				mSortOrder = sortOrder;
-				mTags = tags;
-
+				setSelectedLevel(null);
+				setSelected(null);
 				((ExploreLevelGui) mGui).resetContent();
-
-				mResourceWebRepo.getLevels(sortOrder, tags, false, ExploreLevelScene.this);
+				mIsFetching = true;
+				mResourceWebRepo.getLevels(mLastFetch, false, ExploreLevelScene.this);
 			}
 		}
 
@@ -410,15 +418,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * Fetch more of same
 		 */
 		void fetchMore() {
-			if (!mIsFetching && mUser.isOnline()) {
-				// Search string
-				if (mSearchString != null) {
-					mResourceWebRepo.getLevels(mSearchString, true, ExploreLevelScene.this);
-				}
-				// Sort order
-				else if (mSortOrder != null) {
-					mResourceWebRepo.getLevels(mSortOrder, mTags, true, ExploreLevelScene.this);
-				}
+			if (hasMore()) {
+				mResourceWebRepo.getLevels(mLastFetch, true, ExploreLevelScene.this);
 			}
 		}
 
@@ -426,17 +427,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @return true if more levels can be fetched
 		 */
 		boolean hasMore() {
-			if (mIsFetching || !mUser.isOnline()) {
-				return false;
-			}
-
-			// Search
-			if (mSearchString != null) {
-				return mResourceWebRepo.hasMoreLevels(mSearchString);
-			}
-			// Sort order
-			else if (mSortOrder != null) {
-				return mResourceWebRepo.hasMoreLevels(mSortOrder, mTags);
+			if (!mIsFetching && mUser.isOnline() && mLastFetch != null) {
+				return mResourceWebRepo.hasMoreLevels(mLastFetch);
 			}
 
 			return false;

@@ -50,6 +50,11 @@ public class LevelDef extends Def {
 		LevelDefEntity levelDefEntity = (LevelDefEntity) defEntity;
 		levelDefEntity.levelId = mLevelId;
 		levelDefEntity.levelSpeed = mSpeed;
+
+		if (mLengthInTime == 0) {
+			calculateLength();
+		}
+
 		levelDefEntity.levelLength = mLengthInTime;
 	}
 
