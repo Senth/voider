@@ -64,7 +64,6 @@ class ExploreLevelGui extends ExploreGui {
 		super.resetValues();
 
 		resetComments();
-		resetContent();
 		resetRightPanel();
 	}
 

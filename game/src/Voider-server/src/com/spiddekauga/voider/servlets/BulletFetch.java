@@ -31,7 +31,7 @@ public class BulletFetch extends ActorFetch<BulletDefEntity> {
 				mParameters = (BulletFetchMethod) methodEntity;
 
 				if (hasSearchOptions()) {
-					mResponse.status = searchAndSetFoundActors(SearchTables.BULLET, mParameters.nextCursor, mResponse.bullets);
+					mResponse.status = searchAndSetFoundDefs(SearchTables.BULLET, mParameters.nextCursor, mResponse.bullets);
 				} else {
 					getAndSetNewestBullets();
 				}
@@ -84,12 +84,12 @@ public class BulletFetch extends ActorFetch<BulletDefEntity> {
 	}
 
 	@Override
-	protected void setAdditionalActorInformation(Entity publishedEntity, BulletDefEntity actorDef) {
+	protected void setAdditionalDefInformation(Entity publishedEntity, BulletDefEntity actorDef) {
 		// Does nothing
 	}
 
 	@Override
-	protected BulletDefEntity newActorDef() {
+	protected BulletDefEntity newNetworkDef() {
 		return new BulletDefEntity();
 	}
 

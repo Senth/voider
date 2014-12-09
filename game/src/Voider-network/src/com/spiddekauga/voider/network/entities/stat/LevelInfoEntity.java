@@ -12,9 +12,9 @@ import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 @SuppressWarnings("serial")
 public class LevelInfoEntity implements IEntity {
 	/** Level definition entity for the level */
-	public LevelDefEntity defEntity = null;
+	public LevelDefEntity defEntity = new LevelDefEntity();
 	/** Level stats */
-	public LevelStatsEntity stats = null;
+	public LevelStatsEntity stats = new LevelStatsEntity();
 	/** Level tags */
-	public ArrayList<Tags> tags = null;
+	public ArrayList<Tags> tags = new ArrayList<>();
 }

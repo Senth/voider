@@ -48,7 +48,7 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 				mParameters = (EnemyFetchMethod) methodEntity;
 
 				if (hasSearchOptions()) {
-					mResponse.status = searchAndSetFoundActors(SearchTables.ENEMY, mParameters.nextCursor, mResponse.enemies);
+					mResponse.status = searchAndSetFoundDefs(SearchTables.ENEMY, mParameters.nextCursor, mResponse.enemies);
 				} else {
 					getAndSetNewestEnemies();
 				}
@@ -192,7 +192,7 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 	}
 
 	@Override
-	protected void setAdditionalActorInformation(Entity publishedEntity, EnemyDefEntity networkEntity) {
+	protected void setAdditionalDefInformation(Entity publishedEntity, EnemyDefEntity networkEntity) {
 		// From search
 		String documentId = KeyFactory.keyToString(publishedEntity.getKey());
 		Document document = SearchUtils.getDocument(SearchTables.ENEMY, documentId);
@@ -200,7 +200,7 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 	}
 
 	@Override
-	protected EnemyDefEntity newActorDef() {
+	protected EnemyDefEntity newNetworkDef() {
 		return new EnemyDefEntity();
 	}
 

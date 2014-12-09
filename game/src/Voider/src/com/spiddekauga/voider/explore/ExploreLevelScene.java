@@ -65,22 +65,25 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		// Ask to go online?
-		if (!User.getGlobalUser().isOnline()) {
-			mGui.showGoOnlineDialog();
-			setView(ExploreViews.LOCAL);
-		}
-		// User is online -> Set correct view
-		else {
-			switch (getSelectedAction()) {
-			case LOAD:
-			case SELECT:
+		// Set view
+		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
+			// Ask to go online?
+			if (!User.getGlobalUser().isOnline()) {
+				mGui.showGoOnlineDialog();
 				setView(ExploreViews.LOCAL);
-				break;
+			}
+			// User is online -> Set correct view
+			else {
+				switch (getSelectedAction()) {
+				case LOAD:
+				case SELECT:
+					setView(ExploreViews.LOCAL);
+					break;
 
-			case PLAY:
-				setView(ExploreViews.ONLINE_BROWSE);
-				break;
+				case PLAY:
+					setView(ExploreViews.ONLINE_BROWSE);
+					break;
+				}
 			}
 		}
 	}

@@ -47,7 +47,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelFetch extends ResourceFetch {
+public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	@Override
 	protected void onInit() {
 		mResponse = new LevelFetchMethodResponse();
@@ -106,7 +106,7 @@ public class LevelFetch extends ResourceFetch {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-			// Published table
+		// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
@@ -242,7 +242,7 @@ public class LevelFetch extends ResourceFetch {
 	 * @param levelKey key of the level to get
 	 * @return new level def (network) entity, null if not found
 	 */
-	private static LevelDefEntity getLevelDefEntity(Key levelKey) {
+	private LevelDefEntity getLevelDefEntity(Key levelKey) {
 		Entity entity = DatastoreUtils.getEntity(levelKey);
 		if (entity != null) {
 			return datastoreToLevelDefEntity(entity);
@@ -274,7 +274,7 @@ public class LevelFetch extends ResourceFetch {
 	 * @param datastoreEntity the datastore entity to convert from
 	 * @return new level def (network) entity
 	 */
-	private static LevelDefEntity datastoreToLevelDefEntity(Entity datastoreEntity) {
+	private LevelDefEntity datastoreToLevelDefEntity(Entity datastoreEntity) {
 		LevelDefEntity networkEntity = datastoreToDefEntity(datastoreEntity, new LevelDefEntity());
 
 		// Datastore
@@ -359,6 +359,38 @@ public class LevelFetch extends ResourceFetch {
 			if (mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
 				mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
 			}
+		}
+	}
+
+	@Override
+	protected LevelInfoEntity datastoreToDefEntity(Entity datastoreEntity, LevelInfoEntity networkEntity) {
+		datastoreToDefEntity(datastoreEntity, networkEntity.defEntity);
+		return networkEntity;
+	}
+
+	@Override
+	protected String buildSearchString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected void setAdditionalDefInformation(Entity datastorEntity, LevelInfoEntity networkEntity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected LevelInfoEntity newNetworkDef() {
+		return new LevelInfoEntity();
+	}
+
+	@Override
+	protected FetchStatuses getSuccessStatus(List<?> list) {
+		if (list.size() < FetchSizes.LEVELS) {
+			return FetchStatuses.SUCCESS_FETCHED_ALL;
+		} else {
+			return FetchStatuses.SUCCESS_MORE_EXISTS;
 		}
 	}
 

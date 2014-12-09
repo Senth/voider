@@ -11,7 +11,7 @@ import com.spiddekauga.voider.network.entities.stat.Tags;
 @SuppressWarnings("serial")
 public class LevelFetchMethod extends FetchMethod {
 	/** Sorting */
-	public SortOrders sort = null;
+	public SortOrders sort = SortOrders.NEWEST;
 	/** All tags that should be included, if empty all tags are used */
 	public ArrayList<Tags> tags = new ArrayList<>();
 	/** Search string or text filter, if null not used */
