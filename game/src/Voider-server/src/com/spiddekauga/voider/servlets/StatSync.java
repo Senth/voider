@@ -11,10 +11,17 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.search.Document;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
+import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
@@ -32,6 +39,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserLevelStat;
+import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -163,7 +171,7 @@ public class StatSync extends VoiderServlet {
 	private static void setUserLevelStats(LevelStat from, LevelStat to) {
 		to.bookmark = from.bookmark;
 		to.rating = from.rating;
-		to.tags = from.tags;
+		to.tags = from.tags; // <--- TODO should we change this, how does tagging work?
 		to.comment = from.comment;
 	}
 
@@ -176,8 +184,8 @@ public class StatSync extends VoiderServlet {
 
 			if (levelKey != null) {
 				LevelStat oldStat = updateUserLevelStats(levelKey, levelStat);
-				updateLevelStats(levelKey, levelStat, oldStat);
-				updateLevelTags(levelKey, levelStat.tags);
+				updateGlobalLevelStats(levelKey, levelStat, oldStat);
+				updateGlobalLevelTags(levelKey, levelStat.tags);
 				updatedLevelComment(levelKey, levelStat.comment);
 			}
 		}
@@ -288,12 +296,12 @@ public class StatSync extends VoiderServlet {
 	}
 
 	/**
-	 * Update level stats
+	 * Update global level stats
 	 * @param levelKey key of the level
 	 * @param clientStat new user statistics
 	 * @param serverStat old user statistics
 	 */
-	private void updateLevelStats(Key levelKey, LevelStat clientStat, LevelStat serverStat) {
+	private void updateGlobalLevelStats(Key levelKey, LevelStat clientStat, LevelStat serverStat) {
 		Entity levelEntity = DatastoreUtils.getSingleEntity(T_LEVEL_STAT, levelKey);
 
 		// No entity for this
@@ -362,11 +370,11 @@ public class StatSync extends VoiderServlet {
 	}
 
 	/**
-	 * Update level tags
+	 * Update global level tags
 	 * @param levelKey level to update
 	 * @param tags new level tags to add to the level
 	 */
-	private void updateLevelTags(Key levelKey, ArrayList<Tags> tags) {
+	private void updateGlobalLevelTags(Key levelKey, ArrayList<Tags> tags) {
 		for (Tags tag : tags) {
 			FilterWrapper tagFilter = new FilterWrapper(CLevelTag.TAG, tag.getId());
 			Entity entity = DatastoreUtils.getSingleEntity(T_TAG, levelKey, tagFilter);
@@ -379,6 +387,29 @@ public class StatSync extends VoiderServlet {
 			incrementProperty(entity, CLevelTag.COUNT, 1);
 
 			DatastoreUtils.put(entity);
+		}
+
+
+		// Update search with the 5 most popular tags
+		Query query = new Query(T_TAG, levelKey);
+		query.addSort(CLevelTag.COUNT, SortDirection.DESCENDING);
+		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
+		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ServerConfig.FetchSizes.TAGS);
+
+		String tagList = "";
+		for (Entity entity : preparedQuery.asIterable(fetchOptions)) {
+			if (!tagList.isEmpty()) {
+				tagList += " ";
+			}
+
+			tagList += entity.getProperty(CLevelTag.TAG);
+		}
+
+		Document document = SearchUtils.getDocument(SearchTables.LEVEL, KeyFactory.keyToString(levelKey));
+		if (document != null) {
+			// TODO check if tags needs updating
+
+			// TODO build document
 		}
 	}
 

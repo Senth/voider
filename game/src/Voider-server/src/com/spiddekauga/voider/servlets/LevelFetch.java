@@ -19,8 +19,6 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.search.Document;
-import com.google.appengine.api.search.Results;
-import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.appengine.SearchUtils.Builder.CombineOperators;
@@ -41,7 +39,6 @@ import com.spiddekauga.voider.server.util.ResourceFetch;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
@@ -164,17 +161,17 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 			for (Entity statsEntity : queryResult) {
 				// Get the actual published information
 				Key levelKey = statsEntity.getParent();
+				Entity publishedEntity = DatastoreUtils.getEntity(levelKey);
 
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
-				infoEntity.defEntity = getLevelDefEntity(levelKey);
-				infoEntity.stats = datastoreToLevelStatsEntity(statsEntity);
-				infoEntity.tags = getLevelTags(levelKey);
+				datastoreToDefEntity(publishedEntity, infoEntity.defEntity);
+				datastoreToLevelStatsEntity(statsEntity, infoEntity.stats);
+				searchToNetworkEntity(levelKey, infoEntity);
 				levels.add(infoEntity);
 			}
 		} else if (DatastoreTables.PUBLISHED.equals(table)) {
 			for (Entity publishedEntity : queryResult) {
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
-
 				datastoreToDefEntity(publishedEntity, infoEntity.defEntity);
 				getLevelStatsEntity(publishedEntity.getKey(), infoEntity.stats);
 				searchToNetworkEntity(publishedEntity.getKey(), infoEntity);
@@ -193,39 +190,6 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 		}
 
 		return levels;
-	}
-
-	/**
-	 * Get most popular level tags for the specified level
-	 * @param levelKey key of the level to get the tags from
-	 * @return list with the most popular tags, empty if none was found
-	 */
-	@Deprecated
-	private static ArrayList<Tags> getLevelTags(Key levelKey) {
-		ArrayList<Tags> tags = new ArrayList<>();
-
-		Query query = new Query(DatastoreTables.LEVEL_TAG, levelKey);
-
-		// Sort
-		query.addSort(CLevelTag.COUNT, SortDirection.DESCENDING);
-
-		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
-
-		// Limit
-		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(FetchSizes.TAGS);
-
-		List<Entity> entities = preparedQuery.asList(fetchOptions);
-
-		// Convert tags to enumeration
-		for (Entity entity : entities) {
-			int tagId = DatastoreUtils.getIntProperty(entity, CLevelTag.TAG);
-			Tags tag = Tags.fromId(tagId);
-			if (tag != null) {
-				tags.add(tag);
-			}
-		}
-
-		return tags;
 	}
 
 	/**
@@ -285,47 +249,6 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	 */
 	private boolean hasRequiredTags(LevelInfoEntity level) {
 		return level.tags.containsAll(mParameters.tags);
-	}
-
-	/**
-	 * Search for levels and add these
-	 */
-	@Deprecated
-	private void searchLevels() {
-		com.google.appengine.api.search.Cursor cursor = null;
-		if (mParameters.nextCursor != null) {
-			cursor = com.google.appengine.api.search.Cursor.newBuilder().build(mParameters.nextCursor);
-		}
-
-		Results<ScoredDocument> foundDocuments = SearchUtils.search(SearchTables.LEVEL, mParameters.searchString.toLowerCase(), FetchSizes.LEVELS,
-				cursor);
-
-		if (foundDocuments == null || foundDocuments.getCursor() == null || foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
-			mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
-		}
-
-		if (foundDocuments != null) {
-			// Get the actual published levels from the search
-			for (ScoredDocument document : foundDocuments) {
-				Key levelKey = KeyFactory.stringToKey(document.getId());
-
-				LevelInfoEntity infoEntity = new LevelInfoEntity();
-				infoEntity.defEntity = getLevelDefEntity(levelKey);
-				infoEntity.stats = getLevelStatsEntity(levelKey);
-				infoEntity.tags = getLevelTags(levelKey);
-
-				mResponse.levels.add(infoEntity);
-			}
-
-			// Set cursor
-			if (foundDocuments.getCursor() != null) {
-				mResponse.cursor = foundDocuments.getCursor().toWebSafeString();
-			}
-
-			if (mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
-				mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
-			}
-		}
 	}
 
 	@Override

@@ -105,6 +105,10 @@ public abstract class ResourceFetch<ReturnType> extends VoiderServlet {
 
 		Results<ScoredDocument> documents = SearchUtils.search(searchTable, searchString, FetchSizes.ACTORS, nextCursor);
 
+		if (documents == null) {
+			return FetchStatuses.SUCCESS_FETCHED_ALL;
+		}
+
 		// Convert all found documents to entities
 		for (ScoredDocument document : documents) {
 			ReturnType networkEntity = newNetworkDef();

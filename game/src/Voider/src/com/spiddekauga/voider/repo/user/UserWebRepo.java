@@ -73,12 +73,12 @@ public class UserWebRepo extends WebRepo {
 
 	/**
 	 * Tries to logout the current user
-	 * @param responseListener listens to the web response
+	 * @param responseListeners listens to the web response
 	 */
-	public void logout(IResponseListener responseListener) {
+	public void logout(IResponseListener... responseListeners) {
 		LogoutMethod logoutMethod = new LogoutMethod();
 
-		sendInNewThread(logoutMethod, responseListener);
+		sendInNewThread(logoutMethod, responseListeners);
 	}
 
 	@Override

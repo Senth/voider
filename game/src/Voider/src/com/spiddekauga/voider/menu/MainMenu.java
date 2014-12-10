@@ -22,11 +22,7 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
-import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -51,7 +47,7 @@ import com.spiddekauga.voider.utils.event.UpdateEvent;
  * Main menu of the scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MainMenu extends Scene implements IResponseListener, IEventListener {
+public class MainMenu extends Scene implements IEventListener {
 	/**
 	 * Default constructor for main menu
 	 */
@@ -368,12 +364,9 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 	void logout() {
 		// Online
 		if (mUser.isOnline()) {
-			UserWebRepo.getInstance().logout(this);
+			UserWebRepo.getInstance().logout();
 		}
-		// Offline
-		else {
-			clearCurrentUser();
-		}
+		clearCurrentUser();
 		mUser.logout();
 	}
 
@@ -386,17 +379,6 @@ public class MainMenu extends Scene implements IResponseListener, IEventListener
 		setOutcome(Outcomes.LOGGED_OUT);
 	}
 
-	@Override
-	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof LogoutMethodResponse) {
-			clearCurrentUser();
-		}
-	}
-
-	/** Global user */
 	private static final User mUser = User.getGlobalUser();
-	/** Synchronizer */
-	private static Synchronizer mSynchronizer = Synchronizer.getInstance();
-	/** GUI stack */
 	private LinkedList<Gui> mGuiStack = new LinkedList<Gui>();
 }
