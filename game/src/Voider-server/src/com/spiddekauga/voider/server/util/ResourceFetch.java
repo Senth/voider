@@ -13,6 +13,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
+import com.spiddekauga.voider.network.util.ISearchStore;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 
@@ -69,6 +70,24 @@ public abstract class ResourceFetch<ReturnType> extends VoiderServlet {
 	}
 
 	/**
+	 * Add an array of values into the search builder
+	 * @param fieldName name of the field
+	 * @param array the array to add
+	 * @param maxLength maximum length of the array, if the array is of this size nothing
+	 *        will be added
+	 * @param builder the builder to add to
+	 */
+	protected static void appendSearchEnumArray(String fieldName, ArrayList<? extends ISearchStore> array, int maxLength, SearchUtils.Builder builder) {
+		if (!array.isEmpty() && array.size() != maxLength) {
+			String[] searchFor = new String[array.size()];
+			for (int i = 0; i < searchFor.length; i++) {
+				searchFor[i] = array.get(i).getSearchId();
+			}
+			builder.text(fieldName, searchFor);
+		}
+	}
+
+	/**
 	 * Builds a search string to search for
 	 * @return search string to use when searching
 	 */
@@ -105,10 +124,10 @@ public abstract class ResourceFetch<ReturnType> extends VoiderServlet {
 
 	/**
 	 * Adds additional information to the def
-	 * @param datastorEntity datastoreEntity
+	 * @param datastoreEntity datastoreEntity
 	 * @param networkEntity newly created actor that needs information to be set
 	 */
-	protected abstract void setAdditionalDefInformation(Entity datastorEntity, ReturnType networkEntity);
+	protected abstract void setAdditionalDefInformation(Entity datastoreEntity, ReturnType networkEntity);
 
 	/**
 	 * @return new empty actor definition

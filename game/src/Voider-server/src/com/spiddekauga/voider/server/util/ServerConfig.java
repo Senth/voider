@@ -181,6 +181,7 @@ public class ServerConfig {
 			public static final String LEVEL_LENGTH_CAT = "level_length_cat";
 			public static final String LEVEL_SPEED = "level_speed";
 			public static final String LEVEL_SPEED_CAT = "level_speed_cat";
+			public static final String TAGS = "tags";
 		}
 	}
 

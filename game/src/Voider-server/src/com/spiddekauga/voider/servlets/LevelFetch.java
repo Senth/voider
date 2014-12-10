@@ -23,17 +23,22 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
+import com.spiddekauga.appengine.SearchUtils.Builder.CombineOperators;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.resource.DefEntity;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
+import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelStatsEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.server.util.ResourceFetch;
+import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
@@ -75,7 +80,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	private void getAndSetLevelResponse() {
 		// Search filter
 		if (mParameters.search) {
-			searchLevels();
+			mResponse.status = searchAndSetFoundDefs(SearchTables.LEVEL, mParameters.nextCursor, mResponse.levels);
 		}
 		// Tag filter
 		else if (mParameters.tags != null && !mParameters.tags.isEmpty()) {
@@ -106,7 +111,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-		// Published table
+			// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
@@ -170,9 +175,9 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 			for (Entity publishedEntity : queryResult) {
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
 
-				infoEntity.defEntity = datastoreToLevelDefEntity(publishedEntity);
-				infoEntity.stats = getLevelStatsEntity(publishedEntity.getKey());
-				infoEntity.tags = getLevelTags(publishedEntity.getKey());
+				datastoreToDefEntity(publishedEntity, infoEntity.defEntity);
+				getLevelStatsEntity(publishedEntity.getKey(), infoEntity.stats);
+				searchToNetworkEntity(publishedEntity.getKey(), infoEntity);
 				levels.add(infoEntity);
 			}
 		}
@@ -195,6 +200,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	 * @param levelKey key of the level to get the tags from
 	 * @return list with the most popular tags, empty if none was found
 	 */
+	@Deprecated
 	private static ArrayList<Tags> getLevelTags(Key levelKey) {
 		ArrayList<Tags> tags = new ArrayList<>();
 
@@ -213,7 +219,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 		// Convert tags to enumeration
 		for (Entity entity : entities) {
 			int tagId = DatastoreUtils.getIntProperty(entity, CLevelTag.TAG);
-			Tags tag = Tags.getEnumFromId(tagId);
+			Tags tag = Tags.fromId(tagId);
 			if (tag != null) {
 				tags.add(tag);
 			}
@@ -225,69 +231,28 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	/**
 	 * Get level stats for the specified level
 	 * @param levelKey key of the level to get the stats from
-	 * @return new level stats (network) entity, null if not found
+	 * @param levelStatsEntity entity to set
 	 */
-	private static LevelStatsEntity getLevelStatsEntity(Key levelKey) {
+	private static void getLevelStatsEntity(Key levelKey, LevelStatsEntity levelStatsEntity) {
 		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_STAT, levelKey);
 
 		if (entity != null) {
-			return datastoreToLevelStatsEntity(entity);
+			datastoreToLevelStatsEntity(entity, levelStatsEntity);
 		}
-
-		return null;
-	}
-
-	/**
-	 * Get published level
-	 * @param levelKey key of the level to get
-	 * @return new level def (network) entity, null if not found
-	 */
-	private LevelDefEntity getLevelDefEntity(Key levelKey) {
-		Entity entity = DatastoreUtils.getEntity(levelKey);
-		if (entity != null) {
-			return datastoreToLevelDefEntity(entity);
-		}
-
-		return null;
 	}
 
 	/**
 	 * Create level stats entity from a datastore entity
 	 * @param datastoreEntity datastore entity to convert from
-	 * @return new level stats (network) entity
+	 * @param levelStatsEntity entity to set
 	 */
-	private static LevelStatsEntity datastoreToLevelStatsEntity(Entity datastoreEntity) {
-		LevelStatsEntity levelStatsEntity = new LevelStatsEntity();
-
+	private static void datastoreToLevelStatsEntity(Entity datastoreEntity, LevelStatsEntity levelStatsEntity) {
 		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty(CLevelStat.CLEAR_COUNT)).intValue();
 		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty(CLevelStat.BOOKMARS)).intValue();
 		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty(CLevelStat.PLAY_COUNT)).intValue();
 		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty(CLevelStat.RATINGS)).intValue();
 		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty(CLevelStat.RATING_AVG)).floatValue();
 		levelStatsEntity.ratingSum = ((Long) datastoreEntity.getProperty(CLevelStat.RATING_SUM)).intValue();
-
-		return levelStatsEntity;
-	}
-
-	/**
-	 * Create level def entity from datastore entity
-	 * @param datastoreEntity the datastore entity to convert from
-	 * @return new level def (network) entity
-	 */
-	private LevelDefEntity datastoreToLevelDefEntity(Entity datastoreEntity) {
-		LevelDefEntity networkEntity = datastoreToDefEntity(datastoreEntity, new LevelDefEntity());
-
-		// Datastore
-		networkEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.LEVEL_ID);
-
-		// Search
-		Document document = SearchUtils.getDocument(SearchTables.LEVEL, KeyFactory.keyToString(datastoreEntity.getKey()));
-		if (document != null) {
-			networkEntity.levelLength = SearchUtils.getFloat(document, SLevel.LEVEL_LENGTH);
-			networkEntity.levelSpeed = SearchUtils.getFloat(document, SLevel.LEVEL_SPEED);
-		}
-
-		return networkEntity;
 	}
 
 	/**
@@ -325,6 +290,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	/**
 	 * Search for levels and add these
 	 */
+	@Deprecated
 	private void searchLevels() {
 		com.google.appengine.api.search.Cursor cursor = null;
 		if (mParameters.nextCursor != null) {
@@ -369,15 +335,76 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	}
 
 	@Override
+	protected <DefType extends DefEntity> DefType datastoreToDefEntity(Entity datastoreEntity, DefType networkEntity) {
+		super.datastoreToDefEntity(datastoreEntity, networkEntity);
+
+		// Level information
+		LevelDefEntity levelDefEntity = (LevelDefEntity) networkEntity;
+		levelDefEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.LEVEL_ID);
+
+		return networkEntity;
+	}
+
+
+	@Override
 	protected String buildSearchString() {
-		// TODO Auto-generated method stub
-		return null;
+		SearchUtils.Builder builder = new SearchUtils.Builder();
+
+		// Free text search
+		if (mParameters.searchString != null && mParameters.searchString.length() >= ServerConfig.SEARCH_TEXT_LENGTH_MIN) {
+			builder.text(mParameters.searchString);
+		}
+
+		// Level length
+		appendSearchEnumArray(SLevel.LEVEL_LENGTH_CAT, mParameters.levelLengths, LevelLengthSearchRanges.values().length, builder);
+
+		// Level speed
+		appendSearchEnumArray(SLevel.LEVEL_SPEED_CAT, mParameters.levelSpeeds, LevelSpeedSearchRanges.values().length, builder);
+
+		// Tags
+		if (!mParameters.tags.isEmpty()) {
+			String[] tagStrings = new String[mParameters.tags.size()];
+			for (int i = 0; i < tagStrings.length; i++) {
+				tagStrings[i] = mParameters.tags.get(i).getSearchId();
+			}
+			builder.text(SLevel.TAGS, CombineOperators.AND, tagStrings);
+		}
+
+		return builder.build();
 	}
 
 	@Override
-	protected void setAdditionalDefInformation(Entity datastorEntity, LevelInfoEntity networkEntity) {
-		// TODO Auto-generated method stub
+	protected void setAdditionalDefInformation(Entity datastoreEntity, LevelInfoEntity networkEntity) {
+		Key key = datastoreEntity.getKey();
+		getLevelStatsEntity(datastoreEntity.getKey(), networkEntity.stats);
+		searchToNetworkEntity(key, networkEntity);
+	}
 
+	/**
+	 * Sets information from the search document
+	 * @param key datastore key of the published, this is the same as the document id
+	 * @param levelInfoEntity sets the information in this instance
+	 */
+	private void searchToNetworkEntity(Key key, LevelInfoEntity levelInfoEntity) {
+		String documentId = KeyFactory.keyToString(key);
+		Document document = SearchUtils.getDocument(SearchTables.LEVEL, documentId);
+
+		if (document != null) {
+			// Length
+			levelInfoEntity.defEntity.levelLength = SearchUtils.getFloat(document, SLevel.LEVEL_LENGTH);
+
+			// Speed
+			levelInfoEntity.defEntity.levelSpeed = SearchUtils.getFloat(document, SLevel.LEVEL_SPEED);
+
+			// Tags
+			String tagString = SearchUtils.getText(document, SLevel.TAGS);
+			if (tagString != null) {
+				String[] tags = tagString.split(" ");
+				for (String tag : tags) {
+					levelInfoEntity.tags.add(Tags.fromId(tag));
+				}
+			}
+		}
 	}
 
 	@Override

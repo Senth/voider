@@ -1,14 +1,17 @@
 package com.spiddekauga.voider.network.entities.stat;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+
+import com.spiddekauga.voider.network.util.ISearchStore;
 
 /**
  * All tags
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("javadoc")
-public enum Tags {
+public enum Tags implements ISearchStore {
 	EASY(1),
 	/** Challenging to play */
 	CHALLENGING(2),
@@ -66,6 +69,11 @@ public enum Tags {
 	}
 
 	@Override
+	public String getSearchId() {
+		return String.valueOf(mId);
+	}
+
+	@Override
 	public String toString() {
 		return mName;
 	}
@@ -75,8 +83,17 @@ public enum Tags {
 	 * @param id tag id of the enumeration to get the actual enumeration fro
 	 * @return enumeration of the tag id
 	 */
-	public static Tags getEnumFromId(int id) {
+	public static Tags fromId(int id) {
 		return mIdToEnum.get(id);
+	}
+
+	/**
+	 * Converts a search id string to an enumeration
+	 * @param searchId tag id for search store
+	 * @return enumeration of the search store id
+	 */
+	public static Tags fromId(String searchId) {
+		return fromId(Integer.parseInt(searchId));
 	}
 
 	/**
@@ -93,15 +110,19 @@ public enum Tags {
 	}
 
 	/**
-	 * Convert a list of tag ids back to a list of tags
+	 * Convert a collection of tag ids or search tag ids back to a list of tags
 	 * @param tagIds all tag ids to convert
 	 * @return list of tags
 	 */
-	public static ArrayList<Tags> toTagList(ArrayList<? extends Number> tagIds) {
+	public static ArrayList<Tags> toTagList(Collection<?> tagIds) {
 		ArrayList<Tags> tags = new ArrayList<>();
 		if (tagIds != null) {
-			for (Number tagId : tagIds) {
-				tags.add(getEnumFromId(tagId.intValue()));
+			for (Object tagId : tagIds) {
+				if (tagId instanceof Number) {
+					tags.add(fromId(((Number) tagId).intValue()));
+				} else if (tagId instanceof String) {
+					tags.add(fromId((String) tagId));
+				}
 			}
 		}
 		return tags;

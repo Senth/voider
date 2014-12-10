@@ -659,7 +659,7 @@ public class SearchUtils {
 		 * @param fieldNames all fields to search for the text in
 		 * @return this for chaining
 		 */
-		public Builder text(String text, CombineOperators operator, String... fieldNames) {
+		public Builder textInFields(String text, CombineOperators operator, String... fieldNames) {
 			if (fieldNames.length > 0) {
 				addSpace();
 				String quotedText = quote(text);
@@ -688,13 +688,27 @@ public class SearchUtils {
 
 		/**
 		 * Search for different texts in the same field. Automatically adds quotation
-		 * marks at the beginning and end if none exists.
+		 * marks at the beginning and end if none exists. Uses OR operator, i.e. same as
+		 * calling {@link #text(String, CombineOperators, String...)} with OR.
 		 * @param fieldName the field name to search in
 		 * @param texts Search for all these texts. Automatically adds quotation marks at
 		 *        the beginning and end if none exists.
 		 * @return this for chaining
 		 */
 		public Builder text(String fieldName, String... texts) {
+			return text(fieldName, CombineOperators.OR, texts);
+		}
+
+		/**
+		 * Search for different texts in the same field. Automatically adds quotation
+		 * marks at the beginning and end if none exists.
+		 * @param fieldName the field name to search in
+		 * @param combineOperator operator the texts
+		 * @param texts Search for all these texts. Automatically adds quotation marks at
+		 *        the beginning and end if none exists.
+		 * @return this for chaining
+		 */
+		public Builder text(String fieldName, CombineOperators combineOperator, String... texts) {
 			if (texts.length > 0) {
 				addSpace();
 
@@ -705,7 +719,7 @@ public class SearchUtils {
 				for (int i = 0; i < texts.length; ++i) {
 					// Don't add operator before the first
 					if (i != 0) {
-						or();
+						mStringBuilder.append(combineOperator);
 					}
 
 					// Add text field

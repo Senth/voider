@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 
@@ -22,7 +21,6 @@ import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse
 import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
-import com.spiddekauga.voider.network.util.ISearchStore;
 import com.spiddekauga.voider.server.util.ActorFetch;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
@@ -127,24 +125,6 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 
 
 		return builder.build();
-	}
-
-	/**
-	 * Add an array of values into the search builder
-	 * @param fieldName name of the field
-	 * @param array the array to add
-	 * @param maxLength maximum length of the array, if the array is of this size nothing
-	 *        will be added
-	 * @param builder the builder to add to
-	 */
-	private void appendSearchEnumArray(String fieldName, ArrayList<? extends ISearchStore> array, int maxLength, SearchUtils.Builder builder) {
-		if (!array.isEmpty() && array.size() != maxLength) {
-			String[] searchFor = new String[array.size()];
-			for (int i = 0; i < searchFor.length; i++) {
-				searchFor[i] = array.get(i).getSearchId();
-			}
-			builder.text(fieldName, searchFor);
-		}
 	}
 
 	/**

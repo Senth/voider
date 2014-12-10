@@ -211,7 +211,7 @@ class StatSqliteGateway extends SqliteGateway {
 			// Add tags
 			DatabaseCursor tagCursor = rawQuery("SELECT tag FROM level_tag WHERE uuid='" + levelStats.id + "' AND synced=0;");
 			while (tagCursor.next()) {
-				Tags tag = Tags.getEnumFromId(tagCursor.getInt(0));
+				Tags tag = Tags.fromId(tagCursor.getInt(0));
 				levelStats.tags.add(tag);
 			}
 
