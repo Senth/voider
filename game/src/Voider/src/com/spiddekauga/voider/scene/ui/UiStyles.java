@@ -99,6 +99,7 @@ public class UiStyles {
 		PANEL_SECTION,
 		ERROR,
 		HIGHLIGHT,
+		WARNING,
 		SUCCESS,
 		TOOLTIP,
 		/** Names of the resources that will be publish */
@@ -283,6 +284,7 @@ public class UiStyles {
 		LabelStyles.DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
 		LabelStyles.PANEL_SECTION.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PANEL_SECTION));
 		LabelStyles.ERROR.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
+		LabelStyles.WARNING.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_WARNING));
 		LabelStyles.HIGHLIGHT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
 		LabelStyles.TOOLTIP.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP));
 		LabelStyles.HEADER.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER));

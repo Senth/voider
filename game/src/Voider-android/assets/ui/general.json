@@ -26,6 +26,8 @@ com.badlogic.gdx.graphics.Color: {
 	
 	/** Specific colors */
 	
+	// Warning color
+	warning: {r:0.961, g:0.643, b:0.302, a:1},
 	// Highlight color
 	highlight: turquoise,
 	// Success color
@@ -158,6 +160,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	highlight: {
 		font: default_font,
 		fontColor: highlight,
+	},
+	
+	warning: {
+		font: default_font,
+		fontColor: warning,
 	},
 	
 	error: {

@@ -177,7 +177,7 @@ public class NotificationShower {
 	 */
 	public enum NotificationTypes {
 		/** Information message */
-		INFO(LabelStyles.DEFAULT, SkinNames.GeneralImages.MESSAGE_INFO),
+		INFO(LabelStyles.HIGHLIGHT, SkinNames.GeneralImages.MESSAGE_INFO),
 		/** Highlight message */
 		HIGHLIGHT(LabelStyles.HIGHLIGHT, SkinNames.GeneralImages.MESSAGE_HIGHLIGHT),
 		/** Success message */

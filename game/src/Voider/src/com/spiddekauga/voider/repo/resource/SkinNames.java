@@ -779,6 +779,8 @@ public class SkinNames {
 		LABEL_ERROR(LabelStyle.class, "error"),
 		/** Label for highlights */
 		LABEL_HIGHLIGHT(LabelStyle.class, "highlight"),
+		/** Label for warnings */
+		LABEL_WARNING(LabelStyle.class, "warning"),
 		/** Success messages */
 		LABEL_SUCCESS(LabelStyle.class, "success"),
 		/** Panel section label style */
