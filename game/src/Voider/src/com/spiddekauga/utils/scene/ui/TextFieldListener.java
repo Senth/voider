@@ -137,18 +137,26 @@ public class TextFieldListener implements EventListener {
 						int removedCharacters = text.length();
 						text = text.trim();
 
-						int index = text.lastIndexOf(' ');
+						int cursorPosition = mTextField.getCursorPosition();
 
+						int index = text.lastIndexOf(' ', cursorPosition - 1);
+
+						String newText = "";
 						if (index != -1) {
-							text = text.substring(0, index + 2);
-							removedCharacters -= index + 2;
-						} else {
-							text = "";
+							// Before cursor
+							newText = text.substring(0, index + 1);
+
+							// After cursor
+							if (cursorPosition < text.length()) {
+								newText += text.substring(cursorPosition);
+							}
+
+							removedCharacters = text.length() - newText.length();
 						}
 
-						int cursorPosition = mTextField.getCursorPosition();
-						mTextField.setText(text);
+						mTextField.setText(newText);
 						mTextField.setCursorPosition(cursorPosition - removedCharacters);
+						sendOnChange();
 					}
 				}
 				// Redo
@@ -163,24 +171,26 @@ public class TextFieldListener implements EventListener {
 						mInvoker.undo();
 					}
 				}
-
-				// This needs to be here as there is no ChangeEvent in TextField
-				// Thus if the text is change manually through setText(...) this
-				// will catch that change.
-				mPrevKeystrokeText = mTextField.getText();
 			} else if (inputEvent.getType() == InputEvent.Type.keyTyped) {
-				if (!mTextField.getText().equals(mPrevKeystrokeText)) {
-					onChange(mTextField.getText());
-					sendCommand();
-					mPrevKeystrokeText = mTextField.getText();
-				}
+				sendOnChange();
 			}
 		} else if (event instanceof ChangeEvent && !(event instanceof VisibilityChangeEvent)) {
 			onChange(mTextField.getText());
-			mPrevKeystrokeText = mTextField.getText();
 		}
+		mPrevKeystrokeText = mTextField.getText();
 
 		return true;
+	}
+
+	/**
+	 * Send on change event if text has changed
+	 */
+	private void sendOnChange() {
+		if (!mTextField.getText().equals(mPrevKeystrokeText)) {
+			onChange(mTextField.getText());
+			sendCommand();
+			mPrevKeystrokeText = mTextField.getText();
+		}
 	}
 
 	/**

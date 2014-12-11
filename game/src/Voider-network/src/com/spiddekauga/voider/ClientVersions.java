@@ -8,15 +8,22 @@ package com.spiddekauga.voider;
 @SuppressWarnings("javadoc")
 public enum ClientVersions {
 	// @formatter:off
-	V0_4_0("Initial version."),
+	V0_4_0("Pre-beta version."),
 	V0_4_1(true,
 			"Play/Explore",
 			"	Explore has been merged into Play as Explore essentially was play online.",
 			"	The same Play/Explore screen is now used for loading and selecting levels, enemies, and bullets both online and locally.",
 			"	Enemies and bullets can be loaded from online. This means that you can easily search for specific enemies for your level.",
 			"	Searching for levels have new filters: level length and level speed. Levels can now also be filtered by tags in search options.",
-			"Various Bug Fixes",
-			"	Notifications are now displayed correctly after rezising the window."),
+			"Bug Fixes",
+			"	Notifications are now displayed correctly after rezising the window.",
+			"	Level score and play count are now correctly saved after playing a level.",
+			"UI",
+			"	Updated view icons (top left) in Explore to better show the difference between online and local resources.",
+			"	Display Settings icon now looks like a desktop monitor.",
+			"	Zoom in, out and Reset Zoom now have icons.",
+			"	Toggle background in Level Editor now has an icon.",
+			"	Play/Stop music in Level Editor now has the correct icons."),
 
 			;
 	// @formatter:on

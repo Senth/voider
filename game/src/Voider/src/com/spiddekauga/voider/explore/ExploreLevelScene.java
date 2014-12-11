@@ -220,12 +220,16 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 	@Override
 	protected void setSearchString(String searchString) {
-		if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
-			mSearchCriteriaTemp.searchString = searchString;
+		if (getView().isOnline()) {
+			if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
+				mSearchCriteriaTemp.searchString = searchString;
+			} else {
+				mSearchCriteriaTemp.searchString = "";
+			}
+			updateSearchCriteria();
 		} else {
-			mSearchCriteriaTemp.searchString = "";
+			super.setSearchString(searchString);
 		}
-		updateSearchCriteria();
 	}
 
 	/**
@@ -233,7 +237,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	 */
 	@Override
 	protected String getSearchString() {
-		return mSearchCriteriaTemp.searchString;
+		if (getView().isOnline()) {
+			return mSearchCriteriaTemp.searchString;
+		} else {
+			return super.getSearchString();
+		}
 	}
 
 	/**

@@ -19,6 +19,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Document.Builder;
+import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
@@ -40,6 +42,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublishe
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserLevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
+import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -396,21 +399,66 @@ public class StatSync extends VoiderServlet {
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ServerConfig.FetchSizes.TAGS);
 
-		String tagList = "";
+		ArrayList<Tags> datastoreTags = new ArrayList<>();
 		for (Entity entity : preparedQuery.asIterable(fetchOptions)) {
-			if (!tagList.isEmpty()) {
-				tagList += " ";
+			Long tagId = (Long) entity.getProperty(CLevelTag.TAG);
+			if (tagId != null) {
+				datastoreTags.add(Tags.fromId(tagId.intValue()));
+			} else {
+				mLogger.severe("Can't find TAG field for level tags");
 			}
-
-			tagList += entity.getProperty(CLevelTag.TAG);
 		}
 
 		Document document = SearchUtils.getDocument(SearchTables.LEVEL, KeyFactory.keyToString(levelKey));
 		if (document != null) {
-			// TODO check if tags needs updating
-
-			// TODO build document
+			// Reindex document
+			if (globalTagsNeedsUpdate(datastoreTags, document.getFields(SLevel.TAGS))) {
+				reindexSearchDocument(datastoreTags, document);
+			}
 		}
+	}
+
+	/**
+	 * Reindex the old search document with new tags
+	 * @param tags new tags to reindex with
+	 * @param document the document to reindex with the new tags
+	 */
+	private void reindexSearchDocument(ArrayList<Tags> tags, Document document) {
+		Builder builder = SearchUtils.reindexDocument(document, SLevel.TAGS);
+
+		for (Tags tag : tags) {
+			SearchUtils.addFieldAtom(builder, SLevel.TAGS, tag.getSearchId());
+		}
+
+		SearchUtils.indexDocument(SearchTables.LEVEL, builder.build());
+	}
+
+	/**
+	 * Checks if the global tags needs updating
+	 * @param datastoreTags new tags
+	 * @param oldTagFields all the old tags
+	 * @return true if the tags in the search field needs updating, i.e. are too old
+	 */
+	private boolean globalTagsNeedsUpdate(ArrayList<Tags> datastoreTags, Iterable<Field> oldTagFields) {
+		if (oldTagFields == null) {
+			if (!datastoreTags.isEmpty()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		ArrayList<Tags> oldTags = new ArrayList<>();
+
+		for (Field field : oldTagFields) {
+			oldTags.add(Tags.fromId(field.getAtom()));
+		}
+
+		if (datastoreTags.size() != oldTags.size()) {
+			return true;
+		}
+
+		return !oldTags.containsAll(datastoreTags);
 	}
 
 	/**

@@ -2,6 +2,7 @@ package com.spiddekauga.appengine;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import com.google.appengine.api.search.Cursor;
@@ -330,6 +331,16 @@ public class SearchUtils {
 	}
 
 	/**
+	 * Get all texts from a text, atom, or HTML field
+	 * @param document the document to get the text from
+	 * @param fieldName name of the field
+	 * @return list of all text in the fields, empty if the field wasn't found
+	 */
+	public static ArrayList<String> getTexts(Document document, String fieldName) {
+		return getValues(document, fieldName, FieldType.TEXT, FieldType.ATOM, FieldType.HTML);
+	}
+
+	/**
 	 * Get a float number from the specified field. If multiple fields exists with this
 	 * name the first valid field will be returned.
 	 * @param document the document to get the number from
@@ -346,6 +357,28 @@ public class SearchUtils {
 	}
 
 	/**
+	 * Get all values from a field
+	 * @param <ObjectType> the type to get
+	 * @param document document to get the field from
+	 * @param fieldName name of the field
+	 * @param fieldTypes valid field types the value can be in
+	 * @return list of all found field types, the list is empty if none were found
+	 */
+	public static <ObjectType> ArrayList<ObjectType> getValues(Document document, String fieldName, FieldType... fieldTypes) {
+		ArrayList<ObjectType> values = new ArrayList<>();
+		Iterable<Field> fields = document.getFields(fieldName);
+		if (fields != null) {
+			for (Field field : fields) {
+				ObjectType value = getValue(field, fieldTypes);
+				if (value != null) {
+					values.add(value);
+				}
+			}
+		}
+		return values;
+	}
+
+	/**
 	 * Get the first correct value from a field
 	 * @param <ObjectType> the type to get
 	 * @param document document to get the field from
@@ -353,40 +386,52 @@ public class SearchUtils {
 	 * @param fieldTypes valid field types the value can be in
 	 * @return first valid field value, null if none was found
 	 */
-	@SuppressWarnings("unchecked")
 	public static <ObjectType> ObjectType getValue(Document document, String fieldName, FieldType... fieldTypes) {
 		Iterable<Field> fields = document.getFields(fieldName);
 		if (fields != null) {
 			for (Field field : fields) {
-				if (field.getType() != null) {
-					for (FieldType fieldType : fieldTypes) {
-						if (field.getType() == fieldType) {
-							Object object = null;
-							switch (fieldType) {
-							case ATOM:
-								object = field.getAtom();
-								break;
-							case DATE:
-								object = field.getDate();
-								break;
-							case GEO_POINT:
-								object = field.getGeoPoint();
-								break;
-							case HTML:
-								object = field.getHTML();
-								break;
-							case NUMBER:
-								object = field.getNumber();
-								break;
-							case TEXT:
-								object = field.getText();
-								break;
-							}
+				return getValue(field, fieldTypes);
+			}
+		}
+		return null;
+	}
 
-							if (object != null) {
-								return (ObjectType) object;
-							}
-						}
+	/**
+	 * Get the first correct value from a field
+	 * @param <ObjectType> the type to get
+	 * @param field the field to get the value from
+	 * @param fieldTypes valid field types the value can be in
+	 * @return first valid field value, null if none was found
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ObjectType> ObjectType getValue(Field field, FieldType... fieldTypes) {
+		if (field != null && field.getType() != null) {
+			for (FieldType fieldType : fieldTypes) {
+				if (field.getType() == fieldType) {
+					Object object = null;
+					switch (fieldType) {
+					case ATOM:
+						object = field.getAtom();
+						break;
+					case DATE:
+						object = field.getDate();
+						break;
+					case GEO_POINT:
+						object = field.getGeoPoint();
+						break;
+					case HTML:
+						object = field.getHTML();
+						break;
+					case NUMBER:
+						object = field.getNumber();
+						break;
+					case TEXT:
+						object = field.getText();
+						break;
+					}
+
+					if (object != null) {
+						return (ObjectType) object;
 					}
 				}
 			}
@@ -542,6 +587,32 @@ public class SearchUtils {
 	 */
 	public static void addFieldAtom(Document.Builder builder, String name, String atom) {
 		builder.addField(createFieldAtom(name, atom));
+	}
+
+	/**
+	 * Reindexes a search document
+	 * @param document the document to reindex
+	 * @param skipFields skip fields with these names
+	 * @return new document builder with all old fields set from the document (excepted
+	 *         the skipped fields).
+	 */
+	public static Document.Builder reindexDocument(Document document, String... skipFields) {
+		Document.Builder builder = Document.newBuilder();
+		builder.setId(document.getId());
+		HashSet<String> skipFieldsSet = new HashSet<>();
+		for (String skipField : skipFields) {
+			skipFieldsSet.add(skipField);
+		}
+
+		for (String fieldName : document.getFieldNames()) {
+			if (!skipFieldsSet.contains(fieldName)) {
+				for (Field field : document.getFields(fieldName)) {
+					builder.addField(field);
+				}
+			}
+		}
+
+		return builder;
 	}
 
 	/**

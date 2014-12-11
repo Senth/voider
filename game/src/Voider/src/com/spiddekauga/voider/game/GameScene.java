@@ -311,19 +311,6 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	protected void onDeactivate() {
-		Actor.setPlayerActor(null);
-
-		// End of level, try to set player highscore
-		if (!mTesting && isPublished()) {
-			setNewHighscore();
-			updatePlayCount();
-		}
-
-		super.onDeactivate();
-	}
-
-	@Override
 	protected void onDispose() {
 		// Save the level
 		if (!mTesting) {
@@ -338,12 +325,20 @@ public class GameScene extends WorldScene {
 				gameSave.setDef(gameSaveDef);
 				mResourceRepo.save(gameSaveDef, gameSave);
 			}
+			// Died or completed -> Update stats
+			else if (getOutcome() == Outcomes.LEVEL_COMPLETED || getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
+				if (isPublished()) {
+					setNewHighscore();
+					updatePlayCount();
+				}
+			}
 		}
 
 		if (mLevel != null && (mTesting || mGameSave != null)) {
 			mLevel.dispose();
 		}
 
+		Actor.setPlayerActor(null);
 
 		super.onDispose();
 	}

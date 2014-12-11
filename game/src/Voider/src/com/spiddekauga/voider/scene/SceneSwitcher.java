@@ -574,6 +574,7 @@ public class SceneSwitcher {
 		Object outcomeMessage = poppedScene.getOutcomeMessage();
 		Outcomes loadingOutcome = Outcomes.NOT_APPLICAPLE;
 
+		poppedScene.onDeactivate();
 		poppedScene.onDispose();
 		Gdx.input.setInputProcessor(null);
 

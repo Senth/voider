@@ -188,7 +188,7 @@ class ExploreLevelGui extends ExploreGui {
 				mScene.setView(ExploreViews.ONLINE_BROWSE);
 			}
 		};
-		mWidgets.view.sort = addViewButton(SkinNames.General.EXPLORE_ONLINE, listener, mWidgets.sort.viewHider, mWidgets.info.onlineHider);
+		mWidgets.view.sort = addViewButton(SkinNames.General.EXPLORE_ONLINE, listener, mWidgets.sort.viewHider, mWidgets.onlineHider);
 
 
 		// Search (online)
@@ -198,7 +198,7 @@ class ExploreLevelGui extends ExploreGui {
 				mScene.setView(ExploreViews.ONLINE_SEARCH);
 			}
 		};
-		mWidgets.view.search = addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider(), mWidgets.info.onlineHider);
+		mWidgets.view.search = addViewButton(SkinNames.General.EXPLORE_ONLINE_SEARCH, listener, getSearchFilterHider(), mWidgets.onlineHider);
 
 
 		// Disable view buttons if offline
@@ -309,7 +309,7 @@ class ExploreLevelGui extends ExploreGui {
 	protected void initInfo(AlignTable table, HideListener hider) {
 		super.initInfo(table, hider);
 
-		HideListener onlineHider = mWidgets.info.onlineHider;
+		HideListener onlineHider = mWidgets.onlineHider;
 
 		// Insert Rating after name
 		table.row(1, Horizontal.CENTER, Vertical.TOP);
@@ -400,9 +400,9 @@ class ExploreLevelGui extends ExploreGui {
 		// Toggle image
 		ImageButtonStyle imageButtonStyle = (ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS);
 		HideListener hideListener = new HideListener(true);
-		mWidgets.sort.viewHider.addChild(hideListener);
+		mWidgets.onlineHider.addChild(hideListener);
 		Button tagButton = mLeftPanel.addTab(imageButtonStyle, table, hideListener);
-		mWidgets.sort.viewHider.addToggleActor(tagButton);
+		mWidgets.onlineHider.addToggleActor(tagButton);
 
 
 		// Clear button
@@ -590,6 +590,7 @@ class ExploreLevelGui extends ExploreGui {
 		Search search = new Search();
 		View view = new View();
 		Action action = new Action();
+		HideListener onlineHider = new HideListener(true);
 
 		private class Action implements Disposable {
 			HideManual resumeLevelHider = new HideManual();
@@ -634,7 +635,6 @@ class ExploreLevelGui extends ExploreGui {
 
 		private class Info implements Disposable {
 			AlignTable table = new AlignTable();
-			HideListener onlineHider = new HideListener(true);
 			RatingWidget rating = null;
 			Label plays = null;
 			Label bookmarks = null;
@@ -645,7 +645,6 @@ class ExploreLevelGui extends ExploreGui {
 			@Override
 			public void dispose() {
 				table.dispose();
-				onlineHider.dispose();
 			}
 		}
 
@@ -677,7 +676,6 @@ class ExploreLevelGui extends ExploreGui {
 		}
 
 		private class Tag implements Disposable {
-			AlignTable table = new AlignTable();
 			ButtonGroup buttonGroup = new ButtonGroup();
 			Button[] buttons = new Button[Tags.values().length];
 
@@ -687,7 +685,6 @@ class ExploreLevelGui extends ExploreGui {
 
 			@Override
 			public void dispose() {
-				table.dispose();
 				buttonGroup = new ButtonGroup();
 
 				init();
@@ -717,6 +714,7 @@ class ExploreLevelGui extends ExploreGui {
 			search.dispose();
 			tag.dispose();
 			sort.dispose();
+			onlineHider.dispose();
 		}
 	}
 }

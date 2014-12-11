@@ -108,7 +108,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-			// Published table
+		// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
@@ -320,12 +320,9 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 			levelInfoEntity.defEntity.levelSpeed = SearchUtils.getFloat(document, SLevel.LEVEL_SPEED);
 
 			// Tags
-			String tagString = SearchUtils.getText(document, SLevel.TAGS);
-			if (tagString != null) {
-				String[] tags = tagString.split(" ");
-				for (String tag : tags) {
-					levelInfoEntity.tags.add(Tags.fromId(tag));
-				}
+			ArrayList<String> tagStrings = SearchUtils.getTexts(document, SLevel.TAGS);
+			for (String tag : tagStrings) {
+				levelInfoEntity.tags.add(Tags.fromId(tag));
 			}
 		}
 	}
