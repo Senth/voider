@@ -24,8 +24,10 @@ public enum ClientVersions {
 			"	Zoom in, out and Reset Zoom now have icons.",
 			"	Toggle background in Level Editor now has an icon.",
 			"	Play/Stop music in Level Editor now has the correct icons."),
+	V0_4_2(false,
+			"Quickfix: Can now load/play local levels"),
 
-			;
+	;
 	// @formatter:on
 
 	/**
