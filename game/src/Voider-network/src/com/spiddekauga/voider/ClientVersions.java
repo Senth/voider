@@ -26,6 +26,13 @@ public enum ClientVersions {
 			"	Play/Stop music in Level Editor now has the correct icons."),
 	V0_4_2(false,
 			"Quickfix: Can now load/play local levels"),
+	V0_4_3(false,
+			"Improvements",
+			"	Levels need to be at least 30s long to publish (this to avoid publishing empty or unfinished levels).",
+			"	Bug Report window now has improved layout. The window now includes a button that shows all additional information that is sent to the server.",
+			"Bug Fixes",
+			"	Testing a level from the editor now uses the correct level speed.",
+			"	Level screenshots now have the same resolution independent of the window resolution."),
 
 	;
 	// @formatter:on

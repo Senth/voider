@@ -892,7 +892,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	float getLevelStartingSpeed() {
 		if (mLevel != null) {
-			return mLevel.getSpeed();
+			return mLevel.getLevelDef().getBaseSpeed();
 		} else {
 			return -1;
 		}

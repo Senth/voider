@@ -143,7 +143,7 @@ public class GameScene extends WorldScene {
 
 		// Screenshot size
 		int ssHeight = Gdx.graphics.getHeight() - barHeight;
-		int ssWidth = (int) (ssHeight * Config.Level.SAVE_TEXTURE_RATIO);
+		int ssWidth = (int) (ssHeight * Config.Graphics.WIDESCREEN_RATIO);
 
 		Pixmap ssPixmap = Screens.getScreenshot(0, 0, ssWidth, ssHeight, true);
 

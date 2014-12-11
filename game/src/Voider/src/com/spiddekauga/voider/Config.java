@@ -94,7 +94,7 @@ public class Config {
 		/** Texture size when saving */
 		public final static int SAVE_TEXTURE_SIZE = 128;
 		/** Texture size of layered images on top of the actor */
-		public final static int SAVE_IMAGE_ON_ACTOR_SIZE = SAVE_TEXTURE_SIZE / 3;
+		public final static int SAVE_IMAGE_ON_ACTOR_SIZE = SAVE_TEXTURE_SIZE / 4;
 	}
 
 	/**
@@ -295,7 +295,7 @@ public class Config {
 				public final static float TRIGGER_ACTIVATE_DELAY_MAX = 30;
 				/** Default trigger delay */
 				public final static float TRIGGER_ACTIVATE_DELAY_DEFAULT = 0;
-				/** Step sizeof trigger delay */
+				/** Step size of trigger delay */
 				public final static float TRIGGER_ACTIVATE_DELAY_STEP_SIZE = 0.1f;
 				/** Minimum deactivation trigger delay */
 				public final static float TRIGGER_DEACTIVATE_DELAY_MIN = 0;
@@ -329,6 +329,8 @@ public class Config {
 				public final static float ENEMY_WIDTH = 0.4f;
 			}
 
+			/** Minimum level length for publishing a level, in seconds */
+			public final static float LEVEL_LENGTH_PUBLISH_MIN = 30;
 			/** Enemy snap distance to a path */
 			public final static float ENEMY_SNAP_PATH_DISTANCE = 2;
 			/** Enemy snap distance squared */
@@ -776,13 +778,13 @@ public class Config {
 		/** Seconds before text field commands aren't combinable */
 		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
 		/** Seconds before tooltip is shown when hovering over */
-		public final static float TOOLTIP_HOVER_SHOW = 0.35f;
+		@Deprecated public final static float TOOLTIP_HOVER_SHOW = 0.35f;
 		/** Seconds before tooltip is shown when pressing */
-		public final static float TOOLTIP_PRESS_SHOW = 1;
+		@Deprecated public final static float TOOLTIP_PRESS_SHOW = 1;
 		/** Fade duration of the tooltip when hovering */
-		public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
+		@Deprecated public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
 		/** Tooltip minimum width before wrap */
-		public final static int TOOLTIP_WIDTH_MIN = 200;
+		@Deprecated public final static int TOOLTIP_WIDTH_MIN = 200;
 	}
 
 	/**
@@ -813,8 +815,8 @@ public class Config {
 		public final static float BACKGROUND_BOTTOM_SPEED = 0.5f;
 		/** Screenshot texture width */
 		public final static int SAVE_TEXTURE_WIDTH = 256;
-		/** Screenshot texture ratio */
-		public final static float SAVE_TEXTURE_RATIO = ((float) Graphics.WIDTH_DEFAULT) / Graphics.HEIGHT_DEFAULT;
+		/** Screenshot ratio */
+		public final static float SAVE_TEXTURE_RATIO = Graphics.WIDESCREEN_RATIO;
 		/** Screenshot texture height */
 		public final static int SAVE_TEXTURE_HEIGHT = (int) (SAVE_TEXTURE_WIDTH / SAVE_TEXTURE_RATIO);
 	}

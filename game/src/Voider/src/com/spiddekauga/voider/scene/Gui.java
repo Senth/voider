@@ -15,18 +15,19 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.CBugReportSend;
 import com.spiddekauga.utils.commands.CGameQuit;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -34,6 +35,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
@@ -43,6 +45,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.commands.CSyncFixConflict;
@@ -335,69 +338,88 @@ public abstract class Gui implements Disposable {
 	 * Shows the bug report window
 	 * @param exception the exception that was thrown, null if no exception was thrown
 	 */
-	public synchronized void showBugReportWindow(Exception exception) {
+	public synchronized void showBugReportWindow(final Exception exception) {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 		msgBox.setTitle("Bug Report");
 
-		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
-		LabelStyle errorStyle = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
-		TextFieldStyle textFieldStyle = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
-		float padSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
-
-		int fieldWidth = (int) (Gdx.graphics.getWidth() * 0.75f);
-
 		AlignTable content = new AlignTable();
+		float width = mUiFactory.getStyles().vars.textFieldWidth * 2 + mUiFactory.getStyles().vars.paddingInner;
+		content.setWidth(width);
+		content.setKeepWidth(true);
 
-		Label errorLabel = new Label(Messages.Error.BUG_REPORT_INFO, errorStyle);
-		errorLabel.setWidth(fieldWidth);
+		AlignTable left = new AlignTable();
+		AlignTable right = new AlignTable();
+		left.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+
+
+		// CENTER
+		// Error text
+		Label errorLabel = mUiFactory.text.create(Messages.Error.BUG_REPORT_INFO, LabelStyles.WARNING);
+		errorLabel.setAlignment(Align.center);
 		errorLabel.setWrap(true);
-		errorLabel.pack();
+		content.row().setFillWidth(true);
+		content.add(errorLabel).setWidth(width).setPadBottom(mUiFactory.getStyles().vars.paddingSeparator);
 		content.row();
-		content.add(errorLabel).setPadBottom(padSeparator);
 
 
+		// LEFT
 		// Subject
-		TextField subject = new TextField("", textFieldStyle);
-		subject.setWidth(fieldWidth);
+		TextField subject = mUiFactory.addTextField("Subject", false, "Subject", new TextFieldListener(), left, null);
 		subject.setMaxLength(50);
-		new TextFieldListener(subject, "Subject", null);
-		content.row();
-		content.add(subject);
-
 
 		// Actions
-		TextField lastAction = new TextField("", textFieldStyle);
-		lastAction.setWidth(fieldWidth);
+		TextField lastAction = mUiFactory.addTextArea("Last Action", "Last action you did before the bug occurred?", new TextFieldListener(), left,
+				null);
 		lastAction.setMaxLength(100);
-		new TextFieldListener(lastAction, "Last action you did before the bug occured", null);
-		content.row();
-		content.add(lastAction);
-		TextField secondLastAction = new TextField("", textFieldStyle);
-		secondLastAction.setWidth(fieldWidth);
+
+		TextField secondLastAction = mUiFactory.addTextArea("Second Last Action", "Second last action you did before the bug occurred?",
+				new TextFieldListener(), left, null);
 		secondLastAction.setMaxLength(100);
-		new TextFieldListener(secondLastAction, "Second last action...", null);
-		content.row();
-		content.add(secondLastAction);
 
 
+		// RIGHT
 		// Description
-		Label descriptionLabel = new Label("Detailed description (optional)", labelStyle);
-		content.row();
-		content.add(descriptionLabel);
-		TextField description = new TextField("", textFieldStyle);
-		description.setWidth(fieldWidth);
-		int height = (int) (Gdx.graphics.getHeight() * 0.35f);
-		description.setHeight(height);
-		content.row();
-		content.add(description);
-
+		TextArea description = mUiFactory.addTextArea("Detailed description (optional)", "", new TextFieldListener(), right, null);
+		right.getRow().setFillHeight(true);
+		right.getCell().resetHeight().setFillHeight(true);
 
 		CBugReportSend bugReportSend = new CBugReportSend(this, subject, lastAction, secondLastAction, description, exception);
 		CGameQuit quit = new CGameQuit();
 
+		content.add(left).setPadRight(mUiFactory.getStyles().vars.paddingInner);
+		content.add(right).setFillHeight(true);
+
+		// CENTER
+		// Additional information that is sent
+		ButtonListener buttonListenr = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+				msgBox.setTitle("Additional Error Information");
+
+				AlignTable outerTable = new AlignTable();
+				AlignTable table = new AlignTable();
+				ScrollPane scrollPane = new ScrollPane(table);
+
+				mUiFactory.text.add("Additional information sent in the bug report", outerTable, LabelStyles.WARNING);
+				outerTable.row();
+				outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
+				msgBox.content(outerTable);
+
+				mUiFactory.text.add(Strings.exceptionToString(exception), table);
+
+				msgBox.addCancelButtonAndKeys("Back");
+				showMsgBox(msgBox);
+			}
+		};
+		content.row().setPadTop(mUiFactory.getStyles().vars.paddingSeparator);
+		mUiFactory.button.addText("View additional information that is sent", TextButtonStyles.TRANSPARENT_PRESS, content, buttonListenr, null, null);
+
 		msgBox.content(content);
-		msgBox.button("Send report and quit", bugReportSend);
-		msgBox.button("Quit game", quit);
+		msgBox.button("Quit Game", quit);
+		msgBox.button("Send Report and Quit Game", bugReportSend);
 		msgBox.key(Keys.ESCAPE, quit);
 		msgBox.key(Keys.BACK, quit);
 		msgBox.key(Keys.ENTER, bugReportSend);

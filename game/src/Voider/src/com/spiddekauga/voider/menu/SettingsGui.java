@@ -180,7 +180,8 @@ public class SettingsGui extends Gui {
 				mScene.setFullscreen(checked);
 			}
 		};
-		mWidgets.display.fullscreen = mUiFactory.button.addCheckBoxRow("Fullscreen", CheckBoxStyles.CHECK_BOX, buttonListener, null, table);
+		mWidgets.display.fullscreen = mUiFactory.button.addCheckBoxRow("Fullscreen (Alt+Enter)", CheckBoxStyles.CHECK_BOX, buttonListener, null,
+				table);
 		mWidgets.display.showFullscreenResolution.addButton(mWidgets.display.fullscreen);
 		mWidgets.display.showWindowedResolution.addButton(mWidgets.display.fullscreen);
 	}

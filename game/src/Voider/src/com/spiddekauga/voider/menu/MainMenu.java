@@ -187,7 +187,7 @@ public class MainMenu extends Scene implements IEventListener {
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
-				mGui.showGoOnlineDialog();
+				mGui.showBugReportWindow(new RuntimeException());
 			} else if (keycode == Input.Keys.F10) {
 			} else if (keycode == Input.Keys.F11) {
 			} else if (keycode == Input.Keys.F12) {

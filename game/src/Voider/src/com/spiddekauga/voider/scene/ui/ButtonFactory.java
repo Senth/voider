@@ -136,6 +136,11 @@ public class ButtonFactory extends BaseFactory {
 		case FILLED_PRESS:
 		case FILLED_TOGGLE:
 			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
+
+			// Text is too long, increase button width
+			if (button.getPrefWidth() > mStyles.vars.textButtonWidth) {
+				cell.resetWidth();
+			}
 			break;
 
 		// Slim fit to text

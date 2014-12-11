@@ -469,7 +469,7 @@ class LevelEditorGui extends EditorGui {
 		// Select
 		mToolMenu.row();
 
-		mWidgets.tool.select = mUiFactory.button.addTool(EditorIcons.SELECT, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.select = mUiFactory.button.addTool(EditorIcons.SELECT, buttonGroup, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.select, Messages.EditorTooltips.TOOL_SELECTION);
 		new ButtonListener(mWidgets.tool.select) {
 			@Override
@@ -481,7 +481,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Cancel
-		Button button = mUiFactory.button.addTool(EditorIcons.CANCEL, null, mToolMenu, mDisabledWhenPublished);
+		Button button = mUiFactory.button.addTool(EditorIcons.CANCEL, null, mToolMenu, null);
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_CLEAR_SELECTION);
 		new ButtonListener(button) {
 			@Override
@@ -518,7 +518,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Pan
 		mToolMenu.row();
-		mWidgets.tool.pan = mUiFactory.button.addTool(EditorIcons.PAN, buttonGroup, mToolMenu, mDisabledWhenPublished);
+		mWidgets.tool.pan = mUiFactory.button.addTool(EditorIcons.PAN, buttonGroup, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.pan, Messages.EditorTooltips.TOOL_PAN_LEVEL);
 		new ButtonListener(mWidgets.tool.pan) {
 			@Override
@@ -1149,8 +1149,8 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Back and forth
-		button = mUiFactory.button.addImageWithLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", Positions.RIGHT, null, table,
-				null, mDisabledWhenPublished);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", Positions.RIGHT, null, table, null,
+				mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_BACK_AND_FORTH);
 		mWidgets.path.backAndForth = button;
 		buttonGroup.add(button);

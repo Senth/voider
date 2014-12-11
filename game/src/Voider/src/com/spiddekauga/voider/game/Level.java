@@ -618,6 +618,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		if (fromOriginal instanceof Level) {
 			Level fromLevel = (Level) fromOriginal;
 			mLevelDef = fromLevel.mLevelDef;
+			mSpeed = mLevelDef.getBaseSpeed();
 		}
 	}
 
@@ -631,6 +632,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		LevelDef levelDef = (LevelDef) mLevelDef.copyNewResource();
 		copyLevel.mUniqueId = levelDef.getLevelId();
 		copyLevel.mLevelDef = levelDef;
+		copyLevel.mSpeed = levelDef.getBaseSpeed();
 
 		return copy;
 	}

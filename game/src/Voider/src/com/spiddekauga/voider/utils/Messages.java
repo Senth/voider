@@ -158,8 +158,8 @@ public class Messages {
 		/** Polygon draw/erase line is complex */
 		public final static String POLYGON_DRAW_ERASE_LINE_COMPLEX = POLYGON_COMPLEX_DRAW_APPEND;
 		/** Bug report */
-		public final static String BUG_REPORT_INFO = "The game has crashed due to some unknown bug. "
-				+ "Please describe the last 2 steps you did; this helps enormously when debugging :)";
+		public final static String BUG_REPORT_INFO = "You found a bug! "
+				+ "Please describe the last two actions you did. This helps enormously when debugging, thank you :)";
 		/** Name must contain X characters */
 		public final static String NAME_CHARACTERS_MIN = "must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters";
 	}

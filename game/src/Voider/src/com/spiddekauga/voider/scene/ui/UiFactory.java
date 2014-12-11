@@ -364,8 +364,10 @@ public class UiFactory {
 		}
 
 		TextField textField = new TextField(defaultText, mStyles.textField.standard);
-		listener.setTextField(textField);
-		listener.setDefaultText(defaultText);
+		if (listener != null) {
+			listener.setTextField(textField);
+			listener.setDefaultText(defaultText);
+		}
 
 		// Set width and height
 		table.row();

@@ -293,7 +293,8 @@ public abstract class EditorGui extends Gui {
 		// button = mUiFactory.button.addImageButton(EditorIcons.CAMPAIGN_EDITOR_SELECTED,
 		// mEditorMenu, null, null);
 		// } else {
-		// button = mUiFactory.button.addImageButton(EditorIcons.CAMPAIGN_EDITOR, mEditorMenu,
+		// button = mUiFactory.button.addImageButton(EditorIcons.CAMPAIGN_EDITOR,
+		// mEditorMenu,
 		// null, null);
 		// }
 		// if (this.getClass() != CampaignEditorGui.class) {
@@ -584,15 +585,30 @@ public abstract class EditorGui extends Gui {
 							label.setWidth(Gdx.graphics.getWidth() * 0.5f);
 							showMsgBox(msgBox);
 						}
+
+						float levelLength = ((LevelEditor) mEditor).getLevel().getLevelDef().getLengthInTime();
+						if (showPublish && levelLength < Config.Editor.Level.LEVEL_LENGTH_PUBLISH_MIN) {
+							showPublish = false;
+
+							MsgBoxExecuter msgBox = getFreeMsgBox(true);
+							msgBox.setTitle("Too short level");
+
+							String text = "Please add more content to your level. Your current level has a length of " + ((int) levelLength)
+									+ " seconds, minimum is 30 seconds.";
+							msgBox.content(text).setWidgetWidth(Gdx.graphics.getWidth() * 0.5f);
+
+							msgBox.addCancelButtonAndKeys("OK");
+							showMsgBox(msgBox);
+						}
 					}
 
 					// Check if online
-					if (!User.getGlobalUser().isOnline()) {
+					if (showPublish && !User.getGlobalUser().isOnline()) {
 						showPublish = false;
 
 						MsgBoxExecuter msgBox = getFreeMsgBox(true);
 						msgBox.setTitle("Go Online?");
-						String text = "You need to go online to publish the level.";
+						String text = "You need to go online to publish the " + getResourceTypeName() + ".";
 						Label label = mUiFactory.text.create(text, false);
 
 						final IEventListener loginListener = new IEventListener() {
