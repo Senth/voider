@@ -743,33 +743,39 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			protected void onSelectionChanged(int itemIndex) {
 				Music music = mSelectBox.getSelected();
-				mLevelEditor.setMusic(music);
+				if (mLevelEditor.getMusic() != music) {
+					mLevelEditor.setMusic(music);
+					togglePlayVisibility(true);
+					MusicPlayer.getInstance().play(music, Interpolations.CROSSFADE);
+				}
 			}
 		};
 		mWidgets.info.music = mUiFactory.addSelectBox("Music", Music.getLevelThemes(), selectBoxListener, left, null, null);
 
 		// Music - Play/Stop
 		float musicPadding = mUiFactory.getStyles().vars.paddingOuter;
-		Cell musicCell = left.getCell();
-		Button playButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_PLAY, left, null, null);
-		left.getCell().setPadLeft(musicPadding).setPadRight(musicPadding);
-		Button stopButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_STOP, left, null, null);
+		Cell musicCell = left.getCell().setPadRight(musicPadding);
+		Button playButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_PLAY, left, mWidgets.info.playHider, null);
+		Button stopButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_STOP, left, mWidgets.info.stopHider, null);
+		stopButton.setVisible(false);
+		mWidgets.info.stopButton = stopButton;
 		new ButtonListener(playButton) {
 			@Override
 			protected void onPressed(Button button) {
 				MusicPlayer.getInstance().play(mWidgets.info.music.getSelected(), Interpolations.CROSSFADE);
+				togglePlayVisibility(false);
 			}
 		};
 		new ButtonListener(stopButton) {
 			@Override
 			protected void onPressed(Button button) {
 				MusicPlayer.getInstance().stop(Interpolations.FADE_OUT);
+				togglePlayVisibility(true);
 			}
 		};
 
-
 		// Decrease selection box with the button width + padding
-		float decreaseWidth = (playButton.getWidth() + musicPadding) * 2;
+		float decreaseWidth = playButton.getWidth();
 		musicCell.setWidth(musicCell.getWidth() - decreaseWidth);
 
 		// Speed
@@ -824,6 +830,23 @@ class LevelEditorGui extends EditorGui {
 				.addTextArea("Epilogue", Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
 
 		mInfoTable.layout();
+	}
+
+	@Override
+	protected void resetInfo() {
+		super.resetInfo();
+		togglePlayVisibility(!MusicPlayer.getInstance().isPlaying());
+		mInfoTable.invalidate();
+		mInfoTable.layout();
+	}
+
+	/**
+	 * Toggles play/stop button
+	 * @param showPlay true to show play and hide stop, false to hide play and show stop
+	 */
+	private void togglePlayVisibility(boolean showPlay) {
+		mWidgets.info.playHider.setVisibility(showPlay);
+		mWidgets.info.stopHider.setVisibility(!showPlay);
 	}
 
 	/**
@@ -1025,9 +1048,7 @@ class LevelEditorGui extends EditorGui {
 	 * @return available width inside the right panel
 	 */
 	private float getInnerRightPanelWidth() {
-		return mUiFactory.getStyles().vars.rightPanelWidth;// -
-		// mUiFactory.getStyles().vars.paddingOuter
-		// * 2;
+		return mUiFactory.getStyles().vars.rightPanelWidth;
 	}
 
 	/**
@@ -1216,6 +1237,7 @@ class LevelEditorGui extends EditorGui {
 			enemyAdd.dispose();
 			path.dispose();
 			color.dispose();
+			info.dispose();
 		}
 
 		class ColorWidgets implements Disposable {
@@ -1328,7 +1350,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		}
 
-		class InfoWidgets {
+		class InfoWidgets implements Disposable {
 			Label nameError = null;
 			TextField name = null;
 			TextField description = null;
@@ -1338,6 +1360,15 @@ class LevelEditorGui extends EditorGui {
 			Image image = null;
 			ImageScrollButton theme = null;
 			SelectBox<Music> music = null;
+			Button stopButton = null;
+			HideManual playHider = new HideManual();
+			HideManual stopHider = new HideManual();
+
+			@Override
+			public void dispose() {
+				playHider.dispose();
+				stopHider.dispose();
+			}
 		}
 
 		class PathOptionWidgets implements Disposable {

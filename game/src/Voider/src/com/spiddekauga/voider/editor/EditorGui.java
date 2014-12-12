@@ -739,9 +739,17 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
+	 * Resets the info. This is called before the info dialog is shown
+	 */
+	protected void resetInfo() {
+		// Does nothing
+	}
+
+	/**
 	 * Shows the information for the resource we're editing
 	 */
 	protected void showInfoDialog() {
+		resetInfo();
 		setInfoNameError("");
 		String OPTION_DELIMITER = "option-dialog";
 

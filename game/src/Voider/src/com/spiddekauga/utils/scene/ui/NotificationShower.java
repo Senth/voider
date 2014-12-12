@@ -179,7 +179,7 @@ public class NotificationShower {
 		/** Information message */
 		INFO(LabelStyles.HIGHLIGHT, SkinNames.GeneralImages.MESSAGE_INFO),
 		/** Highlight message */
-		HIGHLIGHT(LabelStyles.HIGHLIGHT, SkinNames.GeneralImages.MESSAGE_HIGHLIGHT),
+		HIGHLIGHT(LabelStyles.WARNING, SkinNames.GeneralImages.MESSAGE_HIGHLIGHT),
 		/** Success message */
 		SUCCESS(LabelStyles.SUCCESS, SkinNames.GeneralImages.MESSAGE_SUCCESS),
 		/** Error message */

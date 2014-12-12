@@ -122,6 +122,13 @@ public class MusicPlayer {
 	}
 
 	/**
+	 * @return true if any music is currently playing
+	 */
+	public boolean isPlaying() {
+		return mCurrent != null;
+	}
+
+	/**
 	 * Interpolates the music
 	 */
 	private void interpolate() {
