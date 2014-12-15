@@ -2,6 +2,7 @@ package com.spiddekauga.voider.repo.misc;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
+import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -52,6 +53,20 @@ class SettingLocalRepo {
 		 */
 		String getDateTime() {
 			return mUserPrefsGateway.getDateTime();
+		}
+
+		/**
+		 * Updates the client version to the latest client version
+		 */
+		void updateClientVersion() {
+			mUserPrefsGateway.updateClientVersion();
+		}
+
+		/**
+		 * @return the last client version this client used
+		 */
+		ClientVersions getLatestClientVersion() {
+			return mUserPrefsGateway.getLatestClientVersion();
 		}
 	}
 

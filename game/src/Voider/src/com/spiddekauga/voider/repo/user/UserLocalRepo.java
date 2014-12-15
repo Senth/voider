@@ -22,7 +22,7 @@ public class UserLocalRepo {
 	 * @param serverKey user id on the server in the future.
 	 */
 	public static void setLastUser(String username, UUID privateKey, String serverKey) {
-		mPrefsGateway.setLastUser(username, privateKey, serverKey);
+		mClientPrefsGateway.setLastUser(username, privateKey, serverKey);
 	}
 
 	/**
@@ -31,14 +31,14 @@ public class UserLocalRepo {
 	 * @param password
 	 */
 	public static void setLastUser(String username, String password) {
-		mPrefsGateway.setLastUser(username, password);
+		mClientPrefsGateway.setLastUser(username, password);
 	}
 
 	/**
 	 * Removes the last logged in user
 	 */
 	public static void removeLastUser() {
-		mPrefsGateway.removeLastUser();
+		mClientPrefsGateway.removeLastUser();
 	}
 
 	/**
@@ -46,17 +46,17 @@ public class UserLocalRepo {
 	 * @return last user logged in, null if not found
 	 */
 	public static User getLastUser() {
-		return mPrefsGateway.getLastUser();
+		return mClientPrefsGateway.getLastUser();
 	}
 
 	/**
 	 * @return client id, creates a new client id if one doesn't exist
 	 */
 	public static UUID getClientId() {
-		UUID clientId = mPrefsGateway.getClientId();
+		UUID clientId = mClientPrefsGateway.getClientId();
 		if (clientId == null) {
 			clientId = UUID.randomUUID();
-			mPrefsGateway.setClientId(clientId);
+			mClientPrefsGateway.setClientId(clientId);
 		}
 
 		return clientId;
@@ -66,17 +66,17 @@ public class UserLocalRepo {
 	 * Save that this app has registered one user, thus no more users can be registered
 	 */
 	public static void setAsRegistered() {
-		mPrefsGateway.setAsRegistered();
+		mClientPrefsGateway.setAsRegistered();
 	}
 
 	/**
 	 * @return true if no user has been registered on this app
 	 */
 	public static boolean isRegisterAvailable() {
-		return mPrefsGateway.isRegisterAvailable();
+		return mClientPrefsGateway.isRegisterAvailable();
 	}
 
-	/** Preferences gateway */
-	private static UserPrefsGateway mPrefsGateway = new UserPrefsGateway();
+
+	private static ClientPrefsGateway mClientPrefsGateway = new ClientPrefsGateway();
 
 }

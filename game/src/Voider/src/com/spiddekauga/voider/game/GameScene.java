@@ -84,6 +84,13 @@ public class GameScene extends WorldScene {
 		mWorld.setContactListener(mCollisionResolver);
 	}
 
+	/**
+	 * Update camera for a screen shot
+	 */
+	private void setupCameraForScreenshot() {
+		// TODO
+	}
+
 	@Override
 	protected void fixCamera() {
 		if (isTestRun()) {
@@ -345,6 +352,8 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected void update(float deltaTime) {
+		super.update(deltaTime);
+
 		updateBorderSpeed();
 		updateMousePosition();
 
@@ -445,6 +454,10 @@ public class GameScene extends WorldScene {
 		super.render();
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			if (mTakeScreenshot) {
+				setupCameraForScreenshot();
+			}
+
 			ShaderProgram defaultShader = ResourceCacheFacade.get(InternalNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
@@ -475,6 +488,7 @@ public class GameScene extends WorldScene {
 
 			if (mTakeScreenshot) {
 				takeScreenshotNow();
+				fixCamera();
 			}
 
 			mShapeRenderer.pop();

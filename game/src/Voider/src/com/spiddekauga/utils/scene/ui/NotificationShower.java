@@ -122,36 +122,37 @@ public class NotificationShower {
 					pushToFront();
 
 					// Create row table with background
-					final AlignTable rowTable = new AlignTable();
-					rowTable.setBackgroundImage(createBackground());
-					rowTable.setPad(mRowPad);
-					rowTable.row().setFillWidth(true);
+					final AlignTable messageTable = new AlignTable();
+					messageTable.setBackgroundImage(createBackground());
+					messageTable.setPad(mRowPad);
+					messageTable.row().setFillWidth(true);
+					messageTable.setName("message-table");
 					mOuterTable.row().setFillWidth(true);
-					mOuterTable.add(rowTable).setFillWidth(true);
-
-					// Icon
+					mOuterTable.add(messageTable).setFillWidth(true);
 					Image image = style.createIcon();
-					rowTable.add(image);
 
 					// Label
 					Label label = style.createMessage(message);
 					label.pack();
 					label.setAlignment(Align.right);
-					rowTable.add(label).setFillWidth(true);
+					messageTable.add(label).setFillWidth(true);
+
+					// Icon
+					messageTable.add(image).setPadLeft(mUiFactory.getStyles().vars.paddingInner);
 
 					// If pressed remove directly
-					rowTable.addListener(new InputListener() {
+					messageTable.addListener(new InputListener() {
 						@Override
 						public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-							rowTable.clearActions();
-							rowTable.addAction(sequence(fadeOut(mFadeIn), removeActor()));
+							messageTable.clearActions();
+							messageTable.addAction(sequence(fadeOut(mFadeIn), removeActor()));
 							return false;
 						}
 					});
 
 
 					// Set timer for fadeIn - display - fadeOut - remove
-					rowTable.addAction(sequence(fadeIn(mFadeIn), delay(mDisplayTime), fadeOut(mFadeOut), removeActor()));
+					messageTable.addAction(sequence(fadeIn(mFadeIn), delay(mDisplayTime), fadeOut(mFadeOut), removeActor()));
 				}
 			});
 		}

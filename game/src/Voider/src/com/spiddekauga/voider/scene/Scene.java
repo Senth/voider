@@ -117,7 +117,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 
 	/**
 	 * Called when a character was type if no message box is active
-	 * @param character the characted that was type
+	 * @param character the character that was type
 	 * @return true if handled, false if not
 	 */
 	protected boolean onKeyTyped(char character) {

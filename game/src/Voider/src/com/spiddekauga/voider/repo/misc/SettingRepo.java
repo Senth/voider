@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.spiddekauga.utils.Resolution;
+import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -38,7 +39,7 @@ public class SettingRepo extends Repo {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		// TODO Auto-generated method stub
+		// Does nothing
 
 	}
 
@@ -61,6 +62,43 @@ public class SettingRepo extends Repo {
 	 */
 	public SettingDisplayRepo display() {
 		return mDisplay;
+	}
+
+	/**
+	 * @return info settings
+	 */
+	public SettingInfoRepo info() {
+		return mInfo;
+	}
+
+	/**
+	 * Info settings
+	 */
+	public class SettingInfoRepo {
+		/**
+		 * Updates the client version to the latest client version
+		 */
+		public void updateClientVersion() {
+			mLocalRepo.updateClientVersion();
+		}
+
+		/**
+		 * @return true if this client has been updated since last login from the current
+		 *         user
+		 */
+		public boolean isClientVersionNewSinceLastLogin() {
+			return mLocalRepo.getLatestClientVersion() != ClientVersions.getLatest();
+		}
+
+		/**
+		 * @return changes since the last client version
+		 */
+		public String getNewChangesSinceLastLogin() {
+			ClientVersions lastLoginVersion = mLocalRepo.getLatestClientVersion();
+			return ClientVersions.getChangeLogs(lastLoginVersion);
+		}
+
+		private SettingGeneralLocalRepo mLocalRepo = SettingLocalRepo.getInstance().general;
 	}
 
 	/**
@@ -372,6 +410,7 @@ public class SettingRepo extends Repo {
 		private SettingDisplayLocalRepo mLocalRepo = SettingLocalRepo.getInstance().display;
 	}
 
+	private SettingInfoRepo mInfo = new SettingInfoRepo();
 	private SettingDisplayRepo mDisplay = new SettingDisplayRepo();
 	private SettingDateRepo mDate = new SettingDateRepo();
 	private SettingSoundRepo mSound = new SettingSoundRepo();

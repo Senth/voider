@@ -12,11 +12,11 @@ import com.spiddekauga.voider.utils.User;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class UserPrefsGateway {
+class ClientPrefsGateway {
 	/**
 	 * Initializes the user preferences gateway
 	 */
-	UserPrefsGateway() {
+	ClientPrefsGateway() {
 		mPreferences = Gdx.app.getPreferences(PREFERENCES_NAME);
 	}
 

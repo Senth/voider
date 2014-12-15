@@ -12,14 +12,15 @@ public enum ClientVersions {
 	V0_4_1(true,
 			"Play/Explore",
 			"	Explore has been merged into Play as Explore essentially was play online.",
-			"	The same Play/Explore screen is now used for loading and selecting levels, enemies, and bullets both online and locally.",
-			"	Enemies and bullets can be loaded from online. This means that you can easily search for specific enemies for your level.",
-			"	Searching for levels have new filters: level length and level speed. Levels can now also be filtered by tags in search options.",
+			"	The same Play/Explore screen is now used for loading levels, enemies, and bullets both online and locally.",
+			"	You can now search for enemies and bullets online for your levels.",
+			"	Searching for levels have new filters: level length and level speed.",
+			"	Levels can now be filtered by tags in 'search' too.",
 			"Bug Fixes",
 			"	Notifications are now displayed correctly after rezising the window.",
 			"	Level score and play count are now correctly saved after playing a level.",
 			"UI",
-			"	Updated view icons (top left) in Explore to better show the difference between online and local resources.",
+			"	Top left icons in Explore now have similar styles for online and local resources.",
 			"	Display Settings icon now looks like a desktop monitor.",
 			"	Zoom in, out and Reset Zoom now have icons.",
 			"	Toggle background in Level Editor now has an icon.",
@@ -28,11 +29,14 @@ public enum ClientVersions {
 			"Quickfix: Can now load/play local levels"),
 	V0_4_3(false,
 			"Improvements",
-			"	Levels need to be at least 30s long to publish (this to avoid publishing empty or unfinished levels).",
-			"	Bug Report window now has improved layout. The window now includes a button that shows all additional information that is sent to the server.",
+			"	Levels need to be at least 30s long to be published (this to avoid publishing empty or unfinished levels).",
+			"	Bug Report window",
+			"		You can now view the additional information that is sent to the server.",
+			"	ChangeLog is now displayed after the client/app has been updated",
 			"Bug Fixes",
 			"	Testing a level from the editor now uses the correct level speed.",
-			"	Level screenshots now have the same resolution independent of the window resolution."),
+			"	Level screenshots now have the same resolution independent of the window resolution.",
+			"	ChangeLogs (these messages) are now tabbed correctly"),
 
 	;
 	// @formatter:on
@@ -57,7 +61,7 @@ public enum ClientVersions {
 			boolean foundAllTabs = false;
 			do {
 				if (point.charAt(index) == '\t') {
-					stringBuilder.append("\t");
+					stringBuilder.append(TAB_REPLACEMENT);
 				} else {
 					foundAllTabs = true;
 				}
@@ -72,6 +76,13 @@ public enum ClientVersions {
 	}
 
 	/**
+	 * @return id of the version
+	 */
+	public int getId() {
+		return ordinal();
+	}
+
+	/**
 	 * No update is needed for this version
 	 * @param changeLogPoints all changes made in this version
 	 */
@@ -80,20 +91,35 @@ public enum ClientVersions {
 	}
 
 	/**
+	 * Get version from id
+	 * @param versionId id gotten from {@link #getId()}
+	 * @return the client version from this specific.
+	 * @throws IllegalArgumentException if version is below 0 or higher than the latest
+	 *         version.
+	 */
+	public static ClientVersions fromId(int versionId) {
+		if (versionId < 0 || versionId >= values().length) {
+			throw new IllegalArgumentException("Version (" + versionId + ") out of bounds");
+		}
+
+		return values()[versionId];
+	}
+
+	/**
 	 * Check if a client update is needed from the specified version
-	 * @param version ordinal of the version
+	 * @param versionId ordinal of the version
 	 * @return true if any version from [version] (not including) to the latest version
 	 *         needs updating.
 	 * @throws IllegalArgumentException if version is below 0 or higher than the latest
 	 *         version.
 	 * @see #isLatestVersion(int)
 	 */
-	public static boolean isUpdateNeeded(int version) {
-		if (version < 0 || version >= values().length) {
-			throw new IllegalArgumentException("Version (" + version + ") out of bounds");
+	public static boolean isUpdateNeeded(int versionId) {
+		if (versionId < 0 || versionId >= values().length) {
+			throw new IllegalArgumentException("Version (" + versionId + ") out of bounds");
 		}
 
-		for (int i = version + 1; i < values().length; ++i) {
+		for (int i = versionId + 1; i < values().length; ++i) {
 			ClientVersions clientVersion = values()[i];
 
 			if (clientVersion.mUpdatedNeeeded) {
@@ -106,18 +132,18 @@ public enum ClientVersions {
 
 	/**
 	 * Check if the version is the latest version
-	 * @param version
+	 * @param versionId
 	 * @return true if version is the latest version, false otherwise
 	 * @throws IllegalArgumentException if version is below 0 or higher than the latest
 	 *         version.
 	 * @see #isUpdateNeeded(int) if an update is needed from version
 	 */
-	public static boolean isLatestVersion(int version) {
-		if (version < 0 || version >= values().length) {
-			throw new IllegalArgumentException("Version (" + version + ") out of bounds");
+	public static boolean isLatestVersion(int versionId) {
+		if (versionId < 0 || versionId >= values().length) {
+			throw new IllegalArgumentException("Version (" + versionId + ") out of bounds");
 		}
 
-		return version == values().length - 1;
+		return versionId == values().length - 1;
 	}
 
 	/**
@@ -125,6 +151,15 @@ public enum ClientVersions {
 	 */
 	public String getChangeLog() {
 		return toString() + "\n" + "-------------------------\n" + mChangeLog;
+	}
+
+	/**
+	 * Get change-log from the specified version
+	 * @param version
+	 * @return all change logs from the specified version
+	 */
+	public static String getChangeLogs(ClientVersions version) {
+		return getChangeLogs(version.getId());
 	}
 
 	/**
@@ -168,6 +203,7 @@ public enum ClientVersions {
 		return name().replace('_', '.');
 	}
 
+	private static final String TAB_REPLACEMENT = "    ";
 	private boolean mUpdatedNeeeded;
 	private String mChangeLog;
 }

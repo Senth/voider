@@ -366,7 +366,7 @@ public class LoginGui extends Gui {
 	 */
 	void showUpdateRequired(String newVersion, String changeLog) {
 		String message = Messages.Version.getRequiredUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(message, changeLog, this);
+		mUiFactory.createUpdateMessageBox(true, message, changeLog, this);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class LoginGui extends Gui {
 	 */
 	void showUpdateAvailable(String newVersion, String changeLog) {
 		String message = Messages.Version.getOptionalUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(message, changeLog, this);
+		mUiFactory.createUpdateMessageBox(false, message, changeLog, this);
 	}
 
 	/** The login scene */

@@ -85,17 +85,21 @@ public class UiFactory {
 
 	/**
 	 * Create 'update message box' to show an update message dialog
+	 * @param updateRequired true if an update is required, false if update is optional
 	 * @param message message to display
 	 * @param changeLog all new changes to display
 	 * @param gui GUI class to create the message box in
 	 */
-	public void createUpdateMessageBox(final String message, final String changeLog, final Gui gui) {
+	public void createUpdateMessageBox(boolean updateRequired, final String message, final String changeLog, final Gui gui) {
 		MsgBoxExecuter msgBox = gui.getFreeMsgBox(true);
 
-		final int width = Gdx.graphics.getWidth() / 2;
-		final int maxHeight = Gdx.graphics.getHeight() / 2;
+		final int width = (int) (Gdx.graphics.getWidth() * 0.7f);
 
-		msgBox.setTitle("Update Required");
+		if (updateRequired) {
+			msgBox.setTitle("Update Required");
+		} else {
+			msgBox.setTitle("Update Available");
+		}
 		Label label = new Label(message, LabelStyles.HIGHLIGHT.getStyle());
 		label.setWrap(true);
 		label.setWidth(width);
@@ -107,36 +111,53 @@ public class UiFactory {
 		new ButtonListener((Button) msgBox.getButtonCell().getActor()) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter changeLogMsgBox = gui.getFreeMsgBox(true);
-				changeLogMsgBox.setTitle("ChangeLog");
-				changeLogMsgBox.content("Changes since your current version", Align.center).padBottom(mStyles.vars.paddingSeparator);
-				changeLogMsgBox.contentRow();
-
-
-				Label label = new Label(changeLog, LabelStyles.DEFAULT.getStyle());
-				label.setWrap(true);
-				label.setWidth(width);
-
-
-				// Too high, use scroll pane
-				label.layout();
-				if (label.getHeight() > maxHeight) {
-					ScrollPane scrollPane = new ScrollPane(label, mStyles.scrollPane.noBackground);
-					scrollPane.setFadeScrollBars(false);
-					changeLogMsgBox.content(scrollPane).size(width, maxHeight);
-				} else {
-					changeLogMsgBox.content(label);
-				}
-
-
-				changeLogMsgBox.addCancelButtonAndKeys("OK");
-
-				gui.showMsgBox(changeLogMsgBox);
+				createChangeLogMsgBox("ChangeLog", "New changes since your version", changeLog, gui);
 			}
 		};
 
 		msgBox.addCancelButtonAndKeys("OK");
 		gui.showMsgBox(msgBox);
+	}
+
+	/**
+	 * Create a change log message box
+	 * @param title title of the message box
+	 * @param topMessage additional message to display above the change log
+	 * @param changeLog the change log
+	 * @param gui the GUI class to add the message box to
+	 */
+	public void createChangeLogMsgBox(String title, String topMessage, String changeLog, Gui gui) {
+		MsgBoxExecuter changeLogMsgBox = gui.getFreeMsgBox(true);
+		changeLogMsgBox.setTitle(title);
+
+		final int width = (int) (Gdx.graphics.getWidth() * 0.7f);
+		final int maxHeight = Gdx.graphics.getHeight() / 2;
+
+		Label label = text.create(topMessage, true);
+		label.setWidth(width);
+		label.setAlignment(Align.center);
+
+		changeLogMsgBox.content(label).padBottom(mStyles.vars.paddingSeparator);
+		changeLogMsgBox.contentRow();
+
+
+		label = text.create(changeLog, false);
+
+
+		// Too high, use scroll pane
+		label.layout();
+		if (label.getHeight() > maxHeight) {
+			ScrollPane scrollPane = new ScrollPane(label, mStyles.scrollPane.noBackground);
+			scrollPane.setFadeScrollBars(false);
+			changeLogMsgBox.content(scrollPane).size(width, maxHeight);
+		} else {
+			changeLogMsgBox.content(label);
+		}
+
+
+		changeLogMsgBox.addCancelButtonAndKeys("OK");
+
+		gui.showMsgBox(changeLogMsgBox);
 	}
 
 	/**

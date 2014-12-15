@@ -664,7 +664,7 @@ public class Cell implements Poolable, IPadding<Cell> {
 			return mCellWidth;
 		}
 		// Special case for labels as they need to be packed
-		else if (mActor instanceof Label && !mFixedWidth) {
+		else if (mActor instanceof Label && !mFixedWidth && !mFillWidth) {
 			return ((Label) mActor).getPrefWidth() + getPadX();
 		} else if (mActor != null) {
 			return mActor.getWidth() + getPadX();

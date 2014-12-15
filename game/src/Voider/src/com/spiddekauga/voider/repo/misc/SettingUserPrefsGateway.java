@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo.misc;
 
+import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.repo.PrefsGateway;
 
 /**
@@ -29,5 +30,28 @@ class SettingUserPrefsGateway extends PrefsGateway {
 		return mPreferences.getString(DATE__DATE_TIME_FORMAT, "");
 	}
 
+	/**
+	 * Updates the client version to the latest client version
+	 */
+	void updateClientVersion() {
+		mPreferences.putInteger(CLIENT__LAST_VERSION, ClientVersions.getLatest().getId());
+		mPreferences.flush();
+	}
+
+	/**
+	 * @return the last client version this client used
+	 */
+	ClientVersions getLatestClientVersion() {
+		int latestVersion = ClientVersions.getLatest().getId();
+		int versionId = mPreferences.getInteger(CLIENT__LAST_VERSION, latestVersion);
+
+		if (versionId > latestVersion || versionId < 0) {
+			versionId = latestVersion;
+		}
+
+		return ClientVersions.fromId(versionId);
+	}
+
+	private static final String CLIENT__LAST_VERSION = "client_lastVersion";
 	private static final String DATE__DATE_TIME_FORMAT = "date_dateTimeFormat";
 }

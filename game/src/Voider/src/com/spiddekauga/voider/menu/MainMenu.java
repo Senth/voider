@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.TestUiScene;
@@ -23,6 +24,8 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -33,6 +36,7 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.Interpolations;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -146,6 +150,8 @@ public class MainMenu extends Scene implements IEventListener {
 				Synchronizer.getInstance().synchronizeAll();
 			}
 
+			SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
+
 			if (message instanceof UpdateEvent) {
 				UpdateEvent event = (UpdateEvent) message;
 				switch (event.type) {
@@ -160,6 +166,11 @@ public class MainMenu extends Scene implements IEventListener {
 				default:
 					break;
 				}
+			}
+			// Check if the client was updated since last login
+			else if (infoRepo.isClientVersionNewSinceLastLogin()) {
+				((MainMenuGui) mGui).showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
+				infoRepo.updateClientVersion();
 			}
 		}
 	}
@@ -185,6 +196,8 @@ public class MainMenu extends Scene implements IEventListener {
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 				mNotification.show(message);
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
+				String changeLog = ClientVersions.getChangeLogs(ClientVersions.V0_4_0);
+				UiFactory.getInstance().createChangeLogMsgBox("ChangeLog", "Test", changeLog, mGui);
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
 				mGui.showBugReportWindow(new RuntimeException());

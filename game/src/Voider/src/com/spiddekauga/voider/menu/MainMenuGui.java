@@ -152,7 +152,7 @@ class MainMenuGui extends MenuGui {
 	 */
 	void showUpdateNeeded(String newVersion, String changeLog) {
 		String message = Messages.Version.getRequiredUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(message, changeLog, this);
+		mUiFactory.createUpdateMessageBox(true, message, changeLog, this);
 	}
 
 	/**
@@ -162,7 +162,15 @@ class MainMenuGui extends MenuGui {
 	 */
 	void showUpdateAvailable(String newVersion, String changeLog) {
 		String message = Messages.Version.getOptionalUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(message, changeLog, this);
+		mUiFactory.createUpdateMessageBox(false, message, changeLog, this);
+	}
+
+	/**
+	 * Shows client changes since last login
+	 * @param changeLog new changes
+	 */
+	void showChangesSinceLastLogin(String changeLog) {
+		mUiFactory.createChangeLogMsgBox("ChangeLog", "New changes since you last logged in on this device", changeLog, this);
 	}
 
 	private AlignTable mOptionTable = new AlignTable();
