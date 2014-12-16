@@ -6,12 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.IRatingListener;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
@@ -32,6 +32,8 @@ public class ScoreSceneGui extends Gui {
 
 	@Override
 	public void resetValues() {
+		super.resetValues();
+
 		if (mScoreScene.isPublished()) {
 			mWidgets.bookmark.setChecked(mScoreScene.isBookmarked());
 			mWidgets.rating.setRating(mScoreScene.getRating());
@@ -136,7 +138,8 @@ public class ScoreSceneGui extends Gui {
 	/**
 	 * Add a text (left aligned) and then another actor (right aligned) to the score table
 	 * @param text label text
-	 * @param labelStyle (optional) style for the text, if null it will use the default label style
+	 * @param labelStyle (optional) style for the text, if null it will use the default
+	 *        label style
 	 * @param actor the actor to add as right aligned
 	 */
 	private void addToScoreTable(String text, LabelStyle labelStyle, Actor actor) {
@@ -158,7 +161,8 @@ public class ScoreSceneGui extends Gui {
 	/**
 	 * Add a text (left aligned) and then another actor (right aligned) to the score table
 	 * @param leftText label text
-	 * @param labelStyle (optional) style for both the left and right text, if null it will use the default label style
+	 * @param labelStyle (optional) style for both the left and right text, if null it
+	 *        will use the default label style
 	 * @param rightText text for the right side
 	 */
 	private void addToScoreTable(String leftText, LabelStyle labelStyle, String rightText) {

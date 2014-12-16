@@ -208,8 +208,6 @@ public class Config {
 			public static final boolean LOAD_UNLOAD_DEPENDENCIES = true;
 		}
 
-		/** Skip loading text */
-		public static final boolean SKIP_LOADING_TIME = true;
 		/** Build level */
 		public static final Builds BUILD = Builds.DEV_LOCAL;
 		/** Set to true to turn on the exception handler */
@@ -223,6 +221,8 @@ public class Config {
 		 * that none of the checks are broken.
 		 */
 		public static boolean DEBUG_TESTS = isBuildOrBelow(Builds.NIGHTLY_DEV);
+		/** Skip loading text */
+		public static final boolean SKIP_LOADING_TIME = isBuildOrBelow(Builds.NIGHTLY_RELEASE) ? false : false;
 
 
 		/**

@@ -482,7 +482,7 @@ public class SceneSwitcher {
 			Scene currentScene = mScenes.peek();
 
 			// Loading using no loading scene
-			if (currentScene.isLoading()) {
+			if (currentScene.isLoading() && !(currentScene instanceof LoadingScene)) {
 				try {
 					boolean allLoaded = ResourceCacheFacade.update();
 
@@ -637,8 +637,6 @@ public class SceneSwitcher {
 	private static void loadActiveSceneResources(LoadingScene forceLoadingScene) {
 		Scene currentScene = mScenes.peek();
 
-		currentScene.loadResources();
-
 		if (forceLoadingScene != null) {
 			switchTo(forceLoadingScene);
 		} else {
@@ -649,6 +647,12 @@ public class SceneSwitcher {
 			} else {
 				currentScene.setLoading(true);
 			}
+		}
+
+		currentScene.loadResources();
+
+		if (currentScene instanceof LoadingScene) {
+			currentScene.onActivate(Outcomes.NOT_APPLICAPLE, null, Outcomes.NOT_APPLICAPLE);
 		}
 	}
 

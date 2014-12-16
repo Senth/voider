@@ -213,7 +213,9 @@ public abstract class Gui implements Disposable {
 	 * Updates the GUI
 	 */
 	public void update() {
-		mNotification.pushToFront();
+		if (mNotification != null) {
+			mNotification.pushToFront();
+		}
 
 		// Remove active message box if it has been hidden
 		if (!mActiveMsgBoxes.isEmpty() && !isWaitOrProgressShowing()) {
@@ -231,7 +233,7 @@ public abstract class Gui implements Disposable {
 			}
 		}
 
-		if (mWidgets.waitWindow.window.getStage() != null) {
+		if (mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null) {
 			mWidgets.waitWindow.animation.act(Gdx.graphics.getDeltaTime());
 		}
 	}
@@ -593,7 +595,6 @@ public abstract class Gui implements Disposable {
 		// Notification messages
 		if (!mIsResizing && ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
 			mNotification = NotificationShower.getInstance();
-			mNotification.setStage(mStage);
 		}
 		if (mWidgets.waitWindow.window == null) {
 			initWaitWindow();
@@ -659,7 +660,9 @@ public abstract class Gui implements Disposable {
 	 * Resets the value of the GUI
 	 */
 	public void resetValues() {
-		// Does nothing
+		if (mNotification != null && !mIsResizing) {
+			mNotification.setStage(mStage);
+		}
 	}
 
 	/**

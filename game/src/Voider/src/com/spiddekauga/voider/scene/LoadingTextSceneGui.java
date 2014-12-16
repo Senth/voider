@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.scene;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -8,7 +8,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.scene.Gui;
 
 /**
  * GUI for the prologue scene

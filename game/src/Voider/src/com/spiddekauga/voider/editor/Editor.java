@@ -8,7 +8,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -42,6 +41,8 @@ import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.LoadingScene;
+import com.spiddekauga.voider.scene.LoadingTextScene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.sound.Interpolations;
@@ -127,6 +128,11 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
+	}
+
+	@Override
+	public LoadingScene getLoadingScene() {
+		return new LoadingTextScene("Loading...");
 	}
 
 	@Override

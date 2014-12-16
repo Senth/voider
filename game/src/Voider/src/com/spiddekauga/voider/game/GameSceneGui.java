@@ -8,10 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
@@ -65,6 +65,8 @@ class GameSceneGui extends Gui {
 
 	@Override
 	public void resetValues() {
+		super.resetValues();
+
 		mWidgets.score.setText(mGameScene.getPlayerScore());
 		mWidgets.score.pack();
 		mWidgets.multiplier.setText("(X" + mGameScene.getPlayerMultiplier() + ")");

@@ -45,7 +45,6 @@ import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.LoadingTextScene;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
@@ -76,7 +75,6 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.sound.Music;
@@ -350,12 +348,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	// --------------------------------
 	// Resource loading etc.
 	// --------------------------------
-	@Override
-	public LoadingScene getLoadingScene() {
-		/** @TODO create default loading scene */
-		return new LoadingTextScene("Loading...");
-	}
-
 	@Override
 	protected void loadResources() {
 		super.loadResources();

@@ -39,7 +39,8 @@ public enum ClientVersions {
 			"		Level screenshots now have the same resolution independent of the window resolution.",
 			"		Opacity now works correctly in level editor and when playing a level",
 			"		Selection tool is now selected (correctly) as default tool in the level editor",
-			"	ChangeLogs (these messages) are now tabbed correctly"),
+			"	ChangeLogs (these messages) are now tabbed correctly",
+			"	In-game notifications are now correctly displayed"),
 
 	;
 	// @formatter:on

@@ -44,6 +44,7 @@ import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.LoadingScene;
+import com.spiddekauga.voider.scene.LoadingTextScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.sound.Interpolations;

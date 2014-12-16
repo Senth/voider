@@ -18,6 +18,13 @@ public abstract class LoadingScene extends Scene {
 	}
 
 	@Override
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
+
+		mGui.initGui();
+	}
+
+	@Override
 	protected void update(float deltaTime) {
 		try {
 			ResourceCacheFacade.update();
