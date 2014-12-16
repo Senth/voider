@@ -4,14 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
  * GUI for the splash screen.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SplashScreenGui extends Gui {
@@ -35,8 +35,10 @@ class SplashScreenGui extends Gui {
 				mSplashScreenImage.setPosition(0, yOffset);
 
 				// Fade in
+				IC_Time icTime = ConfigIni.getInstance().menu.time;
 				mSplashScreenImage.setColor(1, 1, 1, 0);
-				mSplashScreenImage.addAction(Actions.sequence(Actions.delay(Config.Menu.SPLASH_SCREEN_ENTER_TIME), Actions.fadeIn(Config.Menu.SPLASH_SCREEN_FADE_IN)));
+				mSplashScreenImage.addAction(Actions.sequence(Actions.delay(icTime.getSceneEnterTime()),
+						Actions.fadeIn(icTime.getSplashScreenFadeIn())));
 			}
 		}
 	}
@@ -46,7 +48,9 @@ class SplashScreenGui extends Gui {
 	 */
 	public void fadeOut() {
 		if (mSplashScreenImage != null) {
-			mSplashScreenImage.addAction(Actions.sequence(Actions.fadeOut(Config.Menu.SPLASH_SCREEN_FADE_OUT), Actions.delay(Config.Menu.SPLASH_SCREEN_EXIT_TIME), Actions.removeActor()));
+			IC_Time icTime = ConfigIni.getInstance().menu.time;
+			mSplashScreenImage.addAction(Actions.sequence(Actions.fadeOut(icTime.getSplashScreenFadeOut()), Actions.delay(icTime.getSceneExitTime()),
+					Actions.removeActor()));
 		}
 	}
 

@@ -1,17 +1,17 @@
 package com.spiddekauga.voider.scene;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.repo.resource.InternalNames;
-import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 
 /**
  * GUI for the prologue scene
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class LoadingTextSceneGui extends Gui {
@@ -27,24 +27,26 @@ class LoadingTextSceneGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		mLabel = new Label(mText, skin);
-		mLabel.setWrap(true);
+		mLabel = mUiFactory.text.add(mText, true, mMainTable);
+		mLabel.setAlignment(Align.center);
+		Color labelColor = mLabel.getColor();
+		labelColor.a = 0;
+		mLabel.setColor(labelColor);
+		mMainTable.getCell().setFixedWidth(true).setWidth(Gdx.graphics.getWidth() * 0.8f);
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mLabel.setColor(1, 1, 1, 0);
-		mMainTable.add(mLabel);
 
 		// Fade in
-		mLabel.addAction(Actions.sequence(Actions.delay(Config.Menu.LOADING_TEXT_SCENE_ENTER_TIME), Actions.fadeIn(Config.Menu.LOADING_TEXT_SCENE_FADE_IN)));
+		IC_Time icTime = ConfigIni.getInstance().menu.time;
+		mLabel.addAction(Actions.sequence(Actions.delay(icTime.getSceneEnterTime()), Actions.fadeIn(icTime.getSceneUiFadeIn())));
 	}
 
 	/**
 	 * Fade out the text
 	 */
 	public void fadeOut() {
-		if (mLabel != null) {
-			mLabel.addAction(Actions.sequence(Actions.fadeOut(Config.Menu.LOADING_TEXT_SCENE_FADE_OUT), Actions.delay(Config.Menu.SPLASH_SCREEN_EXIT_TIME), Actions.removeActor()));
-		}
+		IC_Time icTime = ConfigIni.getInstance().menu.time;
+		mLabel.addAction(Actions.sequence(Actions.fadeOut(icTime.getSceneUiFadeOut()), Actions.delay(icTime.getSceneExitTime()),
+				Actions.removeActor()));
 	}
 
 	/**

@@ -2,6 +2,8 @@ package com.spiddekauga.voider.scene;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 
@@ -18,8 +20,8 @@ public class LoadingTextScene extends LoadingScene {
 	public LoadingTextScene(String text) {
 		super(new LoadingTextSceneGui(text));
 
-		// TODO change loading scene text time
-		mDisplayTimeMax = 7;
+		IC_Time icTime = ConfigIni.getInstance().menu.time;
+		mDisplayTime = icTime.getDisplayTime(text);
 	}
 
 	@Override
@@ -30,7 +32,7 @@ public class LoadingTextScene extends LoadingScene {
 			switch (mState) {
 			case DISPLAY:
 				mDisplayTimeCurrent += Gdx.graphics.getDeltaTime();
-				if (mDisplayTimeCurrent >= mDisplayTimeMax && !ResourceCacheFacade.isLoading()) {
+				if (mDisplayTimeCurrent >= mDisplayTime && !ResourceCacheFacade.isLoading()) {
 					((LoadingTextSceneGui) mGui).fadeOut();
 					mState = States.FADING;
 				}
@@ -74,7 +76,7 @@ public class LoadingTextScene extends LoadingScene {
 	}
 
 	/** How long the text shall be displayed */
-	private float mDisplayTimeMax;
+	private float mDisplayTime;
 	/** How long the text has been displayed */
 	private float mDisplayTimeCurrent = 0;
 	/** Current loading text scene state */

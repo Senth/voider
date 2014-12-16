@@ -21,6 +21,8 @@ public class ConfigIni {
 	public IC_Sound sound = null;
 	/** Default user settings */
 	public IC_Setting setting = null;
+	/** Menu configuration */
+	public IC_Menu menu = null;
 
 	/**
 	 * Private constructor to enforce singleton pattern
@@ -47,6 +49,7 @@ public class ConfigIni {
 		game = new IC_Game(ini, ini.get("Game"));
 		sound = new IC_Sound(ini, ini.get("Sound"));
 		setting = new IC_Setting(ini, ini.get("Setting"));
+		menu = new IC_Menu(ini, ini.get("Menu"));
 	}
 
 	/**

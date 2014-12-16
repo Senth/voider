@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.app;
 
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.LoadingScene;
@@ -36,10 +37,12 @@ public class SplashScreen extends LoadingScene {
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
 
+		IC_Time icTime = ConfigIni.getInstance().menu.time;
+
 		switch (mState) {
 		case DISPLAY:
 			mDisplayTime += deltaTime;
-			if (mDisplayTime >= Config.Menu.SPLASH_SCREEN_TIME && !ResourceCacheFacade.isLoading()) {
+			if (mDisplayTime >= icTime.getSplashScreenTime() && !ResourceCacheFacade.isLoading()) {
 				((SplashScreenGui) mGui).fadeOut();
 				mState = States.FADING;
 			}

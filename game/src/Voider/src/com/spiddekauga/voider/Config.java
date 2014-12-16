@@ -826,32 +826,6 @@ public class Config {
 		public final static int SAVE_TEXTURE_HEIGHT = (int) (SAVE_TEXTURE_WIDTH / SAVE_TEXTURE_RATIO);
 	}
 
-	/**
-	 * Menus
-	 */
-	public static class Menu {
-		// Splash screen
-		/** Splash screen time, including entering and fade in, excluding fade out exiting */
-		public final static float SPLASH_SCREEN_TIME = 3.5f;
-		/** Splash screen fade in time */
-		public final static float SPLASH_SCREEN_FADE_IN = 1.0f;
-		/** Splash screen fade out time */
-		public final static float SPLASH_SCREEN_FADE_OUT = 1.0f;
-		/** Splash screen enter time */
-		public final static float SPLASH_SCREEN_ENTER_TIME = 0.4f;
-		/** Splash screen exiting time */
-		public final static float SPLASH_SCREEN_EXIT_TIME = 0.1f;
-
-		// Loading text screen
-		/** Loading text scene fade in time */
-		public final static float LOADING_TEXT_SCENE_FADE_IN = 1f;
-		/** Loading text scene fade out time */
-		public final static float LOADING_TEXT_SCENE_FADE_OUT = 1f;
-		/** Loading text scene enter time */
-		public final static float LOADING_TEXT_SCENE_ENTER_TIME = 0.4f;
-		/** Loading text scene exiting time */
-		public final static float LOADING_TEXT_SCENE_EXIT_TIME = 0.1f;
-	}
 
 	/**
 	 * Network
