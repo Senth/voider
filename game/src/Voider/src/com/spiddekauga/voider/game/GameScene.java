@@ -497,8 +497,7 @@ public class GameScene extends WorldScene {
 
 			// Render shape actors
 			mShapeRenderer.push(ShapeType.Filled);
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			enableBlendingWithDefaults();
 
 			mLevel.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
@@ -507,8 +506,7 @@ public class GameScene extends WorldScene {
 			// Render sprite actors
 			mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mSpriteBatch.begin();
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+			mSpriteBatch.setBlendFunction(Config.Graphics.BLEND_SRC_FACTOR, Config.Graphics.BLEND_DST_FACTOR);
 			mLevel.renderSprite(mSpriteBatch);
 			mSpriteBatch.end();
 

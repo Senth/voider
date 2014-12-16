@@ -34,8 +34,11 @@ public enum ClientVersions {
 			"		You can now view the additional information that is sent to the server.",
 			"	ChangeLog is now displayed after the client/app has been updated",
 			"Bug Fixes",
-			"	Testing a level from the editor now uses the correct level speed.",
-			"	Level screenshots now have the same resolution independent of the window resolution.",
+			"	Level Editor",
+			"		Testing a level from the editor now uses the correct level speed.",
+			"		Level screenshots now have the same resolution independent of the window resolution.",
+			"		Opacity now works correctly in level editor and when playing a level",
+			"		Selection tool is now selected (correctly) as default tool in the level editor",
 			"	ChangeLogs (these messages) are now tabbed correctly"),
 
 	;

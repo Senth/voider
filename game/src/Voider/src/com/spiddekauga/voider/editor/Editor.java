@@ -67,7 +67,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 		mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
 		mSpriteBatch.enableBlending();
-		mSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		mSpriteBatch.setBlendFunction(Config.Graphics.BLEND_SRC_FACTOR, Config.Graphics.BLEND_DST_FACTOR);
 		mProjectionMatrixDefault.set(mSpriteBatch.getProjectionMatrix());
 	}
 
@@ -223,9 +223,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * Render the grid
 	 */
 	private void renderGrid() {
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
+		enableBlendingWithDefaults();
 
 		// Offset
 		if (mGridRenderAboveResources) {

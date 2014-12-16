@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -170,16 +169,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void render() {
-		int srcFactor = GL20.GL_SRC_ALPHA;
-		int dstFactor = GL20.GL_ONE;
-
 		if (mLevel == null) {
 			return;
 		}
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			Gdx.gl.glBlendFunc(srcFactor, dstFactor);
+			enableBlendingWithDefaults();
 			renderBackground();
 		}
 
@@ -193,8 +188,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			Gdx.gl.glBlendFunc(srcFactor, dstFactor);
+			enableBlendingWithDefaults();
 			mLevel.render(mShapeRenderer);
 			mLevel.renderEditor(mShapeRenderer);
 			mShapeRenderer.flush();
@@ -417,6 +411,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId());
 				if (loadedLevel != null) {
 					setLevel(loadedLevel);
+					switchTool(Tools.SELECTION);
+					((LevelEditorGui) mGui).resetTools();
 					mGui.hideMsgBoxes();
 					setSaved();
 					mLoadingLevel = null;

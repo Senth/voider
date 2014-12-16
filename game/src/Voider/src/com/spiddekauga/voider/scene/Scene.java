@@ -483,6 +483,14 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	}
 
 	/**
+	 * Enable blending and use the default blend function
+	 */
+	protected void enableBlendingWithDefaults() {
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(Config.Graphics.BLEND_SRC_FACTOR, Config.Graphics.BLEND_DST_FACTOR);
+	}
+
+	/**
 	 * Set if the current scene is loading or not
 	 * @param loading set to true if the scene is loading.
 	 */

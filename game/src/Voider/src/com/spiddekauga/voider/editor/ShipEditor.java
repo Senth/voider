@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.editor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -88,8 +86,7 @@ public class ShipEditor extends ActorEditor {
 
 	@Override
 	protected void render() {
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		enableBlendingWithDefaults();
 		super.render();
 
 		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving() && !isDone()) {

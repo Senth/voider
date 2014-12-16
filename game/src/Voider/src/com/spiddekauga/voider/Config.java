@@ -10,6 +10,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config.Debug.Builds;
@@ -541,6 +542,10 @@ public class Config {
 	 * All graphical options
 	 */
 	public static class Graphics {
+		/** Default blend source factor */
+		public final static int BLEND_SRC_FACTOR = GL20.GL_SRC_ALPHA;
+		/** Default blend destination factor */
+		public final static int BLEND_DST_FACTOR = GL20.GL_ONE_MINUS_SRC_ALPHA;
 		/**
 		 * If we shall use debug_renderer to display graphics instead of sprites (where
 		 * applicable)
