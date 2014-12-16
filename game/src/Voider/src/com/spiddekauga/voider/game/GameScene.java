@@ -88,12 +88,25 @@ public class GameScene extends WorldScene {
 	 * Update camera for a screen shot
 	 */
 	private void setupCameraForScreenshot() {
-		// TODO
+		// Is the screen more or equal (widescreen) to the save texture ratio?
+		float screenRatioCurrent = ((float) Gdx.graphics.getWidth()) / Gdx.graphics.getHeight();
+
+		// Reset to default camera
+		fixCamera();
+
+		// Zoom out the camera so we can see the whole width
+		if (screenRatioCurrent < Config.Level.SAVE_TEXTURE_RATIO) {
+			mCamera.zoom = screenRatioCurrent / Config.Level.SAVE_TEXTURE_RATIO;
+		}
 	}
 
 	@Override
 	protected void fixCamera() {
-		if (isTestRun()) {
+		if (mCamera != null) {
+			mCamera.zoom = 1;
+		}
+
+		if (isTestRun() && !mTakeScreenshot) {
 			float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
 
 			// Decrease scale of width depending on height scaled
@@ -112,7 +125,7 @@ public class GameScene extends WorldScene {
 			} else {
 				mCamera = new OrthographicCamera(width, height);
 			}
-			mCamera.position.y += barHeight * Config.Graphics.WORLD_SCALE * 0.5f;
+			mCamera.position.y = barHeight * Config.Graphics.WORLD_SCALE * 0.5f;
 		}
 		// Just use
 		else {
@@ -146,13 +159,29 @@ public class GameScene extends WorldScene {
 	private void takeScreenshotNow() {
 		mTakeScreenshot = false;
 
-		int barHeight = ((int) ((float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT)));
+		// int barHeight = ((int) ((float)
+		// SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT)));
 
 		// Screenshot size
-		int ssHeight = Gdx.graphics.getHeight() - barHeight;
-		int ssWidth = (int) (ssHeight * Config.Graphics.WIDESCREEN_RATIO);
+		int ssHeight = 0;
+		int ssWidth = 0;
+		int y = 0;
 
-		Pixmap ssPixmap = Screens.getScreenshot(0, 0, ssWidth, ssHeight, true);
+		float screenRatioCurrent = ((float) Gdx.graphics.getWidth()) / Gdx.graphics.getHeight();
+
+		// Widescreen enough, use full height
+		if (screenRatioCurrent >= Config.Level.SAVE_TEXTURE_RATIO) {
+			ssHeight = Gdx.graphics.getHeight();
+			ssWidth = (int) (ssHeight * Config.Level.SAVE_TEXTURE_RATIO);
+		}
+		// Use full width
+		else {
+			ssWidth = Gdx.graphics.getWidth();
+			ssHeight = (int) (ssWidth / Config.Level.SAVE_TEXTURE_RATIO);
+			y = (Gdx.graphics.getHeight() - ssHeight) / 2;
+		}
+
+		Pixmap ssPixmap = Screens.getScreenshot(0, y, ssWidth, ssHeight, true);
 
 
 		// Scale image to the appropriate export size
@@ -454,10 +483,6 @@ public class GameScene extends WorldScene {
 		super.render();
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
-			if (mTakeScreenshot) {
-				setupCameraForScreenshot();
-			}
-
 			ShaderProgram defaultShader = ResourceCacheFacade.get(InternalNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
@@ -477,6 +502,7 @@ public class GameScene extends WorldScene {
 
 			mLevel.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
+			mShapeRenderer.pop();
 
 			// Render sprite actors
 			mSpriteBatch.setProjectionMatrix(mCamera.combined);
@@ -487,11 +513,12 @@ public class GameScene extends WorldScene {
 			mSpriteBatch.end();
 
 			if (mTakeScreenshot) {
+				setupCameraForScreenshot();
 				takeScreenshotNow();
 				fixCamera();
 			}
 
-			mShapeRenderer.pop();
+
 		}
 	}
 

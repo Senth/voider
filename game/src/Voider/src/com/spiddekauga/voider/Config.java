@@ -816,7 +816,7 @@ public class Config {
 		/** Screenshot texture width */
 		public final static int SAVE_TEXTURE_WIDTH = 256;
 		/** Screenshot ratio */
-		public final static float SAVE_TEXTURE_RATIO = Graphics.WIDESCREEN_RATIO;
+		public final static float SAVE_TEXTURE_RATIO = 1.6f;
 		/** Screenshot texture height */
 		public final static int SAVE_TEXTURE_HEIGHT = (int) (SAVE_TEXTURE_WIDTH / SAVE_TEXTURE_RATIO);
 	}
