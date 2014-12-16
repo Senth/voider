@@ -46,6 +46,7 @@ public class UiStyles {
 		public Color sceneBackground = null;
 		public Color widgetBackground = null;
 		public Color widgetInnerBackground = null;
+		public Color notificationBackground = null;
 	}
 
 	public static class Variables {
@@ -254,6 +255,7 @@ public class UiStyles {
 		color.sceneBackground = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
 		color.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 		color.widgetInnerBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_INNER_BACKGROUND_COLOR);
+		color.notificationBackground = SkinNames.getResource(SkinNames.GeneralVars.NOTIFICATION_BACKGROUND_COLOR);
 
 		// Vars
 		vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);

@@ -79,6 +79,5 @@ public class LoadingTextScene extends LoadingScene {
 	private float mDisplayTime;
 	/** How long the text has been displayed */
 	private float mDisplayTimeCurrent = 0;
-	/** Current loading text scene state */
 	private States mState = States.DISPLAY;
 }

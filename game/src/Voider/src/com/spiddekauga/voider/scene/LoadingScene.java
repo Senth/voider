@@ -22,6 +22,7 @@ public abstract class LoadingScene extends Scene {
 		super.onActivate(outcome, message, loadingOutcome);
 
 		mGui.initGui();
+		mGui.resetValues();
 	}
 
 	@Override

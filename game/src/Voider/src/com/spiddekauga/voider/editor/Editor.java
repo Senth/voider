@@ -41,8 +41,8 @@ import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.LoadingProgressScene;
 import com.spiddekauga.voider.scene.LoadingScene;
-import com.spiddekauga.voider.scene.LoadingTextScene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.sound.Interpolations;
@@ -132,7 +132,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 	@Override
 	public LoadingScene getLoadingScene() {
-		return new LoadingTextScene("Loading...");
+		return new LoadingProgressScene();
 	}
 
 	@Override

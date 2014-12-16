@@ -33,6 +33,7 @@ public enum ClientVersions {
 			"	Bug Report window",
 			"		You can now view the additional information that is sent to the server.",
 			"	ChangeLog is now displayed after the client/app has been updated",
+			"	Progress bar is now shown when opening editors.",
 			"Bug Fixes",
 			"	Level Editor",
 			"		Testing a level from the editor now uses the correct level speed.",

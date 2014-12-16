@@ -380,6 +380,13 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * @return loading progress in percentage of completion [0,100]
+	 */
+	public static float getProgress() {
+		return mAssetManager.getProgress();
+	}
+
+	/**
 	 * Disposes all the resources allocated.
 	 */
 	public static void dispose() {

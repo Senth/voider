@@ -124,7 +124,7 @@ java.lang.Float: {
 	// Notification messages
 	notification_width: right_panel_width,
 	// How long notification messages are shown, in seconds
-	notification_time: 7,
+	notification_time: 6,
 	// Fade in duration, in seconds
 	notification_fade_in: 0.3,
 	// Fade out duration, in seconds
