@@ -109,6 +109,37 @@ public class Strings {
 		return minuteString + ":" + secondString;
 	}
 
+	/**
+	 * Count words number of words in a text
+	 * @param text
+	 * @return number of words in the text
+	 */
+	public static int wordCount(String text) {
+		int cWords = 0;
+		boolean prevCharWasWhitespace = true;
+		for (int i = 0; i < text.length(); i++) {
+			if (isWhitespace(text.charAt(i))) {
+				prevCharWasWhitespace = true;
+			} else {
+				if (prevCharWasWhitespace) {
+					cWords++;
+				}
+				prevCharWasWhitespace = false;
+
+			}
+		}
+		return cWords;
+	}
+
+	/**
+	 * Checks if a character is a whitespace or not
+	 * @param character
+	 * @return true if whitespace, false if not
+	 */
+	public static boolean isWhitespace(char character) {
+		return character == ' ' || character == '\n' || character == '\t';
+	}
+
 	/** Vowel pattern */
 	private static Pattern mVowelPattern = Pattern.compile("[aeiouAEIOU]");
 }
