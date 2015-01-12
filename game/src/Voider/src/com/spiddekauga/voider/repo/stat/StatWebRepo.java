@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo.stat;
 
+import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
@@ -63,7 +64,7 @@ class StatWebRepo extends WebRepo {
 			return response;
 		} else {
 			StatSyncMethodResponse methodResponse = new StatSyncMethodResponse();
-			methodResponse.status = StatSyncMethodResponse.Statuses.FAILED_INTERNAL;
+			methodResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 			return methodResponse;
 		}
 	}

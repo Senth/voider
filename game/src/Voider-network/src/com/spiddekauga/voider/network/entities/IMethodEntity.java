@@ -60,6 +60,9 @@ public abstract interface IMethodEntity extends IEntity {
 		/** Synchronize statistics */
 		STAT_SYNC,
 
+		// Analytics
+		/** Send analytics */
+		ANALYTICS,
 
 		;
 		/**

@@ -24,6 +24,7 @@ import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
+import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
@@ -32,7 +33,6 @@ import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethod;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
@@ -54,14 +54,14 @@ public class StatSync extends VoiderServlet {
 	@Override
 	protected void onInit() {
 		mResponse = new StatSyncMethodResponse();
-		mResponse.status = Statuses.FAILED_INTERNAL;
+		mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 		mResponse.syncEntity.syncDate = new Date();
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
-			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
@@ -71,7 +71,7 @@ public class StatSync extends VoiderServlet {
 			checkAndResolveConflicts();
 			syncToServer();
 
-			mResponse.status = Statuses.SUCCESS;
+			mResponse.status = GeneralResponseStatuses.SUCCESS;
 		}
 
 		return mResponse;

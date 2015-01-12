@@ -24,6 +24,10 @@ public class ServerConfig {
 		public static final String USER_RESOURCES = "user_resources";
 		public static final String USER_RESOURCES_DELETED = "user_resources_deleted";
 		public static final String HIGHSCORE = "highscore";
+		// Analytics
+		public static final String ANALYTICS_SESSION = "analytics_session";
+		public static final String ANALYTICS_SCENE = "analytics_scene";
+		public static final String ANALYTICS_EVENT = "analytics_event";
 
 
 		// -- Columns --
@@ -131,6 +135,32 @@ public class ServerConfig {
 			public static final String CREATED = "created";
 			public static final String UPLOADED = "uploaded";
 			public static final String LEVEL_ID = "level_id";
+		}
+
+		// Analytics session
+		public static class CAnalyticsSession {
+			public static final String START_TIME = "start_time";
+			public static final String LENGTH = "length";
+			public static final String USER_ANALYTICS_ID = "user_analytics_id";
+			public static final String PLATFORM = "platform";
+			public static final String OS = "os";
+			public static final String SCREEN_SIZE = "screen_size";
+		}
+
+		// Analytics scene
+		public static class CAnalyticsScene {
+			public static final String START_TIME = "start_time";
+			public static final String LENGTH = "length";
+			public static final String NAME = "name";
+			public static final String LOAD_TIME = "load_time";
+			public static final String DROPOUT = "dropout";
+		}
+
+		// Analytics event
+		public static class CAnalyticsEvent {
+			public static final String TIME = "time";
+			public static final String NAME = "name";
+			public static final String DATA = "data";
 		}
 
 		/**

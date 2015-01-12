@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.stat.HighscoreEntity;
@@ -211,7 +212,7 @@ class HighscoreWebRepo extends WebRepo {
 			return response;
 		} else {
 			HighscoreSyncMethodResponse methodResponse = new HighscoreSyncMethodResponse();
-			methodResponse.status = HighscoreSyncMethodResponse.Statuses.FAILED_CONNECTION;
+			methodResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 			return methodResponse;
 		}
 	}

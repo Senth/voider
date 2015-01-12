@@ -169,6 +169,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>ChatConnected</servlet-name>
 		<url-pattern>/_ah/channel/connected/</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>Analytics</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.Analytics</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Analytics</servlet-name>
+		<url-pattern>/analytics</url-pattern>
+	</servlet-mapping>
 	
 	
 	<!-- Testing -->

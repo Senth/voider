@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.entities.stat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
@@ -13,7 +14,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 @SuppressWarnings("serial")
 public class HighscoreSyncMethodResponse implements IEntity, ISuccessStatuses {
 	/** Upload status */
-	public Statuses status = null;
+	public GeneralResponseStatuses status = null;
 	/** Highscores to update/set */
 	public ArrayList<HighscoreSyncEntity> highscores = new ArrayList<>();
 	/** Latest sync time (to set) */
@@ -23,23 +24,5 @@ public class HighscoreSyncMethodResponse implements IEntity, ISuccessStatuses {
 	@Override
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();
-	}
-
-	/** Success statutes */
-	public enum Statuses implements ISuccessStatuses {
-		/** Successfully uploaded and synced all resources */
-		SUCCESS,
-		/** Failed internal server error */
-		FAILED_INTERNAL,
-		/** Failed to connect to server */
-		FAILED_CONNECTION,
-		/** Failed user not logged in */
-		FAILED_USER_NOT_LOGGED_IN,
-
-		;
-		@Override
-		public boolean isSuccessful() {
-			return name().contains("SUCCESS");
-		}
 	}
 }

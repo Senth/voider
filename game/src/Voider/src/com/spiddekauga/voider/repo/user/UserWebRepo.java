@@ -2,6 +2,7 @@ package com.spiddekauga.voider.repo.user;
 
 import java.util.UUID;
 
+import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.user.LoginMethod;
@@ -111,7 +112,7 @@ public class UserWebRepo extends WebRepo {
 				responseToSend = response;
 			} else {
 				LogoutMethodResponse logoutMethodResponse = new LogoutMethodResponse();
-				logoutMethodResponse.status = LogoutMethodResponse.Statuses.FAILED_SERVER_CONNECTION;
+				logoutMethodResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 				responseToSend = logoutMethodResponse;
 			}
 		}
