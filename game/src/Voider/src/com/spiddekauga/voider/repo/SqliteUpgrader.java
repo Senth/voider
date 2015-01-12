@@ -159,6 +159,33 @@ class SqliteUpgrader {
 				+ "synced INTEGER DEFAULT 0);");
 
 
+		// Analytics
+		// Analytics - Session
+		mNotFoundTables.add("analytics_session");
+		mCreateTableQueries.put("analytics_session", "CREATE TABLE IF NOT EXISTS analytics_session ("
+				+ "session_id TEXT,"
+				+ "start_time INTEGER,"
+				+ "end_time INTEGER DEFAULT 0,"
+				+ "synced INTEGER DEFAULT 0);");
+
+		// Analytics - Scene
+		mNotFoundTables.add("analytics_scene");
+		mCreateTableQueries.put("analytics_scene", "CREATE TABLE IF NOT EXISTS analytics_scene ("
+				+ "session_id TEXT,"
+				+ "scene_id TEXT,"
+				+ "start_time INTEGER,"
+				+ "end_time INTEGER DEFAULT 0,"
+				+ "name TEXT,"
+				+ "load_time REAL);");
+
+		// Analytics - Event
+		mNotFoundTables.add("analytics_event");
+		mCreateTableQueries.put("analytics_event", "CREATE TABLE IF NOT EXISTS analytics_event ("
+				+ "scene_id TEXT,"
+				+ "time INTEGER,"
+				+ "name TEXT,"
+				+ "data TEXT);");
+
 		// @formatter:on
 	}
 
