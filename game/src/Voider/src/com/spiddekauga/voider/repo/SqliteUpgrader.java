@@ -165,8 +165,7 @@ class SqliteUpgrader {
 		mCreateTableQueries.put("analytics_session", "CREATE TABLE IF NOT EXISTS analytics_session ("
 				+ "session_id TEXT,"
 				+ "start_time INTEGER,"
-				+ "end_time INTEGER DEFAULT 0,"
-				+ "synced INTEGER DEFAULT 0);");
+				+ "end_time INTEGER DEFAULT 0);");
 
 		// Analytics - Scene
 		mNotFoundTables.add("analytics_scene");

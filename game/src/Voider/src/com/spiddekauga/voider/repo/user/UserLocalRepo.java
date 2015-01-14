@@ -10,9 +10,26 @@ import com.spiddekauga.voider.utils.User;
  */
 public class UserLocalRepo {
 	/**
+	 * Private constructor to enforce singleton pattern
+	 */
+	private UserLocalRepo() {
+		// TODO auto-generated method
+	}
+
+	/**
+	 * @return instance of this class
+	 */
+	public static UserLocalRepo getInstance() {
+		if (mInstance == null) {
+			mInstance = new UserLocalRepo();
+		}
+		return mInstance;
+	}
+
+	/**
 	 * Disposes all resources
 	 */
-	public static void dispose() {
+	public void dispose() {
 	}
 
 	/**
@@ -21,7 +38,7 @@ public class UserLocalRepo {
 	 * @param privateKey the private key which will be used for automatic login
 	 * @param serverKey user id on the server in the future.
 	 */
-	public static void setLastUser(String username, UUID privateKey, String serverKey) {
+	public void setLastUser(String username, UUID privateKey, String serverKey) {
 		mClientPrefsGateway.setLastUser(username, privateKey, serverKey);
 	}
 
@@ -30,14 +47,14 @@ public class UserLocalRepo {
 	 * @param username username or email of the user that was logged in
 	 * @param password
 	 */
-	public static void setLastUser(String username, String password) {
+	public void setLastUser(String username, String password) {
 		mClientPrefsGateway.setLastUser(username, password);
 	}
 
 	/**
 	 * Removes the last logged in user
 	 */
-	public static void removeLastUser() {
+	public void removeLastUser() {
 		mClientPrefsGateway.removeLastUser();
 	}
 
@@ -45,14 +62,14 @@ public class UserLocalRepo {
 	 * Get information of the last user that was logged in
 	 * @return last user logged in, null if not found
 	 */
-	public static User getLastUser() {
+	public User getLastUser() {
 		return mClientPrefsGateway.getLastUser();
 	}
 
 	/**
 	 * @return client id, creates a new client id if one doesn't exist
 	 */
-	public static UUID getClientId() {
+	public UUID getClientId() {
 		UUID clientId = mClientPrefsGateway.getClientId();
 		if (clientId == null) {
 			clientId = UUID.randomUUID();
@@ -63,20 +80,27 @@ public class UserLocalRepo {
 	}
 
 	/**
+	 * @return user analytics id for this client
+	 */
+	public UUID getAnalyticsId() {
+		return mUserPrefsGateway.getAnalyticsId();
+	}
+
+	/**
 	 * Save that this app has registered one user, thus no more users can be registered
 	 */
-	public static void setAsRegistered() {
+	public void setAsRegistered() {
 		mClientPrefsGateway.setAsRegistered();
 	}
 
 	/**
 	 * @return true if no user has been registered on this app
 	 */
-	public static boolean isRegisterAvailable() {
+	public boolean isRegisterAvailable() {
 		return mClientPrefsGateway.isRegisterAvailable();
 	}
 
-
-	private static ClientPrefsGateway mClientPrefsGateway = new ClientPrefsGateway();
-
+	private UserPrefsGateway mUserPrefsGateway = new UserPrefsGateway();
+	private ClientPrefsGateway mClientPrefsGateway = new ClientPrefsGateway();
+	private static UserLocalRepo mInstance = null;
 }

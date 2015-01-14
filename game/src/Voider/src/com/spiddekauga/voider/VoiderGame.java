@@ -101,7 +101,7 @@ public class VoiderGame implements ApplicationListener {
 		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();
 		Config.dispose();
-		UserLocalRepo.dispose();
+		UserLocalRepo.getInstance().dispose();;
 		ResourceChecker.dispose();
 	}
 

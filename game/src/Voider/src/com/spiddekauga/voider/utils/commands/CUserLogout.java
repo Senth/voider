@@ -48,7 +48,7 @@ public class CUserLogout extends Command implements IResponseListener {
 	 * Removes saved variables for the current user
 	 */
 	private void clearCurrentUser() {
-		UserLocalRepo.removeLastUser();
+		UserLocalRepo.getInstance().removeLastUser();
 		SceneSwitcher.dispose();
 		SceneSwitcher.switchTo(new LoginScene());
 	}

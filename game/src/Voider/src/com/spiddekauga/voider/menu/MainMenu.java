@@ -386,7 +386,7 @@ public class MainMenu extends Scene implements IEventListener {
 	 * Removes saved variables for the current user
 	 */
 	private void clearCurrentUser() {
-		UserLocalRepo.removeLastUser();
+		UserLocalRepo.getInstance().removeLastUser();
 		setNextScene(new LoginScene());
 		setOutcome(Outcomes.LOGGED_OUT);
 	}

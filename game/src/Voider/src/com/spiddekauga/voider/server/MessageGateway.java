@@ -117,7 +117,7 @@ public class MessageGateway implements ChannelService {
 
 		ChatMessage<?> chatMessage = mGson.fromJson(message, ChatMessage.class);
 		if (chatMessage != null) {
-			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(UserLocalRepo.getClientId())) {
+			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(mUserLocalRepo.getClientId())) {
 				for (IMessageListener listener : mListeners) {
 					listener.onMessage(chatMessage);
 				}
@@ -176,11 +176,9 @@ public class MessageGateway implements ChannelService {
 
 	/** Message listeners */
 	private ArrayList<IMessageListener> mListeners = new ArrayList<>();
-	/** Channel API */
 	private ChannelAPI mChannel = null;
-	/** Gson object */
 	private Gson mGson = new Gson();
+	private UserLocalRepo mUserLocalRepo = UserLocalRepo.getInstance();
 
-	/** Singleton instance of this class */
 	private static MessageGateway mInstance = null;
 }

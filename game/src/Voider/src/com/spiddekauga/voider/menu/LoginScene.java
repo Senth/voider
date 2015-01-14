@@ -97,7 +97,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * Try to login using stored username and private key
 	 */
 	void login() {
-		User userInfo = UserLocalRepo.getLastUser();
+		User userInfo = mUserLocalRepo.getLastUser();
 
 		if (userInfo != null && userInfo.isOnline()) {
 			mLoggingInUser.set(userInfo);
@@ -222,7 +222,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 */
 	boolean isRegisterAvailable() {
 		if (Config.Debug.isBuildOrAbove(Builds.BETA)) {
-			return UserLocalRepo.isRegisterAvailable();
+			return mUserLocalRepo.isRegisterAvailable();
 		} else {
 			return true;
 		}
@@ -342,4 +342,5 @@ public class LoginScene extends Scene implements IResponseListener {
 	private UpdateEvent mUpdateInfo = null;
 	/** Logging in user */
 	private User mLoggingInUser = new User();
+	private UserLocalRepo mUserLocalRepo = UserLocalRepo.getInstance();
 }

@@ -26,7 +26,7 @@ class HighscoreSqliteGateway extends SqliteGateway {
 		// Update existing highscore
 		if (exists(levelId)) {
 			execSQL("UPDATE highscore SET score=" + score + ", date=" + dateToString(date) + ", synced=" + syncedString + " WHERE level_id='"
-					+ levelId.toString() + "';");
+					+ levelId + "';");
 		}
 		// Create new highscore
 		else {

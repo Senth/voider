@@ -106,7 +106,7 @@ public class User {
 		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN));
 
 		if (online) {
-			UserLocalRepo.setLastUser(username, privateKey, serverKey);
+			mUserLocalRepo.setLastUser(username, privateKey, serverKey);
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
 			mNotification.show(NotificationTypes.SUCCESS, username + " is now online!");
 		} else {
@@ -134,11 +134,11 @@ public class User {
 	public void login() {
 		// Connect if offline
 		if (mGlobalUser == this && mLoggedIn && !mOnline) {
-			mWebRepo.login(this, UserLocalRepo.getClientId(), mResponseListener);
+			mWebRepo.login(this, mUserLocalRepo.getClientId(), mResponseListener);
 		}
 		// Login
 		else if (mGlobalUser != this) {
-			mWebRepo.login(this, UserLocalRepo.getClientId(), mResponseListener);
+			mWebRepo.login(this, mUserLocalRepo.getClientId(), mResponseListener);
 		}
 		// Error
 		else if (mGlobalUser == this) {
@@ -152,7 +152,7 @@ public class User {
 	 */
 	public void register(IResponseListener responseListener) {
 		if (mGlobalUser != this) {
-			mWebRepo.register(this, UserLocalRepo.getClientId(), mResponseListener, responseListener);
+			mWebRepo.register(this, mUserLocalRepo.getClientId(), mResponseListener, responseListener);
 		}
 	}
 
@@ -361,8 +361,8 @@ public class User {
 				if (User.this != mGlobalUser) {
 					mPrivateKey = response.privateKey;
 					mServerKey = response.userKey;
-					UserLocalRepo.setLastUser(mUsername, response.privateKey, response.userKey);
-					UserLocalRepo.setAsRegistered();
+					mUserLocalRepo.setLastUser(mUsername, response.privateKey, response.userKey);
+					mUserLocalRepo.setAsRegistered();
 				}
 				mNotification.show(NotificationTypes.SUCCESS, "User registered");
 			} else {
@@ -371,9 +371,10 @@ public class User {
 		}
 	};
 
-	private final static NotificationShower mNotification = NotificationShower.getInstance();
-	private final static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
-	private final static UserWebRepo mWebRepo = UserWebRepo.getInstance();
+	private static NotificationShower mNotification = NotificationShower.getInstance();
+	private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
+	private static UserWebRepo mWebRepo = UserWebRepo.getInstance();
+	private static UserLocalRepo mUserLocalRepo = UserLocalRepo.getInstance();
 	/** Global user */
 	private static User mGlobalUser = new User();
 	private String mUsername = "(None)";
