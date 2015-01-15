@@ -25,7 +25,7 @@ public abstract class PrefsGateway implements IEventListener {
 		// appropriate file
 		User user = User.getGlobalUser();
 
-		if (user.isLoggedIn()) {
+		if (user != null && user.isLoggedIn()) {
 			open();
 		}
 

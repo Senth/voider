@@ -24,6 +24,7 @@ import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodRe
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
+import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -149,6 +150,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 			}
 			break;
 
+		case ANALYTICS:
 		case BUG_REPORTS:
 		case HIGHSCORES:
 		case STATS:
@@ -225,6 +227,9 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 						mDownloadProgressListener, responseListeners);
 			}
 			break;
+
+		case ANALYTICS:
+			mAnalyticsRepo.sync(responseListeners);
 		}
 	}
 
@@ -269,6 +274,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		mSyncQueue.add(new SyncClass(SyncTypes.HIGHSCORES, responseListener));
 		mSyncQueue.add(new SyncClass(SyncTypes.STATS, responseListener));
 		mSyncQueue.add(new SyncClass(SyncTypes.BUG_REPORTS, responseListener));
+		mSyncQueue.add(new SyncClass(SyncTypes.ANALYTICS, responseListener));
 	}
 
 	@Override
@@ -428,6 +434,8 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		STATS,
 		/** Fix conflicts */
 		USER_RESOURCE_FIX_CONFLICTS,
+		/** Analytics */
+		ANALYTICS,
 	}
 
 	/**
@@ -528,12 +536,10 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	private Semaphore mSemaphore = new Semaphore(1);
 	/** Queue for what to synchronize */
 	private BlockingQueue<SyncClass> mSyncQueue = new LinkedBlockingQueue<>();
-	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
-	/** Highscore repository */
 	private HighscoreRepo mHighscoreRepo = HighscoreRepo.getInstance();
-	/** Stats repository */
 	private StatRepo mStatRepo = StatRepo.getInstance();
+	private AnalyticsRepo mAnalyticsRepo = AnalyticsRepo.getInstance();
 	/** Download progress listener */
 	private IDownloadProgressListener mDownloadProgressListener = new IDownloadProgressListener() {
 		@Override
@@ -552,6 +558,5 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	/** Event dispatcher */
 	private static final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 
-	/** Instance of this class */
 	private static Synchronizer mInstance = null;
 }

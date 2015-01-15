@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.repo;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.Database;
@@ -104,18 +106,76 @@ public abstract class SqliteGateway implements Disposable, IEventListener {
 	}
 
 	/**
+	 * Set if this instance should queue failed SQL statements when calling
+	 * {@link #execSQL(String)}.
+	 * @param queue true if we should queue. Default is false.
+	 */
+	protected void setQueueFailedSqlStatements(boolean queue) {
+		mQueueIfFail = queue;
+	}
+
+	/**
 	 * Execute a single SQL statement that is NOT a SELECT or any other SQL statement that
-	 * returns data.
+	 * returns data. If {@link #setQueueFailedSqlStatements(boolean)} has been called with
+	 * true and if the database isn't yet connect the SQL statement will be pushed onto a
+	 * queue; when this method is called again it will retry to execute the queue messages
+	 * before the new SQL statement.
 	 * @param sql the SQL statement to be executed. Multiple statements separated by
 	 *        semicolons are not supported.
 	 */
-	protected static synchronized void execSQL(String sql) {
-		try {
-			mDatabase.execSQL(sql);
-		} catch (SQLiteGdxException e) {
-			e.printStackTrace();
-			throw new GdxRuntimeException(e);
+	protected void execSQL(String sql) {
+		// Try to execute failed SQL statements
+		if (mQueueIfFail) {
+			boolean failed = false;
+			while (!mFailQueue.isEmpty() && !failed) {
+				try {
+					execSQLPrivate(mFailQueue.peek());
+					mFailQueue.remove();
+				} catch (SQLiteGdxException e) {
+					failed = true;
+				}
+			}
+
+			// Execute new SQL statement
+			if (!failed) {
+				try {
+					execSQLPrivate(sql);
+				} catch (SQLiteGdxException e) {
+					mFailQueue.add(sql);
+				}
+			}
+			// Add new SQL statement to the fail queue
+			else {
+				mFailQueue.add(sql);
+			}
 		}
+		// Regular execution
+		else {
+			try {
+				execSQLPrivate(sql);
+			} catch (SQLiteGdxException e) {
+				e.printStackTrace();
+				throw new GdxRuntimeException(e);
+			}
+		}
+	}
+
+	/**
+	 * Execute a single SQL statement that is NOT a SELECT or any other SQL statement that
+	 * returns data. If {@link #setQueueFailedSqlStatements(boolean)} has been called with
+	 * true and if the database isn't yet connect the SQL statement will be pushed onto a
+	 * queue; when this method is called again it will retry to execute the queue messages
+	 * before the new SQL statement.
+	 * @param sql the SQL statement to be executed. Multiple statements separated by
+	 *        semicolons are not supported.
+	 * @throws SQLiteGdxException
+	 */
+	private static synchronized void execSQLPrivate(String sql) throws SQLiteGdxException {
+		if (mDatabase == null) {
+			throw new SQLiteGdxException("Database not connected!");
+		}
+
+		mDatabase.execSQL(sql);
 	}
 
 	/**
@@ -168,6 +228,8 @@ public abstract class SqliteGateway implements Disposable, IEventListener {
 		return mDatabase;
 	}
 
-	/** The database */
+	private Queue<String> mFailQueue = new LinkedList<>();
+	/** Queue exec SQL statements if they fail, and retry at a later point */
+	private boolean mQueueIfFail = false;
 	private static Database mDatabase = null;
 }

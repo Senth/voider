@@ -15,6 +15,7 @@ import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.menu.LoginScene;
+import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDisplayRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -56,6 +57,8 @@ public class VoiderGame implements ApplicationListener {
 		}
 
 		mMusicPlayer = MusicPlayer.getInstance();
+
+		AnalyticsRepo.getInstance().newSession();
 	}
 
 	/**
@@ -98,6 +101,7 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void dispose() {
+		AnalyticsRepo.getInstance().endSession();
 		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();
 		Config.dispose();
@@ -152,10 +156,16 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void pause() {
+		if (Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
+			AnalyticsRepo.getInstance().endSession();
+		}
 	}
 
 	@Override
 	public void resume() {
+		if (Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
+			AnalyticsRepo.getInstance().newSession();
+		}
 	}
 
 	private MusicPlayer mMusicPlayer = null;

@@ -18,6 +18,13 @@ import com.spiddekauga.voider.repo.SqliteGateway;
  */
 class AnalyticsSqliteGateway extends SqliteGateway {
 	/**
+	 * Default constructor
+	 */
+	AnalyticsSqliteGateway() {
+		setQueueFailedSqlStatements(true);
+	}
+
+	/**
 	 * Add a new session to the database
 	 * @param startTime time the session was started
 	 * @param screenSize size of the screen
@@ -43,7 +50,8 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	 * @param screenSize size of the screen
 	 */
 	void endSession(UUID sessionId, Date endTime, String screenSize) {
-		execSQL("UPDATE analytics_session SET end_time=" + endTime + ", screen_size='" + screenSize + "' WHERE session_id='" + sessionId + "';");
+		execSQL("UPDATE analytics_session SET end_time=" + endTime.getTime() + ", screen_size='" + screenSize + "' WHERE session_id='" + sessionId
+				+ "';");
 	}
 
 
@@ -172,7 +180,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	private HashMap<UUID, AnalyticsSessionEntity> getSessions() {
 		HashMap<UUID, AnalyticsSessionEntity> sessions = new HashMap<>();
 
-		DatabaseCursor cursor = rawQuery("SELECT FROM analytics_session;");
+		DatabaseCursor cursor = rawQuery("SELECT * FROM analytics_session;");
 
 		while (cursor.next()) {
 			AnalyticsSessionEntity session = new AnalyticsSessionEntity();
@@ -193,7 +201,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	private HashMap<UUID, AnalyticsSceneEntity> getScenes() {
 		HashMap<UUID, AnalyticsSceneEntity> scenes = new HashMap<>();
 
-		DatabaseCursor cursor = rawQuery("SELECT FROM analytics_scene;");
+		DatabaseCursor cursor = rawQuery("SELECT * FROM analytics_scene;");
 
 		while (cursor.next()) {
 			AnalyticsSceneEntity scene = new AnalyticsSceneEntity();
@@ -216,7 +224,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	private ArrayList<AnalyticsEventEntity> getEvents() {
 		ArrayList<AnalyticsEventEntity> events = new ArrayList<>();
 
-		DatabaseCursor cursor = rawQuery("SELECT FROM analytics_event;");
+		DatabaseCursor cursor = rawQuery("SELECT * FROM analytics_event;");
 
 		while (cursor.next()) {
 			AnalyticsEventEntity event = new AnalyticsEventEntity();

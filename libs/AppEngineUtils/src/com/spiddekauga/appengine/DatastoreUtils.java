@@ -459,8 +459,8 @@ public class DatastoreUtils {
 	 */
 	public static void setUnindexedProperty(Entity entity, String propertyName, UUID uuid) {
 		if (uuid != null) {
-			entity.setProperty(propertyName + UUID_LEAST_POSTFIX, uuid.getLeastSignificantBits());
-			entity.setProperty(propertyName + UUID_MOST_POSTFIX, uuid.getMostSignificantBits());
+			entity.setUnindexedProperty(propertyName + UUID_LEAST_POSTFIX, uuid.getLeastSignificantBits());
+			entity.setUnindexedProperty(propertyName + UUID_MOST_POSTFIX, uuid.getMostSignificantBits());
 		}
 	}
 

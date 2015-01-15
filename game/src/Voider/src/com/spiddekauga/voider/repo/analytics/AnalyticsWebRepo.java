@@ -74,6 +74,7 @@ class AnalyticsWebRepo extends WebRepo {
 		method.platform = platform;
 		method.os = os;
 		method.userAnalyticsId = userAnalyticsId;
+		method.sessions = sessions;
 		sendInNewThread(method, responseListeners);
 	}
 
