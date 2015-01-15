@@ -18,16 +18,8 @@ public class AnalyticsSessionEntity implements IEntity {
 	public Date startTime;
 	/** End time of the session */
 	public Date endTime;
-	/** User analytics id */
-	public UUID userAnalyticsId;
-	/** Platform */
-	public String platform;
-	/** OS */
-	public String os;
-	/** Screen width */
-	public int screenWidth;
-	/** Screen height */
-	public int screenHeight;
+	/** Screen size */
+	public String screenSize;
 	/** All scenes in this session */
 	public ArrayList<AnalyticsSceneEntity> scenes = new ArrayList<>();
 }

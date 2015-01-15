@@ -165,7 +165,8 @@ class SqliteUpgrader {
 		mCreateTableQueries.put("analytics_session", "CREATE TABLE IF NOT EXISTS analytics_session ("
 				+ "session_id TEXT,"
 				+ "start_time INTEGER,"
-				+ "end_time INTEGER DEFAULT 0);");
+				+ "end_time INTEGER DEFAULT 0,"
+				+ "screen_size TEXT);");
 
 		// Analytics - Scene
 		mNotFoundTables.add("analytics_scene");
@@ -210,7 +211,7 @@ class SqliteUpgrader {
 	/** Create table queries for all tables */
 	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 	/** DB version */
-	private static final int DB_VERSION = 6;
+	private static final int DB_VERSION = 7;
 	/** Create version table */
 	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
 }

@@ -1,8 +1,16 @@
 package com.spiddekauga.voider.repo.analytics;
 
+import java.util.UUID;
+
+import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Gdx;
+import com.spiddekauga.voider.network.analytics.AnalyticsMethod;
+import com.spiddekauga.voider.network.analytics.AnalyticsMethodResponse;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
+import com.spiddekauga.voider.repo.user.UserLocalRepo;
 
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
@@ -25,11 +33,6 @@ public class AnalyticsRepo extends Repo {
 		return mInstance;
 	}
 
-	@Override
-	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		// TODO Auto-generated method stub
-	}
-
 	/**
 	 * Creates a new session
 	 */
@@ -40,7 +43,7 @@ public class AnalyticsRepo extends Repo {
 	/**
 	 * Ends a session
 	 */
-	void endSession() {
+	public void endSession() {
 		mLocalRepo.endSession();
 	}
 
@@ -48,14 +51,14 @@ public class AnalyticsRepo extends Repo {
 	 * Start a new scene analytics
 	 * @param name scene name
 	 */
-	void startScene(String name) {
+	public void startScene(String name) {
 		mLocalRepo.startScene(name);
 	}
 
 	/**
 	 * End the current scene
 	 */
-	void endScene() {
+	public void endScene() {
 		mLocalRepo.endScene();
 	}
 
@@ -64,10 +67,69 @@ public class AnalyticsRepo extends Repo {
 	 * @param name event name
 	 * @param data extra information about the event
 	 */
-	void addEvent(String name, String data) {
+	public void addEvent(String name, String data) {
 		mLocalRepo.addEvent(name, data);
 	}
 
+	/**
+	 * Sync analytics to the server
+	 * @param responseListeners listeners of the web response
+	 */
+	public void sync(IResponseListener... responseListeners) {
+		mWebRepo.sync(mLocalRepo.getAnalytics(), getPlatform(), getOs(), getUserAnalyticsId(), addToFront(responseListeners, this));
+	}
+
+	@Override
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
+		if (response instanceof AnalyticsMethodResponse) {
+			handleSyncResponse((AnalyticsMethod) method, (AnalyticsMethodResponse) response);
+		}
+	}
+
+	/**
+	 * Handle sync response from the server
+	 * @param method parameters sent to the server
+	 * @param response server response
+	 */
+	private void handleSyncResponse(AnalyticsMethod method, AnalyticsMethodResponse response) {
+		if (response.isSuccessful()) {
+			mLocalRepo.removeAnalytics(method.sessions);
+		}
+	}
+
+	/**
+	 * @return Unique analytics user id
+	 */
+	private UUID getUserAnalyticsId() {
+		return UserLocalRepo.getInstance().getAnalyticsId();
+	}
+
+	/**
+	 * @return platform this client is on
+	 */
+	private String getPlatform() {
+		return Gdx.app.getType().toString();
+	}
+
+	/**
+	 * @return OS this client uses
+	 */
+	private String getOs() {
+		// Android
+		if (Gdx.app.getType() == ApplicationType.Android) {
+			return "Android " + Gdx.app.getVersion();
+		}
+		// iOS
+		else if (Gdx.app.getType() == ApplicationType.iOS) {
+			return "iOS " + Gdx.app.getVersion();
+		}
+		// Desktop and anything else
+		else {
+			return System.getProperty("os.name");
+		}
+	}
+
+	private AnalyticsWebRepo mWebRepo = AnalyticsWebRepo.getInstance();
 	private AnalyticsLocalRepo mLocalRepo = AnalyticsLocalRepo.getInstance();
 	private static AnalyticsRepo mInstance = null;
 }

@@ -6,8 +6,10 @@ package com.spiddekauga.voider.network.entities;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum GeneralResponseStatuses implements ISuccessStatuses {
-	/** Successfully fetched levels, fetched all. */
+	/** Server method completed successfully. */
 	SUCCESS,
+	/** Partial success */
+	SUCCESS_PARTIAL,
 	/** Failed due to some internal server error */
 	FAILED_SERVER_ERROR,
 	/** Failed to connect to the server */

@@ -20,12 +20,18 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	/**
 	 * Add a new session to the database
 	 * @param startTime time the session was started
+	 * @param screenSize size of the screen
 	 * @return id of the session
 	 */
-	UUID addSession(Date startTime) {
+	UUID addSession(Date startTime, String screenSize) {
 		UUID sessionId = UUID.randomUUID();
 
-		execSQL("INSERT INTO analytics_session VALUES ('" + sessionId + "', " + startTime.getTime() + ");");
+		// @formatter:off
+		execSQL("INSERT INTO analytics_session (session_id, start_time, screen_size) VALUES ('" +
+				sessionId + "', " +
+				startTime.getTime() + ", '" +
+				screenSize + "');");
+		// @formatter:on
 
 		return sessionId;
 	}
@@ -34,9 +40,10 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	 * End a created session
 	 * @param sessionId the session to end
 	 * @param endTime time the session was ended
+	 * @param screenSize size of the screen
 	 */
-	void endSession(UUID sessionId, Date endTime) {
-		execSQL("UPDATE analytics_session SET end_time=" + endTime + " WHERE session_id='" + sessionId + "';");
+	void endSession(UUID sessionId, Date endTime, String screenSize) {
+		execSQL("UPDATE analytics_session SET end_time=" + endTime + ", screen_size='" + screenSize + "' WHERE session_id='" + sessionId + "';");
 	}
 
 
@@ -90,19 +97,31 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	}
 
 	/**
-	 * Clear all local analytics
+	 * Remove these specified sessions, scenes and events
+	 * @param sessions all session, scenes and events to remove
 	 */
-	void clear() {
-		execSQL("DELETE FROM analytics_event;");
-		execSQL("DELETE FROM analytics_scene;");
-		execSQL("DELETE FROM analytics_session;");
+	void removeAnalytics(ArrayList<AnalyticsSessionEntity> sessions) {
+		for (AnalyticsSessionEntity session : sessions) {
+			// Delete sessions
+			execSQL("DELETE FROM analytics_session WHERE session_id='" + session.sessionId + "';");
+
+			// Delete scenes
+			execSQL("DELETE FROM analytics_scene WHERE session_id='" + session.sessionId + "';");
+
+			// Delete events
+			for (AnalyticsSceneEntity scene : session.scenes) {
+				execSQL("DELETE FROM analytics_event WHERE scene_id='" + scene.sceneId + "';");
+			}
+		}
 	}
+
 
 	/**
 	 * @return true if there exists any analytics to be synced to the server
+	 * @param skipSession skip this session id
 	 */
-	boolean isAnalyticsExists() {
-		DatabaseCursor cursor = rawQuery("SELECT NULL FROM analytics_session LIMIT 1;");
+	boolean isAnalyticsExists(UUID skipSession) {
+		DatabaseCursor cursor = rawQuery("SELECT NULL FROM analytics_session WHERE session_id<>'" + skipSession + "' LIMIT 1;");
 
 		boolean exists = cursor.next();
 		cursor.close();
@@ -160,6 +179,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 			session.sessionId = UUID.fromString(cursor.getString(0));
 			session.startTime = new Date(cursor.getLong(1));
 			session.endTime = new Date(cursor.getLong(2));
+			session.screenSize = cursor.getString(3);
 			sessions.put(session.sessionId, session);
 		}
 		cursor.close();

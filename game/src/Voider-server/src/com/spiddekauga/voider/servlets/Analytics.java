@@ -64,18 +64,15 @@ public class Analytics extends VoiderServlet {
 			Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_SESSION);
 
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.START_TIME, networkEntity.startTime);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.USER_ANALYTICS_ID, networkEntity.userAnalyticsId);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.PLATFORM, networkEntity.platform);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.OS, networkEntity.os);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.USER_ANALYTICS_ID, mParameters.userAnalyticsId);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.PLATFORM, mParameters.platform);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.OS, mParameters.os);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.SCREEN_SIZE, networkEntity.screenSize);
 
 			// Length
 			long diffDate = networkEntity.endTime.getTime() - networkEntity.startTime.getTime();
 			double seconds = diffDate / 1000d;
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.LENGTH, seconds);
-
-			// Screen size
-			String screenSize = networkEntity.screenWidth + "x" + networkEntity.screenHeight;
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.SCREEN_SIZE, screenSize);
 
 			sessionEntities.add(datastoreEntity);
 		}
@@ -87,7 +84,7 @@ public class Analytics extends VoiderServlet {
 				saveScenes(sessionKeys.get(i), mParameters.sessions.get(i).scenes);
 			}
 		} else {
-			mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
+			mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
 		}
 	}
 
@@ -122,7 +119,7 @@ public class Analytics extends VoiderServlet {
 				saveEvents(sceneKeys.get(i), scenes.get(i).events);
 			}
 		} else {
-			mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
+			mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
 		}
 	}
 
@@ -147,7 +144,7 @@ public class Analytics extends VoiderServlet {
 		List<Key> eventKeys = DatastoreUtils.put(eventEntities);
 
 		if (eventKeys == null || eventKeys.size() != events.size()) {
-			mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
+			mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
 		}
 	}
 

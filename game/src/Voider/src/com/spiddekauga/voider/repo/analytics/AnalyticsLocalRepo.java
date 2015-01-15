@@ -2,13 +2,12 @@ package com.spiddekauga.voider.repo.analytics;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.UUID;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
 
 /**
  * Local repository for analytics
@@ -39,7 +38,7 @@ class AnalyticsLocalRepo {
 		if (mSessionId != null) {
 			Gdx.app.error("AnalyticsLocalRepo", "Session wasn't null when a new session was created!");
 		}
-		mSessionId = mSqliteGateway.addSession(new Date());
+		mSessionId = mSqliteGateway.addSession(new Date(), getScreenSize());
 	}
 
 	/**
@@ -51,7 +50,7 @@ class AnalyticsLocalRepo {
 		}
 
 		if (mSessionId != null) {
-			mSqliteGateway.endSession(mSessionId, new Date());
+			mSqliteGateway.endSession(mSessionId, new Date(), getScreenSize());
 		}
 		mSessionId = null;
 	}
@@ -110,17 +109,18 @@ class AnalyticsLocalRepo {
 	}
 
 	/**
-	 * Clear analytics
+	 * Remove these specified sessions, scenes and events)
+	 * @param sessions the sessions to remove
 	 */
-	void clear() {
-		mSqliteGateway.clear();
+	void removeAnalytics(ArrayList<AnalyticsSessionEntity> sessions) {
+		mSqliteGateway.removeAnalytics(sessions);
 	}
 
 	/**
 	 * @return true if any local analytics exists
 	 */
 	boolean isAnalyticsExists() {
-		return mSqliteGateway.isAnalyticsExists();
+		return mSqliteGateway.isAnalyticsExists(mSessionId);
 	}
 
 	/**
@@ -129,51 +129,22 @@ class AnalyticsLocalRepo {
 	ArrayList<AnalyticsSessionEntity> getAnalytics() {
 		ArrayList<AnalyticsSessionEntity> sessions = mSqliteGateway.getAnalytics();
 
-		// Set additional information for each session
-		String platform = getPlatform();
-		UUID userAnalyticsId = getUserAnalyticsId();
-		String os = getOs();
-		for (AnalyticsSessionEntity session : sessions) {
-			session.os = os;
-			session.platform = platform;
-			session.userAnalyticsId = userAnalyticsId;
-			session.screenWidth = Gdx.graphics.getWidth();
-			session.screenHeight = Gdx.graphics.getHeight();
+		// Remove current session
+		Iterator<AnalyticsSessionEntity> sessionIt = sessions.iterator();
+		boolean removed = false;
+		while (sessionIt.hasNext() && !removed) {
+			AnalyticsSessionEntity session = sessionIt.next();
+			if (session.sessionId.equals(mSessionId)) {
+				sessionIt.remove();
+				removed = true;
+			}
 		}
 
 		return sessions;
 	}
 
-	/**
-	 * @return Unique analytics user id
-	 */
-	private UUID getUserAnalyticsId() {
-		return UserLocalRepo.getInstance().getAnalyticsId();
-	}
-
-	/**
-	 * @return platform this client is on
-	 */
-	private String getPlatform() {
-		return Gdx.app.getType().toString();
-	}
-
-	/**
-	 * @return OS this client uses
-	 */
-	private String getOs() {
-		// Android
-		if (Gdx.app.getType() == ApplicationType.Android) {
-			return "Android " + Gdx.app.getVersion();
-		}
-		// iOS
-		else if (Gdx.app.getType() == ApplicationType.iOS) {
-			return "iOS " + Gdx.app.getVersion();
-		}
-		// Desktop and anything else
-		else {
-			return System.getProperty("os.name");
-		}
+	private String getScreenSize() {
+		return Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
 	}
 
 	/** When a scene started loading */
