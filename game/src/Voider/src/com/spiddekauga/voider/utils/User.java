@@ -6,14 +6,17 @@ import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.user.LoginMethodResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
+import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
 import com.spiddekauga.voider.repo.user.UserWebRepo;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -50,24 +53,32 @@ public class User {
 	}
 
 	/**
-	 * Logs out the user
+	 * Logs out the user, only works for the global user
 	 */
 	public void logout() {
-		mEmail = null;
-		mOnline = false;
-		mPassword = null;
-		mPrivateKey = null;
-		mServerKey = null;
-		mLoggedIn = false;
-		mUsername = "(None)";
-
 		// Update user path
 		if (this == mGlobalUser) {
+			mEmail = null;
+			mOnline = false;
+			mPassword = null;
+			mPrivateKey = null;
+			mServerKey = null;
+			mLoggedIn = false;
+			mUsername = "(None)";
+
 			Config.File.setUserPaths(mUsername);
+			mUserLocalRepo.removeLastUser();
+			SceneSwitcher.dispose();
+			AnalyticsRepo analyticsRepo = AnalyticsRepo.getInstance();
+			analyticsRepo.endSession();
+			analyticsRepo.newSession();
+			SceneSwitcher.switchTo(new LoginScene());
+
+			if (isOnline()) {
+				UserWebRepo.getInstance().logout();
+			}
+			EventDispatcher.getInstance().fire(new GameEvent(EventTypes.USER_LOGOUT));
 		}
-
-
-		EventDispatcher.getInstance().fire(new GameEvent(EventTypes.USER_LOGOUT));
 	}
 
 	/**

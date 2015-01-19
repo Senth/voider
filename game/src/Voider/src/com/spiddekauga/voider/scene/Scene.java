@@ -24,6 +24,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
+import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.sound.MusicPlayer;
 
@@ -338,6 +339,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		if (!mGui.isInitialized()) {
 			Gdx.app.error("Scene", "Failed to load scene!");
 		} else {
+			mAnalyticsRepo.startScene(getClass().getSimpleName());
 			mGui.resetValues();
 		}
 	}
@@ -349,6 +351,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 *       stack).
 	 */
 	protected void onDeactivate() {
+		mAnalyticsRepo.endScene();
 	}
 
 	/**
@@ -660,6 +663,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	private Scene mNextScene = null;
 	/** If the scene has been initialized */
 	private boolean mInitialized = false;
+	private static AnalyticsRepo mAnalyticsRepo = AnalyticsRepo.getInstance();
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */

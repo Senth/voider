@@ -70,7 +70,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 		execSQL("INSERT INTO analytics_scene (session_id, scene_id, start_time, name, load_time) VALUES ('" +
 				sessionId + "', '" +
 				sceneId + "', " +
-				startTime.getTime() + ", " +
+				startTime.getTime() + ", '" +
 				name + "', " +
 				loadTime + ");");
 		// @formatter:on
@@ -84,7 +84,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	 * @param endTime time the scene was ended
 	 */
 	void endScene(UUID sceneId, Date endTime) {
-		execSQL("UPDATE analytics_scene SET end_time=" + endTime + " WHERE scene_id='" + sceneId + "';");
+		execSQL("UPDATE analytics_scene SET end_time=" + endTime.getTime() + " WHERE scene_id='" + sceneId + "';");
 	}
 
 	/**

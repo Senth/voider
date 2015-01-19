@@ -19,10 +19,13 @@ public abstract class LoadingScene extends Scene {
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-		super.onActivate(outcome, message, loadingOutcome);
-
 		mGui.initGui();
 		mGui.resetValues();
+	}
+
+	@Override
+	protected void onDeactivate() {
+
 	}
 
 	@Override
