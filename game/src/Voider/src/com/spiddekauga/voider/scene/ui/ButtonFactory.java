@@ -22,6 +22,7 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.Row;
+import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
@@ -53,6 +54,7 @@ public class ButtonFactory extends BaseFactory {
 	public ImageButton addImage(ISkinNames icon, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 		table.add(imageButton);
+		new AnalyticsButtonListener(imageButton, icon.toString());
 
 		UiFactory.doExtraActionsOnActors(hider, createdActors, imageButton);
 
@@ -73,6 +75,7 @@ public class ButtonFactory extends BaseFactory {
 			ArrayList<Actor> createdActors) {
 		ImageScrollButton imageScrollButton = new ImageScrollButton(style.getStyle(), scrollWhen);
 		table.add(imageScrollButton).setSize(width, height);
+		new AnalyticsButtonListener(imageScrollButton, style.toString());
 
 		UiFactory.doExtraActionsOnActors(null, createdActors, imageScrollButton);
 
@@ -99,6 +102,7 @@ public class ButtonFactory extends BaseFactory {
 		// Actors
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 		mUiFactory.addIconLabel(imageButton, text, textPosition, textStyle, table, hider, createdActors);
+		new AnalyticsButtonListener(imageButton, icon.toString());
 
 		return imageButton;
 	}
@@ -112,7 +116,9 @@ public class ButtonFactory extends BaseFactory {
 	 * @return created text button
 	 */
 	public TextButton createText(String text, TextButtonStyles style) {
-		return new TextButton(text, style.getStyle());
+		TextButton textButton = new TextButton(text, style.getStyle());
+		new AnalyticsButtonListener(textButton, text);
+		return textButton;
 	}
 
 	/**
@@ -258,6 +264,7 @@ public class ButtonFactory extends BaseFactory {
 	 */
 	public ImageButton addTool(ISkinNames icon, ButtonGroup group, AlignTable table, ArrayList<Actor> createdActors) {
 		ImageButton button = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
+		new AnalyticsButtonListener(button, icon.toString());
 
 		if (group != null) {
 			group.add(button);
@@ -307,6 +314,7 @@ public class ButtonFactory extends BaseFactory {
 		table.add(checkBox);
 
 		checkBox.addListener(listener);
+		new AnalyticsButtonListener(checkBox, text);
 
 		UiFactory.doExtraActionsOnActors(hider, createdActors, label, checkBox);
 
@@ -315,12 +323,13 @@ public class ButtonFactory extends BaseFactory {
 
 	/**
 	 * Create a checkbox button
-	 * @param text the text to display on the chekbox
+	 * @param text the text to display on the checkbox
 	 * @param style which checkbox style to use
-	 * @return created chcck box
+	 * @return created checkbox
 	 */
 	public CheckBox createCheckBox(String text, CheckBoxStyles style) {
 		CheckBox checkBox = new CheckBox(text, style.getStyle());
+		new AnalyticsButtonListener(checkBox, text);
 		float imageWidth = checkBox.getImage().getWidth();
 		checkBox.getImageCell().width(imageWidth);
 		checkBox.getLabelCell().padLeft(mStyles.vars.paddingCheckBoxText);
@@ -401,6 +410,7 @@ public class ButtonFactory extends BaseFactory {
 				hider.addToggleActor(button);
 			}
 			buttons[i] = button;
+			new AnalyticsButtonListener(button, enumeration.toString());
 		}
 	}
 
@@ -414,6 +424,7 @@ public class ButtonFactory extends BaseFactory {
 	 */
 	public void addEnumButton(Enum<?> enumeration, ISkinNames image, GuiHider hider, AlignTable table, Button[] buttons) {
 		buttons[enumeration.ordinal()] = mUiFactory.button.addImage(image, table, hider, null);
+		new AnalyticsButtonListener(buttons[enumeration.ordinal()], enumeration.toString());
 	}
 
 	/**
@@ -461,7 +472,6 @@ public class ButtonFactory extends BaseFactory {
 			if (createdActors != null) {
 				createdActors.add(tab.mButton);
 			}
-
 
 			// Special tab handling
 			// Radio button - padding
@@ -577,6 +587,7 @@ public class ButtonFactory extends BaseFactory {
 		@Override
 		public void createButton() {
 			mButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(mImageName));
+			new AnalyticsButtonListener(mButton, mImageName.toString());
 		}
 
 		/** Image name */

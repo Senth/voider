@@ -63,6 +63,14 @@ public class AnalyticsRepo extends Repo {
 	}
 
 	/**
+	 * Add an event without data to the current scene
+	 * @param name event name
+	 */
+	public void addEvent(String name) {
+		addEvent(name, "");
+	}
+
+	/**
 	 * Add an event to the current scene
 	 * @param name event name
 	 * @param data extra information about the event
