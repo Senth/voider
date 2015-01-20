@@ -224,7 +224,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	private ArrayList<AnalyticsEventEntity> getEvents() {
 		ArrayList<AnalyticsEventEntity> events = new ArrayList<>();
 
-		DatabaseCursor cursor = rawQuery("SELECT * FROM analytics_event;");
+		DatabaseCursor cursor = rawQuery("SELECT * FROM analytics_event ORDER BY time ASC;");
 
 		while (cursor.next()) {
 			AnalyticsEventEntity event = new AnalyticsEventEntity();

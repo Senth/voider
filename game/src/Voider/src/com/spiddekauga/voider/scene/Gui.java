@@ -39,6 +39,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -407,10 +408,15 @@ public abstract class Gui implements Disposable {
 
 				mUiFactory.text.add("Additional information sent in the bug report", outerTable, LabelStyles.WARNING);
 				outerTable.row();
+				mUiFactory.text.add("This information might appear to be unreadable", outerTable);
+				outerTable.row();
 				outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
 				msgBox.content(outerTable);
 
 				mUiFactory.text.add(Strings.exceptionToString(exception), table);
+				table.getCell().setPadBottom(mUiFactory.getStyles().vars.paddingInner);
+				table.row();
+				mUiFactory.text.add(AnalyticsRepo.getInstance().getSessionDebug(), table);
 
 				msgBox.addCancelButtonAndKeys("Back");
 				showMsgBox(msgBox);

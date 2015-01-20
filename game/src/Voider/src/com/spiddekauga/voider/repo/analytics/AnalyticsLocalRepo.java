@@ -1,12 +1,16 @@
 package com.spiddekauga.voider.repo.analytics;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.voider.network.analytics.AnalyticsEventEntity;
+import com.spiddekauga.voider.network.analytics.AnalyticsSceneEntity;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 
 /**
@@ -65,7 +69,15 @@ class AnalyticsLocalRepo {
 		}
 
 		endLoadTimer();
-		mSceneId = mSqliteGateway.addScene(mSessionId, new Date(), mSceneLoadTime, name);
+
+		// Remove "Scene" from the scene name
+		String fixedName = name;
+		int sceneIndex = name.indexOf("Scene");
+		if (sceneIndex != -1) {
+			fixedName = name.substring(0, sceneIndex);
+		}
+
+		mSceneId = mSqliteGateway.addScene(mSessionId, new Date(), mSceneLoadTime, fixedName);
 	}
 
 	/**
@@ -143,8 +155,178 @@ class AnalyticsLocalRepo {
 		return sessions;
 	}
 
+	/**
+	 * @return formatted debug string for the current session
+	 */
+	String getSessionDebug() {
+		ArrayList<AnalyticsSessionEntity> sessions = mSqliteGateway.getAnalytics();
+
+		// Get current session
+		AnalyticsSessionEntity session = null;
+		for (AnalyticsSessionEntity sessionEntity : sessions) {
+			if (sessionEntity.sessionId.equals(mSessionId)) {
+				session = sessionEntity;
+				break;
+			}
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		sortScenes(session);
+		if (!session.scenes.isEmpty()) {
+			appendLastActions(session.scenes.get(session.scenes.size() - 1), stringBuilder);
+			stringBuilder.append("</br></br>\n\n");
+		}
+		stringBuilder.append("<h3>Scenes</h3>");
+		for (AnalyticsSceneEntity scene : session.scenes) {
+			appendScene(scene, stringBuilder);
+		}
+
+		return stringBuilder.toString();
+	}
+
+	/**
+	 * Sort all the scenes by time
+	 * @param session sort all scenes by asc time
+	 */
+	private static void sortScenes(AnalyticsSessionEntity session) {
+		Collections.sort(session.scenes, mSceneComparator);
+	}
+
+	/**
+	 * Appends the 10 (or less) latest actions in the current scene
+	 * @param scene latest scene
+	 * @param stringBuilder where to append latest action
+	 */
+	private static void appendLastActions(AnalyticsSceneEntity scene, StringBuilder stringBuilder) {
+		int startIndex = scene.events.size() - 1;
+		int endIndex = startIndex - 9;
+
+		if (endIndex < 0) {
+			endIndex = 0;
+		}
+
+		stringBuilder.append("<h3>Last 10 actions in <b>" + scene.name + "</b> scene</h3>");
+
+		for (int i = startIndex; i >= endIndex; --i) {
+			appendEvent(scene, scene.events.get(i), stringBuilder);
+		}
+	}
+
+	/**
+	 * Append scene with events information
+	 * @param scene the scene to append
+	 * @param stringBuilder where to append the scene with events
+	 */
+	private static void appendScene(AnalyticsSceneEntity scene, StringBuilder stringBuilder) {
+		stringBuilder.append("<b>" + scene.name + " events</b>\n");
+		stringBuilder.append("<table>\n");
+		tableRowStart(stringBuilder);
+		tableHeader("Scene", stringBuilder);
+		tableHeader("Event Name", stringBuilder);
+		tableHeader("Time", stringBuilder);
+		tableHeader("Data", stringBuilder);
+		tableRowEnd(stringBuilder);
+
+		for (AnalyticsEventEntity event : scene.events) {
+			appendEvent(scene, event, stringBuilder);
+		}
+
+		stringBuilder.append("</table>\n");
+	}
+
+	/**
+	 * Append event information
+	 * @param scene scene information
+	 * @param event the event to append
+	 * @param stringBuilder where to append the event
+	 */
+	private static void appendEvent(AnalyticsSceneEntity scene, AnalyticsEventEntity event, StringBuilder stringBuilder) {
+		tableRowStart(stringBuilder);
+
+		// Scene name
+		tableColumn(scene.name, stringBuilder);
+
+		// Event name
+		tableColumn(event.name, stringBuilder);
+
+		// Event time (as seconds since scene started)
+		long diffTimeMili = event.time.getTime() - scene.startTime.getTime();
+		double diffTime = diffTimeMili * 0.001;
+		tableColumn(String.format("%.2f", diffTime), stringBuilder);
+
+		// Event data
+		tableColumn(event.data, stringBuilder);
+
+		tableRowEnd(stringBuilder);
+	}
+
+	/**
+	 * @return current screen size
+	 */
 	private String getScreenSize() {
 		return Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
+	}
+
+	/**
+	 * Sorting scenes by starting time
+	 */
+	private static Comparator<AnalyticsSceneEntity> mSceneComparator = new Comparator<AnalyticsSceneEntity>() {
+		@Override
+		public int compare(AnalyticsSceneEntity o1, AnalyticsSceneEntity o2) {
+			// Null checking
+			if (o1 == null) {
+				if (o2 == null) {
+					return 0;
+				} else {
+					return -1;
+				}
+			} else if (o2 == null) {
+				return 1;
+			}
+
+			// Regular checking
+			return o1.startTime.compareTo(o2.startTime);
+		}
+
+	};
+
+	/**
+	 * Appends a new table header
+	 * @param header
+	 * @param stringBuilder
+	 */
+	private static void tableHeader(String header, StringBuilder stringBuilder) {
+		stringBuilder.append("<th style=\"border: 1px solid black;\">");
+		stringBuilder.append(header);
+		stringBuilder.append("</th>\n");
+	}
+
+	/**
+	 * Appends a new table column
+	 * @param value text in the column
+	 * @param stringBuilder
+	 */
+	private static void tableColumn(String value, StringBuilder stringBuilder) {
+		stringBuilder.append("<td style=\"border: 1px solid black;\">");
+		stringBuilder.append(value);
+		stringBuilder.append("</td>\n");
+	}
+
+	/**
+	 * Start table row
+	 * @param stringBuilder
+	 */
+	private static void tableRowStart(StringBuilder stringBuilder) {
+		stringBuilder.append("<tr>\n");
+	}
+
+	/**
+	 * End table row
+	 * @param stringBuilder
+	 */
+	private static void tableRowEnd(StringBuilder stringBuilder) {
+		stringBuilder.append("</tr>\n");
 	}
 
 	/** When a scene started loading */

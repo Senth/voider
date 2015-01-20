@@ -13,6 +13,62 @@ import java.util.regex.Pattern;
  */
 public class Strings {
 	/**
+	 * Pads the string with the specified character to the right
+	 * @param <T> type of message to write
+	 * @param message the string/value to pad
+	 * @param n number of spaces total the string should contain (including padded)
+	 * @param padChar the character to pad with
+	 * @return padded string
+	 */
+	public static <T> String padRight(T message, int n, char padChar) {
+		String spaceString = padRight(message, n);
+
+		// Find first space
+		int firstSpace = spaceString.length();
+		for (int i = spaceString.length() - 1; i <= 0; --i) {
+			if (spaceString.charAt(i) != ' ') {
+				firstSpace = i + 1;
+				break;
+			}
+		}
+
+		// Convert spaces to padChar
+		String padString = spaceString.substring(0, firstSpace);
+		if (firstSpace < spaceString.length()) {
+			padString += spaceString.substring(firstSpace).replace(' ', padChar);
+		}
+		return padString;
+	}
+
+	/**
+	 * Pads the string with the specified character to the left
+	 * @param <T> type of message to write
+	 * @param message the string/value to pad
+	 * @param n number of spaces total the string should contain (including padded)
+	 * @param padChar the character to pad with
+	 * @return padded string
+	 */
+	public static <T> String padLeft(T message, int n, char padChar) {
+		String spaceString = padLeft(message, n);
+
+		// Find last space
+		int firstNonSpace = spaceString.length();
+		for (int i = 0; i < spaceString.length(); ++i) {
+			if (spaceString.charAt(i) != ' ') {
+				firstNonSpace = i;
+				break;
+			}
+		}
+
+		// Convert spaces to padChar
+		String padString = spaceString.substring(0, firstNonSpace).replace(' ', padChar);
+		if (firstNonSpace < spaceString.length()) {
+			padString += spaceString.substring(firstNonSpace);
+		}
+		return padString;
+	}
+
+	/**
 	 * Pads the string with empty spaces to the right
 	 * @param <T> type of the message to write
 	 * @param message the string/value to pad

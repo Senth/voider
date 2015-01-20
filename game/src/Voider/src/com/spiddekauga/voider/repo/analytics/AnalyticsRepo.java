@@ -80,6 +80,13 @@ public class AnalyticsRepo extends Repo {
 	}
 
 	/**
+	 * @return all events in the current scene. Useful when sending debug messages
+	 */
+	public String getSessionDebug() {
+		return mLocalRepo.getSessionDebug();
+	}
+
+	/**
 	 * Sync analytics to the server
 	 * @param responseListeners listeners of the web response
 	 */
