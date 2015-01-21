@@ -12,6 +12,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.repo.Repo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingDisplayLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingGeneralLocalRepo;
+import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingNetworkLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingSoundLocalRepo;
 
 /**
@@ -69,6 +70,13 @@ public class SettingRepo extends Repo {
 	 */
 	public SettingInfoRepo info() {
 		return mInfo;
+	}
+
+	/**
+	 * @return network settings
+	 */
+	public SettingNetworkRepo network() {
+		return mNetwork;
 	}
 
 	/**
@@ -410,6 +418,29 @@ public class SettingRepo extends Repo {
 		private SettingDisplayLocalRepo mLocalRepo = SettingLocalRepo.getInstance().display;
 	}
 
+	/**
+	 * Network settings
+	 */
+	public class SettingNetworkRepo {
+		/**
+		 * @return true if bug reports should be sent anonymously by default
+		 */
+		public boolean isBugReportSentAnonymously() {
+			return mLocalRepo.isBugReportSentAnonymously();
+		}
+
+		/**
+		 * Set if bug reports should be sent anonymously by default
+		 * @param anonymously true if they should be sent anonymously
+		 */
+		public void setBugReportSendAnonymously(boolean anonymously) {
+			mLocalRepo.setBugReportSendAnonymously(anonymously);
+		}
+
+		private SettingNetworkLocalRepo mLocalRepo = SettingLocalRepo.getInstance().network;
+	}
+
+	private SettingNetworkRepo mNetwork = new SettingNetworkRepo();
 	private SettingInfoRepo mInfo = new SettingInfoRepo();
 	private SettingDisplayRepo mDisplay = new SettingDisplayRepo();
 	private SettingDateRepo mDate = new SettingDateRepo();

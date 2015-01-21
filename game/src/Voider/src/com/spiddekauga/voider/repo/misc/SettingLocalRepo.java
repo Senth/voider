@@ -247,6 +247,28 @@ class SettingLocalRepo {
 		}
 	}
 
+	/**
+	 * Network settings
+	 */
+	class SettingNetworkLocalRepo {
+		/**
+		 * @return true if bug reports should be sent anonymously by default
+		 */
+		boolean isBugReportSentAnonymously() {
+			return mUserPrefsGateway.isBugReportSentAnonymously();
+		}
+
+		/**
+		 * Set if bug reports should be sent anonymously by default
+		 * @param anonymously true if they should be sent anonymously
+		 */
+		void setBugReportSendAnonymously(boolean anonymously) {
+			mUserPrefsGateway.setBugReportSendAnonymously(anonymously);
+		}
+	}
+
+	/** Network setting repository */
+	SettingNetworkLocalRepo network = new SettingNetworkLocalRepo();
 	/** Display setting repository */
 	SettingDisplayLocalRepo display = new SettingDisplayLocalRepo();
 	/** Sound setting repository */

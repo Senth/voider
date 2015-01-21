@@ -159,7 +159,7 @@ public class Messages {
 		public final static String POLYGON_DRAW_ERASE_LINE_COMPLEX = POLYGON_COMPLEX_DRAW_APPEND;
 		/** Bug report */
 		public final static String BUG_REPORT_INFO = "You found a bug! "
-				+ "Please describe the last two actions you did. This helps enormously when debugging, thank you :)";
+				+ "Please describe the last things you did. This helps enormously when debugging, thank you :)";
 		/** Name must contain X characters */
 		public final static String NAME_CHARACTERS_MIN = "must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters";
 	}

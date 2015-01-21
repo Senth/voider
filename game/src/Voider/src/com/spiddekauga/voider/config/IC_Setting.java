@@ -75,14 +75,14 @@ public class IC_Setting extends IniClass {
 	 * Default network settings
 	 */
 	public class IC_Network extends IniClass {
-		protected boolean autoConnectByDefault;
+		protected boolean sendBugReportAnonymouslyByDefault;
 
 		private IC_Network(Ini ini, Section classSection) {
 			super(ini, classSection);
 		}
 
-		public boolean isAutoConnectByDefault() {
-			return autoConnectByDefault;
+		public boolean isSendBugReportAnonymouslyByDefault() {
+			return sendBugReportAnonymouslyByDefault;
 		}
 	}
 

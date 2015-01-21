@@ -7,7 +7,6 @@ import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Display;
-import com.spiddekauga.voider.config.IC_Setting.IC_Network;
 import com.spiddekauga.voider.config.IC_Setting.IC_Sound;
 
 /**
@@ -107,26 +106,6 @@ class SettingClientPrefsGateway {
 	}
 
 	// -----------------------
-	// Network settings
-	// -----------------------
-	/**
-	 * Set if the client should auto-connect when it goes offline
-	 * @param autoConnect true if the client should auto connect when it goes offline
-	 */
-	void setAutoConnect(boolean autoConnect) {
-		mPreferences.putBoolean(NETWORK__AUTO_CONNECT, autoConnect);
-		mPreferences.flush();
-	}
-
-	/**
-	 * @return true if the client should auto connect when it goes offline
-	 */
-	boolean shouldAutoConnect() {
-		IC_Network network = ConfigIni.getInstance().setting.network;
-		return mPreferences.getBoolean(NETWORK__AUTO_CONNECT, network.isAutoConnectByDefault());
-	}
-
-	// -----------------------
 	// Sound settings
 	// -----------------------
 
@@ -206,8 +185,6 @@ class SettingClientPrefsGateway {
 	private static final String SOUND__EFFECTS_VOLUME = "sound_effectsVolume";
 	private static final String SOUND__UI_VOLUME = "sound_uiVolume";
 	private static final String SOUND__MUSIC_VOLUME = "sound_musicVolume";
-
-	private static final String NETWORK__AUTO_CONNECT = "network_autoConnect";
 
 	private Preferences mPreferences;
 	private static final String PREFERENCES_NAME = Config.File.PREFERENCE_PREFIX + "_setting";

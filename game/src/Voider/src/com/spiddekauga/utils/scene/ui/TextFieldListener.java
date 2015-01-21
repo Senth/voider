@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
@@ -122,8 +123,9 @@ public class TextFieldListener implements EventListener {
 			InputEvent inputEvent = (InputEvent) event;
 
 			if (inputEvent.getType() == InputEvent.Type.keyDown) {
-				// Enter, Esc, Back -> Unfocus
-				if (inputEvent.getKeyCode() == Keys.ENTER || inputEvent.getKeyCode() == Keys.ESCAPE || inputEvent.getKeyCode() == Keys.BACK) {
+				// Enter (not TextArea), Esc, Back -> Unfocus
+				if ((inputEvent.getKeyCode() == Keys.ENTER && !(mTextField instanceof TextArea)) || inputEvent.getKeyCode() == Keys.ESCAPE
+						|| inputEvent.getKeyCode() == Keys.BACK) {
 					mTextField.getStage().setKeyboardFocus(null);
 
 					if (inputEvent.getKeyCode() == Keys.ENTER) {
@@ -263,6 +265,24 @@ public class TextFieldListener implements EventListener {
 			if (!Gui.GUI_INVOKER_TEMP_NAME.equals(mTextField.getName())) {
 				mInvoker.execute(new CGuiTextField(mTextField, mPrevKeystrokeText, mTextField.getText()));
 			}
+		}
+	}
+
+	/**
+	 * @return the text field
+	 */
+	public TextField getTextField() {
+		return mTextField;
+	}
+
+	/**
+	 * @return the text in the text field, empty if still default text
+	 */
+	public String getText() {
+		if (isTextFieldDefault()) {
+			return "";
+		} else {
+			return mTextField.getText();
 		}
 	}
 

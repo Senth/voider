@@ -4,14 +4,15 @@ import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
 import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
+import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.resources.BugReportDef;
@@ -32,16 +33,12 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * Creates a command that will send a bug report.
 	 * @param gui the GUI to show progress and success on
 	 * @param subject text for the subject
-	 * @param lastAction text for the last action before the bug occurred
-	 * @param secondLastAction text for the second last action
 	 * @param description text for the description
 	 * @param exception the exception that was thrown
 	 */
-	public CBugReportSend(Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description, Exception exception) {
+	public CBugReportSend(Gui gui, TextFieldListener subject, TextFieldListener description, Exception exception) {
 		mGui = gui;
 		mSubject = subject;
-		mLastAction = lastAction;
-		mSecondLastAction = secondLastAction;
 		mDescription = description;
 		mException = exception;
 	}
@@ -50,12 +47,10 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * Creates a command that will send a bug report.
 	 * @param gui GUI to show progress and success on
 	 * @param subject text for the subject
-	 * @param lastAction text field for the last action before the bug occurred
-	 * @param secondLastAction text field for the second last action
 	 * @param description text field for the description
 	 */
-	public CBugReportSend(Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description) {
-		this(gui, subject, lastAction, secondLastAction, description, null);
+	public CBugReportSend(Gui gui, TextFieldListener subject, TextFieldListener description) {
+		this(gui, subject, description, null);
 	}
 
 	/**
@@ -67,19 +62,25 @@ public class CBugReportSend extends Command implements IResponseListener {
 		String userKey = User.getGlobalUser().getServerKey();
 
 		// Create network entity
-		mBugReport.userKey = userKey;
+		if (!mSendAnonymously) {
+			mBugReport.userKey = userKey;
+		}
 		mBugReport.date = new Date();
 		mBugReport.subject = mSubject.getText();
-		mBugReport.lastAction = mLastAction.getText();
-		mBugReport.secondLastAction = mSecondLastAction.getText();
 		mBugReport.description = mDescription.getText();
 		mBugReport.systemInformation = getSystemInformation();
 
+		// Exception
 		if (mException != null) {
 			String stackTrace = Strings.exceptionToString(mException);
 			stackTrace = Strings.toHtmlString(stackTrace);
-			mBugReport.exception = stackTrace;
+			mBugReport.additionalInformation = stackTrace;
+			mBugReport.additionalInformation += "</br></br>";
 		}
+
+		// Get analytics
+		String analytics = AnalyticsRepo.getInstance().getSessionDebug();
+		mBugReport.additionalInformation += analytics;
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class CBugReportSend extends Command implements IResponseListener {
 
 		switch (Gdx.app.getType()) {
 		case Android:
-			systemInformation = "Android v." + Gdx.app.getVersion();
+			systemInformation = "Android API v." + Gdx.app.getVersion();
 			break;
 
 		case Applet:
@@ -98,7 +99,7 @@ public class CBugReportSend extends Command implements IResponseListener {
 			break;
 
 		case Desktop:
-			systemInformation = "Desktop";
+			systemInformation = System.getProperty("os.name");
 			break;
 
 		case WebGL:
@@ -131,8 +132,6 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 */
 	private void handleBugReportResponse(BugReportMethodResponse response) {
 		if (response.status.isSuccessful()) {
-			mGui.hideWaitWindow();
-
 			// Message box
 			MsgBoxExecuter msgBox = mGui.getFreeMsgBox(true);
 			msgBox.setTitle("Success");
@@ -143,6 +142,8 @@ public class CBugReportSend extends Command implements IResponseListener {
 			msgBox.key(Input.Keys.ENTER, quitGame);
 			msgBox.key(Input.Keys.BACK, quitGame);
 			mGui.showMsgBox(msgBox);
+
+			mGui.hideWaitWindow();
 		} else {
 			saveBugReportLocally();
 		}
@@ -180,8 +181,6 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 */
 	private void saveBugReportLocally() {
 		mResourceRepo.save(new BugReportDef(mBugReport));
-		mGui.hideWaitWindow();
-
 
 		// Message box
 		MsgBoxExecuter msgBox = mGui.getFreeMsgBox(true);
@@ -193,6 +192,8 @@ public class CBugReportSend extends Command implements IResponseListener {
 		msgBox.key(Input.Keys.ENTER, quitGame);
 		msgBox.key(Input.Keys.BACK, quitGame);
 		mGui.showMsgBox(msgBox);
+
+		mGui.hideWaitWindow();
 	}
 
 	/**
@@ -231,17 +232,22 @@ public class CBugReportSend extends Command implements IResponseListener {
 		}
 	};
 
+	/**
+	 * Sets if the bug report should be sent anonymously or not
+	 * @param anonymously true to send it anonymously
+	 */
+	public void setSendAnonymously(boolean anonymously) {
+		mSendAnonymously = anonymously;
+	}
 
+	/** If the bug report should be sent anonymously */
+	private boolean mSendAnonymously = false;
 	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** subject of the bug report */
-	private TextField mSubject;
-	/** Last action the user did */
-	private TextField mLastAction;
-	/** Second last action the user did */
-	private TextField mSecondLastAction;
+	private TextFieldListener mSubject;
 	/** Optional description of the bug */
-	private TextField mDescription;
+	private TextFieldListener mDescription;
 	/** The exception to send */
 	private Exception mException;
 	/** The network entity to send */

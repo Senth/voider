@@ -15,15 +15,12 @@ public class BugReportDef extends Resource {
 	 * Creates a bug report resource from a network entity and store it locally
 	 * @param bugReportEntity entity to set the resource from
 	 */
-	public BugReportDef(
-			BugReportEntity bugReportEntity) {
+	public BugReportDef(BugReportEntity bugReportEntity) {
 		mUserKey = bugReportEntity.userKey;
 		mSubject = bugReportEntity.subject;
-		mLastAction = bugReportEntity.lastAction;
-		mSecondLastAction = bugReportEntity.secondLastAction;
 		mDescription = bugReportEntity.description;
 		mDate = bugReportEntity.date;
-		mException = bugReportEntity.exception;
+		mException = bugReportEntity.additionalInformation;
 		mSystemInformation = bugReportEntity.systemInformation;
 		mUniqueId = bugReportEntity.id;
 	}
@@ -44,10 +41,8 @@ public class BugReportDef extends Resource {
 
 		entity.userKey = mUserKey;
 		entity.subject = mSubject;
-		entity.lastAction = mLastAction;
-		entity.secondLastAction = mSecondLastAction;
 		entity.description = mDescription;
-		entity.exception = mException;
+		entity.additionalInformation = mException;
 		entity.date = mDate;
 		entity.systemInformation = mSystemInformation;
 		entity.id = mUniqueId;
@@ -56,27 +51,19 @@ public class BugReportDef extends Resource {
 	}
 
 	/** User that's reporting */
-	@Tag(113)
-	private String mUserKey;
+	@Tag(113) private String mUserKey;
 	/** Last action */
-	@Tag(114)
-	private String mLastAction;
+	@Tag(114) @Deprecated private String mLastAction;
 	/** Second last action */
-	@Tag(115)
-	private String mSecondLastAction;
+	@Tag(115) @Deprecated private String mSecondLastAction;
 	/** Additional description */
-	@Tag(119)
-	private String mDescription;
+	@Tag(119) private String mDescription;
 	/** Date of the report */
-	@Tag(120)
-	private Date mDate = new Date();
+	@Tag(120) private Date mDate = new Date();
 	/** The exception that was thrown, optional */
-	@Tag(121)
-	private String mException = null;
+	@Tag(121) private String mException = null;
 	/** Subject */
-	@Tag(122)
-	private String mSubject;
+	@Tag(122) private String mSubject;
 	/** System information */
-	@Tag(123)
-	private String mSystemInformation;
+	@Tag(123) private String mSystemInformation;
 }

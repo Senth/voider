@@ -43,6 +43,7 @@ class AnalyticsLocalRepo {
 			Gdx.app.error("AnalyticsLocalRepo", "Session wasn't null when a new session was created!");
 		}
 		mSessionId = mSqliteGateway.addSession(new Date(), getScreenSize());
+		startLoadTimer();
 	}
 
 	/**
@@ -115,8 +116,6 @@ class AnalyticsLocalRepo {
 	void addEvent(String name, String data) {
 		if (mSceneId != null) {
 			mSqliteGateway.addEvent(mSceneId, new Date(), name, data);
-		} else {
-			Gdx.app.error("AnalyticsLocalRepo", "Scene id was null during an event");
 		}
 	}
 
@@ -207,11 +206,13 @@ class AnalyticsLocalRepo {
 		}
 
 		stringBuilder.append("<h3>Last 10 actions in <b>" + scene.name + "</b> scene</h3>");
+		tableHeader(stringBuilder);
 
 		for (int i = startIndex; i >= endIndex; --i) {
 			appendEvent(scene, scene.events.get(i), stringBuilder);
 		}
 	}
+
 
 	/**
 	 * Append scene with events information
@@ -219,14 +220,9 @@ class AnalyticsLocalRepo {
 	 * @param stringBuilder where to append the scene with events
 	 */
 	private static void appendScene(AnalyticsSceneEntity scene, StringBuilder stringBuilder) {
-		stringBuilder.append("<b>" + scene.name + " events</b>\n");
+		stringBuilder.append("<h4>" + scene.name + " events</h4>\n");
 		stringBuilder.append("<table>\n");
-		tableRowStart(stringBuilder);
-		tableHeader("Scene", stringBuilder);
-		tableHeader("Event Name", stringBuilder);
-		tableHeader("Time", stringBuilder);
-		tableHeader("Data", stringBuilder);
-		tableRowEnd(stringBuilder);
+		tableHeader(stringBuilder);
 
 		for (AnalyticsEventEntity event : scene.events) {
 			appendEvent(scene, event, stringBuilder);
@@ -300,6 +296,19 @@ class AnalyticsLocalRepo {
 		stringBuilder.append("<th style=\"border: 1px solid black;\">");
 		stringBuilder.append(header);
 		stringBuilder.append("</th>\n");
+	}
+
+	/**
+	 * Append all table headers to the table
+	 * @param stringBuilder
+	 */
+	private static void tableHeader(StringBuilder stringBuilder) {
+		tableRowStart(stringBuilder);
+		tableHeader("Scene", stringBuilder);
+		tableHeader("Event Name", stringBuilder);
+		tableHeader("Time", stringBuilder);
+		tableHeader("Data", stringBuilder);
+		tableRowEnd(stringBuilder);
 	}
 
 	/**

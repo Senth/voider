@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.repo.misc;
 
 import com.spiddekauga.voider.ClientVersions;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Setting.IC_Network;
 import com.spiddekauga.voider.repo.PrefsGateway;
 
 /**
@@ -52,6 +54,28 @@ class SettingUserPrefsGateway extends PrefsGateway {
 		return ClientVersions.fromId(versionId);
 	}
 
+	// ----------------
+	// Network
+	// ----------------
+	/**
+	 * @return true if bug reports should be sent anonymously by default
+	 */
+	boolean isBugReportSentAnonymously() {
+		IC_Network icNetwork = ConfigIni.getInstance().setting.network;
+		return mPreferences.getBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, icNetwork.isSendBugReportAnonymouslyByDefault());
+	}
+
+	/**
+	 * Set if bug reports should be sent anonymously by default
+	 * @param anonymously true if they should be sent anonymously
+	 */
+	void setBugReportSendAnonymously(boolean anonymously) {
+		mPreferences.putBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, anonymously);
+		mPreferences.flush();
+	}
+
 	private static final String CLIENT__LAST_VERSION = "client_lastVersion";
 	private static final String DATE__DATE_TIME_FORMAT = "date_dateTimeFormat";
+
+	private static final String NETWORK__SEND_BUG_REPORT_ANONYMOUSLY = "network_sendBugReportAnonymously";
 }

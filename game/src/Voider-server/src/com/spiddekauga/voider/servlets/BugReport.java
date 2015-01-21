@@ -70,20 +70,19 @@ public class BugReport extends VoiderServlet {
 	 * @return true if the report was sent successfully
 	 */
 	private boolean sendBugReport(BugReportEntity bugReportEntity) {
-		Entity user = getUser(bugReportEntity.userKey);
-
-		if (user == null) {
-			return false;
+		String sentFromEmail = "anonymous@voider-game.com";
+		String sentFromName = "Anonymous";
+		if (bugReportEntity.userKey != null) {
+			Entity user = getUser(bugReportEntity.userKey);
+			sentFromEmail = (String) user.getProperty("email");
+			sentFromName = (String) user.getProperty("username");
 		}
-
 
 		// Create body
 		String body = "";
-		body += getFormatedHeadline("Last action", bugReportEntity.lastAction);
-		body += getFormatedHeadline("Second last action", bugReportEntity.secondLastAction);
+		body += getFormatedHeadline("System Information", bugReportEntity.systemInformation);
 		body += getFormatedHeadline("Description", bugReportEntity.description);
-		body += getFormatedHeadline("OS", bugReportEntity.systemInformation);
-		body += getFormatedHeadline("Exception", bugReportEntity.exception);
+		body += getFormatedHeadline("Exception", bugReportEntity.additionalInformation);
 
 
 		// Send email
@@ -91,9 +90,9 @@ public class BugReport extends VoiderServlet {
 		Session session = Session.getDefaultInstance(properties);
 		MimeMessage message = new MimeMessage(session);
 		try {
-			message.setFrom(new InternetAddress(ServerConfig.EMAIL_ADMIN, (String) user.getProperty("username")));
+			message.setFrom(new InternetAddress(ServerConfig.EMAIL_ADMIN, sentFromName));
 			Address[] replyToAddresses = new Address[1];
-			replyToAddresses[0] = new InternetAddress((String) user.getProperty("email"), (String) user.getProperty("username"));
+			replyToAddresses[0] = new InternetAddress(sentFromEmail, sentFromName);
 			message.setReplyTo(replyToAddresses);
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(ServerConfig.EMAIL_ADMIN));
 			message.setSubject("[BUG] " + bugReportEntity.subject);

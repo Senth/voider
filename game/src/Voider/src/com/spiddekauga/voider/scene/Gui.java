@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
@@ -40,11 +38,13 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.Messages;
@@ -356,7 +356,6 @@ public abstract class Gui implements Disposable {
 		right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 
 
-		// CENTER
 		// Error text
 		Label errorLabel = mUiFactory.text.create(Messages.Error.BUG_REPORT_INFO, LabelStyles.WARNING);
 		errorLabel.setAlignment(Align.center);
@@ -366,36 +365,39 @@ public abstract class Gui implements Disposable {
 		content.row();
 
 
-		// LEFT
 		// Subject
-		TextField subject = mUiFactory.addTextField("Subject", false, "Subject", new TextFieldListener(), left, null);
+		TextFieldListener subjectListener = new TextFieldListener();
+		TextField subject = mUiFactory.addTextField("Subject", false, "[EX: Can't place enemy]", subjectListener, content, null);
 		subject.setMaxLength(50);
-
-		// Actions
-		TextField lastAction = mUiFactory.addTextArea("Last Action", "Last action you did before the bug occurred?", new TextFieldListener(), left,
-				null);
-		lastAction.setMaxLength(100);
-
-		TextField secondLastAction = mUiFactory.addTextArea("Second Last Action", "Second last action you did before the bug occurred?",
-				new TextFieldListener(), left, null);
-		secondLastAction.setMaxLength(100);
+		content.getCell().setWidth(width);
 
 
-		// RIGHT
 		// Description
-		TextArea description = mUiFactory.addTextArea("Detailed description (optional)", "", new TextFieldListener(), right, null);
-		right.getRow().setFillHeight(true);
-		right.getCell().resetHeight().setFillHeight(true);
+		TextFieldListener descriptionListener = new TextFieldListener();
+		mUiFactory.addTextArea("Detailed description (optional)",
+				"[EX: Doesn't work to place any stationary enemy in the level editor. Tried with two...]", descriptionListener, content, null);
+		content.getCell().setWidth(width);
+		content.getCell().setHeight(content.getCell().getHeight() * 1.5f);
 
-		CBugReportSend bugReportSend = new CBugReportSend(this, subject, lastAction, secondLastAction, description, exception);
+		final CBugReportSend bugReportSend = new CBugReportSend(this, subjectListener, descriptionListener, exception);
 		CGameQuit quit = new CGameQuit();
 
-		content.add(left).setPadRight(mUiFactory.getStyles().vars.paddingInner);
-		content.add(right).setFillHeight(true);
 
-		// CENTER
+		// Send anonymously
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				bugReportSend.setSendAnonymously(checked);
+				SettingRepo.getInstance().network().setBugReportSendAnonymously(checked);
+			}
+		};
+		Button button = mUiFactory.button.addCheckBoxRow("Send anonymously (I can't answer you or ask further questions)", CheckBoxStyles.CHECK_BOX,
+				buttonListener, null, content);
+		button.setChecked(SettingRepo.getInstance().network().isBugReportSentAnonymously());
+
+
 		// Additional information that is sent
-		ButtonListener buttonListenr = new ButtonListener() {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
 				MsgBoxExecuter msgBox = getFreeMsgBox(true);
@@ -405,10 +407,11 @@ public abstract class Gui implements Disposable {
 				AlignTable outerTable = new AlignTable();
 				AlignTable table = new AlignTable();
 				ScrollPane scrollPane = new ScrollPane(table);
+				outerTable.setPaddingRowDefault(0, 0, mUiFactory.getStyles().vars.paddingInner, 0);
 
-				mUiFactory.text.add("Additional information sent in the bug report", outerTable, LabelStyles.WARNING);
-				outerTable.row();
-				mUiFactory.text.add("This information might appear to be unreadable", outerTable);
+
+				mUiFactory.text
+						.add("Additional information sent in the bug report\n(might appear to be unreadable)", outerTable, LabelStyles.WARNING);
 				outerTable.row();
 				outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
 				msgBox.content(outerTable);
@@ -422,15 +425,13 @@ public abstract class Gui implements Disposable {
 				showMsgBox(msgBox);
 			}
 		};
-		content.row().setPadTop(mUiFactory.getStyles().vars.paddingSeparator);
-		mUiFactory.button.addText("View additional information that is sent", TextButtonStyles.TRANSPARENT_PRESS, content, buttonListenr, null, null);
+
+		content.row().setPadTop(mUiFactory.getStyles().vars.paddingInner);
+		mUiFactory.button.addText("View additional information that is sent", TextButtonStyles.LINK, content, buttonListener, null, null);
 
 		msgBox.content(content);
 		msgBox.button("Quit Game", quit);
 		msgBox.button("Send Report and Quit Game", bugReportSend);
-		msgBox.key(Keys.ESCAPE, quit);
-		msgBox.key(Keys.BACK, quit);
-		msgBox.key(Keys.ENTER, bugReportSend);
 
 		showMsgBox(msgBox);
 	}
