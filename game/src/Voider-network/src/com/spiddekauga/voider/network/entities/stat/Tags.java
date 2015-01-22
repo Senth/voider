@@ -69,7 +69,7 @@ public enum Tags implements ISearchStore {
 	}
 
 	@Override
-	public String getSearchId() {
+	public String toSearchId() {
 		return String.valueOf(mId);
 	}
 

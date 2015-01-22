@@ -50,6 +50,7 @@ import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
@@ -251,6 +252,10 @@ class LevelEditorGui extends EditorGui {
 		for (EnemyActorDef enemyDef : enemyDefs) {
 			Button button = new ResourceTextureButton(enemyDef, (ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
 
+			// Analytics
+			new AnalyticsButtonListener(button, "Level_EnemySelect", enemyDef.getName() + " (" + enemyDef.getId() + ":" + enemyDef.getRevision()
+					+ ")");
+
 			// Create tooltip
 			CustomTooltip tooltip = new CustomTooltip(getEnemyTooltip(enemyDef), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, 3);
 			tooltip.setHideWhenHidden(false);
@@ -393,7 +398,7 @@ class LevelEditorGui extends EditorGui {
 		// Default color
 		GuiHider hider = mWidgets.color.hiderDefault;
 		mUiFactory.text.addPanelSection("Default Color", table, hider);
-		ColorTintPicker picker = mUiFactory.addColorTintPicker(table, hider, mDisabledWhenPublished, colorArray.arr);
+		ColorTintPicker picker = mUiFactory.addColorTintPicker("Terrain_ColorDefault", table, hider, mDisabledWhenPublished, colorArray.arr);
 		mWidgets.color.defaultPicker = picker;
 		new SliderListener(picker, null, mInvoker) {
 			@Override
@@ -407,13 +412,13 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setDefaultTerrainOpacity(newValue);
 			}
 		};
-		mWidgets.color.defaultOpacity = mUiFactory.addSlider("Opacity", minOpacity, maxOpacity, 1, sliderListener, table, hider,
-				mDisabledWhenPublished);
+		mWidgets.color.defaultOpacity = mUiFactory.addSlider("Opacity", "Terrain_OpacityDefault", minOpacity, maxOpacity, 1, sliderListener, table,
+				hider, mDisabledWhenPublished);
 
 		// Selected color
 		hider = mWidgets.color.hiderTerrain;
 		mUiFactory.text.addPanelSection("Terrain Color", table, hider);
-		picker = mUiFactory.addColorTintPicker(table, hider, mDisabledWhenPublished, colorArray.arr);
+		picker = mUiFactory.addColorTintPicker("Terrain_Color", table, hider, mDisabledWhenPublished, colorArray.arr);
 		mWidgets.color.terrainPicker = picker;
 		new SliderListener(picker, null, mInvoker) {
 			@Override
@@ -427,7 +432,7 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedTerrainOpacity(newValue);
 			}
 		};
-		mWidgets.color.terrainOpacity = mUiFactory.addSlider("Opacity", minOpacity, maxOpacity, 1, sliderListener, table, hider,
+		mWidgets.color.terrainOpacity = mUiFactory.addSlider("Opacity", "Terrain_Opacity", minOpacity, maxOpacity, 1, sliderListener, table, hider,
 				mDisabledWhenPublished);
 	}
 
@@ -786,7 +791,7 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setLevelStartingSpeed(newValue);
 			}
 		};
-		mWidgets.info.speed = mUiFactory.addSlider(null, Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX,
+		mWidgets.info.speed = mUiFactory.addSlider(null, "Level_Speed", Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX,
 				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, mDisabledWhenPublished);
 
 		// Screenshot image
@@ -1068,8 +1073,8 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mUiFactory.text.addPanelSection("Enemy", table, null);
-		mWidgets.enemy.cEnemies = mUiFactory.addSlider("Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE,
-				sliderListener, table, null, mDisabledWhenPublished);
+		mWidgets.enemy.cEnemies = mUiFactory.addSlider("Copies", "LevelEnemy_Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX,
+				Level.Enemy.ENEMIES_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished);
 
 		HideSliderValue delayHider = new HideSliderValue(mWidgets.enemy.cEnemies, 2, Float.MAX_VALUE);
 		mWidgets.enemy.hiderTable.addChild(delayHider);
@@ -1083,8 +1088,8 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mUiFactory.text.addPanelSection("Spawn", table, delayHider);
-		mWidgets.enemy.betweenDelay = mUiFactory.addSlider("Delay", Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX,
-				Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors);
+		mWidgets.enemy.betweenDelay = mUiFactory.addSlider("Delay", "LevelEnemy_SpawnDelay", Level.Enemy.DELAY_BETWEEN_MIN,
+				Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_SPAWN_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();
@@ -1098,8 +1103,9 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mUiFactory.text.addPanelSection("Activation", table, mWidgets.enemy.hiderActivateDelay);
-		mWidgets.enemy.activateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX,
-				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table, mWidgets.enemy.hiderActivateDelay, createdActors);
+		mWidgets.enemy.activateDelay = mUiFactory.addSlider("Delay", "LevelEnemy_ActivationDelay", Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN,
+				Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
+				mWidgets.enemy.hiderActivateDelay, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_ACTIVATION_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();
@@ -1113,7 +1119,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mUiFactory.text.addPanelSection("Deactivation", table, mWidgets.enemy.hiderDeactivateDelay);
-		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
+		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider("Delay", "LevelEnemy_DeactivationDelay", Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
 				Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
 				mWidgets.enemy.hiderDeactivateDelay, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_DEACTIVATION_DELAY);

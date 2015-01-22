@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 
 /**
@@ -19,8 +20,23 @@ public class AnalyticsButtonListener extends ButtonListener {
 	 * @param name event name
 	 */
 	public AnalyticsButtonListener(Button button, String name) {
+		this(button, name, null);
+	}
+
+	/**
+	 * Listens to the specified button
+	 * @param button listens to this button
+	 * @param name event name
+	 * @param data optional data to display, null to just use pressed/checked/unchecked.
+	 */
+	public AnalyticsButtonListener(Button button, String name, String data) {
 		super(button);
 		mName = name;
+		if (data == null) {
+			mData = "";
+		} else {
+			mData = data + " -> ";
+		}
 
 		ButtonStyle buttonStyle = button.getStyle();
 		if (buttonStyle.checked != null) {
@@ -36,18 +52,21 @@ public class AnalyticsButtonListener extends ButtonListener {
 	@Override
 	protected void onPressed(Button button) {
 		if (!mCheckable) {
-			mAnalyticsRepo.addEvent(mName, "pressed");
+			mAnalyticsRepo.addEvent(mName, AnalyticsEventTypes.BUTTON, mData + "pressed");
 		}
 	}
 
 	@Override
 	protected void onChecked(Button button, boolean checked) {
 		if (mCheckable) {
-			mAnalyticsRepo.addEvent(mName, checked ? "checked" : "unchecked");
+			String data = mData;
+			data += checked ? "checked" : "unchecked";
+			mAnalyticsRepo.addEvent(mName, AnalyticsEventTypes.BUTTON, data);
 		}
 	}
 
 	private boolean mCheckable = false;
 	private String mName;
+	private String mData;
 	private static AnalyticsRepo mAnalyticsRepo = AnalyticsRepo.getInstance();
 }

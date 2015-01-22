@@ -52,7 +52,7 @@ public enum CollisionDamageSearchRanges implements IRangeEnum {
 	}
 
 	@Override
-	public String getSearchId() {
+	public String toSearchId() {
 		return mInternalName;
 	}
 

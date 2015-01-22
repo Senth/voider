@@ -19,4 +19,6 @@ public class AnalyticsEventEntity implements IEntity {
 	public String name;
 	/** Event data */
 	public String data;
+	/** Event type */
+	public AnalyticsEventTypes type;
 }

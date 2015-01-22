@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
 import com.spiddekauga.voider.network.analytics.AnalyticsMethod;
 import com.spiddekauga.voider.network.analytics.AnalyticsMethodResponse;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -65,18 +66,20 @@ public class AnalyticsRepo extends Repo {
 	/**
 	 * Add an event without data to the current scene
 	 * @param name event name
+	 * @param type event type
 	 */
-	public void addEvent(String name) {
-		addEvent(name, "");
+	public void addEvent(String name, AnalyticsEventTypes type) {
+		addEvent(name, type, "");
 	}
 
 	/**
 	 * Add an event to the current scene
 	 * @param name event name
+	 * @param type event type
 	 * @param data extra information about the event
 	 */
-	public void addEvent(String name, String data) {
-		mLocalRepo.addEvent(name, data);
+	public void addEvent(String name, AnalyticsEventTypes type, String data) {
+		mLocalRepo.addEvent(name, type, data);
 	}
 
 	/**

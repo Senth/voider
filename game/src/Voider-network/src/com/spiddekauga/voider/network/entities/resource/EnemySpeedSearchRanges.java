@@ -51,7 +51,7 @@ public enum EnemySpeedSearchRanges implements IRangeEnum {
 	}
 
 	@Override
-	public String getSearchId() {
+	public String toSearchId() {
 		return mInternalName;
 	}
 

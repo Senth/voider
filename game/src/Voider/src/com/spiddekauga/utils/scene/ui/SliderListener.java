@@ -45,6 +45,14 @@ public abstract class SliderListener implements EventListener {
 	}
 
 	/**
+	 * Constructor which automatically calls {@link #init(Slider, TextField)}
+	 * @param slider slider to bind with the text field
+	 */
+	public SliderListener(Slider slider) {
+		this(slider, null);
+	}
+
+	/**
 	 * Creates an invalid slider listener with an invoker. Call
 	 * {@link #init(Slider, TextField)} to initialize the slider listener
 	 * @param invoker used for undoing commands, may be null

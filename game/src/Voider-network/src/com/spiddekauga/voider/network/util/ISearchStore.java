@@ -8,5 +8,5 @@ public interface ISearchStore {
 	/**
 	 * @return search string
 	 */
-	public String getSearchId();
+	public String toSearchId();
 }

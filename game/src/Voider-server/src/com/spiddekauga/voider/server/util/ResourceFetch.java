@@ -81,7 +81,7 @@ public abstract class ResourceFetch<ReturnType> extends VoiderServlet {
 		if (!array.isEmpty() && array.size() != maxLength) {
 			String[] searchFor = new String[array.size()];
 			for (int i = 0; i < searchFor.length; i++) {
-				searchFor[i] = array.get(i).getSearchId();
+				searchFor[i] = array.get(i).toSearchId();
 			}
 			builder.text(fieldName, searchFor);
 		}

@@ -117,7 +117,7 @@ public class SettingsGui extends Gui {
 				mScene.setMasterVolume(newValue);
 			}
 		};
-		mWidgets.sound.master = mUiFactory.addSlider("Master", 0, 100, 1, sliderListener, table, null, null);
+		mWidgets.sound.master = mUiFactory.addSlider("Master", "Sound_Master", 0, 100, 1, sliderListener, table, null, null);
 
 		// Game Effects
 		sliderListener = new SliderListener() {
@@ -126,7 +126,7 @@ public class SettingsGui extends Gui {
 				mScene.setGameVolume(newValue);
 			}
 		};
-		mWidgets.sound.game = mUiFactory.addSlider("Game", 0, 100, 1, sliderListener, table, null, null);
+		mWidgets.sound.game = mUiFactory.addSlider("Game", "Sound_Game", 0, 100, 1, sliderListener, table, null, null);
 
 		// Music
 		sliderListener = new SliderListener() {
@@ -135,7 +135,7 @@ public class SettingsGui extends Gui {
 				mScene.setMusicVolume(newValue);
 			}
 		};
-		mWidgets.sound.music = mUiFactory.addSlider("Music", 0, 100, 1, sliderListener, table, null, null);
+		mWidgets.sound.music = mUiFactory.addSlider("Music", "Sound_Music", 0, 100, 1, sliderListener, table, null, null);
 
 		// Button
 		sliderListener = new SliderListener() {
@@ -144,7 +144,7 @@ public class SettingsGui extends Gui {
 				mScene.setUiVolume(newValue);
 			}
 		};
-		mWidgets.sound.ui = mUiFactory.addSlider("Buttons", 0, 100, 1, sliderListener, table, null, null);
+		mWidgets.sound.ui = mUiFactory.addSlider("Buttons", "Sound_Buttons", 0, 100, 1, sliderListener, table, null, null);
 	}
 
 	private void initDisplay() {

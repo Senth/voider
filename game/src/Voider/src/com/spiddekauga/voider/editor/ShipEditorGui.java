@@ -72,8 +72,8 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setMaxForce(newValue);
 			}
 		};
-		mWidgets.movement.force = mUiFactory.addSlider("Force", icSettings.getForceMin(), icSettings.getForceMax(), icSettings.getForceStepSize(),
-				sliderListener, table, null, null);
+		mWidgets.movement.force = mUiFactory.addSlider("Force", "ShipMovement_Force", icSettings.getForceMin(), icSettings.getForceMax(),
+				icSettings.getForceStepSize(), sliderListener, table, null, null);
 
 		mUiFactory.text.addPanel("The settings below aren't saved. Use these for testing and changing values in config.ini.", table,
 				LabelStyles.HIGHLIGHT);
@@ -86,8 +86,8 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setFrequency(newValue);
 			}
 		};
-		mWidgets.movement.frequency = mUiFactory.addSlider("Frequency", icSettings.getFrequencyMin(), icSettings.getFrequencyMax(),
-				icSettings.getFrequencyStepSize(), sliderListener, table, null, null);
+		mWidgets.movement.frequency = mUiFactory.addSlider("Frequency", "ShipMovement_Frequency", icSettings.getFrequencyMin(),
+				icSettings.getFrequencyMax(), icSettings.getFrequencyStepSize(), sliderListener, table, null, null);
 
 		// Dampening
 		sliderListener = new SliderListener(mInvoker) {
@@ -96,8 +96,8 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setDampening(newValue);
 			}
 		};
-		mWidgets.movement.dampening = mUiFactory.addSlider("Dampening", icSettings.getDampeningMin(), icSettings.getDampeningMax(),
-				icSettings.getDampeningStepSize(), sliderListener, table, null, null);
+		mWidgets.movement.dampening = mUiFactory.addSlider("Dampening", "ShipMovement_Dampening", icSettings.getDampeningMin(),
+				icSettings.getDampeningMax(), icSettings.getDampeningStepSize(), sliderListener, table, null, null);
 
 
 		// Body settings
@@ -111,7 +111,7 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setDensity(newValue);
 			}
 		};
-		mWidgets.movement.density = mUiFactory.addSlider("Density", icVisual.getDensityMin(), icVisual.getDensityMax(),
+		mWidgets.movement.density = mUiFactory.addSlider("Density", "ShipMovement_Density", icVisual.getDensityMin(), icVisual.getDensityMax(),
 				icVisual.getDensityStepSize(), sliderListener, table, null, null);
 
 		// Friction
@@ -121,7 +121,7 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setFriction(newValue);
 			}
 		};
-		mWidgets.movement.friction = mUiFactory.addSlider("Friction", icVisual.getFrictionMin(), icVisual.getFrictionMax(),
+		mWidgets.movement.friction = mUiFactory.addSlider("Friction", "ShipMovement_Friction", icVisual.getFrictionMin(), icVisual.getFrictionMax(),
 				icVisual.getFrictionStepSize(), sliderListener, table, null, null);
 
 		// Elasticity
@@ -131,8 +131,8 @@ public class ShipEditorGui extends ActorGui {
 				mShipEditor.setElasticity(newValue);
 			}
 		};
-		mWidgets.movement.elasticity = mUiFactory.addSlider("Elasticity", icVisual.getElasticityMin(), icVisual.getElasticityMax(),
-				icVisual.getElasticityStepSize(), sliderListener, table, null, null);
+		mWidgets.movement.elasticity = mUiFactory.addSlider("Elasticity", "ShipMovement_Elasticity", icVisual.getElasticityMin(),
+				icVisual.getElasticityMax(), icVisual.getElasticityStepSize(), sliderListener, table, null, null);
 
 	}
 

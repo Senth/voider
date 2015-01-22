@@ -42,6 +42,19 @@ public enum ClientVersions {
 			"		Selection tool is now selected (correctly) as default tool in the level editor",
 			"	ChangeLogs (these messages) are now tabbed correctly",
 			"	In-game notifications are now correctly displayed"),
+	V0_4_4(true,
+			"Analytics",
+			"	These are entirely anonymous",
+			"	Implemented analytics to answer the questions",
+			"		How long does it take for new players to play a level?",
+			"		Do players come back and play more?",
+			"		How do players use the game on a Mobile Device vs. Desktop?",
+			"		What were the player's last actions before a bug occurred?",
+			"BugReport",
+			"	Now uses analytics to see what the player's last actions were",
+			"	Can now send bug reports anonymously",
+			"	Improved design and removed 'last' and 'second last' text fields"
+			),
 
 	;
 	// @formatter:on

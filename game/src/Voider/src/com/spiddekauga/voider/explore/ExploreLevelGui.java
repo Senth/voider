@@ -34,6 +34,7 @@ import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
@@ -532,6 +533,9 @@ class ExploreLevelGui extends ExploreGui {
 			private boolean mWasCheckedOnDown = false;
 		};
 		addContentButton(button);
+
+		// Analytics
+		new AnalyticsButtonListener(button, "ExploreLevel_Select", defEntity.name + " (" + defEntity.resourceId + ":" + defEntity.revision + ")");
 
 		// Level name
 		table.row();

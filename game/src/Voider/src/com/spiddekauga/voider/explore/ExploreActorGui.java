@@ -10,6 +10,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 
 /**
@@ -69,6 +70,16 @@ public class ExploreActorGui extends ExploreGui {
 			private boolean mWasCheckedOnDown = false;
 		};
 		addContentButton(button);
+
+		// Analytics
+		String fullActorType = actor.getClass().getSimpleName();
+		int actorNameIndex = fullActorType.indexOf("DefEntity");
+		String actorType = fullActorType;
+		if (actorNameIndex != -1) {
+			actorType = fullActorType.substring(0, actorNameIndex);
+		}
+		new AnalyticsButtonListener(button, "Explore" + actorType + " _Select", actor.name + " (" + actor.resourceId + ":" + actor.revision + ")");
+
 
 		// Actor name
 		table.row();

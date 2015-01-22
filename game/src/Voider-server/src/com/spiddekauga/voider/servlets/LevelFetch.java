@@ -288,7 +288,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 		if (!mParameters.tags.isEmpty()) {
 			String[] tagStrings = new String[mParameters.tags.size()];
 			for (int i = 0; i < tagStrings.length; i++) {
-				tagStrings[i] = mParameters.tags.get(i).getSearchId();
+				tagStrings[i] = mParameters.tags.get(i).toSearchId();
 			}
 			builder.text(SLevel.TAGS, CombineOperators.AND, tagStrings);
 		}

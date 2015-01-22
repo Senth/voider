@@ -47,6 +47,7 @@ import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
 import com.spiddekauga.voider.game.Themes;
+import com.spiddekauga.voider.repo.analytics.listener.AnalyticsSliderListener;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
@@ -495,6 +496,7 @@ public class UiFactory {
 	 * Adds a min and max slider with section text to a table. These sliders are
 	 * synchronized.
 	 * @param text optional section text for the sliders
+	 * @param name analytics event name if null will use 'text' as event name.
 	 * @param min minimum value of the sliders
 	 * @param max maximum value of the sliders
 	 * @param stepSize step size of the sliders
@@ -504,18 +506,29 @@ public class UiFactory {
 	 * @param hider optional hider to add the elements to (if not null)
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @return Created min and max sliders;
+	 * @throw IllegalArgumentException if 'text' and 'name' are null or empty
 	 */
-	public SliderMinMaxWrapper addSliderMinMax(String text, float min, float max, float stepSize, SliderListener minSliderListener,
+	public SliderMinMaxWrapper addSliderMinMax(String text, String name, float min, float max, float stepSize, SliderListener minSliderListener,
 			SliderListener maxSliderListener, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		if ((text == null || text.isEmpty()) && (name == null || name.isEmpty())) {
+			throw new IllegalArgumentException("Both 'text' and 'name' parameters are null or empty");
+		}
+
 		// Label
 		if (text != null) {
 			Label label = this.text.addPanelSection(text, table, null);
 			doExtraActionsOnActors(hider, createdActors, label);
 		}
 
+		// Event name
+		String eventName = name;
+		if (name == null || name.isEmpty()) {
+			eventName = text;
+		}
+
 		// Sliders
-		Slider minSlider = addSlider("Min", min, max, stepSize, minSliderListener, table, hider, createdActors);
-		Slider maxSlider = addSlider("Max", min, max, stepSize, maxSliderListener, table, hider, createdActors);
+		Slider minSlider = addSlider("Min", eventName + "_min", min, max, stepSize, minSliderListener, table, hider, createdActors);
+		Slider maxSlider = addSlider("Max", eventName + "_max", min, max, stepSize, maxSliderListener, table, hider, createdActors);
 
 		minSliderListener.setGreaterSlider(maxSlider);
 		maxSliderListener.setLesserSlider(minSlider);
@@ -530,6 +543,7 @@ public class UiFactory {
 	/**
 	 * Adds a slider with a text field to a table
 	 * @param text optional text before the slider (if not null)
+	 * @param name analytics event name if null will use 'text' as event name
 	 * @param min minimum value of the slider
 	 * @param max maximum value of the slider
 	 * @param stepSize step size of the slider
@@ -538,11 +552,14 @@ public class UiFactory {
 	 * @param hider optional hider to add the elements to (if not null)
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @return created slider element
+	 * @throw IllegalArgumentException if 'text' and 'name' are null or empty
 	 */
-	public Slider addSlider(String text, float min, float max, float stepSize, SliderListener sliderListener, AlignTable table, GuiHider hider,
-			ArrayList<Actor> createdActors) {
+	public Slider addSlider(String text, String name, float min, float max, float stepSize, SliderListener sliderListener, AlignTable table,
+			GuiHider hider, ArrayList<Actor> createdActors) {
 		if (mStyles == null) {
 			throw new IllegalStateException("init() has not been called!");
+		} else if ((text == null || text.isEmpty()) && (name == null || name.isEmpty())) {
+			throw new IllegalArgumentException("Both 'text' and 'name' parameters are null or empty");
 		}
 
 		table.row().setFillWidth(true).setHeight(mStyles.vars.rowHeight);
@@ -554,9 +571,18 @@ public class UiFactory {
 			table.add(label).setWidth(mStyles.vars.sliderLabelWidth);
 		}
 
+		// Event name
+		String eventName = name;
+		if (eventName == null || eventName.isEmpty()) {
+			eventName = text;
+		}
+
 		// Slider
 		Slider slider = new Slider(min, max, stepSize, false, mStyles.slider.standard);
 		table.add(slider).setFillWidth(true);
+
+		// Analytics
+		new AnalyticsSliderListener(eventName, slider);
 
 		// Text field
 		TextField textField = new TextField("", mStyles.textField.standard);
@@ -612,18 +638,24 @@ public class UiFactory {
 
 	/**
 	 * Add a color slider to the table
+	 * @param name analytics event name
 	 * @param table the table to add this to
 	 * @param hider optional hider for the color picker
 	 * @param createdActors optional, all created actors
 	 * @param colors all the colors to show in the color picker
 	 * @return created slider
 	 */
-	public ColorTintPicker addColorTintPicker(AlignTable table, GuiHider hider, ArrayList<Actor> createdActors, Color... colors) {
+	public ColorTintPicker addColorTintPicker(String name, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors, Color... colors) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("'name' is null or empty");
+		}
+
 		table.row().setFillWidth(true);
 
 		// Picking color
 		ColorTintPicker picker = new ColorTintPicker(false, mStyles.slider.colorPicker, colors);
 		table.add(picker).setFillWidth(true);
+
 
 		doExtraActionsOnActors(hider, createdActors, picker);
 

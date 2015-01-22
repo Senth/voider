@@ -52,7 +52,7 @@ public enum BulletDamageSearchRanges implements IRangeEnum {
 	}
 
 	@Override
-	public String getSearchId() {
+	public String toSearchId() {
 		return mInternalName;
 	}
 

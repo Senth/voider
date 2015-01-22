@@ -250,7 +250,7 @@ public abstract class ActorGui extends EditorGui {
 
 		mUiFactory.text.addPanelSection(getResourceTypeNameCapital() + " Color", table, null);
 
-		mWidgets.color.picker = mUiFactory.addColorTintPicker(table, null, mDisabledWhenPublished, colors);
+		mWidgets.color.picker = mUiFactory.addColorTintPicker(getResourceTypeNameCapital() + "_Color", table, null, mDisabledWhenPublished, colors);
 		new SliderListener(mWidgets.color.picker, null, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -265,6 +265,7 @@ public abstract class ActorGui extends EditorGui {
 	private void initVisual() {
 		IC_Visual icVisual = getVisualConfig();
 		ArrayList<TabWrapper> tabs = new ArrayList<>();
+		String type = getResourceTypeNameCapital();
 
 		mWidgets.visual.hider.addToggleActor(mWidgets.visual.table);
 		AlignTable table = mWidgets.visual.table;
@@ -277,7 +278,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setStartingAngle(newValue);
 			}
 		};
-		mWidgets.visual.startAngle = mUiFactory.addSlider("Angle", 0, 360, 1, sliderListener, table, null, mDisabledWhenPublished);
+		mWidgets.visual.startAngle = mUiFactory.addSlider("Angle", type + "Visual_StartDirection", 0, 360, 1, sliderListener, table, null,
+				mDisabledWhenPublished);
 
 
 		// Rotation speed
@@ -288,8 +290,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setRotationSpeed(newValue);
 			}
 		};
-		mWidgets.visual.rotationSpeed = mUiFactory.addSlider("Speed", icVisual.getRotateSpeedMin(), icVisual.getRotateSpeedMax(),
-				icVisual.getRotateSpeedStepSize(), sliderListener, table, null, mDisabledWhenPublished);
+		mWidgets.visual.rotationSpeed = mUiFactory.addSlider("Speed", type + "Visual_RotateSpeed", icVisual.getRotateSpeedMin(),
+				icVisual.getRotateSpeedMax(), icVisual.getRotateSpeedStepSize(), sliderListener, table, null, mDisabledWhenPublished);
 
 
 		// Different shape tabs
@@ -392,8 +394,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setShapeRadius(newValue);
 			}
 		};
-		mWidgets.visual.circleRadius = mUiFactory.addSlider("Radius", icVisual.getRadiusMin(), icVisual.getRadiusMax(), icVisual.getRadiusStepSize(),
-				sliderListener, table, circleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.circleRadius = mUiFactory.addSlider("Radius", type + "Visual_CircleRadius", icVisual.getRadiusMin(), icVisual.getRadiusMax(),
+				icVisual.getRadiusStepSize(), sliderListener, table, circleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Rectangle
@@ -405,8 +407,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.triangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.rectangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
-				sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.rectangleWidth = mUiFactory.addSlider("Width", type + "Visual_RectangleWidth", icVisual.getSizeMin(), icVisual.getSizeMax(),
+				icVisual.getSizeStepSize(), sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
 		sliderListener = new SliderListener(mInvoker) {
@@ -416,8 +418,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.triangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.rectangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
-				sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.rectangleHeight = mUiFactory.addSlider("Height", type + "Visual_RectangleHeight", icVisual.getSizeMin(),
+				icVisual.getSizeMax(), icVisual.getSizeStepSize(), sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Triangle
@@ -429,8 +431,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.rectangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.triangleWidth = mUiFactory.addSlider("Width", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
-				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.triangleWidth = mUiFactory.addSlider("Width", type + "Visual_TriangleWidth", icVisual.getSizeMin(), icVisual.getSizeMax(),
+				icVisual.getSizeStepSize(), sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
 		sliderListener = new SliderListener(mInvoker) {
@@ -440,8 +442,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.rectangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.triangleHeight = mUiFactory.addSlider("Height", icVisual.getSizeMin(), icVisual.getSizeMax(), icVisual.getSizeStepSize(),
-				sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
+		mWidgets.visual.triangleHeight = mUiFactory.addSlider("Height", type + "Visual_TriangleHeight", icVisual.getSizeMin(), icVisual.getSizeMax(),
+				icVisual.getSizeStepSize(), sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Image
 		if (imageTab != null) {
@@ -456,6 +458,7 @@ public abstract class ActorGui extends EditorGui {
 	private void initVisualImageSettings(GuiHider imageHider) {
 		AlignTable table = mWidgets.visual.table;
 		IC_Visual icVisual = getVisualConfig();
+		String type = getResourceTypeNameCapital();
 
 		// Update
 		mUiFactory.text.addPanelSection("Update Continuously", table, imageHider);
@@ -507,8 +510,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setShapeImageScale(newValue);
 			}
 		};
-		mWidgets.visual.imageScale = mUiFactory.addSlider("Scale", icVisual.getImageScaleMin(), icVisual.getImageScaleMax(),
-				icVisual.getImageScaleStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
+		mWidgets.visual.imageScale = mUiFactory.addSlider("Scale", type + "Visual_ImageScale", icVisual.getImageScaleMin(),
+				icVisual.getImageScaleMax(), icVisual.getImageScaleStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
 
 		// Min Distance between points
 		sliderListener = new SliderListener(mInvoker) {
@@ -517,8 +520,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setShapeImageDistMin(newValue);
 			}
 		};
-		mWidgets.visual.imageDistMin = mUiFactory.addSlider("Dist", icVisual.getImageDistMin(), icVisual.getImageDistMax(),
-				icVisual.getImageDistStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
+		mWidgets.visual.imageDistMin = mUiFactory.addSlider("Dist", type + "Visual_ImageDist", icVisual.getImageDistMin(),
+				icVisual.getImageDistMax(), icVisual.getImageDistStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
 
 		// Min Angle between points
 		sliderListener = new SliderListener(mInvoker) {
@@ -527,8 +530,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setShapeImageAngleMin(newValue);
 			}
 		};
-		mWidgets.visual.imageAngleMin = mUiFactory.addSlider("Angle", icVisual.getImageAngleMin(), icVisual.getImageAngleMax(),
-				icVisual.getImageAngleStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
+		mWidgets.visual.imageAngleMin = mUiFactory.addSlider("Angle", type + "Visual_ImageAngle", icVisual.getImageAngleMin(),
+				icVisual.getImageAngleMax(), icVisual.getImageAngleStepSize(), sliderListener, table, imageHider, mDisabledWhenPublished);
 	}
 
 	/**
@@ -694,8 +697,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setCollisionDamage(newValue);
 			}
 		};
-		mWidgets.collision.damage = mUiFactory.addSlider("Damage", icCollision.getDamageMin(), icCollision.getDamageMax(),
-				icCollision.getDamageStepSize(), sliderListener, mWidgets.collision.table, null, mDisabledWhenPublished);
+		mWidgets.collision.damage = mUiFactory.addSlider("Damage", getResourceTypeNameCapital() + "Collision_Damage", icCollision.getDamageMin(),
+				icCollision.getDamageMax(), icCollision.getDamageStepSize(), sliderListener, mWidgets.collision.table, null, mDisabledWhenPublished);
 
 
 		// Collision destroy

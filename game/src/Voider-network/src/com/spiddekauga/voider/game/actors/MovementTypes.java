@@ -36,7 +36,7 @@ public enum MovementTypes implements ISearchStore {
 	/**
 	 * @return id of the movement type
 	 */
-	public int getId() {
+	public int toId() {
 		return mId;
 	}
 
@@ -44,7 +44,7 @@ public enum MovementTypes implements ISearchStore {
 	 * @return id as a string
 	 */
 	@Override
-	public String getSearchId() {
+	public String toSearchId() {
 		return String.valueOf(mId);
 	}
 

@@ -51,7 +51,7 @@ public enum BulletSpeedSearchRanges implements IRangeEnum {
 	}
 
 	@Override
-	public String getSearchId() {
+	public String toSearchId() {
 		return mInternalName;
 	}
 

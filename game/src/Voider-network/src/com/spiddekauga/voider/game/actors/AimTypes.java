@@ -39,7 +39,7 @@ public enum AimTypes implements ISearchStore {
 	/**
 	 * @return datastore save id
 	 */
-	public int getId() {
+	public int toId() {
 		return mId;
 	}
 
@@ -47,7 +47,7 @@ public enum AimTypes implements ISearchStore {
 	 * @return search save id
 	 */
 	@Override
-	public String getSearchId() {
+	public String toSearchId() {
 		return String.valueOf(mId);
 	}
 

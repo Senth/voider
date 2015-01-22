@@ -427,7 +427,7 @@ public class StatSync extends VoiderServlet {
 		Builder builder = SearchUtils.reindexDocument(document, SLevel.TAGS);
 
 		for (Tags tag : tags) {
-			SearchUtils.addFieldAtom(builder, SLevel.TAGS, tag.getSearchId());
+			SearchUtils.addFieldAtom(builder, SLevel.TAGS, tag.toSearchId());
 		}
 
 		SearchUtils.indexDocument(SearchTables.LEVEL, builder.build());

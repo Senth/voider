@@ -137,6 +137,7 @@ public class Analytics extends VoiderServlet {
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TIME, networkEntity.time);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.NAME, networkEntity.name);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.DATA, networkEntity.data);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TYPE, networkEntity.type.toId());
 
 			eventEntities.add(datastoreEntity);
 		}

@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.spiddekauga.voider.network.analytics.AnalyticsEventEntity;
+import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
 import com.spiddekauga.voider.network.analytics.AnalyticsSceneEntity;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 import com.spiddekauga.voider.repo.SqliteGateway;
@@ -92,15 +93,17 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 	 * @param sceneId id of the scene to add this event to
 	 * @param time when this event was created
 	 * @param name name of the event
+	 * @param type event type
 	 * @param data additional information about the event
 	 */
-	void addEvent(UUID sceneId, Date time, String name, String data) {
+	void addEvent(UUID sceneId, Date time, String name, AnalyticsEventTypes type, String data) {
 		// @formatter:off
 		execSQL("INSERT INTO analytics_event VALUES ('" +
 				sceneId + "', " +
 				time.getTime() + ", '" +
 				name + "', '" +
-				data + "');");
+				data + "', " +
+				type.toId() +");");
 		// @formatter:on
 	}
 
@@ -232,6 +235,7 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 			event.time = new Date(cursor.getLong(1));
 			event.name = cursor.getString(2);
 			event.data = cursor.getString(3);
+			event.type = AnalyticsEventTypes.fromId(cursor.getInt(4));
 			events.add(event);
 		}
 		cursor.close();

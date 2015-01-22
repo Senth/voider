@@ -86,6 +86,16 @@ class SqliteUpgrader {
 				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN comment TEXT DEFAULT '';");
 			}
 		}
+
+
+		// Analytics event
+		if (table.equals("analytics_event")) {
+			// 8 - Added column type
+			if (fromVersion < 8) {
+				mDatabase.execSQL("ALTER TABLE analytics_event ADD COLUMN type INTEGER");
+				mDatabase.execSQL("UPDATE analytics_event SET type=0 WHERE type IS NULL");
+			}
+		}
 	}
 
 	/**
@@ -184,7 +194,8 @@ class SqliteUpgrader {
 				+ "scene_id TEXT,"
 				+ "time INTEGER,"
 				+ "name TEXT,"
-				+ "data TEXT);");
+				+ "data TEXT,"
+				+ "type INTEGER);");
 
 		// @formatter:on
 	}
@@ -211,7 +222,7 @@ class SqliteUpgrader {
 	/** Create table queries for all tables */
 	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 	/** DB version */
-	private static final int DB_VERSION = 7;
+	private static final int DB_VERSION = 8;
 	/** Create version table */
 	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
 }

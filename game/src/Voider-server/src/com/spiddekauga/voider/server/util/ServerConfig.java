@@ -161,6 +161,7 @@ public class ServerConfig {
 			public static final String TIME = "time";
 			public static final String NAME = "name";
 			public static final String DATA = "data";
+			public static final String TYPE = "type";
 		}
 
 		/**

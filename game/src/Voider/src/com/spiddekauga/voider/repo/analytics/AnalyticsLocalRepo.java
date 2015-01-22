@@ -10,6 +10,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.network.analytics.AnalyticsEventEntity;
+import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
 import com.spiddekauga.voider.network.analytics.AnalyticsSceneEntity;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 
@@ -111,11 +112,12 @@ class AnalyticsLocalRepo {
 	/**
 	 * Add an event to the current scene
 	 * @param name event name
+	 * @param type event type
 	 * @param data extra information about the event
 	 */
-	void addEvent(String name, String data) {
+	void addEvent(String name, AnalyticsEventTypes type, String data) {
 		if (mSceneId != null) {
-			mSqliteGateway.addEvent(mSceneId, new Date(), name, data);
+			mSqliteGateway.addEvent(mSceneId, new Date(), name, type, data);
 		}
 	}
 

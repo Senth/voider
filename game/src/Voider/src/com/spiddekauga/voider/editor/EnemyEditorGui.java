@@ -348,9 +348,9 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setPlayerDistanceMax(newValue);
 			}
 		};
-		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Distance From Player", icMovement.getAiDistanceMin(),
-				icMovement.getAiDistanceMax(), icMovement.getAiDistanceStepSize(), minSliderListener, maxSliderListener, table, hider,
-				mDisabledWhenPublished);
+		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Distance From Player", "EnemyMovement_AiDistanceFromPlayer",
+				icMovement.getAiDistanceMin(), icMovement.getAiDistanceMax(), icMovement.getAiDistanceStepSize(), minSliderListener,
+				maxSliderListener, table, hider, mDisabledWhenPublished);
 
 		// Set sliders
 		mWidgets.movement.aiDistanceMin = sliders.min;
@@ -404,8 +404,9 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setRandomTimeMax(newValue);
 			}
 		};
-		sliders = mUiFactory.addSliderMinMax(null, icMovement.getRandomMovementTimeMin(), icMovement.getRandomMovementTimeMax(),
-				icMovement.getRandomMovementTimeStepSize(), minSliderListener, maxSliderListener, table, onTab.getHider(), createdActors);
+		sliders = mUiFactory.addSliderMinMax(null, "EnemyMovement_AiRandomTime", icMovement.getRandomMovementTimeMin(),
+				icMovement.getRandomMovementTimeMax(), icMovement.getRandomMovementTimeStepSize(), minSliderListener, maxSliderListener, table,
+				onTab.getHider(), createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.MOVEMENT_AI_RANDOM_COOLDOWN);
 		mDisabledWhenPublished.addAll(createdActors);
 
@@ -441,8 +442,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.movement.aiSpeedSlider.setValue(newValue);
 			}
 		};
-		Slider slider = mUiFactory.addSlider(null, icMovement.getMoveSpeedMin(), icMovement.getMoveSpeedMax(), icMovement.getMoveSpeedStepSize(),
-				sliderListener, table, hider, mDisabledWhenPublished);
+		Slider slider = mUiFactory.addSlider(null, "EnemyMovement_Speed", icMovement.getMoveSpeedMin(), icMovement.getMoveSpeedMax(),
+				icMovement.getMoveSpeedStepSize(), sliderListener, table, hider, mDisabledWhenPublished);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -510,8 +511,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.movement.aiTurnSpeedSlider.setValue(newValue);
 			}
 		};
-		slider = mUiFactory.addSlider(null, icMovement.getTurnSpeedMin(), icMovement.getTurnSpeedMax(), icMovement.getTurnSpeedStepSize(),
-				sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
+		slider = mUiFactory.addSlider(null, "EnemyMovement_TurnSpeed", icMovement.getTurnSpeedMin(), icMovement.getTurnSpeedMax(),
+				icMovement.getTurnSpeedStepSize(), sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathTurnSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -648,8 +649,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setBulletSpeed(newValue);
 			}
 		};
-		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE,
-				sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", "EnemyWeapon_BulletSpeed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX,
+				Weapon.BULLET_SPEED_STEP_SIZE, sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
 
 		// Damage
 		sliderListener = new SliderListener(mInvoker) {
@@ -658,8 +659,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setWeaponDamage(newValue);
 			}
 		};
-		mWidgets.weapon.damage = mUiFactory.addSlider("Damage", Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE, sliderListener, table,
-				onTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.damage = mUiFactory.addSlider("Damage", "EnemyWeapon_Damage", Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE,
+				sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
 
 
 		// Cooldown
@@ -675,8 +676,9 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setCooldownMax(newValue);
 			}
 		};
-		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Weapon Cooldown Time", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
-				Weapon.COOLDOWN_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.getHider(), mDisabledWhenPublished);
+		SliderMinMaxWrapper sliders = mUiFactory
+				.addSliderMinMax("Weapon Cooldown Time", "EnemyWeapon_CooldownTime", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
+						Weapon.COOLDOWN_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.getHider(), mDisabledWhenPublished);
 
 		// Set sliders
 		mWidgets.weapon.cooldownMin = sliders.min;
@@ -782,8 +784,9 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.weapon.aimRotateStartAngle.setValue(newValue);
 			}
 		};
-		mWidgets.weapon.aimDirectionAngle = mUiFactory.addSlider("Angle", icWeapon.getStartAngleMin(), icWeapon.getStartAngleMax(),
-				icWeapon.getStartAngleStepSize(), sliderListener, table, directionTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.aimDirectionAngle = mUiFactory
+				.addSlider("Angle", "EnemyWeapon_AimDirection", icWeapon.getStartAngleMin(), icWeapon.getStartAngleMax(),
+						icWeapon.getStartAngleStepSize(), sliderListener, table, directionTab.getHider(), mDisabledWhenPublished);
 
 		// Rotate options
 		// Angle
@@ -794,8 +797,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.weapon.aimDirectionAngle.setValue(newValue);
 			}
 		};
-		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", icWeapon.getStartAngleMin(), icWeapon.getStartAngleMax(),
-				icWeapon.getStartAngleStepSize(), sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", "EnemyWeapon_AimRotateDirection", icWeapon.getStartAngleMin(),
+				icWeapon.getStartAngleMax(), icWeapon.getStartAngleStepSize(), sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
 
 		// Rotation speed
 		sliderListener = new SliderListener(mInvoker) {
@@ -804,8 +807,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setAimRotateSpeed(newValue);
 			}
 		};
-		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", icWeapon.getRotateSpeedMin(), icWeapon.getRotateSpeedMax(),
-				icWeapon.getRotateSpeedStepSize(), sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
+		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", "EnemyWeapon_AimRotateSpeed", icWeapon.getRotateSpeedMin(),
+				icWeapon.getRotateSpeedMax(), icWeapon.getRotateSpeedStepSize(), sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
 	}
 
 	@Override

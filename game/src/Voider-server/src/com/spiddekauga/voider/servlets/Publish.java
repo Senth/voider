@@ -571,12 +571,12 @@ public class Publish extends VoiderServlet {
 		appendDefEntity(builder, enemyDefEntity);
 
 		// Movement
-		SearchUtils.addFieldAtom(builder, SEnemy.MOVEMENT_TYPE, enemyDefEntity.movementType.getSearchId());
+		SearchUtils.addFieldAtom(builder, SEnemy.MOVEMENT_TYPE, enemyDefEntity.movementType.toSearchId());
 		if (enemyDefEntity.movementType != MovementTypes.STATIONARY) {
 			SearchUtils.addField(builder, SEnemy.MOVEMENT_SPEED, enemyDefEntity.movementSpeed);
 			EnemySpeedSearchRanges enemySpeedCat = EnemySpeedSearchRanges.getRange(enemyDefEntity.movementSpeed);
 			if (enemySpeedCat != null) {
-				SearchUtils.addFieldAtom(builder, SEnemy.MOVEMENT_SPEED_CAT, enemySpeedCat.getSearchId());
+				SearchUtils.addFieldAtom(builder, SEnemy.MOVEMENT_SPEED_CAT, enemySpeedCat.toSearchId());
 			} else {
 				mLogger.severe("Enemy movement speed (" + enemyDefEntity.movementSpeed + ") is not in a valid search range");
 			}
@@ -587,18 +587,18 @@ public class Publish extends VoiderServlet {
 		if (enemyDefEntity.hasWeapon) {
 			SearchUtils.addField(builder, SEnemy.BULLET_SPEED, enemyDefEntity.bulletSpeed);
 			SearchUtils.addField(builder, SEnemy.BULLET_DAMAGE, enemyDefEntity.bulletDamage);
-			SearchUtils.addFieldAtom(builder, SEnemy.AIM_TYPE, enemyDefEntity.aimType.getSearchId());
+			SearchUtils.addFieldAtom(builder, SEnemy.AIM_TYPE, enemyDefEntity.aimType.toSearchId());
 
 			BulletSpeedSearchRanges bulletSpeedCat = BulletSpeedSearchRanges.getRange(enemyDefEntity.bulletSpeed);
 			if (bulletSpeedCat != null) {
-				SearchUtils.addFieldAtom(builder, SEnemy.BULLET_SPEED_CAT, bulletSpeedCat.getSearchId());
+				SearchUtils.addFieldAtom(builder, SEnemy.BULLET_SPEED_CAT, bulletSpeedCat.toSearchId());
 			} else {
 				mLogger.severe("Enemy bullet speed (" + enemyDefEntity.bulletSpeed + ") is not in a valid range");
 			}
 
 			BulletDamageSearchRanges bulletDamageCat = BulletDamageSearchRanges.getRange(enemyDefEntity.bulletDamage);
 			if (bulletDamageCat != null) {
-				SearchUtils.addFieldAtom(builder, SEnemy.BULLET_DAMAGE_CAT, bulletDamageCat.getSearchId());
+				SearchUtils.addFieldAtom(builder, SEnemy.BULLET_DAMAGE_CAT, bulletDamageCat.toSearchId());
 			} else {
 				mLogger.severe("Enemy bullet damage (" + enemyDefEntity.bulletDamage + ") is not in a valid range");
 			}
@@ -610,7 +610,7 @@ public class Publish extends VoiderServlet {
 
 		CollisionDamageSearchRanges collisionDamageCat = CollisionDamageSearchRanges.getRange(enemyDefEntity.collisionDamage);
 		if (collisionDamageCat != null) {
-			SearchUtils.addFieldAtom(builder, SEnemy.COLLISION_DAMAGE_CAT, collisionDamageCat.getSearchId());
+			SearchUtils.addFieldAtom(builder, SEnemy.COLLISION_DAMAGE_CAT, collisionDamageCat.toSearchId());
 		}
 
 	}
@@ -651,14 +651,14 @@ public class Publish extends VoiderServlet {
 
 		LevelLengthSearchRanges lengthCat = LevelLengthSearchRanges.getRange(levelDefEntity.levelLength);
 		if (lengthCat != null) {
-			SearchUtils.addFieldAtom(builder, SLevel.LEVEL_LENGTH_CAT, lengthCat.getSearchId());
+			SearchUtils.addFieldAtom(builder, SLevel.LEVEL_LENGTH_CAT, lengthCat.toSearchId());
 		} else {
 			mLogger.severe("Level length (" + levelDefEntity.levelLength + ") isn't in a valid range");
 		}
 
 		LevelSpeedSearchRanges speedCat = LevelSpeedSearchRanges.getRange(levelDefEntity.levelSpeed);
 		if (speedCat != null) {
-			SearchUtils.addFieldAtom(builder, SLevel.LEVEL_SPEED_CAT, speedCat.getSearchId());
+			SearchUtils.addFieldAtom(builder, SLevel.LEVEL_SPEED_CAT, speedCat.toSearchId());
 		} else {
 			mLogger.severe("Level speed (" + levelDefEntity.levelSpeed + ") isn't in a valid range");
 		}

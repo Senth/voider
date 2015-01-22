@@ -57,12 +57,12 @@ public class EnemyFetchTest {
 		String field = SEnemy.MOVEMENT_TYPE;
 		mParameters.movementTypes.add(MovementTypes.AI);
 		search = buildSearchString();
-		Assert.assertEquals(field + ":" + MovementTypes.AI.getSearchId(), search);
+		Assert.assertEquals(field + ":" + MovementTypes.AI.toSearchId(), search);
 
 		// Multiple
 		mParameters.movementTypes.add(MovementTypes.STATIONARY);
 		search = buildSearchString();
-		Assert.assertEquals("(" + field + ":" + MovementTypes.AI.getSearchId() + " OR " + field + ":" + MovementTypes.STATIONARY.getSearchId() + ")",
+		Assert.assertEquals("(" + field + ":" + MovementTypes.AI.toSearchId() + " OR " + field + ":" + MovementTypes.STATIONARY.toSearchId() + ")",
 				search);
 
 		// All (nothing)
@@ -94,7 +94,7 @@ public class EnemyFetchTest {
 
 		search = buildSearchString();
 		String expected = mParameters.searchString + " " + SEnemy.HAS_WEAPON + ":1" + " (" + SEnemy.BULLET_SPEED_CAT + ":"
-				+ BulletSpeedSearchRanges.SLOW.getSearchId() + " OR " + SEnemy.BULLET_SPEED_CAT + ":" + BulletSpeedSearchRanges.FASTEST.getSearchId()
+				+ BulletSpeedSearchRanges.SLOW.toSearchId() + " OR " + SEnemy.BULLET_SPEED_CAT + ":" + BulletSpeedSearchRanges.FASTEST.toSearchId()
 				+ ")";
 		Assert.assertEquals(expected, search);
 	}
