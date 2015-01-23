@@ -66,10 +66,10 @@ public abstract interface IMethodEntity extends IEntity {
 
 		;
 		/**
-		 * Creates the enumeration with the correct url
+		 * Creates the enumeration with the correct URL
 		 */
 		private MethodNames() {
-			mUrl = name().toLowerCase().replace('_', '-');
+			mUrl = "api/" + name().toLowerCase().replace('_', '-');
 		}
 
 		@Override
@@ -77,7 +77,7 @@ public abstract interface IMethodEntity extends IEntity {
 			return mUrl;
 		}
 
-		/** The actual url of the method */
+		/** The actual URL of the method */
 		private String mUrl;
 	}
 }

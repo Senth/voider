@@ -11,7 +11,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
-		<url-pattern>/login</url-pattern>
+		<url-pattern>/api/login</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>RegisterUser</servlet-name>
@@ -19,7 +19,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>RegisterUser</servlet-name>
-		<url-pattern>/register-user</url-pattern>
+		<url-pattern>/api/register-user</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Logout</servlet-name>
@@ -27,7 +27,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Logout</servlet-name>
-		<url-pattern>/logout</url-pattern>
+		<url-pattern>/api/logout</url-pattern>
 	</servlet-mapping>
 	
 	
@@ -38,7 +38,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Publish</servlet-name>
-		<url-pattern>/publish</url-pattern>
+		<url-pattern>/api/publish</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>CommentFetch</servlet-name>
@@ -46,7 +46,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>CommentFetch</servlet-name>
-		<url-pattern>/comment-fetch</url-pattern>
+		<url-pattern>/api/comment-fetch</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>LevelFetch</servlet-name>
@@ -54,7 +54,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>LevelFetch</servlet-name>
-		<url-pattern>/level-fetch</url-pattern>
+		<url-pattern>/api/level-fetch</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>EnemyFetch</servlet-name>
@@ -62,7 +62,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>EnemyFetch</servlet-name>
-		<url-pattern>/enemy-fetch</url-pattern>
+		<url-pattern>/api/enemy-fetch</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>BulletFetch</servlet-name>
@@ -70,7 +70,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>BulletFetch</servlet-name>
-		<url-pattern>/bullet-fetch</url-pattern>
+		<url-pattern>/api/bullet-fetch</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ResourceDownload</servlet-name>
@@ -78,7 +78,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ResourceDownload</servlet-name>
-		<url-pattern>/resource-download</url-pattern>
+		<url-pattern>/api/resource-download</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DownloadSync</servlet-name>
@@ -86,7 +86,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DownloadSync</servlet-name>
-		<url-pattern>/download-sync</url-pattern>
+		<url-pattern>/api/download-sync</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>HighscoreSync</servlet-name>
@@ -94,7 +94,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>HighscoreSync</servlet-name>
-		<url-pattern>/highscore-sync</url-pattern>
+		<url-pattern>/api/highscore-sync</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>HighscoreGet</servlet-name>
@@ -102,7 +102,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>HighscoreGet</servlet-name>
-		<url-pattern>/highscore-get</url-pattern>
+		<url-pattern>/api/highscore-get</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>StatSync</servlet-name>
@@ -110,7 +110,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StatSync</servlet-name>
-		<url-pattern>/stat-sync</url-pattern>
+		<url-pattern>/api/stat-sync</url-pattern>
 	</servlet-mapping>
 	
 	
@@ -121,7 +121,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>UserResourceSync</servlet-name>
-		<url-pattern>/user-resource-sync</url-pattern>
+		<url-pattern>/api/user-resource-sync</url-pattern>
 	</servlet-mapping>
 	
 	
@@ -132,7 +132,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>GetUploadUrl</servlet-name>
-		<url-pattern>/get-upload-url</url-pattern>
+		<url-pattern>/api/get-upload-url</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>BlobDownload</servlet-name>
@@ -140,7 +140,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>BlobDownload</servlet-name>
-		<url-pattern>/blob-download</url-pattern>
+		<url-pattern>/api/blob-download</url-pattern>
 	</servlet-mapping>
 	
 	
@@ -151,7 +151,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>BugReport</servlet-name>
-		<url-pattern>/bug-report</url-pattern>
+		<url-pattern>/api/bug-report</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ChatCreate</servlet-name>
@@ -175,9 +175,9 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Analytics</servlet-name>
-		<url-pattern>/analytics</url-pattern>
+		<url-pattern>/api/analytics</url-pattern>
 	</servlet-mapping>
-	
+
 	
 	<!-- Testing -->
 	<servlet>
@@ -188,6 +188,18 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Upgrade</servlet-name>
 		<url-pattern>/upgrade-secret</url-pattern>
 	</servlet-mapping>
+	
+	
+	<!-- Security -->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>cron</web-resource-name>
+			<url-pattern>/cron/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
 	
 	
 	<welcome-file-list>

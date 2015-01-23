@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+	<!-- Weekly Report
+	<cron>
+		<description>Weekly Report</description>
+		<url>/weekly-report</url>
+		<schedule>every 1 minutes</schedule>
+		<target>analytics</target>
+	</cron> -->
+</cronentries>
