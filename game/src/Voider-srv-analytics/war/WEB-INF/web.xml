@@ -6,12 +6,12 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
-		<servlet-name>WeeklyReport</servlet-name>
-		<servlet-class>com.spiddekauga.voider.WeeklyReport</servlet-class>
+		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.AnalyticsDatastoreToBigQuery</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>WeeklyReport</servlet-name>
-		<url-pattern>/weekly-report</url-pattern>
+		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>
+		<url-pattern>/analytics-datastore-to-big-query</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>

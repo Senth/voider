@@ -145,6 +145,7 @@ public class ServerConfig {
 			public static final String PLATFORM = "platform";
 			public static final String OS = "os";
 			public static final String SCREEN_SIZE = "screen_size";
+			public static final String EXPORTED = "exported";
 		}
 
 		// Analytics scene

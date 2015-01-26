@@ -5,6 +5,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-mapreduce-0.8.2.jar" sourcepath="libs/appengine-mapreduce-0.8.2-sources.jar"/>
 	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/bigquery-v2r154lv1.18.0-rc"/>
-	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/storage-v1r24lv1.18.0-rc"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-pipeline-0.2.11.jar" sourcepath="libs/appengine-pipeline-0.2.11-sources.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/AppEngineUtils"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-annotations-2.1.2.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-databind-2.1.3.jar" sourcepath="libs/jackson-databind-2.1.3-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-gcs-client-0.4.4.jar" sourcepath="libs/appengine-gcs-client-0.4.4-sources.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

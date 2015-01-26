@@ -62,6 +62,7 @@ public class Analytics extends VoiderServlet {
 		ArrayList<Entity> sessionEntities = new ArrayList<>();
 		for (AnalyticsSessionEntity networkEntity : mParameters.sessions) {
 			Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_SESSION);
+			datastoreEntity.setProperty(CAnalyticsSession.EXPORTED, false);
 
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.START_TIME, networkEntity.startTime);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.USER_ANALYTICS_ID, mParameters.userAnalyticsId);
