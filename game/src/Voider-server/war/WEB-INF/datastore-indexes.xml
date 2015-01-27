@@ -101,11 +101,5 @@
         <property name="type" direction="asc"/>
         <property name="date" direction="desc"/>
     </datastore-index>
-    
-    <!-- ANALYTICS -->
-    <!-- New Analytics -->
-	<datastore-index kind="analytics_session" ancestor="false" source="manual">
-		<property name="exported" direction="asc"/>
-	</datastore-index>
 
 </datastore-indexes>

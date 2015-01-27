@@ -13,7 +13,7 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class EventOutput extends Output<AnalyticsEvent, Void> {
+public class EventOutput extends Output<AnalyticsEvent, AnalyticsScene> {
 	/**
 	 * Create event output
 	 * @param scene all events are from this scene
@@ -48,7 +48,7 @@ public class EventOutput extends Output<AnalyticsEvent, Void> {
 	}
 
 	@Override
-	public Void finish(Collection<? extends OutputWriter<AnalyticsEvent>> writers) throws IOException {
+	public AnalyticsScene finish(Collection<? extends OutputWriter<AnalyticsEvent>> writers) throws IOException {
 		ArrayList<AnalyticsEvent> events = new ArrayList<>();
 		for (OutputWriter<AnalyticsEvent> writer : writers) {
 			EventOutputWriter eventWriter = (EventOutputWriter) writer;
@@ -57,7 +57,7 @@ public class EventOutput extends Output<AnalyticsEvent, Void> {
 
 		mScene.setEvents(events);
 
-		return null;
+		return mScene;
 	}
 
 	private AnalyticsScene mScene;

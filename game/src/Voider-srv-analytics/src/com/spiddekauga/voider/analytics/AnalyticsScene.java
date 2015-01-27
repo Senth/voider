@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.analytics;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import com.google.appengine.api.datastore.Key;
  */
 @SuppressWarnings("unused")
 @JsonIgnoreProperties({ "key" })
-public class AnalyticsScene {
+public class AnalyticsScene implements Serializable {
 	/**
 	 * Creates a scene without any events.
 	 * @param key datastore key, not stored
@@ -42,6 +41,13 @@ public class AnalyticsScene {
 	}
 
 	/**
+	 * @return all events
+	 */
+	List<AnalyticsEvent> getEvents() {
+		return events;
+	}
+
+	/**
 	 * @return datastore key
 	 */
 	Key getKey() {
@@ -55,4 +61,6 @@ public class AnalyticsScene {
 	private double loadTime;
 	private boolean dropout;
 	private List<AnalyticsEvent> events = null;
+
+	private static final long serialVersionUID = -8495944865811931868L;
 }

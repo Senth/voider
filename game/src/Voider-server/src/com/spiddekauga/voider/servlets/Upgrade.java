@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -18,12 +17,12 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsSession;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -42,17 +41,22 @@ public class Upgrade extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		FilterWrapper levelFilter = new FilterWrapper("type", UploadTypes.LEVEL_DEF.getId());
-		List<Key> levelkeys = DatastoreUtils.getKeys("published", levelFilter);
+		resetAnalyticsSessions();
 
-		for (Key levelKey : levelkeys) {
-			createEmptyLevelStatistics(levelKey);
-			// createComments(levelKey);
-		}
-
-		// indexDocuments();
+		getResponse().setContentType("text/html");
+		getResponse().getWriter().append("DONE !");
 
 		return null;
+	}
+
+	private void resetAnalyticsSessions() {
+		Iterable<Entity> sessions = DatastoreUtils.getEntities(DatastoreTables.ANALYTICS_SESSION);
+		for (Entity session : sessions) {
+			session.setProperty(CAnalyticsSession.EXPORTED, false);
+			mLogger.info("Session (" + session.getKey() + ") as exported!");
+			DatastoreUtils.put(session);
+		}
+		DatastoreUtils.put(sessions);
 	}
 
 	private void indexDocuments() {

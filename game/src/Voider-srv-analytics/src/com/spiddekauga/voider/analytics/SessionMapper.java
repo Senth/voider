@@ -24,6 +24,19 @@ public class SessionMapper extends MapOnlyMapper<Entity, AnalyticsSession> {
 		String os = (String) sessionEntity.getProperty("os");
 		String screenSize = (String) sessionEntity.getProperty("screen_size");
 
-		emit(new AnalyticsSession(value.getKey(), startTime, length, userAnalyticsId, platform, os, screenSize));
+		// @formatter:off
+//		Logger logger = Logger.getLogger("SessionMapper");
+//		logger.info("Emitting new session\n"
+//				+ "Key: " + value.getKey() + "\n"
+//				+ "StartTime: " + startTime + "\n"
+//				+ "Length: " + length + "\n"
+//				+ "User ID: " + userAnalyticsId + "\n"
+//				+ "Platform: " + platform + "\n"
+//				+ "OS: " + os + "\n"
+//				+ "Screen Size: " + screenSize);
+		// @formatter:on
+
+		AnalyticsSession session = new AnalyticsSession(value.getKey(), startTime, length, userAnalyticsId, platform, os, screenSize);
+		emit(session);
 	}
 }

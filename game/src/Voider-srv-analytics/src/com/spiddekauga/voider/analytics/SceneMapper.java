@@ -22,6 +22,17 @@ public class SceneMapper extends MapOnlyMapper<Entity, AnalyticsScene> {
 		double loadTime = (Double) sceneEntity.getProperty("load_time");
 		boolean dropout = (Boolean) sceneEntity.getProperty("dropout");
 
+		// @formatter:off
+//		Logger logger = Logger.getLogger("SceneMapper");
+//		logger.info("Emitting new Scene\n"
+//				+ "Key: " + value.getKey()
+//				+ "\nStart Time: " + startTime
+//				+ "\nLength: " + length
+//				+ "\nName: " + name
+//				+ "\nLoad Time: " + loadTime
+//				+ "\nDropout: " + dropout);
+		// @formatter:on
+
 		emit(new AnalyticsScene(value.getKey(), startTime, length, name, loadTime, dropout));
 	}
 }

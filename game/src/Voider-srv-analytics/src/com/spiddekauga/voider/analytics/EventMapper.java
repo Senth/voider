@@ -19,6 +19,16 @@ public class EventMapper extends MapOnlyMapper<Entity, AnalyticsEvent> {
 		String data = (String) eventEntity.getProperty("data");
 		int type = ((Long) eventEntity.getProperty("type")).intValue();
 
+		// @formatter:off
+//		Logger logger = Logger.getLogger("EntityMapper");
+//		logger.info("Emitting new event\n"
+//				+ "Key: " + value.getKey()
+//				+ "\nTime: " + time
+//				+ "\nName: " + name
+//				+ "\nData: " + data
+//				+ "\nType: " + type);
+		// @formatter:on
+
 		emit(new AnalyticsEvent(time, type, name, data));
 	}
 }

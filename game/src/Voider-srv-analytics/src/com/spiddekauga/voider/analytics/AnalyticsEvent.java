@@ -1,12 +1,14 @@
 package com.spiddekauga.voider.analytics;
 
+import java.io.Serializable;
+
 
 /**
  * Event information for BigQuery
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("unused")
-public class AnalyticsEvent {
+public class AnalyticsEvent implements Serializable {
 	/**
 	 * Create a new analytics event
 	 * @param time when the event was fired, relative to when the scene was started
@@ -25,4 +27,6 @@ public class AnalyticsEvent {
 	private String name;
 	private String data;
 	private int type;
+
+	private static final long serialVersionUID = 2963369048107681654L;
 }

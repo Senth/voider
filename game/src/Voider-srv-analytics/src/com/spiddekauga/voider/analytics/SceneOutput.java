@@ -13,7 +13,7 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SceneOutput extends Output<AnalyticsScene, Void> {
+public class SceneOutput extends Output<AnalyticsScene, AnalyticsSession> {
 	/**
 	 * Create scene output.
 	 * @param session all scenes are from this session
@@ -48,7 +48,7 @@ public class SceneOutput extends Output<AnalyticsScene, Void> {
 	}
 
 	@Override
-	public Void finish(Collection<? extends OutputWriter<AnalyticsScene>> writers) throws IOException {
+	public AnalyticsSession finish(Collection<? extends OutputWriter<AnalyticsScene>> writers) throws IOException {
 		ArrayList<AnalyticsScene> scenes = new ArrayList<>();
 		for (OutputWriter<AnalyticsScene> writer : writers) {
 			SceneOutputWriter sceneWriter = (SceneOutputWriter) writer;
@@ -57,7 +57,7 @@ public class SceneOutput extends Output<AnalyticsScene, Void> {
 
 		mSession.setScenes(scenes);
 
-		return null;
+		return mSession;
 	}
 
 	private AnalyticsSession mSession;

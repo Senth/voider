@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes autoGenerate="false">
-	<!-- New Analytics -->
-	<datastore-index kind="analytics_session" ancestor="false" source="manual">
-		<property name="exported" direction="asc"/>
-	</datastore-index>
+	
 </datastore-indexes>

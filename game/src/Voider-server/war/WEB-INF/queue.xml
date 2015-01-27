@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <queue-entries>
 	<queue>
+		<name>default</name>
+		<rate>5/s</rate>
+	</queue>
+	<queue>
 		<name>analytics-queue</name>
 		<rate>30/s</rate>
 	</queue>

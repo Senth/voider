@@ -12,13 +12,13 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * Combines multiple analytics sessions from a mapper to a list
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class SessionOutput extends Output<AnalyticsSession, List<AnalyticsSession>> {
 	/**
 	 * Combines multiple analytics sessions from a mapper to a list
 	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
 	 */
 	private static class SessionOutputWriter extends OutputWriter<AnalyticsSession> {
+
 		@Override
 		public void write(AnalyticsSession value) throws IOException {
 			mSessions.add(value);
@@ -31,7 +31,9 @@ public class SessionOutput extends Output<AnalyticsSession, List<AnalyticsSessio
 			return mSessions;
 		}
 
+
 		private List<AnalyticsSession> mSessions = new ArrayList<>();
+		private static final long serialVersionUID = 6950115683562076356L;
 	}
 
 	@Override
@@ -52,4 +54,6 @@ public class SessionOutput extends Output<AnalyticsSession, List<AnalyticsSessio
 		}
 		return sessions;
 	}
+
+	private static final long serialVersionUID = -5685614536060471733L;
 }

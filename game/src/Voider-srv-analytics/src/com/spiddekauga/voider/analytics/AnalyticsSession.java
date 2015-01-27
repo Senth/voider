@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.analytics;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +14,7 @@ import com.google.appengine.api.datastore.Key;
  */
 @SuppressWarnings("unused")
 @JsonIgnoreProperties({ "key" })
-public class AnalyticsSession {
+public class AnalyticsSession implements Serializable {
 	/**
 	 * Create a session without any scenes.
 	 * @param key datastore key
@@ -64,4 +65,5 @@ public class AnalyticsSession {
 	private String os;
 	private String screenSize;
 	private List<AnalyticsScene> scenes = null;
+	private static final long serialVersionUID = -797860034811523577L;
 }
