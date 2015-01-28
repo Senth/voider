@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.analytics;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +45,14 @@ public class AnalyticsSession implements Serializable {
 	}
 
 	/**
+	 * Adds another scene to this session
+	 * @param scene
+	 */
+	void addScene(AnalyticsScene scene) {
+		scenes.add(scene);
+	}
+
+	/**
 	 * @return all scenes
 	 */
 	List<AnalyticsScene> getScenes() {
@@ -57,6 +66,20 @@ public class AnalyticsSession implements Serializable {
 		return key;
 	}
 
+	@Override
+	public int hashCode() {
+		return key.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (key == null) {
+			return false;
+		} else {
+			return key.equals(obj);
+		}
+	}
+
 	private Key key;
 	private long startTime;
 	private double length;
@@ -64,6 +87,6 @@ public class AnalyticsSession implements Serializable {
 	private String platform;
 	private String os;
 	private String screenSize;
-	private List<AnalyticsScene> scenes = null;
+	private List<AnalyticsScene> scenes = new ArrayList<>();
 	private static final long serialVersionUID = -797860034811523577L;
 }

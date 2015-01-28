@@ -2,6 +2,7 @@ package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -104,10 +105,11 @@ public class Analytics extends VoiderServlet {
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.NAME, networkEntity.name);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.LOAD_TIME, networkEntity.loadTime);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.DROPOUT, networkEntity.dropout);
+			datastoreEntity.setProperty(CAnalyticsScene.EXPORTED, false);
 
 			// Length
-			long diffDate = networkEntity.endTime.getTime() - networkEntity.startTime.getTime();
-			double seconds = diffDate / 1000d;
+			long diffMs = networkEntity.endTime.getTime() - networkEntity.startTime.getTime();
+			double seconds = diffMs / 1000d;
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.LENGTH, seconds);
 
 			sceneEntities.add(datastoreEntity);
@@ -117,7 +119,8 @@ public class Analytics extends VoiderServlet {
 
 		if (sceneKeys != null && sceneKeys.size() == scenes.size()) {
 			for (int i = 0; i < scenes.size(); ++i) {
-				saveEvents(sceneKeys.get(i), scenes.get(i).events);
+				AnalyticsSceneEntity scene = scenes.get(i);
+				saveEvents(sceneKeys.get(i), scene.startTime, scene.events);
 			}
 		} else {
 			mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
@@ -127,18 +130,24 @@ public class Analytics extends VoiderServlet {
 	/**
 	 * Save events
 	 * @param sceneKey scene the event belongs to
+	 * @param sceneStartTime start time of the scene
 	 * @param events all events to save
 	 */
-	private void saveEvents(Key sceneKey, List<AnalyticsEventEntity> events) {
+	private void saveEvents(Key sceneKey, Date sceneStartTime, List<AnalyticsEventEntity> events) {
 		ArrayList<Entity> eventEntities = new ArrayList<>();
 
 		for (AnalyticsEventEntity networkEntity : events) {
 			Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_EVENT, sceneKey);
 
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TIME, networkEntity.time);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.NAME, networkEntity.name);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.DATA, networkEntity.data);
 			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TYPE, networkEntity.type.toId());
+			datastoreEntity.setProperty(CAnalyticsEvent.EXPORTED, false);
+
+			// Time
+			long diffMs = networkEntity.time.getTime() - sceneStartTime.getTime();
+			double time = diffMs * 0.001;
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TIME, time);
 
 			eventEntities.add(datastoreEntity);
 		}

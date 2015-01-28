@@ -12,16 +12,7 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * Combines multiple analytics events from a mapper to a lilst
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
-public class EventOutput extends Output<AnalyticsEvent, AnalyticsScene> {
-	/**
-	 * Create event output
-	 * @param scene all events are from this scene
-	 */
-	public EventOutput(AnalyticsScene scene) {
-		mScene = scene;
-	}
-
+public class EventOutput extends Output<AnalyticsEvent, List<AnalyticsEvent>> {
 	private static class EventOutputWriter extends OutputWriter<AnalyticsEvent> {
 		@Override
 		public void write(AnalyticsEvent value) throws IOException {
@@ -36,6 +27,7 @@ public class EventOutput extends Output<AnalyticsEvent, AnalyticsScene> {
 		}
 
 		private List<AnalyticsEvent> mEvents = new ArrayList<>();
+		private static final long serialVersionUID = 2034749618016148725L;
 	}
 
 	@Override
@@ -48,17 +40,15 @@ public class EventOutput extends Output<AnalyticsEvent, AnalyticsScene> {
 	}
 
 	@Override
-	public AnalyticsScene finish(Collection<? extends OutputWriter<AnalyticsEvent>> writers) throws IOException {
-		ArrayList<AnalyticsEvent> events = new ArrayList<>();
+	public List<AnalyticsEvent> finish(Collection<? extends OutputWriter<AnalyticsEvent>> writers) throws IOException {
+		List<AnalyticsEvent> events = new ArrayList<>();
 		for (OutputWriter<AnalyticsEvent> writer : writers) {
 			EventOutputWriter eventWriter = (EventOutputWriter) writer;
 			events.addAll(eventWriter.toList());
 		}
 
-		mScene.setEvents(events);
-
-		return mScene;
+		return events;
 	}
 
-	private AnalyticsScene mScene;
+	private static final long serialVersionUID = 3742005962312016190L;
 }

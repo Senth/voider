@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -22,6 +23,8 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsEvent;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsScene;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsSession;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
@@ -49,14 +52,48 @@ public class Upgrade extends VoiderServlet {
 		return null;
 	}
 
+	private void changeEventTimeToDouble() {
+		Iterable<Entity> events = DatastoreUtils.getEntities(DatastoreTables.ANALYTICS_EVENT);
+		List<Entity> updated = new ArrayList<>();
+		for (Entity event : events) {
+			Object oldTime = event.getProperty(CAnalyticsEvent.TIME);
+			double time = 0;
+			if (oldTime instanceof Date) {
+				Entity scene = DatastoreUtils.getEntity(event.getParent());
+				Date sceneDate = (Date) scene.getProperty(CAnalyticsScene.START_TIME);
+				Date date = (Date) event.getProperty(CAnalyticsEvent.TIME);
+				long diffMs = date.getTime() - sceneDate.getTime();
+				time = diffMs * 0.001;
+			} else if (oldTime instanceof Double) {
+				time = (Double) event.getProperty(CAnalyticsEvent.TIME);
+			}
+			event.setUnindexedProperty(CAnalyticsEvent.TIME, time);
+			updated.add(event);
+		}
+		DatastoreUtils.put(updated);
+	}
+
 	private void resetAnalyticsSessions() {
+		List<Entity> updated = new ArrayList<>();
 		Iterable<Entity> sessions = DatastoreUtils.getEntities(DatastoreTables.ANALYTICS_SESSION);
 		for (Entity session : sessions) {
 			session.setProperty(CAnalyticsSession.EXPORTED, false);
-			mLogger.info("Session (" + session.getKey() + ") as exported!");
-			DatastoreUtils.put(session);
+			updated.add(session);
 		}
-		DatastoreUtils.put(sessions);
+
+		Iterable<Entity> scenes = DatastoreUtils.getEntities(DatastoreTables.ANALYTICS_SCENE);
+		for (Entity scene : scenes) {
+			scene.setProperty(CAnalyticsScene.EXPORTED, false);
+			updated.add(scene);
+		}
+
+		Iterable<Entity> events = DatastoreUtils.getEntities(DatastoreTables.ANALYTICS_EVENT);
+		for (Entity event : events) {
+			event.setProperty(CAnalyticsEvent.EXPORTED, false);
+			updated.add(event);
+		}
+
+		DatastoreUtils.put(updated);
 	}
 
 	private void indexDocuments() {

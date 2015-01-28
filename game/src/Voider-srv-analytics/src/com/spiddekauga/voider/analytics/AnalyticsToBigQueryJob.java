@@ -28,10 +28,9 @@ import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
 import com.google.appengine.tools.pipeline.FutureValue;
 import com.google.appengine.tools.pipeline.Job0;
 import com.google.appengine.tools.pipeline.Job1;
-import com.google.appengine.tools.pipeline.Job2;
+import com.google.appengine.tools.pipeline.Job3;
 import com.google.appengine.tools.pipeline.JobSetting;
 import com.google.appengine.tools.pipeline.Value;
-import com.spiddekauga.utils.pipeline.CombineMapResults;
 import com.spiddekauga.voider.config.AnalyticsConfig;
 
 /**
@@ -55,10 +54,16 @@ public class AnalyticsToBigQueryJob extends Job0<List<AnalyticsSession>> {
 				getJobSettings());
 
 		// Scenes
-		FutureValue<List<AnalyticsSession>> sceneFuture = futureCall(new SceneJob(), sessionsFuture, getJobSettings());
+		FutureValue<MapReduceResult<List<AnalyticsScene>>> sceneFuture = futureCall(new MapJob<>(getSceneJobSpec(), getMapSettings()),
+				getJobSettings());
 
 		// Events
-		FutureValue<List<AnalyticsSession>> eventFuture = futureCall(new EventJob(), sceneFuture, getJobSettings());
+		FutureValue<MapReduceResult<List<AnalyticsEvent>>> eventFuture = futureCall(new MapJob<>(getEventJobSpec(), getMapSettings()),
+				getJobSettings());
+
+		// Combine results
+		FutureValue<List<AnalyticsSession>> combinedSessionsFuture = futureCall(new CombineAnalyticsListsJob(), sessionsFuture, sceneFuture,
+				eventFuture, getJobSettings());
 
 		// To Cloud Storage
 		// FutureValue<Void> cloudFuture = futureCall(new CloudStoreJob(), sessionsFuture,
@@ -70,133 +75,45 @@ public class AnalyticsToBigQueryJob extends Job0<List<AnalyticsSession>> {
 		// Set sessions as exported
 		FutureValue<Void> updateDatastore = null;
 
-		return eventFuture;
+		return combinedSessionsFuture;
 	}
 
 	/**
-	 * Generator job for getting scenes in found sessions
+	 * Combine Sessions, scenes and events into one list
 	 */
-	private static class SceneJob extends Job1<List<AnalyticsSession>, MapReduceResult<List<AnalyticsSession>>> {
-		@Override
-		public Value<List<AnalyticsSession>> run(MapReduceResult<List<AnalyticsSession>> sessions) throws Exception {
-			List<FutureValue<MapReduceResult<AnalyticsSession>>> results = new ArrayList<>();
-			for (AnalyticsSession session : sessions.getOutputResult()) {
-				results.add(futureCall(new MapJob<>(getSceneJobSpec(session), getMapSettings()), getJobSettings()));
-			}
-
-			return futureCall(new CombineMapResults<AnalyticsSession>(), futureList(results), getJobSettings());
-		}
-
-		/**
-		 * @param session
-		 * @return scene MapReduce job specification
-		 */
-		private static MapSpecification<Entity, AnalyticsScene, AnalyticsSession> getSceneJobSpec(AnalyticsSession session) {
-			Query query = new Query("analytics_scene", session.getKey());
-			DatastoreInput input = new DatastoreInput(query, AnalyticsConfig.SHARDS_PER_QUERY);
-			SceneMapper mapper = new SceneMapper();
-			SceneOutput output = new SceneOutput(session);
-
-			Builder<Entity, AnalyticsScene, AnalyticsSession> builder = new Builder<>(input, mapper, output);
-			builder.setJobName("Analytics Scene (Datastore -> Object)");
-			return builder.build();
-		}
+	private static class CombineAnalyticsListsJob
+			extends
+			Job3<List<AnalyticsSession>, MapReduceResult<List<AnalyticsSession>>, MapReduceResult<List<AnalyticsScene>>, MapReduceResult<List<AnalyticsEvent>>> {
 
 		@Override
-		public String getJobDisplayName() {
-			return "Scene Job Generator";
-		}
-	}
+		public Value<List<AnalyticsSession>> run(MapReduceResult<List<AnalyticsSession>> sessionsNew,
+				MapReduceResult<List<AnalyticsScene>> scenesNew, MapReduceResult<List<AnalyticsEvent>> eventsNew) throws Exception {
+			List<AnalyticsSession> updatedSessions = new ArrayList<>();
 
-	/**
-	 * Generator job for getting events in found scenes
-	 */
-	private static class EventJob extends Job1<List<AnalyticsSession>, List<AnalyticsSession>> {
-		@Override
-		public Value<List<AnalyticsSession>> run(List<AnalyticsSession> sessions) throws Exception {
-			// StringBuilder logBuilder = new StringBuilder();
-
-			// logBuilder.append("Session information in EventJob");
-			// for (AnalyticsSession session : sessions) {
-			// if (session != null) {
-			// logBuilder.append("\nSession key: ").append(session.getKey());
-			// logBuilder.append("\n\tNo. Scenes: ");
-			// if (session.getScenes() == null) {
-			// logBuilder.append("NULL");
-			// } else {
-			// logBuilder.append(session.getScenes().size());
-			// }
-			// } else {
-			// logBuilder.append("Session is NULL");
-			// }
-			// }
-			// Logger logger = Logger.getLogger("EventJob");
-			// logger.info(logBuilder.toString());
-
-
-			List<FutureValue<MapReduceResult<AnalyticsScene>>> results = new ArrayList<>();
-			for (AnalyticsSession session : sessions) {
-				for (AnalyticsScene scene : session.getScenes()) {
-					results.add(futureCall(new MapJob<>(getEventJobSpec(scene), getMapSettings()), getJobSettings()));
-				}
+			// Map sessions for faster access
+			Map<Key, AnalyticsSession> sessionMap = new HashMap<>();
+			for (AnalyticsSession session : sessionsNew.getOutputResult()) {
+				sessionMap.put(session.getKey(), session);
+				updatedSessions.add(session);
 			}
 
-			FutureValue<List<AnalyticsScene>> scenes = futureCall(new CombineMapResults<AnalyticsScene>(), futureList(results), getJobSettings());
-
-			return futureCall(new UpdateSceneSessions(), immediate(sessions), scenes, getJobSettings());
-		}
-
-		/**
-		 * @param scene
-		 * @return event MapReduce job specification
-		 */
-		private static MapSpecification<Entity, AnalyticsEvent, AnalyticsScene> getEventJobSpec(AnalyticsScene scene) {
-			Query query = new Query("analytics_event", scene.getKey());
-			DatastoreInput input = new DatastoreInput(query, AnalyticsConfig.SHARDS_PER_QUERY);
-			EventMapper mapper = new EventMapper();
-			EventOutput output = new EventOutput(scene);
-
-			Builder<Entity, AnalyticsEvent, AnalyticsScene> builder = new Builder<>(input, mapper, output);
-			builder.setJobName("Analytics Event (Datastore -> Object");
-			return builder.build();
-		}
-
-		@Override
-		public String getJobDisplayName() {
-			return "Event Job Generator";
-		}
-
-		/**
-		 * Update session scene information from previous job
-		 */
-		private static class UpdateSceneSessions extends Job2<List<AnalyticsSession>, List<AnalyticsSession>, List<AnalyticsScene>> {
-			@Override
-			public Value<List<AnalyticsSession>> run(List<AnalyticsSession> sessionsToUpdate, List<AnalyticsScene> scenesNew) throws Exception {
-				// Map scenes for faster access
-				Map<Key, AnalyticsScene> scenesToUpdate = new HashMap<>();
-				for (AnalyticsSession session : sessionsToUpdate) {
-					if (session != null && session.getScenes() != null) {
-						for (AnalyticsScene scene : session.getScenes()) {
-							scenesToUpdate.put(scene.getKey(), scene);
-						}
-					}
-				}
-
-				// Update scene information
-				for (AnalyticsScene sceneNew : scenesNew) {
-					AnalyticsScene updateScene = scenesToUpdate.get(sceneNew.getKey());
-					updateScene.setEvents(sceneNew.getEvents());
-				}
-
-
-				return immediate(sessionsToUpdate);
+			// Add scenes to sessions and map scenes for faster access
+			Map<Key, AnalyticsScene> sceneMap = new HashMap<>();
+			for (AnalyticsScene scene : scenesNew.getOutputResult()) {
+				sceneMap.put(scene.getKey(), scene);
+				AnalyticsSession session = sessionMap.get(scene.getSessionKey());
+				session.addScene(scene);
 			}
 
-			@Override
-			public String getJobDisplayName() {
-				return "Update Scene Sessions";
+			// Add events to scenes
+			for (AnalyticsEvent event : eventsNew.getOutputResult()) {
+				AnalyticsScene scene = sceneMap.get(event.getSceneKey());
+				scene.addEvent(event);
 			}
+
+			return immediate(updatedSessions);
 		}
+
 	}
 
 	/**
@@ -259,7 +176,37 @@ public class AnalyticsToBigQueryJob extends Job0<List<AnalyticsSession>> {
 		SessionOutput output = new SessionOutput();
 
 		Builder<Entity, AnalyticsSession, List<AnalyticsSession>> builder = new Builder<>(input, mapper, output);
-		builder.setJobName("Analytics session (Datastore -> Object)");
+		builder.setJobName("Analytics Session (Datastore -> Object)");
+		return builder.build();
+	}
+
+	/**
+	 * @return scene MapReduce job specification
+	 */
+	private static MapSpecification<Entity, AnalyticsScene, List<AnalyticsScene>> getSceneJobSpec() {
+		Query query = new Query("analytics_scene");
+		query.setFilter(new Query.FilterPredicate("exported", FilterOperator.EQUAL, false));
+		DatastoreInput input = new DatastoreInput(query, AnalyticsConfig.SHARDS_PER_QUERY);
+		SceneMapper mapper = new SceneMapper();
+		SceneOutput output = new SceneOutput();
+
+		Builder<Entity, AnalyticsScene, List<AnalyticsScene>> builder = new Builder<>(input, mapper, output);
+		builder.setJobName("Analytics Scene (Datastore -> Object)");
+		return builder.build();
+	}
+
+	/**
+	 * @return event MapReduce job specification
+	 */
+	private static MapSpecification<Entity, AnalyticsEvent, List<AnalyticsEvent>> getEventJobSpec() {
+		Query query = new Query("analytics_event");
+		query.setFilter(new Query.FilterPredicate("exported", FilterOperator.EQUAL, false));
+		DatastoreInput input = new DatastoreInput(query, AnalyticsConfig.SHARDS_PER_QUERY);
+		EventMapper mapper = new EventMapper();
+		EventOutput output = new EventOutput();
+
+		Builder<Entity, AnalyticsEvent, List<AnalyticsEvent>> builder = new Builder<>(input, mapper, output);
+		builder.setJobName("Analytics Event (Datastore -> Object)");
 		return builder.build();
 	}
 

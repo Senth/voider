@@ -13,10 +13,6 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SessionOutput extends Output<AnalyticsSession, List<AnalyticsSession>> {
-	/**
-	 * Combines multiple analytics sessions from a mapper to a list
-	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
-	 */
 	private static class SessionOutputWriter extends OutputWriter<AnalyticsSession> {
 
 		@Override

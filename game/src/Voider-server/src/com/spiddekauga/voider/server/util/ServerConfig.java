@@ -155,6 +155,7 @@ public class ServerConfig {
 			public static final String NAME = "name";
 			public static final String LOAD_TIME = "load_time";
 			public static final String DROPOUT = "dropout";
+			public static final String EXPORTED = "exported";
 		}
 
 		// Analytics event
@@ -163,6 +164,7 @@ public class ServerConfig {
 			public static final String NAME = "name";
 			public static final String DATA = "data";
 			public static final String TYPE = "type";
+			public static final String EXPORTED = "exported";
 		}
 
 		/**

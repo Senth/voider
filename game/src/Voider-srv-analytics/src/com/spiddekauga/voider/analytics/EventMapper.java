@@ -29,6 +29,6 @@ public class EventMapper extends MapOnlyMapper<Entity, AnalyticsEvent> {
 //				+ "\nType: " + type);
 		// @formatter:on
 
-		emit(new AnalyticsEvent(time, type, name, data));
+		emit(new AnalyticsEvent(value.getParent(), time, type, name, data));
 	}
 }

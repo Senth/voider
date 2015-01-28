@@ -33,6 +33,6 @@ public class SceneMapper extends MapOnlyMapper<Entity, AnalyticsScene> {
 //				+ "\nDropout: " + dropout);
 		// @formatter:on
 
-		emit(new AnalyticsScene(value.getKey(), startTime, length, name, loadTime, dropout));
+		emit(new AnalyticsScene(value.getKey(), value.getParent(), startTime, length, name, loadTime, dropout));
 	}
 }
