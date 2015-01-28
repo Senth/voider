@@ -2,7 +2,6 @@ package com.spiddekauga.voider.analytics;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.appengine.api.datastore.Key;
 
 
@@ -10,8 +9,6 @@ import com.google.appengine.api.datastore.Key;
  * Event information for BigQuery
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("unused")
-@JsonIgnoreProperties({ "sceneKey" })
 public class AnalyticsEvent implements Serializable {
 	/**
 	 * Create a new analytics event
@@ -32,8 +29,36 @@ public class AnalyticsEvent implements Serializable {
 	/**
 	 * @return the parent scene key
 	 */
-	public Key getSceneKey() {
+	Key getSceneKey() {
 		return sceneKey;
+	}
+
+	/**
+	 * @return the time
+	 */
+	public double getTime() {
+		return time;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the data
+	 */
+	public String getData() {
+		return data;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public int getType() {
+		return type;
 	}
 
 	private Key sceneKey;

@@ -5,15 +5,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.appengine.api.datastore.Key;
 
 /**
  * Analytics scene data for BigQuery
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("unused")
-@JsonIgnoreProperties({ "key", "sessionKey" })
 public class AnalyticsScene implements Serializable {
 	/**
 	 * Creates a scene without any events.
@@ -54,7 +51,7 @@ public class AnalyticsScene implements Serializable {
 	/**
 	 * @return all events
 	 */
-	List<AnalyticsEvent> getEvents() {
+	public List<AnalyticsEvent> getEvents() {
 		return events;
 	}
 
@@ -84,6 +81,41 @@ public class AnalyticsScene implements Serializable {
 		} else {
 			return key.equals(obj);
 		}
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public long getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * @return the length
+	 */
+	public double getLength() {
+		return length;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the loadTime
+	 */
+	public double getLoadTime() {
+		return loadTime;
+	}
+
+	/**
+	 * @return the dropout
+	 */
+	public boolean isDropout() {
+		return dropout;
 	}
 
 	private Key sessionKey;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.services.bigquery.Bigquery;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
@@ -19,12 +20,16 @@ import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appengine.tools.cloudstorage.RetryParams;
+import com.google.appengine.tools.mapreduce.GoogleCloudStorageFileSet;
 import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceResult;
 import com.google.appengine.tools.mapreduce.MapSettings;
 import com.google.appengine.tools.mapreduce.MapSpecification;
 import com.google.appengine.tools.mapreduce.MapSpecification.Builder;
+import com.google.appengine.tools.mapreduce.bigqueryjobs.BigQueryLoadGoogleCloudStorageFilesJob;
+import com.google.appengine.tools.mapreduce.bigqueryjobs.BigQueryLoadJobReference;
 import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
+import com.google.appengine.tools.mapreduce.outputs.BigQueryStoreResult;
 import com.google.appengine.tools.pipeline.FutureValue;
 import com.google.appengine.tools.pipeline.Job0;
 import com.google.appengine.tools.pipeline.Job1;
@@ -45,10 +50,10 @@ import com.spiddekauga.voider.config.AnalyticsConfig;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class AnalyticsToBigQueryJob extends Job0<List<AnalyticsSession>> {
+public class AnalyticsToBigQueryJob extends Job0<Void> {
 
 	@Override
-	public Value<List<AnalyticsSession>> run() throws Exception {
+	public Value<Void> run() throws Exception {
 		// Sessions
 		FutureValue<MapReduceResult<List<AnalyticsSession>>> sessionsFuture = futureCall(new MapJob<>(getSessionJobSpec(), getMapSettings()),
 				getJobSettings());
@@ -66,16 +71,15 @@ public class AnalyticsToBigQueryJob extends Job0<List<AnalyticsSession>> {
 				eventFuture, getJobSettings());
 
 		// To Cloud Storage
-		// FutureValue<Void> cloudFuture = futureCall(new CloudStoreJob(), sessionsFuture,
-		// getJobSettings(waitFor(eventFuture)));
+		FutureValue<Void> cloudFuture = futureCall(new CloudStoreJob(), combinedSessionsFuture, getJobSettings());
 
 		// To Big Query
-		FutureValue<Void> bigQueryFuture = null;
+		FutureValue<List<BigQueryLoadJobReference>> bigQueryFuture = futureCall(new ImportToBigQueryJob(), getJobSettings(waitFor(cloudFuture)));
 
-		// Set sessions as exported
-		FutureValue<Void> updateDatastore = null;
+		// Cleanup
+		FutureValue<Void> updateDatastore = futureCall(new CleanupJob(), getJobSettings(waitFor(bigQueryFuture)));
 
-		return combinedSessionsFuture;
+		return updateDatastore;
 	}
 
 	/**
@@ -114,40 +118,92 @@ public class AnalyticsToBigQueryJob extends Job0<List<AnalyticsSession>> {
 			return immediate(updatedSessions);
 		}
 
+		@Override
+		public String getJobDisplayName() {
+			return "Combine Analytics Results";
+		}
 	}
 
 	/**
 	 * Job for printing all the new analytics session to the google cloud storage
 	 */
-	private static class CloudStoreJob extends Job1<Void, MapReduceResult<List<AnalyticsSession>>> {
+	private static class CloudStoreJob extends Job1<Void, List<AnalyticsSession>> {
 		@Override
-		public Value<Void> run(MapReduceResult<List<AnalyticsSession>> sessions) throws Exception {
+		public Value<Void> run(List<AnalyticsSession> sessions) throws Exception {
+			ObjectMapper jackson = new ObjectMapper();
+			GcsService gcsService = GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
 			StringBuilder builder = new StringBuilder();
+			// Logger logger = Logger.getLogger("CloudStoreJob");
 
-			for (AnalyticsSession session : sessions.getOutputResult()) {
-				String sessionJson = mJackson.writeValueAsString(session);
+			for (AnalyticsSession session : sessions) {
+				String sessionJson = jackson.writeValueAsString(session);
 				builder.append(sessionJson).append('\n');
 			}
 
 			String json = builder.toString();
 
+
 			GcsFileOptions.Builder optionBuilder = new GcsFileOptions.Builder();
 			optionBuilder.contentEncoding("application/javascript");
-			GcsOutputChannel outputChannel = mGcsService.createOrReplace(GCS_FILENAME, optionBuilder.build());
+			GcsOutputChannel outputChannel = gcsService.createOrReplace(GCS_FILENAME, optionBuilder.build());
 			PrintWriter printWriter = new PrintWriter(Channels.newWriter(outputChannel, "UTF8"));
 			printWriter.write(json);
 			printWriter.close();
 
-			return null;
+			return immediate(null);
 		}
 
 		@Override
 		public String getJobDisplayName() {
-			return "Cloud Store Job";
+			return "Store (Analytics -> Cloud)";
+		}
+	}
+
+	/**
+	 * Job for importing analytics to the google cloud storage
+	 */
+	private static class ImportToBigQueryJob extends Job0<List<BigQueryLoadJobReference>> {
+		@Override
+		public Value<List<BigQueryLoadJobReference>> run() throws Exception {
+
+			Bigquery.Builder builder = new Bigquery.Builder();
+			builder.setApplicationName("voider-dev");
+
+			BigQueryLoadGoogleCloudStorageFilesJob bigQueryJob = new BigQueryLoadGoogleCloudStorageFilesJob(AnalyticsConfig.BIG_DATASET_NAME,
+					AnalyticsConfig.BIG_TABLE_NAME, APP_ID);
+
+			List<String> fileNames = new ArrayList<>();
+			fileNames.add(FILENAME);
+			GoogleCloudStorageFileSet fileSet = new GoogleCloudStorageFileSet(BUCKET_NAME, fileNames);
+			BigQueryStoreResult<GoogleCloudStorageFileSet> storeResult = new BigQueryStoreResult<GoogleCloudStorageFileSet>(fileSet,
+					AnalyticsConfig.getClientSchema());
+
+			return futureCall(bigQueryJob, immediate(storeResult), getJobSettings());
 		}
 
-		private ObjectMapper mJackson = new ObjectMapper();
-		private final GcsService mGcsService = GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
+		@Override
+		public String getJobDisplayName() {
+			return "Import to Big Query";
+		}
+	}
+
+	/**
+	 * Clean-up job after analytics have been imported
+	 */
+	private static class CleanupJob extends Job0<Void> {
+		@Override
+		public Value<Void> run() throws Exception {
+			// TODO Datastore cleanup
+
+			// TODO Remove json file
+
+			return immediate(null);
+		}
+
+		@Override
+		public String getJobDisplayName() {
+			return "Clean-up";
+		}
 	}
 
 	/**
@@ -211,7 +267,8 @@ public class AnalyticsToBigQueryJob extends Job0<List<AnalyticsSession>> {
 	}
 
 
-	private static final String BUCKET_NAME = SystemProperty.applicationId.get();
+	private static final String APP_ID = SystemProperty.applicationId.get();
+	private static final String BUCKET_NAME = APP_ID;
 	private static final String FILENAME = "analytics.json";
 	private static final GcsFilename GCS_FILENAME = new GcsFilename(BUCKET_NAME, FILENAME);
 }

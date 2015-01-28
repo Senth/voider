@@ -6,15 +6,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.appengine.api.datastore.Key;
 
 /**
  * Analytics session information for BigQuery
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("unused")
-@JsonIgnoreProperties({ "key" })
 public class AnalyticsSession implements Serializable {
 	/**
 	 * Create a session without any scenes.
@@ -55,7 +52,7 @@ public class AnalyticsSession implements Serializable {
 	/**
 	 * @return all scenes
 	 */
-	List<AnalyticsScene> getScenes() {
+	public List<AnalyticsScene> getScenes() {
 		return scenes;
 	}
 
@@ -78,6 +75,48 @@ public class AnalyticsSession implements Serializable {
 		} else {
 			return key.equals(obj);
 		}
+	}
+
+	/**
+	 * @return start time
+	 */
+	public long getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * @return length of the session
+	 */
+	public double getLength() {
+		return length;
+	}
+
+	/**
+	 * @return user analytics id
+	 */
+	public String getUserAnalyticsId() {
+		return userAnalyticsId;
+	}
+
+	/**
+	 * @return platform
+	 */
+	public String getPlatform() {
+		return platform;
+	}
+
+	/**
+	 * @return user OS
+	 */
+	public String getOs() {
+		return os;
+	}
+
+	/**
+	 * @return screen size
+	 */
+	public String getScreenSize() {
+		return screenSize;
 	}
 
 	private Key key;
