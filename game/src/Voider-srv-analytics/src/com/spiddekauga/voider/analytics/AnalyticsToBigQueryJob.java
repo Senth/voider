@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.services.bigquery.Bigquery;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
@@ -26,8 +25,6 @@ import com.google.appengine.tools.mapreduce.MapReduceResult;
 import com.google.appengine.tools.mapreduce.MapSettings;
 import com.google.appengine.tools.mapreduce.MapSpecification;
 import com.google.appengine.tools.mapreduce.MapSpecification.Builder;
-import com.google.appengine.tools.mapreduce.bigqueryjobs.BigQueryLoadGoogleCloudStorageFilesJob;
-import com.google.appengine.tools.mapreduce.bigqueryjobs.BigQueryLoadJobReference;
 import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
 import com.google.appengine.tools.mapreduce.outputs.BigQueryStoreResult;
 import com.google.appengine.tools.pipeline.FutureValue;
@@ -36,6 +33,8 @@ import com.google.appengine.tools.pipeline.Job1;
 import com.google.appengine.tools.pipeline.Job3;
 import com.google.appengine.tools.pipeline.JobSetting;
 import com.google.appengine.tools.pipeline.Value;
+import com.spiddekauga.utils.bigquery.BigQueryLoadGoogleCloudStorageFilesJob;
+import com.spiddekauga.utils.bigquery.BigQueryLoadJobReference;
 import com.spiddekauga.voider.config.AnalyticsConfig;
 
 /**
@@ -144,9 +143,10 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 
 
 			GcsFileOptions.Builder optionBuilder = new GcsFileOptions.Builder();
-			optionBuilder.contentEncoding("application/javascript");
+			optionBuilder.contentEncoding("UTF-8");
+			optionBuilder.mimeType("application/json");
 			GcsOutputChannel outputChannel = gcsService.createOrReplace(GCS_FILENAME, optionBuilder.build());
-			PrintWriter printWriter = new PrintWriter(Channels.newWriter(outputChannel, "UTF8"));
+			PrintWriter printWriter = new PrintWriter(Channels.newWriter(outputChannel, "UTF-8"));
 			printWriter.write(json);
 			printWriter.close();
 
@@ -165,9 +165,6 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 	private static class ImportToBigQueryJob extends Job0<List<BigQueryLoadJobReference>> {
 		@Override
 		public Value<List<BigQueryLoadJobReference>> run() throws Exception {
-
-			Bigquery.Builder builder = new Bigquery.Builder();
-			builder.setApplicationName("voider-dev");
 
 			BigQueryLoadGoogleCloudStorageFilesJob bigQueryJob = new BigQueryLoadGoogleCloudStorageFilesJob(AnalyticsConfig.BIG_DATASET_NAME,
 					AnalyticsConfig.BIG_TABLE_NAME, APP_ID);
@@ -195,7 +192,6 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 		public Value<Void> run() throws Exception {
 			// TODO Datastore cleanup
 
-			// TODO Remove json file
 
 			return immediate(null);
 		}

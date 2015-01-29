@@ -19,7 +19,7 @@ public class AnalyticsConfig {
 	/** Big Query dataset for analytics */
 	public static final String BIG_DATASET_NAME = "analytics";
 	/** Big Query table for analytics */
-	public static final String BIG_TABLE_NAME = "client_events";
+	public static final String BIG_TABLE_NAME = "clientEvents";
 
 	/**
 	 * @param settings optional extra parameters
@@ -71,6 +71,7 @@ public class AnalyticsConfig {
 	 * Helper method for creating table schema fields
 	 * @param name the name of the field
 	 * @param type type of the field
+	 * @return table field schema
 	 */
 	private static TableFieldSchema newFieldSchema(String name, Types type) {
 		return new TableFieldSchema().setName(name).setType(type.name());
@@ -80,9 +81,10 @@ public class AnalyticsConfig {
 	 * Helper method for creating table schema fields with a record
 	 * @param name name of the field
 	 * @param fields schema of the fields
+	 * @return field schema
 	 */
 	private static TableFieldSchema newFieldSchema(String name, List<TableFieldSchema> fields) {
-		return newFieldSchema(name, Types.RECORD).setFields(fields);
+		return newFieldSchema(name, Types.RECORD).setFields(fields).setMode("REPEATED");
 	}
 
 	/**
