@@ -33,6 +33,7 @@ import com.google.appengine.tools.pipeline.Job1;
 import com.google.appengine.tools.pipeline.Job3;
 import com.google.appengine.tools.pipeline.JobSetting;
 import com.google.appengine.tools.pipeline.Value;
+import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.bigquery.BigQueryLoadGoogleCloudStorageFilesJob;
 import com.spiddekauga.utils.bigquery.BigQueryLoadJobReference;
 import com.spiddekauga.voider.config.AnalyticsConfig;
@@ -76,7 +77,7 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 		FutureValue<List<BigQueryLoadJobReference>> bigQueryFuture = futureCall(new ImportToBigQueryJob(), getJobSettings(waitFor(cloudFuture)));
 
 		// Cleanup
-		FutureValue<Void> updateDatastore = futureCall(new CleanupJob(), getJobSettings(waitFor(bigQueryFuture)));
+		FutureValue<Void> updateDatastore = futureCall(new CleanupJob(), combinedSessionsFuture, getJobSettings(waitFor(bigQueryFuture)));
 
 		return updateDatastore;
 	}
@@ -155,7 +156,7 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 
 		@Override
 		public String getJobDisplayName() {
-			return "Store (Analytics -> Cloud)";
+			return "Save JSON in Cloud Storage";
 		}
 	}
 
@@ -187,11 +188,30 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 	/**
 	 * Clean-up job after analytics have been imported
 	 */
-	private static class CleanupJob extends Job0<Void> {
+	private static class CleanupJob extends Job1<Void, List<AnalyticsSession>> {
 		@Override
-		public Value<Void> run() throws Exception {
-			// TODO Datastore cleanup
+		public Value<Void> run(List<AnalyticsSession> sessions) throws Exception {
 
+			// Get all datastore keys for all entities to update
+			List<Key> keys = new ArrayList<>();
+			for (AnalyticsSession session : sessions) {
+				keys.add(session.getKey());
+				for (AnalyticsScene scene : session.getScenes()) {
+					keys.add(scene.getKey());
+					for (AnalyticsEvent event : scene.getEvents()) {
+						keys.add(event.getKey());
+					}
+				}
+			}
+
+			// Datastore -> Set as exported
+			Map<Key, Entity> entities = DatastoreUtils.getEntities(keys);
+			for (Entity entity : entities.values()) {
+				if (entity != null) {
+					entity.setProperty("exported", true);
+				}
+			}
+			DatastoreUtils.put(entities.values());
 
 			return immediate(null);
 		}

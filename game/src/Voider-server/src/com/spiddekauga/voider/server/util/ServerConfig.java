@@ -137,34 +137,36 @@ public class ServerConfig {
 			public static final String LEVEL_ID = "level_id";
 		}
 
+		// Analytics (common attributes)
+		public static class CAnalytics {
+			public static final String EXPORTED = "exported";
+		}
+
 		// Analytics session
-		public static class CAnalyticsSession {
+		public static class CAnalyticsSession extends CAnalytics {
 			public static final String START_TIME = "start_time";
 			public static final String LENGTH = "length";
 			public static final String USER_ANALYTICS_ID = "user_analytics_id";
 			public static final String PLATFORM = "platform";
 			public static final String OS = "os";
 			public static final String SCREEN_SIZE = "screen_size";
-			public static final String EXPORTED = "exported";
 		}
 
 		// Analytics scene
-		public static class CAnalyticsScene {
+		public static class CAnalyticsScene extends CAnalytics {
 			public static final String START_TIME = "start_time";
 			public static final String LENGTH = "length";
 			public static final String NAME = "name";
 			public static final String LOAD_TIME = "load_time";
 			public static final String DROPOUT = "dropout";
-			public static final String EXPORTED = "exported";
 		}
 
 		// Analytics event
-		public static class CAnalyticsEvent {
+		public static class CAnalyticsEvent extends CAnalytics {
 			public static final String TIME = "time";
 			public static final String NAME = "name";
 			public static final String DATA = "data";
 			public static final String TYPE = "type";
-			public static final String EXPORTED = "exported";
 		}
 
 		/**
