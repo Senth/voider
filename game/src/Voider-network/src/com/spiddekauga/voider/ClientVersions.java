@@ -44,7 +44,7 @@ public enum ClientVersions {
 			"	In-game notifications are now correctly displayed"),
 	V0_4_4(true,
 			"Analytics",
-			"	These are entirely anonymous",
+			"	Statistics are entirely anonymous",
 			"	Implemented analytics to answer the questions",
 			"		How long does it take for new players to play a level?",
 			"		Do players come back and play more?",
@@ -53,7 +53,11 @@ public enum ClientVersions {
 			"BugReport",
 			"	Now uses analytics to see what the player's last actions were",
 			"	Can now send bug reports anonymously",
-			"	Improved design and removed 'last' and 'second last' text fields"
+			"	Improved design and removed 'last' and 'second last' text fields",
+			"Other",
+			"	Music has been updated (although game over doesn't loop well)",
+			"	Various smaller UI elements",
+			"	Changed URL (this breaks old clients)"
 			),
 
 	;

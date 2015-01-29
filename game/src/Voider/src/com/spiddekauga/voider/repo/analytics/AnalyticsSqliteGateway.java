@@ -88,6 +88,21 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 		execSQL("UPDATE analytics_scene SET end_time=" + endTime.getTime() + " WHERE scene_id='" + sceneId + "';");
 	}
 
+	// /**
+	// * Sets the last ended scene as the dropout scene
+	// * @param sessionId id of the session to find and set the dropout scene for
+	// */
+	// void setDropoutScene(UUID sessionId) {
+	// DatabaseCursor cursor =
+	// rawQuery("SELECT scene_id FROM analytics_scene WHERE session_id='" + sessionId +
+	// "' ORDER BY startTime DESC LIMIT 1");
+	//
+	// if (cursor.next()) {
+	// String sceneId = cursor.getString(0);
+	// execSQL("UPDATE analytics_scene SET dropout=1);
+	// }
+	// }
+
 	/**
 	 * Add a new event to the specified scene
 	 * @param sceneId id of the scene to add this event to
@@ -171,6 +186,20 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 				scene.events.add(event);
 			} else {
 				Gdx.app.error("AnalyticsSqliteGateway", "Scene not found!");
+			}
+		}
+
+		// Set scene dropout
+		for (AnalyticsSessionEntity session : exportSessions) {
+			AnalyticsSceneEntity dropoutScene = null;
+			for (AnalyticsSceneEntity scene : session.scenes) {
+				if (dropoutScene == null || scene.startTime.after(dropoutScene.startTime)) {
+					dropoutScene = scene;
+				}
+			}
+
+			if (dropoutScene != null) {
+				dropoutScene.dropout = true;
 			}
 		}
 

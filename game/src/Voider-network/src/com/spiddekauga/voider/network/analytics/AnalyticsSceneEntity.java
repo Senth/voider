@@ -25,7 +25,7 @@ public class AnalyticsSceneEntity implements IEntity {
 	/** Load time of the scene, in seconds */
 	public float loadTime;
 	/** If the game was quit through this scene */
-	public boolean dropout;
+	public boolean dropout = false;
 	/** All events in this scene */
 	public ArrayList<AnalyticsEventEntity> events = new ArrayList<>();
 }
