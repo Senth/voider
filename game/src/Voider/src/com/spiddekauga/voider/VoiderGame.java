@@ -1,5 +1,7 @@
 package com.spiddekauga.voider;
 
+import java.util.concurrent.Semaphore;
+
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -15,6 +17,9 @@ import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.menu.LoginScene;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDisplayRepo;
@@ -25,6 +30,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Synchronizer;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * The main application, i.e. start point
@@ -102,6 +108,8 @@ public class VoiderGame implements ApplicationListener {
 	@Override
 	public void dispose() {
 		AnalyticsRepo.getInstance().endSession();
+		syncAnalytics();
+
 		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();
 		Config.dispose();
@@ -158,6 +166,7 @@ public class VoiderGame implements ApplicationListener {
 	public void pause() {
 		if (Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
 			AnalyticsRepo.getInstance().endSession();
+			syncAnalytics();
 		}
 	}
 
@@ -168,6 +177,32 @@ public class VoiderGame implements ApplicationListener {
 		}
 	}
 
+	/**
+	 * Sync analytics
+	 */
+	private void syncAnalytics() {
+		if (User.getGlobalUser().isOnline()) {
+			try {
+				mAnalyticsSyncSemaphore.acquire();
+				AnalyticsRepo.getInstance().sync(mAnalyticsResponseListener);
+				mAnalyticsSyncSemaphore.acquire();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Analytics response listener
+	 */
+	private IResponseListener mAnalyticsResponseListener = new IResponseListener() {
+		@Override
+		public void handleWebResponse(IMethodEntity method, IEntity response) {
+			mAnalyticsSyncSemaphore.release();
+		}
+	};
+
+	private Semaphore mAnalyticsSyncSemaphore = new Semaphore(1);
 	private MusicPlayer mMusicPlayer = null;
 
 	/** Main thread id */

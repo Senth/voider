@@ -59,6 +59,8 @@ public enum ClientVersions {
 			"	Various smaller UI elements",
 			"	Changed URL (this breaks old clients)"
 			),
+	V0_4_5(false,
+			"Hotfix, analytics are now sent during program shutdown"),
 
 	;
 	// @formatter:on

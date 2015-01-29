@@ -44,12 +44,21 @@ public class Upgrade extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		resetAnalyticsSessions();
 
 		getResponse().setContentType("text/html");
 		getResponse().getWriter().append("DONE !");
 
 		return null;
+	}
+
+	private void clearAnalytics() {
+		List<Key> deleteKeys = new ArrayList<>();
+
+		deleteKeys.addAll(DatastoreUtils.getKeys(DatastoreTables.ANALYTICS_SESSION));
+		deleteKeys.addAll(DatastoreUtils.getKeys(DatastoreTables.ANALYTICS_SCENE));
+		deleteKeys.addAll(DatastoreUtils.getKeys(DatastoreTables.ANALYTICS_EVENT));
+
+		DatastoreUtils.delete(deleteKeys);
 	}
 
 	private void changeEventTimeToDouble() {
