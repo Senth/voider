@@ -12,6 +12,7 @@ import com.spiddekauga.utils.IniClass;
 @SuppressWarnings("javadoc")
 public class IC_Sound extends IniClass {
 	public IC_Music music;
+	public IC_Effect effect;
 
 	/**
 	 * Internal music configuration values
@@ -28,6 +29,25 @@ public class IC_Sound extends IniClass {
 		}
 	}
 
+	/**
+	 * Internal sound effects configuration values
+	 */
+	public class IC_Effect extends IniClass {
+		protected float fadeTime;
+		protected float lowHealthTime;
+
+		private IC_Effect(Ini ini, Section classSection) {
+			super(ini, classSection);
+		}
+
+		public float getLowHealthTime() {
+			return lowHealthTime;
+		}
+
+		public float getFadeTime() {
+			return fadeTime;
+		}
+	}
 
 	IC_Sound(Ini ini, Section section) {
 		super(ini, section);

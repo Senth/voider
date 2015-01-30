@@ -36,11 +36,11 @@ public class MusicPlayer {
 
 	/**
 	 * Starts to play this music track. This is same as calling
-	 * {@link #play(Music, Interpolations)} with play(music, Interpolations.NONE)
+	 * {@link #play(Music, MusicInterpolations)} with play(music, Interpolations.NONE)
 	 * @param music the music to start to play
 	 */
 	public void play(Music music) {
-		play(music, Interpolations.NONE);
+		play(music, MusicInterpolations.NONE);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class MusicPlayer {
 	 *        is passed nothing will happen.
 	 * @param interpolation type of interpolation
 	 */
-	public void play(Music music, Interpolations interpolation) {
+	public void play(Music music, MusicInterpolations interpolation) {
 		mPaused = null;
 		if (music != mNext && (music != mCurrent || mInterpolation != null)) {
 			// Finish current interpolation before we start playing
@@ -71,14 +71,14 @@ public class MusicPlayer {
 	 * Stops / Pauses the current playing music
 	 */
 	public void stop() {
-		stop(Interpolations.NONE);
+		stop(MusicInterpolations.NONE);
 	}
 
 	/**
 	 * Stops / Pauses the current playing music with the specified interpolation
 	 * @param interpolation the interpolation to use for stopping the music
 	 */
-	public void stop(Interpolations interpolation) {
+	public void stop(MusicInterpolations interpolation) {
 		if (mNext != null) {
 			if (mCurrent != null && mCurrent.getTrack() != null) {
 				mCurrent.getTrack().stop();
@@ -99,7 +99,7 @@ public class MusicPlayer {
 	 * that.
 	 */
 	public void resume() {
-		resume(Interpolations.NONE);
+		resume(MusicInterpolations.NONE);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class MusicPlayer {
 	 * that.
 	 * @param interpolation the interpolation to start the track with
 	 */
-	public void resume(Interpolations interpolation) {
+	public void resume(MusicInterpolations interpolation) {
 		if (mPaused != null) {
 			play(mPaused, interpolation);
 		}
@@ -162,7 +162,7 @@ public class MusicPlayer {
 	};
 
 	/** Current interpolation */
-	private Interpolations mInterpolation = null;
+	private MusicInterpolations mInterpolation = null;
 	private Music mCurrent = null;
 	private Music mNext = null;
 	private Music mPaused = null;

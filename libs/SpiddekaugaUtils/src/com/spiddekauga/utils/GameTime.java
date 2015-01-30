@@ -3,9 +3,8 @@ package com.spiddekauga.utils;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 
 /**
- * Measures the total game time of the game. If a frame is longer than 0.1s
- * it will clamp the delta time to 0.1s
- * 
+ * Measures the total game time of the game. If a frame is longer than 0.1s it will clamp
+ * the delta time to 0.1s
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameTime {
@@ -47,19 +46,22 @@ public class GameTime {
 	 * Updates the global game time, call once per fram
 	 * @param deltaTime elapsed time since last frame
 	 */
-	public static void updateGlobal(float deltaTime) {
+	public synchronized static void updateGlobal(float deltaTime) {
 		mTotalGlobalTimeElapsed += deltaTime;
 	}
 
 	/**
 	 * @return elapsed global time since the game/program started, in seconds.
 	 */
-	public static float getTotalGlobalTimeElapsed() {
+	public synchronized static float getTotalGlobalTimeElapsed() {
 		return mTotalGlobalTimeElapsed;
 	}
 
 	/** Total global time elapsed since start of game */
 	private static float mTotalGlobalTimeElapsed = 0;
-	/** Maximum time between frames, useful when debugging or lagging so the game doesn't bug out. */
+	/**
+	 * Maximum time between frames, useful when debugging or lagging so the game doesn't
+	 * bug out.
+	 */
 	private static float FRAME_LENGTH_MAX = 0.1f;
 }

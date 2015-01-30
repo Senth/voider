@@ -59,7 +59,7 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
-import com.spiddekauga.voider.sound.Interpolations;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Messages;
@@ -751,7 +751,7 @@ class LevelEditorGui extends EditorGui {
 				if (mLevelEditor.getMusic() != music) {
 					mLevelEditor.setMusic(music);
 					togglePlayVisibility(true);
-					MusicPlayer.getInstance().play(music, Interpolations.CROSSFADE);
+					MusicPlayer.getInstance().play(music, MusicInterpolations.CROSSFADE);
 				}
 			}
 		};
@@ -767,14 +767,14 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(playButton) {
 			@Override
 			protected void onPressed(Button button) {
-				MusicPlayer.getInstance().play(mWidgets.info.music.getSelected(), Interpolations.CROSSFADE);
+				MusicPlayer.getInstance().play(mWidgets.info.music.getSelected(), MusicInterpolations.CROSSFADE);
 				togglePlayVisibility(false);
 			}
 		};
 		new ButtonListener(stopButton) {
 			@Override
 			protected void onPressed(Button button) {
-				MusicPlayer.getInstance().stop(Interpolations.FADE_OUT);
+				MusicPlayer.getInstance().stop(MusicInterpolations.FADE_OUT);
 				togglePlayVisibility(true);
 			}
 		};

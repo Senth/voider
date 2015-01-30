@@ -45,7 +45,7 @@ import com.spiddekauga.voider.scene.LoadingProgressScene;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.sound.Interpolations;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
@@ -93,7 +93,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		mMusicPlayer.stop(Interpolations.FADE_OUT);
+		mMusicPlayer.stop(MusicInterpolations.FADE_OUT);
 
 		Actor.setEditorActive(true);
 

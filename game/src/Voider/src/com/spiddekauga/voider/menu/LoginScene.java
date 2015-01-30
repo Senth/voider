@@ -12,7 +12,7 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.sound.Interpolations;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -61,7 +61,7 @@ public class LoginScene extends Scene implements IResponseListener {
 		eventDispatcher.connect(EventTypes.UPDATE_AVAILABLE, mUpdateListener);
 		eventDispatcher.connect(EventTypes.UPDATE_REQUIRED, mUpdateListener);
 
-		mMusicPlayer.play(Music.TITLE, Interpolations.FADE_IN);
+		mMusicPlayer.play(Music.TITLE, MusicInterpolations.FADE_IN);
 
 		login();
 	}

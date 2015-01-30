@@ -9,7 +9,7 @@ import com.spiddekauga.voider.config.IC_Sound.IC_Music;
  * All different interpolations for music and sound effects
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public enum Interpolations {
+public enum MusicInterpolations {
 	/** No interpolation */
 	NONE,
 	/**

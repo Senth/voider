@@ -14,9 +14,11 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.MusicLoader;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -85,6 +87,7 @@ class ResourceLoader {
 		mAssetManager.setLoader(Skin.class, new SkinLoader(internalFileHandleResolver));
 		mAssetManager.setLoader(Ini.class, new IniLoader(internalFileHandleResolver));
 		mAssetManager.setLoader(Music.class, new MusicLoader(internalFileHandleResolver));
+		mAssetManager.setLoader(Sound.class, new SoundLoader(internalFileHandleResolver));
 	}
 
 	/**

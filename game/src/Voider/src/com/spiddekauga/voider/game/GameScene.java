@@ -47,7 +47,7 @@ import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.LoadingTextScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.sound.Interpolations;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.User;
@@ -332,7 +332,7 @@ public class GameScene extends WorldScene {
 			}
 
 			// Play music
-			mMusicPlayer.play(mLevel.getLevelDef().getMusic(), Interpolations.CROSSFADE);
+			mMusicPlayer.play(mLevel.getLevelDef().getMusic(), MusicInterpolations.CROSSFADE);
 
 			createPlayerShip();
 			createMouseJoint();
@@ -439,7 +439,7 @@ public class GameScene extends WorldScene {
 	private void checkCompletedLevel() {
 		if (mLevel.isCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
-			mMusicPlayer.play(Music.LEVEL_COMPLETED, Interpolations.FADE_OUT);
+			mMusicPlayer.play(Music.LEVEL_COMPLETED, MusicInterpolations.FADE_OUT);
 		}
 	}
 
@@ -454,7 +454,7 @@ public class GameScene extends WorldScene {
 				updateLives();
 			} else {
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
-				mMusicPlayer.play(Music.GAME_OVER, Interpolations.CROSSFADE);
+				mMusicPlayer.play(Music.GAME_OVER, MusicInterpolations.CROSSFADE);
 			}
 		}
 	}

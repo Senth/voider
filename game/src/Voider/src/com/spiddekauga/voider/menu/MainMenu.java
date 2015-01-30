@@ -32,13 +32,16 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
 import com.spiddekauga.voider.repo.user.UserWebRepo;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
-import com.spiddekauga.voider.sound.Interpolations;
 import com.spiddekauga.voider.sound.Music;
+import com.spiddekauga.voider.sound.MusicInterpolations;
+import com.spiddekauga.voider.sound.SoundPlayer;
+import com.spiddekauga.voider.sound.Sounds;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -68,6 +71,10 @@ public class MainMenu extends Scene implements IEventListener {
 		ResourceCacheFacade.load(InternalNames.MUSIC_TITLE);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
+
+		// REMOVE
+		ResourceCacheFacade.load(InternalDeps.GAME_SFX);
+		ResourceCacheFacade.load(InternalDeps.UI_SFX);
 	}
 
 	@Override
@@ -119,7 +126,7 @@ public class MainMenu extends Scene implements IEventListener {
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		super.onActivate(outcome, message, loadingOutcome);
 
-		mMusicPlayer.play(Music.TITLE, Interpolations.FADE_IN);
+		mMusicPlayer.play(Music.TITLE, MusicInterpolations.FADE_IN);
 
 		if (outcome == Outcomes.EXPLORE_LOAD) {
 			if (message instanceof DefEntity) {
@@ -216,6 +223,24 @@ public class MainMenu extends Scene implements IEventListener {
 				ResourceLocalRepo.setSyncUserResourceDate(new Date(0));
 			} else if (keycode == Input.Keys.HOME) {
 
+			}
+			// Sounds
+			else if (keycode == Input.Keys.A) {
+				SoundPlayer.getInstance().stopAll();
+			} else if (keycode == Input.Keys.O) {
+				SoundPlayer.getInstance().play(Sounds.SHIP_LOW_HEALTH);
+			} else if (keycode == Input.Keys.E) {
+				SoundPlayer.getInstance().play(Sounds.BULLET_HIT_PLAYER);
+			} else if (keycode == Input.Keys.U) {
+				SoundPlayer.getInstance().play(Sounds.SHIP_COLLIDE);
+			} else if (keycode == Input.Keys.I) {
+				SoundPlayer.getInstance().play(Sounds.ENEMY_EXPLODES);
+			} else if (keycode == Input.Keys.D) {
+				SoundPlayer.getInstance().play(Sounds.SHIP_LOST);
+			} else if (keycode == Input.Keys.H) {
+				SoundPlayer.getInstance().play(Sounds.UI_BUTTON_HOVER);
+			} else if (keycode == Input.Keys.T) {
+				SoundPlayer.getInstance().play(Sounds.UI_BUTTON_CLICK);
 			}
 		}
 		return super.onKeyDown(keycode);
