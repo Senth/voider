@@ -7,13 +7,15 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.BulletActor;
+import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
- * Resolves collisions between two objects, generally a player
- * and something else.
+ * Resolves collisions between two objects, generally a player and something else.
  * @note This does not change the physics of the objects.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CollisionResolver implements ContactListener {
@@ -26,8 +28,8 @@ public class CollisionResolver implements ContactListener {
 
 		// Add collision actors, so they take damage (if possible)
 		if (bodyA.getUserData() instanceof Actor && bodyB.getUserData() instanceof Actor) {
-			Actor actorA = (Actor)bodyA.getUserData();
-			Actor actorB = (Actor)bodyB.getUserData();
+			Actor actorA = (Actor) bodyA.getUserData();
+			Actor actorB = (Actor) bodyB.getUserData();
 
 			// If one shall be destroyed directly
 			Actor destroyActor = null;
@@ -35,8 +37,7 @@ public class CollisionResolver implements ContactListener {
 			if (actorA.getDef().isDestroyedOnCollide()) {
 				destroyActor = actorA;
 				actor = actorB;
-			}
-			else if (actorB.getDef().isDestroyedOnCollide()) {
+			} else if (actorB.getDef().isDestroyedOnCollide()) {
 				destroyActor = actorB;
 				actor = actorA;
 			}
@@ -47,9 +48,14 @@ public class CollisionResolver implements ContactListener {
 				// Use hit damage from bullet instead
 				if (destroyActor instanceof BulletActor) {
 					damage = ((BulletActor) destroyActor).getHitDamage();
+					if (actor instanceof PlayerActor) {
+						mEventDispatcher.fire(new GameEvent(EventTypes.GAME_PLAYER_HIT_BY_BULLET));
+					}
+				} else if (destroyActor instanceof EnemyActor) {
+					mEventDispatcher.fire(new GameEvent(EventTypes.GAME_ENEMY_EXPLODED));
 				}
 
-				actor.decreaseLife(damage);
+				actor.decreaseHealth(damage);
 				destroyActor.destroyBodySafe();
 				return;
 			}
@@ -60,12 +66,12 @@ public class CollisionResolver implements ContactListener {
 			PlayerActor playerActor = null;
 			Actor collectibleActor = null;
 			if (actorA.getDef().getCollectible() != null && actorB instanceof PlayerActor) {
-				playerActor = (PlayerActor)actorB;
+				playerActor = (PlayerActor) actorB;
 				collectibleActor = actorA;
 			}
 			// A player, B collectible
 			else if (actorA instanceof PlayerActor && actorB.getDef().getCollectible() != null) {
-				playerActor = (PlayerActor)actorA;
+				playerActor = (PlayerActor) actorA;
 				collectibleActor = actorB;
 			}
 
@@ -76,7 +82,6 @@ public class CollisionResolver implements ContactListener {
 				return;
 			}
 
-
 			// Have not been handled yet
 			actorA.addCollidingActor(actorB.getDef());
 			actorB.addCollidingActor(actorA.getDef());
@@ -86,8 +91,8 @@ public class CollisionResolver implements ContactListener {
 
 	@Override
 	public void endContact(Contact contact) {
-		if (contact.getFixtureA() == null || contact.getFixtureA().getBody() == null ||
-				contact.getFixtureB() == null || contact.getFixtureB().getBody() == null) {
+		if (contact.getFixtureA() == null || contact.getFixtureA().getBody() == null || contact.getFixtureB() == null
+				|| contact.getFixtureB().getBody() == null) {
 			return;
 		}
 
@@ -96,8 +101,8 @@ public class CollisionResolver implements ContactListener {
 
 		// Remove collision from actors
 		if (bodyA.getUserData() instanceof Actor && bodyB.getUserData() instanceof Actor) {
-			Actor actorA = (Actor)bodyA.getUserData();
-			Actor actorB = (Actor)bodyB.getUserData();
+			Actor actorA = (Actor) bodyA.getUserData();
+			Actor actorB = (Actor) bodyB.getUserData();
 
 			// If one shall be destroyed on collide...
 			if (actorA.getDef().isDestroyedOnCollide() || actorB.getDef().isDestroyedOnCollide()) {
@@ -105,8 +110,8 @@ public class CollisionResolver implements ContactListener {
 			}
 
 			// Collectible
-			if ((actorA instanceof PlayerActor && actorB.getDef().getCollectible() != null) ||
-					(actorB instanceof PlayerActor && actorA.getDef().getCollectible() != null)) {
+			if ((actorA instanceof PlayerActor && actorB.getDef().getCollectible() != null)
+					|| (actorB instanceof PlayerActor && actorA.getDef().getCollectible() != null)) {
 				return;
 			}
 
@@ -124,4 +129,6 @@ public class CollisionResolver implements ContactListener {
 	public void postSolve(Contact contact, ContactImpulse impulse) {
 		// Does nothing
 	}
+
+	private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 }

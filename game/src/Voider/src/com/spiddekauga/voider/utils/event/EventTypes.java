@@ -58,4 +58,19 @@ public enum EventTypes {
 	SOUND_EFFECTS_VOLUME_CHANGED,
 	/** UI volume was changed */
 	SOUND_UI_VOLUME_CHANGED,
+
+
+	// --- GAME ---
+	/** Player started a collision with something */
+	GAME_PLAYER_COLLISION_BEGIN,
+	/** Player collision ended */
+	GAME_PLAYER_COLLISION_END,
+	/** Player was hit by a bullet */
+	GAME_PLAYER_HIT_BY_BULLET,
+	/** Enemy exploded */
+	GAME_ENEMY_EXPLODED,
+	/** Player lost a ship */
+	GAME_PLAYER_SHIP_LOST,
+	/** An actors health was changed */
+	GAME_ACTOR_HEALTH_CHANGED,
 }

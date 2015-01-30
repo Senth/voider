@@ -2,6 +2,8 @@ package com.spiddekauga.voider.game.actors;
 
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.Collectibles;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * The ship the player controls
@@ -31,11 +33,11 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	public void addCollectible(Collectibles collectible) {
 		switch (collectible) {
 		case HEALTH_25:
-			increaseLife(25);
+			increaseHealth(25);
 			break;
 
 		case HEALTH_50:
-			increaseLife(50);
+			increaseHealth(50);
 			break;
 		}
 	}
@@ -60,5 +62,23 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	@Override
 	public RenderOrders getRenderOrder() {
 		return RenderOrders.PLAYER;
+	}
+
+	@Override
+	public void addCollidingActor(ActorDef actorDef) {
+		if (getCollidingActors().isEmpty()) {
+			mEventDispatcher.fire(new GameEvent(EventTypes.GAME_PLAYER_COLLISION_BEGIN));
+		}
+
+		super.addCollidingActor(actorDef);
+	}
+
+	@Override
+	public void removeCollidingActor(ActorDef actorDef) {
+		super.removeCollidingActor(actorDef);
+
+		if (getCollidingActors().isEmpty()) {
+			mEventDispatcher.fire(new GameEvent(EventTypes.GAME_PLAYER_COLLISION_END));
+		}
 	}
 }

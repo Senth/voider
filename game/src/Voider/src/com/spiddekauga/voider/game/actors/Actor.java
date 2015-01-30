@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -31,6 +32,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.game.HealthChangeEvent;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
 import com.spiddekauga.voider.game.triggers.Trigger;
@@ -53,6 +55,8 @@ import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
  * The abstract base class for all actors
@@ -109,7 +113,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			// Decrease life if colliding with something...
 			if (mDef.getHealthMax() > 0 && mLife > 0) {
 				for (ActorDef collidingActor : mCollidingActors) {
-					decreaseLife(collidingActor.getCollisionDamage() * deltaTime);
+					decreaseHealth(collidingActor.getCollisionDamage() * deltaTime);
 				}
 			}
 		}
@@ -475,25 +479,52 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/**
 	 * Resets the life
 	 */
-	public void resetLife() {
+	public void resetHealth() {
+		float oldLife = mLife;
 		mLife = getDef().getHealthMax();
+		sendChangeHealthEvent(oldLife);
 	}
 
 	/**
 	 * Decrease the actor's life with the specified amount
 	 * @param amount the amount to to decrease the actor's life with
 	 */
-	public void decreaseLife(float amount) {
-		mLife -= amount;
-		sendChangeEvent(EventTypes.LIFE_DECREASED);
+	public void decreaseHealth(float amount) {
+		if (mLife > 0) {
+			float oldLife = mLife;
+			mLife -= amount;
+			sendChangeEvent(EventTypes.LIFE_DECREASED);
+			sendChangeHealthEvent(oldLife);
+			if (this instanceof PlayerActor && mLife <= 0) {
+				mEventDispatcher.fire(new GameEvent(com.spiddekauga.voider.utils.event.EventTypes.GAME_PLAYER_SHIP_LOST));
+			}
+		}
 	}
 
 	/**
 	 * Increases the actor's life with the specified amount
 	 * @param amount the amount to increase
 	 */
-	public void increaseLife(float amount) {
+	public void increaseHealth(float amount) {
+		float oldLife = mLife;
 		mLife += amount;
+
+		// Crop
+		if (mLife > getDef().getHealthMax()) {
+			mLife = getDef().getHealthMax();
+		}
+
+		sendChangeHealthEvent(oldLife);
+	}
+
+	/**
+	 * Send an change life event if the life was changed
+	 * @param oldLife
+	 */
+	private void sendChangeHealthEvent(float oldLife) {
+		if (mLife != oldLife) {
+			mEventDispatcher.fire(new HealthChangeEvent(this, oldLife));
+		}
 	}
 
 	/**
@@ -1240,6 +1271,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		return mIsBeingMoved;
 	}
 
+	/**
+	 * @return colliding actors
+	 */
+	protected List<ActorDef> getCollidingActors() {
+		return mCollidingActors;
+	}
+
 	// Kryo variables
 	/** Current life */
 	@Tag(3) private float mLife = 0;
@@ -1294,6 +1332,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/** Selected outline */
 	private ArrayList<Vector2> mSelectedOutline = null;
 
+	/** Event dispatcher */
+	protected static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 	/** The world used for creating bodies */
 	protected static World mWorld = null;
 	/** If the actor will be used for an editor */

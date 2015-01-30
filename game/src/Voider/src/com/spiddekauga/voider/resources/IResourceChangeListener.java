@@ -3,7 +3,6 @@ package com.spiddekauga.voider.resources;
 
 /**
  * Listens to resource change events
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceChangeListener extends IResource {
@@ -20,7 +19,7 @@ public interface IResourceChangeListener extends IResource {
 	public enum EventTypes {
 		/** Position was changed */
 		POSITION,
-		/** Life was decreased */
-		LIFE_DECREASED
+		/** @deprecated Use game events instead */
+		@Deprecated LIFE_DECREASED
 	}
 }

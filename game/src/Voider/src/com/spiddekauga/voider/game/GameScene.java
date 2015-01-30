@@ -83,6 +83,7 @@ public class GameScene extends WorldScene {
 		super.onInit();
 
 		mWorld.setContactListener(mCollisionResolver);
+		mSoundEffectListener = new SoundEffectListener();
 	}
 
 	/**
@@ -376,6 +377,7 @@ public class GameScene extends WorldScene {
 		}
 
 		Actor.setPlayerActor(null);
+		mSoundEffectListener.dispose();
 
 		super.onDispose();
 	}
@@ -449,7 +451,7 @@ public class GameScene extends WorldScene {
 	private void checkPlayerLives() {
 		if (mPlayerActor.getHealth() <= 0 && !mInvulnerable) {
 			if (mPlayerStats.getExtraLives() > 0) {
-				mPlayerActor.resetLife();
+				mPlayerActor.resetHealth();
 				mPlayerStats.decreaseExtraLives();
 				updateLives();
 			} else {
@@ -862,6 +864,7 @@ public class GameScene extends WorldScene {
 	private Vector2 mBodyShepherdMaxPos = new Vector2();
 	private PlayerStats mPlayerStats = null;
 	private boolean mTakeScreenshot = false;
+	private SoundEffectListener mSoundEffectListener = null;
 
 	// MOUSE JOINT
 	private Vector2 mCursorScreen = new Vector2();
