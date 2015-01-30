@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -187,7 +185,7 @@ abstract class ExploreGui extends Gui {
 	 * @return the created button
 	 */
 	protected Button addViewButton(ISkinNames iconName, ButtonListener listener, HideListener... hideListeners) {
-		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(iconName));
+		Button button = mUiFactory.button.createImage(iconName);
 		mWidgets.view.table.add(button);
 		button.addListener(listener);
 		mWidgets.view.buttonGroup.add(button);
@@ -296,7 +294,8 @@ abstract class ExploreGui extends Gui {
 	 */
 	protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
 		// Tab Button
-		Button button = mUiFactory.addTabScroll(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.contentHider, mLeftPanel);
+		Button button = mUiFactory.button.addTabScroll(SkinNames.General.SEARCH_FILTER, mWidgets.search.table, mWidgets.search.contentHider,
+				mLeftPanel);
 		mWidgets.search.viewHider.addToggleActor(button);
 
 		table.setName("search-filters");
@@ -427,7 +426,7 @@ abstract class ExploreGui extends Gui {
 		mRightPanel = tabWidget;
 
 		// Info
-		mUiFactory.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
+		mUiFactory.button.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
 
 		// Add actions
 		// Revision

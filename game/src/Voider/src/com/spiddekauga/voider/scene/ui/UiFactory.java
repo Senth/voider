@@ -35,7 +35,6 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.ColorTintPicker;
 import com.spiddekauga.utils.scene.ui.GuiHider;
-import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
@@ -51,7 +50,6 @@ import com.spiddekauga.voider.repo.analytics.listener.AnalyticsSliderListener;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
-import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
@@ -816,40 +814,6 @@ public class UiFactory {
 		}
 
 		return cell;
-	}
-
-	/**
-	 * Add a tab to a created tab widget
-	 * @param icon the image of the tab
-	 * @param table will show this table when this tab is selected
-	 * @param hider optional listens to the hider.
-	 * @param tabWidget the tab widget to add the tab to
-	 * @return created tab button
-	 */
-	public Button addTab(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
-		ImageButtonStyle style = SkinNames.getResource(icon);
-
-		if (hider == null) {
-			hider = new HideListener(true);
-		}
-		return tabWidget.addTab(style, table, hider);
-	}
-
-	/**
-	 * Add a scrollable tab to a created tab widget
-	 * @param icon the image of the tab
-	 * @param table will show this table when this tab is selected
-	 * @param hider optional listens to the hider.
-	 * @param tabWidget the tab widget to add the tab to
-	 * @return created tab button
-	 */
-	public Button addTabScroll(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
-		ImageButtonStyle style = SkinNames.getResource(icon);
-
-		if (hider == null) {
-			hider = new HideListener(true);
-		}
-		return tabWidget.addTabScroll(style, table, hider);
 	}
 
 	/**

@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -179,24 +178,22 @@ public class TabWidget extends AlignTable {
 
 	/**
 	 * Adds a new content tab which is scrollable
-	 * @param imageButtonStyle the style to use for the tab
+	 * @param imageButton tab button image
 	 * @param table the table to display this in this tab
 	 * @param hider the hider that will hide the table
-	 * @return created tab button
 	 */
-	public Button addTabScroll(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider) {
-		return addTab(imageButtonStyle, table, hider, true);
+	public void addTabScroll(ImageButton imageButton, AlignTable table, HideListener hider) {
+		addTab(imageButton, table, hider, true);
 	}
 
 	/**
 	 * Adds a new content tab which is scrollable. Automatically creates an anonymous
 	 * hider
-	 * @param imageButtonStyle the style to use for the tab
+	 * @param imageButton tab button image
 	 * @param table the table to display in this tab
-	 * @return created tab button
 	 */
-	public Button addTabScroll(ImageButtonStyle imageButtonStyle, AlignTable table) {
-		return addTabScroll(imageButtonStyle, table, new HideListener(true));
+	public void addTabScroll(ImageButton imageButton, AlignTable table) {
+		addTabScroll(imageButton, table, new HideListener(true));
 	}
 
 	/**
@@ -204,31 +201,28 @@ public class TabWidget extends AlignTable {
 	 * @param imageButtonStyle the style to use for the tab
 	 * @param table the table to display in this tab
 	 * @param hider the hider that will hide the table
-	 * @return create tab button
 	 */
-	public Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider) {
-		return addTab(imageButtonStyle, table, hider, false);
+	public void addTab(ImageButton imageButtonStyle, AlignTable table, HideListener hider) {
+		addTab(imageButtonStyle, table, hider, false);
 	}
 
 	/**
 	 * Adds a new content tab
-	 * @param imageButtonStyle the style to use for the tab
+	 * @param imageButton the style to use for the tab
 	 * @param table the table to display in this tab
 	 * @param hider the hider that will hide the table
 	 * @param scrollable if the tab should be scrollable
-	 * @return create tab button
 	 */
-	private Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider, boolean scrollable) {
-		ImageButton button = new ImageButton(imageButtonStyle);
-		mButtonGroup.add(button);
+	private void addTab(ImageButton imageButton, AlignTable table, HideListener hider, boolean scrollable) {
+		mButtonGroup.add(imageButton);
 		mTabHiderLast = hider;
 
 		if (mTabPosition.isLeftOrRight()) {
 			mTabTable.row();
 		}
 
-		mTabTable.add(button);
-		mTabButtons.add(button);
+		mTabTable.add(imageButton);
+		mTabButtons.add(imageButton);
 
 		Actor addActor = table;
 
@@ -242,34 +236,32 @@ public class TabWidget extends AlignTable {
 			addActor = scrollPane;
 		}
 
-		button.addListener(mTabVisibilityListener);
-		button.addListener(mTabCheckListener);
+		imageButton.addListener(mTabVisibilityListener);
+		imageButton.addListener(mTabCheckListener);
 		hider.addToggleActor(addActor);
-		hider.addButton(button);
+		hider.addButton(imageButton);
 		mContentInnerTable.add(addActor).setFillWidth(true).setFillHeight(true);
 		mContentInnerTable.getRow().setFillWidth(true).setFillHeight(true);
 		invalidateHierarchy();
-		return button;
 	}
 
 	/**
 	 * Adds a new content tab, automatically creates an anonymous hider
-	 * @param imageButtonStyle the style to use for the tab
+	 * @param imageButton image button for the tab
 	 * @param table the table to display in this tab
-	 * @return created tab button
 	 */
-	public Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table) {
-		return addTab(imageButtonStyle, table, new HideListener(true));
+	public void addTab(ImageButton imageButton, AlignTable table) {
+		addTab(imageButton, table, new HideListener(true));
 	}
 
 	/**
 	 * Adds an action button to the action table (usually below the content).
 	 * @pre a tab must have been added through any of the following methods as these
 	 *      action buttons are only visible for this tab
-	 *      {@link #addTab(ImageButtonStyle, AlignTable)},
-	 *      {@link #addTab(ImageButtonStyle, AlignTable, HideListener)},
-	 *      {@link #addTabScroll(ImageButtonStyle, AlignTable)}, or
-	 *      {@link #addTabScroll(ImageButtonStyle, AlignTable, HideListener)}
+	 *      {@link #addTab(ImageButton, AlignTable)},
+	 *      {@link #addTab(ImageButton, AlignTable, HideListener)},
+	 *      {@link #addTabScroll(ImageButton, AlignTable)}, or
+	 *      {@link #addTabScroll(ImageButton, AlignTable, HideListener)}
 	 * @param button the button to add
 	 * @see #addActionButtonGlobal(Button) to add a global action button
 	 */

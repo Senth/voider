@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.ColorArray;
@@ -291,28 +290,28 @@ public class EnemyEditorGui extends ActorGui {
 		super.initSettingsMenu();
 
 		// Movement
-		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.MOVEMENT);
-		Button button = mSettingTabs.addTabScroll(buttonStyle, mMovementTable, mMovementHider);
+		ImageButton button = mUiFactory.button.createImage(SkinNames.EditorIcons.MOVEMENT);
+		mSettingTabs.addTabScroll(button, mMovementTable, mMovementHider);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_MOVEMENT);
 
 		// Weapons
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.WEAPON);
-		button = mSettingTabs.addTab(buttonStyle, mWeaponTable, mWeaponHider);
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.WEAPON);
+		mSettingTabs.addTab(button, mWeaponTable, mWeaponHider);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_WEAPON);
 
 		// Visual
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.VISUALS);
-		button = mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.VISUALS);
+		mSettingTabs.addTab(button, getVisualTable(), getVisualHider());
 		mTooltip.add(button, Messages.EditorTooltips.TAB_VISUAL);
 
 		// Color
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLOR);
-		button = mSettingTabs.addTab(buttonStyle, getColorTable());
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.COLOR);
+		mSettingTabs.addTab(button, getColorTable());
 		mTooltip.add(button, Messages.EditorTooltips.TAB_COLOR_ACTOR);
 
 		// Collision
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLLISION);
-		button = mSettingTabs.addTab(buttonStyle, getCollisionTable());
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.COLLISION);
+		mSettingTabs.addTab(button, getCollisionTable());
 		mTooltip.add(button, Messages.EditorTooltips.TAB_COLLISION);
 	}
 

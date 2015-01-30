@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -59,8 +60,8 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
-import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.Music;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Messages;
 
@@ -991,26 +992,26 @@ class LevelEditorGui extends EditorGui {
 		super.initSettingsMenu();
 
 		// Add enemy list
-		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.ENEMY_ADD_TAB);
-		Button button = mSettingTabs.addTab(buttonStyle, mWidgets.enemyAdd.table, mWidgets.enemyAdd.hiderTable);
+		ImageButton button = mUiFactory.button.createImage(SkinNames.EditorIcons.ENEMY_ADD_TAB);
+		mSettingTabs.addTab(button, mWidgets.enemyAdd.table, mWidgets.enemyAdd.hiderTable);
 		mWidgets.enemyAdd.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY_ADD);
 
 		// Enemy settings
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.ENEMY_INFO);
-		button = mSettingTabs.addTab(buttonStyle, mWidgets.enemy.table, mWidgets.enemy.hiderTable);
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.ENEMY_INFO);
+		mSettingTabs.addTab(button, mWidgets.enemy.table, mWidgets.enemy.hiderTable);
 		mWidgets.enemy.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY);
 
 		// Path settings
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.PATH_TAB);
-		button = mSettingTabs.addTab(buttonStyle, mWidgets.path.table, mWidgets.path.hiderTable);
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.PATH_TAB);
+		mSettingTabs.addTab(button, mWidgets.path.table, mWidgets.path.hiderTable);
 		mWidgets.path.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_PATH);
 
 		// Color settings
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLOR);
-		button = mSettingTabs.addTab(buttonStyle, mWidgets.color.table, mWidgets.color.hiderTable);
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.COLOR);
+		mSettingTabs.addTab(button, mWidgets.color.table, mWidgets.color.hiderTable);
 		mWidgets.color.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_COLOR_LEVEL);
 	}

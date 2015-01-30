@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -59,18 +58,18 @@ public class BulletEditorGui extends ActorGui {
 		super.initSettingsMenu();
 
 		// Visual
-		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.VISUALS);
-		Button button = mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
+		ImageButton button = mUiFactory.button.createImage(SkinNames.EditorIcons.VISUALS);
+		mSettingTabs.addTab(button, getVisualTable(), getVisualHider());
 		mTooltip.add(button, Messages.EditorTooltips.TAB_VISUAL);
 
 		// Color
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLOR);
-		button = mSettingTabs.addTab(buttonStyle, getColorTable());
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.COLOR);
+		mSettingTabs.addTab(button, getColorTable());
 		mTooltip.add(button, Messages.EditorTooltips.TAB_COLOR_ACTOR);
 
 		// Weapon
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.WEAPON);
-		button = mSettingTabs.addTab(buttonStyle, mWeaponTable);
+		button = mUiFactory.button.createImage(SkinNames.EditorIcons.WEAPON);
+		mSettingTabs.addTab(button, mWeaponTable);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_BULLET_TEST);
 	}
 

@@ -68,10 +68,10 @@ public class SettingsGui extends Gui {
 		TabWidget tabWidget = mWidgets.tabWidget;
 
 		if (Gdx.app.getType() == ApplicationType.Desktop) {
-			mUiFactory.addTab(SkinNames.General.SETTINGS_DISPLAY, mWidgets.display.table, mWidgets.display.hider, tabWidget);
+			mUiFactory.button.addTab(SkinNames.General.SETTINGS_DISPLAY, mWidgets.display.table, mWidgets.display.hider, tabWidget);
 		}
-		mUiFactory.addTab(SkinNames.General.SETTINGS_SOUND, mWidgets.sound.table, null, tabWidget);
-		mUiFactory.addTab(SkinNames.General.SETTINGS_GENERAL, mWidgets.general.table, null, tabWidget);
+		mUiFactory.button.addTab(SkinNames.General.SETTINGS_SOUND, mWidgets.sound.table, tabWidget);
+		mUiFactory.button.addTab(SkinNames.General.SETTINGS_GENERAL, mWidgets.general.table, tabWidget);
 	}
 
 	private void initGeneral() {

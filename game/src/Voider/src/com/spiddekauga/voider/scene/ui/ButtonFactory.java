@@ -3,6 +3,9 @@ package com.spiddekauga.voider.scene.ui;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -22,6 +25,7 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.Row;
+import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
@@ -30,6 +34,8 @@ import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
+import com.spiddekauga.voider.sound.SoundPlayer;
+import com.spiddekauga.voider.sound.Sounds;
 
 /**
  * UI factory for buttons
@@ -44,6 +50,69 @@ public class ButtonFactory extends BaseFactory {
 	}
 
 	/**
+	 * Add a tab to a created tab widget
+	 * @param icon the image of the tab
+	 * @param table will show this table when this tab is selected
+	 * @param hider listens to the hider.
+	 * @param tabWidget the tab widget to add the tab to
+	 * @return created tab button
+	 */
+	public ImageButton addTab(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
+		ImageButton button = createImage(icon);
+		tabWidget.addTab(button, table, hider);
+		return button;
+	}
+
+	/**
+	 * Add a scrollable tab to a created tab widget
+	 * @param icon the image of the tab
+	 * @param table will show this table when this tab is selected
+	 * @param hider listens to the hider.
+	 * @param tabWidget the tab widget to add the tab to
+	 * @return created tab button
+	 */
+	public ImageButton addTabScroll(ISkinNames icon, AlignTable table, HideListener hider, TabWidget tabWidget) {
+		ImageButton button = createImage(icon);
+		tabWidget.addTabScroll(button, table, hider);
+		return button;
+
+	}
+
+	/**
+	 * Add a tab to a created tab widget
+	 * @param icon the image of the tab
+	 * @param table will show this table when this tab is selected
+	 * @param tabWidget the tab widget to add the tab to
+	 * @return created tab button
+	 */
+	public ImageButton addTab(ISkinNames icon, AlignTable table, TabWidget tabWidget) {
+		return addTab(icon, table, new HideListener(true), tabWidget);
+	}
+
+	/**
+	 * Add a scrollable tab to a created tab widget
+	 * @param icon the image of the tab
+	 * @param table will show this table when this tab is selected
+	 * @param tabWidget the tab widget to add the tab to
+	 * @return created tab button
+	 */
+	public ImageButton addTabScroll(ISkinNames icon, AlignTable table, TabWidget tabWidget) {
+		return addTabScroll(icon, table, new HideListener(true), tabWidget);
+	}
+
+	/**
+	 * Create an image button
+	 * @param icon name of the image icon
+	 * @return created image button
+	 */
+	public ImageButton createImage(ISkinNames icon) {
+		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
+		new AnalyticsButtonListener(imageButton, icon.toString());
+		imageButton.addListener(mButtonSoundListener);
+		return imageButton;
+	}
+
+	/**
 	 * Add an image button to the specified table
 	 * @param icon name of the image icon
 	 * @param table the table to add the image to
@@ -52,9 +121,8 @@ public class ButtonFactory extends BaseFactory {
 	 * @return created image button
 	 */
 	public ImageButton addImage(ISkinNames icon, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
-		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
+		ImageButton imageButton = createImage(icon);
 		table.add(imageButton);
-		new AnalyticsButtonListener(imageButton, icon.toString());
 
 		UiFactory.doExtraActionsOnActors(hider, createdActors, imageButton);
 
@@ -76,6 +144,7 @@ public class ButtonFactory extends BaseFactory {
 		ImageScrollButton imageScrollButton = new ImageScrollButton(style.getStyle(), scrollWhen);
 		table.add(imageScrollButton).setSize(width, height);
 		new AnalyticsButtonListener(imageScrollButton, style.toString());
+		imageScrollButton.addListener(mButtonSoundListener);
 
 		UiFactory.doExtraActionsOnActors(null, createdActors, imageScrollButton);
 
@@ -103,6 +172,7 @@ public class ButtonFactory extends BaseFactory {
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 		mUiFactory.addIconLabel(imageButton, text, textPosition, textStyle, table, hider, createdActors);
 		new AnalyticsButtonListener(imageButton, icon.toString());
+		imageButton.addListener(mButtonSoundListener);
 
 		return imageButton;
 	}
@@ -118,6 +188,7 @@ public class ButtonFactory extends BaseFactory {
 	public TextButton createText(String text, TextButtonStyles style) {
 		TextButton textButton = new TextButton(text, style.getStyle());
 		new AnalyticsButtonListener(textButton, text);
+		textButton.addListener(mButtonSoundListener);
 		return textButton;
 	}
 
@@ -265,6 +336,7 @@ public class ButtonFactory extends BaseFactory {
 	public ImageButton addTool(ISkinNames icon, ButtonGroup group, AlignTable table, ArrayList<Actor> createdActors) {
 		ImageButton button = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 		new AnalyticsButtonListener(button, icon.toString());
+		button.addListener(mButtonSoundListener);
 
 		if (group != null) {
 			group.add(button);
@@ -525,6 +597,64 @@ public class ButtonFactory extends BaseFactory {
 	}
 
 	/**
+	 * @return sound button listener
+	 */
+	public EventListener getSoundListener() {
+		return mButtonSoundListener;
+	}
+
+	/**
+	 * Plays different sound depending on what button event is used
+	 */
+	private EventListener mButtonSoundListener = new EventListener() {
+		@Override
+		public boolean handle(Event event) {
+			if (event instanceof InputEvent) {
+				InputEvent inputEvent = (InputEvent) event;
+				switch (inputEvent.getType()) {
+				case enter:
+					if (shouldPlaySound(event)) {
+						mSoundPlayer.play(Sounds.UI_BUTTON_HOVER);
+					}
+					break;
+				case touchDown:
+					if (shouldPlaySound(event)) {
+						mSoundPlayer.play(Sounds.UI_BUTTON_CLICK);
+					}
+					break;
+				default:
+					// Does nothing
+					break;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Tests whether we should play a sound for this event
+		 */
+		private boolean shouldPlaySound(Event event) {
+			if (event.getListenerActor() == event.getTarget()) {
+				return false;
+			}
+
+			Button button = (Button) event.getListenerActor();
+			if (!button.isVisible()) {
+				return false;
+			}
+
+			if (button.isDisabled()) {
+				return false;
+			}
+
+			return true;
+		}
+
+		private SoundPlayer mSoundPlayer = SoundPlayer.getInstance();
+	};
+
+	/**
 	 * Interface for creating tab-like buttons
 	 */
 	public abstract class TabWrapper {
@@ -588,6 +718,7 @@ public class ButtonFactory extends BaseFactory {
 		public void createButton() {
 			mButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(mImageName));
 			new AnalyticsButtonListener(mButton, mImageName.toString());
+			mButton.addListener(mButtonSoundListener);
 		}
 
 		/** Image name */

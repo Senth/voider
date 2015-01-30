@@ -47,8 +47,8 @@ import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.LoadingTextScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.Music;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.User;
 
@@ -601,6 +601,7 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.load(InternalNames.UI_GAME);
 		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
 		ResourceCacheFacade.load(InternalDeps.GAME_MUSIC);
+		ResourceCacheFacade.load(InternalDeps.GAME_SFX);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
 		if (mTesting) {
 			ResourceCacheFacade.load(InternalNames.UI_EDITOR);
@@ -626,6 +627,7 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.unload(InternalNames.UI_GAME);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unload(InternalDeps.GAME_MUSIC);
+		ResourceCacheFacade.unload(InternalDeps.GAME_SFX);
 
 		if (mTesting) {
 			ResourceCacheFacade.unload(InternalNames.UI_EDITOR);

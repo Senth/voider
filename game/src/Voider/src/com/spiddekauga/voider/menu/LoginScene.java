@@ -11,9 +11,10 @@ import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.Music;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -39,6 +40,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	protected void loadResources() {
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.MUSIC_TITLE);
+		ResourceCacheFacade.load(InternalDeps.UI_SFX);
 
 		super.loadResources();
 	}
@@ -47,6 +49,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	protected void unloadResources() {
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.MUSIC_TITLE);
+		ResourceCacheFacade.unload(InternalDeps.UI_SFX);
 
 		super.unloadResources();
 	}

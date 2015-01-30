@@ -399,11 +399,11 @@ class ExploreLevelGui extends ExploreGui {
 		};
 
 		// Toggle image
-		ImageButtonStyle imageButtonStyle = (ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS);
+		ImageButton tagButton = mUiFactory.button.createImage(SkinNames.General.TAGS);
 		HideListener hideListener = new HideListener(true);
 		mWidgets.onlineHider.addChild(hideListener);
-		Button tagButton = mLeftPanel.addTab(imageButtonStyle, table, hideListener);
 		mWidgets.onlineHider.addToggleActor(tagButton);
+		mLeftPanel.addTab(tagButton, table, hideListener);
 
 
 		// Clear button

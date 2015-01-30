@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -45,13 +44,11 @@ public class ShipEditorGui extends ActorGui {
 		super.initSettingsMenu();
 
 		// Visual
-		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.VISUALS);
-		Button button = mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
+		Button button = mUiFactory.button.addTab(SkinNames.EditorIcons.VISUALS, getVisualTable(), getVisualHider(), mSettingTabs);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_VISUAL);
 
 		// Movement
-		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.SHIP_SETTINGS);
-		mSettingTabs.addTab(buttonStyle, mWidgets.movement.table);
+		mUiFactory.button.addTab(SkinNames.EditorIcons.SHIP_SETTINGS, mWidgets.movement.table, mSettingTabs);
 	}
 
 	/**
