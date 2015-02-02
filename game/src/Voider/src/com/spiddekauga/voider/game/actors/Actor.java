@@ -1,9 +1,11 @@
 package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -112,8 +114,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 			// Decrease life if colliding with something...
 			if (mDef.getHealthMax() > 0 && mLife > 0) {
-				for (ActorDef collidingActor : mCollidingActors) {
-					decreaseHealth(collidingActor.getCollisionDamage() * deltaTime);
+				for (Actor collidingActor : mCollidingActors.keySet()) {
+					decreaseHealth(collidingActor.getDef().getCollisionDamage() * deltaTime);
 				}
 			}
 		}
@@ -451,20 +453,35 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	/**
 	 * Adds a colliding actor to this actor
-	 * @param actorDef the actor definition this actor is colliding with
+	 * @param actor the actor this actor is colliding with
 	 */
-	public void addCollidingActor(ActorDef actorDef) {
-		mCollidingActors.add(actorDef);
+	public void addCollidingActor(Actor actor) {
+		AtomicInteger count = mCollidingActors.get(actor);
+
+		// New actor
+		if (count == null) {
+			count = new AtomicInteger(1);
+			mCollidingActors.put(actor, count);
+		}
+		// Increase count
+		else {
+			count.incrementAndGet();
+		}
 	}
 
 	/**
 	 * Removes a colliding actor from this actor
-	 * @param actorDef the actor definition this actor is colliding with, but to now
-	 *        remove
+	 * @param actor the actor this actor is colliding with, but to now remove
 	 */
-	public void removeCollidingActor(ActorDef actorDef) {
-		boolean removeSuccess = mCollidingActors.remove(actorDef);
-		if (!removeSuccess) {
+	public void removeCollidingActor(Actor actor) {
+		AtomicInteger count = mCollidingActors.get(actor);
+
+		if (count != null) {
+			int countValue = count.decrementAndGet();
+			if (countValue == 0) {
+				mCollidingActors.remove(actor);
+			}
+		} else {
 			Gdx.app.error("Actor", "Could not find colliding actor to remove");
 		}
 	}
@@ -1274,8 +1291,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/**
 	 * @return colliding actors
 	 */
-	protected List<ActorDef> getCollidingActors() {
-		return mCollidingActors;
+	protected Set<Actor> getCollidingActors() {
+		return mCollidingActors.keySet();
 	}
 
 	// Kryo variables
@@ -1300,7 +1317,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/** Saved body definition (used when creating the body after a load */
 	private BodyDef mSavedBody = null;
 	/** Current actors we're colliding with @todo do we need to save colliding actors? */
-	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
+	private HashMap<Actor, AtomicInteger> mCollidingActors = new HashMap<>();
 	/** World corners of the actor, only used for custom shape and in an editor */
 	private ArrayList<Body> mCorners = new ArrayList<Body>();
 	/** Center body, this represents the center of the actor */

@@ -49,6 +49,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
+import com.spiddekauga.voider.sound.SoundPlayer;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.User;
 
@@ -442,6 +443,7 @@ public class GameScene extends WorldScene {
 		if (mLevel.isCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 			mMusicPlayer.play(Music.LEVEL_COMPLETED, MusicInterpolations.FADE_OUT);
+			mSoundPlayer.stopAll();
 		}
 	}
 
@@ -457,6 +459,7 @@ public class GameScene extends WorldScene {
 			} else {
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 				mMusicPlayer.play(Music.GAME_OVER, MusicInterpolations.CROSSFADE);
+				mSoundPlayer.stopAll();
 			}
 		}
 	}
@@ -865,6 +868,7 @@ public class GameScene extends WorldScene {
 	private PlayerStats mPlayerStats = null;
 	private boolean mTakeScreenshot = false;
 	private SoundEffectListener mSoundEffectListener = null;
+	private SoundPlayer mSoundPlayer = SoundPlayer.getInstance();
 
 	// MOUSE JOINT
 	private Vector2 mCursorScreen = new Vector2();

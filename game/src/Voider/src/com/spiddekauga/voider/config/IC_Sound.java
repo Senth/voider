@@ -35,6 +35,7 @@ public class IC_Sound extends IniClass {
 	public class IC_Effect extends IniClass {
 		protected float fadeTime;
 		protected float lowHealthTime;
+		protected float lowHealthPercent;
 
 		private IC_Effect(Ini ini, Section classSection) {
 			super(ini, classSection);
@@ -46,6 +47,13 @@ public class IC_Sound extends IniClass {
 
 		public float getFadeTime() {
 			return fadeTime;
+		}
+
+		/**
+		 * @return [0,1] range
+		 */
+		public float getLowHealthPercent() {
+			return lowHealthPercent;
 		}
 	}
 

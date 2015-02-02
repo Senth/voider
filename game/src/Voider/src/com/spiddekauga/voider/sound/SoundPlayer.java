@@ -31,7 +31,8 @@ public class SoundPlayer {
 
 	/**
 	 * Play a sound. If the sound is loopable it can be stopped by calling
-	 * {@link #stop(Sounds)}
+	 * {@link #stop(Sounds)}. Does nothing if it's a loopable sound and it's already
+	 * playing.
 	 * @param sound the sound to play.
 	 */
 	public void play(Sounds sound) {
@@ -73,7 +74,7 @@ public class SoundPlayer {
 	}
 
 	/**
-	 * Stops a loopable sound.
+	 * Stops a loopable sound. Does nothing if it's not playing
 	 * @param sound the sound to stop
 	 */
 	public void stop(Sounds sound) {

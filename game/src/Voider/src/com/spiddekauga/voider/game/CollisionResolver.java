@@ -83,8 +83,8 @@ public class CollisionResolver implements ContactListener {
 			}
 
 			// Have not been handled yet
-			actorA.addCollidingActor(actorB.getDef());
-			actorB.addCollidingActor(actorA.getDef());
+			actorA.addCollidingActor(actorB);
+			actorB.addCollidingActor(actorA);
 		}
 	}
 
@@ -115,8 +115,8 @@ public class CollisionResolver implements ContactListener {
 				return;
 			}
 
-			actorA.removeCollidingActor(actorB.getDef());
-			actorB.removeCollidingActor(actorA.getDef());
+			actorA.removeCollidingActor(actorB);
+			actorB.removeCollidingActor(actorA);
 		}
 	}
 

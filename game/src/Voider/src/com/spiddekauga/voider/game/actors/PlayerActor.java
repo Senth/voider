@@ -65,17 +65,17 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	}
 
 	@Override
-	public void addCollidingActor(ActorDef actorDef) {
+	public void addCollidingActor(Actor actor) {
 		if (getCollidingActors().isEmpty()) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.GAME_PLAYER_COLLISION_BEGIN));
 		}
 
-		super.addCollidingActor(actorDef);
+		super.addCollidingActor(actor);
 	}
 
 	@Override
-	public void removeCollidingActor(ActorDef actorDef) {
-		super.removeCollidingActor(actorDef);
+	public void removeCollidingActor(Actor actor) {
+		super.removeCollidingActor(actor);
 
 		if (getCollidingActors().isEmpty()) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.GAME_PLAYER_COLLISION_END));

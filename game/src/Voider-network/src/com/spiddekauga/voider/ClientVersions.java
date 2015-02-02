@@ -61,6 +61,17 @@ public enum ClientVersions {
 			),
 	V0_4_5(false,
 			"Hotfix, analytics are now sent during program shutdown"),
+	V0_4_6(false,
+			"Sound Effects",
+			"	Button sound effects added",
+			"	Game sound effects. These are more of stub sounds and haven't been balanced",
+			"		Collision",
+			"		Enemy explosion",
+			"		Low health",
+			"		Hit by bullet",
+			"		Ship lost",
+			"Bug Fixes",
+			"	Colliding with terrain is now only applied once"),
 
 	;
 	// @formatter:on
