@@ -38,6 +38,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>PasswordResetSendToken</servlet-name>
 		<url-pattern>/api/password-reset-send-token</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>PasswordReset</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.PasswordReset</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PasswordReset</servlet-name>
+		<url-pattern>/api/password-reset</url-pattern>
+	</servlet-mapping>
 	
 	
 	<!-- Published -->

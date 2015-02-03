@@ -16,7 +16,7 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 	/** Username, the user could log in with email, thus reply with the real username */
 	public String username = null;
 	/** If the login was successful */
-	public Statuses status = null;
+	public Statuses status = Statuses.FAILED_SERVER_CONNECTION;
 	/** The private key which can be used to login without a password */
 	public UUID privateKey = null;
 	/** User key */

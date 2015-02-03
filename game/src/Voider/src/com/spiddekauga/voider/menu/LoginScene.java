@@ -6,6 +6,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.user.PasswordResetMethod;
+import com.spiddekauga.voider.network.user.PasswordResetResponse;
 import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -196,6 +198,17 @@ public class LoginScene extends Scene implements IResponseListener {
 	}
 
 	/**
+	 * Try and reset the user's password
+	 * @param email
+	 * @param password
+	 * @param token
+	 */
+	void resetPassword(String email, String password, String token) {
+		// TODO
+		mGui.showWaitWindow("Resetting password");
+	}
+
+	/**
 	 * Handle password reset token
 	 * @param response web response
 	 */
@@ -212,6 +225,33 @@ public class LoginScene extends Scene implements IResponseListener {
 			break;
 		case SUCCESS:
 			((LoginGui) mGui).showPasswordResetWindow();
+			mNotification.showSuccess("Password token sent to email. Please check your email :)");
+			break;
+		}
+	}
+
+	/**
+	 * Handle password reset
+	 * @param method server parameters
+	 * @param response web response
+	 */
+	private void handlePasswordReset(PasswordResetMethod method, PasswordResetResponse response) {
+		mGui.hideWaitWindow();
+
+		switch (response.status) {
+		case FAILED_EXPIRED:
+			// TODO
+			break;
+		case FAILED_SERVER_CONNECTION:
+		case FAILED_SERVER_ERROR:
+			// TODO
+			break;
+		case FAILED_TOKEN:
+			// TODO
+			break;
+		case SUCCESS:
+			mNotification.showSuccess("Password changed!");
+			login(method.email, method.password);
 			break;
 		}
 	}

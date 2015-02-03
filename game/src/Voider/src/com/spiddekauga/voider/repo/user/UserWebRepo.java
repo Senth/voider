@@ -2,16 +2,16 @@ package com.spiddekauga.voider.repo.user;
 
 import java.util.UUID;
 
-import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LogoutMethod;
 import com.spiddekauga.voider.network.user.LogoutResponse;
+import com.spiddekauga.voider.network.user.PasswordResetMethod;
+import com.spiddekauga.voider.network.user.PasswordResetResponse;
 import com.spiddekauga.voider.network.user.PasswordResetSendTokenMethod;
 import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse;
-import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse.Statuses;
 import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -97,6 +97,22 @@ public class UserWebRepo extends WebRepo {
 		sendInNewThread(method, responseListeners);
 	}
 
+	/**
+	 * Tries to reset a password
+	 * @param email user's email
+	 * @param password new password
+	 * @param token reset password token
+	 * @param responseListeners listens to the web response
+	 */
+	public void PasswordResetMethod(String email, String password, String token, IResponseListener... responseListeners) {
+		PasswordResetMethod method = new PasswordResetMethod();
+		method.email = email;
+		method.password = password;
+		method.token = token;
+
+		sendInNewThread(method, responseListeners);
+	}
+
 	@Override
 	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] callerResponseListeners) {
 		IEntity responseToSend = null;
@@ -106,9 +122,7 @@ public class UserWebRepo extends WebRepo {
 			if (response instanceof LoginResponse) {
 				responseToSend = response;
 			} else {
-				LoginResponse loginResponse = new LoginResponse();
-				loginResponse.status = LoginResponse.Statuses.FAILED_SERVER_CONNECTION;
-				responseToSend = loginResponse;
+				responseToSend = new LoginResponse();
 			}
 		}
 		// Register
@@ -116,9 +130,7 @@ public class UserWebRepo extends WebRepo {
 			if (response instanceof RegisterUserResponse) {
 				responseToSend = response;
 			} else {
-				RegisterUserResponse registerUserResponse = new RegisterUserResponse();
-				registerUserResponse.status = RegisterUserResponse.Statuses.FAIL_SERVER_CONNECTION;
-				responseToSend = registerUserResponse;
+				responseToSend = new RegisterUserResponse();
 			}
 		}
 		// Logout
@@ -126,9 +138,7 @@ public class UserWebRepo extends WebRepo {
 			if (response instanceof LogoutResponse) {
 				responseToSend = response;
 			} else {
-				LogoutResponse logoutResponse = new LogoutResponse();
-				logoutResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
-				responseToSend = logoutResponse;
+				responseToSend = new LogoutResponse();
 			}
 		}
 		// Password Reset -> Send Token
@@ -136,9 +146,13 @@ public class UserWebRepo extends WebRepo {
 			if (response instanceof PasswordResetSendTokenResponse) {
 				responseToSend = response;
 			} else {
-				PasswordResetSendTokenResponse passwordResetSendTokenResponse = new PasswordResetSendTokenResponse();
-				passwordResetSendTokenResponse.status = Statuses.FAILED_SERVER_CONNECTION;
-				responseToSend = passwordResetSendTokenResponse;
+				responseToSend = new PasswordResetSendTokenResponse();
+			}
+		} else if (methodEntity instanceof PasswordResetMethod) {
+			if (response instanceof PasswordResetResponse) {
+				responseToSend = response;
+			} else {
+				responseToSend = new PasswordResetResponse();
 			}
 		}
 

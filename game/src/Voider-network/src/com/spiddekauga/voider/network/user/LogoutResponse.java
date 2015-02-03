@@ -11,7 +11,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 @SuppressWarnings("serial")
 public class LogoutResponse implements IEntity, ISuccessStatuses {
 	/** Logout status */
-	public GeneralResponseStatuses status = null;
+	public GeneralResponseStatuses status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 
 	@Override
 	public boolean isSuccessful() {

@@ -159,6 +159,38 @@ public class NotificationShower {
 	}
 
 	/**
+	 * Shows an information message
+	 * @param message the message to display on the screen
+	 */
+	public void showInfo(String message) {
+		show(NotificationTypes.INFO, message);
+	}
+
+	/**
+	 * Shows an error message
+	 * @param message the message to display on the screen
+	 */
+	public void showError(String message) {
+		show(NotificationTypes.ERROR, message);
+	}
+
+	/**
+	 * Shows a highlighted message
+	 * @param message the message to display on the screen
+	 */
+	public void showHighlight(String message) {
+		show(NotificationTypes.HIGHLIGHT, message);
+	}
+
+	/**
+	 * Shows an success message
+	 * @param message the message to display on the screen
+	 */
+	public void showSuccess(String message) {
+		show(NotificationTypes.SUCCESS, message);
+	}
+
+	/**
 	 * Push message to the front of the UI
 	 */
 	public void pushToFront() {

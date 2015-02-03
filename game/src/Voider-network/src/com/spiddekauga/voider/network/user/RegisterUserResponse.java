@@ -12,7 +12,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 @SuppressWarnings("serial")
 public class RegisterUserResponse implements IEntity, ISuccessStatuses {
 	/** If the register was a success */
-	public Statuses status = null;
+	public Statuses status = Statuses.FAIL_SERVER_CONNECTION;
 	/** Private key, for logging in automatically without password */
 	public UUID privateKey = null;
 	/** User key */

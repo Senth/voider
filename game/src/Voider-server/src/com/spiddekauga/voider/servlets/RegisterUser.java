@@ -19,6 +19,7 @@ import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.network.user.RegisterUserResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -93,20 +94,20 @@ public class RegisterUser extends VoiderServlet {
 	private void createNewUser(RegisterUserMethod networkEntity, RegisterUserResponse methodResponse) {
 		Entity datastoreEntity = new Entity(DatastoreTables.USERS.toString());
 
-		datastoreEntity.setProperty("username", networkEntity.username);
-		datastoreEntity.setUnindexedProperty("created", new Date());
-		datastoreEntity.setUnindexedProperty("logged-in", new Date());
-		datastoreEntity.setProperty("email", networkEntity.email);
-		datastoreEntity.setUnindexedProperty("date_format", "MM/dd/yyyy HH:mm:ss");
+		datastoreEntity.setProperty(CUsers.USERNAME, networkEntity.username);
+		datastoreEntity.setUnindexedProperty(CUsers.CREATED, new Date());
+		datastoreEntity.setUnindexedProperty(CUsers.LOGGED_IN, new Date());
+		datastoreEntity.setProperty(CUsers.EMAIL, networkEntity.email);
+		datastoreEntity.setUnindexedProperty(CUsers.DATE_FORMAT, "MM/dd/yyyy HH:mm:ss");
 
 		// Private key
 		UUID privateKey = UUID.randomUUID();
-		DatastoreUtils.setProperty(datastoreEntity, "private_key", privateKey);
+		DatastoreUtils.setProperty(datastoreEntity, CUsers.PRIVATE_KEY, privateKey);
 
 		// Hashed password
 		String salt = BCrypt.gensalt();
 		String hashedPassword = BCrypt.hashpw(networkEntity.password, salt);
-		datastoreEntity.setProperty("password", hashedPassword);
+		datastoreEntity.setProperty(CUsers.PASSWORD, hashedPassword);
 
 		Key userKey = DatastoreUtils.put(datastoreEntity);
 
