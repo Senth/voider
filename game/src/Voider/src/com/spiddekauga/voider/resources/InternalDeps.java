@@ -27,7 +27,7 @@ public enum InternalDeps {
 	MUSIC_CORE(InternalNames.MUSIC_CORE),
 
 	/** Easy access to all game music that needs to be loaded */
-	GAME_MUSIC(InternalNames.MUSIC_GAME_OVER, InternalNames.MUSIC_LEVEL_COMPLETED),
+	GAME_MUSIC(InternalNames.MUSIC_GAME_OVER_INTRO, InternalNames.MUSIC_LEVEL_COMPLETED),
 	/** Easy access to all game sound effects that will be loaded */
 	GAME_SFX(InternalNames.SOUND_BULLET_HIT_PLAYER, InternalNames.SOUND_ENEMY_EXLODES, InternalNames.SOUND_SHIP_COLLIDE,
 			InternalNames.SOUND_SHIP_LOST, InternalNames.SOUND_SHIP_LOW_HEALTH),

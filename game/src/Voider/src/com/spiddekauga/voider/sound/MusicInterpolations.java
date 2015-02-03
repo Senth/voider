@@ -53,7 +53,6 @@ public enum MusicInterpolations {
 				}
 
 				if (next != null && !next.isPlaying()) {
-					next.setLooping(true);
 					next.play();
 				}
 
@@ -75,7 +74,6 @@ public enum MusicInterpolations {
 					// Start at 0 volume
 					if (!next.isPlaying()) {
 						next.setVolume(0);
-						next.setLooping(true);
 						next.play();
 					}
 					// Continue to fade in
@@ -112,7 +110,6 @@ public enum MusicInterpolations {
 				// Start playing so it isn't unloaded
 				if (next != null) {
 					next.setVolume(0);
-					next.setLooping(true);
 					next.play();
 				}
 
@@ -120,7 +117,6 @@ public enum MusicInterpolations {
 				if (next != null && (current == null || !current.isPlaying())) {
 					next.stop();
 					next.setVolume(maxVolume);
-					next.setLooping(true);
 					next.play();
 				}
 
@@ -154,7 +150,6 @@ public enum MusicInterpolations {
 					// Start playing
 					if (!next.isPlaying()) {
 						next.setVolume(0);
-						next.setLooping(true);
 						next.play();
 					}
 					// Continue to fade in
@@ -190,7 +185,6 @@ public enum MusicInterpolations {
 				// Start playing so it isn't unloaded
 				if (next != null) {
 					next.setVolume(0);
-					next.setLooping(true);
 					next.play();
 				}
 
@@ -199,7 +193,6 @@ public enum MusicInterpolations {
 					// Start playing
 					if (!next.isPlaying()) {
 						next.stop();
-						next.setLooping(true);
 						next.play();
 					}
 					// Continue to fade in

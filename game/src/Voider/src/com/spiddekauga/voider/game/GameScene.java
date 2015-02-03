@@ -458,7 +458,7 @@ public class GameScene extends WorldScene {
 				updateLives();
 			} else {
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
-				mMusicPlayer.play(Music.GAME_OVER, MusicInterpolations.CROSSFADE);
+				mMusicPlayer.play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
 				mSoundPlayer.stopAll();
 			}
 		}

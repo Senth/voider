@@ -71,7 +71,9 @@ public enum ClientVersions {
 			"		Hit by bullet",
 			"		Ship lost",
 			"Bug Fixes",
-			"	Colliding with terrain is now only applied once"),
+			"	Colliding with terrain is now only applied once",
+			"	Game Over music now loops correctly"
+			),
 
 	;
 	// @formatter:on

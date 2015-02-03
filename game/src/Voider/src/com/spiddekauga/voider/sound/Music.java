@@ -19,7 +19,9 @@ public enum Music {
 	/** Core theme */
 	CORE(InternalNames.MUSIC_CORE, InternalDeps.MUSIC_CORE),
 	/** Game over */
-	GAME_OVER(InternalNames.MUSIC_GAME_OVER),
+	GAME_OVER_INTRO(InternalNames.MUSIC_GAME_OVER_INTRO, false),
+	/** Game over loop */
+	GAME_OVER_LOOP(InternalNames.MUSIC_GAME_OVER_LOOP),
 	/** Game completed */
 	LEVEL_COMPLETED(InternalNames.MUSIC_LEVEL_COMPLETED),
 	/** Main theme */
@@ -37,7 +39,7 @@ public enum Music {
 	 * @param internalName the internal resource this music uses
 	 */
 	private Music(InternalNames internalName) {
-		this(internalName, null);
+		this(internalName, null, true);
 	}
 
 	/**
@@ -46,16 +48,38 @@ public enum Music {
 	 * @param internalDeps internal dependencies for level themes
 	 */
 	private Music(InternalNames internalName, InternalDeps internalDeps) {
-		mInternalName = internalName;
-		mInternalDeps = internalDeps;
+		this(internalName, internalDeps, true);
 	}
 
+
+	/**
+	 * Sets the internal resource this music uses
+	 * @param internalName the internal resource this music uses
+	 * @param loop true if the track should be looping (default: true)
+	 */
+	private Music(InternalNames internalName, boolean loop) {
+		this(internalName, null, loop);
+	}
+
+	/**
+	 * Sets the internal resource this music uses
+	 * @param internalName the internal resource this music uses
+	 * @param internalDeps internal dependencies for level themes
+	 * @param loop true if the track should be looping (default: true)
+	 */
+	private Music(InternalNames internalName, InternalDeps internalDeps, boolean loop) {
+		mInternalName = internalName;
+		mInternalDeps = internalDeps;
+		mLoop = loop;
+	}
 
 	/**
 	 * @return the actual music track, null if not loaded
 	 */
 	com.badlogic.gdx.audio.Music getTrack() {
-		return ResourceCacheFacade.get(mInternalName);
+		com.badlogic.gdx.audio.Music track = ResourceCacheFacade.get(mInternalName);
+		track.setLooping(mLoop);
+		return track;
 	}
 
 	/**
@@ -63,6 +87,13 @@ public enum Music {
 	 */
 	public InternalDeps getDependency() {
 		return mInternalDeps;
+	}
+
+	/**
+	 * @return true if the track should be looped
+	 */
+	public boolean isLoop() {
+		return mLoop;
 	}
 
 	/**
@@ -80,4 +111,5 @@ public enum Music {
 	/** Internal dependencies for level themes */
 	private InternalDeps mInternalDeps = null;
 	private InternalNames mInternalName;
+	private boolean mLoop = true;
 }

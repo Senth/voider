@@ -40,6 +40,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
+import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.sound.SoundPlayer;
 import com.spiddekauga.voider.sound.Sounds;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -75,6 +76,8 @@ public class MainMenu extends Scene implements IEventListener {
 
 		// REMOVE
 		ResourceCacheFacade.load(InternalDeps.GAME_SFX);
+		ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_INTRO);
+		ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_LOOP);
 	}
 
 	@Override
@@ -82,6 +85,7 @@ public class MainMenu extends Scene implements IEventListener {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.MUSIC_TITLE);
+		ResourceCacheFacade.unload(InternalDeps.UI_SFX);
 	}
 
 	@Override
@@ -241,6 +245,9 @@ public class MainMenu extends Scene implements IEventListener {
 				SoundPlayer.getInstance().play(Sounds.UI_BUTTON_HOVER);
 			} else if (keycode == Input.Keys.T) {
 				SoundPlayer.getInstance().play(Sounds.UI_BUTTON_CLICK);
+			} else if (keycode == Input.Keys.M) {
+				MusicPlayer.getInstance().play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
+				MusicPlayer.getInstance().queue(Music.GAME_OVER_LOOP);
 			}
 		}
 		return super.onKeyDown(keycode);

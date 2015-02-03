@@ -88,7 +88,9 @@ public enum InternalNames {
 	/** Core music */
 	MUSIC_CORE("core.mp3", Music.class),
 	/** Game over music */
-	MUSIC_GAME_OVER("game_over.mp3", Music.class),
+	MUSIC_GAME_OVER_INTRO("game_over_intro.mp3", Music.class),
+	/** Game over loop */
+	MUSIC_GAME_OVER_LOOP("game_over_loop.mp3", Music.class),
 	/** Level success music */
 	MUSIC_LEVEL_COMPLETED("level_completed.mp3", Music.class),
 	/** Main theme */

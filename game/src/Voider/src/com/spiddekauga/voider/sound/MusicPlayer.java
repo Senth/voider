@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.sound;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingSoundRepo;
@@ -50,6 +53,7 @@ public class MusicPlayer {
 	 * @param interpolation type of interpolation
 	 */
 	public void play(Music music, MusicInterpolations interpolation) {
+		mQueue.clear();
 		mPaused = null;
 		if (music != mNext && (music != mCurrent || mInterpolation != null)) {
 			// Finish current interpolation before we start playing
@@ -65,6 +69,58 @@ public class MusicPlayer {
 			mInterpolation = interpolation;
 			interpolate();
 		}
+	}
+
+	/**
+	 * Queues a track to play after the current has fully finished playing. This only
+	 * works if the current track isn't set to loop or isn't playing at all. A call to
+	 * {@link #play(Music)} or {@link #play(Music, MusicInterpolations)} clears the queue.
+	 * @param music the track to push to the queue
+	 * @param interpolation type of interpolation to queue with
+	 */
+	public void queue(Music music, MusicInterpolations interpolation) {
+		boolean queue = false;
+		boolean play = false;
+
+		// Cannot queue after loopable tracks
+		if (mCurrent == null) {
+			if (mNext == null) {
+				if (mQueue.isEmpty()) {
+					play = true;
+				} else {
+					queue = true;
+				}
+			} else if (!mNext.isLoop()) {
+				queue = true;
+			}
+		} else {
+			if (mNext == null) {
+				if (!mCurrent.isLoop()) {
+					queue = true;
+				}
+			} else {
+				if (!mNext.isLoop()) {
+					queue = true;
+				}
+			}
+		}
+
+		if (queue) {
+			mQueue.add(new MusicQueue(music, interpolation));
+		} else if (play) {
+			play(music, interpolation);
+		}
+	}
+
+	/**
+	 * Queues a track to play after the current has fully finished playing. This only
+	 * works if the current track isn't set to loop or isn't playing at all. Uses no
+	 * interpolation between tracks. A call to {@link #play(Music)} or
+	 * {@link #play(Music, MusicInterpolations)} clears the queue.
+	 * @param music the track to push to the queue
+	 */
+	public void queue(Music music) {
+		queue(music, MusicInterpolations.NONE);
 	}
 
 	/**
@@ -118,7 +174,31 @@ public class MusicPlayer {
 	 * Updates the music player
 	 */
 	public void update() {
+		updateQueue();
 		interpolate();
+	}
+
+	/**
+	 * Check if current track has finished, take next in queue then
+	 */
+	private void updateQueue() {
+		if (!mQueue.isEmpty() && isCurrentDone()) {
+			MusicQueue queueElement = mQueue.remove();
+			mNext = queueElement.music;
+			mInterpolation = queueElement.interpolation;
+			interpolate();
+
+			if (queueElement.music.isLoop()) {
+				mQueue.clear();
+			}
+		}
+	}
+
+	/**
+	 * @return true if the current track has finished playing and there is no next track
+	 */
+	private boolean isCurrentDone() {
+		return (mCurrent == null || mCurrent.getTrack().isPlaying()) && mNext == null;
 	}
 
 	/**
@@ -150,6 +230,24 @@ public class MusicPlayer {
 		}
 	}
 
+	/**
+	 * Music Queue class
+	 */
+	private class MusicQueue {
+		/**
+		 * Set the music to play with an interpolation
+		 * @param music
+		 * @param interpolation
+		 */
+		private MusicQueue(Music music, MusicInterpolations interpolation) {
+			this.music = music;
+			this.interpolation = interpolation;
+		}
+
+		private Music music;
+		private MusicInterpolations interpolation;
+	}
+
 	/** Listens to when the master or music volume is changed */
 	private IEventListener mVolumeChangeListener = new IEventListener() {
 		@Override
@@ -166,6 +264,7 @@ public class MusicPlayer {
 	private Music mCurrent = null;
 	private Music mNext = null;
 	private Music mPaused = null;
+	private Queue<MusicQueue> mQueue = new LinkedList<>();
 	private SettingSoundRepo mSoundRepo = SettingRepo.getInstance().sound();
 
 	private static MusicPlayer mInstance = null;
