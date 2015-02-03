@@ -15,9 +15,9 @@ import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.LoginMethod;
-import com.spiddekauga.voider.network.user.LoginMethodResponse;
-import com.spiddekauga.voider.network.user.LoginMethodResponse.ClientVersionStatuses;
-import com.spiddekauga.voider.network.user.LoginMethodResponse.Statuses;
+import com.spiddekauga.voider.network.user.LoginResponse;
+import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatuses;
+import com.spiddekauga.voider.network.user.LoginResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -31,7 +31,7 @@ public class Login extends VoiderServlet {
 
 	@Override
 	protected void onInit() {
-		mResponse = new LoginMethodResponse();
+		mResponse = new LoginResponse();
 		mResponse.status = Statuses.FAILED_SERVER_ERROR;
 	}
 
@@ -159,5 +159,5 @@ public class Login extends VoiderServlet {
 		DatastoreUtils.put(userEntity);
 	}
 
-	private LoginMethodResponse mResponse = null;
+	private LoginResponse mResponse = null;
 }

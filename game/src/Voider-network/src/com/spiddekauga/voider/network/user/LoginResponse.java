@@ -12,7 +12,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LoginMethodResponse implements IEntity, ISuccessStatuses {
+public class LoginResponse implements IEntity, ISuccessStatuses {
 	/** Username, the user could log in with email, thus reply with the real username */
 	public String username = null;
 	/** If the login was successful */

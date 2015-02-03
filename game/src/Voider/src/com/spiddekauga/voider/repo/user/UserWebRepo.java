@@ -6,9 +6,12 @@ import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.LoginMethod;
-import com.spiddekauga.voider.network.user.LoginMethodResponse;
+import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LogoutMethod;
-import com.spiddekauga.voider.network.user.LogoutMethodResponse;
+import com.spiddekauga.voider.network.user.LogoutResponse;
+import com.spiddekauga.voider.network.user.PasswordResetSendTokenMethod;
+import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse;
+import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse.Statuses;
 import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -82,18 +85,30 @@ public class UserWebRepo extends WebRepo {
 		sendInNewThread(logoutMethod, responseListeners);
 	}
 
+	/**
+	 * Send a password reset token to the user
+	 * @param email user's email
+	 * @param responseListeners listens to the web response
+	 */
+	public void passwordResetSendToken(String email, IResponseListener... responseListeners) {
+		PasswordResetSendTokenMethod method = new PasswordResetSendTokenMethod();
+		method.email = email;
+
+		sendInNewThread(method, responseListeners);
+	}
+
 	@Override
 	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] callerResponseListeners) {
 		IEntity responseToSend = null;
 
 		// Login
 		if (methodEntity instanceof LoginMethod) {
-			if (response instanceof LoginMethodResponse) {
+			if (response instanceof LoginResponse) {
 				responseToSend = response;
 			} else {
-				LoginMethodResponse loginMethodResponse = new LoginMethodResponse();
-				loginMethodResponse.status = LoginMethodResponse.Statuses.FAILED_SERVER_CONNECTION;
-				responseToSend = loginMethodResponse;
+				LoginResponse loginResponse = new LoginResponse();
+				loginResponse.status = LoginResponse.Statuses.FAILED_SERVER_CONNECTION;
+				responseToSend = loginResponse;
 			}
 		}
 		// Register
@@ -101,19 +116,29 @@ public class UserWebRepo extends WebRepo {
 			if (response instanceof RegisterUserResponse) {
 				responseToSend = response;
 			} else {
-				RegisterUserResponse registerUserMethodResponse = new RegisterUserResponse();
-				registerUserMethodResponse.status = RegisterUserResponse.Statuses.FAIL_SERVER_CONNECTION;
-				responseToSend = registerUserMethodResponse;
+				RegisterUserResponse registerUserResponse = new RegisterUserResponse();
+				registerUserResponse.status = RegisterUserResponse.Statuses.FAIL_SERVER_CONNECTION;
+				responseToSend = registerUserResponse;
 			}
 		}
 		// Logout
 		else if (methodEntity instanceof LogoutMethod) {
-			if (response instanceof LogoutMethodResponse) {
+			if (response instanceof LogoutResponse) {
 				responseToSend = response;
 			} else {
-				LogoutMethodResponse logoutMethodResponse = new LogoutMethodResponse();
-				logoutMethodResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
-				responseToSend = logoutMethodResponse;
+				LogoutResponse logoutResponse = new LogoutResponse();
+				logoutResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
+				responseToSend = logoutResponse;
+			}
+		}
+		// Password Reset -> Send Token
+		else if (methodEntity instanceof PasswordResetSendTokenMethod) {
+			if (response instanceof PasswordResetSendTokenResponse) {
+				responseToSend = response;
+			} else {
+				PasswordResetSendTokenResponse passwordResetSendTokenResponse = new PasswordResetSendTokenResponse();
+				passwordResetSendTokenResponse.status = Statuses.FAILED_SERVER_CONNECTION;
+				responseToSend = passwordResetSendTokenResponse;
 			}
 		}
 
@@ -124,21 +149,6 @@ public class UserWebRepo extends WebRepo {
 		}
 	}
 
-	/**
-	 * @param responseListener listens to the web response
-	 * @param username checks if this username is registered already
-	 */
-	public void isUsernameExists(IResponseListener responseListener, String username) {
-		// TODO username exists
-	}
-
-	/**
-	 * @param responseListener listens to the web response
-	 * @param email checks if this email is registered already
-	 */
-	public void isEmailExists(IResponseListener responseListener, String email) {
-		// TODO email exists
-	}
 
 	/** Instance of this class */
 	private static UserWebRepo mInstance = null;

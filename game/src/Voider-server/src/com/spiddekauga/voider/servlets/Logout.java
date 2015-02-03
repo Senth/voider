@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.user.LogoutMethodResponse;
+import com.spiddekauga.voider.network.user.LogoutResponse;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -23,7 +23,7 @@ public class Logout extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		LogoutMethodResponse logoutMethodResponse = new LogoutMethodResponse();
+		LogoutResponse logoutMethodResponse = new LogoutResponse();
 		logoutMethodResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 
 		if (mUser.isLoggedIn()) {

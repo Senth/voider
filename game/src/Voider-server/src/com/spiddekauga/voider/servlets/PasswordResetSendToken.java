@@ -83,7 +83,7 @@ public class PasswordResetSendToken extends VoiderServlet {
 		ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
 		byteBuffer.putLong(uuidToken.getLeastSignificantBits());
 		byteBuffer.putLong(uuidToken.getMostSignificantBits());
-		return DatatypeConverter.printBase64Binary(byteBuffer.array());
+		return DatatypeConverter.printBase64Binary(byteBuffer.array()).split("=")[0];
 	}
 
 	/**

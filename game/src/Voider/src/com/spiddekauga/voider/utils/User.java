@@ -9,9 +9,9 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.user.LoginMethodResponse;
+import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
-import com.spiddekauga.voider.network.user.LoginMethodResponse.ClientVersionStatuses;
+import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
@@ -288,8 +288,8 @@ public class User {
 		@Override
 		public void handleWebResponse(IMethodEntity method, IEntity response) {
 			// Login
-			if (response instanceof LoginMethodResponse) {
-				handleLoginResponse((LoginMethodResponse) response);
+			if (response instanceof LoginResponse) {
+				handleLoginResponse((LoginResponse) response);
 			}
 			// Register
 			if (response instanceof RegisterUserResponse) {
@@ -297,7 +297,7 @@ public class User {
 			}
 		}
 
-		private void handleLoginResponse(LoginMethodResponse response) {
+		private void handleLoginResponse(LoginResponse response) {
 			switch (response.clientVersionStatus) {
 			case NEW_VERSION_AVAILABLE:
 				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.latestClientVersion, response.changeLogMessage));

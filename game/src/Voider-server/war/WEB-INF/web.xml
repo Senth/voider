@@ -36,7 +36,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>PasswordResetSendToken</servlet-name>
-		<url-pattern>/password-reset-send-token</url-pattern>
+		<url-pattern>/api/password-reset-send-token</url-pattern>
 	</servlet-mapping>
 	
 	

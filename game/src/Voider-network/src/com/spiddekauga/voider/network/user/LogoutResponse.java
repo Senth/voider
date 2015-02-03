@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LogoutMethodResponse implements IEntity, ISuccessStatuses {
+public class LogoutResponse implements IEntity, ISuccessStatuses {
 	/** Logout status */
 	public GeneralResponseStatuses status = null;
 

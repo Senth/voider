@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -40,12 +41,20 @@ public class LoginGui extends Gui {
 		mWidgets.login.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		mWidgets.register.table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
 		mWidgets.register.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		mWidgets.send.table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
+		mWidgets.send.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		mWidgets.reset.table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
+		mWidgets.reset.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
 		initLoginTable();
+		initPasswordResetNew();
+		initPasswordResetSendToken();
+		mWidgets.reset.hider.hide();
+		mWidgets.send.hider.hide();
 
 		if (mLoginScene.isRegisterAvailable()) {
 			initRegisterTable();
-			mRegisterHider.hide();
+			mWidgets.register.hider.hide();
 		}
 
 		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
@@ -64,13 +73,16 @@ public class LoginGui extends Gui {
 	 */
 	private void initLoginTable() {
 		AlignTable table = mWidgets.login.table;
-		mLoginHider.addToggleActor(table);
 
 		// Username
 		mWidgets.login.usernameListener = new TextFieldListener() {
 			@Override
 			protected void onEnter(String newText) {
-				login();
+				if (mWidgets.login.passwordListener.isTextFieldEmpty()) {
+					getStage().setKeyboardFocus(mWidgets.login.password);
+				} else {
+					login();
+				}
 			}
 		};
 		mWidgets.login.username = mUiFactory.addTextField(null, false, "Username", mWidgets.login.usernameListener, table, null);
@@ -79,7 +91,11 @@ public class LoginGui extends Gui {
 		mWidgets.login.passwordListener = new TextFieldListener() {
 			@Override
 			protected void onEnter(String newText) {
-				login();
+				if (mWidgets.login.usernameListener.isTextFieldEmpty()) {
+					getStage().setKeyboardFocus(mWidgets.login.username);
+				} else {
+					login();
+				}
 			}
 		};
 		mWidgets.login.password = mUiFactory.addPasswordField(null, false, "Password", mWidgets.login.passwordListener, table, null);
@@ -90,7 +106,8 @@ public class LoginGui extends Gui {
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				/** @todo forgot password -> send to another GUI screen */
+				mWidgets.login.hider.hide();
+				mWidgets.send.hider.show();
 			}
 		};
 		mUiFactory.button.addText("Forgot Password", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
@@ -101,8 +118,8 @@ public class LoginGui extends Gui {
 			buttonListener = new ButtonListener() {
 				@Override
 				protected void onPressed(Button button) {
-					mLoginHider.hide();
-					mRegisterHider.show();
+					mWidgets.login.hider.hide();
+					mWidgets.register.hider.show();
 				}
 			};
 			mUiFactory.button.addText("Register", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
@@ -267,8 +284,6 @@ public class LoginGui extends Gui {
 	 */
 	private void initRegisterTable() {
 		AlignTable table = mWidgets.register.table;
-		table.setName("register-table");
-		mRegisterHider.addToggleActor(table);
 
 
 		// Username
@@ -321,8 +336,8 @@ public class LoginGui extends Gui {
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				mRegisterHider.hide();
-				mLoginHider.show();
+				mWidgets.register.hider.hide();
+				mWidgets.login.hider.show();
 			}
 		};
 		mUiFactory.button.addText("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
@@ -346,9 +361,185 @@ public class LoginGui extends Gui {
 	}
 
 	/**
+	 * Initializes the table to forgot password token
+	 */
+	private void initPasswordResetSendToken() {
+		AlignTable table = mWidgets.send.table;
+
+		// Email
+		mWidgets.send.emailListener = new TextFieldListener() {
+			@Override
+			protected void onEnter(String newText) {
+				sendToken();
+			}
+
+			@Override
+			protected void onDone(String newText) {
+				mWidgets.reset.email.setText(newText);
+			}
+		};
+
+		mUiFactory.addTextField("Email", true, "", mWidgets.send.emailListener, table, null);
+		mWidgets.send.emailError = mUiFactory.text.getLastCreatedErrorLabel();
+
+		// Already has a token
+		table.row().setAlign(Vertical.BOTTOM);
+		ButtonListener listener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mWidgets.send.hider.hide();
+				mWidgets.reset.hider.show();
+			}
+		};
+		mUiFactory.button.addText("I Have A Token Already", TextButtonStyles.TRANSPARENT_PRESS, table, listener, null, null);
+
+
+		// Set fixed width
+		table.layout();
+		table.setKeepWidth(true);
+
+
+		// BUTTONS
+		// Back
+		table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(mUiFactory.getStyles().vars.paddingButton);
+		listener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mWidgets.send.hider.hide();
+				mWidgets.login.hider.show();
+			}
+		};
+		mUiFactory.button.addText("Back", TextButtonStyles.FILLED_PRESS, table, listener, null, null);
+		table.getCell().setFixedWidth(true);
+
+		// Send Token
+		listener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				sendToken();
+			}
+		};
+		mUiFactory.button.addText("Continue", TextButtonStyles.FILLED_PRESS, table, listener, null, null);
+		table.getCell().setFixedWidth(true);
+
+
+		mUiFactory.button.addPadding(table.getRow());
+		mWidgets.send.table.row();
+		mWidgets.send.table.layout();
+
+		addActor(table);
+	}
+
+	/**
+	 * Send token request
+	 */
+	private void sendToken() {
+		if (!mWidgets.send.emailListener.isTextFieldEmpty()) {
+			mLoginScene.passwordResetSendToken(mWidgets.send.emailListener.getText());
+		} else {
+			setPasswordResetSendError("is empty");
+		}
+	}
+
+	/**
+	 * Set reset password send token email error
+	 * @param text error text
+	 */
+	void setPasswordResetSendError(String text) {
+		mWidgets.send.emailError.setText(text);
+	}
+
+	/**
+	 * Initializes the table where the user can reset a password with a token
+	 */
+	private void initPasswordResetNew() {
+		AlignTable table = mWidgets.reset.table;
+
+
+		// Email
+		mWidgets.reset.emailListener = new TextFieldListener() {
+			@Override
+			protected void onEnter(String newText) {
+				resetPassword();
+			}
+		};
+		mWidgets.reset.email = mUiFactory.addTextField("Email", true, "your@email.com", mWidgets.reset.emailListener, table, null);
+		mWidgets.reset.emailError = mUiFactory.text.getLastCreatedErrorLabel();
+
+		// Password
+		mWidgets.reset.passwordListener = new TextFieldListener() {
+			@Override
+			protected void onEnter(String newText) {
+				resetPassword();
+			}
+		};
+		mWidgets.reset.password = mUiFactory.addPasswordField("New Password", true, "New Password", mWidgets.reset.passwordListener, table, null);
+		mWidgets.reset.passwordError = mUiFactory.text.getLastCreatedErrorLabel();
+
+		// Confirm password
+		TextFieldListener textFieldListener = new TextFieldListener() {
+			@Override
+			protected void onEnter(String newText) {
+				resetPassword();
+			}
+		};
+		mWidgets.reset.confirmPassword = mUiFactory.addPasswordField(null, false, "Confirm password", textFieldListener, table, null);
+
+		// Token
+		mWidgets.reset.tokenListener = new TextFieldListener() {
+			@Override
+			protected void onEnter(String newText) {
+				resetPassword();
+			}
+		};
+		mWidgets.reset.token = mUiFactory.addTextField("Token", true, "", mWidgets.reset.tokenListener, table, null);
+		mWidgets.reset.tokenError = mUiFactory.text.getLastCreatedErrorLabel();
+
+		// Set fixed width
+		table.layout();
+		table.setKeepWidth(true);
+
+
+		// Back
+		table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(mUiFactory.getStyles().vars.paddingButton);
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mWidgets.reset.hider.hide();
+				mWidgets.send.hider.show();
+			}
+		};
+		mUiFactory.button.addText("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		table.getCell().setFixedWidth(false);
+
+		// Reset
+		buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				resetPassword();
+			}
+		};
+		mUiFactory.button.addText("Reset", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		table.getCell().setFixedWidth(false);
+		mUiFactory.button.addPadding(table.getRow());
+		mWidgets.reset.table.row();
+		mWidgets.reset.table.layout();
+
+		// Add to stage
+		addActor(table);
+	}
+
+	/**
+	 * Reset password
+	 */
+	private void resetPassword() {
+
+	}
+
+	/**
 	 * Show message box for creating an offline user meanwhile.
 	 */
-	void showCouldNotCreateUser() {
+	void showConnectionError() {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 		msgBox.setTitle("Could not connect to server!");
@@ -357,6 +548,14 @@ public class LoginGui extends Gui {
 
 		msgBox.addCancelButtonAndKeys("OK");
 		showMsgBox(msgBox);
+	}
+
+	/**
+	 * Show password reset window
+	 */
+	void showPasswordResetWindow() {
+		mWidgets.send.hider.hide();
+		mWidgets.reset.hider.show();
 	}
 
 	/**
@@ -381,32 +580,48 @@ public class LoginGui extends Gui {
 
 	/** The login scene */
 	private LoginScene mLoginScene = null;
-	/** Login hider */
-	private HideManual mLoginHider = new HideManual();
-	/** Register hider */
-	private HideManual mRegisterHider = new HideManual();
 	/** All the widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
 
 	/**
 	 * Inner widgets
 	 */
-	private static class InnerWidgets {
+	private class InnerWidgets implements Disposable {
 		Login login = new Login();
 		Register register = new Register();
+		PasswordSend send = new PasswordSend();
+		PasswordReset reset = new PasswordReset();
 
-		private static class Login {
+		private class Login implements Disposable {
 			AlignTable table = new AlignTable();
+			HideManual hider = new HideManual();
 			TextField username = null;
 			TextField password = null;
 
 			// Listeners
 			TextFieldListener usernameListener = null;
 			TextFieldListener passwordListener = null;
+
+			private Login() {
+				init();
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				hider.addToggleActor(table);
+			}
 		}
 
-		private static class Register {
+		private class Register implements Disposable {
 			AlignTable table = new AlignTable();
+			HideManual hider = new HideManual();
 			TextField username = null;
 			TextField password = null;
 			TextField confirmPassword = null;
@@ -421,6 +636,92 @@ public class LoginGui extends Gui {
 			Label usernameError = null;
 			Label passwordError = null;
 			Label emailError = null;
+
+			private Register() {
+				init();
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				hider.addToggleActor(table);
+			}
+		}
+
+		private class PasswordSend implements Disposable {
+			AlignTable table = new AlignTable();
+			HideManual hider = new HideManual();
+
+			// Listeners
+			TextFieldListener emailListener = null;
+
+			// Error labels
+			Label emailError = null;
+
+			private PasswordSend() {
+				init();
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				hider.addToggleActor(table);
+			}
+		}
+
+		private class PasswordReset implements Disposable {
+			AlignTable table = new AlignTable();
+			HideManual hider = new HideManual();
+			TextField email = null;
+			TextField password = null;
+			TextField confirmPassword = null;
+			TextField token = null;
+
+			// Listeners
+			TextFieldListener tokenListener = null;
+			TextFieldListener passwordListener = null;
+			TextFieldListener emailListener = null;
+
+			// Error labels
+			Label tokenError = null;
+			Label passwordError = null;
+			Label emailError = null;
+
+			private PasswordReset() {
+				init();
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hider.dispose();
+
+				init();
+			}
+
+			private void init() {
+				hider.addToggleActor(table);
+			}
+		}
+
+		@Override
+		public void dispose() {
+			login.dispose();
+			register.dispose();
+			send.dispose();
+			reset.dispose();
 		}
 	}
 }

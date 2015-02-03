@@ -6,11 +6,13 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
+import com.spiddekauga.voider.repo.user.UserWebRepo;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.sound.Music;
@@ -113,101 +115,6 @@ public class LoginScene extends Scene implements IResponseListener {
 		}
 	}
 
-	// /**
-	// * Handles a login response
-	// * @param response the login response
-	// */
-	// void handleLoginResopnse(LoginMethodResponse response) {
-	// User userInfo = UserLocalRepo.getLastUser();
-	//
-	// switch (response.status) {
-	// case SUCCESS:
-	// switch (response.clientVersionStatus) {
-	// case NEW_VERSION_AVAILABLE:
-	// case UP_TO_DATE:
-	// UserLocalRepo.setLastUser(response.username, response.privateKey,
-	// response.userKey);
-	// mUser.login(response.username, response.userKey, true);
-	// setOutcome(Outcomes.LOGGED_IN, response);
-	// break;
-	//
-	// case UNKNOWN:
-	// case UPDATE_REQUIRED:
-	// loginOffline(response, "");
-	// break;
-	// }
-	//
-	// break;
-	//
-	// case FAILED_USERNAME_PASSWORD_MISMATCH:
-	// if (mAutoLogin) {
-	// mGui.hideWaitWindow();
-	// mNotification.show(NotificationTypes.ERROR, "Could not auto-login " +
-	// userInfo.getUsername());
-	// UserLocalRepo.removeLastUser();
-	// mAutoLogin = false;
-	// mUser.setOnline(false);
-	// } else {
-	// mNotification.show(NotificationTypes.ERROR,
-	// "No username with that password exists");
-	// }
-	// ((LoginGui) mGui).focusUsernameField();
-	//
-	// // Show update available windows
-	// switch (response.clientVersionStatus) {
-	// case NEW_VERSION_AVAILABLE:
-	// ((LoginGui) mGui).showUpdateAvailable(response.latestClientVersion,
-	// response.changeLogMessage);
-	// break;
-	//
-	// case UPDATE_REQUIRED:
-	// ((LoginGui) mGui).showUpdateNeeded(response.latestClientVersion,
-	// response.changeLogMessage);
-	// break;
-	//
-	// case UNKNOWN:
-	// case UP_TO_DATE:
-	// // Does nothing
-	// break;
-	// }
-	// break;
-	//
-	//
-	// case FAILED_SERVER_ERROR:
-	// case FAILED_SERVER_CONNECTION:
-	// loginOffline(response, "Could not connect to server");
-	// break;
-	// }
-	//
-	// mGui.hideWaitWindow();
-	// }
-
-	// /**
-	// * Login offline (if available and after server response)
-	// * @param response
-	// * @param failMessage the message to cannot login offline
-	// */
-	// private void loginOffline(LoginMethodResponse response, String failMessage) {
-	// // Login offline if tried to auto-login
-	// if (mAutoLogin) {
-	// try {
-	// setOutcome(Outcomes.NOT_APPLICAPLE, response);
-	// } catch (GdxRuntimeException e) {
-	// // Error with connection
-	// if (e.getCause() instanceof SQLiteGdxException) {
-	// mNotification.show(NotificationTypes.ERROR,
-	// "Another instance with this user is already running");
-	// }
-	// ((LoginGui) mGui).focusUsernameField();
-	// }
-	// } else {
-	// if (failMessage != null && !failMessage.isEmpty()) {
-	// mNotification.show(NotificationTypes.ERROR, failMessage);
-	// }
-	// ((LoginGui) mGui).focusUsernameField();
-	// }
-	// }
-
 	/**
 	 * Try to login with the specified username and password
 	 * @param username the username to login with
@@ -235,7 +142,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * Handle register response
 	 * @param response the register response
 	 */
-	void handleRegisterResponse(RegisterUserResponse response) {
+	private void handleRegisterResponse(RegisterUserResponse response) {
 		mGui.hideWaitWindow();
 
 		switch (response.status) {
@@ -258,14 +165,11 @@ public class LoginScene extends Scene implements IResponseListener {
 		case FAIL_PASSWORD_TOO_SHORT:
 			((LoginGui) mGui).setRegisterPasswordError("too short");
 
-			// Connection or server error, create a local user instead
 		case FAIL_SERVER_CONNECTION:
 		case FAIL_SERVER_ERROR:
-			((LoginGui) mGui).showCouldNotCreateUser();
+			((LoginGui) mGui).showConnectionError();
 			break;
 		}
-
-
 	}
 
 	/**
@@ -282,6 +186,36 @@ public class LoginScene extends Scene implements IResponseListener {
 		mGui.showWaitWindow("Registering...");
 	}
 
+	/**
+	 * Try to send a password reset token to the specified email
+	 * @param email the email to send the token to
+	 */
+	void passwordResetSendToken(String email) {
+		UserWebRepo.getInstance().passwordResetSendToken(email, this);
+		mGui.showWaitWindow("Sending reset token to email...");
+	}
+
+	/**
+	 * Handle password reset token
+	 * @param response web response
+	 */
+	private void handlePasswordResetSendToken(PasswordResetSendTokenResponse response) {
+		mGui.hideWaitWindow();
+
+		switch (response.status) {
+		case FAILED_EMAIL:
+			((LoginGui) mGui).setPasswordResetSendError("does not exist");
+			break;
+		case FAILED_SERVER_CONNECTION:
+		case FAILED_SERVER_ERROR:
+			((LoginGui) mGui).showConnectionError();
+			break;
+		case SUCCESS:
+			((LoginGui) mGui).showPasswordResetWindow();
+			break;
+		}
+	}
+
 	@Override
 	protected Scene getNextScene() {
 		return new MainMenu();
@@ -292,6 +226,10 @@ public class LoginScene extends Scene implements IResponseListener {
 		// Register
 		if (response instanceof RegisterUserResponse) {
 			handleRegisterResponse((RegisterUserResponse) response);
+		}
+		// Password reset (send token)
+		else if (response instanceof PasswordResetSendTokenResponse) {
+			handlePasswordResetSendToken((PasswordResetSendTokenResponse) response);
 		}
 	}
 
