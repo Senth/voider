@@ -10,18 +10,18 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod.SortOrders;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.stat.CommentEntity;
-import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
-import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.network.resource.CommentFetchMethod;
+import com.spiddekauga.voider.network.resource.CommentFetchResponse;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.LevelDefEntity;
+import com.spiddekauga.voider.network.resource.LevelFetchMethod;
+import com.spiddekauga.voider.network.resource.LevelFetchResponse;
+import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
+import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.LevelFetchMethod.SortOrders;
+import com.spiddekauga.voider.network.stat.CommentEntity;
+import com.spiddekauga.voider.network.stat.LevelInfoEntity;
+import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
@@ -105,10 +105,10 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 	@Override
 	protected void onWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof LevelFetchMethodResponse) {
-			mLevelFetch.handleWebResponse((LevelFetchMethod) method, (LevelFetchMethodResponse) response);
-		} else if (response instanceof CommentFetchMethodResponse) {
-			mCommentFetch.handleWebResponse((CommentFetchMethod) method, (CommentFetchMethodResponse) response);
+		if (response instanceof LevelFetchResponse) {
+			mLevelFetch.handleWebResponse((LevelFetchMethod) method, (LevelFetchResponse) response);
+		} else if (response instanceof CommentFetchResponse) {
+			mCommentFetch.handleWebResponse((CommentFetchMethod) method, (CommentFetchResponse) response);
 		} else {
 			super.onWebResponse(method, response);
 		}
@@ -413,7 +413,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @param method
 		 * @param response
 		 */
-		void handleWebResponse(CommentFetchMethod method, CommentFetchMethodResponse response) {
+		void handleWebResponse(CommentFetchMethod method, CommentFetchResponse response) {
 			// Only do something if it's comments for the currently selected level
 			if (mSelectedLevel != null && mSelectedLevel.defEntity.resourceId.equals(method.resourceId)) {
 				mIsFetching = false;
@@ -499,7 +499,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @param method
 		 * @param response
 		 */
-		void handleWebResponse(LevelFetchMethod method, LevelFetchMethodResponse response) {
+		void handleWebResponse(LevelFetchMethod method, LevelFetchResponse response) {
 			// Only do something if this was the one we last called
 			if (isLastMethod(method)) {
 				mIsFetching = false;

@@ -9,8 +9,8 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
+import com.spiddekauga.voider.network.misc.BugReportEntity;
+import com.spiddekauga.voider.network.misc.BugReportResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
@@ -121,8 +121,8 @@ public class CBugReportSend extends Command implements IResponseListener {
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		// Bug report
-		if (response instanceof BugReportMethodResponse) {
-			handleBugReportResponse((BugReportMethodResponse) response);
+		if (response instanceof BugReportResponse) {
+			handleBugReportResponse((BugReportResponse) response);
 		}
 	}
 
@@ -130,7 +130,7 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * Handles the response from a bug report request
 	 * @param response server's method response
 	 */
-	private void handleBugReportResponse(BugReportMethodResponse response) {
+	private void handleBugReportResponse(BugReportResponse response) {
 		if (response.status.isSuccessful()) {
 			// Message box
 			MsgBoxExecuter msgBox = mGui.getFreeMsgBox(true);

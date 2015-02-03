@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
+import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceHasDef;

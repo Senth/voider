@@ -51,6 +51,10 @@ public abstract interface IMethodEntity extends IEntity {
 		LOGOUT,
 		/** Register new user */
 		REGISTER_USER,
+		/** Reset password -> Send token */
+		PASSWORD_RESET_SEND_TOKEN,
+		/** Reset password -> New password from token */
+		PASSWORD_RESET,
 
 		// Stats
 		/** Highscore sync */

@@ -2,8 +2,8 @@ package com.spiddekauga.voider.repo.stat;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
+import com.spiddekauga.voider.network.stat.StatSyncEntity;
+import com.spiddekauga.voider.network.stat.StatSyncResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
 
@@ -41,8 +41,8 @@ public class StatRepo extends Repo {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof StatSyncMethodResponse) {
-			handleSyncResponse((StatSyncMethodResponse) response);
+		if (response instanceof StatSyncResponse) {
+			handleSyncResponse((StatSyncResponse) response);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class StatRepo extends Repo {
 	 * Handle sync response from the server
 	 * @param response server response
 	 */
-	private void handleSyncResponse(StatSyncMethodResponse response) {
+	private void handleSyncResponse(StatSyncResponse response) {
 		if (response.isSuccessful()) {
 			mLocalRepo.setAsSynced(response.syncEntity.syncDate);
 		}

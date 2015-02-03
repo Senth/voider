@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;

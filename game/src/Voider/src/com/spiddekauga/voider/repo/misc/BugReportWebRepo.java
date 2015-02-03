@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
+import com.spiddekauga.voider.network.misc.BugReportEntity;
+import com.spiddekauga.voider.network.misc.BugReportMethod;
+import com.spiddekauga.voider.network.misc.BugReportResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
 
@@ -20,11 +20,11 @@ public class BugReportWebRepo extends WebRepo {
 		IEntity responseToSend = null;
 
 		if (methodEntity instanceof BugReportMethod) {
-			if (response instanceof BugReportMethodResponse) {
+			if (response instanceof BugReportResponse) {
 				responseToSend = response;
 			} else {
-				BugReportMethodResponse bugReportMethodResponse = new BugReportMethodResponse();
-				bugReportMethodResponse.status = BugReportMethodResponse.Statuses.FAILED_CONNECTION;
+				BugReportResponse bugReportMethodResponse = new BugReportResponse();
+				bugReportMethodResponse.status = BugReportResponse.Statuses.FAILED_CONNECTION;
 				responseToSend = bugReportMethodResponse;
 			}
 		}

@@ -5,12 +5,12 @@ import java.util.UUID;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.user.LoginMethod;
-import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
-import com.spiddekauga.voider.network.entities.user.LogoutMethod;
-import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
-import com.spiddekauga.voider.network.entities.user.RegisterUserMethod;
-import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
+import com.spiddekauga.voider.network.user.LoginMethod;
+import com.spiddekauga.voider.network.user.LoginMethodResponse;
+import com.spiddekauga.voider.network.user.LogoutMethod;
+import com.spiddekauga.voider.network.user.LogoutMethodResponse;
+import com.spiddekauga.voider.network.user.RegisterUserMethod;
+import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
 import com.spiddekauga.voider.utils.User;
@@ -98,11 +98,11 @@ public class UserWebRepo extends WebRepo {
 		}
 		// Register
 		else if (methodEntity instanceof RegisterUserMethod) {
-			if (response instanceof RegisterUserMethodResponse) {
+			if (response instanceof RegisterUserResponse) {
 				responseToSend = response;
 			} else {
-				RegisterUserMethodResponse registerUserMethodResponse = new RegisterUserMethodResponse();
-				registerUserMethodResponse.status = RegisterUserMethodResponse.Statuses.FAIL_SERVER_CONNECTION;
+				RegisterUserResponse registerUserMethodResponse = new RegisterUserResponse();
+				registerUserMethodResponse.status = RegisterUserResponse.Statuses.FAIL_SERVER_CONNECTION;
 				responseToSend = registerUserMethodResponse;
 			}
 		}

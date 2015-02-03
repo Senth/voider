@@ -4,8 +4,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.BulletFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.BulletFetchMethodResponse;
+import com.spiddekauga.voider.network.resource.BulletFetchMethod;
+import com.spiddekauga.voider.network.resource.BulletFetchResponse;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.utils.User;
 
@@ -97,8 +97,8 @@ public class ExploreBulletScene extends ExploreActorScene {
 
 	@Override
 	protected void onWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof BulletFetchMethodResponse) {
-			mBulletFetch.handleWebResponse((BulletFetchMethod) method, (BulletFetchMethodResponse) response);
+		if (response instanceof BulletFetchResponse) {
+			mBulletFetch.handleWebResponse((BulletFetchMethod) method, (BulletFetchResponse) response);
 		} else {
 			super.onWebResponse(method, response);
 		}
@@ -156,7 +156,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 		 * @param method parameters to the server
 		 * @param response server response
 		 */
-		void handleWebResponse(BulletFetchMethod method, BulletFetchMethodResponse response) {
+		void handleWebResponse(BulletFetchMethod method, BulletFetchResponse response) {
 			// Only do something if this was the last one we called
 			if (isLastMethod(method)) {
 				mIsFetching = false;

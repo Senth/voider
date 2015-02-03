@@ -13,7 +13,7 @@ import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
-import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.resource.BulletDefEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;

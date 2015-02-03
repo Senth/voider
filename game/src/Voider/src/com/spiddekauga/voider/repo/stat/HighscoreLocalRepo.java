@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 
 /**
  * Local repository of highscores

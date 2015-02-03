@@ -61,9 +61,9 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
+import com.spiddekauga.voider.network.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.resource.LevelDefEntity;
+import com.spiddekauga.voider.network.resource.PublishResponse;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -857,8 +857,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		super.handleWebResponseSyncronously(method, response);
 
 		// Publish -> Update available tools
-		if (response instanceof PublishMethodResponse) {
-			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+		if (response instanceof PublishResponse) {
+			if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
 				updateAvailableTools(false, true);
 			}
 		}

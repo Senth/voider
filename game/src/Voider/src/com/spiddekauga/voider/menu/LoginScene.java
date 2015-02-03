@@ -6,7 +6,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
+import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -235,7 +235,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * Handle register response
 	 * @param response the register response
 	 */
-	void handleRegisterResponse(RegisterUserMethodResponse response) {
+	void handleRegisterResponse(RegisterUserResponse response) {
 		mGui.hideWaitWindow();
 
 		switch (response.status) {
@@ -290,8 +290,8 @@ public class LoginScene extends Scene implements IResponseListener {
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		// Register
-		if (response instanceof RegisterUserMethodResponse) {
-			handleRegisterResponse((RegisterUserMethodResponse) response);
+		if (response instanceof RegisterUserResponse) {
+			handleRegisterResponse((RegisterUserResponse) response);
 		}
 	}
 

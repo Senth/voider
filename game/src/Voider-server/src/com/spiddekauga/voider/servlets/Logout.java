@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
+import com.spiddekauga.voider.network.user.LogoutMethodResponse;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**

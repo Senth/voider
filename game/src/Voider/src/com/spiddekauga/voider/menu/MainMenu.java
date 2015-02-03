@@ -23,7 +23,7 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;

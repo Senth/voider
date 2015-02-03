@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.analytics.AnalyticsEventEntity;
 import com.spiddekauga.voider.network.analytics.AnalyticsMethod;
-import com.spiddekauga.voider.network.analytics.AnalyticsMethodResponse;
+import com.spiddekauga.voider.network.analytics.AnalyticsResponse;
 import com.spiddekauga.voider.network.analytics.AnalyticsSceneEntity;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
@@ -32,7 +32,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class Analytics extends VoiderServlet {
 	@Override
 	protected void onInit() {
-		mResponse = new AnalyticsMethodResponse();
+		mResponse = new AnalyticsResponse();
 	}
 
 	@Override
@@ -162,5 +162,5 @@ public class Analytics extends VoiderServlet {
 	/** Parameters */
 	private AnalyticsMethod mParameters = null;
 	/** Response */
-	private AnalyticsMethodResponse mResponse = null;
+	private AnalyticsResponse mResponse = null;
 }

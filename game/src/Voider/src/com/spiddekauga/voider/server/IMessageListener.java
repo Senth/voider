@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.server;
 
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage;
 
 /**
  * Listens to messages

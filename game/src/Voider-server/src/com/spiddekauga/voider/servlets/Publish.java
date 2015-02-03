@@ -25,23 +25,23 @@ import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
-import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
-import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.CampaignDefEntity;
-import com.spiddekauga.voider.network.entities.resource.CollisionDamageSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
-import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.PublishMethod;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
+import com.spiddekauga.voider.network.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.resource.BulletSpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.CampaignDefEntity;
+import com.spiddekauga.voider.network.resource.CollisionDamageSearchRanges;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.resource.EnemySpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.LevelDefEntity;
+import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
+import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.PublishMethod;
+import com.spiddekauga.voider.network.resource.PublishResponse;
+import com.spiddekauga.voider.network.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.PublishResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CDependency;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
@@ -66,7 +66,7 @@ public class Publish extends VoiderServlet {
 	protected void onInit() {
 		mSearchDocumentsToAdd.clear();
 		mMethod = null;
-		mResponse = new PublishMethodResponse();
+		mResponse = new PublishResponse();
 		mResponse.status = Statuses.FAILED_SERVER_ERROR;
 		mDatastoreKeys.clear();
 	}
@@ -710,5 +710,5 @@ public class Publish extends VoiderServlet {
 	/** For getting datastore keys faster when adding dependencies */
 	private Map<UUID, Key> mDatastoreKeys = new HashMap<>();
 	private PublishMethod mMethod = null;
-	private PublishMethodResponse mResponse = null;
+	private PublishResponse mResponse = null;
 }

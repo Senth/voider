@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.analytics.AnalyticsMethod;
-import com.spiddekauga.voider.network.analytics.AnalyticsMethodResponse;
+import com.spiddekauga.voider.network.analytics.AnalyticsResponse;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -52,10 +52,10 @@ class AnalyticsWebRepo extends WebRepo {
 	 * @return correct response
 	 */
 	private IEntity handleSyncResponse(IEntity response) {
-		if (response instanceof AnalyticsMethodResponse) {
+		if (response instanceof AnalyticsResponse) {
 			return response;
 		} else {
-			AnalyticsMethodResponse methodResponse = new AnalyticsMethodResponse();
+			AnalyticsResponse methodResponse = new AnalyticsResponse();
 			methodResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 			return methodResponse;
 		}

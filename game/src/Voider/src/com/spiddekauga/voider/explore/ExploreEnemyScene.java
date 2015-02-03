@@ -8,14 +8,14 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.CollisionDamageSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
-import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
+import com.spiddekauga.voider.network.resource.BulletSpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.CollisionDamageSearchRanges;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.resource.EnemyFetchMethod;
+import com.spiddekauga.voider.network.resource.EnemyFetchResponse;
+import com.spiddekauga.voider.network.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
@@ -341,8 +341,8 @@ public class ExploreEnemyScene extends ExploreActorScene {
 
 	@Override
 	protected void onWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof EnemyFetchMethodResponse) {
-			mEnemyFetch.handleWebResponse((EnemyFetchMethod) method, (EnemyFetchMethodResponse) response);
+		if (response instanceof EnemyFetchResponse) {
+			mEnemyFetch.handleWebResponse((EnemyFetchMethod) method, (EnemyFetchResponse) response);
 		} else {
 			super.onWebResponse(method, response);
 		}
@@ -406,7 +406,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		 * @param method parameters to the server
 		 * @param response server response
 		 */
-		void handleWebResponse(EnemyFetchMethod method, EnemyFetchMethodResponse response) {
+		void handleWebResponse(EnemyFetchMethod method, EnemyFetchResponse response) {
 			// Only do something if this was the last one we called
 			if (isLastMethod(method)) {
 				mIsFetching = false;

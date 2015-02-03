@@ -20,10 +20,10 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse.Statuses;
+import com.spiddekauga.voider.network.stat.HighscoreEntity;
+import com.spiddekauga.voider.network.stat.HighscoreGetMethod;
+import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
+import com.spiddekauga.voider.network.stat.HighscoreGetResponse.Statuses;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 
@@ -35,7 +35,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class HighscoreGet extends VoiderServlet {
 	@Override
 	protected void onInit() {
-		mResponse = new HighscoreGetMethodResponse();
+		mResponse = new HighscoreGetResponse();
 		mResponse.status = Statuses.FAILED_INTERNAL;
 	}
 
@@ -278,5 +278,5 @@ public class HighscoreGet extends VoiderServlet {
 	/** Parameters */
 	private HighscoreGetMethod mParameters = null;
 	/** Response */
-	private HighscoreGetMethodResponse mResponse = null;
+	private HighscoreGetResponse mResponse = null;
 }

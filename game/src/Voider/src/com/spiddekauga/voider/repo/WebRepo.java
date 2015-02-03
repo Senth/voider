@@ -19,12 +19,12 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
-import com.spiddekauga.voider.network.entities.misc.BlobDownloadMethod;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
-import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethod;
-import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
+import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
+import com.spiddekauga.voider.network.misc.BugReportMethod;
+import com.spiddekauga.voider.network.misc.GetUploadUrlMethod;
+import com.spiddekauga.voider.network.misc.GetUploadUrlResponse;
+import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.IResource;
@@ -123,8 +123,8 @@ public abstract class WebRepo {
 
 
 		// Upload files
-		if (uploadResponse instanceof GetUploadUrlMethodResponse) {
-			String uploadUrl = ((GetUploadUrlMethodResponse) uploadResponse).uploadUrl;
+		if (uploadResponse instanceof GetUploadUrlResponse) {
+			String uploadUrl = ((GetUploadUrlResponse) uploadResponse).uploadUrl;
 			Gdx.app.debug("WebRepo", "Upload URL: " + uploadUrl);
 			if (uploadUrl != null) {
 				// Fix upload URL

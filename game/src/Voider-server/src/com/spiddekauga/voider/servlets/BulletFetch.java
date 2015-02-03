@@ -8,11 +8,11 @@ import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
-import com.spiddekauga.voider.network.entities.resource.BulletFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.BulletFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.resource.BulletFetchMethod;
+import com.spiddekauga.voider.network.resource.BulletFetchResponse;
+import com.spiddekauga.voider.network.resource.FetchStatuses;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ActorFetch;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
@@ -80,7 +80,7 @@ public class BulletFetch extends ActorFetch<BulletDefEntity> {
 	protected void onInit() {
 		super.onInit();
 
-		mResponse = new BulletFetchMethodResponse();
+		mResponse = new BulletFetchResponse();
 	}
 
 	@Override
@@ -94,5 +94,5 @@ public class BulletFetch extends ActorFetch<BulletDefEntity> {
 	}
 
 	private BulletFetchMethod mParameters = null;
-	private BulletFetchMethodResponse mResponse = null;
+	private BulletFetchResponse mResponse = null;
 }

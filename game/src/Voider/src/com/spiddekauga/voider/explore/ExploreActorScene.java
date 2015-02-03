@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.DefEntity;
 
 /**
  * Can be used separately or be derived and used as a base class for tailoring this scene.

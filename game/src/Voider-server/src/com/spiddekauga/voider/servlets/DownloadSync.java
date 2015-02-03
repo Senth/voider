@@ -13,11 +13,11 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse.Statuses;
+import com.spiddekauga.voider.network.resource.DownloadSyncMethod;
+import com.spiddekauga.voider.network.resource.DownloadSyncResponse;
+import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.DownloadSyncResponse.Statuses;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -35,7 +35,7 @@ public class DownloadSync extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		DownloadSyncMethodResponse response = new DownloadSyncMethodResponse();
+		DownloadSyncResponse response = new DownloadSyncResponse();
 		response.status = Statuses.FAILED_INTERNAL;
 
 		if (mUser.isLoggedIn()) {

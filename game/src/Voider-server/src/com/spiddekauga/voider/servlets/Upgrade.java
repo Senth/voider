@@ -21,7 +21,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsEvent;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsScene;

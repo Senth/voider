@@ -16,36 +16,36 @@ import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.BlobDownloadMethod;
-import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
-import com.spiddekauga.voider.network.entities.resource.BulletFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.BulletFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
-import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.FetchMethod;
-import com.spiddekauga.voider.network.entities.resource.FetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.PublishMethod;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.CommentEntity;
-import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
+import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
+import com.spiddekauga.voider.network.resource.BulletDefEntity;
+import com.spiddekauga.voider.network.resource.BulletFetchMethod;
+import com.spiddekauga.voider.network.resource.BulletFetchResponse;
+import com.spiddekauga.voider.network.resource.CommentFetchMethod;
+import com.spiddekauga.voider.network.resource.CommentFetchResponse;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.DownloadSyncMethod;
+import com.spiddekauga.voider.network.resource.DownloadSyncResponse;
+import com.spiddekauga.voider.network.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.resource.EnemyFetchMethod;
+import com.spiddekauga.voider.network.resource.EnemyFetchResponse;
+import com.spiddekauga.voider.network.resource.FetchMethod;
+import com.spiddekauga.voider.network.resource.FetchResponse;
+import com.spiddekauga.voider.network.resource.FetchStatuses;
+import com.spiddekauga.voider.network.resource.LevelFetchMethod;
+import com.spiddekauga.voider.network.resource.LevelFetchResponse;
+import com.spiddekauga.voider.network.resource.PublishMethod;
+import com.spiddekauga.voider.network.resource.PublishResponse;
+import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
+import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
+import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
+import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.resource.UserResourceSyncMethod;
+import com.spiddekauga.voider.network.resource.UserResourceSyncResponse;
+import com.spiddekauga.voider.network.resource.PublishResponse.Statuses;
+import com.spiddekauga.voider.network.stat.CommentEntity;
+import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -222,14 +222,14 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return a correct response for getting comments
 	 */
 	private IEntity handleCommentFetchResponse(CommentFetchMethod method, IEntity response) {
-		if (response instanceof CommentFetchMethodResponse) {
-			if (((CommentFetchMethodResponse) response).isSuccessful()) {
-				cacheComments(method.resourceId, (CommentFetchMethodResponse) response);
+		if (response instanceof CommentFetchResponse) {
+			if (((CommentFetchResponse) response).isSuccessful()) {
+				cacheComments(method.resourceId, (CommentFetchResponse) response);
 			}
 
 			return response;
 		} else {
-			CommentFetchMethodResponse validResponse = new CommentFetchMethodResponse();
+			CommentFetchResponse validResponse = new CommentFetchResponse();
 			validResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
 			return validResponse;
 		}
@@ -240,7 +240,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param resourceId
 	 * @param response
 	 */
-	private void cacheComments(UUID resourceId, CommentFetchMethodResponse response) {
+	private void cacheComments(UUID resourceId, CommentFetchResponse response) {
 		// Does the cache exist?
 		CommentCacheEntity cache = mCommentCache.getCopy(resourceId);
 
@@ -265,11 +265,11 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return a correct response for syncing user resource revisions
 	 */
 	private IEntity handleUserResourcesSyncResponse(IEntity response) {
-		if (response instanceof UserResourceSyncMethodResponse) {
+		if (response instanceof UserResourceSyncResponse) {
 			return response;
 		} else {
-			UserResourceSyncMethodResponse methodResponse = new UserResourceSyncMethodResponse();
-			methodResponse.uploadStatus = UserResourceSyncMethodResponse.UploadStatuses.FAILED_CONNECTION;
+			UserResourceSyncResponse methodResponse = new UserResourceSyncResponse();
+			methodResponse.uploadStatus = UserResourceSyncResponse.UploadStatuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}
@@ -281,18 +281,18 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleDownloadSyncResponse(IEntity response) {
 		// Download all resources
-		if (response instanceof DownloadSyncMethodResponse) {
+		if (response instanceof DownloadSyncResponse) {
 
-			boolean success = downloadResources(((DownloadSyncMethodResponse) response).resources, mSyncDownloadProgressListener);
+			boolean success = downloadResources(((DownloadSyncResponse) response).resources, mSyncDownloadProgressListener);
 
 			if (!success) {
-				((DownloadSyncMethodResponse) response).status = DownloadSyncMethodResponse.Statuses.FAILED_DOWNLOAD;
+				((DownloadSyncResponse) response).status = DownloadSyncResponse.Statuses.FAILED_DOWNLOAD;
 			}
 
 			return response;
 		} else {
-			DownloadSyncMethodResponse methodResponse = new DownloadSyncMethodResponse();
-			methodResponse.status = DownloadSyncMethodResponse.Statuses.FAILED_CONNECTION;
+			DownloadSyncResponse methodResponse = new DownloadSyncResponse();
+			methodResponse.status = DownloadSyncResponse.Statuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}
@@ -352,20 +352,20 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleResourceDownloadResponse(IEntity response) {
 		// Download all resources
-		if (response instanceof ResourceDownloadMethodResponse) {
+		if (response instanceof ResourceDownloadResponse) {
 
-			boolean success = downloadResources(((ResourceDownloadMethodResponse) response).resources, null);
+			boolean success = downloadResources(((ResourceDownloadResponse) response).resources, null);
 
 			if (!success) {
-				((ResourceDownloadMethodResponse) response).status = ResourceDownloadMethodResponse.Statuses.FAILED_DOWNLOAD;
+				((ResourceDownloadResponse) response).status = ResourceDownloadResponse.Statuses.FAILED_DOWNLOAD;
 			}
 
 			return response;
 		}
 		// Error connecting to server
 		else {
-			ResourceDownloadMethodResponse methodResponse = new ResourceDownloadMethodResponse();
-			methodResponse.status = ResourceDownloadMethodResponse.Statuses.FAILED_CONNECTION;
+			ResourceDownloadResponse methodResponse = new ResourceDownloadResponse();
+			methodResponse.status = ResourceDownloadResponse.Statuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}
@@ -376,10 +376,10 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return a correct response for publishing a resource
 	 */
 	private IEntity handlePublishResponse(IEntity response) {
-		if (response instanceof PublishMethodResponse) {
+		if (response instanceof PublishResponse) {
 			return response;
 		} else {
-			PublishMethodResponse publishMethodResponse = new PublishMethodResponse();
+			PublishResponse publishMethodResponse = new PublishResponse();
 			publishMethodResponse.status = Statuses.FAILED_SERVER_CONNECTION;
 			return publishMethodResponse;
 		}
@@ -390,7 +390,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param method parameters to the server (or search parameters)
 	 * @param response server response
 	 */
-	private void cacheLevels(LevelFetchMethod method, LevelFetchMethodResponse response) {
+	private void cacheLevels(LevelFetchMethod method, LevelFetchResponse response) {
 		LevelCache cache = mLevelCache.get(method);
 
 		boolean newCache = false;
@@ -416,14 +416,14 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleLevelFetchResponse(LevelFetchMethod methodEntity, IEntity response) {
 		// Update cache
-		if (response instanceof LevelFetchMethodResponse) {
-			if (((LevelFetchMethodResponse) response).status.isSuccessful()) {
-				cacheLevels(methodEntity, (LevelFetchMethodResponse) response);
+		if (response instanceof LevelFetchResponse) {
+			if (((LevelFetchResponse) response).status.isSuccessful()) {
+				cacheLevels(methodEntity, (LevelFetchResponse) response);
 			}
 
 			return response;
 		} else {
-			LevelFetchMethodResponse levelGetAllMethodResponse = new LevelFetchMethodResponse();
+			LevelFetchResponse levelGetAllMethodResponse = new LevelFetchResponse();
 			levelGetAllMethodResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
 			return levelGetAllMethodResponse;
 		}
@@ -434,7 +434,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param levelCache
 	 * @param response the response from the server
 	 */
-	private static void updateLevelCache(LevelCache levelCache, LevelFetchMethodResponse response) {
+	private static void updateLevelCache(LevelCache levelCache, LevelFetchResponse response) {
 		levelCache.addLevels(response.levels);
 		updateServerCache(levelCache, response);
 	}
@@ -444,7 +444,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param cache server cache
 	 * @param fetchResponse
 	 */
-	private static void updateServerCache(ServerCache<?> cache, FetchMethodResponse fetchResponse) {
+	private static void updateServerCache(ServerCache<?> cache, FetchResponse fetchResponse) {
 		cache.serverCursor = fetchResponse.cursor;
 		cache.fetchedAll = fetchResponse.status == FetchStatuses.SUCCESS_FETCHED_ALL;
 	}
@@ -457,11 +457,11 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleEnemyFetchResponse(EnemyFetchMethod method, IEntity response) {
 		// Update cache
-		if (response instanceof EnemyFetchMethodResponse) {
-			cacheEnemies(method, (EnemyFetchMethodResponse) response);
+		if (response instanceof EnemyFetchResponse) {
+			cacheEnemies(method, (EnemyFetchResponse) response);
 			return response;
 		} else {
-			EnemyFetchMethodResponse fixedResponse = new EnemyFetchMethodResponse();
+			EnemyFetchResponse fixedResponse = new EnemyFetchResponse();
 			fixedResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
 			return fixedResponse;
 		}
@@ -472,7 +472,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param method search criteria
 	 * @param response response from the server
 	 */
-	private void cacheEnemies(EnemyFetchMethod method, EnemyFetchMethodResponse response) {
+	private void cacheEnemies(EnemyFetchMethod method, EnemyFetchResponse response) {
 		EnemyCache cache = mEnemyCache.get(method);
 
 		boolean newCache = false;
@@ -499,11 +499,11 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleBulletFetchResponse(BulletFetchMethod method, IEntity response) {
 		// Update cache
-		if (response instanceof BulletFetchMethodResponse) {
-			cacheBullets(method.searchString, (BulletFetchMethodResponse) response);
+		if (response instanceof BulletFetchResponse) {
+			cacheBullets(method.searchString, (BulletFetchResponse) response);
 			return response;
 		} else {
-			BulletFetchMethodResponse fixedResponse = new BulletFetchMethodResponse();
+			BulletFetchResponse fixedResponse = new BulletFetchResponse();
 			fixedResponse.status = FetchStatuses.FAILED_SERVER_CONNECTION;
 			return fixedResponse;
 		}
@@ -514,7 +514,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param searchString search criteria
 	 * @param response server response
 	 */
-	private void cacheBullets(String searchString, BulletFetchMethodResponse response) {
+	private void cacheBullets(String searchString, BulletFetchResponse response) {
 		BulletCache cache = mBulletCache.get(searchString);
 
 		boolean newCache = false;
@@ -544,7 +544,7 @@ public class ResourceWebRepo extends WebRepo {
 		CommentFetchMethod method = new CommentFetchMethod();
 		method.resourceId = resourceId;
 		CommentCacheEntity cache = mCommentCache.getCopy(resourceId);
-		CommentFetchMethodResponse response = new CommentFetchMethodResponse();
+		CommentFetchResponse response = new CommentFetchResponse();
 		if (cache != null) {
 			response.comments = cache.comments;
 			response.userComment = cache.userComment;
@@ -571,7 +571,7 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	public void getLevels(LevelFetchMethod method, boolean fetchMore, IResponseListener... responseListeners) {
 		LevelFetchMethod levelFetchMethod = method.copy();
-		LevelFetchMethodResponse response = new LevelFetchMethodResponse();
+		LevelFetchResponse response = new LevelFetchResponse();
 		LevelCache cache = mLevelCache.getCopy(levelFetchMethod);
 		if (cache != null) {
 			response.levels = cache.levels;
@@ -589,7 +589,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response response to use if cache was used
 	 */
 	private void fetch(FetchMethod method, ServerCache<?> cache, boolean fetchMore, IResponseListener[] responseListeners,
-			FetchMethodResponse response) {
+			FetchResponse response) {
 		// Fetch more from server
 		if (cache == null || (fetchMore && !cache.fetchedAll)) {
 			if (cache != null) {
@@ -632,7 +632,7 @@ public class ResourceWebRepo extends WebRepo {
 	public void getEnemies(EnemyFetchMethod method, boolean fetchMore, IResponseListener... responseListeners) {
 		EnemyFetchMethod fetchMethod = method.copy();
 		EnemyCache cache = mEnemyCache.getCopy(fetchMethod);
-		EnemyFetchMethodResponse response = new EnemyFetchMethodResponse();
+		EnemyFetchResponse response = new EnemyFetchResponse();
 		if (cache != null) {
 			response.enemies = cache.enemies;
 		}
@@ -659,7 +659,7 @@ public class ResourceWebRepo extends WebRepo {
 		BulletFetchMethod method = new BulletFetchMethod();
 		method.searchString = searchString;
 		BulletCache cache = mBulletCache.getCopy(searchString);
-		BulletFetchMethodResponse response = new BulletFetchMethodResponse();
+		BulletFetchResponse response = new BulletFetchResponse();
 		if (cache != null) {
 			response.bullets = cache.bullets;
 		}

@@ -30,7 +30,7 @@ import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
+import com.spiddekauga.voider.network.resource.PublishResponse;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
@@ -645,8 +645,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		super.handleWebResponseSyncronously(method, response);
 
 		// Publish -> Remove tools
-		if (response instanceof PublishMethodResponse) {
-			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+		if (response instanceof PublishResponse) {
+			if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
 				switchTool(Tools.MOVE);
 				mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
 			}

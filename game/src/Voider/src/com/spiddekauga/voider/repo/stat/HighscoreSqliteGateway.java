@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.badlogic.gdx.sql.DatabaseCursor;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.repo.SqliteGateway;
 
 /**

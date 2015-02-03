@@ -3,8 +3,8 @@ package com.spiddekauga.voider.repo.stat;
 import java.util.Date;
 import java.util.UUID;
 
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.network.stat.StatSyncEntity;
+import com.spiddekauga.voider.network.stat.Tags;
 
 /**
  * Local repository for stats

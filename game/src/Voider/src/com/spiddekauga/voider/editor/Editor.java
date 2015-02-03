@@ -31,7 +31,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
+import com.spiddekauga.voider.network.resource.PublishResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.repo.resource.InternalNames;
@@ -473,9 +473,9 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 */
 	protected void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
 		// Publish
-		if (response instanceof PublishMethodResponse) {
+		if (response instanceof PublishResponse) {
 			mGui.hideProgressBar();
-			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+			if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
 				mNotification.show(NotificationTypes.SUCCESS, "Publish successful!");
 				mGui.resetValues();
 				mInvoker.dispose();

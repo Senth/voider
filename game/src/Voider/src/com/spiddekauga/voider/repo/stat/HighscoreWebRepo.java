@@ -8,14 +8,14 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod.Fetch;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethod;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.stat.HighscoreEntity;
+import com.spiddekauga.voider.network.stat.HighscoreGetMethod;
+import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
+import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.stat.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
+import com.spiddekauga.voider.network.stat.HighscoreGetMethod.Fetch;
+import com.spiddekauga.voider.network.stat.HighscoreGetResponse.Statuses;
 import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -77,7 +77,7 @@ class HighscoreWebRepo extends WebRepo {
 		method.fetch = fetchOption;
 		method.levelId = levelId;
 
-		HighscoreGetMethodResponse cacheResponse = getCached(levelId, fetchOption);
+		HighscoreGetResponse cacheResponse = getCached(levelId, fetchOption);
 
 		// Use cache
 		if (cacheResponse != null) {
@@ -96,8 +96,8 @@ class HighscoreWebRepo extends WebRepo {
 	 * @return new response that can be used instead of the server response, null if no
 	 *         cached version of the level exists
 	 */
-	private HighscoreGetMethodResponse getCached(UUID levelId, Fetch fetchOption) {
-		HighscoreGetMethodResponse response = null;
+	private HighscoreGetResponse getCached(UUID levelId, Fetch fetchOption) {
+		HighscoreGetResponse response = null;
 
 		switch (fetchOption) {
 		case FIRST_PLACE: {
@@ -105,7 +105,7 @@ class HighscoreWebRepo extends WebRepo {
 
 			// Use cache
 			if (firstPlaceCache != null) {
-				response = new HighscoreGetMethodResponse();
+				response = new HighscoreGetResponse();
 				response.status = Statuses.SUCCESS;
 				response.firstPlace = firstPlaceCache.get();
 			}
@@ -117,7 +117,7 @@ class HighscoreWebRepo extends WebRepo {
 
 			// Use cache
 			if (topCache != null) {
-				response = new HighscoreGetMethodResponse();
+				response = new HighscoreGetResponse();
 				response.topScores = topCache.get();
 			}
 
@@ -130,7 +130,7 @@ class HighscoreWebRepo extends WebRepo {
 
 			// Use cache
 			if (userCache != null && firstPlaceCache != null) {
-				response = new HighscoreGetMethodResponse();
+				response = new HighscoreGetResponse();
 				response.firstPlace = firstPlaceCache.get();
 				response.userPlace = userCache.getUserPlace();
 				response.userScore = userCache.getUserScore();
@@ -166,15 +166,15 @@ class HighscoreWebRepo extends WebRepo {
 	 */
 	private IEntity handleGetResponse(HighscoreGetMethod method, IEntity response) {
 		// Cache result from valid response
-		if (response instanceof HighscoreGetMethodResponse) {
-			if (((HighscoreGetMethodResponse) response).isSuccessful()) {
-				cacheHighscores(method.levelId, (HighscoreGetMethodResponse) response);
+		if (response instanceof HighscoreGetResponse) {
+			if (((HighscoreGetResponse) response).isSuccessful()) {
+				cacheHighscores(method.levelId, (HighscoreGetResponse) response);
 			}
 
 			return response;
 		} else {
-			HighscoreGetMethodResponse methodResponse = new HighscoreGetMethodResponse();
-			methodResponse.status = HighscoreGetMethodResponse.Statuses.FAILED_CONNECTION;
+			HighscoreGetResponse methodResponse = new HighscoreGetResponse();
+			methodResponse.status = HighscoreGetResponse.Statuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}
@@ -184,7 +184,7 @@ class HighscoreWebRepo extends WebRepo {
 	 * @param levelId id of the level
 	 * @param response response from the server
 	 */
-	private void cacheHighscores(UUID levelId, HighscoreGetMethodResponse response) {
+	private void cacheHighscores(UUID levelId, HighscoreGetResponse response) {
 		// First place
 		if (response.firstPlace != null) {
 			mFirstPlaceCache.add(levelId, new FirstPlaceCache(response.firstPlace));
@@ -208,10 +208,10 @@ class HighscoreWebRepo extends WebRepo {
 	 * @return a correct response for syncing highscores
 	 */
 	private IEntity handleSyncResponse(IEntity response) {
-		if (response instanceof HighscoreSyncMethodResponse) {
+		if (response instanceof HighscoreSyncResponse) {
 			return response;
 		} else {
-			HighscoreSyncMethodResponse methodResponse = new HighscoreSyncMethodResponse();
+			HighscoreSyncResponse methodResponse = new HighscoreSyncResponse();
 			methodResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 			return methodResponse;
 		}

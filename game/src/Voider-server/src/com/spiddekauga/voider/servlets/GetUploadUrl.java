@@ -9,8 +9,8 @@ import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethod;
-import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethodResponse;
+import com.spiddekauga.voider.network.misc.GetUploadUrlMethod;
+import com.spiddekauga.voider.network.misc.GetUploadUrlResponse;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -30,7 +30,7 @@ public class GetUploadUrl extends VoiderServlet {
 			return null;
 		}
 
-		GetUploadUrlMethodResponse methodResponse = new GetUploadUrlMethodResponse();
+		GetUploadUrlResponse methodResponse = new GetUploadUrlResponse();
 
 		if (methodEntity instanceof GetUploadUrlMethod) {
 			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();

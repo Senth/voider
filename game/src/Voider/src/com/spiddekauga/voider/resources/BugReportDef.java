@@ -3,7 +3,7 @@ package com.spiddekauga.voider.resources;
 import java.util.Date;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
+import com.spiddekauga.voider.network.misc.BugReportEntity;
 
 
 /**

@@ -17,11 +17,11 @@ import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethod;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.stat.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -36,7 +36,7 @@ public class HighscoreSync extends VoiderServlet {
 	 */
 	@Override
 	protected void onInit() {
-		mResponse = new HighscoreSyncMethodResponse();
+		mResponse = new HighscoreSyncResponse();
 		mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 		mResponse.syncTime = new Date();
 	}
@@ -187,5 +187,5 @@ public class HighscoreSync extends VoiderServlet {
 	/** Highscores to sync to the client */
 	private HashMap<UUID, HighscoreSyncEntity> mHighscoresToClient = new HashMap<>();
 	/** Response */
-	private HighscoreSyncMethodResponse mResponse;
+	private HighscoreSyncResponse mResponse;
 }

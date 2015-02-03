@@ -7,9 +7,9 @@ import org.apache.commons.lang.time.DateUtils;
 
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity.LevelStat;
-import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.network.stat.StatSyncEntity;
+import com.spiddekauga.voider.network.stat.Tags;
+import com.spiddekauga.voider.network.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.repo.SqliteGateway;
 
 /**

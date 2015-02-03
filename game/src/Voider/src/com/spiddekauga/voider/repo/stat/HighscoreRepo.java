@@ -5,10 +5,10 @@ import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod.Fetch;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethod;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.stat.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
+import com.spiddekauga.voider.network.stat.HighscoreGetMethod.Fetch;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -109,8 +109,8 @@ public class HighscoreRepo extends Repo {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof HighscoreSyncMethodResponse) {
-			handleSyncResponse((HighscoreSyncMethod) method, (HighscoreSyncMethodResponse) response);
+		if (response instanceof HighscoreSyncResponse) {
+			handleSyncResponse((HighscoreSyncMethod) method, (HighscoreSyncResponse) response);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class HighscoreRepo extends Repo {
 	 * @param method parameters to the server
 	 * @param response server response
 	 */
-	private void handleSyncResponse(HighscoreSyncMethod method, HighscoreSyncMethodResponse response) {
+	private void handleSyncResponse(HighscoreSyncMethod method, HighscoreSyncResponse response) {
 		// Set highscores as synced
 		if (response.isSuccessful()) {
 			mLocalRepo.setSynced(method.lastSync, method.highscores);

@@ -10,7 +10,7 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
 

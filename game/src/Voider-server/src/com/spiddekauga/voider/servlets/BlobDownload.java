@@ -9,7 +9,7 @@ import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.BlobDownloadMethod;
+import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**

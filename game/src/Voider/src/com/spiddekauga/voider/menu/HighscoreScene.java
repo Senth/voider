@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse;
+import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.scene.Scene;
@@ -47,8 +47,8 @@ public class HighscoreScene extends Scene implements IResponseListener {
 			WebWrapper webWrapper = webIt.next();
 			IEntity response = webWrapper.response;
 
-			if (response instanceof HighscoreGetMethodResponse) {
-				handleGetUserScores((HighscoreGetMethodResponse) response);
+			if (response instanceof HighscoreGetResponse) {
+				handleGetUserScores((HighscoreGetResponse) response);
 			}
 
 			webIt.remove();
@@ -66,7 +66,7 @@ public class HighscoreScene extends Scene implements IResponseListener {
 	 * Handle get user scores
 	 * @param response server response
 	 */
-	private void handleGetUserScores(HighscoreGetMethodResponse response) {
+	private void handleGetUserScores(HighscoreGetResponse response) {
 		if (response.isSuccessful()) {
 			((HighscoreSceneGui) mGui).setFirstPlace(response.firstPlace);
 			((HighscoreSceneGui) mGui).populateUserScores(response.userScore, response.userPlace, response.beforeUser, response.afterUser);

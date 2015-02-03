@@ -36,7 +36,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
-import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
+import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;

@@ -7,7 +7,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.Config.Community;
-import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 

@@ -15,13 +15,13 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
-import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
+import com.spiddekauga.voider.network.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.ResourceDownloadResponse.Statuses;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -153,7 +153,7 @@ public class ResourceDownload extends VoiderServlet {
 	}
 
 	/** Method response */
-	private ResourceDownloadMethodResponse mResponse = new ResourceDownloadMethodResponse();
+	private ResourceDownloadResponse mResponse = new ResourceDownloadResponse();
 	/** All added resources */
 	private HashSet<Key> mAddedResources = new HashSet<>();
 }

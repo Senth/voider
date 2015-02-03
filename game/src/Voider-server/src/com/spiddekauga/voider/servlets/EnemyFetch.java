@@ -12,15 +12,15 @@ import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.BulletDamageSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.CollisionDamageSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.EnemyDefEntity;
-import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.EnemySpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
+import com.spiddekauga.voider.network.resource.BulletSpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.CollisionDamageSearchRanges;
+import com.spiddekauga.voider.network.resource.EnemyDefEntity;
+import com.spiddekauga.voider.network.resource.EnemyFetchMethod;
+import com.spiddekauga.voider.network.resource.EnemyFetchResponse;
+import com.spiddekauga.voider.network.resource.EnemySpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.FetchStatuses;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ActorFetch;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
@@ -36,7 +36,7 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 	protected void onInit() {
 		super.onInit();
 
-		mResponse = new EnemyFetchMethodResponse();
+		mResponse = new EnemyFetchResponse();
 	}
 
 	@Override
@@ -185,6 +185,6 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 	}
 
 	private EnemyFetchMethod mParameters = null;
-	private EnemyFetchMethodResponse mResponse = null;
+	private EnemyFetchResponse mResponse = null;
 
 }

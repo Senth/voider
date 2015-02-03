@@ -27,13 +27,13 @@ import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity.LevelStat;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethod;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.stat.StatSyncEntity;
+import com.spiddekauga.voider.network.stat.StatSyncMethod;
+import com.spiddekauga.voider.network.stat.StatSyncResponse;
+import com.spiddekauga.voider.network.stat.Tags;
+import com.spiddekauga.voider.network.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
@@ -53,7 +53,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class StatSync extends VoiderServlet {
 	@Override
 	protected void onInit() {
-		mResponse = new StatSyncMethodResponse();
+		mResponse = new StatSyncResponse();
 		mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 		mResponse.syncEntity.syncDate = new Date();
 	}
@@ -502,7 +502,7 @@ public class StatSync extends VoiderServlet {
 	/** User level stats to sync to the client */
 	private HashMap<UUID, LevelStat> mUserStatsToClient = new HashMap<>();
 	private StatSyncEntity mParameters = null;
-	private StatSyncMethodResponse mResponse = new StatSyncMethodResponse();
+	private StatSyncResponse mResponse = new StatSyncResponse();
 
 	// Tables
 	private static final String T_PUBLISHED = DatastoreTables.PUBLISHED;

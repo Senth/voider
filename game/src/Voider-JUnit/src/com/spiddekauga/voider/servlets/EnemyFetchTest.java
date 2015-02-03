@@ -10,8 +10,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.spiddekauga.voider.game.actors.MovementTypes;
-import com.spiddekauga.voider.network.entities.resource.BulletSpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.EnemyFetchMethod;
+import com.spiddekauga.voider.network.resource.BulletSpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.EnemyFetchMethod;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SEnemy;
 
 /**

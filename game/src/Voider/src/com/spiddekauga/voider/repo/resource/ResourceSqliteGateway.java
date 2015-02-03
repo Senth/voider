@@ -8,9 +8,9 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.DatabaseCursor;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.resource.RevisionEntity;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.repo.SqliteGateway;
 
 /**

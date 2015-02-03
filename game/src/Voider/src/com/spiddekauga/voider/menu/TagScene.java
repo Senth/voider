@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;

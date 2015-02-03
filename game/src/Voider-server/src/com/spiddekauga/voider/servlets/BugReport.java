@@ -20,10 +20,10 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse.Statuses;
+import com.spiddekauga.voider.network.misc.BugReportEntity;
+import com.spiddekauga.voider.network.misc.BugReportMethod;
+import com.spiddekauga.voider.network.misc.BugReportResponse;
+import com.spiddekauga.voider.network.misc.BugReportResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -40,7 +40,7 @@ public class BugReport extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		BugReportMethodResponse methodResponse = new BugReportMethodResponse();
+		BugReportResponse methodResponse = new BugReportResponse();
 		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
 
 		if (!mUser.isLoggedIn()) {

@@ -16,21 +16,21 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.resource.PublishMethod;
-import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.DownloadSyncMethod;
+import com.spiddekauga.voider.network.resource.DownloadSyncResponse;
+import com.spiddekauga.voider.network.resource.LevelDefEntity;
+import com.spiddekauga.voider.network.resource.PublishMethod;
+import com.spiddekauga.voider.network.resource.PublishResponse;
+import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
+import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
+import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
+import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.resource.RevisionEntity;
+import com.spiddekauga.voider.network.resource.UserResourceSyncMethod;
+import com.spiddekauga.voider.network.resource.UserResourceSyncResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
 import com.spiddekauga.voider.resources.Def;
@@ -198,14 +198,14 @@ public class ResourceRepo extends Repo {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof PublishMethodResponse) {
-			handlePublishResponse((PublishMethod) method, (PublishMethodResponse) response);
-		} else if (response instanceof ResourceDownloadMethodResponse) {
-			handleDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
-		} else if (response instanceof DownloadSyncMethodResponse) {
-			handleSyncDownloadResponse((DownloadSyncMethod) method, (DownloadSyncMethodResponse) response);
-		} else if (response instanceof UserResourceSyncMethodResponse) {
-			handleSyncUserResourcesResponse((UserResourceSyncMethod) method, (UserResourceSyncMethodResponse) response);
+		if (response instanceof PublishResponse) {
+			handlePublishResponse((PublishMethod) method, (PublishResponse) response);
+		} else if (response instanceof ResourceDownloadResponse) {
+			handleDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadResponse) response);
+		} else if (response instanceof DownloadSyncResponse) {
+			handleSyncDownloadResponse((DownloadSyncMethod) method, (DownloadSyncResponse) response);
+		} else if (response instanceof UserResourceSyncResponse) {
+			handleSyncUserResourcesResponse((UserResourceSyncMethod) method, (UserResourceSyncResponse) response);
 		}
 	}
 
@@ -214,7 +214,7 @@ public class ResourceRepo extends Repo {
 	 * @param method
 	 * @param response
 	 */
-	private void handleSyncUserResourcesResponse(UserResourceSyncMethod method, UserResourceSyncMethodResponse response) {
+	private void handleSyncUserResourcesResponse(UserResourceSyncMethod method, UserResourceSyncResponse response) {
 		if (response.uploadStatus.isSuccessful()) {
 			// Set the successful revisions as uploaded/synced
 			for (ResourceRevisionEntity resource : method.resources) {
@@ -319,7 +319,7 @@ public class ResourceRepo extends Repo {
 	 * @param method the sync download method
 	 * @param response sync download response
 	 */
-	private void handleSyncDownloadResponse(DownloadSyncMethod method, DownloadSyncMethodResponse response) {
+	private void handleSyncDownloadResponse(DownloadSyncMethod method, DownloadSyncResponse response) {
 		if (response.status.isSuccessful()) {
 			addDownloaded(response.resources);
 
@@ -332,7 +332,7 @@ public class ResourceRepo extends Repo {
 	 * @param method the download method
 	 * @param response the download response
 	 */
-	private void handleDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
+	private void handleDownloadResponse(ResourceDownloadMethod method, ResourceDownloadResponse response) {
 		// Add all downloaded resources to the local database
 		if (response.isSuccessful()) {
 			addDownloaded(response.resources);
@@ -354,7 +354,7 @@ public class ResourceRepo extends Repo {
 	 * @param method the publish method
 	 * @param response the publish response
 	 */
-	private void handlePublishResponse(PublishMethod method, PublishMethodResponse response) {
+	private void handlePublishResponse(PublishMethod method, PublishResponse response) {
 		if (response.status.isSuccessful()) {
 			for (DefEntity defEntity : method.defs) {
 				ResourceLocalRepo.removeRevisions(defEntity.resourceId);
@@ -381,8 +381,8 @@ public class ResourceRepo extends Repo {
 		}
 		// Already downloaded -> send response
 		else {
-			ResourceDownloadMethodResponse response = new ResourceDownloadMethodResponse();
-			response.status = ResourceDownloadMethodResponse.Statuses.SUCCESS;
+			ResourceDownloadResponse response = new ResourceDownloadResponse();
+			response.status = ResourceDownloadResponse.Statuses.SUCCESS;
 			ResourceDownloadMethod method = new ResourceDownloadMethod();
 			method.resourceId = resourceId;
 			responseListener.handleWebResponse(method, response);

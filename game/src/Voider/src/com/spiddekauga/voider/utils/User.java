@@ -9,9 +9,9 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
-import com.spiddekauga.voider.network.entities.user.LoginMethodResponse.ClientVersionStatuses;
-import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
+import com.spiddekauga.voider.network.user.LoginMethodResponse;
+import com.spiddekauga.voider.network.user.RegisterUserResponse;
+import com.spiddekauga.voider.network.user.LoginMethodResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
@@ -292,8 +292,8 @@ public class User {
 				handleLoginResponse((LoginMethodResponse) response);
 			}
 			// Register
-			if (response instanceof RegisterUserMethodResponse) {
-				handleRegisterResponse((RegisterUserMethodResponse) response);
+			if (response instanceof RegisterUserResponse) {
+				handleRegisterResponse((RegisterUserResponse) response);
 			}
 		}
 
@@ -366,7 +366,7 @@ public class User {
 			}
 		}
 
-		private void handleRegisterResponse(RegisterUserMethodResponse response) {
+		private void handleRegisterResponse(RegisterUserResponse response) {
 			if (response.isSuccessful()) {
 				// Registered and logged in
 				if (User.this != mGlobalUser) {

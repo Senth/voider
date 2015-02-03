@@ -3,9 +3,9 @@ package com.spiddekauga.voider.repo.stat;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethod;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
+import com.spiddekauga.voider.network.stat.StatSyncEntity;
+import com.spiddekauga.voider.network.stat.StatSyncMethod;
+import com.spiddekauga.voider.network.stat.StatSyncResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
 
@@ -60,10 +60,10 @@ class StatWebRepo extends WebRepo {
 	 * @return a correct response for syncing
 	 */
 	private IEntity handleSyncResponse(IEntity response) {
-		if (response instanceof StatSyncMethodResponse) {
+		if (response instanceof StatSyncResponse) {
 			return response;
 		} else {
-			StatSyncMethodResponse methodResponse = new StatSyncMethodResponse();
+			StatSyncResponse methodResponse = new StatSyncResponse();
 			methodResponse.status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 			return methodResponse;
 		}

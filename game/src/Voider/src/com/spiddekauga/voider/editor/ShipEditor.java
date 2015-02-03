@@ -17,7 +17,7 @@ import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;

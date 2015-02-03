@@ -9,11 +9,11 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
-import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.FetchStatuses;
+import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
+import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
@@ -216,8 +216,8 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param response response from the server
 	 */
 	protected void onWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof ResourceDownloadMethodResponse) {
-			handleResourceDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
+		if (response instanceof ResourceDownloadResponse) {
+			handleResourceDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadResponse) response);
 		}
 	}
 
@@ -226,7 +226,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param method parameters to the server method that was called
 	 * @param response server response
 	 */
-	private void handleResourceDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
+	private void handleResourceDownloadResponse(ResourceDownloadMethod method, ResourceDownloadResponse response) {
 		mGui.hideWaitWindow();
 		if (response.status.isSuccessful()) {
 			onResourceDownloaded(mAction);

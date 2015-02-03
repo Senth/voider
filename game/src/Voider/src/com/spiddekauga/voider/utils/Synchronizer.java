@@ -13,16 +13,16 @@ import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
-import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
+import com.spiddekauga.voider.network.misc.BugReportEntity;
+import com.spiddekauga.voider.network.misc.BugReportMethod;
+import com.spiddekauga.voider.network.misc.BugReportResponse;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.resource.DownloadSyncResponse;
+import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
+import com.spiddekauga.voider.network.resource.UserResourceSyncMethod;
+import com.spiddekauga.voider.network.resource.UserResourceSyncResponse;
+import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
+import com.spiddekauga.voider.network.stat.StatSyncResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
@@ -281,16 +281,16 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		SceneSwitcher.hideWaitWindow();
 
-		if (response instanceof UserResourceSyncMethodResponse) {
-			handleSyncUserResourceResponse((UserResourceSyncMethod) method, (UserResourceSyncMethodResponse) response);
-		} else if (response instanceof DownloadSyncMethodResponse) {
-			handleSyncDownloadResponse((DownloadSyncMethodResponse) response);
-		} else if (response instanceof BugReportMethodResponse) {
-			handlePostBugReport((BugReportMethod) method, (BugReportMethodResponse) response);
-		} else if (response instanceof HighscoreSyncMethodResponse) {
-			handleSyncHighscoreResponse((HighscoreSyncMethodResponse) response);
-		} else if (response instanceof StatSyncMethodResponse) {
-			handleStatSyncResponse((StatSyncMethodResponse) response);
+		if (response instanceof UserResourceSyncResponse) {
+			handleSyncUserResourceResponse((UserResourceSyncMethod) method, (UserResourceSyncResponse) response);
+		} else if (response instanceof DownloadSyncResponse) {
+			handleSyncDownloadResponse((DownloadSyncResponse) response);
+		} else if (response instanceof BugReportResponse) {
+			handlePostBugReport((BugReportMethod) method, (BugReportResponse) response);
+		} else if (response instanceof HighscoreSyncResponse) {
+			handleSyncHighscoreResponse((HighscoreSyncResponse) response);
+		} else if (response instanceof StatSyncResponse) {
+			handleStatSyncResponse((StatSyncResponse) response);
 		}
 
 		mSemaphore.release();
@@ -300,7 +300,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 * Handle sync statistics response
 	 * @param response server response
 	 */
-	private void handleStatSyncResponse(StatSyncMethodResponse response) {
+	private void handleStatSyncResponse(StatSyncResponse response) {
 		if (response.isSuccessful()) {
 			mNotification.show(NotificationTypes.SUCCESS, "Stats synced");
 		} else {
@@ -312,7 +312,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 * Handle sync highscore responses
 	 * @param response server response
 	 */
-	private void handleSyncHighscoreResponse(HighscoreSyncMethodResponse response) {
+	private void handleSyncHighscoreResponse(HighscoreSyncResponse response) {
 		if (response.isSuccessful()) {
 			mNotification.show(NotificationTypes.SUCCESS, "Highscores synced");
 		} else {
@@ -324,7 +324,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 * Handle sync download responses
 	 * @param response server response
 	 */
-	private void handleSyncDownloadResponse(DownloadSyncMethodResponse response) {
+	private void handleSyncDownloadResponse(DownloadSyncResponse response) {
 		if (response.isSuccessful()) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS));
 			mNotification.show(NotificationTypes.SUCCESS, "Downloaded resources synced");
@@ -339,7 +339,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 * @param method parameters to the server
 	 * @param response response from the server
 	 */
-	private void handlePostBugReport(BugReportMethod method, BugReportMethodResponse response) {
+	private void handlePostBugReport(BugReportMethod method, BugReportResponse response) {
 		// Show message
 		switch (response.status) {
 		case FAILED_CONNECTION:
@@ -374,7 +374,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 * @param method parameters sent to the server
 	 * @param response response from the server
 	 */
-	private void handleSyncUserResourceResponse(UserResourceSyncMethod method, UserResourceSyncMethodResponse response) {
+	private void handleSyncUserResourceResponse(UserResourceSyncMethod method, UserResourceSyncResponse response) {
 		switch (response.uploadStatus) {
 		case FAILED_CONNECTION:
 		case FAILED_INTERNAL:

@@ -9,7 +9,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 

@@ -3,8 +3,8 @@ package com.spiddekauga.voider.server.util;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 
 /**
  * Common methods for resources

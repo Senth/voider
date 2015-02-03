@@ -5,7 +5,7 @@ import com.spiddekauga.voider.explore.ExploreLevelScene;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;

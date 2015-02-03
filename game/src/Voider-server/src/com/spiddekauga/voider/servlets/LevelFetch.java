@@ -24,17 +24,17 @@ import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.appengine.SearchUtils.Builder.CombineOperators;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.DefEntity;
-import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
-import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.LevelFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.LevelLengthSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.LevelSpeedSearchRanges;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
-import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
-import com.spiddekauga.voider.network.entities.stat.LevelStatsEntity;
-import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.FetchStatuses;
+import com.spiddekauga.voider.network.resource.LevelDefEntity;
+import com.spiddekauga.voider.network.resource.LevelFetchMethod;
+import com.spiddekauga.voider.network.resource.LevelFetchResponse;
+import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
+import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
+import com.spiddekauga.voider.network.resource.UploadTypes;
+import com.spiddekauga.voider.network.stat.LevelInfoEntity;
+import com.spiddekauga.voider.network.stat.LevelStatsEntity;
+import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.server.util.ResourceFetch;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
@@ -52,7 +52,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
 public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	@Override
 	protected void onInit() {
-		mResponse = new LevelFetchMethodResponse();
+		mResponse = new LevelFetchResponse();
 		mResponse.status = FetchStatuses.FAILED_SERVER_ERROR;
 	}
 
@@ -344,5 +344,5 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	/** Method parameters */
 	private LevelFetchMethod mParameters = null;
 	/** Method response */
-	private LevelFetchMethodResponse mResponse = null;
+	private LevelFetchResponse mResponse = null;
 }

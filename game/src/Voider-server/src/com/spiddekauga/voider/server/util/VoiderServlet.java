@@ -20,7 +20,7 @@ import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage;
 
 
 /**

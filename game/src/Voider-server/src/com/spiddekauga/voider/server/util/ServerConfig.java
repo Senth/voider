@@ -12,6 +12,7 @@ public class ServerConfig {
 		/** Blob information for all blobs */
 		public static final String BLOB_INFO = "__BlobInfo__";
 		public static final String USERS = "users";
+		public static final String PASSWORD_RESET = "password_reset";
 		public static final String PUBLISHED = "published";
 		/** Published dependencies */
 		public static final String DEPENDENCY = "dependency";
@@ -40,6 +41,11 @@ public class ServerConfig {
 			public static final String LOGGED_IN = "logged-in";
 			public static final String PRIVATE_KEY = "private_key";
 			public static final String DATE_FORMAT = "date_format";
+		}
+
+		public static class CPasswordReset {
+			public static final String TOKEN = "token";
+			public static final String EXPIRES = "expires";
 		}
 
 		// Published
@@ -253,5 +259,7 @@ public class ServerConfig {
 		public static final int PASSWORD_LENGTH_MIN = 5;
 		/** Maximum number of tags per user per resource */
 		public static final int TAGS_MAX = 5;
+		/** Password reset expires in X hours */
+		public static final long PASSWORD_RESET_EXPIRE_HOURS = 24;
 	}
 }

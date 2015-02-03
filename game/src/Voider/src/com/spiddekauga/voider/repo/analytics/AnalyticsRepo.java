@@ -6,7 +6,7 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
 import com.spiddekauga.voider.network.analytics.AnalyticsMethod;
-import com.spiddekauga.voider.network.analytics.AnalyticsMethodResponse;
+import com.spiddekauga.voider.network.analytics.AnalyticsResponse;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -99,8 +99,8 @@ public class AnalyticsRepo extends Repo {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof AnalyticsMethodResponse) {
-			handleSyncResponse((AnalyticsMethod) method, (AnalyticsMethodResponse) response);
+		if (response instanceof AnalyticsResponse) {
+			handleSyncResponse((AnalyticsMethod) method, (AnalyticsResponse) response);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class AnalyticsRepo extends Repo {
 	 * @param method parameters sent to the server
 	 * @param response server response
 	 */
-	private void handleSyncResponse(AnalyticsMethod method, AnalyticsMethodResponse response) {
+	private void handleSyncResponse(AnalyticsMethod method, AnalyticsResponse response) {
 		if (response.isSuccessful()) {
 			mLocalRepo.removeAnalytics(method.sessions);
 		}

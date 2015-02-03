@@ -18,10 +18,10 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.resource.FetchStatuses;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethod;
-import com.spiddekauga.voider.network.entities.resource.CommentFetchMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.CommentEntity;
+import com.spiddekauga.voider.network.resource.CommentFetchMethod;
+import com.spiddekauga.voider.network.resource.CommentFetchResponse;
+import com.spiddekauga.voider.network.resource.FetchStatuses;
+import com.spiddekauga.voider.network.stat.CommentEntity;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
@@ -38,7 +38,7 @@ public class CommentFetch extends VoiderServlet {
 
 	@Override
 	protected void onInit() {
-		mResponse = new CommentFetchMethodResponse();
+		mResponse = new CommentFetchResponse();
 		mResponse.status = FetchStatuses.FAILED_SERVER_ERROR;
 	}
 
@@ -156,7 +156,7 @@ public class CommentFetch extends VoiderServlet {
 		return networkEntity;
 	}
 
-	private CommentFetchMethodResponse mResponse = null;
+	private CommentFetchResponse mResponse = null;
 
 	// Tables
 	private static final String T_PUBLISHED = DatastoreTables.PUBLISHED;

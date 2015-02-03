@@ -24,16 +24,16 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage;
-import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
-import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
-import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse.UploadStatuses;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
+import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
+import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.resource.RevisionEntity;
+import com.spiddekauga.voider.network.resource.UploadTypes;
+import com.spiddekauga.voider.network.resource.UserResourceSyncMethod;
+import com.spiddekauga.voider.network.resource.UserResourceSyncResponse;
+import com.spiddekauga.voider.network.resource.UserResourceSyncResponse.UploadStatuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResourcesDeleted;
@@ -51,7 +51,7 @@ public class UserResourceSync extends VoiderServlet {
 	 */
 	@Override
 	protected void onInit() {
-		mResponse = new UserResourceSyncMethodResponse();
+		mResponse = new UserResourceSyncResponse();
 		mResponse.uploadStatus = UploadStatuses.FAILED_INTERNAL;
 		mSyncDate = new Date();
 	}
@@ -369,5 +369,5 @@ public class UserResourceSync extends VoiderServlet {
 	/** Sync date */
 	private Date mSyncDate = null;
 	/** Response */
-	private UserResourceSyncMethodResponse mResponse = null;
+	private UserResourceSyncResponse mResponse = null;
 }

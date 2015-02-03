@@ -14,9 +14,9 @@ import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.user.RegisterUserMethod;
-import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse;
-import com.spiddekauga.voider.network.entities.user.RegisterUserMethodResponse.Statuses;
+import com.spiddekauga.voider.network.user.RegisterUserMethod;
+import com.spiddekauga.voider.network.user.RegisterUserResponse;
+import com.spiddekauga.voider.network.user.RegisterUserResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -35,7 +35,7 @@ public class RegisterUser extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		RegisterUserMethodResponse methodResponse = new RegisterUserMethodResponse();
+		RegisterUserResponse methodResponse = new RegisterUserResponse();
 		methodResponse.status = Statuses.FAIL_SERVER_ERROR;
 
 		if (methodEntity instanceof RegisterUserMethod) {
@@ -90,7 +90,7 @@ public class RegisterUser extends VoiderServlet {
 	 * @param networkEntity the network entity
 	 * @param methodResponse entity to respond with
 	 */
-	private void createNewUser(RegisterUserMethod networkEntity, RegisterUserMethodResponse methodResponse) {
+	private void createNewUser(RegisterUserMethod networkEntity, RegisterUserResponse methodResponse) {
 		Entity datastoreEntity = new Entity(DatastoreTables.USERS.toString());
 
 		datastoreEntity.setProperty("username", networkEntity.username);
