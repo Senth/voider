@@ -41,8 +41,9 @@ public class PasswordReset extends VoiderServlet {
 			Entity user = getUser(method.email);
 			Key tokenKey = isTokenValid(user.getKey(), method.token);
 			if (tokenKey != null) {
-				changePassword(user, method.password);
-				removeToken(tokenKey);
+				if (changePassword(user, method.password)) {
+					removeToken(tokenKey);
+				}
 			}
 		}
 
@@ -88,8 +89,14 @@ public class PasswordReset extends VoiderServlet {
 	 * Change the password
 	 * @param user user entity
 	 * @param password new password
+	 * @return false if the password wasn't changed
 	 */
-	private void changePassword(Entity user, String password) {
+	private boolean changePassword(Entity user, String password) {
+		if (!RegisterUser.isPasswordLengthValid(password)) {
+			mResponse.status = Statuses.FAILED_PASSWORD_TOO_SHORT;
+			return false;
+		}
+
 		// New Private key
 		UUID privateKey = UUID.randomUUID();
 		DatastoreUtils.setProperty(user, CUsers.PRIVATE_KEY, privateKey);
@@ -101,9 +108,12 @@ public class PasswordReset extends VoiderServlet {
 
 		Key userKey = DatastoreUtils.put(user);
 
-		if (userKey != null) {
-			mResponse.status = Statuses.SUCCESS;
+		if (userKey == null) {
+			return false;
 		}
+
+		mResponse.status = Statuses.SUCCESS;
+		return true;
 	}
 
 	/**

@@ -533,7 +533,78 @@ public class LoginGui extends Gui {
 	 * Reset password
 	 */
 	private void resetPassword() {
+		clearResetPasswordErrors();
+		if (isResetPasswordFieldsValid()) {
+			mLoginScene.resetPassword(mWidgets.reset.email.getText(), mWidgets.reset.password.getText(), mWidgets.reset.token.getText());
+		}
+	}
 
+	/**
+	 * @return true if all reset password fields are filled and passwords match
+	 */
+	private boolean isResetPasswordFieldsValid() {
+		boolean failed = false;
+
+		// Token
+		if (mWidgets.reset.tokenListener.isTextFieldEmpty()) {
+			setPasswordResetTokenError("is empty");
+			failed = true;
+		}
+		// Password empty
+		if (mWidgets.reset.passwordListener.isTextFieldEmpty()) {
+			setPasswordResetPasswordError("is empty");
+			failed = true;
+		}
+		// Password length
+		else if (mWidgets.reset.password.getText().length() < Config.User.PASSWORD_LENGTH_MIN) {
+			setPasswordResetPasswordError("must contain at least " + Config.User.PASSWORD_LENGTH_MIN + " chars");
+			failed = true;
+		}
+		// Test that passwords match
+		else if (!mWidgets.reset.password.getText().equals(mWidgets.reset.confirmPassword.getText())) {
+			setPasswordResetPasswordError("passwords don't match!");
+			failed = true;
+		}
+		// Email
+		if (mWidgets.reset.emailListener.isTextFieldEmpty()) {
+			setPasswordResetEmailError("is empty");
+			failed = true;
+		}
+
+		return !failed;
+	}
+
+	/**
+	 * Clear reset password errors
+	 */
+	private void clearResetPasswordErrors() {
+		mWidgets.reset.emailError.setText("");
+		mWidgets.reset.passwordError.setText("");
+		mWidgets.reset.tokenError.setText("");
+	}
+
+	/**
+	 * Set register username error
+	 * @param text error text
+	 */
+	void setPasswordResetTokenError(String text) {
+		mWidgets.reset.tokenError.setText(text);
+	}
+
+	/**
+	 * Set register password error
+	 * @param text error text
+	 */
+	void setPasswordResetPasswordError(String text) {
+		mWidgets.reset.passwordError.setText(text);
+	}
+
+	/**
+	 * Set register email error
+	 * @param text error text
+	 */
+	void setPasswordResetEmailError(String text) {
+		mWidgets.reset.emailError.setText(text);
 	}
 
 	/**
@@ -556,6 +627,16 @@ public class LoginGui extends Gui {
 	void showPasswordResetWindow() {
 		mWidgets.send.hider.hide();
 		mWidgets.reset.hider.show();
+	}
+
+	/**
+	 * Show login window
+	 */
+	void showLoginWindow() {
+		mWidgets.reset.hider.hide();
+		mWidgets.register.hider.hide();
+		mWidgets.send.hider.hide();
+		mWidgets.login.hider.show();
 	}
 
 	/**

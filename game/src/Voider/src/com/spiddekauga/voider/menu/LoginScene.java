@@ -204,7 +204,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param token
 	 */
 	void resetPassword(String email, String password, String token) {
-		// TODO
+		UserWebRepo.getInstance().passwordReset(email, password, token, this);
 		mGui.showWaitWindow("Resetting password");
 	}
 
@@ -240,16 +240,20 @@ public class LoginScene extends Scene implements IResponseListener {
 
 		switch (response.status) {
 		case FAILED_EXPIRED:
-			// TODO
+			((LoginGui) mGui).setPasswordResetTokenError("expired");
 			break;
 		case FAILED_SERVER_CONNECTION:
 		case FAILED_SERVER_ERROR:
-			// TODO
+			((LoginGui) mGui).showConnectionError();
 			break;
 		case FAILED_TOKEN:
-			// TODO
+			((LoginGui) mGui).setPasswordResetTokenError("invalid");
+			break;
+		case FAILED_PASSWORD_TOO_SHORT:
+			((LoginGui) mGui).setPasswordResetPasswordError("too short");
 			break;
 		case SUCCESS:
+			((LoginGui) mGui).showLoginWindow();
 			mNotification.showSuccess("Password changed!");
 			login(method.email, method.password);
 			break;
@@ -270,6 +274,10 @@ public class LoginScene extends Scene implements IResponseListener {
 		// Password reset (send token)
 		else if (response instanceof PasswordResetSendTokenResponse) {
 			handlePasswordResetSendToken((PasswordResetSendTokenResponse) response);
+		}
+		// Password reset (actual reset)
+		else if (response instanceof PasswordResetResponse) {
+			handlePasswordReset((PasswordResetMethod) method, (PasswordResetResponse) response);
 		}
 	}
 

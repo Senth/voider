@@ -73,7 +73,7 @@ public class RegisterUser extends VoiderServlet {
 	 * @param password the user's password
 	 * @return true if the password has the minimum required characters in the password
 	 */
-	private boolean isPasswordLengthValid(String password) {
+	static boolean isPasswordLengthValid(String password) {
 		return password.length() >= ServerConfig.UserInfo.PASSWORD_LENGTH_MIN;
 	}
 

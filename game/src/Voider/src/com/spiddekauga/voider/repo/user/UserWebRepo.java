@@ -104,7 +104,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param token reset password token
 	 * @param responseListeners listens to the web response
 	 */
-	public void PasswordResetMethod(String email, String password, String token, IResponseListener... responseListeners) {
+	public void passwordReset(String email, String password, String token, IResponseListener... responseListeners) {
 		PasswordResetMethod method = new PasswordResetMethod();
 		method.email = email;
 		method.password = password;

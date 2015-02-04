@@ -74,6 +74,9 @@ public enum ClientVersions {
 			"	Colliding with terrain is now only applied once",
 			"	Game Over music now loops correctly"
 			),
+	V0_4_7(false,
+			"Forgot/Reset password implemented in login screen",
+			"Fixed a bug when logging in with email later used the email as username"),
 
 	;
 	// @formatter:on

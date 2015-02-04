@@ -10,8 +10,8 @@ import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.LoginResponse;
-import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatuses;
+import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
@@ -323,6 +323,7 @@ public class User {
 				}
 				// Logged in
 				else if (User.this != mGlobalUser) {
+					mUsername = response.username;
 					mPrivateKey = response.privateKey;
 					mServerKey = response.userKey;
 					// No update is required

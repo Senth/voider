@@ -21,6 +21,8 @@ public class PasswordResetResponse implements IEntity {
 		FAILED_TOKEN,
 		/** Failed, token expired */
 		FAILED_EXPIRED,
+		/** Password too short */
+		FAILED_PASSWORD_TOO_SHORT,
 		/** Internal server error */
 		FAILED_SERVER_ERROR,
 		/** Server connection errror */
