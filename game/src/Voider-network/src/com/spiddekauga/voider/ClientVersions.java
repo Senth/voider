@@ -77,6 +77,11 @@ public enum ClientVersions {
 	V0_4_7(false,
 			"Forgot/Reset password implemented in login screen",
 			"Fixed a bug when logging in with email later used the email as username"),
+	V0_4_8(false,
+			"Bugfixes",
+			"	Login screen is now reset when changing resolution",
+			"	Splash screen now fades out correctly"
+			),
 
 	;
 	// @formatter:on

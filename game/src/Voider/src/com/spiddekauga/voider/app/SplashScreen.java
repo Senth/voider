@@ -25,6 +25,7 @@ public class SplashScreen extends LoadingScene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.IMAGE_SPLASH_SCREEN);
+		ResourceCacheFacade.finishLoading();
 	}
 
 	@Override
@@ -55,6 +56,12 @@ public class SplashScreen extends LoadingScene {
 			}
 			break;
 		}
+	}
+
+	@Override
+	protected void render() {
+		enableBlendingWithDefaults();
+		super.render();
 	}
 
 	/**

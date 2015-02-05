@@ -599,15 +599,19 @@ public abstract class Gui implements Disposable {
 
 		MsgBoxExecuter.fadeDuration = 0.01f;
 
-		// Notification messages
-		if (!mIsResizing && ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
-			mNotification = NotificationShower.getInstance();
-		}
-		if (mWidgets.waitWindow.window == null) {
-			initWaitWindow();
-		}
-		if (mWidgets.progressBar.window == null) {
-			initProgressBar();
+		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
+			// Notification messages
+			if (!mIsResizing) {
+				mNotification = NotificationShower.getInstance();
+			}
+			// Wait Window
+			if (mWidgets.waitWindow.window == null) {
+				initWaitWindow();
+			}
+			// Loading progress bar
+			if (mWidgets.progressBar.window == null) {
+				initProgressBar();
+			}
 		}
 
 		mInitialized = true;

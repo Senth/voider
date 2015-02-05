@@ -75,9 +75,11 @@ public class MainMenu extends Scene implements IEventListener {
 		ResourceCacheFacade.load(InternalDeps.UI_SFX);
 
 		// REMOVE
-		ResourceCacheFacade.load(InternalDeps.GAME_SFX);
-		ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_INTRO);
-		ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_LOOP);
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
+			ResourceCacheFacade.load(InternalDeps.GAME_SFX);
+			ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_INTRO);
+			ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_LOOP);
+		}
 	}
 
 	@Override

@@ -60,6 +60,12 @@ public class LoginGui extends Gui {
 		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+		mWidgets.dispose();
+	}
+
 	/**
 	 * Focus username field
 	 */

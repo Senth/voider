@@ -54,6 +54,14 @@ class SplashScreenGui extends Gui {
 		}
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (mSplashScreenImage != null) {
+			mSplashScreenImage.remove();
+		}
+	}
+
 	/**
 	 * @return true when the splash screen has faded
 	 */
