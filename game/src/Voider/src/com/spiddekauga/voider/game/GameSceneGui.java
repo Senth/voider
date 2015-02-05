@@ -8,14 +8,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.spiddekauga.utils.commands.CMusicPlay;
+import com.spiddekauga.utils.commands.CSceneEnd;
+import com.spiddekauga.utils.commands.CSceneSwitch;
+import com.spiddekauga.utils.commands.CSequence;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.voider.menu.SettingsScene;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.Scene.Outcomes;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.spiddekauga.voider.sound.Music;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 
 /**
  * GUI for the GameScene
@@ -184,6 +193,23 @@ class GameSceneGui extends Gui {
 
 		// Multiplier
 		mWidgets.multiplier = mUiFactory.text.add("(X1)", table, labelStyle);
+	}
+
+	/**
+	 * Show menu for resuming game or going back
+	 */
+	void showMenu() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(false);
+		msgBox.button("Resume Game");
+		msgBox.buttonRow();
+		msgBox.button("Restart Game", new CSceneEnd(Outcomes.LEVEL_RESTART));
+		msgBox.buttonRow();
+		msgBox.button("Options", new CSceneSwitch(SettingsScene.class));
+		msgBox.buttonRow();
+		msgBox.button("Main Menu", new CSequence(new CSceneEnd(Outcomes.LEVEL_QUIT), new CMusicPlay(Music.TITLE, MusicInterpolations.CROSSFADE)));
+		msgBox.addCancelKeys();
+
+		showMsgBox(msgBox);
 	}
 
 	/** GameScene object that this GUI acts on */

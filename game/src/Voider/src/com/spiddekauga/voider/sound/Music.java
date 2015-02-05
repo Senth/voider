@@ -78,7 +78,9 @@ public enum Music {
 	 */
 	com.badlogic.gdx.audio.Music getTrack() {
 		com.badlogic.gdx.audio.Music track = ResourceCacheFacade.get(mInternalName);
-		track.setLooping(mLoop);
+		if (track != null) {
+			track.setLooping(mLoop);
+		}
 		return track;
 	}
 

@@ -82,6 +82,16 @@ public enum ClientVersions {
 			"	Login screen is now reset when changing resolution",
 			"	Splash screen now fades out correctly"
 			),
+	V0_4_9(false,
+			"Improvements",
+			"	Pressing Back/Esc when playing a level now brings forth a menu with these options:",
+			"		Resume",
+			"		Restart",
+			"		Options",
+			"		Main Menu -> Goes back to level selection",
+			"Bugfixes",
+			"	Older levels now loads the music track correctly",
+			"	Level speed is now correct"),
 
 	;
 	// @formatter:on

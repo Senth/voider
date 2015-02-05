@@ -245,6 +245,14 @@ public class LevelDef extends Def {
 		super.postRead();
 
 		calculateLength();
+
+		// Some older levels don't have any music added to internal dependencies. Add them
+		if (mMusic == null) {
+			mMusic = Music.SPACE;
+		}
+		if (!isInternalDependency(mMusic.getDependency())) {
+			addDependency(mMusic.getDependency());
+		}
 	}
 
 	/**

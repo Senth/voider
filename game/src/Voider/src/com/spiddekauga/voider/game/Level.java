@@ -10,6 +10,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
@@ -119,7 +123,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 		// Make the map move forward
 		if (mRunning) {
-			mXCoord += mSpeed * deltaTime;
+			updateCoordinates();
 
 			if (mPlayerActor != null && mPlayerActor.getBody() != null) {
 				mPlayerActor.getBody().setLinearVelocity(mSpeed, 0.0f);
@@ -148,6 +152,27 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 				resource.updateEditor();
 			}
 			resourceUpdates = null;
+		}
+	}
+
+	/**
+	 * Update the coordinate position
+	 */
+	private void updateCoordinates() {
+		if (mXCoordBody == null) {
+			World world = Actor.getWorld();
+			if (world != null) {
+				BodyDef bodyDef = new BodyDef();
+				bodyDef.linearVelocity.x = mSpeed;
+				bodyDef.type = BodyType.KinematicBody;
+				bodyDef.position.x = mXCoord;
+				mXCoordBody = world.createBody(bodyDef);
+			}
+		}
+
+		if (mXCoordBody != null) {
+			mXCoordBody.setLinearVelocity(mSpeed, 0);
+			mXCoord = mXCoordBody.getPosition().x;
 		}
 	}
 
@@ -648,9 +673,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	private float mBackgroundTopSpeed = 0;
 	/** Bottom layer background speed */
 	private float mBackgroundBottomSpeed = 0;
-	/** Top layer background */
 	private Texture mBackgroundTop = null;
-	/** Bottom layer background */
 	private Texture mBackgroundBottom = null;
 	/** Contains all the resources used in this level */
 	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
@@ -662,6 +685,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	private ArrayList<IResourceRenderSprite> mRenderSprites = null;
 	/** Current x coordinate (of the screen's left edge) */
 	@Tag(14) private float mXCoord = 0.0f;
+	/** Current x coordinate using a body to get the correct position */
+	private Body mXCoordBody = null;
 	/** Level definition for this level */
 	private LevelDef mLevelDef = null;
 	/** Current speed of the level */
@@ -670,12 +695,12 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	@Tag(16) private boolean mCompletedLevel;
 	/** True if the level is running */
 	private boolean mRunning = false;
-	/** The player actor */
 	private PlayerActor mPlayerActor = null;
 	/** Read class version */
 	private int mClassVersion = CLASS_REVISION;
 	/** Multiple enemies in a group, but just save the leader and number of enemies */
 	@Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
+
 
 	/** Revision this class structure */
 	protected static final int CLASS_REVISION = 2;

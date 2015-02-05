@@ -336,6 +336,26 @@ public class MsgBox extends Dialog {
 		mHiding = true;
 	}
 
+
+	/**
+	 * Only add cancel keys
+	 * @param cancelCommand command to execute if canceled
+	 * @return this message box for chaining
+	 */
+	public MsgBox addCancelKeys(Command cancelCommand) {
+		key(Keys.BACK, cancelCommand);
+		key(Keys.ESCAPE, cancelCommand);
+		return this;
+	}
+
+	/**
+	 * Only add cancel keys
+	 * @return this message box for chaining
+	 */
+	public MsgBox addCancelKeys() {
+		return addCancelKeys(null);
+	}
+
 	/**
 	 * Add cancel button and keys. Text for the cancel button is "Cancel".
 	 * @return this message box for chaining
@@ -379,8 +399,7 @@ public class MsgBox extends Dialog {
 	 */
 	public MsgBox addCancelButtonAndKeys(String buttonText, Command cancelCommand) {
 		button(buttonText, cancelCommand);
-		key(Keys.BACK, cancelCommand);
-		key(Keys.ESCAPE, cancelCommand);
+		addCancelKeys();
 		return this;
 	}
 

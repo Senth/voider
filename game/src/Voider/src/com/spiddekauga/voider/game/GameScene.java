@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -20,12 +19,12 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -350,6 +349,13 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
+	protected void onDeactivate() {
+		super.onDeactivate();
+
+		mSoundPlayer.stopAll();
+	}
+
+	@Override
 	protected void onDispose() {
 		// Save the level
 		if (!mTesting) {
@@ -443,7 +449,6 @@ public class GameScene extends WorldScene {
 		if (mLevel.isCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 			mMusicPlayer.play(Music.LEVEL_COMPLETED, MusicInterpolations.FADE_OUT);
-			mSoundPlayer.stopAll();
 		}
 	}
 
@@ -459,7 +464,6 @@ public class GameScene extends WorldScene {
 			} else {
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 				mMusicPlayer.play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
-				mSoundPlayer.stopAll();
 			}
 		}
 	}
@@ -548,21 +552,27 @@ public class GameScene extends WorldScene {
 		}
 
 		if (super.getNextScene() == null) {
-			ScoreScene scoreScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
-			Scene nextScene = scoreScene;
+			ScoreScene scoreScene = null;
+			Scene nextScene = null;
 
-			// Display highscores and tags
-			boolean online = User.getGlobalUser().isOnline();
-			if (online && isPublished()) {
-				HighscoreScene highscoreScene = new HighscoreScene();
-				HighscoreRepo.getInstance().getPlayerServerScore(getLevelId(), highscoreScene);
-				highscoreScene.setNextScene(nextScene);
-				nextScene = highscoreScene;
+			// Completed or died
+			if (getOutcome() == Outcomes.LEVEL_COMPLETED || getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
+				scoreScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
+				nextScene = scoreScene;
 
-				if (StatLocalRepo.getInstance().isTaggable(getLevelId())) {
-					TagScene tagScene = new TagScene(getLevelId());
-					tagScene.setNextScene(nextScene);
-					nextScene = tagScene;
+				// Display highscores and tags
+				boolean online = User.getGlobalUser().isOnline();
+				if (online && isPublished()) {
+					HighscoreScene highscoreScene = new HighscoreScene();
+					HighscoreRepo.getInstance().getPlayerServerScore(getLevelId(), highscoreScene);
+					highscoreScene.setNextScene(nextScene);
+					nextScene = highscoreScene;
+
+					if (StatLocalRepo.getInstance().isTaggable(getLevelId())) {
+						TagScene tagScene = new TagScene(getLevelId());
+						tagScene.setNextScene(nextScene);
+						nextScene = tagScene;
+					}
 				}
 			}
 
@@ -584,6 +594,13 @@ public class GameScene extends WorldScene {
 			case LEVEL_PLAYER_DIED:
 				// Does nothing
 				break;
+
+			case LEVEL_RESTART: {
+				GameScene gameScene = new GameScene(false, false);
+				gameScene.setLevelToLoad(mLevel.getLevelDef());
+				nextScene = gameScene;
+				break;
+			}
 
 			case LEVEL_QUIT:
 			default:
@@ -710,18 +727,11 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean onKeyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
-		if (keycode == Keys.ESCAPE || keycode == Keys.BACK) {
-			setOutcome(Outcomes.LEVEL_QUIT);
-		}
-
-		// Testing
-		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
-			if (keycode == Keys.F12) {
-				setOutcome(Outcomes.LEVEL_COMPLETED);
-				if (isPublished()) {
-					setNewHighscore();
-					updatePlayCount();
-				}
+		if (KeyHelper.isBackPressed(keycode)) {
+			if (mTesting) {
+				setOutcome(Outcomes.LEVEL_QUIT);
+			} else {
+				((GameSceneGui) mGui).showMenu();
 			}
 		}
 

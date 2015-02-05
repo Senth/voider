@@ -550,7 +550,7 @@ public class Config {
 		 * If we shall use debug_renderer to display graphics instead of sprites (where
 		 * applicable)
 		 */
-		public final static boolean USE_DEBUG_RENDERER = false;
+		public final static boolean USE_DEBUG_RENDERER = true;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Epsilon for box 2d */

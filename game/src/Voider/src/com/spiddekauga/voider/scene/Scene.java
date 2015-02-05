@@ -420,7 +420,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @param outcome the outcome of the scene
 	 * @param message a descriptive outcome message.
 	 */
-	protected synchronized final void setOutcome(Outcomes outcome, Object message) {
+	public synchronized final void setOutcome(Outcomes outcome, Object message) {
 		if (mOutcome == null) {
 			setOutcome(outcome);
 			mOutcomeMessage = message;
@@ -430,11 +430,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/**
 	 * Different outcomes a scene can have
 	 */
-	protected enum Outcomes {
-		/** Selected a definition */
-		@Deprecated DEF_SELECTED,
-		/** Canceled definition selection */
-		@Deprecated DEF_SELECT_CANCEL,
+	public enum Outcomes {
 		/** A resource to be loaded was selected */
 		EXPLORE_LOAD,
 		/** A resource was selected */
@@ -445,6 +441,8 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		LEVEL_PLAYER_DIED,
 		/** Player decided to quit the level */
 		LEVEL_QUIT,
+		/** Restart a level */
+		LEVEL_RESTART,
 		/** Loading succeeded */
 		LOADING_SUCCEEDED,
 		/** Loading failed, missing file */

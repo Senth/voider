@@ -252,6 +252,15 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		return mExternalDependencies;
 	}
 
+	/**
+	 * Check if a resource is an internal dependency
+	 * @param internalDep
+	 * @return true if this resource uses internalDep
+	 */
+	public boolean isInternalDependency(InternalDeps internalDep) {
+		return mInternalDependencies.contains(internalDep);
+	}
+
 	@Override
 	public ArrayList<InternalNames> getInternalDependencies() {
 		ArrayList<InternalNames> dependencies = new ArrayList<>();
