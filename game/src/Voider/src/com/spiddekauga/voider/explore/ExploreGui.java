@@ -470,9 +470,7 @@ abstract class ExploreGui extends Gui {
 	 * Show select revision message box
 	 */
 	private void showSelectRevisionMsgBox() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-		msgBox.setTitle("Select another revision");
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Revision");
 		msgBox.content(mWidgets.revision.scrollPane);
 
 		mWidgets.revision.scrollPane.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
@@ -482,7 +480,6 @@ abstract class ExploreGui extends Gui {
 		msgBox.addCancelButtonAndKeys();
 		msgBox.button("Load Revision", new CExploreLoadRevision(mScene, this));
 
-		showMsgBox(msgBox);
 		getStage().setScrollFocus(mWidgets.revision.list);
 	}
 

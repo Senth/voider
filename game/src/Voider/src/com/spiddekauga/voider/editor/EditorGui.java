@@ -273,13 +273,12 @@ public abstract class EditorGui extends Gui {
 	 * Shows the first time menu
 	 */
 	void showFirstTimeMenu() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(false);
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add(null);
 		msgBox.button("New", new CEditorNew(mEditor));
 		msgBox.buttonRow();
 		msgBox.button("Load", new CEditorLoad(mEditor));
 		msgBox.buttonRow();
 		msgBox.button("Main Menu", new CSceneReturn(MainMenu.class));
-		showMsgBox(msgBox);
 	}
 
 	/**
@@ -463,14 +462,12 @@ public abstract class EditorGui extends Gui {
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed(Button button) {
-					MsgBoxExecuter msgBox = getFreeMsgBox(true);
+					MsgBoxExecuter msgBox = mUiFactory.msgBox.add(Messages.Level.RUN_INVULNERABLE_TITLE);
 
-					msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
 					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
+					msgBox.addCancelButtonAndKeys();
 					msgBox.button("Can die", new CLevelRun(false, (LevelEditor) mEditor));
 					msgBox.button("Invulnerable", new CLevelRun(true, (LevelEditor) mEditor));
-					msgBox.addCancelButtonAndKeys();
-					showMsgBox(msgBox);
 				}
 			};
 		}
@@ -527,13 +524,10 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-				msgBox.setTitle("Duplicate");
+				MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Duplicate");
 				msgBox.content(Messages.replaceName(Messages.Editor.DUPLICATE_BOX, getResourceTypeName()));
-				msgBox.button("Yes", new CEditorDuplicate(mEditor));
 				msgBox.addCancelButtonAndKeys("No");
-				showMsgBox(msgBox);
+				msgBox.button("Yes", new CEditorDuplicate(mEditor));
 			}
 		};
 
@@ -575,30 +569,25 @@ public abstract class EditorGui extends Gui {
 						if (!((LevelEditor) mEditor).hasScreenshot()) {
 							showPublish = false;
 
-							MsgBoxExecuter msgBox = getFreeMsgBox(true);
-							msgBox.setTitle("No screenshot taken");
+							MsgBoxExecuter msgBox = mUiFactory.msgBox.add("No Screenshot Taken");
 							String text = "Please take a screenshot of this level before publishing it. "
 									+ "You can do this by test running the level and click on the camera " + "icon in the top bar.";
 							Label label = mUiFactory.text.create(text, true);
 							msgBox.content(label);
 							msgBox.addCancelButtonAndKeys("OK");
 							label.setWidth(Gdx.graphics.getWidth() * 0.5f);
-							showMsgBox(msgBox);
 						}
 
 						float levelLength = ((LevelEditor) mEditor).getLevel().getLevelDef().getLengthInTime();
 						if (showPublish && levelLength < Config.Editor.Level.LEVEL_LENGTH_PUBLISH_MIN) {
 							showPublish = false;
 
-							MsgBoxExecuter msgBox = getFreeMsgBox(true);
-							msgBox.setTitle("Too short level");
-
+							MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Level Too Short");
 							String text = "Please add more content to your level. Your current level has a length of " + ((int) levelLength)
 									+ " seconds, minimum is 30 seconds.";
 							msgBox.content(text).setWidgetWidth(Gdx.graphics.getWidth() * 0.5f);
 
 							msgBox.addCancelButtonAndKeys("OK");
-							showMsgBox(msgBox);
 						}
 					}
 
@@ -606,8 +595,7 @@ public abstract class EditorGui extends Gui {
 					if (showPublish && !User.getGlobalUser().isOnline()) {
 						showPublish = false;
 
-						MsgBoxExecuter msgBox = getFreeMsgBox(true);
-						msgBox.setTitle("Go Online?");
+						MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Go Online?");
 						String text = "You need to go online to publish the " + getResourceTypeName() + ".";
 						Label label = mUiFactory.text.create(text, false);
 
@@ -624,7 +612,6 @@ public abstract class EditorGui extends Gui {
 						msgBox.content(label);
 						msgBox.addCancelButtonAndKeys();
 						msgBox.button("Connect & Publish", new CSequence(connectEvents, goOnline));
-						showMsgBox(msgBox);
 					}
 
 					if (showPublish) {
@@ -652,8 +639,7 @@ public abstract class EditorGui extends Gui {
 	 * Shows the publish message box
 	 */
 	private void showPublishDialog() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-		msgBox.setTitle("Publish");
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Publish");
 
 		AlignTable content = new AlignTable();
 		content.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
@@ -719,7 +705,6 @@ public abstract class EditorGui extends Gui {
 		msgBox.content(content);
 		msgBox.addCancelButtonAndKeys();
 		msgBox.button("Publish", saveAndPublish);
-		showMsgBox(msgBox);
 	}
 
 	/**
@@ -727,12 +712,10 @@ public abstract class EditorGui extends Gui {
 	 */
 	void showExitConfirmDialog() {
 		if (mEditor.isSaved()) {
-			MsgBoxExecuter msgBox = getFreeMsgBox(true);
-			msgBox.setTitle("Exit to Main Menu");
+			MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Exit to Main Menu");
 			msgBox.content(Messages.Editor.EXIT_TO_MAIN_MENU);
-			msgBox.button("Exit", new CSceneReturn(MainMenu.class));
 			msgBox.addCancelButtonAndKeys();
-			showMsgBox(msgBox);
+			msgBox.button("Exit", new CSceneReturn(MainMenu.class));
 		} else {
 			switchReturnTo("Main Menu", new CSceneReturn(MainMenu.class), UnsavedActions.MAIN_MENU);
 		}
@@ -754,8 +737,7 @@ public abstract class EditorGui extends Gui {
 		String OPTION_DELIMITER = "option-dialog";
 
 		mInvoker.pushDelimiter(OPTION_DELIMITER);
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-		msgBox.setTitle(getResourceTypeNameCapital() + " Options");
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add(getResourceTypeNameCapital() + " Options");
 		msgBox.content(mInfoTable);
 		if (mEditor.isJustCreated()) {
 			msgBox.addCancelButtonAndKeys(new CEditorUndoJustCreated(mEditor));
@@ -765,7 +747,6 @@ public abstract class EditorGui extends Gui {
 		Command save = new CDefHasValidName(msgBox, this, mEditor, getResourceTypeName());
 		msgBox.button("Save", save);
 		msgBox.key(Input.Keys.ENTER, save);
-		showMsgBox(msgBox);
 	}
 
 	/**
@@ -819,15 +800,11 @@ public abstract class EditorGui extends Gui {
 		if (!mEditor.isSaved() || alwaysShow) {
 			Command saveAndExecute = new CEditorSave(mEditor, command);
 
-			MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-			msgBox.clear();
-			msgBox.setTitle(title);
+			MsgBoxExecuter msgBox = mUiFactory.msgBox.add(title);
 			msgBox.content(content);
+			msgBox.addCancelButtonAndKeys();
 			msgBox.button(saveButtonText, saveAndExecute);
 			msgBox.button(withoutSaveButtonText, command);
-			msgBox.addCancelButtonAndKeys();
-			showMsgBox(msgBox);
 		} else {
 			command.execute();
 		}

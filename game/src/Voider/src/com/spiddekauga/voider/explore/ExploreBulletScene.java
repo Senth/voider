@@ -7,6 +7,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.BulletFetchMethod;
 import com.spiddekauga.voider.network.resource.BulletFetchResponse;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -29,7 +30,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 		super.onActivate(outcome, message, loadingOutcome);
 
 		if (!User.getGlobalUser().isOnline()) {
-			mGui.showGoOnlineDialog();
+			UiFactory.getInstance().msgBox.goOnline();
 		}
 	}
 

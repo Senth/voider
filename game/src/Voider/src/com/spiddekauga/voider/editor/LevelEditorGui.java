@@ -764,7 +764,6 @@ class LevelEditorGui extends EditorGui {
 		Button playButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_PLAY, left, mWidgets.info.playHider, null);
 		Button stopButton = mUiFactory.button.addImage(SkinNames.EditorIcons.MUSIC_STOP, left, mWidgets.info.stopHider, null);
 		stopButton.setVisible(false);
-		mWidgets.info.stopButton = stopButton;
 		new ButtonListener(playButton) {
 			@Override
 			protected void onPressed(Button button) {
@@ -811,8 +810,8 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mWidgets.info.description = mUiFactory.addTextArea("Description",
-				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), textFieldListener, right,
-				mDisabledWhenPublished);
+				false, Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), textFieldListener,
+				right, mDisabledWhenPublished);
 
 
 		// Prologue
@@ -823,7 +822,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mWidgets.info.prologue = mUiFactory
-				.addTextArea("Prologue", Messages.Level.PROLOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
+				.addTextArea("Prologue", false, Messages.Level.PROLOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
 
 		// Epilogue
 		textFieldListener = new TextFieldListener(mInvoker) {
@@ -833,7 +832,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mWidgets.info.epilogue = mUiFactory
-				.addTextArea("Epilogue", Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
+				.addTextArea("Epilogue", false, Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
 
 		mInfoTable.layout();
 	}
@@ -899,9 +898,8 @@ class LevelEditorGui extends EditorGui {
 		if (Gdx.app.getType() == ApplicationType.Desktop) {
 			final String THEME_DELIMETER = "theme-select";
 
-			MsgBoxExecuter msgBox = getFreeMsgBox(true);
+			MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Theme");
 			mInvoker.pushDelimiter(THEME_DELIMETER);
-			msgBox.setTitle("Select Theme");
 
 			// Listener that set the theme
 			ButtonListener listener = new ButtonListener() {
@@ -942,14 +940,11 @@ class LevelEditorGui extends EditorGui {
 			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, THEME_DELIMETER, false));
 			msgBox.button("Select");
 			msgBox.key(Input.Keys.ENTER, null);
-
-			showMsgBox(msgBox);
 		}
 
 		// Mobile device, show scene instead
 		else if (Gdx.app.getType() == ApplicationType.Android) {
-			MsgBoxExecuter msgBox = getFreeMsgBox(true);
-			msgBox.setTitle("Select Theme");
+			MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Theme");
 
 			// Listener to open full screen theme scene
 			ButtonListener listener = new ButtonListener() {
@@ -982,8 +977,6 @@ class LevelEditorGui extends EditorGui {
 
 			// Back buttons
 			msgBox.addCancelButtonAndKeys("Back");
-
-			showMsgBox(msgBox);
 		}
 	}
 
@@ -1367,7 +1360,6 @@ class LevelEditorGui extends EditorGui {
 			Image image = null;
 			ImageScrollButton theme = null;
 			SelectBox<Music> music = null;
-			Button stopButton = null;
 			HideManual playHider = new HideManual();
 			HideManual stopHider = new HideManual();
 

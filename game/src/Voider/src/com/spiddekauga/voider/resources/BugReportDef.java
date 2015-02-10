@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
+import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
 
 
 /**
@@ -20,9 +21,10 @@ public class BugReportDef extends Resource {
 		mSubject = bugReportEntity.subject;
 		mDescription = bugReportEntity.description;
 		mDate = bugReportEntity.date;
-		mException = bugReportEntity.additionalInformation;
+		mAdditionalInforamtion = bugReportEntity.additionalInformation;
 		mSystemInformation = bugReportEntity.systemInformation;
 		mUniqueId = bugReportEntity.id;
+		mTypeId = bugReportEntity.type.toId();
 	}
 
 	/**
@@ -42,28 +44,24 @@ public class BugReportDef extends Resource {
 		entity.userKey = mUserKey;
 		entity.subject = mSubject;
 		entity.description = mDescription;
-		entity.additionalInformation = mException;
+		entity.additionalInformation = mAdditionalInforamtion;
 		entity.date = mDate;
 		entity.systemInformation = mSystemInformation;
 		entity.id = mUniqueId;
+		entity.type = BugReportTypes.fromId(mTypeId);
 
 		return entity;
 	}
 
-	/** User that's reporting */
+	/** User that's reporting, null if anonymous */
 	@Tag(113) private String mUserKey;
-	/** Last action */
 	@Tag(114) @Deprecated private String mLastAction;
-	/** Second last action */
 	@Tag(115) @Deprecated private String mSecondLastAction;
-	/** Additional description */
 	@Tag(119) private String mDescription;
-	/** Date of the report */
 	@Tag(120) private Date mDate = new Date();
-	/** The exception that was thrown, optional */
-	@Tag(121) private String mException = null;
-	/** Subject */
+	/** Additional information, such as exception */
+	@Tag(121) private String mAdditionalInforamtion = null;
 	@Tag(122) private String mSubject;
-	/** System information */
 	@Tag(123) private String mSystemInformation;
+	@Tag(130) private int mTypeId;
 }

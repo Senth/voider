@@ -2,13 +2,14 @@ package com.spiddekauga.voider.game.actors;
 
 import java.util.HashMap;
 
+import com.spiddekauga.voider.network.util.IIdStore;
 import com.spiddekauga.voider.network.util.ISearchStore;
 
 /**
  * Enumeration for all enemy movement types
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public enum MovementTypes implements ISearchStore {
+public enum MovementTypes implements ISearchStore, IIdStore {
 	// NEVER EVER remove or change the order of these!
 	/** Uses variable values to behave in a certain manner */
 	AI(1, "AI"),
@@ -33,9 +34,7 @@ public enum MovementTypes implements ISearchStore {
 		return mDisplayName;
 	}
 
-	/**
-	 * @return id of the movement type
-	 */
+	@Override
 	public int toId() {
 		return mId;
 	}

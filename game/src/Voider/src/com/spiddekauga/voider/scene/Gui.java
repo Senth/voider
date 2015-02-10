@@ -14,44 +14,28 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
-import com.spiddekauga.utils.Strings;
-import com.spiddekauga.utils.commands.CBugReportSend;
-import com.spiddekauga.utils.commands.CGameQuit;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
-import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
-import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.ui.UiFactory;
-import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
-import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
-import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.User;
-import com.spiddekauga.voider.utils.commands.CSyncFixConflict;
-import com.spiddekauga.voider.utils.commands.CUserConnect;
-import com.spiddekauga.voider.utils.commands.CUserSetAskGoOnline;
 
 /**
  * Base class for all GUI containing windows
@@ -225,7 +209,7 @@ public abstract class Gui implements Disposable {
 			// Else if the active message box becomes hidden. Show the previous one
 			if (activeMsgBox != null && activeMsgBox.isHidden()) {
 				mActiveMsgBoxes.pop();
-				mFreeMsgBoxes.push(activeMsgBox);
+				mUiFactory.msgBox.free(activeMsgBox);
 
 				// Show the previous message box if one exists
 				if (!mActiveMsgBoxes.isEmpty()) {
@@ -240,33 +224,6 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * @param useTitleStyle set to true to use a message box with the title style
-	 * @return free message box
-	 */
-	public MsgBoxExecuter getFreeMsgBox(boolean useTitleStyle) {
-		String windowStyleName = useTitleStyle ? SkinNames.General.WINDOW_MODAL_TITLE.toString() : SkinNames.General.WINDOW_MODAL.toString();
-
-		// Find a free existing one
-		MsgBoxExecuter msgBox = null;
-		if (!mFreeMsgBoxes.isEmpty()) {
-			msgBox = mFreeMsgBoxes.pop();
-		}
-
-		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		// No free found, create new
-		if (msgBox == null) {
-			msgBox = new MsgBoxExecuter(skin, windowStyleName);
-			msgBox.setButtonPad(mUiFactory.getStyles().vars.paddingButton);
-		} else {
-			msgBox.setStyle(skin.get(windowStyleName, WindowStyle.class));
-		}
-
-
-		msgBox.clear();
-		return msgBox;
-	}
-
-	/**
 	 * Hides all active message boxes
 	 */
 	public void hideMsgBoxes() {
@@ -277,7 +234,7 @@ public abstract class Gui implements Disposable {
 			while (msgBoxIt.hasNext()) {
 				MsgBoxExecuter msgBox = msgBoxIt.next();
 				msgBoxIt.remove();
-				mFreeMsgBoxes.push(msgBox);
+				mUiFactory.msgBox.free(msgBox);
 
 				if (!msgBox.isHidden()) {
 					msgBox.hide();
@@ -285,7 +242,7 @@ public abstract class Gui implements Disposable {
 			}
 		} else if (mActiveMsgBoxes.size() == 1) {
 			MsgBoxExecuter msgBox = mActiveMsgBoxes.pop();
-			mFreeMsgBoxes.push(msgBox);
+			mUiFactory.msgBox.free(msgBox);
 			msgBox.hide();
 		}
 	}
@@ -297,7 +254,7 @@ public abstract class Gui implements Disposable {
 		if (!mActiveMsgBoxes.isEmpty()) {
 			MsgBoxExecuter msgBox = mActiveMsgBoxes.pop();
 			msgBox.hide();
-			mFreeMsgBoxes.push(msgBox);
+			mUiFactory.msgBox.free(msgBox);
 
 			// Show previous
 			if (!mActiveMsgBoxes.isEmpty()) {
@@ -335,105 +292,6 @@ public abstract class Gui implements Disposable {
 	private boolean isWaitOrProgressShowing() {
 		return (mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null)
 				|| (mWidgets.progressBar.window != null && mWidgets.progressBar.window.getStage() != null);
-	}
-
-	/**
-	 * Shows the bug report window
-	 * @param exception the exception that was thrown, null if no exception was thrown
-	 */
-	public synchronized void showBugReportWindow(final Exception exception) {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-		msgBox.setTitle("Bug Report");
-
-		AlignTable content = new AlignTable();
-		float width = mUiFactory.getStyles().vars.textFieldWidth * 2 + mUiFactory.getStyles().vars.paddingInner;
-		content.setWidth(width);
-		content.setKeepWidth(true);
-
-		AlignTable left = new AlignTable();
-		AlignTable right = new AlignTable();
-		left.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-
-
-		// Error text
-		Label errorLabel = mUiFactory.text.create(Messages.Error.BUG_REPORT_INFO, LabelStyles.WARNING);
-		errorLabel.setAlignment(Align.center);
-		errorLabel.setWrap(true);
-		content.row().setFillWidth(true);
-		content.add(errorLabel).setWidth(width).setPadBottom(mUiFactory.getStyles().vars.paddingSeparator);
-		content.row();
-
-
-		// Subject
-		TextFieldListener subjectListener = new TextFieldListener();
-		TextField subject = mUiFactory.addTextField("Subject", false, "[EX: Can't place enemy]", subjectListener, content, null);
-		subject.setMaxLength(50);
-		content.getCell().setWidth(width);
-
-
-		// Description
-		TextFieldListener descriptionListener = new TextFieldListener();
-		mUiFactory.addTextArea("Detailed description (optional)",
-				"[EX: Doesn't work to place any stationary enemy in the level editor. Tried with two...]", descriptionListener, content, null);
-		content.getCell().setWidth(width);
-		content.getCell().setHeight(content.getCell().getHeight() * 1.5f);
-
-		final CBugReportSend bugReportSend = new CBugReportSend(this, subjectListener, descriptionListener, exception);
-		CGameQuit quit = new CGameQuit();
-
-
-		// Send anonymously
-		ButtonListener buttonListener = new ButtonListener() {
-			@Override
-			protected void onChecked(Button button, boolean checked) {
-				bugReportSend.setSendAnonymously(checked);
-				SettingRepo.getInstance().network().setBugReportSendAnonymously(checked);
-			}
-		};
-		Button button = mUiFactory.button.addCheckBoxRow("Send anonymously (I can't answer you or ask further questions)", CheckBoxStyles.CHECK_BOX,
-				buttonListener, null, content);
-		button.setChecked(SettingRepo.getInstance().network().isBugReportSentAnonymously());
-
-
-		// Additional information that is sent
-		buttonListener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-				msgBox.setTitle("Additional Error Information");
-
-				AlignTable outerTable = new AlignTable();
-				AlignTable table = new AlignTable();
-				ScrollPane scrollPane = new ScrollPane(table);
-				outerTable.setPaddingRowDefault(0, 0, mUiFactory.getStyles().vars.paddingInner, 0);
-
-
-				mUiFactory.text
-						.add("Additional information sent in the bug report\n(might appear to be unreadable)", outerTable, LabelStyles.WARNING);
-				outerTable.row();
-				outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
-				msgBox.content(outerTable);
-
-				mUiFactory.text.add(Strings.exceptionToString(exception), table);
-				table.getCell().setPadBottom(mUiFactory.getStyles().vars.paddingInner);
-				table.row();
-				mUiFactory.text.add(AnalyticsRepo.getInstance().getSessionDebug(), table);
-
-				msgBox.addCancelButtonAndKeys("Back");
-				showMsgBox(msgBox);
-			}
-		};
-
-		content.row().setPadTop(mUiFactory.getStyles().vars.paddingInner);
-		mUiFactory.button.addText("View additional information that is sent", TextButtonStyles.LINK, content, buttonListener, null, null);
-
-		msgBox.content(content);
-		msgBox.button("Quit Game", quit);
-		msgBox.button("Send Report and Quit Game", bugReportSend);
-
-		showMsgBox(msgBox);
 	}
 
 	/**
@@ -706,62 +564,6 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Show conflict window
-	 */
-	public synchronized void showConflictWindow() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-		msgBox.setTitle("Sync Conflict");
-		msgBox.getContentTable();
-
-
-		// Set layout
-		float buttonWidth = mUiFactory.getStyles().vars.textButtonWidth * 1.5f;
-		msgBox.contentRow();
-		msgBox.content().width(buttonWidth);
-		msgBox.content().width(buttonWidth);
-		msgBox.content().width(buttonWidth);
-		msgBox.contentRow();
-		msgBox.getContentTable().padBottom(0);
-		msgBox.getButtonTable().padTop(0);
-
-		// Text
-		// @formatter:off
-		String text = "Due to some event, one or more of your levels, enemies, or bullets are in conflict.\n"
-				+ "Which version would you like to keep?\n\n"
-				+ "Choose carefully! As the other choice will be discarded.";
-		Label label = mUiFactory.text.create(text, true, LabelStyles.ERROR);
-		label.setAlignment(Align.center);
-		label.setWidth(buttonWidth * 3);
-		msgBox.content(label).width(buttonWidth * 3).colspan(3);
-		// @formatter:on
-
-
-		// Button text
-		msgBox.contentRow();
-		msgBox.content("Cloud Version", Align.center).padTop(mUiFactory.getStyles().vars.paddingSeparator);
-		msgBox.content();
-		msgBox.content("Local Version", Align.center).padTop(mUiFactory.getStyles().vars.paddingSeparator);
-
-		// Button icon
-		msgBox.contentRow();
-		Image image = new Image(SkinNames.getDrawable(SkinNames.GeneralImages.SYNC_CLOUD));
-		msgBox.content(image);
-		msgBox.content();
-		image = new Image(SkinNames.getDrawable(SkinNames.GeneralImages.SYNC_DEVICE));
-		msgBox.content(image);
-
-		// Buttons
-		msgBox.button("Download & Continue", new CSyncFixConflict(false));
-		msgBox.getButtonCell().setPadRight(buttonWidth).setWidth(buttonWidth);
-		msgBox.button("Upload & Continue", new CSyncFixConflict(true));
-		msgBox.getButtonCell().setWidth(buttonWidth);
-
-
-		showMsgBox(msgBox);
-	}
-
-	/**
 	 * Checks if a button is checked (from the event).
 	 * @param event checks if the target inside the event is a button and it's checked
 	 * @return checked button. If the target isn't a button or the button isn't checked it
@@ -778,10 +580,6 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Show a login dialog
-	 */
-
-	/**
 	 * Set the GUI as visible/invisible. I.e. if the GUI should be drawn or not.
 	 * @param visible set to true for visible, false for invisible.
 	 */
@@ -794,27 +592,6 @@ public abstract class Gui implements Disposable {
 	 */
 	public boolean isVisible() {
 		return mVisible;
-	}
-
-	/**
-	 * Shows the go online dialog (if it should be shown)
-	 */
-	public void showGoOnlineDialog() {
-		if (User.getGlobalUser().isAskToGoOnline()) {
-			MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-			msgBox.setTitle("Go Online?");
-
-			Label label = mUiFactory.text.create("To use online features you need to connect to the server.");
-			msgBox.content(label);
-
-			msgBox.addCancelButtonAndKeys("Cancel");
-			msgBox.button("Cancel and don't ask again this session", new CUserSetAskGoOnline(false));
-			msgBox.getButtonCell().resetWidth().setPadRight(mUiFactory.getStyles().vars.paddingInner);
-			msgBox.button("Connect", new CUserConnect());
-
-			showMsgBox(msgBox);
-		}
 	}
 
 
@@ -833,8 +610,7 @@ public abstract class Gui implements Disposable {
 	private Stage mStage = null;
 	/** Active message boxes */
 	private Stack<MsgBoxExecuter> mActiveMsgBoxes = new Stack<>();
-	/** Inactive/free message boxes */
-	private Stack<MsgBoxExecuter> mFreeMsgBoxes = new Stack<>();
+
 	/** Various widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
 

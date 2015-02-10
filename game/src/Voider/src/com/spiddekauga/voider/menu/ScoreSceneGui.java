@@ -104,7 +104,7 @@ public class ScoreSceneGui extends Gui {
 					mScoreScene.setComment(newText);
 				}
 			};
-			mWidgets.comment = mUiFactory.addTextArea(null, "Comment on the level you just played", tableWidth, textFieldListener, mMainTable, null);
+			mWidgets.comment = mUiFactory.addTextArea(null, false, "Comment on the level you just played", tableWidth, textFieldListener, mMainTable, null);
 		} else {
 			String text = "Highscore, rate, bookmark, and comment features are disabled for unpublished levels. "
 					+ "They will be available once you publish your level :D";

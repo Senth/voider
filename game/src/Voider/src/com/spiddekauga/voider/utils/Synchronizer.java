@@ -34,6 +34,7 @@ import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatRepo;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.server.IMessageListener;
 import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -342,17 +343,17 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	private void handlePostBugReport(BugReportMethod method, BugReportResponse response) {
 		// Show message
 		switch (response.status) {
-		case FAILED_CONNECTION:
+		case FAILED_SERVER_CONNECTION:
 		case FAILED_SERVER_ERROR:
 		case FAILED_USER_NOT_LOGGED_IN:
-			mNotification.show(NotificationTypes.ERROR, "Send saved bug reports");
+			mNotification.show(NotificationTypes.ERROR, "Couldn't send saved bug reports");
 			break;
 
 		case SUCCESS:
 			mNotification.show(NotificationTypes.SUCCESS, "Sent saved bug reports");
 			break;
 
-		case SUCCESS_WITH_ERRORS:
+		case SUCCESS_PARTIAL:
 			mNotification.show(NotificationTypes.HIGHLIGHT, "Sent some bug reports?");
 			break;
 		}
@@ -405,7 +406,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 
 		case SUCCESS_PARTIAL:
 			mConflictsFound = response.conflicts;
-			SceneSwitcher.showConflictWindow();
+			UiFactory.getInstance().msgBox.conflictWindow();
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_CONFLICT));
 			break;
 		}

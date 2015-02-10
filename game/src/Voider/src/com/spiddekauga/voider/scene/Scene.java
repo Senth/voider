@@ -26,6 +26,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.MusicPlayer;
 
 /**
@@ -155,7 +156,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	public synchronized void handleException(Exception exception) {
 		if (mGui.isInitialized()) {
 			mAnalyticsRepo.endSession();
-			mGui.showBugReportWindow(exception);
+			UiFactory.getInstance().msgBox.bugReport(exception);
 		}
 	}
 

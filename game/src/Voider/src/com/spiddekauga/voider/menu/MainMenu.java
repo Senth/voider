@@ -210,10 +210,10 @@ public class MainMenu extends Scene implements IEventListener {
 				mNotification.show(message);
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
 				String changeLog = ClientVersions.getChangeLogs(ClientVersions.V0_4_0);
-				UiFactory.getInstance().createChangeLogMsgBox("ChangeLog", "Test", changeLog, mGui);
+				UiFactory.getInstance().msgBox.changeLog("ChangeLog", "Test", changeLog);
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
-				mGui.showBugReportWindow(new RuntimeException());
+				UiFactory.getInstance().msgBox.bugReport();
 			} else if (keycode == Input.Keys.F10) {
 			} else if (keycode == Input.Keys.F11) {
 			} else if (keycode == Input.Keys.F12) {

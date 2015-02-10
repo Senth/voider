@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -22,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.spiddekauga.utils.Maths;
@@ -37,7 +35,6 @@ import com.spiddekauga.utils.scene.ui.ColorTintPicker;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
@@ -50,7 +47,6 @@ import com.spiddekauga.voider.repo.analytics.listener.AnalyticsSliderListener;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
-import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
@@ -64,6 +60,8 @@ public class UiFactory {
 	public LabelFactory text = new LabelFactory();
 	/** Create buttons */
 	public ButtonFactory button = new ButtonFactory();
+	/** Create message boxes */
+	public MsgBoxFactory msgBox = new MsgBoxFactory();
 
 	/**
 	 * Creates an empty UI Factory. Call {@link #init()} to initialize all styles
@@ -82,82 +80,6 @@ public class UiFactory {
 		return mInstance;
 	}
 
-	/**
-	 * Create 'update message box' to show an update message dialog
-	 * @param updateRequired true if an update is required, false if update is optional
-	 * @param message message to display
-	 * @param changeLog all new changes to display
-	 * @param gui GUI class to create the message box in
-	 */
-	public void createUpdateMessageBox(boolean updateRequired, final String message, final String changeLog, final Gui gui) {
-		MsgBoxExecuter msgBox = gui.getFreeMsgBox(true);
-
-		final int width = (int) (Gdx.graphics.getWidth() * 0.7f);
-
-		if (updateRequired) {
-			msgBox.setTitle("Update Required");
-		} else {
-			msgBox.setTitle("Update Available");
-		}
-		Label label = new Label(message, LabelStyles.HIGHLIGHT.getStyle());
-		label.setWrap(true);
-		label.setWidth(width);
-		label.setAlignment(Align.center);
-		msgBox.content(label);
-
-		// Add change-log
-		msgBox.button("ChangeLog");
-		new ButtonListener((Button) msgBox.getButtonCell().getActor()) {
-			@Override
-			protected void onPressed(Button button) {
-				createChangeLogMsgBox("ChangeLog", "New changes since your version", changeLog, gui);
-			}
-		};
-
-		msgBox.addCancelButtonAndKeys("OK");
-		gui.showMsgBox(msgBox);
-	}
-
-	/**
-	 * Create a change log message box
-	 * @param title title of the message box
-	 * @param topMessage additional message to display above the change log
-	 * @param changeLog the change log
-	 * @param gui the GUI class to add the message box to
-	 */
-	public void createChangeLogMsgBox(String title, String topMessage, String changeLog, Gui gui) {
-		MsgBoxExecuter changeLogMsgBox = gui.getFreeMsgBox(true);
-		changeLogMsgBox.setTitle(title);
-
-		final int width = (int) (Gdx.graphics.getWidth() * 0.7f);
-		final int maxHeight = Gdx.graphics.getHeight() / 2;
-
-		Label label = text.create(topMessage, true);
-		label.setWidth(width);
-		label.setAlignment(Align.center);
-
-		changeLogMsgBox.content(label).padBottom(mStyles.vars.paddingSeparator);
-		changeLogMsgBox.contentRow();
-
-
-		label = text.create(changeLog, false);
-
-
-		// Too high, use scroll pane
-		label.layout();
-		if (label.getHeight() > maxHeight) {
-			ScrollPane scrollPane = new ScrollPane(label, mStyles.scrollPane.noBackground);
-			scrollPane.setFadeScrollBars(false);
-			changeLogMsgBox.content(scrollPane).size(width, maxHeight);
-		} else {
-			changeLogMsgBox.content(label);
-		}
-
-
-		changeLogMsgBox.addCancelButtonAndKeys("OK");
-
-		gui.showMsgBox(changeLogMsgBox);
-	}
 
 	/**
 	 * Create a tooltip widget
@@ -373,6 +295,44 @@ public class UiFactory {
 	 */
 	public TextField addTextField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
 			ArrayList<Actor> createdActors) {
+		return addTextField(sectionText, errorLabel, defaultText, mStyles.vars.textFieldWidth, listener, table, createdActors);
+	}
+
+	/**
+	 * Adds a text field with an optional label header
+	 * @param sectionText optional text for the label, if null no label is added
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
+	 * @param defaultText default text in the text field
+	 * @param width set the width of the text field
+	 * @param listener text field listener
+	 * @param table the table to add the text field to
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @return Created text field
+	 */
+	public TextField addTextField(String sectionText, boolean errorLabel, String defaultText, float width, TextFieldListener listener,
+			AlignTable table, ArrayList<Actor> createdActors) {
+		TextField textField = new TextField(defaultText, mStyles.textField.standard);
+		addTextField(textField, sectionText, errorLabel, defaultText, width, listener, table, createdActors);
+		return textField;
+	}
+
+	/**
+	 * Adds a text field with an optional label header
+	 * @param textField the text field or area that will be added
+	 * @param sectionText optional text for the label, if null no label is added
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
+	 * @param defaultText default text in the text field
+	 * @param width the width of the text field
+	 * @param listener text field listener
+	 * @param table the table to add the text field to
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 */
+	private void addTextField(TextField textField, String sectionText, boolean errorLabel, String defaultText, float width,
+			TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
 		// Label
 		if (sectionText != null) {
 			// If error label, wrap the both labels in another table with fixed width
@@ -381,9 +341,10 @@ public class UiFactory {
 			} else {
 				text.addSection(sectionText, table, null, createdActors);
 			}
+			table.getRow().setWidth(width);
+			table.getCell().setWidth(width);
 		}
 
-		TextField textField = new TextField(defaultText, mStyles.textField.standard);
 		if (listener != null) {
 			listener.setTextField(textField);
 			listener.setDefaultText(defaultText);
@@ -391,11 +352,9 @@ public class UiFactory {
 
 		// Set width and height
 		table.row();
-		table.add(textField).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);
+		table.add(textField).setSize(width, mStyles.vars.rowHeight);
 
 		doExtraActionsOnActors(null, createdActors, textField);
-
-		return textField;
 	}
 
 	/**
@@ -426,10 +385,14 @@ public class UiFactory {
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
-	public TextArea addTextArea(String sectionText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
-		return addTextArea(sectionText, defaultText, mStyles.vars.textFieldWidth, listener, table, createdActors);
+	public TextArea addTextArea(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
+			ArrayList<Actor> createdActors) {
+		return addTextArea(sectionText, false, defaultText, mStyles.vars.textFieldWidth, listener, table, createdActors);
 	}
 
 	/**
@@ -440,23 +403,16 @@ public class UiFactory {
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
-	public TextArea addTextArea(String sectionText, String defaultText, float width, TextFieldListener listener, AlignTable table,
-			ArrayList<Actor> createdActors) {
-		// Label
-		text.addSection(sectionText, table, null, createdActors);
-
+	public TextArea addTextArea(String sectionText, boolean errorLabel, String defaultText, float width, TextFieldListener listener,
+			AlignTable table, ArrayList<Actor> createdActors) {
 		TextArea textArea = new TextArea(defaultText, mStyles.textField.standard);
-		listener.setTextField(textArea);
-		listener.setDefaultText(defaultText);
-
-		// Set width and height
-		table.row();
-		table.add(textArea).setSize(width, mStyles.vars.textAreaHeight);
-
-		doExtraActionsOnActors(null, createdActors, textArea);
-
+		addTextField(textArea, sectionText, errorLabel, defaultText, width, listener, table, createdActors);
+		table.getCell().setSize(width, mStyles.vars.textAreaHeight);
 		return textArea;
 	}
 
@@ -920,6 +876,7 @@ public class UiFactory {
 		mStyles = new UiStyles();
 		text.init(mStyles);
 		button.init(mStyles);
+		msgBox.init(mStyles);
 	}
 
 	/**

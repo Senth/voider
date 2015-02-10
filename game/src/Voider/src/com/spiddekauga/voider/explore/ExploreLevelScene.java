@@ -15,10 +15,10 @@ import com.spiddekauga.voider.network.resource.CommentFetchResponse;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.resource.LevelFetchMethod;
+import com.spiddekauga.voider.network.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.resource.LevelFetchResponse;
 import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
-import com.spiddekauga.voider.network.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.stat.CommentEntity;
 import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.stat.Tags;
@@ -29,6 +29,7 @@ import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -69,7 +70,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			// Ask to go online?
 			if (!User.getGlobalUser().isOnline()) {
-				mGui.showGoOnlineDialog();
+				UiFactory.getInstance().msgBox.goOnline();
 				setView(ExploreViews.LOCAL);
 			}
 			// User is online -> Set correct view

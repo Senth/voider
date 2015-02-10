@@ -59,13 +59,11 @@ class MainMenuGui extends MenuGui {
 	 * Show quit main menu dialog
 	 */
 	void showQuitMsgBox() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-		msgBox.setTitle("Quit game?");
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Quit Game?");
 		msgBox.content("\nDo you want to quit the game?");
 		msgBox.button("Quit", new CGameQuit());
 		msgBox.button("Logout", new CUserLogout());
 		msgBox.addCancelButtonAndKeys();
-		showMsgBox(msgBox);
 	}
 
 	/**
@@ -126,10 +124,7 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-				msgBox.setTitle("Logout");
-
+				MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Logout");
 				msgBox.content("Do you want to logout?", Align.center);
 
 				if (!User.getGlobalUser().isOnline()) {
@@ -140,7 +135,6 @@ class MainMenuGui extends MenuGui {
 
 				msgBox.addCancelButtonAndKeys();
 				msgBox.button("Logout", new CUserLogout());
-				showMsgBox(msgBox);
 			}
 		};
 	}
@@ -152,7 +146,7 @@ class MainMenuGui extends MenuGui {
 	 */
 	void showUpdateNeeded(String newVersion, String changeLog) {
 		String message = Messages.Version.getRequiredUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(true, message, changeLog, this);
+		mUiFactory.msgBox.updateMessage(true, message, changeLog);
 	}
 
 	/**
@@ -162,7 +156,7 @@ class MainMenuGui extends MenuGui {
 	 */
 	void showUpdateAvailable(String newVersion, String changeLog) {
 		String message = Messages.Version.getOptionalUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(false, message, changeLog, this);
+		mUiFactory.msgBox.updateMessage(false, message, changeLog);
 	}
 
 	/**
@@ -170,7 +164,7 @@ class MainMenuGui extends MenuGui {
 	 * @param changeLog new changes
 	 */
 	void showChangesSinceLastLogin(String changeLog) {
-		mUiFactory.createChangeLogMsgBox("ChangeLog", "New changes since you last logged in on this device", changeLog, this);
+		mUiFactory.msgBox.changeLog("ChangeLog", "New changes since you last logged in on this device", changeLog);
 	}
 
 	private AlignTable mOptionTable = new AlignTable();

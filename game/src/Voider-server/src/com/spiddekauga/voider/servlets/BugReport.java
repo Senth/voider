@@ -18,12 +18,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
 import com.spiddekauga.voider.network.misc.BugReportMethod;
 import com.spiddekauga.voider.network.misc.BugReportResponse;
-import com.spiddekauga.voider.network.misc.BugReportResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -35,33 +35,33 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class BugReport extends VoiderServlet {
 	@Override
 	protected void onInit() {
-		// Does nothing
+		mResponse = new BugReportResponse();
+		mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		BugReportResponse methodResponse = new BugReportResponse();
-		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
 
 		if (!mUser.isLoggedIn()) {
-			methodResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
-			return methodResponse;
+			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
+			return mResponse;
 		}
 
 		if (methodEntity instanceof BugReportMethod) {
-			methodResponse.status = Statuses.SUCCESS;
+			BugReportMethod parameters = (BugReportMethod) methodEntity;
+			mResponse.status = GeneralResponseStatuses.SUCCESS;
 
-			for (BugReportEntity bugReportEntity : ((BugReportMethod) methodEntity).bugs) {
+			for (BugReportEntity bugReportEntity : parameters.bugs) {
 				boolean success = sendBugReport(bugReportEntity);
 
 				if (!success) {
-					methodResponse.status = Statuses.SUCCESS_WITH_ERRORS;
-					methodResponse.failedBugReports.add(bugReportEntity.id);
+					mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
+					mResponse.failedBugReports.add(bugReportEntity.id);
 				}
 			}
 		}
 
-		return methodResponse;
+		return mResponse;
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class BugReport extends VoiderServlet {
 			replyToAddresses[0] = new InternetAddress(sentFromEmail, sentFromName);
 			message.setReplyTo(replyToAddresses);
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(ServerConfig.EMAIL_ADMIN));
-			message.setSubject("[BUG] " + bugReportEntity.subject);
+			message.setSubject(getSubject(bugReportEntity));
 			message.setContent(body, "text/html");
 			Transport.send(message);
 		} catch (MessagingException | UnsupportedEncodingException e) {
@@ -104,6 +104,33 @@ public class BugReport extends VoiderServlet {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get bug report subject
+	 * @param bugReportEntity
+	 * @return subject for the bug report
+	 */
+	private String getSubject(BugReportEntity bugReportEntity) {
+		String subject = "";
+		if (bugReportEntity.type != null) {
+			switch (bugReportEntity.type) {
+			case UNKNOWN:
+				subject = "[BUG_UNKNOWN]";
+				break;
+			case BUG_CUSTOM:
+				subject = "[BUG]";
+				break;
+			case BUG_EXCEPTION:
+				subject = "[BUG_EXN]";
+				break;
+			case FEATURE:
+				subject = "[FEATURE]";
+				break;
+			}
+		}
+
+		return subject + " " + bugReportEntity.subject;
 	}
 
 	/**
@@ -144,6 +171,6 @@ public class BugReport extends VoiderServlet {
 	}
 
 
-	/** Cached users */
-	HashMap<String, Entity> mUsersCached = new HashMap<>();
+	private HashMap<String, Entity> mUsersCached = new HashMap<>();
+	private BugReportResponse mResponse = null;
 }

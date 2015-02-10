@@ -617,14 +617,10 @@ public class LoginGui extends Gui {
 	 * Show message box for creating an offline user meanwhile.
 	 */
 	void showConnectionError() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-		msgBox.setTitle("Could not connect to server!");
-		msgBox.content("To fix this either wait a couple of hours (if\n" + "server is down) or connect your device to the\n" + "Internet.\n\n"
-				+ "Sorry for your incovenience.");
-
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Connection Error");
+		msgBox.content("Could not connect to the server. To fix this either wait a couple of hours (if\n"
+				+ "server is down) or connect your device to the\n" + "Internet.\n\n" + "Sorry for your incovenience.");
 		msgBox.addCancelButtonAndKeys("OK");
-		showMsgBox(msgBox);
 	}
 
 	/**
@@ -652,7 +648,7 @@ public class LoginGui extends Gui {
 	 */
 	void showUpdateRequired(String newVersion, String changeLog) {
 		String message = Messages.Version.getRequiredUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(true, message, changeLog, this);
+		mUiFactory.msgBox.updateMessage(true, message, changeLog);
 	}
 
 	/**
@@ -662,7 +658,7 @@ public class LoginGui extends Gui {
 	 */
 	void showUpdateAvailable(String newVersion, String changeLog) {
 		String message = Messages.Version.getOptionalUpdate(newVersion);
-		mUiFactory.createUpdateMessageBox(false, message, changeLog, this);
+		mUiFactory.msgBox.updateMessage(false, message, changeLog);
 	}
 
 	/** The login scene */

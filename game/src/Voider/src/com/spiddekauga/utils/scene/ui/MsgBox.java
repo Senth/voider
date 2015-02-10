@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -19,6 +18,7 @@ import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.esotericsoftware.tablelayout.Cell;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.validate.IValidate;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
@@ -88,7 +88,8 @@ public class MsgBox extends Dialog {
 		mButtonTable.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if (!mValues.containsKey(actor)) {
+				boolean valid = validate(actor);
+				if (!valid) {
 					return;
 				}
 				result(mValues.get(actor));
@@ -102,12 +103,51 @@ public class MsgBox extends Dialog {
 					throw new GdxRuntimeException(e);
 				}
 			}
+
+			/**
+			 * Validate the actor
+			 * @param actor the actor to validate
+			 * @return true if the actor is valid and should continue
+			 */
+			private boolean validate(Actor actor) {
+				IValidate[] validations = mValidations.get(actor);
+				boolean valid = true;
+				if (validations != null) {
+					for (IValidate validation : validations) {
+						validation.resetError();
+
+						if (!validation.isValid()) {
+							validation.printError();
+							valid = false;
+						}
+					}
+				}
+
+				return valid;
+			}
 		});
 	}
 
 	@Override
 	public void setObject(Actor actor, Object object) {
-		mValues.put(actor, object);
+		if (object != null) {
+			mValues.put(actor, object);
+		}
+	}
+
+	/**
+	 * Associate an actor with object and possible validations
+	 * @param actor
+	 * @param object
+	 * @param validations
+	 * @return this for chaining
+	 */
+	public MsgBox setObject(Actor actor, Object object, IValidate... validations) {
+		setObject(actor, object);
+		if (validations != null && validations.length > 0) {
+			mValidations.put(actor, validations);
+		}
+		return this;
 	}
 
 	/**
@@ -257,23 +297,39 @@ public class MsgBox extends Dialog {
 	}
 
 
-	/**
-	 * Adds a text button to the button table. Null will be passed to
-	 * {@link #result(Object)} if this button is clicked. Will use UiFactory to create the
-	 * button
-	 */
 	@Override
 	public MsgBox button(String text) {
 		return button(text, null);
 	}
 
-	/**
-	 * Adds a text button to the button table. Will use UiFactory to create the button
-	 * @param object The object that will be passed to {@link #result(Object)} if this
-	 *        button is clicked. May be null.
-	 */
 	@Override
 	public MsgBox button(String text, Object object) {
+		Button button = addButton(text);
+		setObject(button, object);
+		return this;
+	}
+
+	/**
+	 * Creates a new button with the specified text
+	 * @param text text of the button using the default style
+	 * @param object The object that will be passed to {@link #result(Object)} if this
+	 *        button is clicked. May be null.
+	 * @param validations optional validations. The object is only passed if all
+	 *        validations are valid
+	 * @return this for chaining
+	 */
+	public MsgBox button(String text, Object object, IValidate... validations) {
+		Button button = addButton(text);
+		setObject(button, object, validations);
+		return this;
+	}
+
+	/**
+	 * Create a text button
+	 * @param text the text of the button
+	 * @return the created and added button
+	 */
+	private Button addButton(String text) {
 		com.spiddekauga.utils.scene.ui.Cell cell = mUiFactory.button.addText(text, TextButtonStyles.FILLED_PRESS, mButtonTable, null, null, null);
 
 		// Pad every cell except first
@@ -281,35 +337,45 @@ public class MsgBox extends Dialog {
 			cell.setPadLeft(mButtonPad);
 		}
 
-		setObject(cell.getActor(), object);
-		return this;
+		return (Button) cell.getActor();
 	}
+
 
 	/**
-	 * Adds a text button to the button table.
-	 * @param object The object that will be passed to {@link #result(Object)} if this
-	 *        button is clicked. May be null.
+	 * @deprecated This method should never be called. Create the button outside of this
+	 *             class instead then use {@link #button(Button)} or
+	 *             {@link #button(Button, Object)}.
 	 */
+	@Deprecated
 	@Override
 	public MsgBox button(String text, Object object, TextButtonStyle buttonStyle) {
-		return button(new TextButton(text, buttonStyle), object);
+		throw new IllegalAccessError("This method should never be called, use button(String) instead");
 	}
 
-	/** Adds the given button to the button table. */
 	@Override
 	public MsgBox button(Button button) {
 		return button(button, null);
 	}
 
-	/**
-	 * Adds the given button to the button table.
-	 * @param object The object that will be passed to {@link #result(Object)} if this
-	 *        button is clicked. May be null.
-	 */
 	@Override
 	public MsgBox button(Button button, Object object) {
 		mButtonTable.add(button);
 		setObject(button, object);
+		return this;
+	}
+
+	/**
+	 * Adds the given button to the button table.
+	 * @param button the button to add.
+	 * @param object The object that will be passed to {@link #result(Object)} if this
+	 *        button is clicked. May be null.
+	 * @param validations optional validations. The object is only passed if all
+	 *        validations are valid
+	 * @return this for chaining
+	 */
+	public MsgBox button(Button button, Object object, IValidate... validations) {
+		mButtonTable.add(button);
+		setObject(button, object, validations);
 		return this;
 	}
 
@@ -321,13 +387,29 @@ public class MsgBox extends Dialog {
 		return mButtonTable.getCell();
 	}
 
-	/** {@link #pack() Packs} the dialog and adds it to the stage, centered. */
 	@Override
 	public MsgBox show(Stage stage) {
 		mButtonTable.layout();
 		super.show(stage);
 		mHiding = false;
 		return this;
+	}
+
+	@Override
+	public void layout() {
+		mButtonTable.layout();
+		super.layout();
+		pack();
+		centerPosition();
+	}
+
+	/**
+	 * Center it's position
+	 */
+	private void centerPosition() {
+		if (getStage() != null) {
+			setPosition(Math.round((getStage().getWidth() - getWidth()) / 2), Math.round((getStage().getHeight() - getHeight()) / 2));
+		}
 	}
 
 	@Override
@@ -443,12 +525,20 @@ public class MsgBox extends Dialog {
 		mButtonPad = pad;
 	}
 
+	@Override
+	public void setSkin(Skin skin) {
+		mSkin = skin;
+		super.setSkin(skin);
+	}
+
 	/** Button padding */
 	private float mButtonPad = 0;
 	/** Pointer to cancelHide in Dialog */
 	Field mfCancelHide = null;
 	/** Objects associated with a button */
-	ObjectMap<Actor, Object> mValues = new ObjectMap<>();
+	private ObjectMap<Actor, Object> mValues = new ObjectMap<>();
+	/** Validations when a button is pressed */
+	private ObjectMap<Actor, IValidate[]> mValidations = new ObjectMap<>();
 	/** Default cancel text */
 	private static final String CANCEL_TEXT = "Cancel";
 	/** Button table */

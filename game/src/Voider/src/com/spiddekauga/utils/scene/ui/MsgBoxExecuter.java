@@ -4,9 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.utils.commands.Command;
 
 /**
- * Wrapper for the message box. This message box executes the commands passed
- * for the buttons.
- * 
+ * Wrapper for the message box. This message box executes the commands passed for the
+ * buttons.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MsgBoxExecuter extends MsgBox {
@@ -19,8 +18,7 @@ public class MsgBoxExecuter extends MsgBox {
 	}
 
 	/**
-	 * Creates a message box with a window style to use from
-	 * the specified skin
+	 * Creates a message box with a window style to use from the specified skin
 	 * @param skin the skin to find the window style in.
 	 * @param windowStyleName name of the window style found in skin
 	 */

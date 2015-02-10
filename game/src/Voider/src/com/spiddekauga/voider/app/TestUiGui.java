@@ -203,10 +203,9 @@ public class TestUiGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = getFreeMsgBox(false);
+				MsgBoxExecuter msgBox = mUiFactory.msgBox.add(null);
 				msgBox.content("Modal window");
 				msgBox.addCancelButtonAndKeys("OK");
-				showMsgBox(msgBox);
 			}
 		};
 
@@ -216,11 +215,9 @@ public class TestUiGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = getFreeMsgBox(true);
-				msgBox.setTitle("Title");
+				MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Title");
 				msgBox.content("Modal window");
 				msgBox.addCancelButtonAndKeys("OK");
-				showMsgBox(msgBox);
 			}
 		};
 	}

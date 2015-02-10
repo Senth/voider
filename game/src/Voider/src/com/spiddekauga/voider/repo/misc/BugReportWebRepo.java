@@ -23,9 +23,7 @@ public class BugReportWebRepo extends WebRepo {
 			if (response instanceof BugReportResponse) {
 				responseToSend = response;
 			} else {
-				BugReportResponse bugReportMethodResponse = new BugReportResponse();
-				bugReportMethodResponse.status = BugReportResponse.Statuses.FAILED_CONNECTION;
-				responseToSend = bugReportMethodResponse;
+				responseToSend = new BugReportResponse();
 			}
 		}
 

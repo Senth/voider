@@ -199,7 +199,7 @@ class GameSceneGui extends Gui {
 	 * Show menu for resuming game or going back
 	 */
 	void showMenu() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(false);
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add(null);
 		msgBox.button("Resume Game");
 		msgBox.buttonRow();
 		msgBox.button("Restart Game", new CSceneEnd(Outcomes.LEVEL_RESTART));
@@ -208,8 +208,6 @@ class GameSceneGui extends Gui {
 		msgBox.buttonRow();
 		msgBox.button("Main Menu", new CSequence(new CSceneEnd(Outcomes.LEVEL_QUIT), new CMusicPlay(Music.TITLE, MusicInterpolations.CROSSFADE)));
 		msgBox.addCancelKeys();
-
-		showMsgBox(msgBox);
 	}
 
 	/** GameScene object that this GUI acts on */

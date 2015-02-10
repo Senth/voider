@@ -6,10 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
+import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
 import com.spiddekauga.voider.network.misc.BugReportResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
@@ -17,6 +17,7 @@ import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -32,25 +33,20 @@ public class CBugReportSend extends Command implements IResponseListener {
 	/**
 	 * Creates a command that will send a bug report.
 	 * @param gui the GUI to show progress and success on
-	 * @param subject text for the subject
-	 * @param description text for the description
 	 * @param exception the exception that was thrown
 	 */
-	public CBugReportSend(Gui gui, TextFieldListener subject, TextFieldListener description, Exception exception) {
+	public CBugReportSend(Gui gui, Exception exception) {
 		mGui = gui;
-		mSubject = subject;
-		mDescription = description;
+		createBugReportEntity();
 		mException = exception;
 	}
 
 	/**
 	 * Creates a command that will send a bug report.
 	 * @param gui GUI to show progress and success on
-	 * @param subject text for the subject
-	 * @param description text field for the description
 	 */
-	public CBugReportSend(Gui gui, TextFieldListener subject, TextFieldListener description) {
-		this(gui, subject, description, null);
+	public CBugReportSend(Gui gui) {
+		this(gui, null);
 	}
 
 	/**
@@ -66,8 +62,8 @@ public class CBugReportSend extends Command implements IResponseListener {
 			mBugReport.userKey = userKey;
 		}
 		mBugReport.date = new Date();
-		mBugReport.subject = mSubject.getText();
-		mBugReport.description = mDescription.getText();
+		mBugReport.subject = "";
+		mBugReport.description = "";
 		mBugReport.systemInformation = getSystemInformation();
 
 		// Exception
@@ -76,6 +72,7 @@ public class CBugReportSend extends Command implements IResponseListener {
 			stackTrace = Strings.toHtmlString(stackTrace);
 			mBugReport.additionalInformation = stackTrace;
 			mBugReport.additionalInformation += "</br></br>";
+			mBugReport.type = BugReportTypes.BUG_EXCEPTION;
 		}
 
 		// Get analytics
@@ -133,15 +130,21 @@ public class CBugReportSend extends Command implements IResponseListener {
 	private void handleBugReportResponse(BugReportResponse response) {
 		if (response.status.isSuccessful()) {
 			// Message box
-			MsgBoxExecuter msgBox = mGui.getFreeMsgBox(true);
-			msgBox.setTitle("Success");
+			MsgBoxExecuter msgBox = UiFactory.getInstance().msgBox.add("Success");
 			msgBox.content(Messages.Info.BUG_REPORT_SENT);
-			Command quitGame = new CGameQuit();
-			msgBox.button("Quit game", quitGame);
-			msgBox.key(Input.Keys.ESCAPE, quitGame);
-			msgBox.key(Input.Keys.ENTER, quitGame);
-			msgBox.key(Input.Keys.BACK, quitGame);
-			mGui.showMsgBox(msgBox);
+
+			// Exception, quit the game
+			if (mBugReport.type == BugReportTypes.BUG_EXCEPTION) {
+				Command quitGame = new CGameQuit();
+				msgBox.button("Quit game", quitGame);
+				msgBox.key(Input.Keys.ESCAPE, quitGame);
+				msgBox.key(Input.Keys.ENTER, quitGame);
+				msgBox.key(Input.Keys.BACK, quitGame);
+			}
+			// Continue with the game
+			else {
+				msgBox.addCancelButtonAndKeys("OK");
+			}
 
 			mGui.hideWaitWindow();
 		} else {
@@ -151,8 +154,6 @@ public class CBugReportSend extends Command implements IResponseListener {
 
 	@Override
 	public boolean execute() {
-		createBugReportEntity();
-
 		mGui.showWaitWindow("");
 		if (User.getGlobalUser().isOnline()) {
 			sendBugReport();
@@ -183,15 +184,17 @@ public class CBugReportSend extends Command implements IResponseListener {
 		mResourceRepo.save(new BugReportDef(mBugReport));
 
 		// Message box
-		MsgBoxExecuter msgBox = mGui.getFreeMsgBox(true);
-		msgBox.setTitle("Failed");
+		MsgBoxExecuter msgBox = UiFactory.getInstance().msgBox.add("Failed To Send Bug Report");
 		msgBox.content(Messages.Info.BUG_REPORT_SAVED_LOCALLY);
-		Command quitGame = new CGameQuit();
-		msgBox.button("Quit game", quitGame);
-		msgBox.key(Input.Keys.ESCAPE, quitGame);
-		msgBox.key(Input.Keys.ENTER, quitGame);
-		msgBox.key(Input.Keys.BACK, quitGame);
-		mGui.showMsgBox(msgBox);
+		if (mBugReport.type == BugReportTypes.BUG_EXCEPTION) {
+			Command quitGame = new CGameQuit();
+			msgBox.button("Quit game", quitGame);
+			msgBox.key(Input.Keys.ESCAPE, quitGame);
+			msgBox.key(Input.Keys.ENTER, quitGame);
+			msgBox.key(Input.Keys.BACK, quitGame);
+		} else {
+			msgBox.addCancelButtonAndKeys("OK");
+		}
 
 		mGui.hideWaitWindow();
 	}
@@ -240,14 +243,34 @@ public class CBugReportSend extends Command implements IResponseListener {
 		mSendAnonymously = anonymously;
 	}
 
+	/**
+	 * Set the subject of the bug report
+	 * @param subject
+	 */
+	public void setSubject(String subject) {
+		mBugReport.subject = subject;
+	}
+
+	/**
+	 * Set the description of the bug report
+	 * @param description
+	 */
+	public void setDescription(String description) {
+		mBugReport.description = description;
+	}
+
+	/**
+	 * Set the bug type
+	 * @param bugReportType
+	 */
+	public void setType(BugReportTypes bugReportType) {
+		mBugReport.type = bugReportType;
+	}
+
 	/** If the bug report should be sent anonymously */
 	private boolean mSendAnonymously = false;
 	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
-	/** subject of the bug report */
-	private TextFieldListener mSubject;
-	/** Optional description of the bug */
-	private TextFieldListener mDescription;
 	/** The exception to send */
 	private Exception mException;
 	/** The network entity to send */
