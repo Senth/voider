@@ -1,5 +1,9 @@
 package com.spiddekauga.voider.server.util;
 
+import java.io.UnsupportedEncodingException;
+
+import javax.mail.internet.InternetAddress;
+
 
 /**
  * Server configuration
@@ -227,8 +231,8 @@ public class ServerConfig {
 		}
 	}
 
-	/** Email administrator */
-	public static final String EMAIL_ADMIN = "spiddekauga@voider-game.com";
+	/** Admin email address */
+	public static final InternetAddress EMAIL_ADMIN;
 
 	/** Public Search tokenize sizes */
 	public static class TokenSizes {
@@ -261,5 +265,16 @@ public class ServerConfig {
 		public static final int TAGS_MAX = 5;
 		/** Password reset expires in X hours */
 		public static final long PASSWORD_RESET_EXPIRE_HOURS = 24;
+	}
+
+	// Initialization of some variables
+	static {
+		InternetAddress emailAddress = null;
+		try {
+			emailAddress = new InternetAddress("spiddekauga@voider-game.com", "Voider");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		EMAIL_ADMIN = emailAddress;
 	}
 }

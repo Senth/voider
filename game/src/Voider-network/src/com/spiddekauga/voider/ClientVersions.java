@@ -90,6 +90,8 @@ public enum ClientVersions {
 			"		Options",
 			"		Main Menu -> Goes back to level selection",
 			"	Bug reports and feature requests can now be sent from within the game",
+			"		Access it by pressing 'Insert' or",
+			"		to the right of undo/redo buttons in all editors",
 			"Bugfixes",
 			"	Older levels now loads the music track correctly",
 			"	Level speed is now correct"),

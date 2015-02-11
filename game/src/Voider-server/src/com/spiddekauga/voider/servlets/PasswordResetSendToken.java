@@ -126,8 +126,6 @@ public class PasswordResetSendToken extends VoiderServlet {
 		String sendToEmail = (String) userEntity.getProperty(CUsers.EMAIL);
 		String sendToName = (String) userEntity.getProperty(CUsers.USERNAME);
 
-		String sentFromName = "Voider";
-
 		String body = "";
 		body += "Hi " + sendToName + "!<br/><br/>";
 		body += "A password reset has been initiated for your Voider account. If you "
@@ -143,7 +141,7 @@ public class PasswordResetSendToken extends VoiderServlet {
 		Session session = Session.getDefaultInstance(new Properties());
 		MimeMessage message = new MimeMessage(session);
 		try {
-			message.setFrom(new InternetAddress(ServerConfig.EMAIL_ADMIN, sentFromName));
+			message.setFrom(ServerConfig.EMAIL_ADMIN);
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(sendToEmail, sendToName));
 			message.setSubject("[Voider] Password Reset");
 			message.setContent(body, "text/html");

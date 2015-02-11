@@ -28,6 +28,7 @@ import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.MusicPlayer;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes: Game, Menus,
@@ -82,6 +83,10 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		// Toggle fullscreen on desktop
 		if (Gdx.app.getType() == ApplicationType.Desktop && KeyHelper.isAltPressed() && keycode == Input.Keys.ENTER) {
 			SettingRepo.getInstance().display().toggleFullscreen();
+		}
+		// Open Bug Report Window
+		if (User.getGlobalUser().isLoggedIn() && keycode == Input.Keys.INSERT) {
+			UiFactory.getInstance().msgBox.bugReport();
 		}
 
 		// Testing

@@ -37,8 +37,8 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 */
 	public CBugReportSend(Gui gui, Exception exception) {
 		mGui = gui;
-		createBugReportEntity();
 		mException = exception;
+		createBugReportEntity();
 	}
 
 	/**
@@ -73,11 +73,11 @@ public class CBugReportSend extends Command implements IResponseListener {
 			mBugReport.additionalInformation = stackTrace;
 			mBugReport.additionalInformation += "</br></br>";
 			mBugReport.type = BugReportTypes.BUG_EXCEPTION;
-		}
 
-		// Get analytics
-		String analytics = AnalyticsRepo.getInstance().getSessionDebug();
-		mBugReport.additionalInformation += analytics;
+			// Get analytics
+			String analytics = AnalyticsRepo.getInstance().getSessionDebug();
+			mBugReport.additionalInformation += analytics;
+		}
 	}
 
 	/**

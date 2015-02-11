@@ -404,8 +404,18 @@ public abstract class EditorGui extends Gui {
 			}
 		};
 
+		// Bug Report
+		button = mUiFactory.button.addImage(SkinNames.General.BUG_REPORT, mEditMenu, null, null);
+		mTooltip.add(button, Messages.EditorTooltips.ACTION_BUG_REPORT);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mUiFactory.msgBox.bugReport();
+			}
+		};
+
 		// Grid stuff
-		if (getClass() != CampaignEditorGui.class) {
+		if (mEditor instanceof CampaignEditor) {
 			// Grid
 			button = mUiFactory.button.addImage(EditorIcons.GRID, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_TOGGLE);

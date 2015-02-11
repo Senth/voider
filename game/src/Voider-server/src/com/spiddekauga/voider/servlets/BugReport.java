@@ -90,11 +90,11 @@ public class BugReport extends VoiderServlet {
 		Session session = Session.getDefaultInstance(properties);
 		MimeMessage message = new MimeMessage(session);
 		try {
-			message.setFrom(new InternetAddress(ServerConfig.EMAIL_ADMIN, sentFromName));
+			message.setFrom(ServerConfig.EMAIL_ADMIN);
 			Address[] replyToAddresses = new Address[1];
 			replyToAddresses[0] = new InternetAddress(sentFromEmail, sentFromName);
 			message.setReplyTo(replyToAddresses);
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(ServerConfig.EMAIL_ADMIN));
+			message.addRecipient(Message.RecipientType.TO, ServerConfig.EMAIL_ADMIN);
 			message.setSubject(getSubject(bugReportEntity));
 			message.setContent(body, "text/html");
 			Transport.send(message);

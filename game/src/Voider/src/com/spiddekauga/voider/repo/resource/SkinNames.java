@@ -749,6 +749,8 @@ public class SkinNames {
 	public enum General implements ISkinNames {
 		/** Wait animation texture */
 		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
+		/** Bug Report icon */
+		BUG_REPORT(ImageButtonStyle.class),
 		/** Regular press button */
 		BUTTON_PRESS(ButtonStyle.class, "press"),
 		/** Toggle button */

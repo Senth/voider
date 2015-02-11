@@ -496,37 +496,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	
 	/** Explore */
-	
-	// DEPRECATED
-	featured: {
-		imageUp: featured,
-		imageOver: featured_over,
-		imageDown: featured_down,
-		imageChecked: featured_checked,
-		imageCheckedOver: featured_checked_over,
-		imageDisabled: featured_disabled
-	},
-	
-	// DEPRECATED
-	browse: {
-		imageUp: browse,
-		imageOver: browse_over,
-		imageDown: browse_down,
-		imageChecked: browse_checked,
-		imageCheckedOver: browse_checked_over,
-		imageDisabled: browse_disabled
-	},
-	
-	// DEPRECATED
-	search: {
-		imageUp: search,
-		imageOver: search_over,
-		imageDown: search_down,
-		imageChecked: search_checked,
-		imageCheckedOver: search_checked_over,
-		imageDisabled: search_disabled
-	},
-	
+		
 	explore_local: {
 		imageUp: explore_local,
 		imageOver: explore_local_over,
@@ -608,51 +578,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	/** Icons */
 	
-	date: {
-		imageUp: date,
-		imageOver: date_over,
-		imageDown: date_down,
-		imageChecked: date_checked,
-		imageCheckedOver: date_checked_over,
-		imageDisabled: date_disabled
-	},
-	
-	edit: {
-		imageUp: edit,
-		imageOver: edit_over,
-		imageDown: edit_down,
-		imageChecked: edit_checked,
-		imageCheckedOver: edit_checked_over,
-		imageDisabled: edit_disabled
-	},
-	
-	player: {
-		imageUp: player,
-		imageOver: player_over,
-		imageDown: player_down,
-		imageChecked: player_checked,
-		imageCheckedOver: player_checked_over,
-		imageDisabled: player_disabled
-	},
-	
-	plays: {
-		imageUp: plays,
-		imageOver: plays_over,
-		imageDown: plays_down,
-		imageChecked: plays_checked,
-		imageCheckedOver: plays_checked_over,
-		imageDisabled: plays_disabled
-	},
-	
-	star: {
-		imageUp: star,
-		imageOver: star_over,
-		imageDown: star_down,
-		imageChecked: star_checked,
-		imageCheckedOver: star_checked_over,
-		imageDisabled: star_disabled
-	},
-	
 	tag: {
 		imageUp: tag,
 		imageOver: tag_over,
@@ -678,7 +603,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: login_big_disabled
 	},
 	
-	bugs:  {
+	bug_report:  {
 		imageUp: bugs,
 		imageOver: bugs_over,
 		imageDown: bugs_down

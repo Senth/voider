@@ -296,6 +296,7 @@ public class Messages {
 		// Top bar middle actions
 		ACTION_UNDO("Undo", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),
 		ACTION_REDO("Redo", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),
+		ACTION_BUG_REPORT("Bug Report"),
 		ACTION_GRID_TOGGLE("Toggle grid", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),
 		ACTION_GRID_ABOVE("Toggle grid above actors", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),
 		ACTION_SHOW_BACKGROUND("Toggle background", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),
