@@ -63,7 +63,6 @@ public class VoiderGame implements ApplicationListener {
 		}
 
 		mMusicPlayer = MusicPlayer.getInstance();
-
 		AnalyticsRepo.getInstance().newSession();
 	}
 
@@ -125,6 +124,7 @@ public class VoiderGame implements ApplicationListener {
 		GameTime.updateGlobal(Gdx.graphics.getDeltaTime());
 
 		try {
+			Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 			SceneSwitcher.update();
 			mMusicPlayer.update();
 		} catch (RuntimeException e) {

@@ -455,7 +455,7 @@ public abstract class Gui implements Disposable {
 		}
 
 
-		MsgBoxExecuter.fadeDuration = 0.01f;
+		// MsgBoxExecuter.fadeDuration = 0.01f;
 
 		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
 			// Notification messages

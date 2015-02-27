@@ -24,5 +24,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Voider/libs/ini4j-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="libs/gdx-box2d.jar" sourcepath="libs/gdx-box2d-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gdx-bullet.jar" sourcepath="libs/gdx-bullet-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

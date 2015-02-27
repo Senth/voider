@@ -415,7 +415,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Grid stuff
-		if (mEditor instanceof CampaignEditor) {
+		if (!(mEditor instanceof CampaignEditor)) {
 			// Grid
 			button = mUiFactory.button.addImage(EditorIcons.GRID, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_TOGGLE);
@@ -595,7 +595,7 @@ public abstract class EditorGui extends Gui {
 							MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Level Too Short");
 							String text = "Please add more content to your level. Your current level has a length of " + ((int) levelLength)
 									+ " seconds, minimum is 30 seconds.";
-							msgBox.content(text).setWidgetWidth(Gdx.graphics.getWidth() * 0.5f);
+							msgBox.content(text).setActorWidth(Gdx.graphics.getWidth() * 0.5f);
 
 							msgBox.addCancelButtonAndKeys("OK");
 						}

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# TODO write usage
+EXTENSIONS=("gdx-box2d" "gdx-bullet")
+
 usage() {
 cat << EOF
 Usage:
@@ -69,17 +70,28 @@ elif [ "$PROJECT_DIR" = "" ]; then
 	exit
 fi
 
+# Create extension string
+for extension in ${EXTENSIONS[@]}; do
+	EXTENSIONS_STRING="$EXTENSIONS_STRING $extension"
+done
 
-#Program
+# Build
 OLD_PWD=$PWD
 cd "$GDX_DIR"
-ant
+ant clean
+ant gdx-backend-android gdx-backend-lwjgl gdx-box2d gdx-bullet gdx-core gdx-jnigen $EXTENSIONS_STRING
 cd "dist"
 
 # Main project
 MAIN_DIR_LIBS="$PROJECT_DIR/$NAME/libs"
 cp -v gdx.jar "$MAIN_DIR_LIBS"
 cp -v sources/gdx-sources.jar "$MAIN_DIR_LIBS"
+
+# Extensions for the main program
+for extension in ${EXTENSIONS[@]}; do
+	cp -v "extensions/$extension/${extension}.jar" "$MAIN_DIR_LIBS"
+	cp -v "extensions/$extension/sources/${extension}-sources.jar" "$MAIN_DIR_LIBS"
+done
 
 # Android
 ANDROID_DIR_LIBS="$PROJECT_DIR/$NAME-android/libs"

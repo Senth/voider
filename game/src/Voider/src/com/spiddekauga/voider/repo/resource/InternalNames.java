@@ -218,6 +218,7 @@ public enum InternalNames {
 			textureParameter.genMipMaps = true;
 			textureParameter.wrapU = TextureWrap.Repeat;
 			textureParameter.wrapV = TextureWrap.Repeat;
+			// textureParameter.minFilter = TextureFilter.Nearest;
 			textureParameter.minFilter = TextureFilter.MipMapLinearLinear;
 			InternalNames internalName = InternalNames.values()[i];
 			internalName.mParameters = textureParameter;

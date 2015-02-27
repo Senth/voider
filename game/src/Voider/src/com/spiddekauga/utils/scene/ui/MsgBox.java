@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -16,7 +17,6 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
-import com.esotericsoftware.tablelayout.Cell;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.validate.IValidate;
 import com.spiddekauga.voider.scene.ui.UiFactory;
@@ -189,7 +189,6 @@ public class MsgBox extends Dialog {
 	 * @return cell for this content
 	 */
 	public Cell<? extends Actor> content(Actor actor) {
-		@SuppressWarnings("unchecked")
 		Cell<? extends Actor> cell = getContentTable().add(actor);
 		if (actor instanceof AlignTable) {
 			((AlignTable) actor).layout();

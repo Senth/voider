@@ -40,6 +40,7 @@ public class Main {
 		config.addIcon(InternalNames.ICON_128.getFilePath(), fileType);
 		config.addIcon(InternalNames.ICON_64.getFilePath(), fileType);
 		config.addIcon(InternalNames.ICON_32.getFilePath(), fileType);
+		// config.useGL30 = true;
 
 		new LwjglApplication(new VoiderGame(), config);
 	}
