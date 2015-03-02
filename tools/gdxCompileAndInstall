@@ -1,6 +1,17 @@
 #!/bin/bash
 
-EXTENSIONS=("gdx-box2d" "gdx-bullet")
+# For Voider
+MAIN_EXT=("gdx" "gdx-box2d")
+# For Voider-desktop
+DESKTOP_EXT=("gdx-backend-lwjgl")
+# For Voider-android
+ANDROID_EXT=("gdx-backend-android")
+# Various native code for all platforms
+# PLATFORM_EXT=("gdx" "gdx-box2d")
+
+# All platforms, PROJECT_NAME:PLATFORM[:OTHER_PLATFORMS].
+# If multiple colon exists the libs will be placed inside these folders
+PLATFORMS=("desktop:desktop" "android:armeabi:armeabi-v7a:x86")
 
 usage() {
 cat << EOF
@@ -78,30 +89,80 @@ done
 # Build
 OLD_PWD=$PWD
 cd "$GDX_DIR"
-ant clean
-ant gdx-backend-android gdx-backend-lwjgl gdx-box2d gdx-bullet gdx-core gdx-jnigen $EXTENSIONS_STRING
-cd "dist"
+# mvn compile
+# mvn install
+# ant gdx-backend-android gdx-backend-lwjgl gdx-box2d gdx-bullet gdx-core gdx-jnigen $EXTENSIONS_STRING
 
-# Main project
+# Library 
+LIB_DIR="/home/senth/.m2/repository/com/badlogicgames/gdx"
+
+
+function get_latest_dir() {
+	latest_dir_string=`find * -type d -exec stat --format '%Y :%y %n' "{}" \; | sort -nr | cut -d: -f2- | head -n 1`
+	# Latest dir is the one after the last space
+	latest_dir=${latest_dir_string##*\ }
+	echo "$latest_dir"
+}
+
+function copy_libs() {
+	in_lib="$1"
+	out_lib="$2"
+	declare -a ext_arr=("${!3}")
+	for extension in ${ext_arr[@]}; do
+		cd "$in_lib/$extension"
+		version=`get_latest_dir`
+		cd $version
+
+		# Copy jar and source
+		cp -v $extension-${version}.jar "$out_lib/${extension}.jar"
+		cp -v $extension-$version-sources.jar "$out_lib/$extension-sources.jar"
+	done
+}
+
+
+function copy_native_libs() {
+	for extension in ${MAIN_EXT[@]}; do
+		cd "$LIB_DIR/$extension-platform"
+		version=`get_latest_dir`
+		cd $version
+		middle_name="platform-$version-natives"
+
+		# Copy natives to specific platform
+		for platform_string in ${PLATFORMS[@]}; do
+			project_name=${platform_string%%:*}
+			platforms=${platform_string#*:}
+			out_dir="$PROJECT_DIR/Voider-$project_name/libs"
+
+			OIFS=$IFS
+			IFS=':' read -ra platform_arr <<< "$platforms"
+			IFS=$OIFS
+			for platform in ${platform_arr[@]}; do
+				# Single output folder
+				if [ ${#platform_arr[@]} = 1 ]; then
+					out_file="$out_dir/${extension}-natives.jar"
+				else
+					out_file="$out_dir/$platform/${extension}-natives.jar"
+				fi
+
+				cp -v "$extension-$middle_name-${platform}.jar" "$out_file"
+			done
+		done
+	done
+}
+
+# Main dependencies
 MAIN_DIR_LIBS="$PROJECT_DIR/$NAME/libs"
-cp -v gdx.jar "$MAIN_DIR_LIBS"
-cp -v sources/gdx-sources.jar "$MAIN_DIR_LIBS"
-
-# Extensions for the main program
-for extension in ${EXTENSIONS[@]}; do
-	cp -v "extensions/$extension/${extension}.jar" "$MAIN_DIR_LIBS"
-	cp -v "extensions/$extension/sources/${extension}-sources.jar" "$MAIN_DIR_LIBS"
-done
+copy_libs "$LIB_DIR" "$MAIN_DIR_LIBS" MAIN_EXT[@]
 
 # Android
 ANDROID_DIR_LIBS="$PROJECT_DIR/$NAME-android/libs"
-cp -v gdx-backend-android.jar "$ANDROID_DIR_LIBS"
-cp -v sources/gdx-backend-android-sources.jar "$ANDROID_DIR_LIBS"
+copy_libs "$LIB_DIR" "$ANDROID_DIR_LIBS" ANDROID_EXT[@]
 
 # Desktop
 DESKTOP_DIR_LIBS="$PROJECT_DIR/$NAME-desktop/libs"
-cp -v gdx-backend-lwjgl-natives.jar "$DESKTOP_DIR_LIBS"
-cp -v gdx-backend-lwjgl.jar "$DESKTOP_DIR_LIBS"
-cp -v sources/gdx-backend-lwjgl-sources.jar "$DESKTOP_DIR_LIBS"
+copy_libs "$LIB_DIR" "$DESKTOP_DIR_LIBS" DESKTOP_EXT[@]
+
+# Native libs
+copy_native_libs
 
 cd "$OLD_PWD"
