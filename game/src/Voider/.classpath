@@ -1,30 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SpiddekaugaUtils"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Voider-network"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/fluent-hc-4.3.2.jar" sourcepath="libs/fluent-hc-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="libs/gdx-sqlite.jar" sourcepath="libs/gdx-sqlite-src.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gdx.jar" sourcepath="libs/gdx-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpclient-4.3.2.jar" sourcepath="libs/httpclient-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpclient-cache-4.3.2.jar" sourcepath="libs/httpclient-cache-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcore-4.3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="libs/jacc.jar" sourcepath="libs/jacc-src.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.json.jar" sourcepath="libs/org.json.zip"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar" sourcepath="libs/commons-io-2.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-lang-2.6.jar" sourcepath="libs/commons-lang-2.6-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.4.jar" sourcepath="libs/gson-2.2.4-sources.jar"/>
-	<classpathentry kind="lib" path="libs/ini4j.jar" sourcepath="libs/ini4j-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/Voider/libs/ini4j-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="libs/gdx-box2d.jar" sourcepath="libs/gdx-box2d-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gdx-bullet.jar" sourcepath="libs/gdx-bullet-sources.jar"/>
+	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

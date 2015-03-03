@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# For Voider
+# Extensions
 MAIN_EXT=("gdx" "gdx-box2d")
 # For Voider-desktop
 DESKTOP_EXT=("gdx-backend-lwjgl")
