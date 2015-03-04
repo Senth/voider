@@ -10,7 +10,6 @@ import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -215,11 +214,11 @@ public enum InternalNames {
 		// Level theme
 		for (int i = LEVEL_THEME_CORE_TOP.ordinal(); i <= LEVEL_THEME_TUNNELS_BOTTOM.ordinal(); ++i) {
 			TextureParameter textureParameter = new TextureParameter();
-			textureParameter.genMipMaps = true;
+			textureParameter.genMipMaps = false;
 			textureParameter.wrapU = TextureWrap.Repeat;
 			textureParameter.wrapV = TextureWrap.Repeat;
 			// textureParameter.minFilter = TextureFilter.Nearest;
-			textureParameter.minFilter = TextureFilter.MipMapLinearLinear;
+			// textureParameter.minFilter = TextureFilter.MipMapLinearLinear;
 			InternalNames internalName = InternalNames.values()[i];
 			internalName.mParameters = textureParameter;
 		}

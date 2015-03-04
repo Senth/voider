@@ -6,7 +6,6 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -52,7 +51,6 @@ import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
-import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -243,7 +241,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.scrollTable.dispose(true);
 
 
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup<ResourceTextureButton> buttonGroup = new ButtonGroup<ResourceTextureButton>();
 		int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
 		int cColumEnemy = enemiesPerColumn;
 		float maxScrollPaneHeight = getEnemyScrollListMaxHeight();
@@ -251,7 +249,8 @@ class LevelEditorGui extends EditorGui {
 		Cell enemyButtonCell = null;
 
 		for (EnemyActorDef enemyDef : enemyDefs) {
-			Button button = new ResourceTextureButton(enemyDef, (ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
+			ResourceTextureButton button = new ResourceTextureButton(enemyDef,
+					(ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
 
 			// Analytics
 			new AnalyticsButtonListener(button, "Level_EnemySelect", enemyDef.getName() + " (" + enemyDef.getId() + ":" + enemyDef.getRevision()
@@ -470,7 +469,7 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes the tool menu
 	 */
 	private void initToolMenu() {
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<>();
 
 		// Select
 		mToolMenu.row();
@@ -801,7 +800,7 @@ class LevelEditorGui extends EditorGui {
 		left.add(mWidgets.info.image).setWidth(mUiFactory.getStyles().vars.textFieldWidth);
 
 
-		// --- Right side ---
+		// --- Right side ---Button
 		// Description
 		textFieldListener = new TextFieldListener(mInvoker) {
 			@Override
@@ -809,9 +808,9 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setDescription(newText);
 			}
 		};
-		mWidgets.info.description = mUiFactory.addTextArea("Description",
-				false, Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), textFieldListener,
-				right, mDisabledWhenPublished);
+		mWidgets.info.description = mUiFactory.addTextArea("Description", false,
+				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), textFieldListener, right,
+				mDisabledWhenPublished);
 
 
 		// Prologue
@@ -821,8 +820,8 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setPrologue(newText);
 			}
 		};
-		mWidgets.info.prologue = mUiFactory
-				.addTextArea("Prologue", false, Messages.Level.PROLOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
+		mWidgets.info.prologue = mUiFactory.addTextArea("Prologue", false, Messages.Level.PROLOGUE_DEFAULT, textFieldListener, right,
+				mDisabledWhenPublished);
 
 		// Epilogue
 		textFieldListener = new TextFieldListener(mInvoker) {
@@ -831,8 +830,8 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEpilogue(newText);
 			}
 		};
-		mWidgets.info.epilogue = mUiFactory
-				.addTextArea("Epilogue", false, Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
+		mWidgets.info.epilogue = mUiFactory.addTextArea("Epilogue", false, Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right,
+				mDisabledWhenPublished);
 
 		mInfoTable.layout();
 	}
@@ -875,10 +874,10 @@ class LevelEditorGui extends EditorGui {
 		Themes theme = mLevelEditor.getTheme();
 
 		button.clearLayers();
-		Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
-		Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
-		button.addLayer(bottomLayer);
-		button.addLayer(topLayer);
+		// Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
+		// Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
+		// button.addLayer(bottomLayer);
+		// button.addLayer(topLayer);
 	}
 
 	/**
@@ -1131,8 +1130,8 @@ class LevelEditorGui extends EditorGui {
 		mUiFactory.text.addPanelSection("Enemy path movement", table, null);
 
 		// Buttons
-		Button button;
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ImageButton button;
+		ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<ImageButton>();
 		buttonGroup.setMinCheckCount(0);
 
 		GuiCheckCommandCreator checkCommandCreator = new GuiCheckCommandCreator(mInvoker);

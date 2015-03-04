@@ -47,7 +47,6 @@ public abstract class WorldScene extends Scene {
 		super.onInit();
 
 		fixCamera();
-		mWorld = new World(new Vector2(), true);
 
 		if (mPickingRadius > 0) {
 			createPickingCircle(mPickingRadius);
@@ -315,7 +314,7 @@ public abstract class WorldScene extends Scene {
 	};
 
 	/** Physics world */
-	protected World mWorld = null;
+	protected World mWorld = new World(new Vector2(), true);
 	/** Camera for the editor */
 	protected OrthographicCamera mCamera = null;
 	/** Border around the screen so the player ship can't escape */

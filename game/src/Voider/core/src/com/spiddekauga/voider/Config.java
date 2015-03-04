@@ -209,7 +209,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_LOCAL;
+		public static final Builds BUILD = Builds.BETA;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */
@@ -401,7 +401,7 @@ public class Config {
 		/** Milestone step size. Should be a multiplier of GRID_STEP_SIZE! */
 		public final static int GRID_MILESTONE_STEP = GRID_STEP_SIZE * 5;
 		/** Maximum name length */
-		public final static int NAME_LENGTH_MAX = 16;
+		public final static int NAME_LENGTH_MAX = 25;
 		/** Maximum length of description */
 		public final static int DESCRIPTION_LENGTH_MAX = 256;
 		/** Maximum length of story */
@@ -782,14 +782,6 @@ public class Config {
 		public final static String TEXT_FIELD_DISABLED_NAME = "DISABLED";
 		/** Seconds before text field commands aren't combinable */
 		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
-		/** Seconds before tooltip is shown when hovering over */
-		@Deprecated public final static float TOOLTIP_HOVER_SHOW = 0.35f;
-		/** Seconds before tooltip is shown when pressing */
-		@Deprecated public final static float TOOLTIP_PRESS_SHOW = 1;
-		/** Fade duration of the tooltip when hovering */
-		@Deprecated public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
-		/** Tooltip minimum width before wrap */
-		@Deprecated public final static int TOOLTIP_WIDTH_MIN = 200;
 	}
 
 	/**

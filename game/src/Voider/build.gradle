@@ -112,7 +112,7 @@ project(":core") {
 		compile "edu.gvsu.cis.masl:java-channels-api:0.1"
 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.spiddekauga:SpiddekaugaUtils:0.1"
-		compile "com.esotericsoftware.kryo:kryo:2.24.0"
+		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "org.apache.httpcomponents:httpmime:4.3.6"
     }

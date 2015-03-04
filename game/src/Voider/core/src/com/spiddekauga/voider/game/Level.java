@@ -249,10 +249,12 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param spriteBatch used for rendering sprites.
 	 */
 	public void renderBackground(SpriteBatch spriteBatch) {
-		if (mBackgroundBottom != null && mBackgroundTop != null) {
-			renderBackground(spriteBatch, mBackgroundBottom, mBackgroundBottomSpeed);
-			renderBackground(spriteBatch, mBackgroundTop, mBackgroundTopSpeed);
-		}
+
+
+		// if (mBackgroundBottom != null && mBackgroundTop != null) {
+		// renderBackground(spriteBatch, mBackgroundBottom, mBackgroundBottomSpeed);
+		// renderBackground(spriteBatch, mBackgroundTop, mBackgroundTopSpeed);
+		// }
 	}
 
 	/**

@@ -235,7 +235,7 @@ public class UiFactory {
 
 		ArrayList<Actor> createdActors = new ArrayList<>();
 
-		ButtonGroup buttonGroup = checkable ? new ButtonGroup() : null;
+		ButtonGroup<ImageScrollButton> buttonGroup = checkable ? new ButtonGroup<ImageScrollButton>() : null;
 
 		for (Themes theme : Themes.values()) {
 			ButtonStyle buttonStyle;
@@ -255,8 +255,8 @@ public class UiFactory {
 			// Add layers
 			Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
 			Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
-			button.addLayer(bottomLayer, bottomLayerSpeed);
-			button.addLayer(topLayer, topLayerSpeed);
+			// button.addLayer(bottomLayer, bottomLayerSpeed);
+			// button.addLayer(topLayer, topLayerSpeed);
 
 			// Add to table and get label
 			createdActors.clear();

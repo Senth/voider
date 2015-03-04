@@ -95,6 +95,11 @@ public enum ClientVersions {
 			"Bugfixes",
 			"	Older levels now loads the music track correctly",
 			"	Level speed is now correct"),
+//	V0_4_10(false,
+//			"Bugfixes",
+//			"	Level speed is now used correctly, not just set correctly :P",
+//			"	Fixed a crash caused by level background on some devices"
+//			),
 
 	;
 	// @formatter:on
