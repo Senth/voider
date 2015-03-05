@@ -37,7 +37,7 @@ repositories {
 
 dependencies {
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.18'
-    provided 'javax.servlet:javax.servlet-api:3.0.1'
+    compile 'javax.servlet:servlet-api:2.5'
 	deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 }
 

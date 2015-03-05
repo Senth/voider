@@ -14,8 +14,8 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.tools.imagepacker.TexturePacker2;
-import com.badlogic.gdx.tools.imagepacker.TexturePacker2.Settings;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 import com.esotericsoftware.minlog.Log;
 import com.esotericsoftware.minlog.Log.Logger;
 
@@ -118,6 +118,7 @@ public class Main {
 	 */
 	static private void initPackDirs() {
 		mDirs.add(new TextureInOutWrapper(UI_PNG_DIR, UI_ATLAS_DIR));
+		mDirs.add(new TextureInOutWrapper("backgrounds-cropped", "backgrounds"));
 	}
 
 	/**
@@ -154,7 +155,7 @@ public class Main {
 
 		@Override
 		public void run() {
-			TexturePacker2.processIfModified(mSettings, mInputDir, mOutputDir, mName);
+			TexturePacker.processIfModified(mSettings, mInputDir, mOutputDir, mName);
 		};
 
 		String mInputDir;
@@ -167,8 +168,8 @@ public class Main {
 
 	static {
 		mSettings.alias = true;
-		mSettings.maxHeight = 4096;
-		mSettings.maxWidth = 4096;
+		mSettings.maxHeight = 2048;
+		mSettings.maxWidth = 2048;
 		mSettings.format = Format.RGBA8888;
 	}
 

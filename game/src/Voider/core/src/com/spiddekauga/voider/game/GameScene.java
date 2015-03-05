@@ -161,9 +161,6 @@ public class GameScene extends WorldScene {
 	private void takeScreenshotNow() {
 		mTakeScreenshot = false;
 
-		// int barHeight = ((int) ((float)
-		// SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT)));
-
 		// Screenshot size
 		int ssHeight = 0;
 		int ssWidth = 0;

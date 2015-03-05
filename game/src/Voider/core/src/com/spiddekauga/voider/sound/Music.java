@@ -15,7 +15,7 @@ public enum Music {
 	/** Surface theme */
 	SURFACE(InternalNames.MUSIC_SURFACE, InternalDeps.MUSIC_SURFACE),
 	/** Tunnels theme */
-	TUNNELS(InternalNames.MUSIC_TUNNELS, InternalDeps.MUSIC_TUNNELS),
+	TUNNELS(InternalNames.MUSIC_TUNNEL, InternalDeps.MUSIC_TUNNEL),
 	/** Core theme */
 	CORE(InternalNames.MUSIC_CORE, InternalDeps.MUSIC_CORE),
 	/** Game over */

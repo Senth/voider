@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.game;
 
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.resources.InternalDeps;
 
 /**
@@ -47,19 +46,19 @@ public enum Themes {
 		return mName;
 	}
 
-	/**
-	 * @return top layer of theme
-	 */
-	public InternalNames getTopLayer() {
-		return mDependency.getDependencies()[1];
-	}
-
-	/**
-	 * @return bottom layer of theme
-	 */
-	public InternalNames getBottomLayer() {
-		return mDependency.getDependencies()[0];
-	}
+	// /**
+	// * @return top layer of theme
+	// */
+	// public InternalNames getTopLayer() {
+	// return mDependency.getDependencies()[1];
+	// }
+	//
+	// /**
+	// * @return bottom layer of theme
+	// */
+	// public InternalNames getBottomLayer() {
+	// return mDependency.getDependencies()[0];
+	// }
 
 	/**
 	 * @return dependency of the theme

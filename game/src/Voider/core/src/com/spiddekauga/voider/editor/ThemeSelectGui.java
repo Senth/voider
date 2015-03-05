@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -9,7 +8,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
-import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
@@ -59,10 +57,11 @@ class ThemeSelectGui extends Gui {
 		// Add layers
 		float topLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_TOP_LAYER_SPEED);
 		float bottomLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_BOTTOM_LAYER_SPEED);
-		Texture bottomLayer = ResourceCacheFacade.get(mScene.getTheme().getBottomLayer());
-		Texture topLayer = ResourceCacheFacade.get(mScene.getTheme().getTopLayer());
-		background.addLayer(bottomLayer, bottomLayerSpeed);
-		background.addLayer(topLayer, topLayerSpeed);
+		// Texture bottomLayer =
+		// ResourceCacheFacade.get(mScene.getTheme().getBottomLayer());
+		// Texture topLayer = ResourceCacheFacade.get(mScene.getTheme().getTopLayer());
+		// background.addLayer(bottomLayer, bottomLayerSpeed);
+		// background.addLayer(topLayer, topLayerSpeed);
 
 		addActor(background);
 		background.setZIndex(0);

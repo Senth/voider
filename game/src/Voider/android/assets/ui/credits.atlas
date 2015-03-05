@@ -1,19 +1,20 @@
 
 credits.png
+size: 512,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-spiddekauga_white
-  rotate: false
-  xy: 1, 46
-  size: 256, 75
-  orig: 256, 75
-  offset: 0, 0
-  index: -1
 libgdx
   rotate: false
-  xy: 1, 1
+  xy: 2, 2
   size: 256, 43
   orig: 256, 43
+  offset: 0, 0
+  index: -1
+spiddekauga_white
+  rotate: false
+  xy: 2, 47
+  size: 256, 75
+  orig: 256, 75
   offset: 0, 0
   index: -1

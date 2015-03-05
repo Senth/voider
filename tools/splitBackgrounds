@@ -1,0 +1,99 @@
+#!/bin/bash
+
+shopt -s extglob
+
+DROPBOX_DIR="$HOME/Dropbox"
+DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider exec/Voider - editable resources/internal_resources"
+
+SPLIT_IN_DIR="$DROPBOX_ASSET_DIR/backgrounds-editable"
+SPLIT_OUT_DIR="$DROPBOX_ASSET_DIR/backgrounds-cropped"
+CROP_SIZE=1020
+SCALED_HEIGHTS=("720" "480" "120")
+
+# Clear out dir
+function clearOutDir {
+	rm -rf "$SPLIT_OUT_DIR"
+	mkdir "$SPLIT_OUT_DIR"
+}
+
+function createScaledImages {
+	cd "$SPLIT_IN_DIR"
+
+	for dir_ending in */; do
+		dir=${dir_ending%%/}
+		cd $dir
+
+		for scale in ${SCALED_HEIGHTS[@]}; do
+			echo Scaling $dir to $scale
+			out_dir="$SPLIT_IN_DIR/${dir}_${scale}/"
+			mkdir "$out_dir"
+
+			for background in *.png; do
+				convert "$background" -filter Quadratic -resize x${scale} "${out_dir}$background"
+			done
+		done
+
+		cd ..
+	done
+}
+
+
+function convertEverything {
+	cd "$SPLIT_IN_DIR"
+
+	for dir in */; do
+		cd $dir
+
+		# Create out dir
+		out_dir="$SPLIT_OUT_DIR/$dir"
+		mkdir "$out_dir"
+
+		# Convert
+		for background in *.png; do
+			background_base=${background%%.png}
+			width=`identify -format '%w' $background`
+
+			echo Splitting $background_base to ${CROP_SIZE}x${CROP_SIZE}
+
+			convert "$background" -crop "${CROP_SIZE}x${CROP_SIZE}" +repage "${out_dir}$background"
+
+			# Rename pictures using index 0_0, 0_1, and 1_0 for x and y
+			OPWD="$PWD"
+			cd "$SPLIT_OUT_DIR/$dir"
+
+			x_offset=0
+			x=0
+			y=0
+			i=0
+			for splitted in $background_base*; do
+				if [ $x_offset -ge $width ]; then
+					x_offset=0
+					x=0
+					y=$((y+1))
+				fi
+
+				mv "$background_base-${i}.png" "$background_base-${y}-${x}.png"
+
+				x=$((x+1))
+				x_offset=$((x_offset+CROP_SIZE))
+				i=$((i+1))
+			done
+
+			# Go back
+			cd "$OPWD"
+		done
+
+		# Go back
+		cd ..
+	done
+}
+
+function cleanup {
+	cd "$SPLIT_IN_DIR"
+	rm -rf *_[0-9][0-9][0-9]*
+}
+
+clearOutDir
+createScaledImages
+convertEverything
+cleanup

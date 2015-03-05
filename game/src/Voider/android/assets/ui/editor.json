@@ -13,7 +13,7 @@ java.lang.Float: {
 	enemy_activate_on_test_run_radius: {value: 0.5},
 	
 	
-	/** Theme settings (only for level) */
+	/** Theme settings (only in editor) */
 	
 	// Speed of top/bottom layer when selecting a theme for the level
 	theme_top_layer_speed: {value: 150},

@@ -1,0 +1,186 @@
+
+tunnels.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+level_theme_tunnels_bottom-0-0
+  rotate: false
+  xy: 2, 1024
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-0-1
+  rotate: false
+  xy: 2, 2
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-0-2
+  rotate: false
+  xy: 1024, 1024
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-0-3
+  rotate: false
+  xy: 1024, 2
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+
+tunnels2.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+level_theme_tunnels_bottom-0-4
+  rotate: false
+  xy: 2, 1024
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-0-0
+  rotate: false
+  xy: 2, 2
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-0-1
+  rotate: false
+  xy: 1024, 1024
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-0-2
+  rotate: false
+  xy: 1024, 2
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+
+tunnels3.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+level_theme_tunnels_bottom-0-5
+  rotate: false
+  xy: 1024, 404
+  size: 300, 1020
+  orig: 300, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-1-0
+  rotate: false
+  xy: 1024, 1984
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-1-1
+  rotate: false
+  xy: 1024, 1922
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-1-2
+  rotate: false
+  xy: 1024, 1860
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-1-3
+  rotate: false
+  xy: 1024, 1798
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-1-4
+  rotate: false
+  xy: 1024, 1736
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_bottom-1-5
+  rotate: false
+  xy: 1024, 342
+  size: 300, 60
+  orig: 300, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-0-3
+  rotate: false
+  xy: 2, 1024
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-0-4
+  rotate: false
+  xy: 2, 2
+  size: 1020, 1020
+  orig: 1020, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-0-5
+  rotate: false
+  xy: 1326, 404
+  size: 300, 1020
+  orig: 300, 1020
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-1-0
+  rotate: false
+  xy: 1024, 1674
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-1-1
+  rotate: false
+  xy: 1024, 1612
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-1-2
+  rotate: false
+  xy: 1024, 1550
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-1-3
+  rotate: false
+  xy: 1024, 1488
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-1-4
+  rotate: false
+  xy: 1024, 1426
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_tunnels_top-1-5
+  rotate: false
+  xy: 1024, 280
+  size: 300, 60
+  orig: 300, 60
+  offset: 0, 0
+  index: -1

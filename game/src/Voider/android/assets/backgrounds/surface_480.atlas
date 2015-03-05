@@ -1,0 +1,48 @@
+
+surface_480.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+level_theme_surface_bottom-0-0
+  rotate: false
+  xy: 2, 1448
+  size: 1020, 480
+  orig: 1020, 480
+  offset: 0, 0
+  index: -1
+level_theme_surface_bottom-0-1
+  rotate: false
+  xy: 2, 966
+  size: 1020, 480
+  orig: 1020, 480
+  offset: 0, 0
+  index: -1
+level_theme_surface_bottom-0-2
+  rotate: false
+  xy: 1024, 966
+  size: 360, 480
+  orig: 360, 480
+  offset: 0, 0
+  index: -1
+level_theme_surface_top-0-0
+  rotate: false
+  xy: 1024, 1448
+  size: 1020, 480
+  orig: 1020, 480
+  offset: 0, 0
+  index: -1
+level_theme_surface_top-0-1
+  rotate: false
+  xy: 2, 484
+  size: 1020, 480
+  orig: 1020, 480
+  offset: 0, 0
+  index: -1
+level_theme_surface_top-0-2
+  rotate: false
+  xy: 2, 2
+  size: 360, 480
+  orig: 360, 480
+  offset: 0, 0
+  index: -1

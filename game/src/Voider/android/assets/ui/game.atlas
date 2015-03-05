@@ -1,33 +1,34 @@
 
 game.png
+size: 128,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+health_bar_background
+  rotate: false
+  xy: 14, 2
+  size: 1, 26
+  orig: 1, 26
+  offset: 0, 0
+  index: -1
+health_bar_health
+  rotate: false
+  xy: 2, 2
+  size: 10, 26
+  orig: 10, 26
+  offset: 0, 0
+  index: -1
 shuttle_lives_no
   rotate: false
-  xy: 1, 29
+  xy: 2, 30
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 shuttle_lives_yes
   rotate: false
-  xy: 35, 29
+  xy: 36, 30
   size: 32, 32
   orig: 32, 32
-  offset: 0, 0
-  index: -1
-health_bar_health
-  rotate: false
-  xy: 1, 1
-  size: 10, 26
-  orig: 10, 26
-  offset: 0, 0
-  index: -1
-health_bar_background
-  rotate: false
-  xy: 69, 35
-  size: 1, 26
-  orig: 1, 26
   offset: 0, 0
   index: -1

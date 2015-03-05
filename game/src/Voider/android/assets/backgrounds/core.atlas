@@ -1,0 +1,34 @@
+
+core.png
+size: 2048,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+level_theme_core_bottom-0-0
+  rotate: false
+  xy: 2, 2
+  size: 360, 1020
+  orig: 360, 1020
+  offset: 0, 0
+  index: -1
+level_theme_core_bottom-1-0
+  rotate: false
+  xy: 726, 962
+  size: 360, 60
+  orig: 360, 60
+  offset: 0, 0
+  index: -1
+level_theme_core_top-0-0
+  rotate: false
+  xy: 364, 2
+  size: 360, 1020
+  orig: 360, 1020
+  offset: 0, 0
+  index: -1
+level_theme_core_top-1-0
+  rotate: false
+  xy: 726, 900
+  size: 360, 60
+  orig: 360, 60
+  offset: 0, 0
+  index: -1

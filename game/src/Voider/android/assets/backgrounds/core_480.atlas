@@ -1,0 +1,20 @@
+
+core_480.png
+size: 256,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+level_theme_core_bottom
+  rotate: false
+  xy: 2, 484
+  size: 160, 480
+  orig: 160, 480
+  offset: 0, 0
+  index: -1
+level_theme_core_top
+  rotate: false
+  xy: 2, 2
+  size: 160, 480
+  orig: 160, 480
+  offset: 0, 0
+  index: -1

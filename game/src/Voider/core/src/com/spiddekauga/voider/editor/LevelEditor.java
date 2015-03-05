@@ -253,8 +253,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	private void createBackground() {
 		Themes currentTheme = mLevel.getLevelDef().getTheme();
-		mBackgroundBottom = ResourceCacheFacade.get(currentTheme.getBottomLayer());
-		mBackgroundTop = ResourceCacheFacade.get(currentTheme.getTopLayer());
+		// mBackgroundBottom = ResourceCacheFacade.get(currentTheme.getBottomLayer());
+		// mBackgroundTop = ResourceCacheFacade.get(currentTheme.getTopLayer());
 	}
 
 	@Override

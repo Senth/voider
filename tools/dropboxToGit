@@ -1,17 +1,17 @@
 #!/bin/bash
 
-CAN_SYNC=('ui' 'ui-raw' 'gfx' 'txt' 'export' 'music' 'sfx')
+CAN_SYNC=('ui' 'ui-raw' 'gfx' 'txt' 'export' 'music' 'sfx' 'backgrounds' 'backgrounds-raw')
 UI_RAW=('general' 'game' 'editor' 'credits')
 DROPBOX_DIR="$HOME/Dropbox"
 DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider exec/Voider - editable resources/internal_resources"
 DROPBOX_UI_RAW_DIR="$DROPBOX_ASSET_DIR/ui-editable"
 GIT_SUB_DIR="$GIT_DIR/game"
 GIT_UI_RAW_DIR="$GIT_SUB_DIR/ui"
-GIT_ASSET_DIR="$GIT_SUB_DIR/src/Voider-android/assets"
+GIT_ASSET_DIR="$GIT_SUB_DIR/src/Voider/android/assets"
 
 usage() {
 cat << EOF
-Usage: $0 [ui/gfx/txt/export/music/sfx/ui-raw]
+Usage: $0 [ui/gfx/txt/export/music/sfx/backgrounds/ui-raw/backgrounds-raw]
 When not specifying anything all are synced from the dropbox directory to the git folder
 
 Options:
@@ -69,6 +69,12 @@ syncUiRaw() {
 	done
 }
 
+syncBackgroundsRaw() {
+	dir="$GIT_UI_RAW_DIR/backgrounds"
+	rm -rf "$dir"
+	cp -rv "$DROPBOX_ASSET_DIR/backgrounds-editable" "$dir"
+}
+
 syncFiles() {
 	rm -rv "$GIT_ASSET_DIR/$1"
 	cp -rv "$DROPBOX_ASSET_DIR/$1" "$GIT_ASSET_DIR"
@@ -79,6 +85,9 @@ do
 	# UI raw is a special case
 	if [ "$sync_object" = "ui-raw" ]; then
 		syncUiRaw
+	# Background raw
+	elif [ "$sync_object" = "backgrounds-raw" ]; then
+		syncBackgroundsRaw
 	# The rest are just folders
 	else
 		syncFiles "$sync_object"

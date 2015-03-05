@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -44,7 +43,6 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsSliderListener;
-import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
@@ -253,8 +251,8 @@ public class UiFactory {
 			}
 
 			// Add layers
-			Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
-			Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
+			// Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
+			// Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
 			// button.addLayer(bottomLayer, bottomLayerSpeed);
 			// button.addLayer(topLayer, topLayerSpeed);
 
