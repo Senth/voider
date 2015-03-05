@@ -653,7 +653,9 @@ public class SceneSwitcher {
 	private static void deactivateCurrentScene() {
 		if (!mScenes.isEmpty()) {
 			Scene previousScene = mScenes.peek();
-			previousScene.onDeactivate();
+			if (previousScene.isInitialized()) {
+				previousScene.onDeactivate();
+			}
 
 			if (Gdx.input != null) {
 				Gdx.input.setInputProcessor(null);

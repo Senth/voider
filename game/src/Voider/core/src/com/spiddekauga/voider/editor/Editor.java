@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -202,6 +203,18 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			if (!mGui.isMsgBoxActive()) {
 				((EditorGui) mGui).showExitConfirmDialog();
 				return true;
+			}
+		}
+
+		// Hotkeys with control
+		if (KeyHelper.isCtrlPressed()) {
+			// Save
+			if (keycode == Input.Keys.S) {
+				saveDef();
+			}
+			// Open
+			if (keycode == Input.Keys.O) {
+				((EditorGui) mGui).open();
 			}
 		}
 
@@ -659,6 +672,28 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	protected Matrix4 getProjectionMatrixDefault() {
 		return mProjectionMatrixDefault;
 	}
+
+	@Override
+	public final void saveDef() {
+		saveDef(null);
+	}
+
+	@Override
+	public final void saveDef(Command command) {
+		if (!isSaved() && !isPublished()) {
+			saveImpl(command);
+		} else if (isPublished()) {
+			mNotification.showHighlight("Cannot save a published " + ((EditorGui) mGui).getResourceTypeName());
+		} else if (isSaved()) {
+			mNotification.show("Already saved");
+		}
+	}
+
+	/**
+	 * Called if the resources actually should be saved
+	 * @param command the command to execute after the save, null if none
+	 */
+	protected abstract void saveImpl(Command command);
 
 	/**
 	 * Called after the image for the actor definition has been created.

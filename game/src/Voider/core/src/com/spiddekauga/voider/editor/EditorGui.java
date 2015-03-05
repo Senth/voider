@@ -557,8 +557,7 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current",
-						Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
+				open();
 			}
 		};
 
@@ -643,6 +642,14 @@ public abstract class EditorGui extends Gui {
 				showInfoDialog();
 			}
 		};
+	}
+
+	/**
+	 * Open/Load another definition
+	 */
+	void open() {
+		executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current",
+				Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
 	}
 
 	/**

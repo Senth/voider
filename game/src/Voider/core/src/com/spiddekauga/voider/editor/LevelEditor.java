@@ -752,12 +752,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public void saveDef() {
-		saveToFile();
-	}
-
-	@Override
-	public void saveDef(Command command) {
+	protected void saveImpl(Command command) {
 		saveToFile();
 		if (command != null) {
 			command.execute();
@@ -766,31 +761,29 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void saveToFile() {
-		if (!isPublished() && !isSaved()) {
-			mLevel.calculateStartEndPosition();
+		mLevel.calculateStartEndPosition();
 
-			int oldRevision = mLevel.getRevision();
-			mResourceRepo.save(mLevel.getDef(), mLevel);
-			mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
-			showSyncMessage();
+		int oldRevision = mLevel.getRevision();
+		mResourceRepo.save(mLevel.getDef(), mLevel);
+		mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
+		showSyncMessage();
 
-			// Update latest resource if revision was changed by more than one
-			if (oldRevision != mLevel.getDef().getRevision() - 1) {
-				ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
-				ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
-			}
+		// Update latest resource if revision was changed by more than one
+		if (oldRevision != mLevel.getDef().getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
+			ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
+		}
 
-			// Saved first time? Then load level and def and use loaded versions instead
-			if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {
-				ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
-				ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
-				ResourceCacheFacade.finishLoading();
+		// Saved first time? Then load level and def and use loaded versions instead
+		if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
+			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
+			ResourceCacheFacade.finishLoading();
 
-				// Reset the level to old revision
-				mLevel.getDef().setRevision(oldRevision);
+			// Reset the level to old revision
+			mLevel.getDef().setRevision(oldRevision);
 
-				setLevel((Level) ResourceCacheFacade.get(mLevel.getId()));
-			}
+			setLevel((Level) ResourceCacheFacade.get(mLevel.getId()));
 		}
 
 		setSaved();

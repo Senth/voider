@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor;
@@ -44,6 +45,7 @@ import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
+import com.spiddekauga.voider.utils.Messages;
 
 /**
  * Common class for all actor editors
@@ -592,6 +594,35 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		} else {
 			return 0;
 		}
+	}
+
+	@Override
+	protected void saveImpl(Command command) {
+		setSaving(mActorDef, newActor(), command);
+	}
+
+	@Override
+	protected void saveToFile() {
+		int oldRevision = mActorDef.getRevision();
+
+		mResourceRepo.save(this, mActorDef);
+		mNotification.showSuccess(Messages.Info.SAVED);
+		showSyncMessage();
+
+		// Saved first time? Then load it and use the loaded version
+		if (!ResourceCacheFacade.isLoaded(mActorDef.getId())) {
+			ResourceCacheFacade.load(this, mActorDef.getId(), true);
+			ResourceCacheFacade.finishLoading();
+
+			setActorDef((ActorDef) ResourceCacheFacade.get(mActorDef.getId()));
+		}
+
+		// Update latest loaded resource
+		if (oldRevision != mActorDef.getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mActorDef, oldRevision);
+		}
+
+		setSaved();
 	}
 
 	/**

@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
-import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.network.resource.BulletDefEntity;
@@ -18,7 +17,6 @@ import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -59,7 +57,7 @@ public class BulletEditor extends ActorEditor {
 				}
 
 				BulletActorDef bulletDef = ResourceCacheFacade.get(bulletDefEntity.resourceId, bulletDefEntity.revision);
-				setDef(bulletDef);
+				setActorDef(bulletDef);
 				mGui.resetValues();
 				setSaved();
 				mInvoker.dispose();
@@ -122,44 +120,10 @@ public class BulletEditor extends ActorEditor {
 	public void newDef() {
 		BulletActorDef newDef = new BulletActorDef();
 		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
-		setDef(newDef);
+		setActorDef(newDef);
 		mGui.resetValues();
 		setSaved();
 		mInvoker.dispose();
-	}
-
-	@Override
-	public void saveDef() {
-		setSaving(mDef, new BulletActor());
-	}
-
-	@Override
-	public void saveDef(Command command) {
-		setSaving(mDef, new BulletActor(), command);
-	}
-
-	@Override
-	protected void saveToFile() {
-		int oldRevision = mDef.getRevision();
-
-		mResourceRepo.save(this, mDef);
-		mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
-		showSyncMessage();
-
-		// Saved first time? Then load it and use the loaded version
-		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {
-			ResourceCacheFacade.load(this, mDef.getId(), true);
-			ResourceCacheFacade.finishLoading();
-
-			setDef((BulletActorDef) ResourceCacheFacade.get(mDef.getId()));
-		}
-
-		// Update latest loaded resource
-		if (oldRevision != mDef.getRevision() - 1) {
-			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
-		}
-
-		setSaved();
 	}
 
 	@Override
@@ -237,15 +201,11 @@ public class BulletEditor extends ActorEditor {
 	}
 
 
-	/**
-	 * Sets a new definition for the bullet
-	 * @param def the new definition to use
-	 */
-	private void setDef(BulletActorDef def) {
-		setActorDef(def);
-
-		mDef = def;
-		mWeapon.getDef().setBulletActorDef(def);
+	@Override
+	protected void setActorDef(ActorDef def) {
+		super.setActorDef(def);
+		mDef = (BulletActorDef) def;
+		mWeapon.getDef().setBulletActorDef(mDef);
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
 		}
@@ -263,7 +223,7 @@ public class BulletEditor extends ActorEditor {
 
 	@Override
 	public void undoJustCreated() {
-		setDef(null);
+		setActorDef(null);
 	}
 
 

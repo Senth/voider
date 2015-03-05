@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
@@ -29,6 +28,7 @@ import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -48,7 +48,6 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -131,7 +130,7 @@ public class EnemyEditor extends ActorEditor {
 					ResourceCacheFacade.finishLoading();
 				}
 
-				setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(enemyDefEntity.resourceId, enemyDefEntity.revision));
+				setActorDef((EnemyActorDef) ResourceCacheFacade.get(enemyDefEntity.resourceId, enemyDefEntity.revision));
 				setMovementType(mDef.getMovementType());
 				mGui.resetValues();
 				setSaved();
@@ -427,12 +426,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	@Override
-	public void saveDef() {
-		setSaving(mDef, new EnemyActor(), getSaveImages());
-	}
-
-	@Override
-	public void saveDef(Command command) {
+	protected void saveImpl(Command command) {
 		setSaving(mDef, new EnemyActor(), command, getSaveImages());
 	}
 
@@ -480,31 +474,6 @@ public class EnemyEditor extends ActorEditor {
 		return images;
 	}
 
-	@Override
-	protected void saveToFile() {
-		int oldRevision = mDef.getRevision();
-
-		mResourceRepo.save(mDef);
-		mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
-		showSyncMessage();
-
-		// Saved first time? Then load it and use the loaded resource
-		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {
-			ResourceCacheFacade.load(this, mDef.getId(), true);
-			ResourceCacheFacade.finishLoading();
-
-			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(mDef.getId()));
-		}
-
-
-		// Update latest resource
-		if (oldRevision != mDef.getRevision() - 1) {
-			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
-		}
-
-		setSaved();
-	}
-
 	/**
 	 * Creates a new enemy
 	 */
@@ -512,7 +481,7 @@ public class EnemyEditor extends ActorEditor {
 	public void newDef() {
 		EnemyActorDef def = new EnemyActorDef();
 		def.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_COLOR_DEFAULT));
-		setEnemyDef(def);
+		setActorDef(def);
 		mGui.resetValues();
 		setMovementType(MovementTypes.PATH);
 		setSaved();
@@ -995,7 +964,7 @@ public class EnemyEditor extends ActorEditor {
 	 */
 	@Override
 	public void duplicateDef() {
-		setEnemyDef((EnemyActorDef) mDef.copyNewResource());
+		setActorDef((EnemyActorDef) mDef.copyNewResource());
 		mGui.resetValues();
 		saveDef();
 	}
@@ -1121,14 +1090,11 @@ public class EnemyEditor extends ActorEditor {
 		}
 	}
 
-	/**
-	 * Sets the definition for the enemy actors.
-	 * @param def the new definition to use for the enemies
-	 */
-	private void setEnemyDef(EnemyActorDef def) {
-		setActorDef(def);
+	@Override
+	protected void setActorDef(ActorDef def) {
+		super.setActorDef(def);
 
-		mDef = def;
+		mDef = (EnemyActorDef) def;
 		mEnemyActor.setDef(mDef);
 		mEnemyPathOnce.setDef(mDef);
 		mEnemyPathLoop.setDef(mDef);
@@ -1241,7 +1207,7 @@ public class EnemyEditor extends ActorEditor {
 
 	@Override
 	public void undoJustCreated() {
-		setEnemyDef(null);
+		setActorDef(null);
 	}
 
 	/** Current enemy actor */

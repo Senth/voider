@@ -149,20 +149,6 @@ level_theme_space_top-1-0
   orig: 1020, 60
   offset: 0, 0
   index: -1
-level_theme_space_top-1-4
-  rotate: false
-  xy: 1024, 1674
-  size: 1020, 60
-  orig: 1020, 60
-  offset: 0, 0
-  index: -1
-level_theme_space_top-1-3
-  rotate: false
-  xy: 1024, 1674
-  size: 1020, 60
-  orig: 1020, 60
-  offset: 0, 0
-  index: -1
 level_theme_space_top-1-2
   rotate: false
   xy: 1024, 1674
@@ -171,6 +157,20 @@ level_theme_space_top-1-2
   offset: 0, 0
   index: -1
 level_theme_space_top-1-1
+  rotate: false
+  xy: 1024, 1674
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_space_top-1-4
+  rotate: false
+  xy: 1024, 1674
+  size: 1020, 60
+  orig: 1020, 60
+  offset: 0, 0
+  index: -1
+level_theme_space_top-1-3
   rotate: false
   xy: 1024, 1674
   size: 1020, 60

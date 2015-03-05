@@ -8,13 +8,13 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.network.resource.DefEntity;
@@ -62,7 +62,7 @@ public class ShipEditor extends ActorEditor {
 				}
 
 				PlayerActorDef playerDef = ResourceCacheFacade.get(defEntity.resourceId, defEntity.revision);
-				setDef(playerDef);
+				setActorDef(playerDef);
 				mGui.resetValues();
 				setSaved();
 				mInvoker.dispose();
@@ -240,19 +240,17 @@ public class ShipEditor extends ActorEditor {
 	public void newDef() {
 		PlayerActorDef newDef = new PlayerActorDef();
 		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.PLAYER_COLOR_DEFAULT));
-		setDef(newDef);
+		setActorDef(newDef);
 		mGui.resetValues();
 		setSaved();
 		mInvoker.dispose();
 	}
 
-	/**
-	 * Sets the current definition
-	 * @param def set the current definition
-	 */
-	private void setDef(PlayerActorDef def) {
-		setActorDef(def);
-		mDef = def;
+	@Override
+	protected void setActorDef(ActorDef def) {
+		super.setActorDef(def);
+
+		mDef = (PlayerActorDef) def;
 
 		if (def != null) {
 			mActor.setDef(def);
@@ -283,16 +281,6 @@ public class ShipEditor extends ActorEditor {
 	}
 
 	@Override
-	public void saveDef() {
-		setSaving(mDef, new PlayerActor());
-	}
-
-	@Override
-	public void saveDef(Command command) {
-		setSaving(mDef, new PlayerActor(), command);
-	}
-
-	@Override
 	public void loadDef() {
 		SceneSwitcher.switchTo(ExploreFactory.create(PlayerActorDef.class, ExploreActions.LOAD));
 	}
@@ -307,7 +295,7 @@ public class ShipEditor extends ActorEditor {
 
 	@Override
 	public void undoJustCreated() {
-		setDef(null);
+		setActorDef(null);
 	}
 
 	@Override
@@ -328,7 +316,7 @@ public class ShipEditor extends ActorEditor {
 			ResourceCacheFacade.load(this, mDef.getId(), true);
 			ResourceCacheFacade.finishLoading();
 
-			setDef((PlayerActorDef) ResourceCacheFacade.get(mDef.getId()));
+			setActorDef((PlayerActorDef) ResourceCacheFacade.get(mDef.getId()));
 		}
 
 		// Update latest loaded resource

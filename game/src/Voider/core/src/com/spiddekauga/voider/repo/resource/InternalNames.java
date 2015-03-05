@@ -6,13 +6,11 @@ import java.util.Map;
 import org.ini4j.Ini;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.utils.Path;
@@ -32,22 +30,22 @@ public enum InternalNames {
 	UI_CREDITS("ui/credits.json", Skin.class),
 
 	// Themes / Backgrounds
-	LEVEL_BACKGROUND_CORE_1080("backgrounds/core", Skin.class),
-	LEVEL_BACKGROUND_CORE_720("backgrounds/core_720", Skin.class),
-	LEVEL_BACKGROUND_CORE_480("backgrounds/core_480", Skin.class),
-	LEVEL_BACKGROUND_CORE_120("backgrounds/core_120", Skin.class),
-	LEVEL_BACKGROUND_SURFACE_1080("backgrounds/surface", Skin.class),
-	LEVEL_BACKGROUND_SURFACE_720("backgrounds/surface_720", Skin.class),
-	LEVEL_BACKGROUND_SURFACE_480("backgrounds/surface_480", Skin.class),
-	LEVEL_BACKGROUND_SURFACE_120("backgrounds/surface_120", Skin.class),
-	LEVEL_BACKGROUND_TUNNEL_1080("backgrounds/tunnels", Skin.class),
-	LEVEL_BACKGROUND_TUNNEL_720("backgrounds/tunnels_720", Skin.class),
-	LEVEL_BACKGROUND_TUNNEL_480("backgrounds/tunnels_480", Skin.class),
-	LEVEL_BACKGROUND_TUNNEL_120("backgrounds/tunnels_120", Skin.class),
-	LEVEL_BACKGROUND_SPACE_1080("backgrounds/space", Skin.class),
-	LEVEL_BACKGROUND_SPACE_720("backgrounds/space_720", Skin.class),
-	LEVEL_BACKGROUND_SPACE_480("backgrounds/space_480", Skin.class),
-	LEVEL_BACKGROUND_SPACE_120("backgrounds/space_120", Skin.class),
+	LEVEL_BACKGROUND_CORE_1080("backgrounds/core.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_CORE_720("backgrounds/core_720.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_CORE_480("backgrounds/core_480.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_CORE_120("backgrounds/core_120.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SURFACE_1080("backgrounds/surface.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SURFACE_720("backgrounds/surface_720.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SURFACE_480("backgrounds/surface_480.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SURFACE_120("backgrounds/surface_120.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_TUNNEL_1080("backgrounds/tunnels.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_TUNNEL_720("backgrounds/tunnels_720.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_TUNNEL_480("backgrounds/tunnels_480.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_TUNNEL_120("backgrounds/tunnels_120.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SPACE_1080("backgrounds/space.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SPACE_720("backgrounds/space_720.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SPACE_480("backgrounds/space_480.atlas", TextureAtlas.class),
+	LEVEL_BACKGROUND_SPACE_120("backgrounds/space_120.atlas", TextureAtlas.class),
 
 
 	// Images
@@ -195,6 +193,7 @@ public enum InternalNames {
 			mResourcePaths.put(ShaderProgram.class, SHADER_PATH);
 			mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
 			mResourcePaths.put(Skin.class, UI_PATH);
+			mResourcePaths.put(TextureAtlas.class, "");
 			mResourcePaths.put(Sound.class, SOUND_PATH);
 			mResourcePaths.put(Ini.class, TEXT_PATH);
 			mResourcePaths.put(Music.class, MUSIC_PATH);
@@ -203,15 +202,16 @@ public enum InternalNames {
 
 		// -- Parameters --
 		// Level theme
-		for (int i = LEVEL_BACKGROUND_CORE_1080.ordinal(); i <= LEVEL_BACKGROUND_SPACE_120.ordinal(); ++i) {
-			TextureParameter textureParameter = new TextureParameter();
-			textureParameter.genMipMaps = false;
-			textureParameter.wrapU = TextureWrap.Repeat;
-			textureParameter.wrapV = TextureWrap.Repeat;
-			textureParameter.minFilter = TextureFilter.Nearest;
-			textureParameter.minFilter = TextureFilter.Nearest;
-			InternalNames internalName = InternalNames.values()[i];
-			internalName.mParameters = textureParameter;
-		}
+		// for (int i = LEVEL_BACKGROUND_CORE_1080.ordinal(); i <=
+		// LEVEL_BACKGROUND_SPACE_120.ordinal(); ++i) {
+		// TextureParameter textureParameter = new TextureParameter();
+		// textureParameter.genMipMaps = false;
+		// textureParameter.wrapU = TextureWrap.Repeat;
+		// textureParameter.wrapV = TextureWrap.Repeat;
+		// textureParameter.minFilter = TextureFilter.Nearest;
+		// textureParameter.minFilter = TextureFilter.Nearest;
+		// InternalNames internalName = InternalNames.values()[i];
+		// internalName.mParameters = textureParameter;
+		// }
 	}
 }

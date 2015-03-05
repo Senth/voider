@@ -200,7 +200,7 @@ bugs_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-bugs_down
+panel_bug_checked
   rotate: false
   xy: 490, 64
   size: 32, 32
@@ -214,7 +214,7 @@ panel_bug_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_bug_checked
+bugs_down
   rotate: false
   xy: 490, 64
   size: 32, 32
@@ -222,6 +222,13 @@ panel_bug_checked
   offset: 0, 0
   index: -1
 bugs_checked_over
+  rotate: false
+  xy: 524, 98
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_bug_checked_over
   rotate: false
   xy: 524, 98
   size: 32, 32
@@ -236,13 +243,6 @@ bugs_over
   offset: 0, 0
   index: -1
 panel_bug_over
-  rotate: false
-  xy: 524, 98
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_bug_checked_over
   rotate: false
   xy: 524, 98
   size: 32, 32
@@ -306,7 +306,7 @@ button_default_checked
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_down
+button_transparent_checked
   rotate: false
   xy: 1039, 487
   size: 7, 7
@@ -322,7 +322,7 @@ button_tag_down
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_checked
+button_default_down
   rotate: false
   xy: 1039, 487
   size: 7, 7
@@ -330,7 +330,7 @@ button_transparent_checked
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_default_down
+button_transparent_down
   rotate: false
   xy: 1039, 487
   size: 7, 7
@@ -354,14 +354,6 @@ button_transparent_checked_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_over
-  rotate: false
-  xy: 728, 35
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
 button_tag_over
   rotate: false
   xy: 728, 35
@@ -371,6 +363,14 @@ button_tag_over
   offset: 0, 0
   index: -1
 button_default_over
+  rotate: false
+  xy: 728, 35
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_over
   rotate: false
   xy: 728, 35
   size: 7, 7
@@ -402,7 +402,7 @@ button_default_up
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_tag_up
+button_transparent_up
   rotate: false
   xy: 376, 25
   size: 7, 7
@@ -410,7 +410,7 @@ button_tag_up
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_up
+button_tag_up
   rotate: false
   xy: 376, 25
   size: 7, 7
@@ -2199,7 +2199,7 @@ settings_network_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_down
+settings_statistics_checked
   rotate: false
   xy: 940, 162
   size: 32, 32
@@ -2213,7 +2213,7 @@ settings_network_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_checked
+settings_statistics_down
   rotate: false
   xy: 940, 162
   size: 32, 32
@@ -2234,14 +2234,14 @@ settings_statistics_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_network_over
+settings_statistics_checked_over
   rotate: false
   xy: 974, 162
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_checked_over
+settings_network_over
   rotate: false
   xy: 974, 162
   size: 32, 32

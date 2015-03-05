@@ -25,12 +25,7 @@ public class CampaignEditor extends Editor {
 	}
 
 	@Override
-	public void saveDef() {
-		saveToFile();
-	}
-
-	@Override
-	public void saveDef(Command command) {
+	protected void saveImpl(Command command) {
 		saveToFile();
 		if (command != null) {
 			command.execute();
@@ -40,7 +35,6 @@ public class CampaignEditor extends Editor {
 	@Override
 	public void loadDef() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

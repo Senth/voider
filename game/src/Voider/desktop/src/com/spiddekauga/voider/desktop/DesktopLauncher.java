@@ -16,6 +16,7 @@ public class DesktopLauncher {
 		config.title = "Voider";
 		config.width = Config.Graphics.WIDTH_START;
 		config.height = Config.Graphics.HEIGHT_START;
+		config.foregroundFPS = 60;
 
 
 		// Add icons
