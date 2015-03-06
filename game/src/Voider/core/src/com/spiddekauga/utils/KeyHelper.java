@@ -14,7 +14,7 @@ public class KeyHelper {
 	 * @return true if a delete key was pressed
 	 */
 	public static boolean isDeletePressed(int keycode) {
-		return keycode == Keys.DEL || keycode == Keys.BACKSPACE || keycode == Keys.FORWARD_DEL;
+		return keycode == Keys.BACKSPACE || keycode == Keys.FORWARD_DEL;
 	}
 
 	/**

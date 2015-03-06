@@ -1,16 +1,17 @@
 package com.spiddekauga.voider.servlets;
 
+//@formatter:off
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
 
+
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -21,6 +22,8 @@ import com.spiddekauga.voider.network.user.LoginResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.utils.BCrypt;
+// @formatter:on
 
 /**
  * Tries to login to the server
