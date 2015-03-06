@@ -4,28 +4,28 @@ size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-level_theme_surface_bottom-0-0
+bottom-0-0
   rotate: false
   xy: 2, 724
   size: 1020, 720
   orig: 1020, 720
   offset: 0, 0
   index: -1
-level_theme_surface_bottom-0-1
+bottom-0-1
   rotate: false
   xy: 2, 2
   size: 1020, 720
   orig: 1020, 720
   offset: 0, 0
   index: -1
-level_theme_surface_bottom-0-2
+bottom-0-2
   rotate: false
   xy: 1024, 724
   size: 1020, 720
   orig: 1020, 720
   offset: 0, 0
   index: -1
-level_theme_surface_top-0-0
+top-0-0
   rotate: false
   xy: 1024, 2
   size: 1020, 720
@@ -38,28 +38,28 @@ size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-level_theme_surface_bottom-0-3
+bottom-0-3
   rotate: false
   xy: 1024, 724
   size: 540, 720
   orig: 540, 720
   offset: 0, 0
   index: -1
-level_theme_surface_top-0-1
+top-0-1
   rotate: false
   xy: 2, 724
   size: 1020, 720
   orig: 1020, 720
   offset: 0, 0
   index: -1
-level_theme_surface_top-0-2
+top-0-2
   rotate: false
   xy: 2, 2
   size: 1020, 720
   orig: 1020, 720
   offset: 0, 0
   index: -1
-level_theme_surface_top-0-3
+top-0-3
   rotate: false
   xy: 1024, 2
   size: 540, 720

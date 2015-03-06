@@ -53,7 +53,7 @@ function convertEverything {
 			background_base=${background%%.png}
 			width=`identify -format '%w' $background`
 
-			echo Splitting $background_base to ${CROP_SIZE}x${CROP_SIZE}
+			echo Splitting ${dir}$background_base to ${CROP_SIZE}x${CROP_SIZE}
 
 			convert "$background" -crop "${CROP_SIZE}x${CROP_SIZE}" +repage "${out_dir}$background"
 
@@ -72,7 +72,16 @@ function convertEverything {
 					y=$((y+1))
 				fi
 
-				mv "$background_base-${i}.png" "$background_base-${y}-${x}.png"
+				from_name="$background_base-${i}.png"
+
+				# Sometimes the files are smaller than the split size -> Just use regular name then
+				if [ ! -e "$from_name" ]; then
+					from_name=$background
+				fi
+
+				mv "$from_name" "$background_base-${y}-${x}.png"
+
+
 
 				x=$((x+1))
 				x_offset=$((x_offset+CROP_SIZE))

@@ -12,20 +12,17 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 public enum InternalDeps {
 	// !!!NEVER EVER remove or change order of these!!!
 	/** Space theme */
-	THEME_SPACE(new ResolutionResource(ResolutionDef.RES_480, InternalNames.LEVEL_BACKGROUND_SPACE_480), new ResolutionResource(
-			ResolutionDef.RES_720, InternalNames.LEVEL_BACKGROUND_SPACE_720), new ResolutionResource(ResolutionDef.RES_1080,
-			InternalNames.LEVEL_BACKGROUND_SPACE_1080)),
+	THEME_SPACE(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_SPACE_720), new ResolutionResource(
+			ResolutionRange.RES_1080, InternalNames.LEVEL_BACKGROUND_SPACE_1080)),
 	/** Core theme */
-	THEME_CORE(new ResolutionResource(ResolutionDef.RES_480, InternalNames.LEVEL_BACKGROUND_CORE_480), new ResolutionResource(ResolutionDef.RES_720,
-			InternalNames.LEVEL_BACKGROUND_CORE_720), new ResolutionResource(ResolutionDef.RES_1080, InternalNames.LEVEL_BACKGROUND_CORE_1080)),
+	THEME_CORE(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_CORE_720), new ResolutionResource(ResolutionRange.RES_1080,
+			InternalNames.LEVEL_BACKGROUND_CORE_1080)),
 	/** Surface theme */
-	THEME_SURFACE(new ResolutionResource(ResolutionDef.RES_480, InternalNames.LEVEL_BACKGROUND_SURFACE_480), new ResolutionResource(
-			ResolutionDef.RES_720, InternalNames.LEVEL_BACKGROUND_SURFACE_720), new ResolutionResource(ResolutionDef.RES_1080,
-			InternalNames.LEVEL_BACKGROUND_SURFACE_1080)),
+	THEME_SURFACE(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_SURFACE_720), new ResolutionResource(
+			ResolutionRange.RES_1080, InternalNames.LEVEL_BACKGROUND_SURFACE_1080)),
 	/** Tunnel theme */
-	THEME_TUNNEL(new ResolutionResource(ResolutionDef.RES_480, InternalNames.LEVEL_BACKGROUND_TUNNEL_480), new ResolutionResource(
-			ResolutionDef.RES_720, InternalNames.LEVEL_BACKGROUND_TUNNEL_720), new ResolutionResource(ResolutionDef.RES_1080,
-			InternalNames.LEVEL_BACKGROUND_TUNNEL_1080)),
+	THEME_TUNNEL(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_TUNNELS_720), new ResolutionResource(
+			ResolutionRange.RES_1080, InternalNames.LEVEL_BACKGROUND_TUNNELS_1080)),
 
 	/** Music for space */
 	MUSIC_SPACE(InternalNames.MUSIC_SPACE),
@@ -98,22 +95,22 @@ public enum InternalDeps {
 		ArrayList<ResolutionResource> resources = new ArrayList<>();
 
 		// Add 1080p versions
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_CORE_1080));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_SPACE_1080));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_SURFACE_1080));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_TUNNEL_1080));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_CORE_1080));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_SPACE_1080));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_SURFACE_1080));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_TUNNELS_1080));
 
 		// Add 480p versions
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_CORE_480));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_SPACE_480));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_SURFACE_480));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_TUNNEL_480));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_CORE_480));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_SPACE_480));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_SURFACE_480));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_TUNNELS_480));
 
 		// Add 120p versions
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_CORE_120));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_SPACE_120));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_SURFACE_120));
-		resources.add(new ResolutionResource(ResolutionDef.RES_ALL, InternalNames.LEVEL_BACKGROUND_TUNNEL_120));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_CORE_120));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_SPACE_120));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_SURFACE_120));
+		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_TUNNELS_120));
 
 		THEME_ALL.mResolutionResources = new ResolutionResource[resources.size()];
 		resources.toArray(THEME_ALL.mResolutionResources);

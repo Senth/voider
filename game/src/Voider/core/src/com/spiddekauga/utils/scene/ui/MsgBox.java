@@ -1,8 +1,11 @@
 package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -388,8 +391,14 @@ public class MsgBox extends Dialog {
 
 	@Override
 	public MsgBox show(Stage stage) {
+		show(stage, Actions.fadeIn(mFadeInTimeDefault, Interpolation.linear));
+		return this;
+	}
+
+	@Override
+	public MsgBox show(Stage stage, Action action) {
 		mButtonTable.layout();
-		super.show(stage);
+		super.show(stage, action);
 		mHiding = false;
 		return this;
 	}
@@ -413,10 +422,14 @@ public class MsgBox extends Dialog {
 
 	@Override
 	public void hide() {
-		super.hide();
-		mHiding = true;
+		hide(Actions.fadeOut(mFadeOutTimeDefault, Interpolation.linear));
 	}
 
+	@Override
+	public void hide(Action action) {
+		super.hide(action);
+		mHiding = true;
+	}
 
 	/**
 	 * Only add cancel keys
@@ -530,6 +543,26 @@ public class MsgBox extends Dialog {
 		super.setSkin(skin);
 	}
 
+	/**
+	 * Set the default fade in time for all message boxes
+	 * @param seconds number of seconds
+	 */
+	public static void setFadeInTime(float seconds) {
+		mFadeInTimeDefault = seconds;
+	}
+
+	/**
+	 * Set the default fade out time for all message boxes
+	 * @param seconds number of seconds
+	 */
+	public static void setFadeOutTime(float seconds) {
+		mFadeOutTimeDefault = seconds;
+	}
+
+	/** Default fade in time in seconds */
+	private static float mFadeInTimeDefault = 0.3f;
+	/** Default fade out time in seconds */
+	private static float mFadeOutTimeDefault = 0.3f;
 	/** Button padding */
 	private float mButtonPad = 0;
 	/** Pointer to cancelHide in Dialog */

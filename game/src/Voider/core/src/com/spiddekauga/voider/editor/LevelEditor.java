@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -19,8 +18,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
-import com.spiddekauga.voider.config.ConfigIni;
-import com.spiddekauga.voider.config.IC_Game;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.ActorAddTool;
@@ -44,6 +41,7 @@ import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
+import com.spiddekauga.voider.game.LevelBackground;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -172,8 +170,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
-			enableBlendingWithDefaults();
-			renderBackground();
+			if (mShowBackground) {
+				renderBackground();
+			}
 		}
 
 		super.render();
@@ -202,59 +201,28 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Renders the background if it should
+	 * Render the background
 	 */
 	private void renderBackground() {
-		if (mShowBackground) {
-			if (mBackgroundBottom == null) {
-				createBackground();
-			}
-
-			mSpriteBatch.setProjectionMatrix(mCamera.combined);
-			mSpriteBatch.begin();
-
-			IC_Game game = ConfigIni.getInstance().game;
-			// renderBackground(mBackgroundBottom, game.getLayerBottomSpeed());
-			// renderBackground(mBackgroundTop, game.getLayerTopSpeed());
-
-			mSpriteBatch.end();
-		}
-	}
-
-	/**
-	 * Render a specific background
-	 * @param background the background to render
-	 * @param layerSpeed relative speed of the background
-	 */
-	private void renderBackground(Texture background, float layerSpeed) {
-		// Offset in screen coordinates
-		float layerOffset = mCamera.position.x / getScreenToWorldScale() * layerSpeed;
-
-		// Get shown height
 		float renderHeightDefault = Gdx.graphics.getHeight() * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
-		float renderHeight = renderHeightDefault * getScreenToWorldScale();
+		int renderHeight = (int) (renderHeightDefault / mCamera.zoom);
+		int offsetY = (int) (renderHeightDefault - (renderHeight / 2));
+		offsetY -= mCamera.position.y / mCamera.zoom / getScreenToWorldScale();
 
-		// Texture scaling
-		float textureScale = renderHeightDefault / background.getHeight();
-		float width = Gdx.graphics.getWidth() / (background.getWidth() * textureScale) * mCamera.zoom;
-		float startX = layerOffset / background.getWidth();
 
-		// Position
-		float offsetY = (Gdx.graphics.getHeight() - renderHeightDefault) / 2;
-		float x = mCamera.position.x - mCamera.viewportWidth * mCamera.zoom / 2;
-		float y = -mCamera.viewportHeight / 2 + offsetY * getScreenToWorldScale();
+		if (mBackground == null) {
+			mBackground = mLevel.getLevelDef().getTheme().createBackground(renderHeight);
+		} else {
+			mBackground = mLevel.getLevelDef().getTheme().updateBackground(mBackground, (int) (renderHeight / getScreenToWorldScale()));
+		}
 
-		// Draw
-		mSpriteBatch.draw(background, x, y, mCamera.viewportWidth * mCamera.zoom, renderHeight, startX, 0, startX + width, 1);
-	}
+		int x = (int) (mCamera.position.x / mCamera.zoom);
 
-	/**
-	 * Create level background
-	 */
-	private void createBackground() {
-		Themes currentTheme = mLevel.getLevelDef().getTheme();
-		// mBackgroundBottom = ResourceCacheFacade.get(currentTheme.getBottomLayer());
-		// mBackgroundTop = ResourceCacheFacade.get(currentTheme.getTopLayer());
+		enableBlendingWithDefaults();
+		mSpriteBatch.setProjectionMatrix(getProjectionMatrixDefault());
+		mSpriteBatch.begin();
+		mBackground.render(mSpriteBatch, x, offsetY, renderHeight);
+		mSpriteBatch.end();
 	}
 
 	@Override
@@ -274,9 +242,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		boolean sameRevision = false;
 
 		boolean oldIsPublished = isPublished();
-
-		mBackgroundBottom = null;
-		mBackgroundTop = null;
 
 		if (mLevel != null) {
 			if (level != null && mLevel.equals(level.getId())) {
@@ -1683,8 +1648,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mLevel.getLevelDef().setTheme(theme);
 			setUnsaved();
 			((LevelEditorGui) mGui).resetTheme();
-			mBackgroundBottom = null;
-			mBackgroundTop = null;
 		}
 	}
 
@@ -1746,8 +1709,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		return null;
 	}
 
-	private Texture mBackgroundBottom = null;
-	private Texture mBackgroundTop = null;
+	private LevelBackground mBackground = null;
 	private byte[] mPngBytesBeforeTest = null;
 	private boolean mShowBackground = true;
 	private ArrayList<EnemyActorDef> mAddEnemies = new ArrayList<>();

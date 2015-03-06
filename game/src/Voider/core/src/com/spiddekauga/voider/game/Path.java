@@ -40,7 +40,7 @@ import com.spiddekauga.voider.utils.Geometry;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender,
-IResourceSelectable, KryoPostRead {
+		IResourceSelectable, KryoPostRead {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -687,7 +687,7 @@ IResourceSelectable, KryoPostRead {
 	 * What type of path type the enemy uses, only applicable if movement type is set to
 	 * path
 	 */
-	@Tag(18) private PathTypes mPathType = PathTypes.ONCE;
+	@Tag(18) private PathTypes mPathType = PathTypes.BACK_AND_FORTH;
 	/** World the path is bound to */
 	private World mWorld = null;
 	/** Body of the path */

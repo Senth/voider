@@ -228,14 +228,14 @@ bugs_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_bug_checked_over
+bugs_over
   rotate: false
   xy: 524, 98
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-bugs_over
+panel_bug_checked_over
   rotate: false
   xy: 524, 98
   size: 32, 32
@@ -362,7 +362,7 @@ button_tag_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_default_over
+button_transparent_over
   rotate: false
   xy: 728, 35
   size: 7, 7
@@ -370,7 +370,7 @@ button_default_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_over
+button_default_over
   rotate: false
   xy: 728, 35
   size: 7, 7
@@ -1882,14 +1882,14 @@ scroll_horizontal_knob
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll_vertical_knob
+slider_knob
   rotate: false
   xy: 128, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-slider_knob
+scroll_vertical_knob
   rotate: false
   xy: 128, 2
   size: 16, 16
@@ -2199,7 +2199,7 @@ settings_network_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_checked
+settings_statistics_down
   rotate: false
   xy: 940, 162
   size: 32, 32
@@ -2213,7 +2213,7 @@ settings_network_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_down
+settings_statistics_checked
   rotate: false
   xy: 940, 162
   size: 32, 32
@@ -2227,14 +2227,14 @@ settings_network_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_over
+settings_statistics_checked_over
   rotate: false
   xy: 974, 162
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_checked_over
+settings_statistics_over
   rotate: false
   xy: 974, 162
   size: 32, 32

@@ -18,9 +18,12 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
@@ -58,6 +61,11 @@ public class MsgBoxFactory {
 	void init(UiStyles styles) {
 		mStyles = styles;
 		mUiFactory = UiFactory.getInstance();
+
+		// Set msgbox default fade in time
+		IC_Time time = ConfigIni.getInstance().menu.time;
+		MsgBox.setFadeInTime(time.getMsgBoxFadeIn());
+		MsgBox.setFadeOutTime(time.getMsgBoxFadeOut());
 	}
 
 	/**
@@ -401,6 +409,7 @@ public class MsgBoxFactory {
 		} else {
 			msgBox.setStyle(windowStyle);
 		}
+
 
 		msgBox.clear();
 

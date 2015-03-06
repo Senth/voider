@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -25,8 +24,6 @@ import com.spiddekauga.utils.kryo.KryoPostWrite;
 import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.config.ConfigIni;
-import com.spiddekauga.voider.config.IC_Game;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -81,29 +78,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mRunning = level.mRunning;
 		mSpeed = level.mSpeed;
 		mXCoord = level.mXCoord;
-		mBackgroundBottom = level.mBackgroundBottom;
-		mBackgroundTop = level.mBackgroundTop;
+		mBackground = level.mBackground;
 	}
 
 	/**
-	 * Sets the background for the level
+	 * Creates the background for this level
 	 */
 	private void createBackground() {
-		// Set background textures
 		if (mLevelDef.getTheme() != null) {
-			// mBackgroundBottom =
-			// ResourceCacheFacade.get(mLevelDef.getTheme().getBottomLayer());
-			// mBackgroundTop =
-			// ResourceCacheFacade.get(mLevelDef.getTheme().getTopLayer());
-			//
-			// mBackgroundBottom.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-			// mBackgroundTop.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+			mBackground = mLevelDef.getTheme().createBackground();
 		}
-
-		// Set background speed
-		IC_Game icGame = ConfigIni.getInstance().game;
-		mBackgroundBottomSpeed = icGame.getLayerBottomSpeed();
-		mBackgroundTopSpeed = icGame.getLayerTopSpeed();
 	}
 
 	/**
@@ -118,7 +102,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param deltaTime elapsed seconds since last frame
 	 */
 	public void update(float deltaTime) {
-		if (mBackgroundBottom == null) {
+		if (mBackground == null) {
 			createBackground();
 		}
 
@@ -250,38 +234,20 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param spriteBatch used for rendering sprites.
 	 */
 	public void renderBackground(SpriteBatch spriteBatch) {
-
-
-		// if (mBackgroundBottom != null && mBackgroundTop != null) {
-		// renderBackground(spriteBatch, mBackgroundBottom, mBackgroundBottomSpeed);
-		// renderBackground(spriteBatch, mBackgroundTop, mBackgroundTopSpeed);
-		// }
+		renderBackground(spriteBatch, 0, Gdx.graphics.getHeight());
 	}
 
 	/**
-	 * Renders a specific background layer
-	 * @param spriteBatch used for rendering the backgrounds
-	 * @param background the background to render
-	 * @param layerSpeed the relative speed of the background
+	 * Renders the background on a part of the screen
+	 * @param spriteBatch used for rendering
+	 * @param y where on the y-axis to start rendering
+	 * @param height how high the background should be
 	 */
-	private void renderBackground(SpriteBatch spriteBatch, Texture background, float layerSpeed) {
-		// Calculate top and bottom layer offsets.
-		float diffCoords = mXCoord - mLevelDef.getStartXCoord();
-		float layerOffset = diffCoords * layerSpeed;
-
-		// Convert to screen coordinates
-		layerOffset /= Config.Graphics.WORLD_SCALE;
-
-
-		// Texture scaling
-		float textureScale = ((float) Gdx.graphics.getHeight()) / background.getHeight();
-		float width = Gdx.graphics.getWidth() / (background.getWidth() * textureScale);
-
-		float start = layerOffset / background.getWidth();
-
-
-		// Draw
-		spriteBatch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), start, 0, start + width, 1);
+	public void renderBackground(SpriteBatch spriteBatch, int y, int height) {
+		if (mBackground != null) {
+			float diffCoords = mXCoord - mLevelDef.getStartXCoord();
+			mBackground.render(spriteBatch, diffCoords);
+		}
 	}
 
 	/**
@@ -672,12 +638,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		// Does nothing
 	}
 
-	/** Top layer background speed */
-	private float mBackgroundTopSpeed = 0;
-	/** Bottom layer background speed */
-	private float mBackgroundBottomSpeed = 0;
-	private Texture mBackgroundTop = null;
-	private Texture mBackgroundBottom = null;
+	private LevelBackground mBackground = null;
 	/** Contains all the resources used in this level */
 	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */

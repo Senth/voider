@@ -53,14 +53,14 @@ add_move_corner_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-terrain_add_move_corner_over
+add_move_corner_over
   rotate: false
   xy: 2, 113
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-add_move_corner_over
+terrain_add_move_corner_over
   rotate: false
   xy: 2, 113
   size: 32, 32
@@ -829,14 +829,14 @@ terrain_draw_erase_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-draw_erase_down
+terrain_draw_erase_checked
   rotate: false
   xy: 408, 147
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-terrain_draw_erase_checked
+draw_erase_down
   rotate: false
   xy: 408, 147
   size: 32, 32
@@ -850,14 +850,14 @@ draw_erase_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-terrain_draw_erase_checked_over
+draw_erase_over
   rotate: false
   xy: 442, 181
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-draw_erase_over
+terrain_draw_erase_checked_over
   rotate: false
   xy: 442, 181
   size: 32, 32
@@ -1998,6 +1998,13 @@ path_add_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
+path_add_down
+  rotate: false
+  xy: 852, 79
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 path_tab_down
   rotate: false
   xy: 852, 79
@@ -2012,21 +2019,7 @@ path_tab_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-path_add_down
-  rotate: false
-  xy: 852, 79
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 path_add_checked_over
-  rotate: false
-  xy: 886, 113
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-path_tab_checked_over
   rotate: false
   xy: 886, 113
   size: 32, 32
@@ -2041,6 +2034,13 @@ path_add_over
   offset: 0, 0
   index: -1
 path_tab_over
+  rotate: false
+  xy: 886, 113
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+path_tab_checked_over
   rotate: false
   xy: 886, 113
   size: 32, 32
@@ -2432,14 +2432,14 @@ terrain_remove_corner_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-terrain_remove_corner_checked
+remove_corner_down
   rotate: false
   xy: 1122, 147
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-remove_corner_down
+terrain_remove_corner_checked
   rotate: false
   xy: 1122, 147
   size: 32, 32
@@ -2460,14 +2460,14 @@ remove_corner_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-terrain_remove_corner_over
+terrain_remove_corner_checked_over
   rotate: false
   xy: 1156, 181
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-terrain_remove_corner_checked_over
+terrain_remove_corner_over
   rotate: false
   xy: 1156, 181
   size: 32, 32

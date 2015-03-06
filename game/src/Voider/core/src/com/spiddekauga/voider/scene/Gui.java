@@ -594,7 +594,6 @@ public abstract class Gui implements Disposable {
 		return mVisible;
 	}
 
-
 	private boolean mIsResizing = false;
 	/** UI Factory for creating UI elements */
 	protected static UiFactory mUiFactory = UiFactory.getInstance();
@@ -613,6 +612,7 @@ public abstract class Gui implements Disposable {
 
 	/** Various widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
+
 
 	/** Inner widgets */
 	private static class InnerWidgets {
