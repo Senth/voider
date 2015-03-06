@@ -53,6 +53,7 @@ public class IC_Setting extends IniClass {
 		protected String[] dateFormats;
 		protected String time24hFormat;
 		protected String timeAmPmFormat;
+		protected String dateTimeFormatDefault;
 
 		private IC_General(Ini ini, Section classSection) {
 			super(ini, classSection);
@@ -68,6 +69,10 @@ public class IC_Setting extends IniClass {
 
 		public String getTimeAmPmFormat() {
 			return timeAmPmFormat;
+		}
+
+		public String getDateTimeFormatDefault() {
+			return dateTimeFormatDefault;
 		}
 	}
 

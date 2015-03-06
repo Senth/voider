@@ -29,7 +29,7 @@ class SettingUserPrefsGateway extends PrefsGateway {
 	 * @return DateTime format the user uses.
 	 */
 	String getDateTime() {
-		return mPreferences.getString(DATE__DATE_TIME_FORMAT, "");
+		return mPreferences.getString(DATE__DATE_TIME_FORMAT, ConfigIni.getInstance().setting.general.getDateTimeFormatDefault());
 	}
 
 	/**

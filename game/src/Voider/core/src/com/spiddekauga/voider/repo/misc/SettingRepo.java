@@ -137,7 +137,7 @@ public class SettingRepo extends Repo {
 
 		/**
 		 * Get first or second part of the date time string
-		 * @param datePart true if we want to get the date part
+		 * @param datePart true if we want to get the date part, false for the time part
 		 * @return specific split part of the date time string
 		 */
 		private String getFormatPart(boolean datePart) {
