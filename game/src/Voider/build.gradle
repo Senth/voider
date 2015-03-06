@@ -25,7 +25,8 @@ allprojects {
     }
 
     repositories {
-    	maven { url "http://maven.senth.org/" }
+    	maven { url "http://maven.senth.org/snapshots" }
+    	maven { url "http://maven.senth.org/releases" }
         mavenCentral()
         //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         //maven { url "https://oss.sonatype.org/content/repositories/releases/" }
@@ -111,7 +112,7 @@ project(":core") {
         compile "org.ini4j:ini4j:0.5.4"
 		compile "edu.gvsu.cis.masl:java-channels-api:0.1"
 		compile "com.google.code.gson:gson:2.2.4"
-		compile "com.spiddekauga:SpiddekaugaUtils:0.1"
+		compile "com.spiddekauga:spiddekauga-utils:0.1-SNAPSHOT"
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "org.apache.httpcomponents:httpmime:4.3.6"

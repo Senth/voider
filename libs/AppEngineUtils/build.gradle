@@ -11,15 +11,18 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 
 jar {
 	manifest {
-		attributes	'Implementation-Title': 'Spiddekauga Utils',
+		attributes	'Implementation-Title': 'Appengine Utils',
 					'Implementation-Version': version
 	}
 }
 
-task apiJar(type: Jar)
+task sourceJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allJava
+}
 
 artifacts {
-	archives apiJar
+	archives sourceJar
 }
 
 configurations {
@@ -45,7 +48,11 @@ uploadArchives {
 	repositories {
 		mavenDeployer {
 			configuration = configurations.deployerJars
-			repository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org") {
+			pom.artifactId = 'appengine-utils'
+			repository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org/releases") {
+				authentication(userName: "senth")
+			}
+			snapshotRepository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org/snapshots") {
 				authentication(userName: "senth")
 			}
 		}
@@ -53,5 +60,5 @@ uploadArchives {
 }
 
 eclipse.project {
-	name = 'AppEngineUtils'
+	name = 'appengine-utils'
 }

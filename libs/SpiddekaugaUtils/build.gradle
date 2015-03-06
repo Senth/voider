@@ -4,7 +4,7 @@ apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-version = 0.1
+version = '0.1-SNAPSHOT'
 group = 'com.spiddekauga'
 
 sourceSets.main.java.srcDirs = [ "src/" ]
@@ -16,10 +16,13 @@ jar {
 	}
 }
 
-task apiJar(type: Jar)
+task sourceJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allJava
+}
 
 artifacts {
-	archives apiJar
+	archives sourceJar
 }
 
 configurations {
@@ -39,7 +42,11 @@ uploadArchives {
 	repositories {
 		mavenDeployer {
 			configuration = configurations.deployerJars
-			repository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org") {
+			pom.artifactId = 'spiddekauga-utils'
+			repository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org/releases") {
+				authentication(userName: "senth")
+			}
+			snapshotRepository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org/snapshots") {
 				authentication(userName: "senth")
 			}
 		}
