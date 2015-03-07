@@ -17,6 +17,10 @@ jar {
 	}
 }
 
+ext {
+	artifactId = 'appengine-utils'
+}
+
 task sourceJar(type: Jar) {
 	classifier = 'sources'
 	from sourceSets.main.allJava
@@ -37,6 +41,7 @@ sourceSets {
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 }
 
 dependencies {
@@ -45,11 +50,17 @@ dependencies {
 	deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 }
 
+install  {
+	repositories.mavenInstaller {
+		pom.artifactId = project.artifactId
+	}
+}
+
 uploadArchives {
 	repositories {
 		mavenDeployer {
 			configuration = configurations.deployerJars
-			pom.artifactId = 'appengine-utils'
+			pom.artifactId = project.artifactId
 			repository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org/releases") {
 				authentication(userName: "senth")
 			}

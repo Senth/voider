@@ -17,6 +17,10 @@ jar {
 	}
 }
 
+ext {
+	artifactId = 'spiddekauga-utils'
+}
+
 task sourceJar(type: Jar) {
 	classifier = 'sources'
 	from sourceSets.main.allJava
@@ -37,6 +41,12 @@ repositories {
 dependencies {
 	compile "com.esotericsoftware:kryo:3.0.0"
 	deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
+}
+
+install  {
+	repositories.mavenInstaller {
+		pom.artifactId = project.artifactId
+	}
 }
 
 uploadArchives {
