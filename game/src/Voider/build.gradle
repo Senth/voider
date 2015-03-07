@@ -158,6 +158,13 @@ project(":server-analytics") {
 	}
 }
 
+tasks.eclipse.doLast {
+    delete ".project"
+}
+
+//--------------------------------------------
+//				DEPLOYMENT
+//--------------------------------------------
 task deployNightlyDev << {
 	deployBuild "NIGHTLY_DEV"
 }
@@ -211,8 +218,4 @@ def replaceBuildName(currentBuild, nextBuild) {
 	File configFile = file(filename)
 	def updatedContent = configFile.getText('UTF-8').replaceAll(fromString, toString)
 	configFile.write(updatedContent, 'UTF-8')
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }
