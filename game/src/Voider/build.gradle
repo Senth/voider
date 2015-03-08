@@ -14,6 +14,9 @@ buildscript {
     }
 }
 
+ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
+ext.appengineExplodedWebFile = "server/build/exploded-app/WEB-INF/appengine-web.xml"
+
 allprojects {
     apply plugin: "eclipse"
     
@@ -166,23 +169,36 @@ tasks.eclipse.doLast {
 //				DEPLOYMENT
 //--------------------------------------------
 task deployNightlyDev << {
-	deployBuild "NIGHTLY_DEV"
+	deployBuild("NIGHTLY_DEV")
 }
 
 task deployNightlyRelease << {
-	deployBuild "NIGHTLY_RELEASE"
+	deployBuild("NIGHTLY_RELEASE")
 }
 
 task deployBeta << {
-	deployBuild "BETA"
+	deployBuild("BETA")
 }
 
-task deployAppengine << {
-	// TODO deploy app engine
+task deployAppengineDev << {
+	updateAppengineVersion()
+	deployAppengine("voider-dev")
+}
+
+task deployAppengineNightly << {
+	updateAppengineVersion()
+	deployAppengine("voider-nightly")
+	updateApplicationId("voider-dev")
+}
+
+task deployAppengineBeta << {
+	updateAppengineVersion()
+	deployAppengine("voider-beta")
+	updateApplicationId("voider-dev")
 }
 
 def deployBuild(deployBuild) {
-	replaceBuildName "DEV_LOCAL", deployBuild
+	replaceBuildName("DEV_LOCAL", deployBuild)
 	
 	def dropboxDir = "/home/senth/Dropbox/Voider exec/"
 	def copyTo = ""
@@ -208,7 +224,7 @@ def deployBuild(deployBuild) {
 	
 	Files.move(Paths.get(desktopFile), Paths.get(copyTo), StandardCopyOption.REPLACE_EXISTING)
 	
-	replaceBuildName deployBuild, "DEV_LOCAL"
+	replaceBuildName(deployBuild, "DEV_LOCAL")
 }
 
 def replaceBuildName(currentBuild, nextBuild) {
@@ -218,4 +234,37 @@ def replaceBuildName(currentBuild, nextBuild) {
 	File configFile = file(filename)
 	def updatedContent = configFile.getText('UTF-8').replaceAll(fromString, toString)
 	configFile.write(updatedContent, 'UTF-8')
+}
+
+def updateAppengineVersion() {
+	def searchFor = "<version>.*</version>"
+	def replaceWith = "<version>" + version + "</version>"
+	
+	File webappFile = file(project.appengineWebFile)
+	def updatedContent = webappFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+	webappFile.write(updatedContent, 'UTF-8')
+	
+	File explodedFile = file(project.appengineExplodedWebFile)
+	updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+	explodedFile.write(updatedContent, 'UTF-8')
+}
+
+def updateApplicationId(applicationId) {
+	def searchFor = "<application>.*</application>"
+	def replaceWith = "<application>" + applicationId + "</application>"
+	
+	File webappFile = file(project.appengineWebFile)
+	def updatedContent = webappFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+	webappFile.write(updatedContent, 'UTF-8')
+	
+	File explodedFile = file(project.appengineExplodedWebFile)
+	updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+	explodedFile.write(updatedContent, 'UTF-8')
+}
+
+def deployAppengine(applicationId) {
+	updateApplicationId(applicationId)
+
+	// Deploy
+	project(":server").appengineUpdate.execute()
 }
