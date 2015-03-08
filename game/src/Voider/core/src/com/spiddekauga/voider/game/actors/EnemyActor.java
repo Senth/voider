@@ -840,6 +840,11 @@ public class EnemyActor extends Actor {
 		Pools.vector2.free(velocity);
 	}
 
+	@Override
+	public EnemyActorDef getDef() {
+		return (EnemyActorDef) super.getDef();
+	}
+
 	/**
 	 * Moves to target using turning algorithm
 	 * @param targetDirection direction we want the enemy to move in
@@ -849,11 +854,14 @@ public class EnemyActor extends Actor {
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(getBody().getLinearVelocity());
 
+		float enemySpeed = getDef().getSpeed();
+
 		// Decrease with level speed
-		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI && !velocity.equals(Vector2.Zero)) {
-			float ratio = Math.abs(velocity.x / getDef(EnemyActorDef.class).getSpeed());
-			float addSpeed = mLevel.getSpeed() * ratio;
-			velocity.x -= addSpeed;
+		if (!mEditorActive && getDef().getMovementType() == MovementTypes.AI && !velocity.equals(Vector2.Zero)) {
+			// float ratio = Math.abs(velocity.x /
+			// getDef(EnemyActorDef.class).getSpeed());
+			// float addSpeed = mLevel.getSpeed() * ratio;
+			// velocity.x -= addSpeed;
 		}
 
 		boolean noVelocity = Maths.approxCompare(velocity.len2(), 0.01f);
@@ -905,7 +913,7 @@ public class EnemyActor extends Actor {
 
 		if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN) || oppositeDirection || noVelocity) {
 			float angleBefore = velocity.angle();
-			float rotation = getDef(EnemyActorDef.class).getTurnSpeed() * deltaTime * getDef(EnemyActorDef.class).getSpeed();
+			float rotation = getDef().getTurnSpeed() * deltaTime * enemySpeed;
 			if (!counterClockwise) {
 				rotation = -rotation;
 			}
@@ -939,9 +947,9 @@ public class EnemyActor extends Actor {
 
 			// Increase with level speed
 			if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-				float ratio = Math.abs(velocity.x / getDef(EnemyActorDef.class).getSpeed());
-				float addSpeed = mLevel.getSpeed() * ratio;
-				velocity.x += addSpeed;
+				float ratio = velocity.x / getDef(EnemyActorDef.class).getSpeed();
+				float addSpeed = mLevel.getSpeed() * ratio * 0.25f;
+				velocity.nor().scl(enemySpeed + addSpeed);
 			}
 
 			getBody().setLinearVelocity(velocity);
@@ -952,7 +960,6 @@ public class EnemyActor extends Actor {
 
 		Pools.vector2.free(velocity);
 	}
-
 
 	/**
 	 * Sets the next index to move to, takes into account what type the path is.

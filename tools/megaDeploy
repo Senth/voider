@@ -1,16 +1,46 @@
 #!/bin/bash
 
-tasks=(	'setAppengineBeta'
-		'server:appengineUpdate'
-		'setAppengineNightly'
-		'server:appengineUpdate'
-		'setAppengineDev'
-		'server:appengineUpdate'
-		'deployNightlyDev'
-		'deployNightlyRelease'
-		'deployBeta'
-	  )
+POSSIBLE_ARGS=('appengine' 'game')
 
+APPENGINE_TASKS=(
+	'setAppengineBeta'
+	'server:appengineUpdate'
+	'setAppengineNightly'
+	'server:appengineUpdate'
+	'setAppengineDev'
+	'server:appengineUpdate'
+)
+
+GAME_TASKS=(
+	'deployNightlyDev'
+	'deployNightlyRelease'
+	'deployBeta'
+)
+
+tasks=()
+
+
+
+# Parse arguments
+while [ -n "$*" ]; do
+	case $1 in
+	appengine)
+		tasks+=("${APPENGINE_TASKS[@]}")
+		;;
+	game)
+		tasks+=("${GAME_TASKS[@]}")
+		;;
+	esac
+	shift
+done
+
+# No arguments sync all
+if [ ${#tasks[@]} -eq 0 ]; then
+	tasks=( "${APPENGINE_TASKS[@]}")
+	tasks+=( "${GAME_TASKS[@]}")
+fi
+
+# Run tasks
 for task in ${tasks[@]}; do
 	./gradlew $task
 
