@@ -38,7 +38,7 @@ public class CDefHasValidName extends Command {
 
 	@Override
 	public boolean execute() {
-		String name = null;
+		String name = "";
 		if (mEditor instanceof LevelEditor) {
 			name = ((LevelEditor) mEditor).getName();
 		} else if (mEditor instanceof IActorEditor) {

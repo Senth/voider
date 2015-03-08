@@ -779,9 +779,7 @@ public class GameScene extends WorldScene {
 		mMouseJointDef.bodyA = mMouseBody;
 		mMouseJointDef.bodyB = mPlayerActor.getBody();
 		mMouseJointDef.collideConnected = true;
-		if (mPlayerActor != null) {
-			mMouseJointDef.maxForce = mPlayerActor.getDef(PlayerActorDef.class).getMouseJointForceMax();
-		}
+		mMouseJointDef.maxForce = mPlayerActor.getDef(PlayerActorDef.class).getMouseJointForceMax();
 	}
 
 	/**

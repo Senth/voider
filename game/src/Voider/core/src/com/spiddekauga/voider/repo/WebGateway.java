@@ -76,7 +76,7 @@ public class WebGateway {
 	 *         null if an error occurred.
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, ArrayList<FieldNameFileWrapper> files) {
-		return sendRequest(uploadUrl, entity, files);
+		return sendRequest(uploadUrl, entity, files, (IOutstreamProgressListener) null);
 	}
 
 	/**

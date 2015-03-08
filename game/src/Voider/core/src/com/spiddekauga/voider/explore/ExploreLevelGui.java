@@ -29,9 +29,9 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.LevelDefEntity;
+import com.spiddekauga.voider.network.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
-import com.spiddekauga.voider.network.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
@@ -495,8 +495,7 @@ class ExploreLevelGui extends ExploreGui {
 			defEntity = levelInfoEntity.defEntity;
 			rating = levelInfoEntity.stats.getIntRating();
 		} else {
-			defEntity = null;
-			levelInfoEntity = null;
+			return table;
 		}
 
 		// Image button

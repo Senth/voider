@@ -1,3 +1,23 @@
 #!/bin/bash
 
-./gradlew deployAppengineDev && ./gradlew deployAppengineNightly && ./gradlew deployAppengineBeta && ./gradlew deployNightlyDev && ./gradlew deployNightlyRelease && ./gradlew deployBeta
+tasks=(	'setAppengineBeta'
+		'server:appengineUpdate'
+		'setAppengineNightly'
+		'server:appengineUpdate'
+		'setAppengineDev'
+		'server:appengineUpdate'
+		'deployNightlyDev'
+		'deployNightlyRelease'
+		'deployBeta'
+	  )
+
+for task in ${tasks[@]}; do
+	./gradlew $task
+
+	if [ $? -ne 0 ]; then
+		break
+	fi
+
+	sleep 3
+done
+# ./gradlew setAppengineBeta && ./gradlew server:appengineUpdate && ./gradlew setAppengineNightly && ./gradlew server: && ./gradlew deployAppengineBeta && ./gradlew deployNightlyDev && ./gradlew deployNightlyRelease && ./gradlew deployBeta

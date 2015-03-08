@@ -95,11 +95,23 @@ public enum ClientVersions {
 			"Bugfixes",
 			"	Older levels now loads the music track correctly",
 			"	Level speed is now correct"),
-//	V0_4_10(false,
-//			"Bugfixes",
-//			"	Level speed is now used correctly, not just set correctly :P",
-//			"	Fixed a crash caused by level background on some devices"
-//			),
+	V0_4_10(false,
+			"Improvements",
+			"	Bullet speed is now relative to level speed",
+			"	Enemy AI movement is relative to level speed",
+			"		This means that bullets and enemies will appear to move faster.",
+			"		But now they actually take the same time to travel from the",
+			"		center of the screen to left or right (which they didn't before).",
+			"	Updated libgdx engine to 1.5.5",
+			"Bugfixes",
+			"	Level speed is now used correctly, not just set correctly :P",
+			"	Fixed a crash caused by level background on some devices",
+			"		Selecting a level background in the editor is temporarily disabled",
+			"	Grid can now be disabled again in editors",
+			"	Enemies can now be loaded again",
+			"	Bullets now only hit the ship once",
+			"	Music and sound now loops without a small pause"
+			),
 
 	;
 	// @formatter:on

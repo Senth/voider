@@ -831,7 +831,9 @@ public class EnemyActor extends Actor {
 
 		// Increase with level speed
 		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-			velocity.x += mLevel.getSpeed();
+			float ratio = Math.abs(velocity.x / getDef(EnemyActorDef.class).getSpeed());
+			float addSpeed = mLevel.getSpeed() * ratio;
+			velocity.x += addSpeed;
 		}
 
 		getBody().setLinearVelocity(velocity);
@@ -849,7 +851,9 @@ public class EnemyActor extends Actor {
 
 		// Decrease with level speed
 		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI && !velocity.equals(Vector2.Zero)) {
-			velocity.x -= mLevel.getSpeed();
+			float ratio = Math.abs(velocity.x / getDef(EnemyActorDef.class).getSpeed());
+			float addSpeed = mLevel.getSpeed() * ratio;
+			velocity.x -= addSpeed;
 		}
 
 		boolean noVelocity = Maths.approxCompare(velocity.len2(), 0.01f);
@@ -935,7 +939,9 @@ public class EnemyActor extends Actor {
 
 			// Increase with level speed
 			if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-				velocity.x += mLevel.getSpeed();
+				float ratio = Math.abs(velocity.x / getDef(EnemyActorDef.class).getSpeed());
+				float addSpeed = mLevel.getSpeed() * ratio;
+				velocity.x += addSpeed;
 			}
 
 			getBody().setLinearVelocity(velocity);

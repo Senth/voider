@@ -199,7 +199,7 @@ class GameSceneGui extends Gui {
 	 * Show menu for resuming game or going back
 	 */
 	void showMenu() {
-		MsgBoxExecuter msgBox = mUiFactory.msgBox.add(null);
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Menu");
 		msgBox.button("Resume Game");
 		msgBox.buttonRow();
 		msgBox.button("Restart Game", new CSceneEnd(Outcomes.LEVEL_RESTART));

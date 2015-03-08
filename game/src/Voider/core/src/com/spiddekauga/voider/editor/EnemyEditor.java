@@ -122,7 +122,7 @@ public class EnemyEditor extends ActorEditor {
 				mInvoker.execute(new CEnemyBulletDefSelect(((BulletDefEntity) message).resourceId, this));
 			}
 		} else if (outcome == Outcomes.EXPLORE_LOAD) {
-			if (message instanceof EnemyActorDef) {
+			if (message instanceof EnemyDefEntity) {
 				EnemyDefEntity enemyDefEntity = (EnemyDefEntity) message;
 
 				if (!ResourceCacheFacade.isLoaded(enemyDefEntity.resourceId, enemyDefEntity.revision)) {

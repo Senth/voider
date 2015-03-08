@@ -31,6 +31,12 @@ public class CollisionResolver implements ContactListener {
 			Actor actorA = (Actor) bodyA.getUserData();
 			Actor actorB = (Actor) bodyB.getUserData();
 
+
+			// Do nothing if body is being destroyed
+			if (actorA.shallBodyBeDestroyed() || actorB.shallBodyBeDestroyed()) {
+				return;
+			}
+
 			// If one shall be destroyed directly
 			Actor destroyActor = null;
 			Actor actor = null;

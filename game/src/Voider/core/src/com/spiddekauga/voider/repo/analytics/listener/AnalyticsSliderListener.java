@@ -16,6 +16,7 @@ public class AnalyticsSliderListener extends SliderListener {
 	 */
 	public AnalyticsSliderListener(String eventName, Slider slider) {
 		super(slider);
+		mName = eventName;
 	}
 
 	@Override

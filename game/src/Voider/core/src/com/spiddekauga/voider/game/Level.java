@@ -120,8 +120,9 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 				}
 			}
 
-
-			mPlayerActor.update(deltaTime);
+			if (mPlayerActor != null) {
+				mPlayerActor.update(deltaTime);
+			}
 
 			// Update resources
 			if (mResourceUpdates == null) {

@@ -36,7 +36,6 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
-import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames.GeneralImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.Def;
@@ -830,8 +829,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	private Tools mActiveTool = Tools.NONE;
 	/** Current selection */
 	protected Selection mSelection = new Selection();
-	/** Resource Repository */
-	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Zoom tool */
 	private ZoomTool mZoomTool = null;
 }

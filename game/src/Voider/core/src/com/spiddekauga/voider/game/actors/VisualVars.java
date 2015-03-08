@@ -630,6 +630,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 					} while (intersectionId != -1);
 
 					tempVertices = createCopy(mCorners);
+				} else {
+					return;
 				}
 
 

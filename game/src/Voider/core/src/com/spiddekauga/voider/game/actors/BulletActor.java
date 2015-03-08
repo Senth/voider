@@ -26,9 +26,15 @@ public class BulletActor extends Actor {
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(direction).nor().scl(speed);
 
+
+		// Add speed from the level
 		if (!mEditorActive) {
-			velocity.x += mLevel.getSpeed();
+			float ratio = Math.abs(velocity.x / speed);
+			float addSpeed = mLevel.getSpeed() * ratio;
+			velocity.x += addSpeed;
 		}
+
+
 		shoot(position, velocity, hitDamage, shotByPlayer);
 		Pools.vector2.free(velocity);
 	}

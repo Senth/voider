@@ -67,7 +67,6 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
-import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -1720,6 +1719,4 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private ZoomTool mZoomTool = null;
 	private boolean mEnemyHighlight = true;
 	private Color mDefaultTerrainColor = new Color();
-	/** Resource repository */
-	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 }

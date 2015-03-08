@@ -16,6 +16,7 @@ buildscript {
 
 ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
 ext.appengineExplodedWebFile = "server/build/exploded-app/WEB-INF/appengine-web.xml"
+ext.defaultBuild = "DEV_LOCAL"
 
 allprojects {
     apply plugin: "eclipse"
@@ -168,69 +169,80 @@ tasks.eclipse.doLast {
 //--------------------------------------------
 //				DEPLOYMENT
 //--------------------------------------------
-task deployNightlyDev << {
+task deployNightlyDev(dependsOn: ['setBuildNightlyDev', ':core:clean', ':desktop:dist']) << {
 	deployBuild("NIGHTLY_DEV")
 }
 
-task deployNightlyRelease << {
+task setBuildNightlyDev << {
+	replaceBuildName("NIGHTLY_DEV")
+}
+
+task deployNightlyRelease(dependsOn: ['setBuildNightlyRelease', ':core:clean', ':desktop:dist']) << {
 	deployBuild("NIGHTLY_RELEASE")
 }
 
-task deployBeta << {
+task setBuildNightlyRelease << {
+	replaceBuildName("NIGHTLY_RELEASE")
+}
+
+task deployBeta(dependsOn: ['setBuildBeta', ':core:clean', ':desktop:dist']) << {
 	deployBuild("BETA")
 }
 
-task deployAppengineDev << {
-	updateAppengineVersion()
-	deployAppengine("voider-dev")
+task setBuildBeta << {
+	replaceBuildName("BETA")
 }
+// Ordering
+project(':core').compileJava.mustRunAfter setBuildBeta
+project(':core').compileJava.mustRunAfter setBuildNightlyDev
+project(':core').compileJava.mustRunAfter setBuildNightlyRelease
 
-task deployAppengineNightly << {
+
+// Appengine tasks
+task setAppengineDev << {
 	updateAppengineVersion()
-	deployAppengine("voider-nightly")
 	updateApplicationId("voider-dev")
 }
 
-task deployAppengineBeta << {
+task setAppengineNightly << {
 	updateAppengineVersion()
-	deployAppengine("voider-beta")
-	updateApplicationId("voider-dev")
+	updateApplicationId("voider-nightly")
+}
+
+task setAppengineBeta << {
+	updateAppengineVersion()
+	updateApplicationId("voider-beta")
 }
 
 def deployBuild(deployBuild) {
-	replaceBuildName("DEV_LOCAL", deployBuild)
-	
 	def dropboxDir = "/home/senth/Dropbox/Voider exec/"
 	def copyTo = ""
 	switch ( deployBuild ) {
 		case "NIGHTLY_DEV":
-			copyTo = "Voider - editable resources/Voider2.jar"
+			copyTo = "Voider - editable resources/Voider.jar"
 			break
 		
 		case "NIGHTLY_RELEASE":
-			copyTo = "Voider/Voider-nightly2.jar"
+			copyTo = "Voider/Voider-nightly.jar"
 			break
 			
 		case "BETA":
-			copyTo = "Voider/Voider-beta2.jar"
+			copyTo = "Voider/Voider-beta.jar"
 			break
 	}
 	
 	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
 	copyTo = dropboxDir + copyTo
 	
-	project(":desktop").clean.execute()
-	project(":desktop").dist.execute()
-	
 	Files.move(Paths.get(desktopFile), Paths.get(copyTo), StandardCopyOption.REPLACE_EXISTING)
 	
-	replaceBuildName(deployBuild, "DEV_LOCAL")
+	replaceBuildName(project.defaultBuild)
 }
 
-def replaceBuildName(currentBuild, nextBuild) {
+def replaceBuildName(nextBuild) {
 	def filename = "core/src/com/spiddekauga/voider/Config.java";
-	def fromString = "BUILD = Builds." + currentBuild
-	def toString = "BUILD = Builds." + nextBuild
+	def fromString = "BUILD = Builds.*;"
+	def toString = "BUILD = Builds." + nextBuild + ";"
 	File configFile = file(filename)
 	def updatedContent = configFile.getText('UTF-8').replaceAll(fromString, toString)
 	configFile.write(updatedContent, 'UTF-8')
@@ -260,11 +272,4 @@ def updateApplicationId(applicationId) {
 	File explodedFile = file(project.appengineExplodedWebFile)
 	updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
 	explodedFile.write(updatedContent, 'UTF-8')
-}
-
-def deployAppengine(applicationId) {
-	updateApplicationId(applicationId)
-
-	// Deploy
-	project(":server").appengineUpdate.execute()
 }
