@@ -205,6 +205,13 @@ public interface IActorEditor extends IEditor {
 	 */
 	void deactivateTools();
 
+	/**
+	 * Execute tool commands. These are tools that only have one direct function when
+	 * pressed.
+	 * @param tool the tool to execute
+	 */
+	void executeTool(Tools tool);
+
 	// --------------- Collision -----------------
 	/**
 	 * Sets colliding damage of the enemy

@@ -113,6 +113,13 @@ public class KeyHelper {
 	}
 
 	/**
+	 * @return true if no modifier is pressed
+	 */
+	public static boolean isNoModifiersPressed() {
+		return !isCtrl() && !isAlt() && !isShift() && !isCtrlAlt();
+	}
+
+	/**
 	 * @return true if any control key is pressed
 	 */
 	private static boolean isCtrl() {

@@ -373,15 +373,35 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 	}
 
-	/**
-	 * Reset the current zoom
-	 */
-	private void resetZoom() {
-		if (mZoomTool != null) {
-			fixCamera();
+	@Override
+	public void executeTool(Tools tool) {
+		if (!isInitialized()) {
+			return;
+		}
+
+		switch (tool) {
+		case ZOOM_IN:
+			mZoomTool.zoomIn();
+			break;
+
+		case ZOOM_OUT:
+			mZoomTool.zoomOut();
+			break;
+
+		case ZOOM_RESET:
 			mZoomTool.resetZoom();
+			break;
+
+		case CENTER_RESET:
+			mInvoker.execute(new CActorEditorCenterReset(this));
+			break;
+
+		default:
+			// Does nothing
+			break;
 		}
 	}
+
 
 	/**
 	 * Activation the specific tool
@@ -400,32 +420,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			}
 		}
 
-
-		// Extra activation actions
-		switch (tool) {
-		case ZOOM_IN:
-			mZoomTool.setZoomStateOnClick(true);
-			break;
-
-		case ZOOM_OUT:
-			mZoomTool.setZoomStateOnClick(false);
-			break;
-
-		case ZOOM_RESET:
-			resetZoom();
-			break;
-
-		case CENTER_RESET:
-			mInvoker.execute(new CActorEditorCenterReset(this));
-			break;
-
-		case NONE:
+		if (tool == Tools.NONE) {
 			mActiveTool = tool;
-			break;
-
-		default:
-			// Does nothing
-			break;
 		}
 	}
 
@@ -482,7 +478,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
 			mInputMultiplexer.removeProcessor(mTools[Tools.PAN.ordinal()]);
 			mInputMultiplexer.removeProcessor(mZoomTool);
-			resetZoom();
+			if (mZoomTool != null) {
+				mZoomTool.resetZoom();
+			}
 
 			// Remove drawing actor
 			if (mDrawingActor != null) {

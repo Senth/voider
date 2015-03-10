@@ -112,6 +112,19 @@ public enum ClientVersions {
 			"	Bullets now only hit the ship once",
 			"	Music and sound now loops without a small pause"
 			),
+	V0_4_11(false,
+			"Improvements",
+			"	Enemy AI movement relative level speed decreased (looks better now)",
+			"Bugfixes",
+			"	Enemy triggers are now saved correctly"
+			),
+	V0_4_12(false,
+			"Improvements",
+			"	Zoom in/out in editors now zoom in/out directly when clicked on",
+			"Bugfixes",
+			"	Fixed zoom tool as it sometimes stopped working in enemy/bullet editor"
+			),
+
 
 	;
 	// @formatter:on
@@ -214,11 +227,11 @@ public enum ClientVersions {
 	 * @see #isUpdateNeeded(int) if an update is needed from version
 	 */
 	public static boolean isLatestVersion(int versionId) {
-		if (versionId < 0 || versionId >= values().length) {
+		if (versionId < 0) {
 			throw new IllegalArgumentException("Version (" + versionId + ") out of bounds");
 		}
 
-		return versionId == values().length - 1;
+		return versionId >= values().length - 1;
 	}
 
 	/**

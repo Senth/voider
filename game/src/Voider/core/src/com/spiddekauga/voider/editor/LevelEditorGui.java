@@ -507,7 +507,7 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(mWidgets.tool.zoomIn) {
 			@Override
 			protected void onPressed(Button button) {
-				mLevelEditor.switchTool(Tools.ZOOM_IN);
+				mLevelEditor.zoomIn();
 			}
 		};
 
@@ -517,7 +517,7 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(mWidgets.tool.zoomOut) {
 			@Override
 			protected void onPressed(Button button) {
-				mLevelEditor.switchTool(Tools.ZOOM_OUT);
+				mLevelEditor.zoomOut();
 			}
 		};
 

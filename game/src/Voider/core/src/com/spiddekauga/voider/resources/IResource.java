@@ -31,6 +31,7 @@ public interface IResource {
 	 * @param boundResource the resource to add and bind
 	 * @return true if the resource was added successfully
 	 */
+	@Deprecated
 	boolean addBoundResource(IResource boundResource);
 
 	/**

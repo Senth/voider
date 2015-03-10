@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -237,8 +238,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDescription(newText);
 			}
 		};
-		mWidgets.info.description = mUiFactory.addTextArea("Description",
-				false, Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), listener, mInfoTable, mDisabledWhenPublished);
+		mWidgets.info.description = mUiFactory.addTextArea("Description", false,
+				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), listener, mInfoTable, mDisabledWhenPublished);
 	}
 
 	/**
@@ -538,29 +539,29 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes the toolbox
 	 */
 	private void initToolMenu() {
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<>();
 
 		mDrawToolHider.addToggleActor(mToolMenu);
 
 
 		// Zoom in
 		mToolMenu.row();
-		mWidgets.tool.zoomIn = mUiFactory.button.addTool(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomIn = mUiFactory.button.addTool(EditorIcons.ZOOM_IN, null, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomIn, Messages.EditorTooltips.TOOL_ZOOM_IN_ACTOR);
 		new ButtonListener(mWidgets.tool.zoomIn) {
 			@Override
 			protected void onPressed(Button button) {
-				mActorEditor.switchTool(Tools.ZOOM_IN);
+				mActorEditor.executeTool(Tools.ZOOM_IN);
 			}
 		};
 
 		// Zoom out
-		mWidgets.tool.zoomOut = mUiFactory.button.addTool(EditorIcons.ZOOM_OUT, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomOut = mUiFactory.button.addTool(EditorIcons.ZOOM_OUT, null, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomOut, Messages.EditorTooltips.TOOL_ZOOM_OUT_ACTOR);
 		new ButtonListener(mWidgets.tool.zoomOut) {
 			@Override
 			protected void onPressed(Button button) {
-				mActorEditor.switchTool(Tools.ZOOM_OUT);
+				mActorEditor.executeTool(Tools.ZOOM_OUT);
 			}
 		};
 
@@ -581,7 +582,7 @@ public abstract class ActorGui extends EditorGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mActorEditor.switchTool(Tools.ZOOM_RESET);
+				mActorEditor.executeTool(Tools.ZOOM_RESET);
 			}
 		};
 
@@ -678,7 +679,7 @@ public abstract class ActorGui extends EditorGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mActorEditor.switchTool(Tools.CENTER_RESET);
+				mActorEditor.executeTool(Tools.CENTER_RESET);
 			}
 		};
 	}

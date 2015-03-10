@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -64,7 +63,7 @@ public class EnemyActor extends Actor {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 
-		EnemyActorDef def = getDef(EnemyActorDef.class);
+		EnemyActorDef def = getDef();
 		if (def != null && def.getMovementType() != null && getBody() != null) {
 			if (isActive()) {
 				// Update movement
@@ -358,101 +357,67 @@ public class EnemyActor extends Actor {
 	 * Resets the weapon
 	 */
 	public void resetWeapon() {
-		mWeapon.setWeaponDef(getDef(EnemyActorDef.class).getWeaponDef());
-
-		mShootAngle = getDef(EnemyActorDef.class).getAimStartAngle();
+		mWeapon.setWeaponDef(getDef().getWeaponDef());
+		mShootAngle = getDef().getAimStartAngle();
 	}
 
 	@Override
-	public void write(Kryo kryo, Output output) {
-		super.write(kryo, output);
+	public void preWrite() {
+		super.preWrite();
 
-		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
-
-		// Weapon
-		if (enemyDef.hasWeapon()) {
-			kryo.writeObject(output, mWeapon);
-			output.writeFloat(mShootAngle);
-		}
-
-		// Group
-		if (mGroup != null) {
-			output.writeBoolean(mGroupLeader);
-		}
-
-		// Movement
-		if (enemyDef.getMovementType() == MovementTypes.AI) {
-			if (enemyDef.isMovingRandomly()) {
-				output.writeFloat(mRandomMoveNext, 100, true);
-				kryo.writeObject(output, mRandomMoveDirection);
-			}
-		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			kryo.writeObjectOrNull(output, mPath, Path.class);
-
-			if (mPath != null) {
-				output.writeInt(mPathIndexNext, false);
-
-				switch (mPath.getPathType()) {
-				case ONCE:
-					output.writeBoolean(mPathOnceReachedEnd);
-					break;
-
-				case BACK_AND_FORTH:
-					output.writeBoolean(mPathForward);
-					break;
-
-				case LOOP:
-					// Does nothing
-					break;
-				}
-			}
-		}
+		mClassRevision = CLASS_REVISION;
 	}
 
 	@Override
 	public void read(Kryo kryo, Input input) {
 		super.read(kryo, input);
 
-		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
-		setDef(enemyDef);
+		EnemyActorDef enemyDef = getDef();
+		super.setDef(enemyDef);
 
-		// Weapon
-		if (enemyDef.hasWeapon()) {
-			mWeapon = kryo.readObject(input, Weapon.class);
-			mWeapon.setWeaponDef(enemyDef.getWeaponDef());
-			mShootAngle = input.readFloat();
-		}
-
-		// Group
-		if (mGroup != null) {
-			mGroupLeader = input.readBoolean();
-		}
-
-		// Movement
-		if (enemyDef.getMovementType() == MovementTypes.AI) {
-			if (enemyDef.isMovingRandomly()) {
-				mRandomMoveNext = input.readFloat(100, true);
-				mRandomMoveDirection = kryo.readObject(input, Vector2.class);
+		if (mClassRevision == 0) {
+			// Weapon
+			if (enemyDef.hasWeapon()) {
+				mWeapon = kryo.readObject(input, Weapon.class);
+				mWeapon.setWeaponDef(enemyDef.getWeaponDef());
+				mShootAngle = input.readFloat();
 			}
-		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			mPath = kryo.readObjectOrNull(input, Path.class);
 
-			if (mPath != null) {
-				mPathIndexNext = input.readInt(false);
+			// Group
+			if (mGroup != null) {
+				mGroupLeader = input.readBoolean();
+			}
 
-				switch (mPath.getPathType()) {
-				case ONCE:
-					mPathOnceReachedEnd = input.readBoolean();
-					break;
-
-				case BACK_AND_FORTH:
-					mPathForward = input.readBoolean();
-					break;
-
-				case LOOP:
-					// Does nothing
-					break;
+			// Movement
+			if (enemyDef.getMovementType() == MovementTypes.AI) {
+				if (enemyDef.isMovingRandomly()) {
+					mRandomMoveNext = input.readFloat(100, true);
+					mRandomMoveDirection = kryo.readObject(input, Vector2.class);
 				}
+			} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
+				mPath = kryo.readObjectOrNull(input, Path.class);
+
+				if (mPath != null) {
+					mPathIndexNext = input.readInt(false);
+
+					switch (mPath.getPathType()) {
+					case ONCE:
+						mPathOnceReachedEnd = input.readBoolean();
+						break;
+
+					case BACK_AND_FORTH:
+						mPathForward = input.readBoolean();
+						break;
+
+					case LOOP:
+						// Does nothing
+						break;
+					}
+				}
+			}
+		} else {
+			if (enemyDef.hasWeapon()) {
+				mWeapon.setWeaponDef(enemyDef.getWeaponDef());
 			}
 		}
 	}
@@ -1126,36 +1091,39 @@ public class EnemyActor extends Actor {
 		return RenderOrders.ENEMY;
 	}
 
+	private static final int CLASS_REVISION = 2;
+	@Tag(132) private int mClassRevision = 0;
+
 	/** Polygon line for drawing wider outline */
 	private ArrayList<Vector2> mActivateCircle = null;
+
 	/** Enemy weapon */
-	private Weapon mWeapon = new Weapon();
+	@Tag(141) private Weapon mWeapon = new Weapon();
 	/** Shooting angle (used when rotating) */
-	private float mShootAngle = 0;
+	@Tag(142) private float mShootAngle = 0;
 
 	// Group
 	/** Group of the enemy, null if the enemy doesn't belong to a group */
 	@Tag(75) private EnemyGroup mGroup = null;
 	/** If this enemy is the first in the group */
-	private boolean mGroupLeader = false;
+	@Tag(140) private boolean mGroupLeader = false;
 
 	// AI MOVEMENT
 	/** Next random move time */
-	private float mRandomMoveNext = 0;
+	@Tag(138) private float mRandomMoveNext = 0;
 	/** Direction of the current random move */
-	private Vector2 mRandomMoveDirection = new Vector2();
+	@Tag(139) private Vector2 mRandomMoveDirection = new Vector2();
 
 
 	// PATH MOVEMENT
 	/** Path we're currently following */
-	private Path mPath = null;
-	/** Path id, used when saving/loading enemy actor as it does not save the path */
+	@Tag(133) private Path mPath = null;
 	/** Index of path we're heading to */
-	private int mPathIndexNext = -1;
+	@Tag(134) private int mPathIndexNext = -1;
 	/** If the enemy is moving in the path direction */
-	private boolean mPathForward = true;
+	@Tag(135) private boolean mPathForward = true;
 	/** ONCE path reach end */
-	private boolean mPathOnceReachedEnd = false;
+	@Tag(136) private boolean mPathOnceReachedEnd = false;
 	/** Last direction */
-	private Vector2 mTargetDirection = new Vector2();
+	@Tag(137) private Vector2 mTargetDirection = new Vector2();
 }

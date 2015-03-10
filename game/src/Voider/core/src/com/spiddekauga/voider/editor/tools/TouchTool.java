@@ -100,7 +100,11 @@ public abstract class TouchTool extends InputAdapter {
 	 * differently
 	 */
 	public void activate() {
-		mActive = true;
+		if (canBeActive()) {
+			mActive = true;
+		} else {
+			throw new IllegalStateException(getClass().getSimpleName() + " isn't allowed to be activated");
+		}
 	}
 
 	/**
@@ -108,7 +112,11 @@ public abstract class TouchTool extends InputAdapter {
 	 * Usually this will make selected actors to be drawn regularly again
 	 */
 	public void deactivate() {
-		mActive = false;
+		if (canBeActive()) {
+			mActive = false;
+		} else {
+			throw new IllegalStateException(getClass().getSimpleName() + " isn't allowed to be deactivated");
+		}
 	}
 
 	/**
@@ -246,6 +254,22 @@ public abstract class TouchTool extends InputAdapter {
 		return true;
 	}
 
+	/**
+	 * Set this to false to make the tool unable to activate (it throws an exception if
+	 * it's activated)
+	 * @param canBeActive
+	 */
+	protected void setCanBeActive(boolean canBeActive) {
+		mCanBeActive = canBeActive;
+	}
+
+	/**
+	 * @return true if this tool is allowed to be active
+	 */
+	public boolean canBeActive() {
+		return mCanBeActive;
+	}
+
 	/** Send notifications */
 	protected NotificationShower mNotification = NotificationShower.getInstance();
 	/** If the player double clicked */
@@ -271,6 +295,8 @@ public abstract class TouchTool extends InputAdapter {
 	/** Selectable resource types */
 	protected ArrayList<Class<? extends IResource>> mSelectableResourceTypes = new ArrayList<Class<? extends IResource>>();
 
+	/** True if this tool is allowed to be active */
+	private boolean mCanBeActive = true;
 	/** If this tool is currently active */
 	private boolean mActive = false;
 	/** If the tool is currently drawing */

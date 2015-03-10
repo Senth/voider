@@ -27,19 +27,13 @@ public class ZoomTool extends TouchTool {
 
 		mZoomMin = zoomMin;
 		mZoomMax = zoomMax;
+
+		setCanBeActive(false);
 	}
 
 	@Override
 	protected boolean down(int button) {
-		if (isActive()) {
-			if (mZoomInOnClick) {
-				zoom(-1);
-			} else {
-				zoom(1);
-			}
-
-			return true;
-		}
+		// Does nothing
 		return false;
 	}
 
@@ -72,14 +66,6 @@ public class ZoomTool extends TouchTool {
 	}
 
 	/**
-	 * Set zoom click state
-	 * @param zoomIn true if we want to zoom in on clicks, false if zoom out
-	 */
-	public void setZoomStateOnClick(boolean zoomIn) {
-		mZoomInOnClick = zoomIn;
-	}
-
-	/**
 	 * Reset the zoom
 	 */
 	public void resetZoom() {
@@ -87,6 +73,20 @@ public class ZoomTool extends TouchTool {
 		Vector2 zoomPos = calculateZoomPos(1, mZoom);
 		mZoom = 1;
 		mInvoker.execute(new CCameraZoom(mCamera, mZoom, zoomPos));
+	}
+
+	/**
+	 * Zoom in
+	 */
+	public void zoomIn() {
+		zoom(-1);
+	}
+
+	/**
+	 * Zoom out
+	 */
+	public void zoomOut() {
+		zoom(1);
 	}
 
 	/**
@@ -210,8 +210,6 @@ public class ZoomTool extends TouchTool {
 		mWorldMax.y = y;
 	}
 
-	/** True if will zoom in on click */
-	private boolean mZoomInOnClick = true;
 	/** Current zoom value */
 	private float mZoom = 1;
 	/** Min zoom value */

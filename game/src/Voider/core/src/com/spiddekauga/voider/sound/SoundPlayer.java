@@ -162,6 +162,9 @@ public class SoundPlayer {
 			while (mSound.isPlaying()) {
 				float timeDiff = GameTime.getTotalGlobalTimeElapsed() - startTime;
 				Sound track = mSound.getTrack();
+				if (track == null) {
+					return;
+				}
 
 				// Fade
 				if (timeDiff < mFadeTime) {

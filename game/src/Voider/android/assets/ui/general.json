@@ -187,7 +187,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: white,
 	},
 	
-	// Default text for text fields
+	// Default text for text fields - NOT IMPLEMTED YET
 	textfield_default: {
 		font: default_font,
 		fontColor: grey_dark,
@@ -223,7 +223,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	
 	tooltip: {
 		font: default_font,
-		fontColor: grey_dark,
+		fontColor: grey_light,
 	},
 	
 	// Label for the publish names 

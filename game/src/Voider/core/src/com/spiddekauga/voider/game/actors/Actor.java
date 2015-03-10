@@ -29,6 +29,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
@@ -66,7 +67,7 @@ import com.spiddekauga.voider.utils.event.GameEvent;
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
 		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRenderShape, IResourceRenderSprite, IResourceEditorRender,
-		IResourceSelectable, IResourceCorner {
+		IResourceSelectable, IResourceCorner, KryoPreWrite {
 	/**
 	 * Sets the texture of the actor including the actor definition. Automatically creates
 	 * a body for the actor.
@@ -561,9 +562,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	@Override
-	public void write(Kryo kryo, Output output) {
-		output.writeInt(CLASS_REVISION, true);
+	public void preWrite() {
+		mClassRevision = CLASS_REVISION;
+	}
 
+	@Override
+	public void write(Kryo kryo, Output output) {
 		// Saves active state?
 		output.writeBoolean(mEditorActive);
 		if (!mEditorActive) {
@@ -592,8 +596,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public void read(Kryo kryo, Input input) {
-		@SuppressWarnings("unused")
-		int classRevision = input.readInt(true);
+		if (mClassRevision == 0) {
+			// Read old class revision which never was used
+			mClassRevision = input.readInt(true);
+		}
 
 		// Load active state
 		boolean editorWasActive = input.readBoolean();
@@ -1301,11 +1307,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/** Body position, remember even when we don't have a body */
 	@Tag(4) private Vector2 mPosition = new Vector2();
 	/** Trigger informations */
-	@Deprecated @Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<>();
+	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<>();
 
 	// Kryo special variables
 	/** Revision of the actor */
-	protected final int CLASS_REVISION = 1;
+	private static final int CLASS_REVISION = 2;
+	@Tag(131) private int mClassRevision = 0;
+
 	/** True if the actor is active */
 	private boolean mActive = true;
 	/** The belonging definition of this actor */

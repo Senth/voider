@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -15,8 +15,6 @@ import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug;
-import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
@@ -585,11 +583,49 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 		}
 
-		// Testing
-		if (Debug.isBuildOrBelow(Builds.DEV_LOCAL)) {
-			// Update theme
-			if (Keys.F12 == keycode) {
-				((LevelEditorGui) mGui).resetTheme();
+		// Tools
+		if (KeyHelper.isNoModifiersPressed()) {
+			if (keycode == Input.Keys.S) {
+				switchTool(Tools.SELECTION);
+			} else if (keycode == Input.Keys.P) {
+				switchTool(Tools.PATH_ADD);
+			} else if (keycode == Input.Keys.M) {
+				switchTool(Tools.MOVE);
+			} else if (keycode == Input.Keys.E) {
+				switchTool(Tools.ENEMY_ADD);
+			}
+		}
+
+		// Tools - Terrain
+		if (keycode == Input.Keys.D) {
+			if (KeyHelper.isShiftPressed()) {
+				switchTool(Tools.TERRAIN_DRAW_ERASE);
+			} else if (KeyHelper.isNoModifiersPressed()) {
+				switchTool(Tools.TERRAIN_DRAW_APPEND);
+			}
+		} else if (keycode == Input.Keys.C) {
+			if (KeyHelper.isShiftPressed()) {
+				switchTool(Tools.ADD_MOVE_CORNER);
+			} else if (KeyHelper.isNoModifiersPressed()) {
+				switchTool(Tools.REMOVE_CORNER);
+			}
+		}
+
+		// Tools - Trigger
+		else if (keycode == Input.Keys.T) {
+			if (KeyHelper.isShiftPressed()) {
+				switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+			} else if (KeyHelper.isNoModifiersPressed()) {
+				switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
+			}
+		}
+
+		// Tools - zoom
+		else if (keycode == Input.Keys.Z) {
+			if (KeyHelper.isShiftPressed()) {
+				switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+			} else if (KeyHelper.isNoModifiersPressed()) {
+				switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
 			}
 		}
 
@@ -642,8 +678,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		case SELECTION:
 		case DELETE:
 		case PAN:
-		case ZOOM_IN:
-		case ZOOM_OUT:
 			return true;
 
 		default:
@@ -1519,6 +1553,26 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mZoomTool != null) {
 			fixCamera();
 			mZoomTool.resetZoom();
+		}
+	}
+
+	/**
+	 * Zoom in
+	 */
+	void zoomIn() {
+		if (mZoomTool != null) {
+			fixCamera();
+			mZoomTool.zoomIn();
+		}
+	}
+
+	/**
+	 * Zoom out
+	 */
+	void zoomOut() {
+		if (mZoomTool != null) {
+			fixCamera();
+			mZoomTool.zoomOut();
 		}
 	}
 
