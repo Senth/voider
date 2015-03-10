@@ -248,7 +248,7 @@ public class MsgBox extends Dialog {
 		if (alignment != null) {
 			label.setAlignment(alignment);
 		}
-		return content(new Label(text, labelStyle));
+		return content(label);
 	}
 
 	/**

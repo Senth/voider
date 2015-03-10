@@ -3,6 +3,8 @@ package com.spiddekauga.voider.menu;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.commands.CGameQuit;
+import com.spiddekauga.utils.commands.CRun;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -11,6 +13,7 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.commands.CUserLogout;
@@ -60,10 +63,24 @@ class MainMenuGui extends MenuGui {
 	 */
 	void showQuitMsgBox() {
 		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Quit Game?");
-		msgBox.content("\nDo you want to quit the game?");
-		msgBox.button("Quit", new CGameQuit());
-		msgBox.button("Logout", new CUserLogout());
+		msgBox.content("Do you want to quit the game?");
 		msgBox.addCancelButtonAndKeys();
+
+		Command logoutCommand = null;
+		if (User.getGlobalUser().isOnline()) {
+			logoutCommand = new CUserLogout();
+		} else {
+			logoutCommand = new CRun() {
+				@Override
+				public boolean execute() {
+					showConfirmLogout();
+					return true;
+				}
+			};
+		}
+
+		msgBox.button("Logout", logoutCommand);
+		msgBox.button("Quit", new CGameQuit());
 	}
 
 	/**
@@ -129,20 +146,22 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Logout");
-				msgBox.content("Do you want to logout?", Align.center);
-
-				if (!User.getGlobalUser().isOnline()) {
-					msgBox.contentRow();
-					msgBox.content("NOTE! You are currently offline.\nYou will only be able to login (and play) if you have an Internet connection.",
-							Align.center).padTop(mUiFactory.getStyles().vars.paddingSeparator);
-				}
-
-				msgBox.addCancelButtonAndKeys();
-				msgBox.button("Logout", new CUserLogout());
+				showQuitMsgBox();
 			}
 		};
 		mUiFactory.button.addSound(button);
+	}
+
+	/**
+	 * Show Confirm logout message box
+	 */
+	void showConfirmLogout() {
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Confirm Logout");
+		msgBox.content("You are currently offline.\nYou can only login again if you have an Internet connection.", Align.center,
+				LabelStyles.HIGHLIGHT.getStyle());
+
+		msgBox.addCancelButtonAndKeys();
+		msgBox.button("Logout", new CUserLogout());
 	}
 
 	/**

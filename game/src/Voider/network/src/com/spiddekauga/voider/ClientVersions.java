@@ -123,6 +123,8 @@ public enum ClientVersions {
 			"	Zoom in/out in editors now zoom in/out directly when clicked on",
 			"	Added back button in various menus",
 			"	Removed UI sound everywhere except main menus",
+			"	Pressing logout now brings up same menu as Back/Esc",
+			"	When logging out when you're offline an confirmation box will now be shown",
 			"Bugfixes",
 			"	Fixed zoom tool as it sometimes stopped working in enemy/bullet editor"
 			),
