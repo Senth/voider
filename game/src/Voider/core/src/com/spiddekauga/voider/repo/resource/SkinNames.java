@@ -873,6 +873,8 @@ public class SkinNames {
 		PLAYER_BIG(ImageButtonStyle.class),
 		/** Settings big */
 		SETTINGS_BIG(ImageButtonStyle.class),
+		/** Back button big */
+		BACK_BIG(ImageButtonStyle.class),
 		/** Comments tab */
 		COMMENTS(ImageButtonStyle.class),
 		/** Image tab */

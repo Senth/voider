@@ -121,6 +121,8 @@ public enum ClientVersions {
 	V0_4_12(false,
 			"Improvements",
 			"	Zoom in/out in editors now zoom in/out directly when clicked on",
+			"	Added back button in various menus",
+			"	Removed UI sound everywhere except main menus",
 			"Bugfixes",
 			"	Fixed zoom tool as it sometimes stopped working in enemy/bullet editor"
 			),

@@ -22,10 +22,17 @@ public class SettingsScene extends Scene {
 	@Override
 	protected boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
-			setOutcome(Outcomes.NOT_APPLICAPLE);
+			back();
 		}
 
 		return super.onKeyDown(keycode);
+	}
+
+	/**
+	 * Move back to the previous scene
+	 */
+	void back() {
+		setOutcome(Outcomes.NOT_APPLICAPLE);
 	}
 
 	/**

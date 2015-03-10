@@ -50,6 +50,14 @@ public class ButtonFactory extends BaseFactory {
 	}
 
 	/**
+	 * Add a button to the sound listener. I.e. make the button have UI effects
+	 * @param button
+	 */
+	public void addSound(Button button) {
+		button.addListener(mButtonSoundListener);
+	}
+
+	/**
 	 * Add a tab to a created tab widget
 	 * @param icon the image of the tab
 	 * @param table will show this table when this tab is selected
@@ -108,7 +116,6 @@ public class ButtonFactory extends BaseFactory {
 	public ImageButton createImage(ISkinNames icon) {
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 		new AnalyticsButtonListener(imageButton, icon.toString());
-		imageButton.addListener(mButtonSoundListener);
 		return imageButton;
 	}
 
@@ -144,7 +151,6 @@ public class ButtonFactory extends BaseFactory {
 		ImageScrollButton imageScrollButton = new ImageScrollButton(style.getStyle(), scrollWhen);
 		table.add(imageScrollButton).setSize(width, height);
 		new AnalyticsButtonListener(imageScrollButton, style.toString());
-		imageScrollButton.addListener(mButtonSoundListener);
 
 		UiFactory.doExtraActionsOnActors(null, createdActors, imageScrollButton);
 
@@ -172,7 +178,6 @@ public class ButtonFactory extends BaseFactory {
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 		mUiFactory.addIconLabel(imageButton, text, textPosition, textStyle, table, hider, createdActors);
 		new AnalyticsButtonListener(imageButton, icon.toString());
-		imageButton.addListener(mButtonSoundListener);
 
 		return imageButton;
 	}
@@ -188,7 +193,6 @@ public class ButtonFactory extends BaseFactory {
 	public TextButton createText(String text, TextButtonStyles style) {
 		TextButton textButton = new TextButton(text, style.getStyle());
 		new AnalyticsButtonListener(textButton, text);
-		textButton.addListener(mButtonSoundListener);
 		return textButton;
 	}
 
@@ -333,10 +337,9 @@ public class ButtonFactory extends BaseFactory {
 	 * @param createdActors optional adds the tool button to this list (if not null)
 	 * @return created tool icon button
 	 */
-	public ImageButton addTool(ISkinNames icon, ButtonGroup group, AlignTable table, ArrayList<Actor> createdActors) {
+	public ImageButton addTool(ISkinNames icon, ButtonGroup<ImageButton> group, AlignTable table, ArrayList<Actor> createdActors) {
 		ImageButton button = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 		new AnalyticsButtonListener(button, icon.toString());
-		button.addListener(mButtonSoundListener);
 
 		if (group != null) {
 			group.add(button);
@@ -420,7 +423,7 @@ public class ButtonFactory extends BaseFactory {
 	 * @param table the table to add the checkbox to
 	 * @return created checkbox
 	 */
-	public CheckBox addCheckBox(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
+	public CheckBox addCheckBox(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup<CheckBox> group, AlignTable table) {
 		CheckBox checkBox = createCheckBox(text, style);
 
 		table.add(checkBox);
@@ -444,7 +447,7 @@ public class ButtonFactory extends BaseFactory {
 	 * @param table the table to add the checkbox to
 	 * @return created checkbox
 	 */
-	public CheckBox addCheckBoxRow(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
+	public CheckBox addCheckBoxRow(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup<CheckBox> group, AlignTable table) {
 		table.row();
 
 		CheckBox checkBox = addCheckBox(text, style, listener, group, table);
@@ -464,10 +467,10 @@ public class ButtonFactory extends BaseFactory {
 	 * @param table where to add the buttons
 	 * @param buttons empty checkbox array, created button is added to this array
 	 */
-	public void addEnumCheckboxes(Enum<?>[] enumerations, CheckBoxStyles style, GuiHider hider, ButtonGroup group, boolean vertical,
+	public void addEnumCheckboxes(Enum<?>[] enumerations, CheckBoxStyles style, GuiHider hider, ButtonGroup<CheckBox> group, boolean vertical,
 			AlignTable table, Button[] buttons) {
 		if (buttons.length != enumerations.length) {
-			throw new RuntimeException("Enumeration doesn't have same length as buttons. Enums:\n " + enumerations.toString());
+			throw new RuntimeException("Enumeration doesn't have same length as buttons. Enums:\n " + enumerations.length);
 		}
 
 		for (int i = 0; i < enumerations.length; i++) {
@@ -500,6 +503,23 @@ public class ButtonFactory extends BaseFactory {
 	}
 
 	/**
+	 * Create a back button table
+	 * @param buttonListener button listener for the back button
+	 * @return table placed at the correct place with a back button
+	 */
+	public AlignTable createBackButton(ButtonListener buttonListener) {
+		AlignTable table = new AlignTable();
+		table.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+
+		ImageButton button = createImage(SkinNames.General.BACK_BIG);
+		table.add(button);
+		button.addListener(buttonListener);
+		addSound(button);
+
+		return table;
+	}
+
+	/**
 	 * Create generic tabs for a table.
 	 * @param table adds the tabs to this table
 	 * @param parentHider parent hider for all tab hiders
@@ -513,7 +533,7 @@ public class ButtonFactory extends BaseFactory {
 		if (invoker != null) {
 			checkCommandCreator = new GuiCheckCommandCreator(invoker);
 		}
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup<Button> buttonGroup = new ButtonGroup<>();
 		buttonGroup.setMinCheckCount(1);
 		buttonGroup.setMaxCheckCount(1);
 
@@ -596,13 +616,6 @@ public class ButtonFactory extends BaseFactory {
 	 */
 	public TabRadioWrapper createTabRadioWrapper(String text) {
 		return new TabRadioWrapper(text);
-	}
-
-	/**
-	 * @return sound button listener
-	 */
-	public EventListener getSoundListener() {
-		return mButtonSoundListener;
 	}
 
 	/**
@@ -720,7 +733,6 @@ public class ButtonFactory extends BaseFactory {
 		public void createButton() {
 			mButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(mImageName));
 			new AnalyticsButtonListener(mButton, mImageName.toString());
-			mButton.addListener(mButtonSoundListener);
 		}
 
 		/** Image name */

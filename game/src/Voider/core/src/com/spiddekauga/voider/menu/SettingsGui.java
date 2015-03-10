@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Disposable;
@@ -58,6 +59,19 @@ public class SettingsGui extends Gui {
 		if (Gdx.app.getType() == ApplicationType.Desktop) {
 			initDisplay();
 		}
+
+		initBackButton();
+	}
+
+	private void initBackButton() {
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.back();
+			}
+		};
+
+		addActor(mUiFactory.button.createBackButton(buttonListener));
 	}
 
 	private void initHeader() {
@@ -94,7 +108,7 @@ public class SettingsGui extends Gui {
 		mUiFactory.text.addSection("Time Format", table, null);
 		table.getRow().setAlign(Vertical.BOTTOM);
 		table.getCell().setAlign(Vertical.BOTTOM);
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup<CheckBox> buttonGroup = new ButtonGroup<>();
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(Button button, boolean checked) {

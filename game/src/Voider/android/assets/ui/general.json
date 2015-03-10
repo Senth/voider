@@ -350,13 +350,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: play_disabled
 	},
 	
-	explore: {
-		imageUp: explore,
-		imageOver: explore_over,
-		imageDown: explore_down,
-		imageDisabled: explore_disabled
-	},
-	
 	create: {
 		imageUp: create,
 		imageOver: create_over,
@@ -391,6 +384,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: settings_big_down,
 		imageDisabled: settings_big_disabled
 	},
+	
+	back_big: {
+		imageUp: back_big,
+		imageOver: back_big_over,
+		imageDown: back_big_down,
+		imageDisabled: back_big_disabled
+	}
 	
 	/** Menu - Play */
 	

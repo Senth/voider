@@ -70,7 +70,7 @@ class MainMenuGui extends MenuGui {
 	 * Initializes the main menu
 	 */
 	private void initMainMenu() {
-		// Explore
+		// Play
 		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
@@ -78,6 +78,7 @@ class MainMenuGui extends MenuGui {
 				mMenuScene.gotoExplore();
 			}
 		};
+		mUiFactory.button.addSound(button);
 		mUiFactory.button.addPadding(mMainTable);
 
 
@@ -89,6 +90,7 @@ class MainMenuGui extends MenuGui {
 				mMenuScene.pushMenu(Menus.EDITOR);
 			}
 		};
+		mUiFactory.button.addSound(button);
 		mUiFactory.button.addPadding(mMainTable);
 
 
@@ -100,6 +102,7 @@ class MainMenuGui extends MenuGui {
 				mMenuScene.pushMenu(Menus.SETTINGS);
 			}
 		};
+		mUiFactory.button.addSound(button);
 
 		// Player Info
 		button = mUiFactory.button.addImage(SkinNames.General.PLAYER_BIG, mPlayerInfoTable, null, null);
@@ -109,6 +112,7 @@ class MainMenuGui extends MenuGui {
 				// TODO go to info
 			}
 		};
+		mUiFactory.button.addSound(button);
 
 		// Spiddekauga Info
 		button = mUiFactory.button.addImage(SkinNames.General.SPIDDEKAUGA_INFO, mSpiddekaugaTable, null, null);
@@ -118,6 +122,7 @@ class MainMenuGui extends MenuGui {
 				mMenuScene.pushMenu(Menus.CREDITS);
 			}
 		};
+		mUiFactory.button.addSound(button);
 
 		// Logout
 		button = mUiFactory.button.addImage(SkinNames.General.LOGOUT, mLogoutTable, null, null);
@@ -137,6 +142,7 @@ class MainMenuGui extends MenuGui {
 				msgBox.button("Logout", new CUserLogout());
 			}
 		};
+		mUiFactory.button.addSound(button);
 	}
 
 	/**

@@ -28,12 +28,19 @@ class CreditScene extends Scene {
 	@Override
 	protected boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
-			setOutcome(Outcomes.NOT_APPLICAPLE);
+			back();
 			return true;
 		}
 
 		return super.onKeyDown(keycode);
 	};
+
+	/**
+	 * Move back to the previous scene
+	 */
+	void back() {
+		setOutcome(Outcomes.NOT_APPLICAPLE);
+	}
 
 	/**
 	 * @return all credits

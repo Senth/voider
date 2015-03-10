@@ -28,13 +28,27 @@ class EditorSelectionGui extends MenuGui {
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
 		initMenu();
+		initBackButton();
+	}
+
+	private void initBackButton() {
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mMenuScene.popMenu();
+			}
+		};
+
+		addActor(mUiFactory.button.createBackButton(buttonListener));
 	}
 
 	/**
 	 * Initializes the menu
 	 */
 	private void initMenu() {
-		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_LEVEL_BIG, "Level", Positions.BOTTOM, null, mMainTable, null, null);
+		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_LEVEL_BIG, "Level", Positions.BOTTOM, null, mMainTable, null,
+				null);
+		mUiFactory.button.addSound(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -43,6 +57,7 @@ class EditorSelectionGui extends MenuGui {
 		};
 
 		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_ENEMY_BIG, "Enemy", Positions.BOTTOM, null, mMainTable, null, null);
+		mUiFactory.button.addSound(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -52,6 +67,7 @@ class EditorSelectionGui extends MenuGui {
 		mUiFactory.button.addPadding(mMainTable);
 
 		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_BULLET_BIG, "Bullet", Positions.BOTTOM, null, mMainTable, null, null);
+		mUiFactory.button.addSound(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -62,6 +78,7 @@ class EditorSelectionGui extends MenuGui {
 
 		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
 			button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_SHIP_BIG, "Ship", Positions.BOTTOM, null, mMainTable, null, null);
+			mUiFactory.button.addSound(button);
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed(Button button) {
