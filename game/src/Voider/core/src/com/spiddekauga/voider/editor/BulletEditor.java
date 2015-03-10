@@ -63,7 +63,7 @@ public class BulletEditor extends ActorEditor {
 				mInvoker.dispose();
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-			mGui.hideMsgBoxes();
+			mGui.popMsgBoxes();
 		}
 	}
 

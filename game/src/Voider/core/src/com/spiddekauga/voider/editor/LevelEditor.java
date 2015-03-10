@@ -367,7 +367,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					setLevel(loadedLevel);
 					switchTool(Tools.SELECTION);
 					((LevelEditorGui) mGui).resetTools();
-					mGui.hideMsgBoxes();
+					mGui.popMsgBoxes();
 					setSaved();
 					mLoadingLevel = null;
 				} else {
@@ -382,7 +382,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				mInvoker.execute(new CLevelEnemyDefAdd(((EnemyDefEntity) message).resourceId, this));
 			}
 		} else if (outcome == Outcomes.EXPLORE_LOAD) {
-			mGui.hideMsgBoxes();
+			mGui.popMsgBoxes();
 
 			if (message instanceof LevelDefEntity) {
 				LevelDefEntity levelDefEntity = (LevelDefEntity) message;
@@ -409,7 +409,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				}
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-			mGui.hideMsgBoxes();
+			mGui.popMsgBoxes();
 		}
 		// Set as unsaved if took screenshot
 		else if (outcome == Outcomes.LEVEL_PLAYER_DIED || outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_QUIT) {
@@ -422,7 +422,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		else if (outcome == Outcomes.THEME_SELECTED) {
 			Themes theme = (Themes) message;
 			setTheme(theme);
-			mGui.hideMsgBoxActive();
+			mGui.popMsgBoxActive();
 		}
 
 		if (mLevel != null) {

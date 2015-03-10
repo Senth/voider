@@ -185,6 +185,7 @@ public class MainMenu extends Scene implements IEventListener {
 				((MainMenuGui) mGui).showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
 				infoRepo.updateClientVersion();
 			}
+			infoRepo.updateClientVersion();
 		}
 	}
 

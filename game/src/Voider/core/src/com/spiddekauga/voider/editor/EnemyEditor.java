@@ -136,7 +136,7 @@ public class EnemyEditor extends ActorEditor {
 				setSaved();
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-			mGui.hideMsgBoxes();
+			mGui.popMsgBoxes();
 		}
 	}
 

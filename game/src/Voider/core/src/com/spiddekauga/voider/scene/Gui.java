@@ -30,6 +30,7 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -206,8 +207,8 @@ public abstract class Gui implements Disposable {
 		if (!mActiveMsgBoxes.isEmpty() && !isWaitOrProgressShowing()) {
 			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.peek();
 
-			// Else if the active message box becomes hidden. Show the previous one
-			if (activeMsgBox != null && activeMsgBox.isHidden()) {
+			// If the active message box was hidden. Show the previous one
+			if (activeMsgBox.isHidden()) {
 				mActiveMsgBoxes.pop();
 				mUiFactory.msgBox.free(activeMsgBox);
 
@@ -215,6 +216,10 @@ public abstract class Gui implements Disposable {
 				if (!mActiveMsgBoxes.isEmpty()) {
 					mActiveMsgBoxes.peek().show(mStage);
 				}
+			}
+			// Fade in the message box as wait or progress window has been hidden
+			else if (!activeMsgBox.isVisible() && activeMsgBox.getActions().size == 0) {
+				fadeInMessageBox();
 			}
 		}
 
@@ -224,9 +229,9 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Hides all active message boxes
+	 * Remove all active message boxes
 	 */
-	public void hideMsgBoxes() {
+	public void popMsgBoxes() {
 		if (mActiveMsgBoxes.size() >= 2) {
 			// Only the latest message box is shown, i.e. just remove all except the
 			// last message box which we hide.
@@ -248,9 +253,10 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Hide active message box. Will activate the previous message box if one is available
+	 * Pop/Remove active message box. Will activate the previous message box if one is
+	 * available
 	 */
-	public void hideMsgBoxActive() {
+	public void popMsgBoxActive() {
 		if (!mActiveMsgBoxes.isEmpty()) {
 			MsgBoxExecuter msgBox = mActiveMsgBoxes.pop();
 			msgBox.hide();
@@ -261,6 +267,18 @@ public abstract class Gui implements Disposable {
 				mActiveMsgBoxes.peek().clearActions();
 				mActiveMsgBoxes.peek().show(mStage);
 			}
+		}
+	}
+
+	/**
+	 * Hide the current message box by making it invisible. This also clear any actions of
+	 * the message box
+	 */
+	private void hideMsgBoxActive() {
+		if (!mActiveMsgBoxes.isEmpty()) {
+			MsgBoxExecuter msgBox = mActiveMsgBoxes.peek();
+			msgBox.clearActions();
+			msgBox.setVisible(false);
 		}
 	}
 
@@ -304,9 +322,7 @@ public abstract class Gui implements Disposable {
 		}
 
 		// Hide message box
-		if (!mActiveMsgBoxes.isEmpty()) {
-			mActiveMsgBoxes.peek().setVisible(false);
-		}
+		hideMsgBoxActive();
 
 		// Show window if it doesn't belong to a stage
 		if (mWidgets.waitWindow.window.getStage() == null) {
@@ -348,8 +364,6 @@ public abstract class Gui implements Disposable {
 
 		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
 		mWidgets.waitWindow.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
-
-		fadeInMessageBox();
 	}
 
 	/**
@@ -362,9 +376,7 @@ public abstract class Gui implements Disposable {
 		}
 
 		// Hide message box
-		if (!mActiveMsgBoxes.isEmpty()) {
-			mActiveMsgBoxes.peek().setVisible(false);
-		}
+		hideMsgBoxActive();
 
 		mWidgets.progressBar.window.clearActions();
 
@@ -393,9 +405,6 @@ public abstract class Gui implements Disposable {
 		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
 		mWidgets.progressBar.window.clearActions();
 		mWidgets.progressBar.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
-
-		// Fade in message box
-		fadeInMessageBox();
 	}
 
 	/**
@@ -403,10 +412,9 @@ public abstract class Gui implements Disposable {
 	 */
 	private void fadeInMessageBox() {
 		if (!mActiveMsgBoxes.isEmpty()) {
-			float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
-			float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
+			float waitDelay = Config.Gui.MSG_BOX_SHOW_WAIT_TIME;
 			final MsgBoxExecuter msgBox = mActiveMsgBoxes.peek();
-			msgBox.addAction(Actions.sequence(Actions.delay(fadeOutDuriation + 0.1f), Actions.show(), Actions.fadeIn(fadeInDuration)));
+			msgBox.addAction(Actions.sequence(Actions.delay(waitDelay), Actions.show(), MsgBoxExecuter.fadeInActionDefault()));
 		}
 	}
 

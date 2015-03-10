@@ -391,7 +391,7 @@ public class MsgBox extends Dialog {
 
 	@Override
 	public MsgBox show(Stage stage) {
-		show(stage, Actions.fadeIn(mFadeInTimeDefault, Interpolation.linear));
+		show(stage, fadeInActionDefault());
 		return this;
 	}
 
@@ -422,7 +422,7 @@ public class MsgBox extends Dialog {
 
 	@Override
 	public void hide() {
-		hide(Actions.fadeOut(mFadeOutTimeDefault, Interpolation.linear));
+		hide(fadeOutActionDefault());
 	}
 
 	@Override
@@ -541,6 +541,20 @@ public class MsgBox extends Dialog {
 	public void setSkin(Skin skin) {
 		mSkin = skin;
 		super.setSkin(skin);
+	}
+
+	/**
+	 * @return a new default fade in action for message boxes
+	 */
+	public static Action fadeInActionDefault() {
+		return Actions.fadeIn(mFadeInTimeDefault, Interpolation.linear);
+	}
+
+	/**
+	 * @return new default fade out action for message boxes
+	 */
+	public static Action fadeOutActionDefault() {
+		return Actions.fadeOut(mFadeOutTimeDefault, Interpolation.linear);
 	}
 
 	/**
