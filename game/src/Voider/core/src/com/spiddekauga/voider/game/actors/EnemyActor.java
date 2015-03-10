@@ -168,13 +168,14 @@ public class EnemyActor extends Actor {
 			shapeRenderer.pop();
 
 
-			// Highlight if will be spawned when test running the level
+			// Highlight enemies that won't be spawned if will be spawned when test
+			// running the level
 			Scene scene = SceneSwitcher.getActiveScene(false);
 			if (scene instanceof LevelEditor) {
 				LevelEditor levelEditor = (LevelEditor) scene;
 				if (levelEditor.isEnemyHighlightOn()) {
 
-					float levelStartCoord = levelEditor.getRunFromHerePosition();
+					float levelStartCoord = levelEditor.getRunFromHereLeftPosition();
 					float enemyActivationCoord = Float.MIN_VALUE;
 
 					// Enemy has a dedicated trigger
@@ -190,8 +191,23 @@ public class EnemyActor extends Actor {
 						enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
 					}
 
-					// Enemy will spawn
+					boolean enemyWillSpawn = false;
 					if (levelStartCoord <= enemyActivationCoord) {
+						enemyWillSpawn = true;
+					}
+					// // Check special cases with stationary enemies
+					// else {
+					// if (isStationary()) {
+					// float rightBoundingPos = getPosition().x + getBoundingRadius();
+					// float leftXCoord = levelEditor.getRunFromHereLeftPosition();
+					// if (rightBoundingPos > leftXCoord) {
+					// enemyWillSpawn = true;
+					// }
+					// }
+					// }
+
+					// Enemy will spawn
+					if (!enemyWillSpawn) {
 
 						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_COLOR));
 
@@ -217,6 +233,14 @@ public class EnemyActor extends Actor {
 			RenderOrders.resetZValueOffset(shapeRenderer);
 			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 		}
+	}
+
+	/**
+	 * @return true if the enemy will be stationary. I.e. it's movement type is either
+	 *         stationary or path but doesn't have a path set
+	 */
+	public boolean isStationary() {
+		return getDef().getMovementType() == MovementTypes.STATIONARY || (getDef().getMovementType() == MovementTypes.PATH && mPath == null);
 	}
 
 	/**

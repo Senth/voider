@@ -186,7 +186,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	@Override
+	@Deprecated
 	public boolean addBoundResource(IResource boundResource) {
+		Config.Debug.deprecatedException();
+
 		boolean success = super.addBoundResource(boundResource);
 
 		// Find all listeners for this actor. Then check for trigger info

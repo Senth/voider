@@ -335,7 +335,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * Adds a number of resources to the level
 	 * @param resources an arraylist of resources
 	 */
-	public void addResource(ArrayList<? extends IResource> resources) {
+	public void addResource(Iterable<? extends IResource> resources) {
 		for (IResource resource : resources) {
 			addResource(resource);
 		}
@@ -357,7 +357,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * Removes all the the specified resources from the level
 	 * @param resources all resources to remove from the level
 	 */
-	public void removeResource(ArrayList<? extends IResource> resources) {
+	public void removeResources(Iterable<? extends IResource> resources) {
 		for (IResource resource : resources) {
 			removeResource(resource.getId());
 		}

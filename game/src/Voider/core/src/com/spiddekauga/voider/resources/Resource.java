@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -94,7 +95,10 @@ public abstract class Resource implements IResource {
 	}
 
 	@Override
+	@Deprecated
 	public boolean addBoundResource(IResource boundResource) {
+		Debug.deprecatedException();
+
 		if (boundResource instanceof IResourceChangeListener) {
 			addChangeListener((IResourceChangeListener) boundResource);
 			return true;
@@ -149,10 +153,8 @@ public abstract class Resource implements IResource {
 	}
 
 	/** Unique id of the resource */
-	@Tag(1)
-	protected UUID mUniqueId = null;
+	@Tag(1) protected UUID mUniqueId = null;
 	/** Listeners of the resource */
-	@Tag(2)
-	private ArrayList<IResourceChangeListener> mListeners = null;
+	@Tag(2) private ArrayList<IResourceChangeListener> mListeners = null;
 
 }

@@ -413,7 +413,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 		// Set as unsaved if took screenshot
 		else if (outcome == Outcomes.LEVEL_PLAYER_DIED || outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_QUIT) {
-			if (mPngBytesBeforeTest != mLevel.getDef().getPngImage()) {
+			if (mPngBytesBeforeTestRun != mLevel.getDef().getPngImage()) {
 				setUnsaved();
 				((LevelEditorGui) mGui).resetImage();
 			}
@@ -708,20 +708,89 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		float xPosition = getRunFromHerePosition();
 		copyLevel.setStartPosition(xPosition);
 		copyLevel.calculateEndPosition();
-
+		copyLevel.createDefaultTriggers();
+		removeTriggersBeforeRun(copyLevel);
 		testGame.setLevelToRun(copyLevel);
 
-		mPngBytesBeforeTest = copyLevel.getDef().getPngImage();
+		mPngBytesBeforeTestRun = copyLevel.getDef().getPngImage();
 
-		// Remove screen triggers before the specified coordinate
-		ArrayList<TScreenAt> triggers = copyLevel.getResources(TScreenAt.class);
+
+		SceneSwitcher.switchTo(testGame);
+	}
+
+	/**
+	 * Remove triggers before the testing coordinates for enemies
+	 * @param level the level to remove triggers from
+	 */
+	private void removeTriggersBeforeRun(Level level) {
+		float width = calculateDefaultWorldWidth();
+		float leftXCoord = level.getXCoord() - width;
+
+		ArrayList<IResource> toBeRemoved = new ArrayList<>();
+		ArrayList<TScreenAt> triggers = level.getResources(TScreenAt.class);
 		for (TScreenAt trigger : triggers) {
 			if (trigger.isTriggered()) {
-				copyLevel.removeResource(trigger.getId());
+				// Remove triggers left of the screen
+				if (trigger instanceof TScreenAt) {
+					if (trigger.getPosition().x <= leftXCoord) {
+						toBeRemoved.add(trigger);
+					}
+				}
+
+				// for (TriggerInfo triggerInfo : trigger.getListeners()) {
+				// if (triggerInfo.listener instanceof EnemyActor) {
+				// removeTriggeredEnemies((EnemyActor) triggerInfo.listener, leftXCoord,
+				// toBeRemoved);
+				// }
+				// }
 			}
 		}
 
-		SceneSwitcher.switchTo(testGame);
+		level.removeResources(toBeRemoved);
+	}
+
+	// /**
+	// * Checks if an enemy should be removed as it's trigger has already been triggered.
+	// If
+	// * it should be removed it is removed along with any dependencies
+	// * @param enemy the enemy to check
+	// * @param leftXCoord leftmost x coordinate of the window
+	// * @param toBeRemoved everything that should be removed
+	// */
+	// private void removeTriggeredEnemies(EnemyActor enemy, float leftXCoord,
+	// ArrayList<IResource> toBeRemoved) {
+	// // Remove all triggers that are to the left of the screen
+	// if ()
+	//
+	// // // Always remove all AI and Path enemies (with a path)
+	// // if (enemy.getDef().getMovementType() == MovementTypes.AI) {
+	// // toBeRemoved.add(enemy);
+	// //
+	// // // Also remove default deactivate trigger
+	// // TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(enemy,
+	// Actions.ACTOR_DEACTIVATE);
+	// // if (triggerInfo.trigger instanceof TActorActivated) {
+	// // toBeRemoved.add(triggerInfo.trigger);
+	// // }
+	// // } else if (enemy.getDef().getMovementType() == MovementTypes.PATH) {
+	// // if (enemy.getPath() != null) {
+	// // toBeRemoved.add(enemy);
+	// // }
+	// // }
+	// //
+	// // // Remove all enemies that are to the left of the screen and aren't visible
+	// // float rightBoundingPos = enemy.getPosition().x + enemy.getBoundingRadius();
+	// // if (rightBoundingPos <= leftXCoord) {
+	// // toBeRemoved.add(enemy);
+	// // }
+	// }
+
+	/**
+	 * Calculates the left window position when test running
+	 * @return start position (left side of the window) when test running from here
+	 */
+	public float getRunFromHereLeftPosition() {
+		return getRunFromHerePosition() - calculateDefaultWorldWidth();
 	}
 
 	/**
@@ -1763,7 +1832,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	private LevelBackground mBackground = null;
-	private byte[] mPngBytesBeforeTest = null;
+	private byte[] mPngBytesBeforeTestRun = null;
 	private boolean mShowBackground = true;
 	private ArrayList<EnemyActorDef> mAddEnemies = new ArrayList<>();
 	private Level mLevel = null;

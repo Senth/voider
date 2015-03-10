@@ -224,6 +224,23 @@ public class Config {
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = isBuildOrBelow(Builds.NIGHTLY_RELEASE) ? false : false;
 
+		/**
+		 * Call this method to throw a deprecated error message. If the build is in
+		 * development an exception will be thrown, otherwise it's just skipped.
+		 */
+		public static void deprecatedException() {
+			if (isBuildOrBelow(Builds.DEV_SERVER)) {
+				throw new DeprecatedException();
+			}
+		}
+
+
+		/**
+		 * Deprecated exception
+		 */
+		public static class DeprecatedException extends RuntimeException {
+			private static final long serialVersionUID = -2515360644807136974L;
+		}
 
 		/**
 		 * All different builds

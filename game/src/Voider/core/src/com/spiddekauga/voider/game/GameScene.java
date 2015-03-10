@@ -250,7 +250,6 @@ public class GameScene extends WorldScene {
 	private void setLevel(Level level) {
 		mLevel = level;
 		mLevel.run();
-		mLevel.createDefaultTriggers();
 
 		mBodyShepherd.setActors(mLevel.getResources(Actor.class));
 
@@ -307,6 +306,7 @@ public class GameScene extends WorldScene {
 			else if (mLevelToLoad != null) {
 				Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
 				level.setStartPosition(level.getLevelDef().getStartXCoord());
+				level.createDefaultTriggers();
 				setLevel(level);
 			}
 

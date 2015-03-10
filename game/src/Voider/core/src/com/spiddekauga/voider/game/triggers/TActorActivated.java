@@ -13,6 +13,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
@@ -109,7 +110,10 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	}
 
 	@Override
+	@Deprecated
 	public boolean addBoundResource(IResource boundResource) {
+		Debug.deprecatedException();
+
 		boolean success = super.addBoundResource(boundResource);
 
 		if (boundResource instanceof Actor) {

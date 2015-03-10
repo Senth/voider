@@ -190,10 +190,7 @@ public abstract class WorldScene extends Scene {
 	 * Fixes the camera resolution
 	 */
 	protected void fixCamera() {
-		float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
-		// Decrease scale of width depending on height scaled
-		float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
-		width *= heightScale;
+		float width = calculateDefaultWorldWidth();
 		float height = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.WORLD_SCALE;
 
 		if (mCamera != null) {
@@ -203,6 +200,17 @@ public abstract class WorldScene extends Scene {
 		} else {
 			mCamera = new OrthographicCamera(width, height);
 		}
+	}
+
+	/**
+	 * Calculate the default world width. As the height needs to be scaled to fit the
+	 * window the width isn't just scaled with the world scale
+	 * @return default world width when the height is scaled
+	 */
+	protected float calculateDefaultWorldWidth() {
+		float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
+		float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE * heightScale;
+		return width;
 	}
 
 	/**

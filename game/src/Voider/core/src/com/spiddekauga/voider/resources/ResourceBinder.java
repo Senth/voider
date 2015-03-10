@@ -6,10 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.utils.commands.Invoker;
-import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
 import com.spiddekauga.voider.game.Level;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Contains all the resources. Used for example in levels to later bind all resources that
@@ -44,14 +41,15 @@ public class ResourceBinder {
 			// Find all other resources that uses the removed resource
 			// Unbind/Remove the removed resource from those
 			if (removedResource != null) {
-				Invoker invoker = SceneSwitcher.getInvoker();
+				// Invoker invoker = SceneSwitcher.getInvoker();
 				for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
 					IResource resource = entry.getValue();
 
 					if (resource.removeBoundResource(removedResource)) {
-						if (invoker != null && addRemoveBoundResourceToInvoker) {
-							invoker.execute(new CResourceBoundRemove(resource, removedResource), true);
-						}
+						// if (invoker != null && addRemoveBoundResourceToInvoker) {
+						// invoker.execute(new CResourceBoundRemove(resource,
+						// removedResource), true);
+						// }
 					}
 				}
 			}
