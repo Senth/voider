@@ -514,7 +514,7 @@ public class GameScene extends WorldScene {
 			mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mSpriteBatch.begin();
 			mSpriteBatch.setBlendFunction(Config.Graphics.BLEND_SRC_FACTOR, Config.Graphics.BLEND_DST_FACTOR);
-			mLevel.renderSprite(mSpriteBatch);
+			mLevel.render(mSpriteBatch);
 			mSpriteBatch.end();
 
 			if (mTakeScreenshot) {

@@ -36,6 +36,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
+import com.spiddekauga.voider.resources.IResourceEditorRenderSprite;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourceHasDef;
 import com.spiddekauga.voider.resources.IResourcePosition;
@@ -279,7 +280,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * Renders the sprites for the level
 	 * @param spriteBatch batch for rendering sprites
 	 */
-	public void renderSprite(SpriteBatch spriteBatch) {
+	public void render(SpriteBatch spriteBatch) {
 		if (mRunning) {
 			if (mRenderSprites == null) {
 				mRenderSprites = mResourceBinder.getResources(IResourceRenderSprite.class);
@@ -299,13 +300,24 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
-	 * Renders the levels resources with editor special rendering
+	 * Renders the level's resources with editor special rendering
 	 * @param shapeRenderer shape renderer used for rendering
 	 */
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		ArrayList<IResourceEditorRender> resourceRenders = mResourceBinder.getResources(IResourceEditorRender.class);
 		for (IResourceEditorRender resourceRender : resourceRenders) {
 			resourceRender.renderEditor(shapeRenderer);
+		}
+	}
+
+	/**
+	 * Renders the level resources' editor sprites
+	 * @param spriteBatch batch for rendering sprites
+	 */
+	public void renderEditor(SpriteBatch spriteBatch) {
+		ArrayList<IResourceEditorRenderSprite> resourceSprites = mResourceBinder.getResources(IResourceEditorRenderSprite.class);
+		for (IResourceEditorRenderSprite resourceSprite : resourceSprites) {
+			resourceSprite.renderEditorSprite(spriteBatch);
 		}
 	}
 

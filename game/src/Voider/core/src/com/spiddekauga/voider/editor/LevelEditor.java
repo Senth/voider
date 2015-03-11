@@ -192,7 +192,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mSpriteBatch.begin();
-			mLevel.renderSprite(mSpriteBatch);
+			mLevel.render(mSpriteBatch);
+			mLevel.renderEditor(mSpriteBatch);
 			mSpriteBatch.end();
 		}
 	}
@@ -737,6 +738,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					}
 				}
 
+				// REMOVE
 				// for (TriggerInfo triggerInfo : trigger.getListeners()) {
 				// if (triggerInfo.listener instanceof EnemyActor) {
 				// removeTriggeredEnemies((EnemyActor) triggerInfo.listener, leftXCoord,
@@ -749,6 +751,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		level.removeResources(toBeRemoved);
 	}
 
+	// REMOVE
 	// /**
 	// * Checks if an enemy should be removed as it's trigger has already been triggered.
 	// If

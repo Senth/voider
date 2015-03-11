@@ -1,9 +1,9 @@
 package com.spiddekauga.voider.game.actors;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
@@ -24,11 +24,12 @@ import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.EditorImages;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceEditorRenderSprite;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -36,7 +37,7 @@ import com.spiddekauga.voider.utils.Pools;
  * An enemy actor, these can generally shoot on the player.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class EnemyActor extends Actor {
+public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 	/**
 	 * Default constructor
 	 */
@@ -48,7 +49,8 @@ public class EnemyActor extends Actor {
 	public void dispose() {
 		super.dispose();
 
-		clearPolygonOutline();
+		// REMOVE
+		// clearPolygonOutline();
 	}
 
 	@Override
@@ -168,70 +170,91 @@ public class EnemyActor extends Actor {
 			shapeRenderer.pop();
 
 
-			// Highlight enemies that won't be spawned if will be spawned when test
-			// running the level
-			Scene scene = SceneSwitcher.getActiveScene(false);
-			if (scene instanceof LevelEditor) {
-				LevelEditor levelEditor = (LevelEditor) scene;
-				if (levelEditor.isEnemyHighlightOn()) {
-
-					float levelStartCoord = levelEditor.getRunFromHereLeftPosition();
-					float enemyActivationCoord = Float.MIN_VALUE;
-
-					// Enemy has a dedicated trigger
-					TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
-					if (triggerInfo != null) {
-						if (triggerInfo.trigger instanceof TScreenAt) {
-							enemyActivationCoord = ((TScreenAt) triggerInfo.trigger).getPosition().x;
-						}
-					}
-
-					// Enemy will use default trigger
-					if (enemyActivationCoord == Float.MIN_VALUE) {
-						enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
-					}
-
-					boolean enemyWillSpawn = false;
-					if (levelStartCoord <= enemyActivationCoord) {
-						enemyWillSpawn = true;
-					}
-					// // Check special cases with stationary enemies
-					// else {
-					// if (isStationary()) {
-					// float rightBoundingPos = getPosition().x + getBoundingRadius();
-					// float leftXCoord = levelEditor.getRunFromHereLeftPosition();
-					// if (rightBoundingPos > leftXCoord) {
-					// enemyWillSpawn = true;
-					// }
-					// }
-					// }
-
-					// Enemy will spawn
-					if (!enemyWillSpawn) {
-
-						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_COLOR));
-
-						Vector2 offsetPosition = new Vector2(getPosition());
-
-						if (getDef().getVisual().getCornerCount() == 2) {
-							offsetPosition.sub(getDef().getVisual().getCorners().get(0));
-							offsetPosition.sub(getDef().getVisual().getCenterOffset());
-						}
-
-						if (mActivateCircle == null) {
-							reloadActivateCircle();
-						}
-
-						if (mActivateCircle != null) {
-							RenderOrders.offsetZValue(shapeRenderer);
-							shapeRenderer.triangles(mActivateCircle, offsetPosition);
-						}
-					}
-				}
-			}
-
 			RenderOrders.resetZValueOffset(shapeRenderer);
 			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
+		}
+	}
+
+	@Override
+	public void renderEditorSprite(SpriteBatch spriteBatch) {
+		// Highlight enemies that won't be spawned if will be spawned when test
+		// running the level
+		Scene scene = SceneSwitcher.getActiveScene(false);
+		if (scene instanceof LevelEditor) {
+			LevelEditor levelEditor = (LevelEditor) scene;
+			if (levelEditor.isEnemyHighlightOn()) {
+
+				if (mNotSpawnSprite == null) {
+					TextureRegion region = SkinNames.getRegion(EditorImages.ENEMY_NOT_SPAWNED);
+					mNotSpawnSprite = new Sprite(region);
+					mNotSpawnSprite.setScale(Config.Graphics.WORLD_SCALE);
+					float originX = mNotSpawnSprite.getWidth() * Config.Graphics.WORLD_SCALE / 2;
+					float originY = mNotSpawnSprite.getHeight() * Config.Graphics.WORLD_SCALE / 2;
+					mNotSpawnSprite.setOrigin(-originX, -originY);
+
+					if (mNotSpawnSprite == null) {
+						return;
+					}
+				}
+				mNotSpawnSprite.setPosition(getPosition().x, getPosition().y);
+
+				float levelStartCoord = levelEditor.getRunFromHereLeftPosition();
+				float enemyActivationCoord = Float.MIN_VALUE;
+
+				// Enemy has a dedicated trigger
+				TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
+				if (triggerInfo != null) {
+					if (triggerInfo.trigger instanceof TScreenAt) {
+						enemyActivationCoord = ((TScreenAt) triggerInfo.trigger).getPosition().x;
+					}
+				}
+
+				// Enemy will use default trigger
+				if (enemyActivationCoord == Float.MIN_VALUE) {
+					enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
+				}
+
+				boolean enemyWillSpawn = false;
+				if (levelStartCoord <= enemyActivationCoord) {
+					enemyWillSpawn = true;
+				}
+				// REMOVE
+				// // Check special cases with stationary enemies
+				// else {
+				// if (isStationary()) {
+				// float rightBoundingPos = getPosition().x + getBoundingRadius();
+				// float leftXCoord = levelEditor.getRunFromHereLeftPosition();
+				// if (rightBoundingPos > leftXCoord) {
+				// enemyWillSpawn = true;
+				// }
+				// }
+				// }
+
+				// Enemy will spawn
+				if (!enemyWillSpawn) {
+					mNotSpawnSprite.draw(spriteBatch);
+
+					// REMOVE
+					// shapeRenderer.setColor((Color)
+					// SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_COLOR));
+					//
+					// Vector2 offsetPosition = new Vector2(getPosition());
+					//
+					// if (getDef().getVisual().getCornerCount() == 2) {
+					// offsetPosition.sub(getDef().getVisual().getCorners().get(0));
+					// offsetPosition.sub(getDef().getVisual().getCenterOffset());
+					// }
+					//
+					// if (mActivateCircle == null) {
+					// reloadActivateCircle();
+					// }
+					//
+					// if (mActivateCircle != null) {
+					// RenderOrders.offsetZValue(shapeRenderer);
+					// shapeRenderer.triangles(mActivateCircle, offsetPosition);
+					// }
+				}
+			}
 		}
 	}
 
@@ -1069,46 +1092,48 @@ public class EnemyActor extends Actor {
 	public void reloadFixtures() {
 		super.reloadFixtures();
 
-		reloadActivateCircle();
+		// reloadActivateCircle();
 	}
 
-	/**
-	 * Clears the polygon outline
-	 */
-	private void clearPolygonOutline() {
-		mActivateCircle = null;
-	}
-
-	/**
-	 * Reloads the activate polygon circle for the enemy
-	 */
-	private void reloadActivateCircle() {
-		if (mEditorActive) {
-			clearPolygonOutline();
-
-			ArrayList<Vector2> vertices = getDef().getVisual().getPolygonShape();
-			if (vertices != null && !vertices.isEmpty()) {
-				float radius = SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_RADIUS);
-				ArrayList<Vector2> circleLines = Geometry.createCircle(radius);
-
-				// Calculate center
-				Vector2 center = new Vector2();
-				for (Vector2 vertex : vertices) {
-					center.add(vertex);
-				}
-				center.scl(1 / vertices.size());
-
-				// Offset to center
-				for (Vector2 vertex : circleLines) {
-					vertex.add(center);
-				}
-
-				EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
-				mActivateCircle = earClippingTriangulator.computeTriangles(circleLines);
-				Collections.reverse(mActivateCircle);
-			}
-		}
-	}
+	// REMOVE
+	// /**
+	// * Clears the polygon outline
+	// */
+	// private void clearPolygonOutline() {
+	// mActivateCircle = null;
+	// }
+	//
+	// /**
+	// * Reloads the activate polygon circle for the enemy
+	// */
+	// private void reloadActivateCircle() {
+	// if (mEditorActive) {
+	// clearPolygonOutline();
+	//
+	// ArrayList<Vector2> vertices = getDef().getVisual().getPolygonShape();
+	// if (vertices != null && !vertices.isEmpty()) {
+	// float radius =
+	// SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_RADIUS);
+	// ArrayList<Vector2> circleLines = Geometry.createCircle(radius);
+	//
+	// // Calculate center
+	// Vector2 center = new Vector2();
+	// for (Vector2 vertex : vertices) {
+	// center.add(vertex);
+	// }
+	// center.scl(1 / vertices.size());
+	//
+	// // Offset to center
+	// for (Vector2 vertex : circleLines) {
+	// vertex.add(center);
+	// }
+	//
+	// EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
+	// mActivateCircle = earClippingTriangulator.computeTriangles(circleLines);
+	// Collections.reverse(mActivateCircle);
+	// }
+	// }
+	// }
 
 	@Override
 	public RenderOrders getRenderOrder() {
@@ -1118,8 +1143,11 @@ public class EnemyActor extends Actor {
 	private static final int CLASS_REVISION = 2;
 	@Tag(132) private int mClassRevision = 0;
 
-	/** Polygon line for drawing wider outline */
-	private ArrayList<Vector2> mActivateCircle = null;
+	// REMOVE
+	// /** Polygon line for drawing wider outline */
+	// private ArrayList<Vector2> mActivateCircle = null;
+	/** Image to draw over enemies that won't spawn */
+	private Sprite mNotSpawnSprite = null;
 
 	/** Enemy weapon */
 	@Tag(141) private Weapon mWeapon = new Weapon();

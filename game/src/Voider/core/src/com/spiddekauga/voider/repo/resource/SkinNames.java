@@ -253,8 +253,6 @@ public class SkinNames {
 	 * Editor images
 	 */
 	public enum EditorImages implements IImageNames {
-		/** YouTube icon */
-		YOUTUBE,
 		/** Tooltip */
 		TOOLTIP,
 		/** Enemy AI movement save image */
@@ -269,6 +267,8 @@ public class SkinNames {
 		PATH_LOOP,
 		/** Once image */
 		PATH_ONCE,
+		/** Enemy not spawned image */
+		ENEMY_NOT_SPAWNED,
 
 		;
 
