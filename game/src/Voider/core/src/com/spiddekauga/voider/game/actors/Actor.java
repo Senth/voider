@@ -57,6 +57,7 @@ import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -309,7 +310,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mDef.getVisual().hasImage()) {
 			return;
 		}
-
 
 		RenderOrders.offsetZValue(shapeRenderer, this);
 
@@ -990,6 +990,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		return mDef.getVisual().getBoundingRadius();
 	}
 
+	@Override
+	public BoundingBox getBoundingBox() {
+		mBoundingBox.set(mDef.getVisual().getBoundingBox());
+		mBoundingBox.offset(mPosition);
+		return mBoundingBox;
+	}
+
 	/**
 	 * @return activation time of the actor, negative value if the actor is inactive.
 	 */
@@ -1359,6 +1366,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	private boolean mIsBeingMoved = false;
 	/** Selected outline */
 	private ArrayList<Vector2> mSelectedOutline = null;
+	/** Bounding box relative to the actor's position */
+	private BoundingBox mBoundingBox = new BoundingBox();
 
 	/** Event dispatcher */
 	protected static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();

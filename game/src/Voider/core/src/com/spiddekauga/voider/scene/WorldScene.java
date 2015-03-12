@@ -20,6 +20,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
+import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -102,6 +103,7 @@ public abstract class WorldScene extends Scene {
 		mWorld.step(1 / 60f, 6, 2);
 
 		// Remove unwanted bullets
+		updateBoundingBox();
 		Vector2 minScreenPos = getWorldMinCoordinates();
 		Vector2 maxScreenPos = getWorldMaxCoordinates();
 		mBulletDestroyer.update(deltaTime);
@@ -111,6 +113,7 @@ public abstract class WorldScene extends Scene {
 		if (mBorderBody != null) {
 			synchronizeBorder(mBorderBody);
 		}
+
 	}
 
 	/**
@@ -162,6 +165,13 @@ public abstract class WorldScene extends Scene {
 	@Override
 	protected float getWorldHeight() {
 		return mCamera.viewportHeight;
+	}
+
+	/**
+	 * @return bounding box off the screen in world coordinates
+	 */
+	public BoundingBox getBoundingBoxWorld() {
+		return mWindowBox;
 	}
 
 	/**
@@ -321,6 +331,21 @@ public abstract class WorldScene extends Scene {
 		}
 	};
 
+	/**
+	 * Update the bounding box to the current world
+	 */
+	private void updateBoundingBox() {
+		Vector2 min = getWorldMinCoordinates();
+		Vector2 max = getWorldMaxCoordinates();
+
+		mWindowBox.setLeft(min.x);
+		mWindowBox.setRight(max.x);
+		mWindowBox.setTop(max.y);
+		mWindowBox.setBottom(min.y);
+	}
+
+	/** Window bounding box */
+	private BoundingBox mWindowBox = new BoundingBox();
 	/** Physics world */
 	protected World mWorld = new World(new Vector2(), true);
 	/** Camera for the editor */

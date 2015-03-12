@@ -9,6 +9,7 @@ import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.TimeBullet;
 
@@ -44,10 +45,13 @@ public class BulletDestroyer implements Disposable {
 	/**
 	 * Renders all the bullets
 	 * @param shapeRenderer shape renderer to be used for rendering
+	 * @param windowBox position of the window
 	 */
-	public void render(ShapeRendererEx shapeRenderer) {
+	public void render(ShapeRendererEx shapeRenderer, BoundingBox windowBox) {
 		for (TimeBullet timeBullet : mBullets) {
-			timeBullet.bulletActor.renderShape(shapeRenderer);
+			if (windowBox.overlaps(timeBullet.bulletActor.getBoundingBox())) {
+				timeBullet.bulletActor.renderShape(shapeRenderer);
+			}
 		}
 	}
 

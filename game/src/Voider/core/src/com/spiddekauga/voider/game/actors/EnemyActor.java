@@ -370,9 +370,9 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 	 * @param levelSpeed speed of the level
 	 * @return enemy activation coordinate
 	 */
-	private float calculateDefaultActivateTriggerPosition(float levelSpeed) {
+	public float calculateDefaultActivateTriggerPosition(float levelSpeed) {
 		// Calculate position of trigger
-		float xCoord = getPosition().x - getDef().getVisual().getBoundingRadius();
+		float xCoord = getBoundingBox().getLeft();
 
 		// Decrease position if we are in an enemy group
 		if (mGroup != null) {
@@ -1038,7 +1038,7 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 	 */
 	private void checkPathDeactivate() {
 		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
-			if (getPath().getRightestCorner().x + getDef().getVisual().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+			if (getPath().getBoundingBox().getRight() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 
 				// For 'once', check that the ship cannot be seen too
 				boolean deactivate = false;

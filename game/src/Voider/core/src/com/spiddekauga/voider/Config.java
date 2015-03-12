@@ -209,7 +209,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_LOCAL;
+		public static final Builds BUILD = Builds.BETA;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */
@@ -819,12 +819,12 @@ public class Config {
 		 * How much offset from the first resource inside the level the beginning of the
 		 * level should be placed
 		 */
-		public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.1f;
+		@Deprecated public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.1f;
 		/**
 		 * How much offset from the last resource inside the level the x-coordinate should
 		 * appear
 		 */
-		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 1.1f;
+		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE;
 		/** Speed of the front/top background layer, relative to the level speed */
 		public final static float BACKGROUND_TOP_SPEED = 0.75f;
 		/** Speed of the back/bottom background layer, relative to the level speed */

@@ -21,6 +21,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 
 /**
@@ -37,6 +38,9 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		mLevel = level;
 		mPosition.x = xCoord;
 		mPosition.y = 0;
+		mBoundingBox.setTop(0);
+		mBoundingBox.setBottom(0);
+		updateBoundingBox();
 	}
 
 	@Override
@@ -66,6 +70,19 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public float getBoundingRadius() {
 		return 0;
+	}
+
+	/**
+	 * Update the position of the bounding box
+	 */
+	private void updateBoundingBox() {
+		mBoundingBox.setLeft(mPosition.x);
+		mBoundingBox.setRight(mPosition.x);
+	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		return mBoundingBox;
 	}
 
 	@Override
@@ -117,6 +134,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public void setPosition(Vector2 position) {
 		mPosition.set(position.x, 0);
+		updateBoundingBox();
 
 		if (mBody != null) {
 			mBody.setTransform(mPosition, 0);
@@ -189,6 +207,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		return mIsBeingMoved;
 	}
 
+	private BoundingBox mBoundingBox = new BoundingBox();
 	/** If the trigger is being moved */
 	private boolean mIsBeingMoved = false;
 	/** Vertices for the trigger */

@@ -47,6 +47,7 @@ import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
+import com.spiddekauga.voider.utils.BoundingBox;
 
 /**
  * A game level
@@ -253,10 +254,27 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
+	 * Check if a resource is within the window box and we should render it
+	 * @param resource
+	 * @param windowBox
+	 * @return true if the resource is within the window box (if it has a bounding box)
+	 */
+	public boolean shouldRender(IResource resource, BoundingBox windowBox) {
+		if (resource instanceof IResourcePosition) {
+			BoundingBox resourceBox = ((IResourcePosition) resource).getBoundingBox();
+			return windowBox.overlaps(resourceBox);
+		} else {
+			return true;
+		}
+	}
+
+	/**
 	 * Renders the level, or rather its actors
 	 * @param shapeRenderer shape renderer used for rendering
+	 * @param windowBox bounding box for the window, i.e. we don't render anything outside
+	 *        of this
 	 */
-	public void render(ShapeRendererEx shapeRenderer) {
+	public void render(ShapeRendererEx shapeRenderer, BoundingBox windowBox) {
 		// Only get once if running
 		if (mRunning) {
 			if (mRenderShapes == null) {
@@ -267,8 +285,10 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		}
 
 		// Render
-		for (IResourceRenderShape shapes : mRenderShapes) {
-			shapes.renderShape(shapeRenderer);
+		for (IResourceRenderShape shape : mRenderShapes) {
+			if (shouldRender(shape, windowBox)) {
+				shape.renderShape(shapeRenderer);
+			}
 		}
 
 		if (mPlayerActor != null) {
@@ -279,8 +299,10 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	/**
 	 * Renders the sprites for the level
 	 * @param spriteBatch batch for rendering sprites
+	 * @param windowBox bounding box for the window, i.e. we don't render anything outside
+	 *        of this
 	 */
-	public void render(SpriteBatch spriteBatch) {
+	public void render(SpriteBatch spriteBatch, BoundingBox windowBox) {
 		if (mRunning) {
 			if (mRenderSprites == null) {
 				mRenderSprites = mResourceBinder.getResources(IResourceRenderSprite.class);
@@ -291,7 +313,9 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 		// Render
 		for (IResourceRenderSprite sprite : mRenderSprites) {
-			sprite.renderSprite(spriteBatch);
+			if (shouldRender(sprite, windowBox)) {
+				sprite.renderSprite(spriteBatch);
+			}
 		}
 
 		if (mPlayerActor != null) {
@@ -493,16 +517,33 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		ArrayList<IResourcePosition> resources = mResourceBinder.getResources(IResourcePosition.class);
 
 		for (IResourcePosition resource : resources) {
-			float position = resource.getPosition().x - resource.getBoundingRadius();
+			float leftPos = Float.MAX_VALUE;
 
-			if (position < startPosition) {
-				startPosition = position;
+			// For enemies we use the default trigger
+			if (resource instanceof EnemyActor) {
+				EnemyActor enemy = (EnemyActor) resource;
+
+				TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE);
+				// Check with the default trigger.
+				// We don't use the existing trigger since we will iterate over that
+				// resource anyhow.
+				if (triggerInfo == null) {
+					leftPos = enemy.calculateDefaultActivateTriggerPosition(mSpeed);
+				}
+			}
+			// Use bounding box for everything else
+			else {
+				leftPos = resource.getBoundingBox().getLeft();
+			}
+
+			if (leftPos < startPosition) {
+				startPosition = leftPos;
 			}
 		}
 
 		// Only set start position if we had any resources
 		if (startPosition != Float.MAX_VALUE) {
-			startPosition -= Config.Level.START_COORD_OFFSET;
+			// startPosition -= Config.Level.START_COORD_OFFSET;
 			mLevelDef.setStartXCoord(startPosition);
 		} else {
 			mLevelDef.setStartXCoord(0);
@@ -526,7 +567,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		}
 
 		// Only set end position if we had any resources
-		if (endPosition != Float.MIN_VALUE) {
+		if (endPosition > Float.MIN_VALUE) {
 			endPosition += Config.Level.END_COORD_OFFSET;
 			mLevelDef.setEndXCoord(endPosition);
 		} else {

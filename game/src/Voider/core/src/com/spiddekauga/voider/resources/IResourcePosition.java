@@ -1,10 +1,10 @@
 package com.spiddekauga.voider.resources;
 
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.voider.utils.BoundingBox;
 
 /**
  * If the resource has a position
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourcePosition extends IResource {
@@ -23,6 +23,11 @@ public interface IResourcePosition extends IResource {
 	 * @return radius bounding area of the resource
 	 */
 	float getBoundingRadius();
+
+	/**
+	 * @return bounding box of the resource relative to it's position
+	 */
+	BoundingBox getBoundingBox();
 
 	/**
 	 * Set if the resource is currently being moved

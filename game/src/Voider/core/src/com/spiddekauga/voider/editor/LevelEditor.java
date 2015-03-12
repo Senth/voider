@@ -183,7 +183,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
 			enableBlendingWithDefaults();
-			mLevel.render(mShapeRenderer);
+			mLevel.render(mShapeRenderer, getBoundingBoxWorld());
 			mLevel.renderEditor(mShapeRenderer);
 			mShapeRenderer.flush();
 			renderAboveBelowBorders();
@@ -192,7 +192,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mSpriteBatch.begin();
-			mLevel.render(mSpriteBatch);
+			mLevel.render(mSpriteBatch, getBoundingBoxWorld());
 			mLevel.renderEditor(mSpriteBatch);
 			mSpriteBatch.end();
 		}

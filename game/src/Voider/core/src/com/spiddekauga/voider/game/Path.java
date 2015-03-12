@@ -32,6 +32,7 @@ import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 
 
@@ -51,13 +52,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	@Override
 	public RenderOrders getRenderOrder() {
 		return RenderOrders.ENEMY_PATH;
-	}
-
-	/**
-	 * @return rightest corner from the path
-	 */
-	public Vector2 getRightestCorner() {
-		return mRightestCorner;
 	}
 
 	@Override
@@ -95,7 +89,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			updateEnemyPositions();
 		}
 
-		calculateRightestCorner();
+		updateBoundingBox();
 	}
 
 	/**
@@ -130,7 +124,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 		updateEnemyPositions();
 
-		calculateRightestCorner();
+		updateBoundingBox();
 	}
 
 	/**
@@ -152,6 +146,18 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		}
 
 		return center;
+	}
+
+	/**
+	 * Update the bounding box
+	 */
+	private void updateBoundingBox() {
+		mBoundingBox = Geometry.getBoundingBox(mCorners);
+	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		return mBoundingBox;
 	}
 
 	@Override
@@ -192,9 +198,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 				updateEnemyPositions();
 			}
 
-			if (removedCorner.equals(mRightestCorner)) {
-				calculateRightestCorner();
-			}
+			updateBoundingBox();
 		}
 
 		return removedCorner;
@@ -220,7 +224,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			}
 		}
 
-		calculateRightestCorner();
+		updateBoundingBox();
 	}
 
 	@Override
@@ -590,21 +594,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		}
 	}
 
-	/**
-	 * Update the corner furthest to the right
-	 */
-	private void calculateRightestCorner() {
-		float xCoordMax = Float.NEGATIVE_INFINITY;
-		mRightestCorner = null;
-
-		for (Vector2 corner : mCorners) {
-			if (corner.x > xCoordMax) {
-				xCoordMax = corner.x;
-				mRightestCorner = corner;
-			}
-		}
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -612,7 +601,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		result = prime * result + ((mCorners == null) ? 0 : mCorners.hashCode());
 		result = prime * result + ((mEnemies == null) ? 0 : mEnemies.hashCode());
 		result = prime * result + ((mPathType == null) ? 0 : mPathType.hashCode());
-		result = prime * result + ((mRightestCorner == null) ? 0 : mRightestCorner.hashCode());
 		return result;
 	}
 
@@ -645,13 +633,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		if (mPathType != other.mPathType) {
 			return false;
 		}
-		if (mRightestCorner == null) {
-			if (other.mRightestCorner != null) {
-				return false;
-			}
-		} else if (!mRightestCorner.equals(other.mRightestCorner)) {
-			return false;
-		}
 		return true;
 	}
 
@@ -667,10 +648,11 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 	@Override
 	public void postRead() {
-		calculateRightestCorner();
+		updateBoundingBox();
 	}
 
-
+	/** Bounding box of the path */
+	private BoundingBox mBoundingBox = new BoundingBox();
 	/** If the resource is being moved */
 	private boolean mIsBeingMoved = false;
 	/** Path vertices for drawing in editor */
@@ -681,8 +663,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	@Tag(17) private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
 	/** Corner bodies, for picking */
 	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
-	/** Corner farthest to the right */
-	private Vector2 mRightestCorner = null;
 	/**
 	 * What type of path type the enemy uses, only applicable if movement type is set to
 	 * path

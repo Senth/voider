@@ -506,15 +506,15 @@ public class GameScene extends WorldScene {
 			mShapeRenderer.push(ShapeType.Filled);
 			enableBlendingWithDefaults();
 
-			mLevel.render(mShapeRenderer);
-			mBulletDestroyer.render(mShapeRenderer);
+			mLevel.render(mShapeRenderer, getBoundingBoxWorld());
+			mBulletDestroyer.render(mShapeRenderer, getBoundingBoxWorld());
 			mShapeRenderer.pop();
 
 			// Render sprite actors
 			mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mSpriteBatch.begin();
 			mSpriteBatch.setBlendFunction(Config.Graphics.BLEND_SRC_FACTOR, Config.Graphics.BLEND_DST_FACTOR);
-			mLevel.render(mSpriteBatch);
+			mLevel.render(mSpriteBatch, getBoundingBoxWorld());
 			mSpriteBatch.end();
 
 			if (mTakeScreenshot) {

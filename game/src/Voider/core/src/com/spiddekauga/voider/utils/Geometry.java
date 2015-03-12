@@ -1113,13 +1113,43 @@ public class Geometry {
 	}
 
 	/**
+	 * Calculate bounding box from vertices
+	 * @param vertices all vertices to get the bounding box from
+	 * @return bounding box from the specified vertices
+	 */
+	public static BoundingBox getBoundingBox(Iterable<Vector2> vertices) {
+		BoundingBox box = new BoundingBox(Float.MAX_VALUE);
+
+		for (Vector2 vertex : vertices) {
+			// Left
+			if (vertex.x < box.getLeft()) {
+				box.setLeft(vertex.x);
+			}
+			// Right
+			if (vertex.x > box.getRight()) {
+				box.setRight(vertex.x);
+			}
+			// Top
+			if (vertex.y > box.getTop()) {
+				box.setTop(vertex.y);
+			}
+			// Bottom
+			if (vertex.y < box.getBottom()) {
+				box.setBottom(vertex.y);
+			}
+		}
+
+		return box;
+	}
+
+	/**
 	 * Calculates the vertex farthest away from the specified point
 	 * @param point the point to check the vertices against
 	 * @param vertices the vertices to check
 	 * @return vertex farthest away from the specified point, if vertices are empty a null
 	 *         vertex will be returned.
 	 */
-	public static Vector2 vertexFarthestAway(Vector2 point, ArrayList<Vector2> vertices) {
+	public static Vector2 vertexFarthestAway(Vector2 point, Iterable<Vector2> vertices) {
 		if (point == null || vertices == null) {
 			return null;
 		}
@@ -1148,7 +1178,7 @@ public class Geometry {
 	 * @param intersections all intersection points
 	 * @return true if the polygon shape only contains simple intersections.
 	 */
-	public static boolean arePolygonIntersectionsSimple(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
+	public static boolean arePolygonIntersectionsSimple(List<Vector2> vertices, List<Vector2> intersections) {
 		if (intersections == null) {
 			return true;
 		}
@@ -1184,15 +1214,14 @@ public class Geometry {
 	 * intersect itself. Will only work for simple intersections, i.e. intersections that
 	 * won't make a hole inside the polygon. To try if it's valid use
 	 * @param vertices all the corner vertices of the polygon, this array will be modified
-	 *        if an intersection exists
-	 *        {@link #arePolygonIntersectionsSimple(ArrayList, ArrayList)}
+	 *        if an intersection exists {@link #arePolygonIntersectionsSimple(List, List)}
 	 * @param testLoop this will include a test from end to begin vertices. If the polygon
 	 *        isn't complete you might not want to test this.
 	 * @return newly created vertices, these have been created from Pools.vector2 be sure
 	 *         to free them after their use. Same goes for the ArrayList. Null if no
 	 *         vertices were created.
 	 */
-	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, boolean testLoop) {
+	public static ArrayList<Vector2> makePolygonNonComplex(List<Vector2> vertices, boolean testLoop) {
 		ArrayList<Vector2> newVertices = new ArrayList<>();
 
 		int end = testLoop ? vertices.size() : vertices.size() - 1;
@@ -1248,7 +1277,7 @@ public class Geometry {
 	 * @return list of polygons that were split from the original polygon. Don't forget to
 	 *         free the array lists!
 	 */
-	public static ArrayList<ArrayList<Vector2>> splitPolygonWithIntersections(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
+	public static ArrayList<ArrayList<Vector2>> splitPolygonWithIntersections(List<Vector2> vertices, List<Vector2> intersections) {
 		ArrayList<ArrayList<Vector2>> polygons = new ArrayList<>();
 
 		// Add original list
@@ -1362,7 +1391,7 @@ public class Geometry {
 	 * @return index of the other line that intersects with lineIndex, -1 if no
 	 *         intersection exists.
 	 */
-	public static int getIntersection(ArrayList<Vector2> vertices, int lineIndex, int testFromIndex, int testToIndex) {
+	public static int getIntersection(List<Vector2> vertices, int lineIndex, int testFromIndex, int testToIndex) {
 		if (vertices.size() < 3) {
 			return -1;
 		}

@@ -91,7 +91,7 @@ public class BulletEditor extends ActorEditor {
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
 
-			mBulletDestroyer.render(mShapeRenderer);
+			mBulletDestroyer.render(mShapeRenderer, getBoundingBoxWorld());
 
 			mShapeRenderer.pop();
 		}

@@ -294,7 +294,7 @@ public class EnemyEditor extends ActorEditor {
 			}
 
 			mPlayerActor.renderShape(mShapeRenderer);
-			mBulletDestroyer.render(mShapeRenderer);
+			mBulletDestroyer.render(mShapeRenderer, getBoundingBoxWorld());
 
 			mShapeRenderer.translate(0, 0, 1);
 			mShapeRenderer.pop();

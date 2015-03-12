@@ -31,6 +31,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
@@ -66,7 +67,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		setDefaultFixtureValues();
 		createFixtureDef();
-		calculateBoundingRadius();
+		calculateBounds();
 	}
 
 	/**
@@ -158,8 +159,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		}
 
-		calculateBoundingRadius();
-
+		calculateBounds();
 		fixtureChanged();
 	}
 
@@ -194,8 +194,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			}
 		}
 
-		calculateBoundingRadius();
-
+		calculateBounds();
 		fixtureChanged();
 	}
 
@@ -230,8 +229,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			}
 		}
 
-		calculateBoundingRadius();
-
+		calculateBounds();
 		fixtureChanged();
 	}
 
@@ -271,6 +269,45 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public float getBoundingRadius() {
 		return mBoundingRadius;
+	}
+
+	/**
+	 * @return bounding box
+	 */
+	public BoundingBox getBoundingBox() {
+		return mBoundingBox;
+	}
+
+	/**
+	 * Calculate bounding box and radius bounds
+	 */
+	private void calculateBounds() {
+		calculateBoundingRadius();
+		calculateBoundingBox();
+	}
+
+	/**
+	 * Calculate bounding box
+	 */
+	private void calculateBoundingBox() {
+		switch (mShapeType) {
+		case CIRCLE:
+			mBoundingBox.setFromCircle(mShapeCircleRadius);
+			break;
+
+		case RECTANGLE:
+		case TRIANGLE:
+			mBoundingBox = Geometry.getBoundingBox(mVertices);
+			break;
+
+		case CUSTOM:
+		case IMAGE:
+			mBoundingBox = Geometry.getBoundingBox(mCorners);
+			break;
+		}
+
+		// Offset bounding box with the center
+		mBoundingBox.offset(mCenterOffset);
 	}
 
 	/**
@@ -355,19 +392,19 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			switch (shapeType) {
 			case CIRCLE:
 				fixtureDef.shape = createCircleShape();
-				calculateBoundingRadius();
+				calculateBounds();
 				break;
 
 
 			case RECTANGLE:
 				fixtureDef.shape = createRectangleShape();
-				calculateBoundingRadius();
+				calculateBounds();
 				break;
 
 
 			case TRIANGLE:
 				fixtureDef.shape = createTriangleShape();
-				calculateBoundingRadius();
+				calculateBounds();
 				break;
 
 
@@ -770,7 +807,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			}
 		}
 
-		calculateBoundingRadius();
+		calculateBounds();
 		fixtureChanged();
 	}
 
@@ -1252,6 +1289,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<>();
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
+	/** Bounding box */
+	private BoundingBox mBoundingBox = new BoundingBox();
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** Class structure revision */
