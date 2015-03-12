@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.utils.Pool;
@@ -32,14 +33,14 @@ import com.spiddekauga.voider.utils.Pool;
  * {@code
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
- * 
+ *
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
  * shapeRenderer.pop();
- * 
+ *
  * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);
@@ -313,18 +314,28 @@ public class ShapeRendererEx implements Disposable {
 	/** Sets the transformation matrix to identity. */
 	public void identity() {
 		mTransform.idt();
+		mTranslate.set(0, 0, 0);
 		mMatrixDirty = true;
 	}
 
 	/**
-	 * Multiplies the current transformation matrix by a translation matrix.
+	 * Adds these coordinate to the translate vector. This doesn't affect the
+	 * transformation matrix.
 	 * @param x
 	 * @param y
 	 * @param z
 	 */
 	public void translate(float x, float y, float z) {
-		mTransform.translate(x, y, z);
-		mMatrixDirty = true;
+		mTranslate.add(x, y, z);
+	}
+
+	/**
+	 * Adds this vector to the translate vector. This doesn't affect the transformation
+	 * matrix.
+	 * @param vector
+	 */
+	public void translate(Vector3 vector) {
+		mTranslate.add(vector);
 	}
 
 	/**
@@ -380,8 +391,8 @@ public class ShapeRendererEx implements Disposable {
 		}
 		checkDirty();
 		checkFlush(1);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z);
+		color();
+		vertex(x, y, z);
 	}
 
 	/**
@@ -400,10 +411,10 @@ public class ShapeRendererEx implements Disposable {
 		}
 		checkDirty();
 		checkFlush(2);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x2, y2, z2);
+		color();
+		vertex(x, y, z);
+		color();
+		vertex(x2, y2, z2);
 	}
 
 	/**
@@ -420,10 +431,10 @@ public class ShapeRendererEx implements Disposable {
 		}
 		checkDirty();
 		checkFlush(2);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, 0);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x2, y2, 0);
+		color();
+		vertex(x, y, 0);
+		color();
+		vertex(x2, y2, 0);
 	}
 
 	/**
@@ -495,21 +506,21 @@ public class ShapeRendererEx implements Disposable {
 		float dddfy = tmp2y * pre5;
 
 		while (segments-- > 0) {
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(fx, fy, 0);
+			color();
+			vertex(fx, fy, 0);
 			fx += dfx;
 			fy += dfy;
 			dfx += ddfx;
 			dfy += ddfy;
 			ddfx += dddfx;
 			ddfy += dddfy;
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(fx, fy, 0);
+			color();
+			vertex(fx, fy, 0);
 		}
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(fx, fy, 0);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x2, y2, 0);
+		color();
+		vertex(fx, fy, 0);
+		color();
+		vertex(x2, y2, 0);
 	}
 
 	/**
@@ -527,27 +538,27 @@ public class ShapeRendererEx implements Disposable {
 		checkDirty();
 		checkFlush(6);
 		if (mCurrentType.peek() == ShapeType.Line) {
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, 0);
+			color();
+			vertex(x1, y1, 0);
+			color();
+			vertex(x2, y2, 0);
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x3, y3, 0);
+			color();
+			vertex(x2, y2, 0);
+			color();
+			vertex(x3, y3, 0);
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x3, y3, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, 0);
+			color();
+			vertex(x3, y3, 0);
+			color();
+			vertex(x1, y1, 0);
 		} else {
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x3, y3, 0);
+			color();
+			vertex(x1, y1, 0);
+			color();
+			vertex(x2, y2, 0);
+			color();
+			vertex(x3, y3, 0);
 		}
 	}
 
@@ -614,39 +625,39 @@ public class ShapeRendererEx implements Disposable {
 		checkFlush(8);
 
 		if (mCurrentType.peek() == ShapeType.Line) {
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y, 0);
+			color();
+			vertex(x, y, 0);
+			color();
+			vertex(x + width, y, 0);
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, 0);
+			color();
+			vertex(x + width, y, 0);
+			color();
+			vertex(x + width, y + height, 0);
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y + height, 0);
+			color();
+			vertex(x + width, y + height, 0);
+			color();
+			vertex(x, y + height, 0);
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y + height, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, 0);
+			color();
+			vertex(x, y + height, 0);
+			color();
+			vertex(x, y, 0);
 		} else {
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, 0);
+			color();
+			vertex(x, y, 0);
+			color();
+			vertex(x + width, y, 0);
+			color();
+			vertex(x + width, y + height, 0);
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y + height, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, 0);
+			color();
+			vertex(x + width, y + height, 0);
+			color();
+			vertex(x, y + height, 0);
+			color();
+			vertex(x, y, 0);
 		}
 	}
 
@@ -674,44 +685,45 @@ public class ShapeRendererEx implements Disposable {
 
 		if (mCurrentType.peek() == ShapeType.Line) {
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, 0);
+			vertex(x, y, 0);
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
-			mRenderer.vertex(x + width, y, 0);
+			vertex(x + width, y, 0);
 
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
-			mRenderer.vertex(x + width, y, 0);
+			vertex(x + width, y, 0);
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, 0);
+			vertex(x + width, y + height, 0);
 
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, 0);
+			vertex(x + width, y + height, 0);
 			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
-			mRenderer.vertex(x, y + height, 0);
+			vertex(x, y + height, 0);
 
 			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
-			mRenderer.vertex(x, y + height, 0);
+			vertex(x, y + height, 0);
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, 0);
+			vertex(x, y, 0);
 		} else {
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, 0);
+			vertex(x, y, 0);
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
-			mRenderer.vertex(x + width, y, 0);
+			vertex(x + width, y, 0);
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, 0);
+			vertex(x + width, y + height, 0);
 
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, 0);
+			vertex(x + width, y + height, 0);
 			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
-			mRenderer.vertex(x, y + height, 0);
+			vertex(x, y + height, 0);
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, 0);
+			vertex(x, y, 0);
 		}
 	}
 
 	/**
-	 * Draws a box. The x, y and z coordinate specify the bottom left front corner of the
-	 * rectangle. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	 * Draws a 3D-box. The x, y and z coordinate specify the bottom left front corner of
+	 * the rectangle. The {@link ShapeType} passed to begin has to be
+	 * {@link ShapeType#Line}.
 	 * @param x
 	 * @param y
 	 * @param z
@@ -729,65 +741,65 @@ public class ShapeRendererEx implements Disposable {
 
 		depth = -depth;
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y, z);
+		color();
+		vertex(x, y, z);
+		color();
+		vertex(x + width, y, z);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y, z);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y, z + depth);
+		color();
+		vertex(x + width, y, z);
+		color();
+		vertex(x + width, y, z + depth);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y, z + depth);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z + depth);
+		color();
+		vertex(x + width, y, z + depth);
+		color();
+		vertex(x, y, z + depth);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z + depth);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z);
+		color();
+		vertex(x, y, z + depth);
+		color();
+		vertex(x, y, z);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y + height, z);
+		color();
+		vertex(x, y, z);
+		color();
+		vertex(x, y + height, z);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y + height, z);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y + height, z);
+		color();
+		vertex(x, y + height, z);
+		color();
+		vertex(x + width, y + height, z);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y + height, z);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y + height, z + depth);
+		color();
+		vertex(x + width, y + height, z);
+		color();
+		vertex(x + width, y + height, z + depth);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y + height, z + depth);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y + height, z + depth);
+		color();
+		vertex(x + width, y + height, z + depth);
+		color();
+		vertex(x, y + height, z + depth);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y + height, z + depth);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y + height, z);
+		color();
+		vertex(x, y + height, z + depth);
+		color();
+		vertex(x, y + height, z);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y, z);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y + height, z);
+		color();
+		vertex(x + width, y, z);
+		color();
+		vertex(x + width, y + height, z);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y, z + depth);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + width, y + height, z + depth);
+		color();
+		vertex(x + width, y, z + depth);
+		color();
+		vertex(x + width, y + height, z + depth);
 
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, z + depth);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y + height, z + depth);
+		color();
+		vertex(x, y, z + depth);
+		color();
+		vertex(x, y + height, z + depth);
 	}
 
 	/**
@@ -824,41 +836,41 @@ public class ShapeRendererEx implements Disposable {
 		float cx = radius, cy = 0;
 		if (mCurrentType.peek() == ShapeType.Line) {
 			for (int i = 0; i < segments; i++) {
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, 0);
+				color();
+				vertex(x + cx, y + cy, 0);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, 0);
+				color();
+				vertex(x + cx, y + cy, 0);
 			}
 			// Ensure the last segment is identical to the first.
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + cx, y + cy, 0);
+			color();
+			vertex(x + cx, y + cy, 0);
 		} else {
 			segments--;
 			for (int i = 0; i < segments; i++) {
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x, y, 0);
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, 0);
+				color();
+				vertex(x, y, 0);
+				color();
+				vertex(x + cx, y + cy, 0);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, 0);
+				color();
+				vertex(x + cx, y + cy, 0);
 			}
 			// Ensure the last segment is identical to the first.
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + cx, y + cy, 0);
+			color();
+			vertex(x, y, 0);
+			color();
+			vertex(x + cx, y + cy, 0);
 		}
 
 		cx = radius;
 		cy = 0;
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + cx, y + cy, 0);
+		color();
+		vertex(x + cx, y + cy, 0);
 	}
 
 	/**
@@ -898,51 +910,51 @@ public class ShapeRendererEx implements Disposable {
 		float cx = radius, cy = 0;
 		if (mCurrentType.peek() == ShapeType.Line) {
 			for (int i = 0; i < segments; i++) {
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, z);
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x, y, z + height);
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, z);
+				color();
+				vertex(x + cx, y + cy, z);
+				color();
+				vertex(x, y, z + height);
+				color();
+				vertex(x + cx, y + cy, z);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, z);
+				color();
+				vertex(x + cx, y + cy, z);
 			}
 			// Ensure the last segment is identical to the first.
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + cx, y + cy, z);
+			color();
+			vertex(x + cx, y + cy, z);
 		} else {
 			segments--;
 			for (int i = 0; i < segments; i++) {
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x, y, z);
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, z);
+				color();
+				vertex(x, y, z);
+				color();
+				vertex(x + cx, y + cy, z);
 				float temp = cx;
 				float temp2 = cy;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, z);
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + temp, y + temp2, z);
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, z);
-				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x, y, z + height);
+				color();
+				vertex(x + cx, y + cy, z);
+				color();
+				vertex(x + temp, y + temp2, z);
+				color();
+				vertex(x + cx, y + cy, z);
+				color();
+				vertex(x, y, z + height);
 			}
 			// Ensure the last segment is identical to the first.
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, z);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + cx, y + cy, z);
+			color();
+			vertex(x, y, z);
+			color();
+			vertex(x + cx, y + cy, z);
 		}
 		cx = radius;
 		cy = 0;
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + cx, y + cy, z);
+		color();
+		vertex(x + cx, y + cy, z);
 	}
 
 	/**
@@ -984,10 +996,10 @@ public class ShapeRendererEx implements Disposable {
 				y2 = vertices[i + 3];
 			}
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, 0);
+			color();
+			vertex(x1, y1, 0);
+			color();
+			vertex(x2, y2, 0);
 		}
 	}
 
@@ -1022,10 +1034,10 @@ public class ShapeRendererEx implements Disposable {
 			x2 = vertices[i + 2];
 			y2 = vertices[i + 3];
 
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, 0);
-			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, 0);
+			color();
+			vertex(x1, y1, 0);
+			color();
+			vertex(x2, y2, 0);
 		}
 	}
 
@@ -1109,22 +1121,42 @@ public class ShapeRendererEx implements Disposable {
 		}
 	}
 
+	/**
+	 * Wrapper for setting the color of the next vertex. Uses the specified color
+	 */
+	private void color() {
+		mRenderer.color(mColor);
+	}
+
+	/**
+	 * Wrapper for rendering vertices which includes the translation vector
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	private void vertex(float x, float y, float z) {
+		mRenderer.vertex(x + mTranslate.x, y + mTranslate.y, z + mTranslate.z);
+	}
+
 	/** Renderer */
-	ImmediateModeRenderer mRenderer;
+	private ImmediateModeRenderer mRenderer;
 	/** If the matrix is dirty */
 	boolean mMatrixDirty = false;
+	/**
+	 * Translation coordinates, uses this so we don't have to flush every time we
+	 * translate :)
+	 */
+	private Vector3 mTranslate = new Vector3();
 	/** projection view matrix */
-	Matrix4 mProjView = new Matrix4();
+	private Matrix4 mProjView = new Matrix4();
 	/** any temporary transformation to move the object */
-	Matrix4 mTransform = new Matrix4();
+	private Matrix4 mTransform = new Matrix4();
 	/** combined view of the camera */
-	Matrix4 mCombined = new Matrix4();
-	/** temporary matrix */
-	Matrix4 mTmp = new Matrix4();
+	private Matrix4 mCombined = new Matrix4();
 	/** Color of the shape */
-	Color mColor = new Color(1, 1, 1, 1);
+	private Color mColor = new Color(1, 1, 1, 1);
 	/** Stack of shape type */
-	Stack<ShapeType> mCurrentType = new Stack<ShapeRendererEx.ShapeType>();
+	private Stack<ShapeType> mCurrentType = new Stack<ShapeRendererEx.ShapeType>();
 	/** Pool for vector */
-	Pool<Vector2> mVectorPool = new Pool<>(Vector2.class, 3, 10);
+	private Pool<Vector2> mVectorPool = new Pool<>(Vector2.class, 3, 10);
 }

@@ -120,6 +120,7 @@ public enum ClientVersions {
 			),
 	V0_4_12(false,
 			"Improvements",
+			"	Performance by a huge amount :D",
 			"	Zoom in/out in editors now zoom in/out directly when clicked on",
 			"	Added back button in various menus",
 			"	Removed UI sound everywhere except main menus",
