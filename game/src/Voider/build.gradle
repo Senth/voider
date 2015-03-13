@@ -159,9 +159,9 @@ project(":server-analytics") {
 	
 	dependencies {
 		providedCompile 'javax.servlet:servlet-api:2.5'
-		compile "com.spiddekauga.appengine:appengine-utils:$appengineUtilsVersion"
 		compile "com.google.appengine.tools:appengine-gcs-client:0.4.4"
 		compile "com.google.appengine.tools:appengine-mapreduce:0.8.3"
+		compile "com.spiddekauga.appengine:appengine-utils:$appengineUtilsVersion"
 	}
 }
 
