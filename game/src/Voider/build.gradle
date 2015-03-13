@@ -11,6 +11,7 @@ buildscript {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
         classpath 'com.android.tools.build:gradle:1.0.0'
         classpath 'org.robovm:robovm-gradle-plugin:1.0.0-beta-04'
+		classpath 'com.google.appengine:gradle-appengine-plugin:1.9.18'
     }
 }
 
@@ -139,6 +140,7 @@ project(":network") {
 project(":server") {
 	apply plugin: "java"
 	apply plugin: "war"
+	apply plugin: 'appengine'
 	
 	dependencies {
 		providedCompile 'javax.servlet:servlet-api:2.5'
@@ -153,6 +155,7 @@ project(":server") {
 project(":server-analytics") {
 	apply plugin: "java"
 	apply plugin: "war"
+	apply plugin: 'appengine'
 	
 	dependencies {
 		providedCompile 'javax.servlet:servlet-api:2.5'
@@ -169,30 +172,40 @@ tasks.eclipse.doLast {
 //--------------------------------------------
 //				DEPLOYMENT
 //--------------------------------------------
-task deployNightlyDev(dependsOn: ['setBuildNightlyDev', ':core:clean', ':desktop:dist']) << {
-	deployBuild("NIGHTLY_DEV")
+task deployGameNightlyDev(dependsOn: ['setBuildNightlyDev', ':core:clean', ':desktop:dist']) << {
+	deployGame("NIGHTLY_DEV")
 }
 
 task setBuildNightlyDev << {
 	replaceBuildName("NIGHTLY_DEV")
 }
 
-task deployNightlyRelease(dependsOn: ['setBuildNightlyRelease', ':core:clean', ':desktop:dist']) << {
-	deployBuild("NIGHTLY_RELEASE")
+task deployGameNightlyRelease(dependsOn: ['setBuildNightlyRelease', ':core:clean', ':desktop:dist']) << {
+	deployGame("NIGHTLY_RELEASE")
 }
 
 task setBuildNightlyRelease << {
 	replaceBuildName("NIGHTLY_RELEASE")
 }
 
-task deployBeta(dependsOn: ['setBuildBeta', ':core:clean', ':desktop:dist']) << {
-	deployBuild("BETA")
+task deployGameBeta(dependsOn: ['setBuildBeta', ':core:clean', ':desktop:dist']) << {
+	deployGame("BETA")
 }
 
 task setBuildBeta << {
 	replaceBuildName("BETA")
 }
+
+task setBuildRelease << {
+	replaceBuildName("RELEASE")
+}
+
+task deployGameRelease(dependsOn: ['setBuildRelease', 'core:clean', ':desktop:dist']) << {
+	deployGame("RELEASE")
+}
+
 // Ordering
+project(':core').compileJava.mustRunAfter setBuildRelease
 project(':core').compileJava.mustRunAfter setBuildBeta
 project(':core').compileJava.mustRunAfter setBuildNightlyDev
 project(':core').compileJava.mustRunAfter setBuildNightlyRelease
@@ -209,33 +222,76 @@ task setAppengineNightly << {
 	updateApplicationId("voider-nightly")
 }
 
-task setAppengineBeta << {
+task setAppengineBeta() << {
 	updateAppengineVersion()
 	updateApplicationId("voider-beta")
 }
 
-def deployBuild(deployBuild) {
+task setAppengineRelease() << {
+	updateAppengineVersion()
+	updateApplicationId("voider-game")
+}
+
+task deployAppengineDev(dependsOn: ['setAppengineDev', 'server:appengineUpdate']) << {
+	// Does nothing
+}
+
+task deployAppengineNightly(dependsOn: ['setAppengineNightly', 'server:appengineUpdate']) << {
+	// Does nothing
+}
+
+task deployAppengineBeta(dependsOn: ['setAppengineBeta', 'server:appengineUpdate']) << {
+	// Does nothing
+}
+
+task deployAppengineRelease(dependsOn: ['setAppengineRelease', 'server:appengineUpdate']) << {
+	// Does nothing
+}
+
+// Ordering
+project(':server').appengineUpdate.mustRunAfter setAppengineDev
+project(':server').appengineUpdate.mustRunAfter setAppengineBeta
+project(':server').appengineUpdate.mustRunAfter setAppengineNightly
+project(':server').appengineUpdate.mustRunAfter setAppengineRelease
+
+// Deploy Game to dropbox and other places
+def deployGame(buildName) {
 	def dropboxDir = "/home/senth/Dropbox/Voider exec/"
-	def copyTo = ""
-	switch ( deployBuild ) {
+	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
+	def dropboxCopyTo = ""
+	def warDir = projectDir.absolutePath + "/server/src/main/webapp/"
+	def explodedDir = projectDir.absolutePath + "/server/build/exploded-app/"
+	switch ( buildName ) {
 		case "NIGHTLY_DEV":
-			copyTo = "Voider - editable resources/Voider.jar"
+			dropboxCopyTo = dropboxDir + "Voider - editable resources/Voider.jar"
 			break
 		
 		case "NIGHTLY_RELEASE":
-			copyTo = "Voider/Voider-nightly.jar"
+			dropboxCopyTo = dropboxDir + "Voider/Voider-nightly.jar"
 			break
-			
+		
 		case "BETA":
-			copyTo = "Voider/Voider-beta.jar"
+			warDir += "Voider-beta.jar"
+			explodedDir += "Voider-beta.jar"
+			break
+
+		case "RELEASE":
+			warDir += "Voider.jar"
+			explodedDir += "Voider.jar"
 			break
 	}
-	
-	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
-	copyTo = dropboxDir + copyTo
-	
-	Files.move(Paths.get(desktopFile), Paths.get(copyTo), StandardCopyOption.REPLACE_EXISTING)
-	
+
+	// Copy to dropbox
+	if (dropboxCopyTo != "") {
+		dropboxCopyTo = dropboxDir + dropboxCopyTo
+		Files.move(Paths.get(desktopFile), Paths.get(dropboxCopyTo), StandardCopyOption.REPLACE_EXISTING)
+	}
+	// Copy to appengine
+	else {
+
+		Files.copy(Paths.get(desktopFile), Paths.get(warDir), StandardCopyOption.REPLACE_EXISTING)
+		Files.move(Paths.get(desktopFile), Paths.get(explodedDir), StandardCopyOption.REPLACE_EXISTING)
+	}
 	replaceBuildName(project.defaultBuild)
 }
 

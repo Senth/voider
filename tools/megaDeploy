@@ -3,18 +3,16 @@
 POSSIBLE_ARGS=('appengine' 'game')
 
 APPENGINE_TASKS=(
-	'setAppengineBeta'
-	'server:appengineUpdate'
-	'setAppengineNightly'
-	'server:appengineUpdate'
-	'setAppengineDev'
-	'server:appengineUpdate'
+	'deplopAppengineRelease'
+	'deployAppengineBeta'
+	'deployAppengineNightly'
+	'deployAppengineDev'
 )
 
 GAME_TASKS=(
-	'deployNightlyDev'
-	'deployNightlyRelease'
-	'deployBeta'
+	'deployGameNightlyDev'
+	'deployGameNightlyRelease'
+	'deployGameBeta'
 )
 
 tasks=()
@@ -36,8 +34,8 @@ done
 
 # No arguments sync all
 if [ ${#tasks[@]} -eq 0 ]; then
-	tasks=( "${APPENGINE_TASKS[@]}")
-	tasks+=( "${GAME_TASKS[@]}")
+	tasks=( "${GAME_TASKS[@]}")
+	tasks+=( "${APPENGINE_TASKS[@]}")
 fi
 
 # Run tasks
