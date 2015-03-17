@@ -19,7 +19,7 @@ public class ResourceUtils {
 	public static ResourceBlobEntity getBlobLevelInformation(Entity levelDef) {
 		ResourceBlobEntity information = new ResourceBlobEntity();
 
-		information.resourceId = DatastoreUtils.getUuidProperty(levelDef, "level_id");
+		information.resourceId = DatastoreUtils.getPropertyUuid(levelDef, "level_id");
 		information.blobKey = ((BlobKey) levelDef.getProperty("level_blob_key")).getKeyString();
 		information.uploadType = UploadTypes.LEVEL;
 
@@ -33,7 +33,7 @@ public class ResourceUtils {
 	public static ResourceBlobEntity getBlobInformation(Entity resource) {
 		ResourceBlobEntity information = new ResourceBlobEntity();
 
-		information.resourceId = DatastoreUtils.getUuidProperty(resource, "resource_id");
+		information.resourceId = DatastoreUtils.getPropertyUuid(resource, "resource_id");
 		information.blobKey = ((BlobKey) resource.getProperty("blob_key")).getKeyString();
 		long defTypeId = (long) resource.getProperty("type");
 		information.uploadType = UploadTypes.fromId((int) defTypeId);

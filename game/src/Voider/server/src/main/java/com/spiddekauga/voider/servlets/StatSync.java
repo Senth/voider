@@ -30,10 +30,10 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.stat.StatSyncEntity;
+import com.spiddekauga.voider.network.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.network.stat.StatSyncMethod;
 import com.spiddekauga.voider.network.stat.StatSyncResponse;
 import com.spiddekauga.voider.network.stat.Tags;
-import com.spiddekauga.voider.network.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
@@ -262,7 +262,7 @@ public class StatSync extends VoiderServlet {
 				}
 			}
 
-			oldStat.rating = DatastoreUtils.getIntProperty(userEntity, CUserLevelStat.RATING);
+			oldStat.rating = DatastoreUtils.getPropertyInt(userEntity, CUserLevelStat.RATING, 0);
 			oldStat.bookmark = (boolean) userEntity.getProperty(CUserLevelStat.BOOKMARK);
 		}
 
@@ -482,7 +482,7 @@ public class StatSync extends VoiderServlet {
 		// Set correct level/campaign id
 		Entity levelEntity = DatastoreUtils.getEntity((Key) serverEntity.getProperty(CUserLevelStat.LEVEL_KEY));
 		if (levelEntity != null) {
-			levelStats.id = DatastoreUtils.getUuidProperty(levelEntity, "resource_id");
+			levelStats.id = DatastoreUtils.getPropertyUuid(levelEntity, "resource_id");
 		} else {
 			return null;
 		}

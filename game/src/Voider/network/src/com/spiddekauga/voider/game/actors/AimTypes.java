@@ -2,7 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 import java.util.HashMap;
 
-import com.spiddekauga.voider.network.util.ISearchStore;
+import com.spiddekauga.utils.ISearchStore;
 
 /**
  * Enumeration for how to aim

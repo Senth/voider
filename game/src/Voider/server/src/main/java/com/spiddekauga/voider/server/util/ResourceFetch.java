@@ -11,9 +11,9 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
+import com.spiddekauga.utils.ISearchStore;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.FetchStatuses;
-import com.spiddekauga.voider.network.util.ISearchStore;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 
@@ -34,12 +34,12 @@ public abstract class ResourceFetch<ReturnType> extends VoiderServlet {
 	 * @return the network entity (same as the second parameter)
 	 */
 	protected <DefType extends DefEntity> DefType datastoreToDefEntity(Entity datastoreEntity, DefType networkEntity) {
-		networkEntity.copyParentId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.COPY_PARENT_ID);
+		networkEntity.copyParentId = DatastoreUtils.getPropertyUuid(datastoreEntity, CPublished.COPY_PARENT_ID);
 		networkEntity.date = (Date) datastoreEntity.getProperty(CPublished.DATE);
 		networkEntity.description = (String) datastoreEntity.getProperty(CPublished.DESCRIPTION);
 		networkEntity.name = (String) datastoreEntity.getProperty(CPublished.NAME);
-		networkEntity.resourceId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.RESOURCE_ID);
-		networkEntity.png = DatastoreUtils.getByteArrayProperty(datastoreEntity, CPublished.PNG);
+		networkEntity.resourceId = DatastoreUtils.getPropertyUuid(datastoreEntity, CPublished.RESOURCE_ID);
+		networkEntity.png = DatastoreUtils.getPropertyByteArray(datastoreEntity, CPublished.PNG);
 
 		// Set creators
 		Key creatorKey = datastoreEntity.getParent();

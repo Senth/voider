@@ -19,7 +19,7 @@ public class SessionMapper extends MapOnlyMapper<Entity, AnalyticsSession> {
 
 		Date startTime = (Date) sessionEntity.getProperty("start_time");
 		double length = (Double) sessionEntity.getProperty("length");
-		UUID userAnalyticsId = DatastoreUtils.getUuidProperty(sessionEntity, "user_analytics_id");
+		UUID userAnalyticsId = DatastoreUtils.getPropertyUuid(sessionEntity, "user_analytics_id");
 		String platform = (String) sessionEntity.getProperty("platform");
 		String os = (String) sessionEntity.getProperty("os");
 		String screenSize = (String) sessionEntity.getProperty("screen_size");

@@ -17,6 +17,7 @@ public class ServerConfig {
 		public static final String BLOB_INFO = "__BlobInfo__";
 		public static final String USERS = "users";
 		public static final String PASSWORD_RESET = "password_reset";
+		public static final String MOTD = "motd";
 		public static final String PUBLISHED = "published";
 		/** Published dependencies */
 		public static final String DEPENDENCY = "dependency";
@@ -47,8 +48,18 @@ public class ServerConfig {
 			public static final String DATE_FORMAT = "date_format";
 		}
 
+		// Reset Password Tokens
 		public static class CPasswordReset {
 			public static final String TOKEN = "token";
+			public static final String EXPIRES = "expires";
+		}
+
+		// Message of the Day
+		public static class CMotd {
+			public static final String TITLE = "title";
+			public static final String CONTENT = "content";
+			public static final String TYPE = "type";
+			public static final String CREATED = "created";
 			public static final String EXPIRES = "expires";
 		}
 

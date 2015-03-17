@@ -9,6 +9,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.Repo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingDisplayLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingGeneralLocalRepo;
@@ -104,6 +105,30 @@ public class SettingRepo extends Repo {
 		public String getNewChangesSinceLastLogin() {
 			ClientVersions lastLoginVersion = mLocalRepo.getLatestClientVersion();
 			return ClientVersions.getChangeLogs(lastLoginVersion);
+		}
+
+		/**
+		 * Set the latest message of the day date
+		 * @param motd message of the day
+		 */
+		public void setLatestMotdDate(Motd motd) {
+			mLocalRepo.setLatestMotdDate(motd);
+		}
+
+		/**
+		 * Set the latest message of the day date from several MOTD
+		 * @param motds all new message of the day
+		 */
+		public void setLatestMotdDate(Iterable<Motd> motds) {
+			mLocalRepo.setLatestMotdDate(motds);
+		}
+
+		/**
+		 * Filter out MOTDs that have been displayed already
+		 * @param motds all MOTDs to parse
+		 */
+		public void filterMotds(Iterable<Motd> motds) {
+			mLocalRepo.filterMotds(motds);
 		}
 
 		private SettingGeneralLocalRepo mLocalRepo = SettingLocalRepo.getInstance().general;

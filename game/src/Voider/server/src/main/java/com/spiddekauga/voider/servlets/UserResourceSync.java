@@ -152,9 +152,9 @@ public class UserResourceSync extends VoiderServlet {
 
 				for (Entity entity : preparedQuery.asIterable()) {
 					ResourceRevisionBlobEntity blobEntity = new ResourceRevisionBlobEntity();
-					blobEntity.resourceId = DatastoreUtils.getUuidProperty(entity, CUserResources.RESOURCE_ID);
-					blobEntity.revision = DatastoreUtils.getIntProperty(entity, CUserResources.REVISION);
-					blobEntity.uploadType = UploadTypes.fromId(DatastoreUtils.getIntProperty(entity, CUserResources.TYPE));
+					blobEntity.resourceId = DatastoreUtils.getPropertyUuid(entity, CUserResources.RESOURCE_ID);
+					blobEntity.revision = DatastoreUtils.getPropertyInt(entity, CUserResources.REVISION, 0);
+					blobEntity.uploadType = DatastoreUtils.getPropertyIdStore(entity, CUserResources.TYPE, UploadTypes.class);
 					blobEntity.blobKey = ((BlobKey) entity.getProperty(CUserResources.BLOB_KEY)).getKeyString();
 					blobEntity.created = (Date) entity.getProperty(CUserResources.CREATED);
 
@@ -298,7 +298,7 @@ public class UserResourceSync extends VoiderServlet {
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		for (Entity entity : preparedQuery.asIterable()) {
-			UUID resourceId = DatastoreUtils.getUuidProperty(entity, CUserResourcesDeleted.RESOURCE_ID);
+			UUID resourceId = DatastoreUtils.getPropertyUuid(entity, CUserResourcesDeleted.RESOURCE_ID);
 
 			mResponse.resourcesToRemove.add(resourceId);
 		}
@@ -322,7 +322,7 @@ public class UserResourceSync extends VoiderServlet {
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		for (Entity entity : preparedQuery.asIterable()) {
-			UUID resourceId = DatastoreUtils.getUuidProperty(entity, CUserResources.RESOURCE_ID);
+			UUID resourceId = DatastoreUtils.getPropertyUuid(entity, CUserResources.RESOURCE_ID);
 
 			// Only add if resource isn't in conflict
 			if (!mResponse.conflicts.containsKey(resourceId) && !mResponse.resourcesToRemove.contains(resourceId)
@@ -331,8 +331,8 @@ public class UserResourceSync extends VoiderServlet {
 
 				ResourceRevisionBlobEntity blobEntity = new ResourceRevisionBlobEntity();
 				blobEntity.resourceId = resourceId;
-				blobEntity.revision = DatastoreUtils.getIntProperty(entity, CUserResources.REVISION);
-				blobEntity.uploadType = UploadTypes.fromId(DatastoreUtils.getIntProperty(entity, CUserResources.TYPE));
+				blobEntity.revision = DatastoreUtils.getPropertyInt(entity, CUserResources.REVISION, 0);
+				blobEntity.uploadType = DatastoreUtils.getPropertyIdStore(entity, CUserResources.TYPE, UploadTypes.class);
 				blobEntity.blobKey = ((BlobKey) entity.getProperty(CUserResources.BLOB_KEY)).getKeyString();
 				blobEntity.created = (Date) entity.getProperty(CUserResources.CREATED);
 
@@ -358,7 +358,7 @@ public class UserResourceSync extends VoiderServlet {
 		Entity entity = new Entity(DatastoreTables.USER_RESOURCES, mUser.getKey());
 		DatastoreUtils.setProperty(entity, CUserResources.RESOURCE_ID, resourceRevisionEntity.resourceId);
 		entity.setProperty(CUserResources.REVISION, revisionEntity.revision);
-		entity.setUnindexedProperty(CUserResources.TYPE, resourceRevisionEntity.type.getId());
+		entity.setUnindexedProperty(CUserResources.TYPE, resourceRevisionEntity.type.toId());
 		entity.setProperty(CUserResources.CREATED, revisionEntity.date);
 		entity.setProperty(CUserResources.UPLOADED, mSyncDate);
 		entity.setUnindexedProperty(CUserResources.BLOB_KEY, blobKeys.get(revisionEntity.revision));

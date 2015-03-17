@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.repo.misc;
 
+import java.util.Date;
+
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Network;
@@ -54,6 +56,23 @@ class SettingUserPrefsGateway extends PrefsGateway {
 		return ClientVersions.fromId(versionId);
 	}
 
+	/**
+	 * Update the latest message of the day date
+	 * @param date latest date
+	 */
+	void setLatestMotdDate(Date date) {
+		mPreferences.putLong(MOTD__LATEST_DATE, date.getTime());
+		mPreferences.flush();
+	}
+
+	/**
+	 * @return get latest message of the day date
+	 */
+	Date getLatestMotdDate() {
+		long dateTime = mPreferences.getLong(MOTD__LATEST_DATE, 0);
+		return new Date(dateTime);
+	}
+
 	// ----------------
 	// Network
 	// ----------------
@@ -74,6 +93,7 @@ class SettingUserPrefsGateway extends PrefsGateway {
 		mPreferences.flush();
 	}
 
+	private static final String MOTD__LATEST_DATE = "motd_latestDate";
 	private static final String CLIENT__LAST_VERSION = "client_lastVersion";
 	private static final String DATE__DATE_TIME_FORMAT = "date_dateTimeFormat";
 

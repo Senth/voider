@@ -18,6 +18,10 @@
 					<key>LaunchConfigHandle</key>
 					<value>&lt;project&gt;/.externalToolBuilders/Maven Install (spiddekauga-utils).launch</value>
 				</dictionary>
+				<dictionary>
+					<key>incclean</key>
+					<value>true</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>

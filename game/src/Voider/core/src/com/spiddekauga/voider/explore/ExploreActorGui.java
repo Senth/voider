@@ -41,7 +41,7 @@ public class ExploreActorGui extends ExploreGui {
 		ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
 		imageButtonStyle.imageUp = (Drawable) actor.drawable;
 
-		Button button = new ImageButton(imageButtonStyle);
+		ImageButton button = new ImageButton(imageButtonStyle);
 		button.setChecked(selected);
 		table.row().setFillWidth(true);
 		table.add(button).setFillWidth(true).setKeepAspectRatio(true);

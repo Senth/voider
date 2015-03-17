@@ -176,8 +176,8 @@ public class HighscoreSync extends VoiderServlet {
 	 */
 	private static HighscoreSyncEntity serverToNetworkEntity(Entity serverEntity) {
 		HighscoreSyncEntity networkEntity = new HighscoreSyncEntity();
-		networkEntity.levelId = DatastoreUtils.getUuidProperty(serverEntity, "level_id");
-		networkEntity.score = DatastoreUtils.getIntProperty(serverEntity, "score");
+		networkEntity.levelId = DatastoreUtils.getPropertyUuid(serverEntity, "level_id");
+		networkEntity.score = DatastoreUtils.getPropertyInt(serverEntity, "score", 0);
 		networkEntity.created = (Date) serverEntity.getProperty("created");
 
 		return networkEntity;

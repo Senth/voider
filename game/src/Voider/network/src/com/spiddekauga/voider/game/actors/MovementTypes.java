@@ -2,8 +2,8 @@ package com.spiddekauga.voider.game.actors;
 
 import java.util.HashMap;
 
-import com.spiddekauga.voider.network.util.IIdStore;
-import com.spiddekauga.voider.network.util.ISearchStore;
+import com.spiddekauga.utils.IIdStore;
+import com.spiddekauga.utils.ISearchStore;
 
 /**
  * Enumeration for all enemy movement types

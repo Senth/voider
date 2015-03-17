@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -254,7 +255,7 @@ class ExploreLevelGui extends ExploreGui {
 		table.setMarginRight(mUiFactory.getStyles().vars.paddingInner);
 		getStage().addActor(table);
 
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup<CheckBox> buttonGroup = new ButtonGroup<>();
 
 		// Create buttons
 		mUiFactory.button.addEnumCheckboxes(SortOrders.values(), CheckBoxStyles.RADIO, null, buttonGroup, false, table, mWidgets.sort.buttons);
@@ -503,7 +504,7 @@ class ExploreLevelGui extends ExploreGui {
 		ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
 		imageButtonStyle.imageUp = (Drawable) defEntity.drawable;
 
-		Button button = new ImageButton(imageButtonStyle);
+		ImageButton button = new ImageButton(imageButtonStyle);
 		button.setChecked(selected);
 		table.row().setFillWidth(true);
 		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
@@ -679,7 +680,7 @@ class ExploreLevelGui extends ExploreGui {
 		}
 
 		private class Tag implements Disposable {
-			ButtonGroup buttonGroup = new ButtonGroup();
+			ButtonGroup<CheckBox> buttonGroup = null;
 			Button[] buttons = new Button[Tags.values().length];
 
 			private Tag() {
@@ -688,12 +689,11 @@ class ExploreLevelGui extends ExploreGui {
 
 			@Override
 			public void dispose() {
-				buttonGroup = new ButtonGroup();
-
 				init();
 			}
 
 			private void init() {
+				buttonGroup = new ButtonGroup<>();
 				buttonGroup.setMinCheckCount(0);
 				buttonGroup.setMaxCheckCount(5);
 			}

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import com.spiddekauga.voider.network.util.ISearchStore;
+import com.spiddekauga.utils.ISearchStore;
 
 /**
  * All tags

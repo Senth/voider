@@ -21,11 +21,14 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsEvent;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsScene;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsSession;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -44,11 +47,26 @@ public class Upgrade extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+		createMotd();
 
 		getResponse().setContentType("text/html");
 		getResponse().getWriter().append("DONE !");
 
 		return null;
+	}
+
+	private void createMotd() {
+		Entity entity = new Entity(DatastoreTables.MOTD);
+
+		Date nowDate = new Date();
+
+		entity.setUnindexedProperty(CMotd.CREATED, nowDate);
+		entity.setUnindexedProperty(CMotd.TITLE, "New MOTD :D");
+		entity.setUnindexedProperty(CMotd.CONTENT, "This is my content.\nHope you like it :)");
+		entity.setProperty(CMotd.EXPIRES, new Date(nowDate.getTime() + 1000000));
+		DatastoreUtils.setUnindexedProperty(entity, CMotd.TYPE, MotdTypes.INFO);
+
+		DatastoreUtils.put(entity);
 	}
 
 	private void clearAnalytics() {
@@ -108,8 +126,9 @@ public class Upgrade extends VoiderServlet {
 	private void indexDocuments() {
 		HashMap<UploadTypes, ArrayList<Document>> documentsToAdd = new HashMap<>();
 
-		for (Entity entity : DatastoreUtils.getEntities("published")) {
-			UploadTypes uploadType = UploadTypes.fromId(DatastoreUtils.getIntProperty(entity, "type"));
+		for (Entity entity : DatastoreUtils.getEntities(DatastoreTables.PUBLISHED)) {
+			UploadTypes uploadType = DatastoreUtils.getPropertyIdStore(entity, CPublished.TYPE, UploadTypes.class);
+
 
 			ArrayList<Document> documents = documentsToAdd.get(uploadType);
 

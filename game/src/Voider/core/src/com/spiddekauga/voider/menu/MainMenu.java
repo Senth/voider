@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -23,6 +25,7 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
@@ -49,7 +52,6 @@ import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 import com.spiddekauga.voider.utils.event.IEventListener;
-import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * Main menu of the scene
@@ -165,27 +167,35 @@ public class MainMenu extends Scene implements IEventListener {
 
 			SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
 
-			if (message instanceof UpdateEvent) {
-				UpdateEvent event = (UpdateEvent) message;
-				switch (event.type) {
-				case UPDATE_AVAILABLE:
-					((MainMenuGui) mGui).showUpdateAvailable(event.latestClientVersion, event.changeLog);
-					break;
+			if (message instanceof LoginInfo) {
+				LoginInfo loginInfo = (LoginInfo) message;
 
-				case UPDATE_REQUIRED:
-					((MainMenuGui) mGui).showUpdateNeeded(event.latestClientVersion, event.changeLog);
-					break;
+				// Update information
+				if (loginInfo.updateInfo != null) {
+					switch (loginInfo.updateInfo.type) {
+					case UPDATE_AVAILABLE:
+						((MainMenuGui) mGui).showUpdateAvailable(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
+						break;
 
-				default:
-					break;
+					case UPDATE_REQUIRED:
+						((MainMenuGui) mGui).showUpdateNeeded(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
+						break;
+
+					default:
+						break;
+					}
+				}
+				// Check if the client was updated since last login
+				else if (infoRepo.isClientVersionNewSinceLastLogin()) {
+					((MainMenuGui) mGui).showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
+					infoRepo.updateClientVersion();
+				}
+
+				// MOTD
+				if (loginInfo.motds != null && !loginInfo.motds.isEmpty()) {
+					showNewMotd(loginInfo.motds);
 				}
 			}
-			// Check if the client was updated since last login
-			else if (infoRepo.isClientVersionNewSinceLastLogin()) {
-				((MainMenuGui) mGui).showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
-				infoRepo.updateClientVersion();
-			}
-			infoRepo.updateClientVersion();
 		}
 	}
 
@@ -424,6 +434,41 @@ public class MainMenu extends Scene implements IEventListener {
 		UserLocalRepo.getInstance().removeLastUser();
 		setNextScene(new LoginScene());
 		setOutcome(Outcomes.LOGGED_OUT);
+	}
+
+	/**
+	 * Show new MOTD
+	 * @param motds
+	 */
+	private void showNewMotd(ArrayList<Motd> motds) {
+		// Remove MOTD we already have shown the user
+		SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
+		infoRepo.filterMotds(motds);
+
+		// Sort these by created date (oldest first)
+		Collections.sort(motds, new Comparator<Motd>() {
+			@Override
+			public int compare(Motd o1, Motd o2) {
+				if (o1.created.before(o2.created)) {
+					return -1;
+				}
+				if (o1.created.after(o2.created)) {
+					return 1;
+				}
+				return 0;
+			}
+		});
+
+		((MainMenuGui) mGui).showMotds(motds);
+	}
+
+	/**
+	 * Call this once a message of the day has been clicked away
+	 * @param motd the MOTD
+	 */
+	void motdViewed(Motd motd) {
+		SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
+		infoRepo.setLatestMotdDate(motd);
 	}
 
 	private static final User mUser = User.getGlobalUser();

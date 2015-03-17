@@ -872,7 +872,7 @@ public class TabWidget extends AlignTable {
 	/** Cell that contains the outer table */
 	private Cell mContentOuterCell = null;
 	/** Tab button group */
-	private ButtonGroup mButtonGroup = new ButtonGroup();
+	private ButtonGroup<Button> mButtonGroup = new ButtonGroup<>();
 	/** The hider that is used for the last added tab */
 	private HideListener mTabHiderLast = null;
 	/** Button padding for the action buttons */

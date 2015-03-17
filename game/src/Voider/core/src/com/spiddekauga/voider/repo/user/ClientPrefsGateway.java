@@ -9,7 +9,6 @@ import com.spiddekauga.voider.utils.User;
 
 /**
  * Preference gateway for user repository
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ClientPrefsGateway {
@@ -43,8 +42,8 @@ class ClientPrefsGateway {
 	/**
 	 * Set last logged in (online) user
 	 * @param username username or email of the user that was logged in
-	 * @param privateKey the private key which will be used for automatic login
-	 * in the future.
+	 * @param privateKey the private key which will be used for automatic login in the
+	 *        future.
 	 * @param serverKey user id on the server
 	 */
 	void setLastUser(String username, UUID privateKey, String serverKey) {
@@ -61,6 +60,7 @@ class ClientPrefsGateway {
 	 * @param username username or email of the user that was logged in
 	 * @param password
 	 */
+	@Deprecated
 	void setLastUser(String username, String password) {
 		mPreferences.putString(LAST_USER__USERNAME, username);
 		mPreferences.putBoolean(LAST_USER__ONLINE, false);
@@ -78,6 +78,7 @@ class ClientPrefsGateway {
 		mPreferences.remove(LAST_USER__PRIVATE_KEY);
 		mPreferences.remove(LAST_USER__SERVER_KEY);
 		mPreferences.remove(LAST_USER__PASSWORD);
+		mPreferences.remove(LAST_USER__ONLINE);
 		mPreferences.flush();
 	}
 
@@ -121,20 +122,6 @@ class ClientPrefsGateway {
 		return userInfo;
 	}
 
-	/**
-	 * Save that this app has registered one user, thus no more users can be registered
-	 */
-	void setAsRegistered() {
-		mPreferences.putBoolean(REGISTER__HAS_REGISTERED, true);
-	}
-
-	/**
-	 * @return true if no user has been registered on this app
-	 */
-	boolean isRegisterAvailable() {
-		return !mPreferences.getBoolean(REGISTER__HAS_REGISTERED, false);
-	}
-
 	/** Preferences */
 	private Preferences mPreferences;
 	/** Preferences name */
@@ -146,17 +133,14 @@ class ClientPrefsGateway {
 	private static final String LAST_USER__USERNAME = "lastUser_username";
 	/** Private key of last user */
 	private static final String LAST_USER__PRIVATE_KEY = "lastUser_privateKey";
-	/** If saved last user was online or offline */
-	private static final String LAST_USER__ONLINE = "lastUser_online";
-	/** Password */
-	private static final String LAST_USER__PASSWORD = "lastUser_password";
+	@Deprecated private static final String LAST_USER__ONLINE = "lastUser_online";
+	@Deprecated private static final String LAST_USER__PASSWORD = "lastUser_password";
 	/** User id on the server */
 	private static final String LAST_USER__SERVER_KEY = "lastUser_serverKey";
 	/** Client id */
 	private static final String CLIENT__ID = "client_id";
 
 	// REGISTER
-	/** True if the app has registered one user */
-	private static final String REGISTER__HAS_REGISTERED = "register_hasRegistered";
+	@Deprecated private static final String REGISTER__HAS_REGISTERED = "register_hasRegistered";
 
 }

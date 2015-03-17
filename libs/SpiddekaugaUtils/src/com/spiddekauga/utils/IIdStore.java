@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.network.util;
+package com.spiddekauga.utils;
 
 /**
  * Stores the id of something

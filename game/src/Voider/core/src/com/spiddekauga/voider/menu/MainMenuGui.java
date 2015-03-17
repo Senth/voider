@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.menu;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.commands.CGameQuit;
@@ -11,6 +13,9 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
+import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
@@ -192,9 +197,37 @@ class MainMenuGui extends MenuGui {
 		mUiFactory.msgBox.changeLog("ChangeLog", "New changes since you last logged in on this device", changeLog);
 	}
 
+	/**
+	 * Show all message of the day
+	 * @param motds all messages
+	 */
+	void showMotds(final ArrayList<Motd> motds) {
+		SettingDateRepo dateRepo = SettingRepo.getInstance().date();
+
+		for (final Motd motd : motds) {
+			MsgBoxExecuter msgBox = mUiFactory.msgBox.add(motd.title);
+
+			String date = dateRepo.getDateTime(motd.created);
+
+			msgBox.content(date, Align.center);
+			msgBox.contentRow();
+			msgBox.content(motd.content, Align.center);
+
+			// Update MOTD view date when viewed
+			Command motdViewed = new CRun() {
+				@Override
+				public boolean execute() {
+					mMenuScene.motdViewed(motd);
+					return true;
+				}
+			};
+
+			msgBox.addCancelButtonAndKeys("OK", motdViewed);
+		}
+	}
+
 	private AlignTable mOptionTable = new AlignTable();
 	private AlignTable mPlayerInfoTable = new AlignTable();
 	private AlignTable mLogoutTable = new AlignTable();
 	private AlignTable mSpiddekaugaTable = new AlignTable();
-
 }

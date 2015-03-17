@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.network.resource;
 
-import com.spiddekauga.voider.network.util.ISearchStore;
+import com.spiddekauga.utils.ISearchStore;
 
 /**
  * Range enumeration / category for searches

@@ -37,7 +37,7 @@ public enum ExternalTypes {
 	 * @param type the class type of resource
 	 */
 	private ExternalTypes(UploadTypes uploadType, Class<? extends IResource> type) {
-		mId = uploadType.getId();
+		mId = uploadType.toId();
 		mType = type;
 	}
 
@@ -79,7 +79,7 @@ public enum ExternalTypes {
 	 * @return external type enumeration of uploadType
 	 */
 	public static ExternalTypes fromUploadType(UploadTypes uploadType) {
-		return mIdToEnum.get(uploadType.getId());
+		return mIdToEnum.get(uploadType.toId());
 	}
 
 	/** Unique integer id of the enum */

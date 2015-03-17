@@ -127,7 +127,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 		case NEWEST:
 			query.addSort(CPublished.DATE, SortDirection.DESCENDING);
 			// Only search for levels
-			Filter levelFilter = new FilterPredicate(CPublished.TYPE, FilterOperator.EQUAL, UploadTypes.LEVEL_DEF.getId());
+			Filter levelFilter = new FilterPredicate(CPublished.TYPE, FilterOperator.EQUAL, UploadTypes.LEVEL_DEF.toId());
 			query.setFilter(levelFilter);
 			break;
 
@@ -263,7 +263,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 
 		// Level information
 		LevelDefEntity levelDefEntity = (LevelDefEntity) networkEntity;
-		levelDefEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.LEVEL_ID);
+		levelDefEntity.levelId = DatastoreUtils.getPropertyUuid(datastoreEntity, CPublished.LEVEL_ID);
 
 		return networkEntity;
 	}

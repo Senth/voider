@@ -129,6 +129,7 @@ public enum ClientVersions {
 			"	Enemies on test runs from the editor now spawns even on the left side",
 			"		Enemies are marked by an X if they aren't spawned",
 			"	Start location of the level is now calculated more accurately",
+			"	Added 'message of the day'-like messaging system",
 			"Bugfixes",
 			"	Fixed zoom tool as it sometimes stopped working in enemy/bullet editor"
 			),

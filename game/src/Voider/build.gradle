@@ -48,6 +48,7 @@ allprojects {
     
     configurations.all {
     	resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 }
 
@@ -135,6 +136,10 @@ project(":core") {
 
 project(":network") {
 	apply plugin: "java"
+
+	dependencies {
+		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
+	}
 }
 
 project(":server") {

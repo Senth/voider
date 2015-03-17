@@ -18,6 +18,7 @@ public enum EventTypes {
 	/** Failed to login user or connect */
 	USER_LOGIN_FAILED,
 
+
 	// --- CAMERA ---
 	/** Camera zoom was changed */
 	CAMERA_ZOOM_CHANGE,
@@ -47,6 +48,13 @@ public enum EventTypes {
 	UPDATE_AVAILABLE,
 	/** Update is required */
 	UPDATE_REQUIRED,
+
+
+	// --- MOTD ---
+	/** New message of the day */
+	MOTD_NEW,
+	/** All current Message of the day */
+	MOTD_CURRENT,
 
 
 	// --- SOUND ---

@@ -2,14 +2,15 @@ package com.spiddekauga.voider.network.resource;
 
 import java.util.HashMap;
 
+import com.spiddekauga.utils.IIdStore;
+
 
 /**
  * All definition types that can be uploaded
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("javadoc")
-public enum UploadTypes {
+public enum UploadTypes implements IIdStore {
 	BULLET_DEF(1),
 	ENEMY_DEF(2),
 	PICKUP_DEF(3),
@@ -38,10 +39,8 @@ public enum UploadTypes {
 		return mName;
 	}
 
-	/**
-	 * @return id of the movement type
-	 */
-	public int getId() {
+	@Override
+	public int toId() {
 		return mId;
 	}
 

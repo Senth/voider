@@ -48,7 +48,7 @@ public abstract class ActorFetch<DefType extends DefEntity> extends ResourceFetc
 		Query query = new Query(DatastoreTables.PUBLISHED);
 
 		// Only search for enemies
-		Filter enemyFilter = new FilterPredicate(CPublished.TYPE, FilterOperator.EQUAL, type.getId());
+		Filter enemyFilter = new FilterPredicate(CPublished.TYPE, FilterOperator.EQUAL, type.toId());
 		query.setFilter(enemyFilter);
 
 		// By Newest

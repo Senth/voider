@@ -1,10 +1,12 @@
 package com.spiddekauga.voider.network.user;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
+import com.spiddekauga.voider.network.misc.Motd;
 
 
 /**
@@ -29,6 +31,8 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 	public String latestClientVersion = ClientVersions.getLatest().toString();
 	/** Change-log for new versions that are available */
 	public String changeLogMessage = null;
+	/** Message of the Day */
+	public ArrayList<Motd> motds = new ArrayList<>();
 
 	@Override
 	public boolean isSuccessful() {

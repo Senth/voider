@@ -11,7 +11,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
  */
 @SuppressWarnings("serial")
 public class ChatMessage<DataType> implements IEntity {
-	/** Type of messasge */
+	/** Type of message */
 	public MessageTypes type = null;
 	/** This client will skip processing the message */
 	public UUID skipClient = null;

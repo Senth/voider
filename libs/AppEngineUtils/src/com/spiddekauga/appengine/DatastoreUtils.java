@@ -1,6 +1,8 @@
 package com.spiddekauga.appengine;
 
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -27,6 +29,7 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.ShortBlob;
+import com.spiddekauga.utils.IIdStore;
 
 /**
  * Utilities for Datastore
@@ -439,7 +442,7 @@ public class DatastoreUtils {
 	}
 
 	/**
-	 * Set an unindex property to an entity, but only if it's not null
+	 * Set an unindexed property to an entity, but only if it's not null
 	 * @param entity the entity to set the property in
 	 * @param propertyName name of the property
 	 * @param value the object to set as the property value. If null this method does
@@ -452,7 +455,31 @@ public class DatastoreUtils {
 	}
 
 	/**
-	 * Set a UUID property to an entity.
+	 * Set a property which has a IIdStore
+	 * @param entity the entity to set the property in
+	 * @param propertyName name of the property
+	 * @param idObject object which has an id
+	 */
+	public static void setProperty(Entity entity, String propertyName, IIdStore idObject) {
+		if (idObject != null) {
+			entity.setProperty(propertyName, idObject.toId());
+		}
+	}
+
+	/**
+	 * Set an unindexed property which has a IIdStore
+	 * @param entity the entity to set the property in
+	 * @param propertyName name of the property
+	 * @param idObject object which has an id
+	 */
+	public static void setUnindexedProperty(Entity entity, String propertyName, IIdStore idObject) {
+		if (idObject != null) {
+			entity.setUnindexedProperty(propertyName, idObject.toId());
+		}
+	}
+
+	/**
+	 * Set an unindexed UUID property to an entity.
 	 * @param entity the entity to add the UUID to
 	 * @param propertyName name of the property
 	 * @param uuid the UUID to add to the entity
@@ -501,7 +528,7 @@ public class DatastoreUtils {
 	 * @param propertyName name of the property
 	 * @return Stored UUID, null if it doesn't exist
 	 */
-	public static UUID getUuidProperty(Entity entity, String propertyName) {
+	public static UUID getPropertyUuid(Entity entity, String propertyName) {
 		if (entity.hasProperty(propertyName + UUID_LEAST_POSTFIX) && entity.hasProperty(propertyName + UUID_MOST_POSTFIX)) {
 			long leastBits = (long) entity.getProperty(propertyName + UUID_LEAST_POSTFIX);
 			long mostBits = (long) entity.getProperty(propertyName + UUID_MOST_POSTFIX);
@@ -515,16 +542,37 @@ public class DatastoreUtils {
 	 * Get an integer property
 	 * @param entity the entity to get the integer from
 	 * @param propertyName name of the property
-	 * @return stored integer, 0 if it doesn't exist
+	 * @return stored integer
+	 * @throws PropertyNotFoundException if the property wasn't found
+	 * @see #getPropertyInt(Entity, String, int)
 	 */
-	public static int getIntProperty(Entity entity, String propertyName) {
+	public static int getPropertyInt(Entity entity, String propertyName) throws PropertyNotFoundException {
 		Long longValue = (Long) entity.getProperty(propertyName);
 
 		if (longValue != null) {
 			return longValue.intValue();
+		} else {
+			throw new PropertyNotFoundException();
+		}
+	}
+
+	/**
+	 * Get an integer property
+	 * @param entity the entity to get the integer from
+	 * @param propertyName name of the property
+	 * @param defaultValue returns this value if the property wasn't found
+	 * @return stored integer, 0 if it doesn't exist
+	 */
+	public static int getPropertyInt(Entity entity, String propertyName, int defaultValue) {
+		int value = defaultValue;
+
+		Long longValue = (Long) entity.getProperty(propertyName);
+
+		if (longValue != null) {
+			value = longValue.intValue();
 		}
 
-		return 0;
+		return value;
 	}
 
 	/**
@@ -533,7 +581,7 @@ public class DatastoreUtils {
 	 * @param propertyName name of the property
 	 * @return stored byte array, null if wasn't set
 	 */
-	public static byte[] getByteArrayProperty(Entity entity, String propertyName) {
+	public static byte[] getPropertyByteArray(Entity entity, String propertyName) {
 		Object blob = entity.getProperty(propertyName);
 
 		if (blob instanceof ShortBlob) {
@@ -546,12 +594,73 @@ public class DatastoreUtils {
 	}
 
 	/**
+	 * Get an ID property. This requires that the class has a public method called 'T
+	 * fromId(int)' otherwise an exception is thrown.
+	 * @param <T> Type of the IdStore
+	 * @param entity the entity to get the id from
+	 * @param propertyName name of the property
+	 * @param clazz the class of the id property. This class needs to have a public method
+	 *        call 'T fromId(int)' otherwise an exception is thrown.
+	 * @return id object (usually an enumeration), null if not found
+	 * @throws IllegalArgumentException if the class doesn't have an public method with
+	 *         the signature: 'T fromId(int)'
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends IIdStore> T getPropertyIdStore(Entity entity, String propertyName, Class<T> clazz) {
+		// Check so that T has the required method
+		Method fromIdMehod = null;
+		try {
+			fromIdMehod = clazz.getMethod("fromId", int.class);
+
+			// Invalid return type
+			if (fromIdMehod.getReturnType() != clazz) {
+				throw new IllegalArgumentException(clazz.getName() + " method 'T fromId(int)' doesn't return itself");
+			}
+		}
+		// Doesn't exist
+		catch (NoSuchMethodException e) {
+			throw new IllegalArgumentException(clazz.getName() + " method 'T fromId(int)' wasn't found");
+		}
+		// Method isn't public
+		catch (SecurityException e) {
+			throw new IllegalArgumentException(clazz.getName() + " method 'T fromId(int)' isn't public");
+		}
+
+		// Get the value
+		try {
+			int property = getPropertyInt(entity, propertyName);
+
+			// Convert to T
+			try {
+				Object object = fromIdMehod.invoke(null, property);
+
+				if (object != null) {
+					return (T) object;
+				}
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new IllegalArgumentException(clazz.getName() + " method 'T fromId(int)' isn't static");
+			}
+		} catch (PropertyNotFoundException e) {
+		}
+
+		return null;
+	}
+
+
+	/**
 	 * Prepare a query
 	 * @param query the query to prepare
 	 * @return prepared query
 	 */
 	public static PreparedQuery prepare(Query query) {
 		return mDatastore.prepare(query);
+	}
+
+	/**
+	 * Property not found exception when the property wasn't found
+	 */
+	public static class PropertyNotFoundException extends Exception {
+		private static final long serialVersionUID = -2475594610909583785L;
 	}
 
 	/**

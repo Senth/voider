@@ -16,7 +16,11 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/Maven Install (appengine-utils).launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/Maven-install (appengine-utils).launch</value>
+				</dictionary>
+				<dictionary>
+					<key>incclean</key>
+					<value>true</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

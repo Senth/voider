@@ -20,6 +20,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.MotdEvent;
 import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
@@ -143,13 +144,33 @@ public class User {
 	 * to connect to the server again.
 	 */
 	public void login() {
+		login(null);
+	}
+
+	/**
+	 * Tries to login this user, either offline or online. If the login is successful this
+	 * will automatically set the global user. If the user is already offline it will try
+	 * to connect to the server again.
+	 * @param responseListener listens to the web response
+	 */
+	public void login(IResponseListener responseListener) {
+		IResponseListener[] listeners = null;
+		if (responseListener != null) {
+			listeners = new IResponseListener[2];
+			listeners[1] = responseListener;
+		} else {
+			listeners = new IResponseListener[1];
+		}
+		listeners[0] = mResponseListener;
+
+
 		// Connect if offline
 		if (mGlobalUser == this && mLoggedIn && !mOnline) {
-			mWebRepo.login(this, mUserLocalRepo.getClientId(), mResponseListener);
+			mWebRepo.login(this, mUserLocalRepo.getClientId(), listeners);
 		}
 		// Login
 		else if (mGlobalUser != this) {
-			mWebRepo.login(this, mUserLocalRepo.getClientId(), mResponseListener);
+			mWebRepo.login(this, mUserLocalRepo.getClientId(), listeners);
 		}
 		// Error
 		else if (mGlobalUser == this) {
@@ -335,6 +356,11 @@ public class User {
 						loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
 					}
 				}
+
+				// MOTD
+				if (!response.motds.isEmpty()) {
+					mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motds));
+				}
 			}
 			// Send error message
 			else {
@@ -374,7 +400,6 @@ public class User {
 					mPrivateKey = response.privateKey;
 					mServerKey = response.userKey;
 					mUserLocalRepo.setLastUser(mUsername, response.privateKey, response.userKey);
-					mUserLocalRepo.setAsRegistered();
 				}
 				mNotification.show(NotificationTypes.SUCCESS, "User registered");
 			} else {

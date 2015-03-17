@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.spiddekauga.utils.IIdStore;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.util.IIdStore;
 
 /**
  * Bug report information

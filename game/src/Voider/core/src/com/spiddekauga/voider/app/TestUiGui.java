@@ -135,7 +135,7 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// Checkboxes
-		Button button = new CheckBox("Checkbox 1", mGeneralSkin, SkinNames.General.CHECK_BOX_DEFAULT.toString());
+		CheckBox button = new CheckBox("Checkbox 1", mGeneralSkin, SkinNames.General.CHECK_BOX_DEFAULT.toString());
 		mMainTable.add(button);
 
 		button = new CheckBox("Checkbox 2", mGeneralSkin, SkinNames.General.CHECK_BOX_DEFAULT.toString());
@@ -143,7 +143,7 @@ public class TestUiGui extends Gui {
 		mMainTable.add(button).setPadRight(50);
 
 		// Radio buttons
-		ButtonGroup buttonGroup = new ButtonGroup();
+		ButtonGroup<CheckBox> buttonGroup = new ButtonGroup<>();
 		button = new CheckBox("Radio 1", mGeneralSkin, SkinNames.General.CHECK_BOX_RADIO.toString());
 		buttonGroup.add(button);
 		mMainTable.add(button);

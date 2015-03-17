@@ -502,7 +502,7 @@ public class Publish extends VoiderServlet {
 	private boolean appendDefEntity(Entity datastoreEntity, DefEntity defEntity) {
 		// Type
 		if (defEntity.type != null) {
-			DatastoreUtils.setProperty(datastoreEntity, CPublished.TYPE, defEntity.type.getId());
+			DatastoreUtils.setProperty(datastoreEntity, CPublished.TYPE, defEntity.type.toId());
 		} else {
 			mLogger.severe("DefType is null for " + defEntity.resourceId);
 			return false;

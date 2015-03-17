@@ -1,8 +1,12 @@
 package com.spiddekauga.voider.repo.misc;
 
+import java.util.Date;
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.ClientVersions;
+import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -67,6 +71,54 @@ class SettingLocalRepo {
 		 */
 		ClientVersions getLatestClientVersion() {
 			return mUserPrefsGateway.getLatestClientVersion();
+		}
+
+		/**
+		 * Set the latest message of the day date
+		 * @param motd message of the day
+		 */
+		void setLatestMotdDate(Motd motd) {
+			Date previousDate = mUserPrefsGateway.getLatestMotdDate();
+			if (motd.created.after(previousDate)) {
+				mUserPrefsGateway.setLatestMotdDate(motd.created);
+			}
+		}
+
+		/**
+		 * Set the latest message of the day date from several MOTD
+		 * @param motds all new message of the day
+		 */
+		void setLatestMotdDate(Iterable<Motd> motds) {
+			Motd latestMotd = null;
+			Date latestDate = new Date(0);
+
+			for (Motd motd : motds) {
+				if (motd.created.after(latestDate)) {
+					latestDate = motd.created;
+					latestMotd = motd;
+				}
+			}
+
+			if (latestMotd != null) {
+				setLatestMotdDate(latestMotd);
+			}
+		}
+
+		/**
+		 * Filter out MOTDs that have been displayed already
+		 * @param motds all MOTDs to parse
+		 */
+		void filterMotds(Iterable<Motd> motds) {
+			Iterator<Motd> it = motds.iterator();
+			Date previousDate = mUserPrefsGateway.getLatestMotdDate();
+
+			while (it.hasNext()) {
+				Motd motd = it.next();
+
+				if (motd.created.before(previousDate)) {
+					it.remove();
+				}
+			}
 		}
 	}
 

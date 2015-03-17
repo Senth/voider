@@ -52,10 +52,8 @@ public class LoginGui extends Gui {
 		mWidgets.reset.hider.hide();
 		mWidgets.send.hider.hide();
 
-		if (mLoginScene.isRegisterAvailable()) {
-			initRegisterTable();
-			mWidgets.register.hider.hide();
-		}
+		initRegisterTable();
+		mWidgets.register.hider.hide();
 
 		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
 	}
@@ -119,17 +117,15 @@ public class LoginGui extends Gui {
 		mUiFactory.button.addText("Forgot Password", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
 
 		// Register
-		if (mLoginScene.isRegisterAvailable()) {
-			table.row();
-			buttonListener = new ButtonListener() {
-				@Override
-				protected void onPressed(Button button) {
-					mWidgets.login.hider.hide();
-					mWidgets.register.hider.show();
-				}
-			};
-			mUiFactory.button.addText("Register", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
-		}
+		table.row();
+		buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mWidgets.login.hider.hide();
+				mWidgets.register.hider.show();
+			}
+		};
+		mUiFactory.button.addText("Register", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
 
 
 		// Set fixed width

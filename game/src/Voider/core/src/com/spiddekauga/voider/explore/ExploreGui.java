@@ -5,9 +5,11 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -147,8 +149,7 @@ abstract class ExploreGui extends Gui {
 	 * Reset the content
 	 */
 	void resetContent() {
-		mWidgets.content.table.dispose();
-		mWidgets.content.buttonGroup = new ButtonGroup();
+		mWidgets.content.dispose();
 
 		if (mScene != null && mScene.isFetchingContent()) {
 			addWaitIconToContent();
@@ -185,7 +186,7 @@ abstract class ExploreGui extends Gui {
 	 * @return the created button
 	 */
 	protected Button addViewButton(ISkinNames iconName, ButtonListener listener, HideListener... hideListeners) {
-		Button button = mUiFactory.button.createImage(iconName);
+		ImageButton button = mUiFactory.button.createImage(iconName);
 		mWidgets.view.table.add(button);
 		button.addListener(listener);
 		mWidgets.view.buttonGroup.add(button);
@@ -634,7 +635,7 @@ abstract class ExploreGui extends Gui {
 	private void calculateActorsPerRow() {
 		float floatActorsPerRow = mWidgets.content.scrollPane.getWidth() / getMaxActorWidth();
 		mActorsPerRow = (int) floatActorsPerRow;
-		if (floatActorsPerRow != mActorsPerRow) {
+		if (!MathUtils.isEqual(floatActorsPerRow, mActorsPerRow)) {
 			mActorsPerRow++;
 		}
 	}
@@ -683,7 +684,7 @@ abstract class ExploreGui extends Gui {
 	 * Add a button to the content button group
 	 * @param button the button to add
 	 */
-	protected void addContentButton(Button button) {
+	protected void addContentButton(ImageButton button) {
 		mWidgets.content.buttonGroup.add(button);
 	}
 
@@ -918,25 +919,25 @@ abstract class ExploreGui extends Gui {
 		private class Content implements Disposable {
 			AlignTable table = new AlignTable();
 			ScrollPane scrollPane = null;
-			ButtonGroup buttonGroup = new ButtonGroup();
+			ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<>();
 			Row waitIconRow = null;
 
 			@Override
 			public void dispose() {
 				table.dispose();
-				buttonGroup = new ButtonGroup();
+				buttonGroup = new ButtonGroup<>();
 			}
 		}
 
 		private class View implements Disposable {
 			AlignTable table = new AlignTable();
-			ButtonGroup buttonGroup = new ButtonGroup();
+			ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<>();
 			Button local = null;
 
 			@Override
 			public void dispose() {
 				table.dispose();
-				buttonGroup = new ButtonGroup();
+				buttonGroup = new ButtonGroup<>();
 			}
 		}
 

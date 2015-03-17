@@ -1,29 +1,30 @@
 package com.spiddekauga.voider.servlets;
 
-//@formatter:off
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
 
-
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
+import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.network.user.LoginResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderServlet;
-import com.spiddekauga.utils.BCrypt;
-// @formatter:on
 
 /**
  * Tries to login to the server
@@ -46,6 +47,7 @@ public class Login extends VoiderServlet {
 				LoginMethod loginMethod = (LoginMethod) methodEntity;
 				checkClientVersion(loginMethod);
 				login(loginMethod);
+				getMessageOfTheDay();
 			}
 		}
 
@@ -98,7 +100,7 @@ public class Login extends VoiderServlet {
 			// Login and update last logged in date
 			if (mResponse.status == Statuses.SUCCESS) {
 				mResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
-				mResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, CUsers.PRIVATE_KEY);
+				mResponse.privateKey = DatastoreUtils.getPropertyUuid(datastoreEntity, CUsers.PRIVATE_KEY);
 				mResponse.username = (String) datastoreEntity.getProperty(CUsers.USERNAME);
 				mResponse.dateFormat = (String) datastoreEntity.getProperty(CUsers.DATE_FORMAT);
 				updateLastLoggedIn(datastoreEntity);
@@ -124,6 +126,32 @@ public class Login extends VoiderServlet {
 	}
 
 	/**
+	 * Get new messages (MOTD) if we successfully logged in
+	 */
+	private void getMessageOfTheDay() {
+		// Could not login, skip message of the day
+		if (mResponse.status != Statuses.SUCCESS) {
+			return;
+		}
+
+
+		// Get all active MOTD
+		FilterWrapper notExpired = new FilterWrapper(CMotd.EXPIRES, FilterOperator.GREATER_THAN_OR_EQUAL, new Date());
+		Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.MOTD, notExpired);
+
+		// Convert to MOTD types
+		for (Entity entity : entities) {
+			Motd motd = new Motd();
+			motd.created = (Date) entity.getProperty(CMotd.CREATED);
+			motd.title = (String) entity.getProperty(CMotd.TITLE);
+			motd.content = (String) entity.getProperty(CMotd.CONTENT);
+			motd.type = DatastoreUtils.getPropertyIdStore(entity, CMotd.TYPE, MotdTypes.class);
+
+			mResponse.motds.add(motd);
+		}
+	}
+
+	/**
 	 * Try to use private key authorization
 	 * @param datastoreEntity the datastore entity to test with
 	 * @param privateKey the private key to test
@@ -134,7 +162,7 @@ public class Login extends VoiderServlet {
 			return false;
 		}
 
-		UUID datastorePrivateKey = DatastoreUtils.getUuidProperty(datastoreEntity, CUsers.PRIVATE_KEY);
+		UUID datastorePrivateKey = DatastoreUtils.getPropertyUuid(datastoreEntity, CUsers.PRIVATE_KEY);
 		return privateKey.equals(datastorePrivateKey);
 	}
 

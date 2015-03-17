@@ -47,6 +47,7 @@ public class UserLocalRepo {
 	 * @param username username or email of the user that was logged in
 	 * @param password
 	 */
+	@Deprecated
 	public void setLastUser(String username, String password) {
 		mClientPrefsGateway.setLastUser(username, password);
 	}
@@ -66,6 +67,7 @@ public class UserLocalRepo {
 		return mClientPrefsGateway.getLastUser();
 	}
 
+
 	/**
 	 * @return client id, creates a new client id if one doesn't exist
 	 */
@@ -84,20 +86,6 @@ public class UserLocalRepo {
 	 */
 	public UUID getAnalyticsId() {
 		return mUserPrefsGateway.getAnalyticsId();
-	}
-
-	/**
-	 * Save that this app has registered one user, thus no more users can be registered
-	 */
-	public void setAsRegistered() {
-		mClientPrefsGateway.setAsRegistered();
-	}
-
-	/**
-	 * @return true if no user has been registered on this app
-	 */
-	public boolean isRegisterAvailable() {
-		return mClientPrefsGateway.isRegisterAvailable();
 	}
 
 	private UserPrefsGateway mUserPrefsGateway = new UserPrefsGateway();
