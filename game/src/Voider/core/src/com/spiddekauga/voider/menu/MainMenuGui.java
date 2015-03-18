@@ -205,24 +205,7 @@ class MainMenuGui extends MenuGui {
 		SettingDateRepo dateRepo = SettingRepo.getInstance().date();
 
 		for (final Motd motd : motds) {
-			MsgBoxExecuter msgBox = mUiFactory.msgBox.add(motd.title);
-
-			String date = dateRepo.getDateTime(motd.created);
-
-			msgBox.content(date, Align.center);
-			msgBox.contentRow();
-			msgBox.content(motd.content, Align.center);
-
-			// Update MOTD view date when viewed
-			Command motdViewed = new CRun() {
-				@Override
-				public boolean execute() {
-					mMenuScene.motdViewed(motd);
-					return true;
-				}
-			};
-
-			msgBox.addCancelButtonAndKeys("OK", motdViewed);
+			mUiFactory.msgBox.motd(motd);
 		}
 	}
 

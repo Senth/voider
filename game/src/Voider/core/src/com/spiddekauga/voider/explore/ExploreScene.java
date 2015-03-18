@@ -44,7 +44,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 
 		mLocalType = ExternalTypes.fromType(defType);
 		mAction = action;
-		((ExploreGui) mGui).setExploreScene(this);
+		getGui().setExploreScene(this);
 	}
 
 	@Override
@@ -161,7 +161,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * Repopulate content
 	 */
 	protected void repopulateContent() {
-		((ExploreGui) mGui).resetContent();
+		getGui().resetContent();
 		if (getView().isLocal()) {
 			updateLocalContent();
 		}
@@ -187,7 +187,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 			setSelected(null);
 		}
 
-		((ExploreGui) mGui).addContent(mFilteredResults);
+		getGui().addContent(mFilteredResults);
 	}
 
 	/**
@@ -227,7 +227,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param response server response
 	 */
 	private void handleResourceDownloadResponse(ResourceDownloadMethod method, ResourceDownloadResponse response) {
-		mGui.hideWaitWindow();
+		getGui().hideWaitWindow();
 		if (response.status.isSuccessful()) {
 			onResourceDownloaded(mAction);
 		} else {
@@ -270,7 +270,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	protected void downloadResource(DefEntity defEntity) {
 		if (!ResourceLocalRepo.exists(defEntity.resourceId)) {
 			mResourceRepo.download(this, defEntity.resourceId);
-			mGui.showWaitWindow("Downloading " + defEntity.name);
+			getGui().showWaitWindow("Downloading " + defEntity.name);
 		} else {
 			onResourceDownloaded(mAction);
 		}
@@ -344,9 +344,9 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 */
 	protected void setView(ExploreViews view) {
 		mView = view;
-		((ExploreGui) mGui).resetViewButtons();
-		((ExploreGui) mGui).resetContent();
-		((ExploreGui) mGui).resetContentMargins();
+		getGui().resetViewButtons();
+		getGui().resetContent();
+		getGui().resetContentMargins();
 		repopulateContent();
 	}
 
@@ -410,7 +410,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	protected void setSelected(DefEntity def) {
 		if (mSelected != def) {
 			mSelected = def;
-			((ExploreGui) mGui).onSelectionChanged(def);
+			getGui().onSelectionChanged(def);
 		}
 	}
 
@@ -448,6 +448,11 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 		} else {
 			return new ArrayList<>();
 		}
+	}
+
+	@Override
+	protected ExploreGui getGui() {
+		return (ExploreGui) super.getGui();
 	}
 
 	private ArrayList<DefEntity> mAllLocalDefs = null;

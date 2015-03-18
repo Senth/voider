@@ -29,15 +29,17 @@ public class Motd implements IEntity {
 		SEVERE(1),
 		/** Usually server maintenance */
 		WARNING(2),
+		/** Highlighted message */
+		HIGHLIGHT(3),
 		/** Regular, but not really important information */
-		INFO(3),
+		INFO(4),
 		/**
 		 * Reserved. Not used atm. Sponsored/Featured information, not essential to the
 		 * game
 		 */
-		FEATURED(4),
+		FEATURED(5),
 
-		// Next ID: 5
+		// Next ID: 6
 		;
 
 		/**

@@ -352,7 +352,7 @@ public class SceneSwitcher {
 		if (mScenes.isEmpty()) {
 			return null;
 		} else {
-			return mScenes.peek().mGui;
+			return mScenes.peek().getGui();
 		}
 	}
 
@@ -363,7 +363,7 @@ public class SceneSwitcher {
 		if (mScenes.isEmpty()) {
 			return null;
 		} else {
-			return mScenes.peek().mGui.getStage();
+			return mScenes.peek().getGui().getStage();
 		}
 	}
 
@@ -373,7 +373,7 @@ public class SceneSwitcher {
 	 */
 	public static void showWaitWindow(String message) {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().mGui.showWaitWindow(message);
+			mScenes.peek().getGui().showWaitWindow(message);
 		}
 	}
 
@@ -382,7 +382,7 @@ public class SceneSwitcher {
 	 */
 	public static void hideWaitWindow() {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().mGui.hideWaitWindow();
+			mScenes.peek().getGui().hideWaitWindow();
 		}
 	}
 
@@ -392,7 +392,7 @@ public class SceneSwitcher {
 	 */
 	public static void showProgressBar(String message) {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().mGui.showProgressBar(message);
+			mScenes.peek().getGui().showProgressBar(message);
 		}
 	}
 
@@ -401,7 +401,7 @@ public class SceneSwitcher {
 	 */
 	public static void hideProgressBar() {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().mGui.hideProgressBar();
+			mScenes.peek().getGui().hideProgressBar();
 		}
 	}
 
@@ -411,7 +411,7 @@ public class SceneSwitcher {
 	 */
 	public static void updateProgressBar(float percentage) {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().mGui.updateProgressBar(percentage);
+			mScenes.peek().getGui().updateProgressBar(percentage);
 		}
 	}
 
@@ -422,7 +422,7 @@ public class SceneSwitcher {
 	 */
 	public static void updateProgressBar(float percentage, String message) {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().mGui.updateProgressBar(percentage, message);
+			mScenes.peek().getGui().updateProgressBar(percentage, message);
 		}
 	}
 

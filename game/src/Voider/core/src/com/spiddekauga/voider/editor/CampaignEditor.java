@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -15,7 +16,7 @@ public class CampaignEditor extends Editor {
 	public CampaignEditor() {
 		super(new CampaignEditorGui(), 0);
 
-		((EditorGui) mGui).setEditor(this);
+		getGui().setEditor(this);
 	}
 
 	@Override
@@ -112,5 +113,10 @@ public class CampaignEditor extends Editor {
 	public Def getDef() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	protected CampaignEditorGui getGui() {
+		return (CampaignEditorGui) super.getGui();
 	}
 }

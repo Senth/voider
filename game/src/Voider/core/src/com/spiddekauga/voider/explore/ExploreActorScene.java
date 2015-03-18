@@ -30,7 +30,7 @@ public class ExploreActorScene extends ExploreScene {
 	protected ExploreActorScene(ExploreActorGui gui, ExploreActions action, Class<? extends ActorDef> actorDefType) {
 		super(gui, action, actorDefType);
 
-		((ExploreActorGui) mGui).setActorScene(this);
+		getGui().setActorScene(this);
 	}
 
 	@Override
@@ -88,5 +88,10 @@ public class ExploreActorScene extends ExploreScene {
 		default:
 			break;
 		}
+	}
+
+	@Override
+	protected ExploreActorGui getGui() {
+		return (ExploreActorGui) super.getGui();
 	}
 }

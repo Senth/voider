@@ -34,7 +34,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	ExploreEnemyScene(ExploreActions action) {
 		super(new ExploreEnemyGui(), action, EnemyActorDef.class);
 
-		((ExploreEnemyGui) mGui).setExploreEnemyScene(this);
+		getGui().setExploreEnemyScene(this);
 	}
 
 	@Override
@@ -349,6 +349,11 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		}
 	}
 
+	@Override
+	protected ExploreEnemyGui getGui() {
+		return (ExploreEnemyGui) super.getGui();
+	}
+
 	/**
 	 * Class for fetching Enemies online
 	 */
@@ -374,7 +379,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		void fetch(EnemyFetchMethod searchCriteria) {
 			if (mUser.isOnline()) {
 				setSelected(null);
-				((ExploreEnemyGui) mGui).resetContent();
+				getGui().resetContent();
 
 				mIsFetching = true;
 				mLastFetch = searchCriteria.copy();
@@ -415,7 +420,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 				// Create drawables and add content
 				if (response.isSuccessful()) {
 					createDrawables(response.enemies);
-					((ExploreEnemyGui) mGui).addContent(response.enemies);
+					getGui().addContent(response.enemies);
 				} else {
 					handleFailedStatus(response.status);
 				}

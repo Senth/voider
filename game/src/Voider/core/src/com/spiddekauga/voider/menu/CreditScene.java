@@ -119,6 +119,10 @@ class CreditScene extends Scene {
 		super.unloadResources();
 	}
 
+	@Override
+	protected CreditGui getGui() {
+		return (CreditGui) super.getGui();
+	}
 
 	/**
 	 * Wrapper for credits sections

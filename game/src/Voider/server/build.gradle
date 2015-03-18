@@ -20,6 +20,7 @@ dependencies {
 
 appengine {
     httpPort = 8888
+	jvmFlags = ["-Ddatastore.backing_store=$projectDir.absolutePath/appengine-generated/local_db.bin"]
 
     appcfg {
 		oauth2 = true

@@ -38,20 +38,25 @@ public class LoadingProgressScene extends LoadingScene {
 		case DISPLAY:
 
 			if (!ResourceCacheFacade.isLoading()) {
-				((LoadingProgressGui) mGui).updateProgress(100);
-				((LoadingProgressGui) mGui).fadeOut();
+				getGui().updateProgress(100);
+				getGui().fadeOut();
 				mState = States.FADING;
 			} else {
-				((LoadingProgressGui) mGui).updateProgress(ResourceCacheFacade.getProgress());
+				getGui().updateProgress(ResourceCacheFacade.getProgress());
 			}
 			break;
 		case FADING:
-			if (((LoadingProgressGui) mGui).hasFaded()) {
+			if (getGui().hasFaded()) {
 				setOutcome(Outcomes.LOADING_SUCCEEDED);
 			}
 			break;
 
 		}
+	}
+
+	@Override
+	protected LoadingProgressGui getGui() {
+		return (LoadingProgressGui) super.getGui();
 	}
 
 	/**

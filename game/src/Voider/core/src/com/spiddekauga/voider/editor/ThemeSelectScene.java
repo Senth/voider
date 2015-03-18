@@ -20,7 +20,7 @@ public class ThemeSelectScene extends Scene {
 		super(new ThemeSelectGui());
 		mTheme = theme;
 
-		((ThemeSelectGui) mGui).setScene(this);
+		((ThemeSelectGui) getGui()).setScene(this);
 	}
 
 	@Override

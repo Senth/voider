@@ -33,14 +33,14 @@ public class LoadingTextScene extends LoadingScene {
 			case DISPLAY:
 				mDisplayTimeCurrent += Gdx.graphics.getDeltaTime();
 				if (mDisplayTimeCurrent >= mDisplayTime && !ResourceCacheFacade.isLoading()) {
-					((LoadingTextSceneGui) mGui).fadeOut();
+					getGui().fadeOut();
 					mState = States.FADING;
 				}
 				break;
 
 
 			case FADING:
-				if (((LoadingTextSceneGui) mGui).hasFaded()) {
+				if (getGui().hasFaded()) {
 					setOutcome(Outcomes.LOADING_SUCCEEDED);
 				}
 				break;
@@ -63,6 +63,11 @@ public class LoadingTextScene extends LoadingScene {
 		super.unloadResources();
 
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+	}
+
+	@Override
+	protected LoadingTextSceneGui getGui() {
+		return (LoadingTextSceneGui) super.getGui();
 	}
 
 	/**

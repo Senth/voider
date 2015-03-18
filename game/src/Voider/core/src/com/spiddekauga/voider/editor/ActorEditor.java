@@ -62,7 +62,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 
 		// Set config variables
-		IC_Visual icVisual = ((ActorGui) mGui).getVisualConfig();
+		IC_Visual icVisual = getGui().getVisualConfig();
 		mShapeImageAngleMin = icVisual.getImageAngleDefault();
 		mShapeImageDistMin = icVisual.getImageDistDefault();
 		mSelection.setAsSelectedOnSelection(false);
@@ -318,7 +318,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			return;
 		}
 		mActorDef.setName(name);
-		((EditorGui) mGui).resetName();
+		((EditorGui) getGui()).resetName();
 
 		setUnsaved();
 	}
@@ -433,7 +433,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void activateTools(Tools activateTool) {
 		switchTool(activateTool);
-		((ActorGui) mGui).resetTools();
+		getGui().resetTools();
 
 		// Add delete tool
 		if (!isPublished() && !mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
@@ -651,7 +651,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void publishDef() {
 		if (mActorDef != null) {
-			mGui.showProgressBar("Uploading...");
+			getGui().showProgressBar("Uploading...");
 			mResourceRepo.publish(this, this, mActorDef);
 		}
 	}
@@ -810,6 +810,11 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			return mActorDef.isDestroyedOnCollide();
 		}
 		return false;
+	}
+
+	@Override
+	protected ActorGui getGui() {
+		return (ActorGui) super.getGui();
 	}
 
 	private boolean mShapeImageUpdate = false;

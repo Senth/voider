@@ -24,7 +24,7 @@ public class TagScene extends Scene {
 		super(new TagSceneGui());
 		mResourceId = resourceId;
 
-		((TagSceneGui) mGui).setScene(this);
+		getGui().setScene(this);
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 	}
 
@@ -60,6 +60,11 @@ public class TagScene extends Scene {
 		}
 
 		return randomTags;
+	}
+
+	@Override
+	protected TagSceneGui getGui() {
+		return (TagSceneGui) super.getGui();
 	}
 
 	/** Local stat repository */

@@ -633,12 +633,18 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	}
 
 	/**
-	 * @param <GuiType> the GUI type to return
 	 * @return GUI in the correct type
 	 */
-	@SuppressWarnings("unchecked")
-	protected <GuiType extends Gui> GuiType getGui() {
-		return (GuiType) mGui;
+	protected Gui getGui() {
+		return mGui;
+	}
+
+	/**
+	 * Set the GUI element
+	 * @param gui new GUI for the scene
+	 */
+	protected void setGui(Gui gui) {
+		mGui = gui;
 	}
 
 	/** Shape Renderer used for rendering stuff */
@@ -646,7 +652,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/** Input multiplexer */
 	protected InputMultiplexerExceptionSnatcher mInputMultiplexer = null;
 	/** GUI for the scene */
-	protected Gui mGui = null;
+	private Gui mGui = null;
 	/** Notification messages */
 	protected NotificationShower mNotification = null;
 	/** The music player */

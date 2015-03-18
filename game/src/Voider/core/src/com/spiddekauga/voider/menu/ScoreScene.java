@@ -12,6 +12,7 @@ import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.repo.stat.UserLevelStat;
+import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
@@ -39,7 +40,7 @@ public class ScoreScene extends Scene {
 			mStat = new UserLevelStat();
 		}
 
-		((ScoreSceneGui) mGui).setScoreScene(this);
+		getGui().setScoreScene(this);
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 	}
 
@@ -179,6 +180,11 @@ public class ScoreScene extends Scene {
 		} else {
 			return "0";
 		}
+	}
+
+	@Override
+	protected ScoreSceneGui getGui() {
+		return (ScoreSceneGui) super.getGui();
 	}
 
 	/** Player stats */

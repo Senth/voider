@@ -86,7 +86,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	public LevelEditor() {
 		super(new LevelEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
-		((LevelEditorGui) mGui).setLevelEditor(this);
+		getGui().setLevelEditor(this);
 	}
 
 	@Override
@@ -129,8 +129,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void onResize(int width, int height) {
 		super.onResize(width, height);
-		mGui.dispose();
-		mGui.initGui();
+		getGui().dispose();
+		getGui().initGui();
 	}
 
 	/**
@@ -281,7 +281,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		updateAvailableTools(oldIsPublished, isPublished());
-		mGui.resetValues();
+		getGui().resetValues();
 
 		mInvoker.dispose();
 
@@ -367,8 +367,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				if (loadedLevel != null) {
 					setLevel(loadedLevel);
 					switchTool(Tools.SELECTION);
-					((LevelEditorGui) mGui).resetTools();
-					mGui.popMsgBoxes();
+					getGui().resetTools();
+					getGui().popMsgBoxes();
 					setSaved();
 					mLoadingLevel = null;
 				} else {
@@ -383,7 +383,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				mInvoker.execute(new CLevelEnemyDefAdd(((EnemyDefEntity) message).resourceId, this));
 			}
 		} else if (outcome == Outcomes.EXPLORE_LOAD) {
-			mGui.popMsgBoxes();
+			getGui().popMsgBoxes();
 
 			if (message instanceof LevelDefEntity) {
 				LevelDefEntity levelDefEntity = (LevelDefEntity) message;
@@ -410,20 +410,20 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				}
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-			mGui.popMsgBoxes();
+			getGui().popMsgBoxes();
 		}
 		// Set as unsaved if took screenshot
 		else if (outcome == Outcomes.LEVEL_PLAYER_DIED || outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_QUIT) {
 			if (mPngBytesBeforeTestRun != mLevel.getDef().getPngImage()) {
 				setUnsaved();
-				((LevelEditorGui) mGui).resetImage();
+				getGui().resetImage();
 			}
 		}
 		// Theme selected
 		else if (outcome == Outcomes.THEME_SELECTED) {
 			Themes theme = (Themes) message;
 			setTheme(theme);
-			mGui.popMsgBoxActive();
+			getGui().popMsgBoxActive();
 		}
 
 		if (mLevel != null) {
@@ -442,7 +442,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			if (enemyActorDef != null) {
 				if (!mAddEnemies.contains(enemyActorDef)) {
 					mAddEnemies.add(0, enemyActorDef);
-					((LevelEditorGui) mGui).resetEnemyAddTable();
+					getGui().resetEnemyAddTable();
 					return true;
 				} else {
 					mNotification.show("This enemy has already been added.");
@@ -461,7 +461,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (enemyDef != null) {
 			if (!mAddEnemies.contains(enemyDef)) {
 				mAddEnemies.add(0, enemyDef);
-				((LevelEditorGui) mGui).resetEnemyAddTable();
+				getGui().resetEnemyAddTable();
 			}
 		}
 	}
@@ -478,7 +478,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				boolean removed = mAddEnemies.remove(enemyActorDef);
 
 				if (removed) {
-					((LevelEditorGui) mGui).resetEnemyAddTable();
+					getGui().resetEnemyAddTable();
 					return true;
 				}
 			}
@@ -507,7 +507,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				pickupActorDef = ResourceCacheFacade.get(pickupId);
 			}
 			((ActorAddTool) Tools.PICKUP_ADD.getTool()).setActorDef(pickupActorDef);
-			mGui.resetValues();
+			getGui().resetValues();
 		} catch (Exception e) {
 			Gdx.app.error("LevelEditor", e.toString());
 			e.printStackTrace();
@@ -526,7 +526,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void onResourceAdded(IResource resource) {
-		mGui.resetValues();
+		getGui().resetValues();
 		mLevel.addResource(resource);
 
 		// Set default color
@@ -539,7 +539,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
-		mGui.resetValues();
+		getGui().resetValues();
 		mLevel.removeResource(resource.getId());
 		setUnsaved();
 	}
@@ -549,18 +549,18 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		setUnsaved();
 
 		if (resource instanceof EnemyActor) {
-			((LevelEditorGui) mGui).resetEnemyOptions();
+			getGui().resetEnemyOptions();
 		}
 	}
 
 	@Override
 	public void onResourceSelected(IResource resource) {
-		mGui.resetValues();
+		getGui().resetValues();
 	}
 
 	@Override
 	public void onResourceDeselected(IResource resource) {
-		mGui.resetValues();
+		getGui().resetValues();
 	}
 
 	/**
@@ -665,7 +665,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 		}
 
-		((LevelEditorGui) mGui).resetColor();
+		getGui().resetColor();
 	}
 
 	/**
@@ -879,7 +879,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		setLevel(level);
 
-		mGui.resetValues();
+		getGui().resetValues();
 		mInvoker.dispose();
 		saveDef();
 	}
@@ -887,7 +887,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void publishDef() {
 		if (mLevel != null) {
-			mGui.showProgressBar("Uploading...");
+			getGui().showProgressBar("Uploading...");
 			mResourceRepo.publish(this, this, mLevel);
 		}
 	}
@@ -899,7 +899,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
 		}
 
-		mGui.updateProgressBar(percentage);
+		getGui().updateProgressBar(percentage);
 	}
 
 	@Override
@@ -969,7 +969,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public void setName(String name) {
 		if (mLevel != null) {
 			mLevel.getDef().setName(name);
-			((EditorGui) mGui).resetName();
+			((EditorGui) getGui()).resetName();
 			setUnsaved();
 		}
 	}
@@ -1288,7 +1288,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 		}
 
-		((LevelEditorGui) mGui).resetEnemyOptions();
+		getGui().resetEnemyOptions();
 		setUnsaved();
 	}
 
@@ -1376,7 +1376,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			path.setPathType(pathType);
 		}
 
-		mGui.resetValues();
+		getGui().resetValues();
 	}
 
 	/**
@@ -1772,7 +1772,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mLevel != null) {
 			mLevel.getLevelDef().setTheme(theme);
 			setUnsaved();
-			((LevelEditorGui) mGui).resetTheme();
+			getGui().resetTheme();
 		}
 	}
 
@@ -1795,7 +1795,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mLevel != null) {
 			mLevel.getLevelDef().setMusic(music);
 			setUnsaved();
-			((LevelEditorGui) mGui).resetMusic();
+			getGui().resetMusic();
 		}
 	}
 
@@ -1832,6 +1832,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			return mLevel.getDef();
 		}
 		return null;
+	}
+
+	@Override
+	protected LevelEditorGui getGui() {
+		return (LevelEditorGui) super.getGui();
 	}
 
 	private LevelBackground mBackground = null;

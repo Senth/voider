@@ -43,8 +43,8 @@ public class PrototypeScene extends Scene {
 			setOutcome(Outcomes.NOT_APPLICAPLE);
 			return true;
 		} else if (keycode == Input.Keys.F5) {
-			mGui.dispose();
-			mGui.initGui();
+			getGui().dispose();
+			getGui().initGui();
 		}
 
 		return false;

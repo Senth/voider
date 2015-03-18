@@ -19,8 +19,8 @@ public abstract class LoadingScene extends Scene {
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-		mGui.initGui();
-		mGui.resetValues();
+		getGui().initGui();
+		getGui().resetValues();
 	}
 
 	@Override
@@ -38,4 +38,6 @@ public abstract class LoadingScene extends Scene {
 			setOutcome(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
 		}
 	}
+
+
 }

@@ -36,7 +36,7 @@ public class ShipEditor extends ActorEditor {
 	public ShipEditor() {
 		super(new ShipEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, PlayerActor.class);
 
-		((ShipEditorGui) mGui).setShipEditor(this);
+		getGui().setShipEditor(this);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class ShipEditor extends ActorEditor {
 
 				PlayerActorDef playerDef = ResourceCacheFacade.get(defEntity.resourceId, defEntity.revision);
 				setActorDef(playerDef);
-				mGui.resetValues();
+				getGui().resetValues();
 				setSaved();
 				mInvoker.dispose();
 			}
@@ -241,7 +241,7 @@ public class ShipEditor extends ActorEditor {
 		PlayerActorDef newDef = new PlayerActorDef();
 		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.PLAYER_COLOR_DEFAULT));
 		setActorDef(newDef);
-		mGui.resetValues();
+		getGui().resetValues();
 		setSaved();
 		mInvoker.dispose();
 	}
@@ -264,8 +264,8 @@ public class ShipEditor extends ActorEditor {
 			mActor.destroyBody();
 		}
 
-		if (mGui.isInitialized()) {
-			mGui.resetValues();
+		if (getGui().isInitialized()) {
+			getGui().resetValues();
 		}
 	}
 
@@ -288,7 +288,7 @@ public class ShipEditor extends ActorEditor {
 	@Override
 	public void duplicateDef() {
 		mDef = mDef.copyNewResource();
-		mGui.resetValues();
+		getGui().resetValues();
 		mInvoker.dispose();
 		saveDef();
 	}
@@ -376,6 +376,10 @@ public class ShipEditor extends ActorEditor {
 		return false;
 	}
 
+	@Override
+	protected ShipEditorGui getGui() {
+		return (ShipEditorGui) super.getGui();
+	}
 
 	private PlayerActor mActor = new PlayerActor();
 	private PlayerActorDef mDef = null;

@@ -25,8 +25,10 @@ import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
+import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -38,6 +40,7 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.commands.CMotdViewed;
 import com.spiddekauga.voider.utils.commands.CSyncFixConflict;
 import com.spiddekauga.voider.utils.commands.CUserConnect;
 import com.spiddekauga.voider.utils.commands.CUserSetAskGoOnline;
@@ -115,6 +118,47 @@ public class MsgBoxFactory {
 		msgBox.getButtonCell().setPadRight(buttonWidth).setWidth(buttonWidth);
 		msgBox.button("Upload & Continue", new CSyncFixConflict(true));
 		msgBox.getButtonCell().setWidth(buttonWidth);
+	}
+
+	/**
+	 * Show a message of the day
+	 * @param motd the message of the day to show
+	 */
+	public void motd(Motd motd) {
+		SettingDateRepo dateRepo = SettingRepo.getInstance().date();
+		String date = dateRepo.getDateTime(motd.created);
+
+		MsgBoxExecuter msgBox = add("Message from Creator :)    (" + date + ")");
+
+		Label label = mUiFactory.text.create(motd.title, LabelStyles.HEADER);
+		label.setAlignment(Align.center);
+
+		msgBox.content(label);
+		msgBox.contentRow(mStyles.vars.paddingParagraph, 0);
+
+		LabelStyles labelStyle = null;
+		switch (motd.type) {
+		case FEATURED:
+		case INFO:
+			labelStyle = LabelStyles.DEFAULT;
+			break;
+		case SEVERE:
+			labelStyle = LabelStyles.ERROR;
+			break;
+		case WARNING:
+			labelStyle = LabelStyles.WARNING;
+			break;
+		case HIGHLIGHT:
+			labelStyle = LabelStyles.HIGHLIGHT;
+			break;
+		}
+
+		label = mUiFactory.text.create(motd.content, true, labelStyle);
+		label.setAlignment(Align.center);
+		label.setWidth((int) (Gdx.graphics.getWidth() * 0.7f));
+		msgBox.content(label);
+
+		msgBox.addCancelButtonAndKeys("OK", new CMotdViewed(motd));
 	}
 
 	/**

@@ -22,7 +22,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 	ExploreBulletScene(ExploreActions action) {
 		super(new ExploreBulletGui(), action, BulletActorDef.class);
 
-		((ExploreBulletGui) mGui).setExploreBulletScene(this);
+		getGui().setExploreBulletScene(this);
 	}
 
 	@Override
@@ -105,6 +105,11 @@ public class ExploreBulletScene extends ExploreActorScene {
 		}
 	}
 
+	@Override
+	protected ExploreBulletGui getGui() {
+		return (ExploreBulletGui) super.getGui();
+	}
+
 	private class BulletFetch {
 		/**
 		 * Fetch initial bullets again
@@ -124,7 +129,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 		void fetch(String searchCriteria) {
 			if (mUser.isOnline() && !mLastSearch.equals(searchCriteria)) {
 				setSelected(null);
-				((ExploreBulletGui) mGui).resetContent();
+				getGui().resetContent();
 
 				mIsFetching = true;
 				mLastSearch = searchCriteria;
@@ -165,7 +170,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 				// Create drawables and add content
 				if (response.isSuccessful()) {
 					createDrawables(response.bullets);
-					((ExploreBulletGui) mGui).addContent(response.bullets);
+					getGui().addContent(response.bullets);
 				} else {
 					handleFailedStatus(response.status);
 				}

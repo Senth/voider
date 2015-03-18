@@ -261,6 +261,18 @@ public class MsgBox extends Dialog {
 	}
 
 	/**
+	 * Adds a row to the content with specific padding
+	 * @param padTop top padding
+	 * @param padBottom bottom padding
+	 * @return this for chaining
+	 */
+	public MsgBox contentRow(float padTop, float padBottom) {
+		Cell<?> cell = getContentTable().row();
+		cell.padTop(padTop).padBottom(padBottom);
+		return this;
+	}
+
+	/**
 	 * Invalid, don't call this. Throws an exception. Use {@link #content(String)}
 	 * instead.
 	 */

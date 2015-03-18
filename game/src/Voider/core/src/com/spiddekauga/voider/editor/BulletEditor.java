@@ -30,7 +30,7 @@ public class BulletEditor extends ActorEditor {
 	public BulletEditor() {
 		super(new BulletEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, BulletActor.class);
 
-		((BulletEditorGui) mGui).setBulletEditor(this);
+		getGui().setBulletEditor(this);
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public class BulletEditor extends ActorEditor {
 
 				BulletActorDef bulletDef = ResourceCacheFacade.get(bulletDefEntity.resourceId, bulletDefEntity.revision);
 				setActorDef(bulletDef);
-				mGui.resetValues();
+				getGui().resetValues();
 				setSaved();
 				mInvoker.dispose();
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-			mGui.popMsgBoxes();
+			getGui().popMsgBoxes();
 		}
 	}
 
@@ -121,7 +121,7 @@ public class BulletEditor extends ActorEditor {
 		BulletActorDef newDef = new BulletActorDef();
 		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
 		setActorDef(newDef);
-		mGui.resetValues();
+		getGui().resetValues();
 		setSaved();
 		mInvoker.dispose();
 	}
@@ -135,7 +135,7 @@ public class BulletEditor extends ActorEditor {
 	public void duplicateDef() {
 		mDef = mDef.copyNewResource();
 		mWeapon.getDef().setBulletActorDef(mDef);
-		mGui.resetValues();
+		getGui().resetValues();
 		mInvoker.dispose();
 		saveDef();
 	}
@@ -206,8 +206,8 @@ public class BulletEditor extends ActorEditor {
 		super.setActorDef(def);
 		mDef = (BulletActorDef) def;
 		mWeapon.getDef().setBulletActorDef(mDef);
-		if (mGui.isInitialized()) {
-			mGui.resetValues();
+		if (getGui().isInitialized()) {
+			getGui().resetValues();
 		}
 	}
 
@@ -226,6 +226,10 @@ public class BulletEditor extends ActorEditor {
 		setActorDef(null);
 	}
 
+	@Override
+	protected BulletEditorGui getGui() {
+		return (BulletEditorGui) super.getGui();
+	}
 
 	/** Current weapon that fires the bullets */
 	private Weapon mWeapon = new Weapon();

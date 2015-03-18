@@ -38,7 +38,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	public LoginScene() {
 		super(new LoginGui());
 
-		((LoginGui) mGui).setLoginScene(this);
+		getGui().setLoginScene(this);
 	}
 
 	@Override
@@ -112,11 +112,11 @@ public class LoginScene extends Scene implements IResponseListener {
 		if (userInfo != null && userInfo.isOnline()) {
 			mLoggingInUser.set(userInfo);
 			mLoggingInUser.login();
-			mGui.showWaitWindow("Auto logging in as " + userInfo.getUsername());
+			getGui().showWaitWindow("Auto logging in as " + userInfo.getUsername());
 		}
 		// Test offline
 		else {
-			((LoginGui) mGui).focusUsernameField();
+			getGui().focusUsernameField();
 		}
 	}
 
@@ -129,7 +129,7 @@ public class LoginScene extends Scene implements IResponseListener {
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setPassword(password);
 		mLoggingInUser.login();
-		mGui.showWaitWindow("Logging in");
+		getGui().showWaitWindow("Logging in");
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param response the register response
 	 */
 	private void handleRegisterResponse(RegisterUserResponse response) {
-		mGui.hideWaitWindow();
+		getGui().hideWaitWindow();
 
 		switch (response.status) {
 		case SUCCESS:
@@ -145,23 +145,23 @@ public class LoginScene extends Scene implements IResponseListener {
 			break;
 
 		case FAIL_EMAIL_EXISTS:
-			((LoginGui) mGui).setRegisterEmailError("is already registered");
+			getGui().setRegisterEmailError("is already registered");
 			break;
 
 		case FAIL_USERNAME_EXISTS:
-			((LoginGui) mGui).setRegisterUsernameError("name is occupied");
+			getGui().setRegisterUsernameError("name is occupied");
 			break;
 
 		case FAIL_USERNAME_TOO_SHORT:
-			((LoginGui) mGui).setRegisterUsernameError("too short");
+			getGui().setRegisterUsernameError("too short");
 			break;
 
 		case FAIL_PASSWORD_TOO_SHORT:
-			((LoginGui) mGui).setRegisterPasswordError("too short");
+			getGui().setRegisterPasswordError("too short");
 
 		case FAIL_SERVER_CONNECTION:
 		case FAIL_SERVER_ERROR:
-			((LoginGui) mGui).showConnectionError();
+			getGui().showConnectionError();
 			break;
 		}
 	}
@@ -177,7 +177,7 @@ public class LoginScene extends Scene implements IResponseListener {
 		mLoggingInUser.setEmail(email);
 		mLoggingInUser.setPassword(password);
 		mLoggingInUser.register(this);
-		mGui.showWaitWindow("Registering...");
+		getGui().showWaitWindow("Registering...");
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 */
 	void passwordResetSendToken(String email) {
 		UserWebRepo.getInstance().passwordResetSendToken(email, this);
-		mGui.showWaitWindow("Sending reset token to email...");
+		getGui().showWaitWindow("Sending reset token to email...");
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 */
 	void resetPassword(String email, String password, String token) {
 		UserWebRepo.getInstance().passwordReset(email, password, token, this);
-		mGui.showWaitWindow("Resetting password");
+		getGui().showWaitWindow("Resetting password");
 	}
 
 	/**
@@ -205,18 +205,18 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param response web response
 	 */
 	private void handlePasswordResetSendToken(PasswordResetSendTokenResponse response) {
-		mGui.hideWaitWindow();
+		getGui().hideWaitWindow();
 
 		switch (response.status) {
 		case FAILED_EMAIL:
-			((LoginGui) mGui).setPasswordResetSendError("does not exist");
+			getGui().setPasswordResetSendError("does not exist");
 			break;
 		case FAILED_SERVER_CONNECTION:
 		case FAILED_SERVER_ERROR:
-			((LoginGui) mGui).showConnectionError();
+			getGui().showConnectionError();
 			break;
 		case SUCCESS:
-			((LoginGui) mGui).showPasswordResetWindow();
+			getGui().showPasswordResetWindow();
 			mNotification.showSuccess("Password token sent to email. Please check your email :)");
 			break;
 		}
@@ -228,24 +228,24 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param response web response
 	 */
 	private void handlePasswordReset(PasswordResetMethod method, PasswordResetResponse response) {
-		mGui.hideWaitWindow();
+		getGui().hideWaitWindow();
 
 		switch (response.status) {
 		case FAILED_EXPIRED:
-			((LoginGui) mGui).setPasswordResetTokenError("expired");
+			getGui().setPasswordResetTokenError("expired");
 			break;
 		case FAILED_SERVER_CONNECTION:
 		case FAILED_SERVER_ERROR:
-			((LoginGui) mGui).showConnectionError();
+			getGui().showConnectionError();
 			break;
 		case FAILED_TOKEN:
-			((LoginGui) mGui).setPasswordResetTokenError("invalid");
+			getGui().setPasswordResetTokenError("invalid");
 			break;
 		case FAILED_PASSWORD_TOO_SHORT:
-			((LoginGui) mGui).setPasswordResetPasswordError("too short");
+			getGui().setPasswordResetPasswordError("too short");
 			break;
 		case SUCCESS:
-			((LoginGui) mGui).showLoginWindow();
+			getGui().showLoginWindow();
 			mNotification.showSuccess("Password changed!");
 			login(method.email, method.password);
 			break;
@@ -273,27 +273,32 @@ public class LoginScene extends Scene implements IResponseListener {
 		}
 	}
 
+	@Override
+	protected LoginGui getGui() {
+		return (LoginGui) super.getGui();
+	}
+
 	private IEventListener mLoginListener = new IEventListener() {
 		@Override
 		public void handleEvent(GameEvent event) {
 			switch (event.type) {
 			case USER_LOGIN:
-				mGui.hideWaitWindow();
+				getGui().hideWaitWindow();
 				setOutcome(Outcomes.LOGGED_IN, mLoginInfo);
 				break;
 
 			case USER_LOGIN_FAILED:
-				mGui.hideWaitWindow();
+				getGui().hideWaitWindow();
 
 				// Show client update information
 				if (mLoginInfo.updateInfo != null) {
 					switch (mLoginInfo.updateInfo.type) {
 					case UPDATE_AVAILABLE:
-						((LoginGui) mGui).showUpdateAvailable(mLoginInfo.updateInfo.latestClientVersion, mLoginInfo.updateInfo.changeLog);
+						getGui().showUpdateAvailable(mLoginInfo.updateInfo.latestClientVersion, mLoginInfo.updateInfo.changeLog);
 						break;
 
 					case UPDATE_REQUIRED:
-						((LoginGui) mGui).showUpdateRequired(mLoginInfo.updateInfo.latestClientVersion, mLoginInfo.updateInfo.changeLog);
+						getGui().showUpdateRequired(mLoginInfo.updateInfo.latestClientVersion, mLoginInfo.updateInfo.changeLog);
 						break;
 
 					default:

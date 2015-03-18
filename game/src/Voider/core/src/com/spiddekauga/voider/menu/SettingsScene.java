@@ -16,7 +16,7 @@ public class SettingsScene extends Scene {
 	public SettingsScene() {
 		super(new SettingsGui());
 
-		((SettingsGui) mGui).setScene(this);
+		getGui().setScene(this);
 	}
 
 	@Override
@@ -168,6 +168,11 @@ public class SettingsScene extends Scene {
 	 */
 	Resolution getResolutionWindowed() {
 		return mSettingRepo.display().getResolutionWindowed();
+	}
+
+	@Override
+	protected SettingsGui getGui() {
+		return (SettingsGui) super.getGui();
 	}
 
 	private SettingRepo mSettingRepo = SettingRepo.getInstance();

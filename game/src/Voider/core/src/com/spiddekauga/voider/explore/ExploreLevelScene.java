@@ -44,7 +44,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	ExploreLevelScene(ExploreActions action) {
 		super(new ExploreLevelGui(), action, LevelDef.class);
 
-		((ExploreLevelGui) mGui).setExploreLevelScene(this);
+		getGui().setExploreLevelScene(this);
 	}
 
 	@Override
@@ -388,9 +388,9 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		void fetch(boolean fetchMore) {
 			if (mSelectedLevel != null && mUser.isOnline()) {
 				if (!fetchMore) {
-					((ExploreLevelGui) mGui).resetComments();
+					getGui().resetComments();
 				}
-				((ExploreLevelGui) mGui).commentWaitIconAdd();
+				getGui().commentWaitIconAdd();
 				UUID resourceId = mSelectedLevel.defEntity.resourceId;
 				mResourceWebRepo.getComments(resourceId, fetchMore, ExploreLevelScene.this);
 				mIsFetching = true;
@@ -418,19 +418,19 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			// Only do something if it's comments for the currently selected level
 			if (mSelectedLevel != null && mSelectedLevel.defEntity.resourceId.equals(method.resourceId)) {
 				mIsFetching = false;
-				((ExploreLevelGui) mGui).commentWaitIconRemove();
+				getGui().commentWaitIconRemove();
 
 				if (response.isSuccessful()) {
 					// Set user comment
 					if (response.userComment != null) {
 						String dateString = mDateRepo.getDate(response.userComment.date);
-						((ExploreLevelGui) mGui).setUserComment(response.userComment.comment, dateString);
+						getGui().setUserComment(response.userComment.comment, dateString);
 					}
 
 					// Add comments
 					for (CommentEntity commentEntity : response.comments) {
 						String dateString = mDateRepo.getDate(commentEntity.date);
-						((ExploreLevelGui) mGui).addComment(commentEntity.username, commentEntity.comment, dateString);
+						getGui().addComment(commentEntity.username, commentEntity.comment, dateString);
 					}
 				} else {
 					handleFailedStatus(response.status);
@@ -439,6 +439,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		}
 
 		boolean mIsFetching = false;
+	}
+
+	@Override
+	protected ExploreLevelGui getGui() {
+		return (ExploreLevelGui) super.getGui();
 	}
 
 	/**
@@ -469,7 +474,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 				setSelectedLevel(null);
 				setSelected(null);
-				((ExploreLevelGui) mGui).resetContent();
+				getGui().resetContent();
 				mIsFetching = true;
 				mResourceWebRepo.getLevels(mLastFetch, false, ExploreLevelScene.this);
 			}
@@ -507,7 +512,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 				if (response.isSuccessful()) {
 					createDrawables(response.levels);
-					((ExploreLevelGui) mGui).addContent(response.levels);
+					getGui().addContent(response.levels);
 				} else {
 					handleFailedStatus(response.status);
 				}

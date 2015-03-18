@@ -167,13 +167,13 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		super.update(deltaTime);
 
 		if (getDef() == null) {
-			((EditorGui) mGui).showFirstTimeMenu();
+			getGui().showFirstTimeMenu();
 			return;
 		}
 
 		// Show info dialog after the resource has been created
 		if (getDef().getName().equals(Config.Actor.NAME_DEFAULT)) {
-			((EditorGui) mGui).showInfoDialog();
+			getGui().showInfoDialog();
 		}
 
 		if (shallAutoSave()) {
@@ -182,7 +182,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 		if (!mCollisionBoxesBeenCreated) {
 			mCollisionBoxesBeenCreated = true;
-			((EditorGui) mGui).resetCollisionBoxes();
+			getGui().resetCollisionBoxes();
 		}
 	}
 
@@ -200,8 +200,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		}
 		// Back - main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
-			if (!mGui.isMsgBoxActive()) {
-				((EditorGui) mGui).showExitConfirmDialog();
+			if (!getGui().isMsgBoxActive()) {
+				getGui().showExitConfirmDialog();
 				return true;
 			}
 		}
@@ -214,7 +214,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			}
 			// Open
 			if (keycode == Input.Keys.O) {
-				((EditorGui) mGui).open();
+				getGui().open();
 			}
 		}
 
@@ -398,7 +398,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		pixmap.dispose();
 
 		// Save the file to file
-		mGui.setVisible(true);
+		getGui().setVisible(true);
 		mSaving = false;
 		saveToFile();
 
@@ -444,7 +444,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
 		}
 
-		mGui.updateProgressBar(percentage);
+		getGui().updateProgressBar(percentage);
 	}
 
 	/**
@@ -487,10 +487,10 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	protected void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
 		// Publish
 		if (response instanceof PublishResponse) {
-			mGui.hideProgressBar();
+			getGui().hideProgressBar();
 			if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
 				mNotification.show(NotificationTypes.SUCCESS, "Publish successful!");
-				mGui.resetValues();
+				getGui().resetValues();
 				mInvoker.dispose();
 			} else {
 				mNotification.show(NotificationTypes.ERROR, "Publish failed!");
@@ -626,7 +626,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			mExecutedAfterSaved = command;
 			mSavingImages = images;
 
-			mGui.setVisible(false);
+			getGui().setVisible(false);
 			createActorDefTexture();
 		} else if (command != null) {
 			command.execute();
@@ -683,10 +683,15 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		if (!isSaved() && !isPublished()) {
 			saveImpl(command);
 		} else if (isPublished()) {
-			mNotification.showHighlight("Cannot save a published " + ((EditorGui) mGui).getResourceTypeName());
+			mNotification.showHighlight("Cannot save a published " + getGui().getResourceTypeName());
 		} else if (isSaved()) {
 			mNotification.show("Already saved");
 		}
+	}
+
+	@Override
+	protected EditorGui getGui() {
+		return (EditorGui) super.getGui();
 	}
 
 	/**

@@ -67,7 +67,7 @@ public class GameScene extends WorldScene {
 	 */
 	public GameScene(boolean testing, boolean invulnerable) {
 		super(new GameSceneGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
-		((GameSceneGui) mGui).setGameScene(this);
+		getGui().setGameScene(this);
 
 		mTesting = testing;
 		mInvulnerable = invulnerable;
@@ -334,7 +334,7 @@ public class GameScene extends WorldScene {
 
 			createPlayerShip();
 			createMouseJoint();
-			mGui.resetValues();
+			getGui().resetValues();
 
 			// Set last played
 			if (isPublished()) {
@@ -408,7 +408,7 @@ public class GameScene extends WorldScene {
 
 
 		// GUI
-		mGui.resetValues();
+		getGui().resetValues();
 	}
 
 	/**
@@ -531,7 +531,7 @@ public class GameScene extends WorldScene {
 	 * Updates the lives
 	 */
 	private void updateLives() {
-		((GameSceneGui) mGui).updateLives(mPlayerStats.getExtraLives(), PlayerStats.getStartLives());
+		getGui().updateLives(mPlayerStats.getExtraLives(), PlayerStats.getStartLives());
 	}
 
 	@Override
@@ -728,7 +728,7 @@ public class GameScene extends WorldScene {
 			if (mTesting) {
 				setOutcome(Outcomes.LEVEL_QUIT);
 			} else {
-				((GameSceneGui) mGui).showMenu();
+				getGui().showMenu();
 			}
 		}
 
@@ -808,7 +808,7 @@ public class GameScene extends WorldScene {
 		// Set lives
 		mLevel.setPlayer(mPlayerActor);
 		updateLives();
-		mGui.resetValues();
+		getGui().resetValues();
 	}
 
 	/**
@@ -844,6 +844,11 @@ public class GameScene extends WorldScene {
 		mBodyShepherdMinPos.y -= getWorldHeight();
 		mBodyShepherdMaxPos.x += getWorldWidth();
 		mBodyShepherdMaxPos.y += getWorldHeight();
+	}
+
+	@Override
+	protected GameSceneGui getGui() {
+		return (GameSceneGui) super.getGui();
 	}
 
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();

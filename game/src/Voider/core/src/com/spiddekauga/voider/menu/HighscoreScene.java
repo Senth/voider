@@ -21,7 +21,7 @@ public class HighscoreScene extends Scene implements IResponseListener {
 	 */
 	public HighscoreScene() {
 		super(new HighscoreSceneGui());
-		((HighscoreSceneGui) mGui).setHighscoreScene(this);
+		getGui().setHighscoreScene(this);
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 	}
 
@@ -68,12 +68,13 @@ public class HighscoreScene extends Scene implements IResponseListener {
 	 */
 	private void handleGetUserScores(HighscoreGetResponse response) {
 		if (response.isSuccessful()) {
-			((HighscoreSceneGui) mGui).setFirstPlace(response.firstPlace);
-			((HighscoreSceneGui) mGui).populateUserScores(response.userScore, response.userPlace, response.beforeUser, response.afterUser);
+			getGui().setFirstPlace(response.firstPlace);
+			getGui().populateUserScores(response.userScore, response.userPlace, response.beforeUser, response.afterUser);
 		} else {
 			continueToNextScene();
 		}
 
+		// REMOVE
 		// switch (response.status) {
 		// case FAILED_CONNECTION:
 		// mNotification.show(MessageStyles.ERROR, "Failed to connect to the server");
@@ -88,17 +89,24 @@ public class HighscoreScene extends Scene implements IResponseListener {
 		// break;
 		//
 		// case FAILED_LEVEL_NOT_FOUND:
-		// mNotification.show(MessageStyles.ERROR, "Could not find any highscores for this level");
+		// mNotification.show(MessageStyles.ERROR,
+		// "Could not find any highscores for this level");
 		// break;
 		//
 		// case FAILED_HIGHSCORES_NOT_FOUND:
-		// mNotification.show(MessageStyles.ERROR, "Didn't find any highscores for this level");
+		// mNotification.show(MessageStyles.ERROR,
+		// "Didn't find any highscores for this level");
 		// break;
 		//
 		// case SUCCESS:
 		//
 		// break;
 		// }
+	}
+
+	@Override
+	protected HighscoreSceneGui getGui() {
+		return (HighscoreSceneGui) super.getGui();
 	}
 
 	/** Web responses to be processed */

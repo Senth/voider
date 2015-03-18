@@ -47,10 +47,10 @@ public class TestUiScene extends Scene {
 		} else if (KeyHelper.isBackPressed(keycode)) {
 			Gdx.app.exit();
 		} else if (keycode == Input.Keys.F11) {
-			mGui.showProgressBar("This is a progress window that is quite long...\nMultiple lines...");
-			mGui.updateProgressBar(50, "50 / 100");
+			getGui().showProgressBar("This is a progress window that is quite long...\nMultiple lines...");
+			getGui().updateProgressBar(50, "50 / 100");
 		} else if (keycode == Input.Keys.F12) {
-			mGui.hideProgressBar();
+			getGui().hideProgressBar();
 		}
 
 		return false;
@@ -63,8 +63,8 @@ public class TestUiScene extends Scene {
 			mLoadingValue = 0;
 		}
 
-		((TestUiGui) mGui).setLoadingBar(mLoadingValue);
-		((TestUiGui) mGui).setHealthBar(100 - mLoadingValue);
+		((TestUiGui) getGui()).setLoadingBar(mLoadingValue);
+		((TestUiGui) getGui()).setHealthBar(100 - mLoadingValue);
 	}
 
 	/**
@@ -73,8 +73,8 @@ public class TestUiScene extends Scene {
 	private void reloadUi() {
 		ResourceCacheFacade.reload(InternalNames.UI_GENERAL);
 
-		mGui.dispose();
-		mGui.initGui();
+		getGui().dispose();
+		getGui().initGui();
 	}
 
 	/** Loading value */

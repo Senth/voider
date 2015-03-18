@@ -6,10 +6,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 
+import net._01001111.text.LoremIpsum;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.TestUiScene;
@@ -26,6 +27,7 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
@@ -40,10 +42,8 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
-import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.sound.SoundPlayer;
 import com.spiddekauga.voider.sound.Sounds;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -63,8 +63,8 @@ public class MainMenu extends Scene implements IEventListener {
 	 */
 	public MainMenu() {
 		super(new MainMenuGui());
-		((MainMenuGui) mGui).setMenuScene(this);
-		mGuiStack.add(mGui);
+		getGui().setMenuScene(this);
+		mGuiStack.add(getGui());
 	}
 
 	@Override
@@ -153,9 +153,9 @@ public class MainMenu extends Scene implements IEventListener {
 			}
 		}
 
-		mGui.dispose();
-		mGui.initGui();
-		mGui.resetValues();
+		getGui().dispose();
+		getGui().initGui();
+		getGui().resetValues();
 
 
 		// Show if logged in online
@@ -174,11 +174,11 @@ public class MainMenu extends Scene implements IEventListener {
 				if (loginInfo.updateInfo != null) {
 					switch (loginInfo.updateInfo.type) {
 					case UPDATE_AVAILABLE:
-						((MainMenuGui) mGui).showUpdateAvailable(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
+						getGui().showUpdateAvailable(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
 						break;
 
 					case UPDATE_REQUIRED:
-						((MainMenuGui) mGui).showUpdateNeeded(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
+						getGui().showUpdateNeeded(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
 						break;
 
 					default:
@@ -187,7 +187,7 @@ public class MainMenu extends Scene implements IEventListener {
 				}
 				// Check if the client was updated since last login
 				else if (infoRepo.isClientVersionNewSinceLastLogin()) {
-					((MainMenuGui) mGui).showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
+					getGui().showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
 					infoRepo.updateClientVersion();
 				}
 
@@ -220,11 +220,18 @@ public class MainMenu extends Scene implements IEventListener {
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 				mNotification.show(message);
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
-				String changeLog = ClientVersions.getChangeLogs(ClientVersions.V0_4_0);
-				UiFactory.getInstance().msgBox.changeLog("ChangeLog", "Test", changeLog);
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
-				UiFactory.getInstance().msgBox.bugReport();
+				Motd motd = new Motd();
+				LoremIpsum loremIpsum = new LoremIpsum();
+				motd.content = loremIpsum.paragraphs(2);
+				motd.title = loremIpsum.randomWord();
+				motd.created = new Date();
+				motd.type = MotdTypes.INFO;
+
+				ArrayList<Motd> motds = new ArrayList<>();
+				motds.add(motd);
+				getGui().showMotds(motds);
 			} else if (keycode == Input.Keys.F10) {
 			} else if (keycode == Input.Keys.F11) {
 			} else if (keycode == Input.Keys.F12) {
@@ -244,23 +251,8 @@ public class MainMenu extends Scene implements IEventListener {
 			// Sounds
 			else if (keycode == Input.Keys.A) {
 				SoundPlayer.getInstance().stopAll();
-			} else if (keycode == Input.Keys.O) {
-				SoundPlayer.getInstance().play(Sounds.SHIP_LOW_HEALTH);
-			} else if (keycode == Input.Keys.E) {
-				SoundPlayer.getInstance().play(Sounds.BULLET_HIT_PLAYER);
 			} else if (keycode == Input.Keys.U) {
 				SoundPlayer.getInstance().play(Sounds.SHIP_COLLIDE);
-			} else if (keycode == Input.Keys.I) {
-				SoundPlayer.getInstance().play(Sounds.ENEMY_EXPLODES);
-			} else if (keycode == Input.Keys.D) {
-				SoundPlayer.getInstance().play(Sounds.SHIP_LOST);
-			} else if (keycode == Input.Keys.H) {
-				SoundPlayer.getInstance().play(Sounds.UI_BUTTON_HOVER);
-			} else if (keycode == Input.Keys.T) {
-				SoundPlayer.getInstance().play(Sounds.UI_BUTTON_CLICK);
-			} else if (keycode == Input.Keys.M) {
-				MusicPlayer.getInstance().play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
-				MusicPlayer.getInstance().queue(Music.GAME_OVER_LOOP);
 			}
 		}
 		return super.onKeyDown(keycode);
@@ -387,8 +379,8 @@ public class MainMenu extends Scene implements IEventListener {
 			if (newGui != null) {
 				newGui.setMenuScene(this);
 				newGui.initGui();
-				mInputMultiplexer.removeProcessor(mGui.getStage());
-				mGui = newGui;
+				mInputMultiplexer.removeProcessor(getGui().getStage());
+				setGui(newGui);
 				mGuiStack.push(newGui);
 				mInputMultiplexer.addProcessor(0, newGui.getStage());
 				newGui.resetValues();
@@ -403,15 +395,15 @@ public class MainMenu extends Scene implements IEventListener {
 	 * Pops the current menu from the stack. Can not pop Main Menu from the stack.
 	 */
 	void popMenu() {
-		if (mGui.getClass() != MainMenuGui.class) {
-			mInputMultiplexer.removeProcessor(mGui.getStage());
+		if (getGui().getClass() != MainMenuGui.class) {
+			mInputMultiplexer.removeProcessor(getGui().getStage());
 			mGuiStack.pop().dispose();
-			mGui = mGuiStack.peek();
-			mInputMultiplexer.addProcessor(0, mGui.getStage());
+			setGui(mGuiStack.peek());
+			mInputMultiplexer.addProcessor(0, getGui().getStage());
 		}
 		// Quit game
 		else {
-			((MainMenuGui) mGui).showQuitMsgBox();
+			getGui().showQuitMsgBox();
 		}
 	}
 
@@ -459,7 +451,7 @@ public class MainMenu extends Scene implements IEventListener {
 			}
 		});
 
-		((MainMenuGui) mGui).showMotds(motds);
+		getGui().showMotds(motds);
 	}
 
 	/**
@@ -469,6 +461,11 @@ public class MainMenu extends Scene implements IEventListener {
 	void motdViewed(Motd motd) {
 		SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
 		infoRepo.setLatestMotdDate(motd);
+	}
+
+	@Override
+	protected MainMenuGui getGui() {
+		return (MainMenuGui) super.getGui();
 	}
 
 	private static final User mUser = User.getGlobalUser();

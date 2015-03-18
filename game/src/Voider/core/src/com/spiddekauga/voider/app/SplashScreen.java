@@ -44,14 +44,14 @@ public class SplashScreen extends LoadingScene {
 		case DISPLAY:
 			mDisplayTime += deltaTime;
 			if (mDisplayTime >= icTime.getSplashScreenTime() && !ResourceCacheFacade.isLoading()) {
-				((SplashScreenGui) mGui).fadeOut();
+				getGui().fadeOut();
 				mState = States.FADING;
 			}
 			break;
 
 
 		case FADING:
-			if (((SplashScreenGui) mGui).hasFaded()) {
+			if (getGui().hasFaded()) {
 				setOutcome(Outcomes.LOADING_SUCCEEDED);
 			}
 			break;
@@ -62,6 +62,11 @@ public class SplashScreen extends LoadingScene {
 	protected void render() {
 		enableBlendingWithDefaults();
 		super.render();
+	}
+
+	@Override
+	protected SplashScreenGui getGui() {
+		return (SplashScreenGui) super.getGui();
 	}
 
 	/**

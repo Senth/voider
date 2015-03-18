@@ -61,12 +61,12 @@ public class EnemyEditor extends ActorEditor {
 	public EnemyEditor() {
 		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, EnemyActor.class);
 
-		((EnemyEditorGui) mGui).setEnemyEditor(this);
+		getGui().setEnemyEditor(this);
 	}
 
 	@Override
 	protected void onDeactivate() {
-		((EnemyEditorGui) mGui).clearCollisionBoxes();
+		getGui().clearCollisionBoxes();
 
 		Actor.setPlayerActor(null);
 
@@ -132,11 +132,11 @@ public class EnemyEditor extends ActorEditor {
 
 				setActorDef((EnemyActorDef) ResourceCacheFacade.get(enemyDefEntity.resourceId, enemyDefEntity.revision));
 				setMovementType(mDef.getMovementType());
-				mGui.resetValues();
+				getGui().resetValues();
 				setSaved();
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-			mGui.popMsgBoxes();
+			getGui().popMsgBoxes();
 		}
 	}
 
@@ -162,7 +162,7 @@ public class EnemyEditor extends ActorEditor {
 				setBulletActorDef(null);
 			}
 
-			mGui.resetValues();
+			getGui().resetValues();
 		} catch (Exception e) {
 			Gdx.app.error("EnemyEditor", e.toString());
 			e.printStackTrace();
@@ -189,9 +189,9 @@ public class EnemyEditor extends ActorEditor {
 	@Override
 	protected void onResize(int width, int height) {
 		super.onResize(width, height);
-		mGui.dispose();
-		mGui.initGui();
-		((EnemyEditorGui) mGui).updatePathLabelsPositions();
+		getGui().dispose();
+		getGui().initGui();
+		getGui().updatePathLabelsPositions();
 	}
 
 	@Override
@@ -482,7 +482,7 @@ public class EnemyEditor extends ActorEditor {
 		EnemyActorDef def = new EnemyActorDef();
 		def.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_COLOR_DEFAULT));
 		setActorDef(def);
-		mGui.resetValues();
+		getGui().resetValues();
 		setMovementType(MovementTypes.PATH);
 		setSaved();
 	}
@@ -965,7 +965,7 @@ public class EnemyEditor extends ActorEditor {
 	@Override
 	public void duplicateDef() {
 		setActorDef((EnemyActorDef) mDef.copyNewResource());
-		mGui.resetValues();
+		getGui().resetValues();
 		saveDef();
 	}
 
@@ -1100,8 +1100,8 @@ public class EnemyEditor extends ActorEditor {
 		mEnemyPathLoop.setDef(mDef);
 		mEnemyPathBackAndForth.setDef(mDef);
 
-		if (mGui.isInitialized()) {
-			mGui.resetValues();
+		if (getGui().isInitialized()) {
+			getGui().resetValues();
 		}
 	}
 
@@ -1208,6 +1208,11 @@ public class EnemyEditor extends ActorEditor {
 	@Override
 	public void undoJustCreated() {
 		setActorDef(null);
+	}
+
+	@Override
+	protected EnemyEditorGui getGui() {
+		return (EnemyEditorGui) super.getGui();
 	}
 
 	/** Current enemy actor */
