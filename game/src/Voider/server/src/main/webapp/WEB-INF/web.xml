@@ -5,10 +5,14 @@ xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 
+
+	<!--———————————————
+	 		API
+	———————————————–-->
 	<!-- User -->
 	<servlet>
 		<servlet-name>Login</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.Login</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Login</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
@@ -16,7 +20,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>RegisterUser</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.RegisterUser</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.RegisterUser</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>RegisterUser</servlet-name>
@@ -24,7 +28,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Logout</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.Logout</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Logout</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Logout</servlet-name>
@@ -32,7 +36,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>PasswordResetSendToken</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.PasswordResetSendToken</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.PasswordResetSendToken</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>PasswordResetSendToken</servlet-name>
@@ -40,7 +44,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>PasswordReset</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.PasswordReset</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.PasswordReset</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>PasswordReset</servlet-name>
@@ -51,7 +55,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<!-- Published -->
 	<servlet>
 		<servlet-name>Publish</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.Publish</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Publish</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Publish</servlet-name>
@@ -59,7 +63,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>CommentFetch</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.CommentFetch</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.CommentFetch</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>CommentFetch</servlet-name>
@@ -67,7 +71,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>LevelFetch</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.LevelFetch</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.LevelFetch</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>LevelFetch</servlet-name>
@@ -75,7 +79,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>EnemyFetch</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.EnemyFetch</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.EnemyFetch</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>EnemyFetch</servlet-name>
@@ -83,7 +87,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>BulletFetch</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.BulletFetch</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.BulletFetch</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>BulletFetch</servlet-name>
@@ -91,7 +95,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ResourceDownload</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.ResourceDownload</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.ResourceDownload</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ResourceDownload</servlet-name>
@@ -99,7 +103,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DownloadSync</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.DownloadSync</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.DownloadSync</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DownloadSync</servlet-name>
@@ -107,7 +111,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>HighscoreSync</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.HighscoreSync</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.HighscoreSync</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>HighscoreSync</servlet-name>
@@ -115,7 +119,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>HighscoreGet</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.HighscoreGet</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.HighscoreGet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>HighscoreGet</servlet-name>
@@ -123,7 +127,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>StatSync</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.StatSync</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.StatSync</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StatSync</servlet-name>
@@ -134,7 +138,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<!-- User resources -->
 	<servlet>
 		<servlet-name>UserResourceSync</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.UserResourceSync</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.UserResourceSync</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>UserResourceSync</servlet-name>
@@ -145,7 +149,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<!-- Upload/Download -->
 	<servlet>
 		<servlet-name>GetUploadUrl</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.GetUploadUrl</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.GetUploadUrl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>GetUploadUrl</servlet-name>
@@ -153,7 +157,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>BlobDownload</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.BlobDownload</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.BlobDownload</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>BlobDownload</servlet-name>
@@ -164,15 +168,28 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<!-- Misc -->
 	<servlet>
 		<servlet-name>BugReport</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.BugReport</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.api.BugReport</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>BugReport</servlet-name>
 		<url-pattern>/api/bug-report</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>Analytics</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Analytics</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Analytics</servlet-name>
+		<url-pattern>/api/analytics</url-pattern>
+	</servlet-mapping>
+
+
+	<!--———————————————
+	 		BACKEND
+	———————————————–-->
+	<servlet>
 		<servlet-name>ChatCreate</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.ChatCreate</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.backend.ChatCreate</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ChatCreate</servlet-name>
@@ -180,31 +197,38 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ChatConnected</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.ChatConnected</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.backend.ChatConnected</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ChatConnected</servlet-name>
 		<url-pattern>/_ah/channel/connected/</url-pattern>
 	</servlet-mapping>
+	
+	
+	<!--———————————————
+	 		WEB
+	———————————————–-->
+	<!-- Beta signup -->
 	<servlet>
-		<servlet-name>Analytics</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.Analytics</servlet-class>
+		<servlet-name>BetaSignup</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.web.BetaSignup</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Analytics</servlet-name>
-		<url-pattern>/api/analytics</url-pattern>
+		<servlet-name>BetaSignup</servlet-name>
+		<url-pattern>/beta-signup</url-pattern>
 	</servlet-mapping>
-
 	
 	<!-- Testing -->
 	<servlet>
 		<servlet-name>Upgrade</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.Upgrade</servlet-class>
+		<servlet-class>com.spiddekauga.voider.servlets.web.Upgrade</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Upgrade</servlet-name>
 		<url-pattern>/upgrade-secret</url-pattern>
 	</servlet-mapping>
+	
+	
 	
 	
 	<!-- Security -->

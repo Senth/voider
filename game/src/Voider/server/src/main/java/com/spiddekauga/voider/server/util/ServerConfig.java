@@ -34,6 +34,9 @@ public class ServerConfig {
 		public static final String ANALYTICS_SESSION = "analytics_session";
 		public static final String ANALYTICS_SCENE = "analytics_scene";
 		public static final String ANALYTICS_EVENT = "analytics_event";
+		// Beta sign-up
+		public static final String BETA_KEY = "beta_key";
+		public static final String BETA_SIGNUP = "beta_signup";
 
 
 		// -- Columns --
@@ -188,6 +191,22 @@ public class ServerConfig {
 			public static final String NAME = "name";
 			public static final String DATA = "data";
 			public static final String TYPE = "type";
+		}
+
+		// Beta keys
+		public static class CBetaKey {
+			public static final String KEY = "key";
+			public static final String GROUP_NAME = "group_name";
+			public static final String USED = "used";
+		}
+
+		// Beta sign-up
+		public static class CBetaSignUp {
+			public static final String EMAIL = "email";
+			public static final String BETA_KEY = "beta_key";
+			public static final String DATE = "date";
+			public static final String CONFIRM_EXPIRES = "confirm_expires";
+			public static final String CONFIRM_KEY = "confirm_key";
 		}
 
 		/**

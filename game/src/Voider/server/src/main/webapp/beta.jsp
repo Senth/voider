@@ -22,12 +22,12 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                   <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
                 </button>
-                <a href="index.html" class="navbar-brand">VOIDER</a>
+                <a href="index.jsp" class="navbar-brand">VOIDER</a>
               </div>
               <div class="collapse navbar-collapse pull-right">
                 <ul class="nav navbar-nav">
                   <li>
-                    <a href="index.html">Home</a>
+                    <a href="index.jsp">Home</a>
                   </li>
                   <li class="active">
                     <a href="#">Beta Testing</a>
@@ -46,11 +46,18 @@
       <hr />
       <div class="row">
         <div class="col-md-12">
-          <h3 class="text-Left">Sign up here</h3>
-			<form action="beta-signup" method="post">
-	        	<p class="text-left"><span style="margin-right: 10px">Email:</span><input type="text" name="email" style="width: 200px;" /><input type="submit" /></p>
-	        </form>
-        	You will get a confirmation mail that you have signed up for the beta. You will then have to wait in queue to get a key. New keys are released every now and then :)
+          <h3 class="text-Left"><%
+          	// Display sign up
+          	if (request.getParameter("signed_up") == null) {
+          		out.print("Sign up here");
+          	} else {
+          		out.print("Please confirm your beta sign-up through your mail :)");
+          	}
+          	%></h3>
+          	<% if (request.getParameter("signed_up") == null) {
+          		out.print("<form action=\"beta-signup\" method=\"post\"><p class=\"text-left\"><span style=\"margin-right: 10px\">Email:</span><input type=\"text\" name=\"email\" style=\"width: 200px;\" /><input type=\"submit\" /></p></form>");
+	        }%>
+        	You will receive an email with a <b>confirmation link</b>. You will need to confirm your email through that link within 1 week, otherwise your position will be removed. You will then have to wait in queue to get a key. New keys are released every now and then :)
         </div>
       </div>
       <div class="row">
@@ -164,7 +171,7 @@
         </div>
         <div class="col-md-8">
           <div align="right">
-            <a href="index.html">Home</a> | <a href="testing.html"> Beta Testing</a>
+            <a href="index.jsp">Home</a> | <a href="testing.html"> Beta Testing</a>
           </div>
         </div>
       </div>

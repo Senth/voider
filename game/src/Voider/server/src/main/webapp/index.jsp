@@ -30,7 +30,7 @@
                     <a href="#">Home</a>
                   </li>
                   <li>
-                    <a href="beta.html">Beta Testing</a>
+                    <a href="beta.jsp">Beta Testing</a>
                   </li>
                 </ul>
               </div>
@@ -77,7 +77,7 @@
         </div>
         <div class="col-md-8">
           <div align="right">
-            <a href="index.html">Home</a> | <a href="beta.html">Beta Testing</a>
+            <a href="index.html">Home</a> | <a href="beta.jsp">Beta Testing</a>
           </div>
         </div>
       </div>

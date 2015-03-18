@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.servlets;
+package com.spiddekauga.voider.servlets.backend;
 
 import java.io.IOException;
 
