@@ -118,7 +118,7 @@ public enum ClientVersions {
 			"Bugfixes",
 			"	Enemy triggers are now saved correctly"
 			),
-	V0_4_12(false,
+	V0_5_0(true,
 			"Improvements",
 			"	Performance by a huge amount :D",
 			"	Zoom in/out in editors now zoom in/out directly when clicked on",

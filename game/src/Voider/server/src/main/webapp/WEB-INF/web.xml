@@ -217,21 +217,42 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>BetaSignup</servlet-name>
 		<url-pattern>/beta-signup</url-pattern>
 	</servlet-mapping>
-	
-	<!-- Testing -->
+	<!-- Browse Beta Key Group -->
 	<servlet>
-		<servlet-name>Upgrade</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.web.Upgrade</servlet-class>
+		<servlet-name>BetaKeys</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.web.BetaKeys</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Upgrade</servlet-name>
-		<url-pattern>/upgrade-secret</url-pattern>
+		<servlet-name>BetaKeys</servlet-name>
+		<url-pattern>/beta-keys</url-pattern>
 	</servlet-mapping>
 	
 	
+	<!--———————————————
+	 		ADMIN
+	———————————————–-->
+	<!-- Testing -->
+	<servlet>
+		<servlet-name>Upgrade</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Upgrade</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Upgrade</servlet-name>
+		<url-pattern>/admin/upgrade-secret</url-pattern>
+	</servlet-mapping>
+	<!-- Beta Key Generator -->
+	<servlet>
+		<servlet-name>BetaKeyGenerate</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.BetaKeyGenerate</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BetaKeyGenerate</servlet-name>
+		<url-pattern>/admin/generate-beta-keys</url-pattern>
+	</servlet-mapping>
 	
-	
-	<!-- Security -->
+	<!--———————————————
+	 	  SECURITY
+	———————————————–-->
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>cron</web-resource-name>
@@ -240,10 +261,17 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<auth-constraint>
 			<role-name>admin</role-name>
 		</auth-constraint>
+		<web-resource-collection>
+			<web-resource-name>admin</web-resource-name>
+			<url-pattern>/admin/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
 	</security-constraint>
 	
 	
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 </web-app>

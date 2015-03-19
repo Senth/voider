@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.servlets.web;
+package com.spiddekauga.voider.servlets.admin;
 
 import java.io.IOException;
 import java.util.ArrayList;

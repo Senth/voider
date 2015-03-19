@@ -1,43 +1,4 @@
-<!doctype html>
-
-<html>
-  
-  <head>
-    <title>VOIDER</title>
-    <meta name="viewport" content="width=device-width">
-	<link rel="stylesheet" href="css/voider.css">
-	<link rel="stylesheet" href="css/glyphicons.css">
-	<script src="scripts/modernizr.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  </head>
-  
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12" style="padding: 40px 0px 40px 0px;">
-          <div class="navbar navbar-default">
-            <div class="container">
-              <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                  <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-                </button>
-                <a href="index.jsp" class="navbar-brand">VOIDER</a>
-              </div>
-              <div class="collapse navbar-collapse pull-right">
-                <ul class="nav navbar-nav">
-                  <li>
-                    <a href="index.jsp">Home</a>
-                  </li>
-                  <li class="active">
-                    <a href="#">Beta Testing</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<%@include file="include/header.jsp" %>
       <div class="row">
         <div class="col-md-12" style="padding: 0px 0px 40px 0px;">
           <h1 class="text-center">Beta Testing</h1>
@@ -164,23 +125,4 @@
           </ol>
         </div>
       </div>
-      <hr />
-      <div class="row">
-        <div class="col-md-4" align="left">
-          <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">YouTube</a>
-        </div>
-        <div class="col-md-8">
-          <div align="right">
-            <a href="index.jsp">Home</a> | <a href="testing.html"> Beta Testing</a>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12" style="padding: 20px 0px 20px 0px;">
-          <p class="text-center">Copyright &copy; <a href="#">Spiddekauga Games</a> 2015</p>
-        </div>
-      </div>
-    </div>
-  </body>
-
-</html>
+<%@include file="include/footer.jsp" %>

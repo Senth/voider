@@ -37,7 +37,7 @@ public class ServerConfig {
 		// Beta sign-up
 		public static final String BETA_KEY = "beta_key";
 		public static final String BETA_SIGNUP = "beta_signup";
-
+		public static final String BETA_GROUP = "beta_group";
 
 		// -- Columns --
 		// Users
@@ -196,7 +196,6 @@ public class ServerConfig {
 		// Beta keys
 		public static class CBetaKey {
 			public static final String KEY = "key";
-			public static final String GROUP_NAME = "group_name";
 			public static final String USED = "used";
 		}
 
@@ -207,6 +206,12 @@ public class ServerConfig {
 			public static final String DATE = "date";
 			public static final String CONFIRM_EXPIRES = "confirm_expires";
 			public static final String CONFIRM_KEY = "confirm_key";
+		}
+
+		// Beta group
+		public static class CBetaGroup {
+			public static final String NAME = "name";
+			public static final String HASH = "hash";
 		}
 
 		/**
@@ -263,6 +268,16 @@ public class ServerConfig {
 
 	/** Admin email address */
 	public static final InternetAddress EMAIL_ADMIN;
+	/** No-reply email address */
+	public static final InternetAddress EMAIL_NO_REPLY;
+	/** Voider release URL */
+	public static final String RELEASE_URL = "http://voider-game.com/";
+	/** Voider beta URL */
+	public static final String BETA_URL = "http://voider-beta.appspot.com/";
+	/** Beta download location */
+	public static final String BETA_CLIENT_URL = RELEASE_URL + "Voider-beta.jar";
+	/** Beta information location */
+	public static final String BETA_INFO_URL = RELEASE_URL + "beta.jsp";
 
 	/** Public Search tokenize sizes */
 	public static class TokenSizes {
@@ -299,12 +314,15 @@ public class ServerConfig {
 
 	// Initialization of some variables
 	static {
-		InternetAddress emailAddress = null;
+		InternetAddress adminEmail = null;
+		InternetAddress noReplyEmail = null;
 		try {
-			emailAddress = new InternetAddress("spiddekauga@voider-game.com", "Voider");
+			adminEmail = new InternetAddress("matteus@voider-game.com", "Voider");
+			noReplyEmail = new InternetAddress("no-reply@voider-game.com", "Voider");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		EMAIL_ADMIN = emailAddress;
+		EMAIL_ADMIN = adminEmail;
+		EMAIL_NO_REPLY = noReplyEmail;
 	}
 }
