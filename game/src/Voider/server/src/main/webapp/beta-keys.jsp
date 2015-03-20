@@ -1,4 +1,4 @@
-<%@include file="../include/header.jsp" %>
+<%@include file="include/header.jsp" %>
 <div class="row">
 	<div class="col-md-12">
 		<h1 class="text-center">Available Beta Keys</h1>
@@ -18,4 +18,4 @@
 		</table>
 	</div>
 </div>
-<%@include file="../include/footer.jsp" %>
+<jsp:include page="include/footer.jsp" />

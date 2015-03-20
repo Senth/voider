@@ -1,3 +1,4 @@
+<%@include file="methods.jsp" %>
       <hr>
       <div class="row">
         <div class="col-md-4" align="left">

@@ -13,6 +13,10 @@
           		out.print("This email has already entered the queue<br />But hasn't been confirmed yet");
           	} else if (request.getParameter("confirm_success") != null) {
 				out.print("Confirmation successful!");
+			} else if (request.getParameter("confirm_failed") != null) {
+				out.print("Confirmation failed!");
+			} else if (request.getParameter("confirm_already") != null) {
+				out.print("Already confirmed");
           	} else if (request.getParameter("resend_confirm") != null) {
           		out.print("Confirmation mail resent");
           	} else if (request.getParameter("resend_key") != null) {
@@ -47,7 +51,7 @@
 	      		out.println("<hr />");
 	      		out.println("<div class=\"row\">");
 	      		out.println("<div class=\"col-md-12\">");
-	      		out.println("<h3 class=\"text-center\"><a href=\"beta-signup?resend_confirm&email=" + email + "\">Resend Key</a></h3>");
+	      		out.println("<h3 class=\"text-center\"><a href=\"beta-signup?resend_confirm&email=" + email + "\">Resend Confirmation Link</a></h3>");
 	      		out.println("</div></div>");
       		}
       	}
@@ -58,4 +62,4 @@
       		<h4 class="text-center"><a href="beta.jsp">Back</a></h4>
       	</div>
       </div>
-<%@include file="include/footer.jsp" %>
+<jsp:include page="include/footer.jsp" />

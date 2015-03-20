@@ -15,6 +15,8 @@ buildscript {
     }
 }
 
+// jvmArgs += [ '-XX:MaxPermSize=2G' ]
+
 ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
 ext.appengineExplodedWebFile = "server/build/exploded-app/WEB-INF/appengine-web.xml"
 ext.defaultBuild = "DEV_LOCAL"
@@ -209,6 +211,19 @@ task deployGameRelease(dependsOn: ['setBuildRelease', 'core:clean', ':desktop:di
 	deployGame("RELEASE")
 }
 
+
+// Upload to GS
+task uploadBetaToGs(type: Exec) {
+	def filename = "build/Voider-beta.jar"
+	def gsFile = "gs://voider-shared/app/"
+
+	commandLine 'gsutil', 'cp', filename, gsFile
+}
+
+// task uploadReleaseToGs(type: Exec) << {
+// 	Does nothing yet...
+// }
+
 // Ordering
 project(':core').compileJava.mustRunAfter setBuildRelease
 project(':core').compileJava.mustRunAfter setBuildBeta
@@ -234,7 +249,7 @@ task setAppengineBeta() << {
 
 task setAppengineRelease() << {
 	updateAppengineVersion()
-	updateApplicationId("voider-game")
+	updateApplicationId("voider-thegame")
 }
 
 task deployAppengineDev(dependsOn: ['setAppengineDev', 'server:appengineUpdate']) << {
@@ -245,7 +260,7 @@ task deployAppengineNightly(dependsOn: ['setAppengineNightly', 'server:appengine
 	// Does nothing
 }
 
-task deployAppengineBeta(dependsOn: ['setAppengineBeta', 'server:appengineUpdate']) << {
+task deployAppengineBeta(dependsOn: ['uploadBetaToGs', 'setAppengineBeta', 'server:appengineUpdate']) << {
 	// Does nothing
 }
 
@@ -253,19 +268,20 @@ task deployAppengineRelease(dependsOn: ['setAppengineRelease', 'server:appengine
 	// Does nothing
 }
 
+
 // Ordering
 project(':server').appengineUpdate.mustRunAfter setAppengineDev
 project(':server').appengineUpdate.mustRunAfter setAppengineBeta
 project(':server').appengineUpdate.mustRunAfter setAppengineNightly
 project(':server').appengineUpdate.mustRunAfter setAppengineRelease
 
+
 // Deploy Game to dropbox and other places
 def deployGame(buildName) {
 	def dropboxDir = "/home/senth/Dropbox/Voider exec/"
 	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
 	def dropboxCopyTo = ""
-	def warDir = projectDir.absolutePath + "/server/src/main/webapp/"
-	def explodedDir = projectDir.absolutePath + "/server/build/exploded-app/"
+	def exportFile = projectDir.absolutePath + "/build/";
 	switch ( buildName ) {
 		case "NIGHTLY_DEV":
 			dropboxCopyTo = "Voider - editable resources/Voider.jar"
@@ -276,13 +292,11 @@ def deployGame(buildName) {
 			break
 		
 		case "BETA":
-			warDir += "Voider-beta.jar"
-			explodedDir += "Voider-beta.jar"
+			exportFile += "Voider-beta.jar"
 			break
 
 		case "RELEASE":
-			warDir += "Voider.jar"
-			explodedDir += "Voider.jar"
+			exportFile += "Voider.jar"
 			break
 	}
 
@@ -293,8 +307,7 @@ def deployGame(buildName) {
 	}
 	// Copy to appengine
 	else {
-		Files.copy(Paths.get(desktopFile), Paths.get(warDir), StandardCopyOption.REPLACE_EXISTING)
-		Files.move(Paths.get(desktopFile), Paths.get(explodedDir), StandardCopyOption.REPLACE_EXISTING)
+		Files.move(Paths.get(desktopFile), Paths.get(exportFile), StandardCopyOption.REPLACE_EXISTING)
 	}
 	replaceBuildName(project.defaultBuild)
 }

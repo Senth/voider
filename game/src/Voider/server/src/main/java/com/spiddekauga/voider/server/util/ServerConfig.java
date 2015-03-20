@@ -292,7 +292,7 @@ public class ServerConfig {
 		/** Beta server */
 		BETA("voider-beta"),
 		/** Release server */
-		RELEASE("voider-release"),
+		RELEASE("voider-thegame"),
 
 		;
 

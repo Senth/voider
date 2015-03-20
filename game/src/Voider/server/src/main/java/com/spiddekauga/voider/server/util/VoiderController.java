@@ -108,10 +108,12 @@ public abstract class VoiderController extends HttpServlet {
 		MimeMessage message = new MimeMessage(session);
 
 		try {
-			message.setFrom(ServerConfig.EMAIL_NO_REPLY);
+			mLogger.info("Trying to send a mail to " + email);
+			message.setFrom(ServerConfig.EMAIL_ADMIN);
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
 			message.setSubject(subject);
 			message.setContent(content, "text/html");
+			mLogger.info("Calling Transport.send(message);");
 			Transport.send(message);
 		} catch (MessagingException e) {
 			e.printStackTrace();

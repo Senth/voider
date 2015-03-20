@@ -31,4 +31,4 @@
           Core
         </div>
       </div>
-<%@include file="include/footer.jsp" %>
+<jsp:include page="include/footer.jsp" />

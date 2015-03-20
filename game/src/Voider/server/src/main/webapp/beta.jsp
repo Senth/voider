@@ -23,7 +23,7 @@
       </div>
       <div class="row">
         <div class="col-md-12" style="padding-top: 20px">
-          <h3 class="text-Left"><a href="Voider-beta.jar">Download Beta</a></h3>
+          <h3 class="text-Left"><a href="http://storage.googleapis.com/voider-shared/app/Voider-beta.jar">Download Beta</a></h3>
 			*Requires beta access to play*
         </div>
       </div>
@@ -125,4 +125,4 @@
           </ol>
         </div>
       </div>
-<%@include file="include/footer.jsp" %>
+<jsp:include page="include/footer.jsp" />

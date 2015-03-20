@@ -3,7 +3,7 @@
 POSSIBLE_ARGS=('appengine' 'game')
 
 APPENGINE_TASKS=(
-	'deplopAppengineRelease'
+	'deployAppengineRelease'
 	'deployAppengineBeta'
 	'deployAppengineNightly'
 	'deployAppengineDev'

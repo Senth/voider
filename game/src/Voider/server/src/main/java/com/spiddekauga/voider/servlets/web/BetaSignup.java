@@ -6,10 +6,10 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.utils.SystemProperty;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.server.util.ServerConfig;
+import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaSignUp;
 import com.spiddekauga.voider.server.util.VoiderController;
@@ -24,7 +24,7 @@ public class BetaSignup extends VoiderController {
 	@Override
 	protected void onRequest() {
 		// Forward to beta server if this is the release server
-		if (SystemProperty.applicationId.get().equals("voider-release")) {
+		if (Builds.RELEASE.isCurrent()) {
 			String parameters = "";
 
 			for (Entry<String, String[]> post : getParameters().entrySet()) {
@@ -45,6 +45,7 @@ public class BetaSignup extends VoiderController {
 			}
 
 			super.redirect(ServerConfig.BETA_URL + "beta-signup?" + parameters);
+			return;
 		}
 
 
@@ -93,7 +94,7 @@ public class BetaSignup extends VoiderController {
 			}
 			// Not expired, send error
 			else if (confirmExpires.after(new Date())) {
-				redirect("not_confirmed");
+				redirect("not_confirmed&email=" + email);
 				return;
 			}
 		}
@@ -143,7 +144,7 @@ public class BetaSignup extends VoiderController {
 	protected void redirect(String url) {
 		String redirectUrl = "";
 		// Beta client should always redirect to the release home page
-		if (SystemProperty.applicationId.get().equals("voider-beta")) {
+		if (Builds.BETA.isCurrent()) {
 			redirectUrl = ServerConfig.RELEASE_URL;
 		}
 
@@ -231,12 +232,20 @@ public class BetaSignup extends VoiderController {
 		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.BETA_SIGNUP, new FilterWrapper(CBetaSignUp.CONFIRM_KEY, confirmKey));
 
 		if (entity != null) {
-			entity.removeProperty(CBetaSignUp.CONFIRM_EXPIRES);
-			entity.removeProperty(CBetaSignUp.CONFIRM_KEY);
+			// Remove expire date
+			if (entity.hasProperty(CBetaSignUp.CONFIRM_EXPIRES)) {
+				entity.removeProperty(CBetaSignUp.CONFIRM_EXPIRES);
+				DatastoreUtils.put(entity);
+				redirect("confirm_success");
+			}
+			// Already confirmed
+			else {
+				redirect("confirm_already");
+			}
 
-			DatastoreUtils.put(entity);
+
+		} else {
+			redirect("confirm_failed");
 		}
-
-		redirect("confirm_success");
 	}
 }
