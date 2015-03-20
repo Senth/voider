@@ -14,6 +14,7 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
@@ -230,12 +231,28 @@ public class LoginGui extends Gui {
 	}
 
 	/**
+	 * Set register key error
+	 * @param text error text
+	 */
+	void setRegisterKeyError(String text) {
+		if (mWidgets.register.keyError != null) {
+			mWidgets.register.keyError.setText(text);
+		}
+	}
+
+	/**
 	 * Try to register with the specified fields
 	 */
 	private void register() {
 		clearRegisterErrors();
 		if (isRegisterFieldsValid(true)) {
-			mLoginScene.register(mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText());
+			String betaKey = null;
+			if (Config.Debug.BUILD == Builds.BETA) {
+				betaKey = mWidgets.register.key.getText();
+			}
+
+			mLoginScene.register(mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText(),
+					betaKey);
 		}
 	}
 
@@ -278,6 +295,20 @@ public class LoginGui extends Gui {
 			failed = true;
 		}
 
+		// Register key
+		if (Config.Debug.BUILD == Builds.BETA) {
+			// Empty
+			if (mWidgets.register.keyListener.isTextFieldEmpty()) {
+				setRegisterKeyError("is empty");
+				failed = true;
+			}
+			// isn't correct length
+			else if (mWidgets.register.keyListener.getText().length() != Config.Debug.REGISTER_KEY_LENGTH) {
+				setRegisterKeyError("invalid key format");
+				failed = true;
+			}
+		}
+
 		return !failed;
 	}
 
@@ -289,43 +320,31 @@ public class LoginGui extends Gui {
 
 
 		// Username
-		mWidgets.register.usernameListener = new TextFieldListener() {
-			@Override
-			protected void onEnter(String newText) {
-				register();
-			}
-		};
+		mWidgets.register.usernameListener = new RegisterListener();
 		mWidgets.register.username = mUiFactory.addTextField("Username", true, "Username", mWidgets.register.usernameListener, table, null);
 		mWidgets.register.usernameError = mUiFactory.text.getLastCreatedErrorLabel();
 
 		// Password
-		mWidgets.register.passwordListener = new TextFieldListener() {
-			@Override
-			protected void onEnter(String newText) {
-				register();
-			}
-		};
+		mWidgets.register.passwordListener = new RegisterListener();
 		mWidgets.register.password = mUiFactory.addPasswordField("Password", true, "Password", mWidgets.register.passwordListener, table, null);
 		mWidgets.register.passwordError = mUiFactory.text.getLastCreatedErrorLabel();
 
 		// Confirm password
-		TextFieldListener textFieldListener = new TextFieldListener() {
-			@Override
-			protected void onEnter(String newText) {
-				register();
-			}
-		};
+		TextFieldListener textFieldListener = new RegisterListener();
 		mWidgets.register.confirmPassword = mUiFactory.addPasswordField(null, false, "Confirm password", textFieldListener, table, null);
 
 		// Email
-		mWidgets.register.emailListener = new TextFieldListener() {
-			@Override
-			protected void onEnter(String newText) {
-				register();
-			}
-		};
+		mWidgets.register.emailListener = new RegisterListener();
 		mWidgets.register.email = mUiFactory.addTextField("Email", true, "your@email.com", mWidgets.register.emailListener, table, null);
 		mWidgets.register.emailError = mUiFactory.text.getLastCreatedErrorLabel();
+
+
+		// Beta key
+		if (Config.Debug.BUILD == Builds.BETA) {
+			mWidgets.register.keyListener = new RegisterListener();
+			mWidgets.register.key = mUiFactory.addTextField("Beta Key", true, "", mWidgets.register.keyListener, table, null);
+			mWidgets.register.keyError = mUiFactory.text.getLastCreatedErrorLabel();
+		}
 
 
 		// Set fixed width
@@ -663,6 +682,16 @@ public class LoginGui extends Gui {
 	private InnerWidgets mWidgets = new InnerWidgets();
 
 	/**
+	 * Register text field listener
+	 */
+	private class RegisterListener extends TextFieldListener {
+		@Override
+		protected void onEnter(String newText) {
+			register();
+		}
+	}
+
+	/**
 	 * Inner widgets
 	 */
 	private class InnerWidgets implements Disposable {
@@ -705,16 +734,19 @@ public class LoginGui extends Gui {
 			TextField password = null;
 			TextField confirmPassword = null;
 			TextField email = null;
+			TextField key = null;
 
 			// Listeners
 			TextFieldListener usernameListener = null;
 			TextFieldListener passwordListener = null;
 			TextFieldListener emailListener = null;
+			TextFieldListener keyListener = null;
 
 			// Error labels
 			Label usernameError = null;
 			Label passwordError = null;
 			Label emailError = null;
+			Label keyError = null;
 
 			private Register() {
 				init();

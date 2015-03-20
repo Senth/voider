@@ -14,8 +14,6 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
 import com.spiddekauga.voider.network.misc.Motd;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
@@ -202,8 +200,6 @@ class MainMenuGui extends MenuGui {
 	 * @param motds all messages
 	 */
 	void showMotds(final ArrayList<Motd> motds) {
-		SettingDateRepo dateRepo = SettingRepo.getInstance().date();
-
 		for (final Motd motd : motds) {
 			mUiFactory.msgBox.motd(motd);
 		}

@@ -223,6 +223,8 @@ public class Config {
 		public static boolean DEBUG_TESTS = isBuildOrBelow(Builds.NIGHTLY_DEV);
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = isBuildOrBelow(Builds.NIGHTLY_RELEASE) ? false : false;
+		/** Beta key length */
+		public static final int REGISTER_KEY_LENGTH = 22;
 
 		/**
 		 * Call this method to throw a deprecated error message. If the build is in

@@ -71,6 +71,7 @@ public class UserWebRepo extends WebRepo {
 		registerMethod.email = user.getEmail();
 		registerMethod.username = user.getUsername();
 		registerMethod.password = user.getPassword();
+		registerMethod.key = user.getRegisterKey();
 
 		sendInNewThread(registerMethod, responseListeners);
 	}

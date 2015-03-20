@@ -35,8 +35,6 @@ import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
-import com.spiddekauga.voider.repo.user.UserWebRepo;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
@@ -405,27 +403,6 @@ public class MainMenu extends Scene implements IEventListener {
 		else {
 			getGui().showQuitMsgBox();
 		}
-	}
-
-	/**
-	 * Logs out the user
-	 */
-	void logout() {
-		// Online
-		if (mUser.isOnline()) {
-			UserWebRepo.getInstance().logout();
-		}
-		clearCurrentUser();
-		mUser.logout();
-	}
-
-	/**
-	 * Removes saved variables for the current user
-	 */
-	private void clearCurrentUser() {
-		UserLocalRepo.getInstance().removeLastUser();
-		setNextScene(new LoginScene());
-		setOutcome(Outcomes.LOGGED_OUT);
 	}
 
 	/**

@@ -18,7 +18,9 @@ import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.network.user.RegisterUserResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig;
+import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaKey;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -31,41 +33,86 @@ public class RegisterUser extends VoiderServlet {
 
 	@Override
 	protected void onInit() {
-		// Does nothing
+		mResponse = new RegisterUserResponse();
+		mResponse.status = Statuses.FAIL_SERVER_ERROR;
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		RegisterUserResponse methodResponse = new RegisterUserResponse();
-		methodResponse.status = Statuses.FAIL_SERVER_ERROR;
-
 		if (methodEntity instanceof RegisterUserMethod) {
-			FilterWrapper usernameProperty = new FilterWrapper("username", ((RegisterUserMethod) methodEntity).username);
-			FilterWrapper emailProperty = new FilterWrapper("email", ((RegisterUserMethod) methodEntity).email);
+			mParameters = (RegisterUserMethod) methodEntity;
+
+			FilterWrapper usernameProperty = new FilterWrapper("username", mParameters.username);
+			FilterWrapper emailProperty = new FilterWrapper("email", mParameters.email);
+			boolean validFields = true;
 
 			// Check username length
-			if (!isUsernameLengthValid(((RegisterUserMethod) methodEntity).username)) {
-				methodResponse.status = Statuses.FAIL_USERNAME_TOO_SHORT;
+			if (!isUsernameLengthValid(mParameters.username)) {
+				mResponse.status = Statuses.FAIL_USERNAME_TOO_SHORT;
+				validFields = false;
 			}
 			// Check password length
-			else if (!isPasswordLengthValid(((RegisterUserMethod) methodEntity).password)) {
-				methodResponse.status = Statuses.FAIL_PASSWORD_TOO_SHORT;
+			else if (!isPasswordLengthValid(mParameters.password)) {
+				mResponse.status = Statuses.FAIL_PASSWORD_TOO_SHORT;
+				validFields = false;
 			}
 			// Check if username is free
 			else if (DatastoreUtils.exists(DatastoreTables.USERS.toString(), usernameProperty)) {
-				methodResponse.status = Statuses.FAIL_USERNAME_EXISTS;
+				mResponse.status = Statuses.FAIL_USERNAME_EXISTS;
+				validFields = false;
 			}
 			// Check email
 			else if (DatastoreUtils.exists(DatastoreTables.USERS.toString(), emailProperty)) {
-				methodResponse.status = Statuses.FAIL_EMAIL_EXISTS;
+				mResponse.status = Statuses.FAIL_EMAIL_EXISTS;
+				validFields = false;
 			}
+			// Check beta key
+			else if (!isRegisterKeyValid(mParameters.key)) {
+				validFields = false;
+			}
+
 			// All valid
-			else {
-				createNewUser((RegisterUserMethod) methodEntity, methodResponse);
+			if (validFields) {
+				createNewUser();
 			}
 		}
 
-		return methodResponse;
+		return mResponse;
+	}
+
+	/**
+	 * Check if beta key is valid (and required)
+	 * @param registerKey
+	 * @return true if this client doesn't need a register key or if the register key is
+	 *         valid.
+	 */
+	private boolean isRegisterKeyValid(String registerKey) {
+		if (Builds.BETA.isCurrent()) {
+			if (registerKey != null) {
+				Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.BETA_KEY, new FilterWrapper(CBetaKey.KEY, registerKey));
+
+				// Found key
+				if (entity != null) {
+					// Not used
+					Boolean used = (Boolean) entity.getProperty(CBetaKey.USED);
+					if (used != null && !used) {
+						mBetaKeyEntity = entity;
+						return true;
+					} else {
+						mResponse.status = Statuses.FAIL_REGISTER_KEY_USED;
+					}
+				} else {
+					mResponse.status = Statuses.FAIL_REGISTER_KEY_INVALID;
+				}
+			} else {
+				mResponse.status = Statuses.FAIL_REGISTER_KEY_INVALID;
+			}
+			return false;
+		}
+		// Not beta build
+		else {
+			return true;
+		}
 	}
 
 	/**
@@ -88,16 +135,14 @@ public class RegisterUser extends VoiderServlet {
 
 	/**
 	 * Adds the new user to the datastore
-	 * @param networkEntity the network entity
-	 * @param methodResponse entity to respond with
 	 */
-	private void createNewUser(RegisterUserMethod networkEntity, RegisterUserResponse methodResponse) {
+	private void createNewUser() {
 		Entity datastoreEntity = new Entity(DatastoreTables.USERS.toString());
 
-		datastoreEntity.setProperty(CUsers.USERNAME, networkEntity.username);
+		datastoreEntity.setProperty(CUsers.USERNAME, mParameters.username);
 		datastoreEntity.setUnindexedProperty(CUsers.CREATED, new Date());
 		datastoreEntity.setUnindexedProperty(CUsers.LOGGED_IN, new Date());
-		datastoreEntity.setProperty(CUsers.EMAIL, networkEntity.email);
+		datastoreEntity.setProperty(CUsers.EMAIL, mParameters.email);
 		datastoreEntity.setUnindexedProperty(CUsers.DATE_FORMAT, "MM/dd/yyyy HH:mm:ss");
 
 		// Private key
@@ -106,15 +151,31 @@ public class RegisterUser extends VoiderServlet {
 
 		// Hashed password
 		String salt = BCrypt.gensalt();
-		String hashedPassword = BCrypt.hashpw(networkEntity.password, salt);
+		String hashedPassword = BCrypt.hashpw(mParameters.password, salt);
 		datastoreEntity.setProperty(CUsers.PASSWORD, hashedPassword);
 
 		Key userKey = DatastoreUtils.put(datastoreEntity);
 
 		if (userKey != null) {
-			methodResponse.userKey = KeyFactory.keyToString(userKey);
-			methodResponse.privateKey = privateKey;
-			methodResponse.status = Statuses.SUCCESS;
+			mResponse.userKey = KeyFactory.keyToString(userKey);
+			mResponse.privateKey = privateKey;
+			mResponse.status = Statuses.SUCCESS;
+
+			if (Builds.BETA.isCurrent()) {
+				setBetaKeyAsUsed();
+			}
 		}
 	}
+
+	/**
+	 * Set the beta key as used
+	 */
+	private void setBetaKeyAsUsed() {
+		mBetaKeyEntity.setProperty(CBetaKey.USED, true);
+		DatastoreUtils.put(mBetaKeyEntity);
+	}
+
+	private Entity mBetaKeyEntity = null;
+	private RegisterUserResponse mResponse = null;
+	private RegisterUserMethod mParameters = null;
 }

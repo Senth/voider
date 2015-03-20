@@ -41,6 +41,10 @@ public class RegisterUserResponse implements IEntity, ISuccessStatuses {
 		FAIL_SERVER_ERROR,
 		/** Server connection error */
 		FAIL_SERVER_CONNECTION,
+		/** Beta/Register key has already been used */
+		FAIL_REGISTER_KEY_USED,
+		/** Beta/Register key is invalid */
+		FAIL_REGISTER_KEY_INVALID,
 
 		;
 		@Override

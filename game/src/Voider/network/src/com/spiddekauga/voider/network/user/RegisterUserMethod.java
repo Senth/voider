@@ -15,6 +15,8 @@ public class RegisterUserMethod implements IMethodEntity {
 		return MethodNames.REGISTER_USER;
 	}
 
+	/** Register key; for the beta */
+	public String key;
 	/** Username */
 	public String username;
 	/** Password */

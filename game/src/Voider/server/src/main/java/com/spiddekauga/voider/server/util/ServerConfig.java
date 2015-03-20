@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 
 import javax.mail.internet.InternetAddress;
 
+import com.google.appengine.api.utils.SystemProperty;
+
 
 /**
  * Server configuration
@@ -278,6 +280,38 @@ public class ServerConfig {
 	public static final String BETA_CLIENT_URL = RELEASE_URL + "Voider-beta.jar";
 	/** Beta information location */
 	public static final String BETA_INFO_URL = RELEASE_URL + "beta.jsp";
+
+	/**
+	 * All different servers builds
+	 */
+	public enum Builds {
+		/** Development server */
+		DEV("voider-dev"),
+		/** Nightly server */
+		NIGHTLY("voider-nightly"),
+		/** Beta server */
+		BETA("voider-beta"),
+		/** Release server */
+		RELEASE("voider-release"),
+
+		;
+
+		/**
+		 * @param appId application id of the build
+		 */
+		private Builds(String appId) {
+			mAppId = appId;
+		}
+
+		/**
+		 * @return true if this is the current server
+		 */
+		public boolean isCurrent() {
+			return SystemProperty.applicationId.get().equals(mAppId);
+		}
+
+		private String mAppId;
+	}
 
 	/** Public Search tokenize sizes */
 	public static class TokenSizes {

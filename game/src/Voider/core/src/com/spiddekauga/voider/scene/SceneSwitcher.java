@@ -132,9 +132,6 @@ public class SceneSwitcher {
 					}
 				}
 
-				// Unload current scene
-				ResourceCacheFacade.unload(currentScene);
-
 				currentScene.setOutcome(Outcomes.NOT_APPLICAPLE);
 				currentScene.onDispose();
 			}
@@ -157,12 +154,34 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * Clears all scenes and unloads the resources for them (during the next update call)
+	 * @see #dispose() Call this when you want to clear everything directly
+	 */
+	public static void clearScenes() {
+		// Deactivate the current scene
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().onDeactivate();
+		}
+
+		for (Scene scene : mScenes) {
+			scene.onDispose();
+			mScenesNeedUnloading.add(scene);
+		}
+
+		mScenes.clear();
+	}
+
+	/**
 	 * Disposes the scene switcher
+	 * @see #clearScenes() if you just want to clear all the scenes
 	 */
 	public static void dispose() {
 		if (mScenes != null) {
 			for (Scene scene : mScenes) {
 				scene.onDispose();
+				if (scene.isResourcesLoaded()) {
+					scene.unloadResources();
+				}
 				ResourceCacheFacade.unload(scene);
 			}
 			mScenes.clear();
@@ -465,6 +484,7 @@ public class SceneSwitcher {
 				while (sceneIt.hasNext()) {
 					Scene unloadScene = sceneIt.next();
 					unloadScene.unloadResources();
+					ResourceCacheFacade.unload(unloadScene);
 					sceneIt.remove();
 				}
 			}
@@ -573,8 +593,6 @@ public class SceneSwitcher {
 		if (poppedScene.isResourcesLoaded()) {
 			mScenesNeedUnloading.add(poppedScene);
 		}
-		ResourceCacheFacade.unload(poppedScene);
-
 
 		// Go to next scene, or return to the previous?
 		// Go to next scene

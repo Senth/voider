@@ -158,6 +158,15 @@ public class LoginScene extends Scene implements IResponseListener {
 
 		case FAIL_PASSWORD_TOO_SHORT:
 			getGui().setRegisterPasswordError("too short");
+			break;
+
+		case FAIL_REGISTER_KEY_INVALID:
+			getGui().setRegisterKeyError("invalid");
+			break;
+
+		case FAIL_REGISTER_KEY_USED:
+			getGui().setRegisterKeyError("has been used");
+			break;
 
 		case FAIL_SERVER_CONNECTION:
 		case FAIL_SERVER_ERROR:
@@ -171,11 +180,13 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param username the new username
 	 * @param password the new password
 	 * @param email the email to register with the username
+	 * @param registerKey beta key for registering, null if not used
 	 */
-	void register(String username, String password, String email) {
+	void register(String username, String password, String email, String registerKey) {
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setEmail(email);
 		mLoggingInUser.setPassword(password);
+		mLoggingInUser.setRegisterKey(registerKey);
 		mLoggingInUser.register(this);
 		getGui().showWaitWindow("Registering...");
 	}

@@ -119,6 +119,8 @@ public enum ClientVersions {
 			"	Enemy triggers are now saved correctly"
 			),
 	V0_5_0(true,
+			"Beta Key System",
+			"	The beta now requires new users to have a beta key to register.",
 			"Improvements",
 			"	Performance by a huge amount :D",
 			"	Zoom in/out in editors now zoom in/out directly when clicked on",
@@ -131,7 +133,8 @@ public enum ClientVersions {
 			"	Start location of the level is now calculated more accurately",
 			"	Added 'message of the day'-like messaging system",
 			"Bugfixes",
-			"	Fixed zoom tool as it sometimes stopped working in enemy/bullet editor"
+			"	Fixed zoom tool as it sometimes stopped working in enemy/bullet editor",
+			"	You can now login after a logout (without having to restart the app)"
 			),
 
 

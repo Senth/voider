@@ -3,6 +3,8 @@ package com.spiddekauga.voider.repo.analytics;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -88,21 +90,6 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 		execSQL("UPDATE analytics_scene SET end_time=" + endTime.getTime() + " WHERE scene_id='" + sceneId + "';");
 	}
 
-	// /**
-	// * Sets the last ended scene as the dropout scene
-	// * @param sessionId id of the session to find and set the dropout scene for
-	// */
-	// void setDropoutScene(UUID sessionId) {
-	// DatabaseCursor cursor =
-	// rawQuery("SELECT scene_id FROM analytics_scene WHERE session_id='" + sessionId +
-	// "' ORDER BY startTime DESC LIMIT 1");
-	//
-	// if (cursor.next()) {
-	// String sceneId = cursor.getString(0);
-	// execSQL("UPDATE analytics_scene SET dropout=1);
-	// }
-	// }
-
 	/**
 	 * Add a new event to the specified scene
 	 * @param sceneId id of the scene to add this event to
@@ -168,25 +155,39 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 		}
 
 		// Set scenes
+		Set<UUID> scenesWithoutSession = new HashSet<>();
 		HashMap<UUID, AnalyticsSceneEntity> scenes = getScenes();
 		for (AnalyticsSceneEntity scene : scenes.values()) {
 			AnalyticsSessionEntity session = sessions.get(scene.sessionId);
 			if (session != null) {
 				session.scenes.add(scene);
 			} else {
+				scenesWithoutSession.add(scene.sessionId);
 				Gdx.app.error("AnalyticsSqliteGateway", "Session not found!");
 			}
 		}
 
+		// Delete scenes that didn't have any session
+		for (UUID sessionId : scenesWithoutSession) {
+			execSQL("DELETE FROM analytics_scene WHERE session_id='" + sessionId + "';");
+		}
+
 		// Set events
+		Set<UUID> eventsWithoutScenes = new HashSet<>();
 		ArrayList<AnalyticsEventEntity> events = getEvents();
 		for (AnalyticsEventEntity event : events) {
 			AnalyticsSceneEntity scene = scenes.get(event.sceneId);
 			if (scene != null) {
 				scene.events.add(event);
 			} else {
+				eventsWithoutScenes.add(event.sceneId);
 				Gdx.app.error("AnalyticsSqliteGateway", "Scene not found!");
 			}
+		}
+
+		// Delete events where the scene couldn't be found
+		for (UUID sceneId : eventsWithoutScenes) {
+			execSQL("DELETE FROM analytics_event WHERE scene_id='" + sceneId + "';");
 		}
 
 		// Set scene dropout

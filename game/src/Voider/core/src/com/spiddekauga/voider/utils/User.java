@@ -59,6 +59,10 @@ public class User {
 	public void logout() {
 		// Update user path
 		if (this == mGlobalUser) {
+			if (isOnline()) {
+				UserWebRepo.getInstance().logout();
+			}
+
 			mEmail = null;
 			mOnline = false;
 			mPassword = null;
@@ -73,11 +77,9 @@ public class User {
 			AnalyticsRepo analyticsRepo = AnalyticsRepo.getInstance();
 			analyticsRepo.endSession();
 			analyticsRepo.newSession();
+			SceneSwitcher.clearScenes();
 			SceneSwitcher.switchTo(new LoginScene());
 
-			if (isOnline()) {
-				UserWebRepo.getInstance().logout();
-			}
 			EventDispatcher.getInstance().fire(new GameEvent(EventTypes.USER_LOGOUT));
 		}
 	}
@@ -305,6 +307,21 @@ public class User {
 		return mAskToGoOnline;
 	}
 
+	/**
+	 * Set register (beta) key
+	 * @param registerKey
+	 */
+	public void setRegisterKey(String registerKey) {
+		mRegisterKey = registerKey;
+	}
+
+	/**
+	 * @return the register (beta) key
+	 */
+	public String getRegisterKey() {
+		return mRegisterKey;
+	}
+
 	private IResponseListener mResponseListener = new IResponseListener() {
 		@Override
 		public void handleWebResponse(IMethodEntity method, IEntity response) {
@@ -421,6 +438,8 @@ public class User {
 	private String mPassword = null;
 	/** Email, usually not used or stored */
 	private String mEmail = null;
+	/** Register key for the beta */
+	private String mRegisterKey = null;
 	/** Private login key */
 	private UUID mPrivateKey = null;
 	private boolean mLoggedIn = false;

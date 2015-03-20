@@ -268,11 +268,11 @@ def deployGame(buildName) {
 	def explodedDir = projectDir.absolutePath + "/server/build/exploded-app/"
 	switch ( buildName ) {
 		case "NIGHTLY_DEV":
-			dropboxCopyTo = dropboxDir + "Voider - editable resources/Voider.jar"
+			dropboxCopyTo = "Voider - editable resources/Voider.jar"
 			break
 		
 		case "NIGHTLY_RELEASE":
-			dropboxCopyTo = dropboxDir + "Voider/Voider-nightly.jar"
+			dropboxCopyTo = "Voider/Voider-nightly.jar"
 			break
 		
 		case "BETA":
@@ -293,7 +293,6 @@ def deployGame(buildName) {
 	}
 	// Copy to appengine
 	else {
-
 		Files.copy(Paths.get(desktopFile), Paths.get(warDir), StandardCopyOption.REPLACE_EXISTING)
 		Files.move(Paths.get(desktopFile), Paths.get(explodedDir), StandardCopyOption.REPLACE_EXISTING)
 	}
