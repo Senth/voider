@@ -23,6 +23,7 @@ public class PrototypeScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(BACKGROUND_TO_USE);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
 	}
 
@@ -30,6 +31,7 @@ public class PrototypeScene extends Scene {
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(BACKGROUND_TO_USE);
 	}
 
 	@Override
@@ -54,4 +56,7 @@ public class PrototypeScene extends Scene {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 	}
+
+	/** Background to use for the prototype scene */
+	static final InternalNames BACKGROUND_TO_USE = InternalNames.LEVEL_BACKGROUND_TUNNELS_720;
 }

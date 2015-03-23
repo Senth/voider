@@ -543,7 +543,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * @param oldLife
 	 */
 	private void sendChangeHealthEvent(float oldLife) {
-		if (mLife != oldLife) {
+		if (!MathUtils.isEqual(mLife, oldLife)) {
 			mEventDispatcher.fire(new HealthChangeEvent(this, oldLife));
 		}
 	}

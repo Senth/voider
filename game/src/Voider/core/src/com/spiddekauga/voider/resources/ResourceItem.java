@@ -2,12 +2,12 @@ package com.spiddekauga.voider.resources;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Wrapper to simplify the queue. Only available for this pacakage
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceItem {
@@ -25,6 +25,8 @@ public class ResourceItem {
 		} else if (object.getClass() == this.getClass()) {
 			return ((ResourceItem) object).id.equals(id);
 		} else if (object instanceof UUID) {
+			Gdx.app.error("ResourceItem", "Deprecated use of ResourceItem.equals(UUID)");
+			Thread.dumpStack();
 			return id.equals(object);
 		} else {
 			return false;

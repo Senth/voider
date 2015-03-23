@@ -7,7 +7,9 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
-import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
+import com.spiddekauga.utils.scene.ui.ScrollWhen;
+import com.spiddekauga.voider.game.LevelBackground;
+import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
@@ -39,29 +41,19 @@ class ThemeSelectGui extends Gui {
 	 * Initialize the scrolling background
 	 */
 	private void initBackground() {
-		ImageScrollButton background = new ImageScrollButton(ButtonStyles.PRESS.getStyle(), ScrollWhen.ALWAYS);
+		ImageScrollButton background = mUiFactory.button.createImageScroll(ScrollWhen.ALWAYS, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+				ButtonStyles.PRESS, null);
+
+		addActor(background);
 		background.setTouchable(Touchable.disabled);
 
-		// Set size
-		int width = Gdx.graphics.getWidth();
-		int height = Gdx.graphics.getHeight();
-		width += background.getPadX() * 2;
-		height += background.getPadY() * 2;
-		background.setSize(width, height);
-
-		// Offset position
-		float padLeft = background.getPadLeft();
-		float padBottom = background.getPadBottom();
-		background.setPosition(-padLeft, -padBottom);
-
 		// Add layers
+		Themes theme = mScene.getTheme();
+		LevelBackground levelBackground = theme.createBackground((int) background.getHeight());
 		float topLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_TOP_LAYER_SPEED);
 		float bottomLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_BOTTOM_LAYER_SPEED);
-		// Texture bottomLayer =
-		// ResourceCacheFacade.get(mScene.getTheme().getBottomLayer());
-		// Texture topLayer = ResourceCacheFacade.get(mScene.getTheme().getTopLayer());
-		// background.addLayer(bottomLayer, bottomLayerSpeed);
-		// background.addLayer(topLayer, topLayerSpeed);
+		background.addLayer(levelBackground.getBottomLayer(), bottomLayerSpeed);
+		background.addLayer(levelBackground.getTopLayer(), topLayerSpeed);
 
 		addActor(background);
 		background.setZIndex(0);

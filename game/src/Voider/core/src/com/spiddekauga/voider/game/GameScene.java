@@ -576,7 +576,9 @@ public class GameScene extends WorldScene {
 
 			switch (getOutcome()) {
 			case LEVEL_COMPLETED:
-				scoreScene.setLevelCompleted(true);
+				if (scoreScene != null) {
+					scoreScene.setLevelCompleted(true);
+				}
 				LevelDef levelDef = null;
 				if (mLevelToLoad != null || mGameSave != null) {
 					levelDef = mLevel.getDef();

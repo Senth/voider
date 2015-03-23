@@ -2,6 +2,7 @@ package com.spiddekauga.voider.scene.ui;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -23,8 +24,8 @@ import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
-import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.Row;
+import com.spiddekauga.utils.scene.ui.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -136,6 +137,26 @@ public class ButtonFactory extends BaseFactory {
 		return imageButton;
 	}
 
+
+	/**
+	 * Create an image scroll button to a table
+	 * @param scrollWhen when to scroll the images
+	 * @param width
+	 * @param height
+	 * @param style which button style to use
+	 * @param createdActors optional adds the button ot this list (if not null)
+	 * @return created image scroll button
+	 */
+	public ImageScrollButton createImageScroll(ScrollWhen scrollWhen, float width, float height, ButtonStyles style, ArrayList<Actor> createdActors) {
+		ImageScrollButton imageScrollButton = new ImageScrollButton(style.getStyle(), scrollWhen);
+		imageScrollButton.setSize(width, height);
+		new AnalyticsButtonListener(imageScrollButton, style.toString());
+
+		UiFactory.doExtraActionsOnActors(null, createdActors, imageScrollButton);
+
+		return imageScrollButton;
+	}
+
 	/**
 	 * Add an image scroll button to a table
 	 * @param scrollWhen when to scroll the images
@@ -148,11 +169,8 @@ public class ButtonFactory extends BaseFactory {
 	 */
 	public ImageScrollButton addImageScroll(ScrollWhen scrollWhen, float width, float height, ButtonStyles style, AlignTable table,
 			ArrayList<Actor> createdActors) {
-		ImageScrollButton imageScrollButton = new ImageScrollButton(style.getStyle(), scrollWhen);
+		ImageScrollButton imageScrollButton = createImageScroll(scrollWhen, width, height, style, createdActors);
 		table.add(imageScrollButton).setSize(width, height);
-		new AnalyticsButtonListener(imageScrollButton, style.toString());
-
-		UiFactory.doExtraActionsOnActors(null, createdActors, imageScrollButton);
 
 		return imageScrollButton;
 	}
@@ -249,9 +267,9 @@ public class ButtonFactory extends BaseFactory {
 
 				// Check for uneven height, then pad extra at the top
 				boolean padExtra = false;
-				if (padHeight != ((int) padHeight)) {
+				if (!MathUtils.isEqual(padHeight, MathUtils.floor(padHeight))) {
 					padExtra = true;
-					padHeight = (int) padHeight;
+					padHeight = MathUtils.floor(padHeight);
 				}
 
 				float padTop = padExtra ? padHeight + 1 : padHeight;

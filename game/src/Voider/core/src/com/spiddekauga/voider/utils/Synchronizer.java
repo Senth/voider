@@ -59,9 +59,6 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 * @return singleton instance of this Synchronizer
 	 */
 	public static Synchronizer getInstance() {
-		if (mInstance == null) {
-			mInstance = new Synchronizer();
-		}
 		return mInstance;
 	}
 
@@ -559,5 +556,5 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	/** Event dispatcher */
 	private static final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 
-	private static Synchronizer mInstance = null;
+	private static final Synchronizer mInstance = new Synchronizer();
 }

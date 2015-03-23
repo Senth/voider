@@ -3,6 +3,7 @@ package com.spiddekauga.voider.resources;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
@@ -37,6 +38,8 @@ public abstract class Resource implements IResource {
 				}
 			}
 		} else if (object instanceof UUID) {
+			Gdx.app.error("Resource", "Deprecated use of Resource.equals(UUID)");
+			Thread.dumpStack();
 			return mUniqueId.equals(object);
 		}
 		return false;

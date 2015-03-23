@@ -136,6 +136,10 @@ public enum ClientVersions {
 			"	Fixed zoom tool as it sometimes stopped working in enemy/bullet editor",
 			"	You can now login after a logout (without having to restart the app)"
 			),
+	V0_5_1(false,
+			"Level Backgrounds",
+			"	Re-enabled preview when selecting these in the editor"
+			),
 
 
 	;

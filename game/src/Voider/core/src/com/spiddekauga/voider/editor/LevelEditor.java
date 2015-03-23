@@ -376,9 +376,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				}
 			}
 		} else if (outcome == Outcomes.EXPLORE_SELECT) {
-			// mInvoker.execute(new CLevelPickupDefSelect(((ResourceItem) message).id,
-			// this));
-
 			if (message instanceof EnemyDefEntity) {
 				mInvoker.execute(new CLevelEnemyDefAdd(((EnemyDefEntity) message).resourceId, this));
 			}
@@ -421,7 +418,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 		// Theme selected
 		else if (outcome == Outcomes.THEME_SELECTED) {
-			Themes theme = (Themes) message;
+			final Themes theme = (Themes) message;
 			setTheme(theme);
 			getGui().popMsgBoxActive();
 		}
@@ -737,56 +734,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 						toBeRemoved.add(trigger);
 					}
 				}
-
-				// REMOVE
-				// for (TriggerInfo triggerInfo : trigger.getListeners()) {
-				// if (triggerInfo.listener instanceof EnemyActor) {
-				// removeTriggeredEnemies((EnemyActor) triggerInfo.listener, leftXCoord,
-				// toBeRemoved);
-				// }
-				// }
 			}
 		}
 
 		level.removeResources(toBeRemoved);
 	}
-
-	// REMOVE
-	// /**
-	// * Checks if an enemy should be removed as it's trigger has already been triggered.
-	// If
-	// * it should be removed it is removed along with any dependencies
-	// * @param enemy the enemy to check
-	// * @param leftXCoord leftmost x coordinate of the window
-	// * @param toBeRemoved everything that should be removed
-	// */
-	// private void removeTriggeredEnemies(EnemyActor enemy, float leftXCoord,
-	// ArrayList<IResource> toBeRemoved) {
-	// // Remove all triggers that are to the left of the screen
-	// if ()
-	//
-	// // // Always remove all AI and Path enemies (with a path)
-	// // if (enemy.getDef().getMovementType() == MovementTypes.AI) {
-	// // toBeRemoved.add(enemy);
-	// //
-	// // // Also remove default deactivate trigger
-	// // TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(enemy,
-	// Actions.ACTOR_DEACTIVATE);
-	// // if (triggerInfo.trigger instanceof TActorActivated) {
-	// // toBeRemoved.add(triggerInfo.trigger);
-	// // }
-	// // } else if (enemy.getDef().getMovementType() == MovementTypes.PATH) {
-	// // if (enemy.getPath() != null) {
-	// // toBeRemoved.add(enemy);
-	// // }
-	// // }
-	// //
-	// // // Remove all enemies that are to the left of the screen and aren't visible
-	// // float rightBoundingPos = enemy.getPosition().x + enemy.getBoundingRadius();
-	// // if (rightBoundingPos <= leftXCoord) {
-	// // toBeRemoved.add(enemy);
-	// // }
-	// }
 
 	/**
 	 * Calculates the left window position when test running
@@ -1768,7 +1720,30 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * Set the theme for the level
 	 * @param theme the theme for the level
 	 */
-	void setTheme(Themes theme) {
+	void setTheme(final Themes theme) {
+		mInvoker.execute(new Command() {
+			@Override
+			public boolean undo() {
+				_setTheme(mOldTheme);
+				return true;
+			}
+
+			@Override
+			public boolean execute() {
+				mOldTheme = getTheme();
+				_setTheme(theme);
+				return true;
+			}
+
+			Themes mOldTheme = null;
+		});
+	}
+
+	/**
+	 * Set the theme internally
+	 * @param theme
+	 */
+	private void _setTheme(Themes theme) {
 		if (mLevel != null) {
 			mLevel.getLevelDef().setTheme(theme);
 			setUnsaved();
@@ -1791,7 +1766,30 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * Sets the music for the level
 	 * @param music the music for the level
 	 */
-	void setMusic(Music music) {
+	void setMusic(final Music music) {
+		mInvoker.execute(new Command() {
+			@Override
+			public boolean undo() {
+				_setMusic(mOldMusic);
+				return true;
+			}
+
+			@Override
+			public boolean execute() {
+				mOldMusic = getMusic();
+				_setMusic(music);
+				return true;
+			}
+
+			Music mOldMusic = null;
+		});
+	}
+
+	/**
+	 * Set the music internally
+	 * @param music
+	 */
+	private void _setMusic(Music music) {
 		if (mLevel != null) {
 			mLevel.getLevelDef().setMusic(music);
 			setUnsaved();

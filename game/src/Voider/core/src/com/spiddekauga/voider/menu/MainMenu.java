@@ -13,6 +13,7 @@ import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.CampaignEditor;
@@ -25,7 +26,6 @@ import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
-import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.resource.DefEntity;
@@ -210,7 +210,7 @@ public class MainMenu extends Scene implements IEventListener {
 				if (KeyHelper.isAltPressed()) {
 					SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.LOAD));
 				} else if (KeyHelper.isShiftPressed()) {
-					SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class, ExploreActions.LOAD));
+					SceneSwitcher.switchTo(new PrototypeScene());
 				} else {
 					SceneSwitcher.switchTo(new TestUiScene());
 				}

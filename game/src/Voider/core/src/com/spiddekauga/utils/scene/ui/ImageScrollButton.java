@@ -2,13 +2,8 @@ package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * An image button with several image layers that can scroll if specified. The size of
@@ -18,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 public class ImageScrollButton extends Button {
 	/**
 	 * Creates an image button with the images and when to scroll. Be sure to call
-	 * {@link #addLayer(Texture, float)} to add images to this button.
+	 * {@link #addLayer(TextureAtlas, String, float)} to add images to this button.
 	 * @param buttonStyle underlying button style
 	 * @param scrollWhen when to scroll
 	 */
@@ -32,64 +27,91 @@ public class ImageScrollButton extends Button {
 	 */
 	public void clearLayers() {
 		for (ImageScroll imageScroll : mImages) {
-			removeActor(imageScroll.mImage);
+			removeActor(imageScroll);
 		}
 		mImages.clear();
 	}
 
 	/**
 	 * Add an image to render on top of the existing
-	 * @param image the image to add
+	 * @param atlas the atlas that contains the layerName
+	 * @param imageName name of the image/layer (postfix should be 0-0) to get the correct
+	 *        coordinates
 	 * @param speed scroll speed of the image
 	 */
-	public void addLayer(Texture image, float speed) {
-		mImages.add(new ImageScroll(image, speed));
+	public void addLayer(TextureAtlas atlas, String imageName, float speed) {
+		ImageScroll imageScroll = new ImageScroll(atlas, imageName, speed);
+		addLayer(imageScroll, speed);
+
+
 	}
 
 	/**
-	 * Add an image (with no scroll speed) to render on top of the existing
-	 * @param image the image to add
+	 * Add an image to render on top of the existing
+	 * @param atlas the atlas that contains the layerName
+	 * @param imageName name of the image/layer (postfix should be 0-0) to get the correct
+	 *        coordinates
 	 */
-	public void addLayer(Texture image) {
-		image.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		mImages.add(new ImageScroll(image, 0));
-	}
-
-	@Override
-	public void draw(Batch batch, float parentAlpha) {
-		updateImages();
-		super.draw(batch, parentAlpha);
+	public void addLayer(TextureAtlas atlas, String imageName) {
+		addLayer(atlas, imageName, 0);
 	}
 
 	/**
-	 * Update image scrolling
+	 * Add a layer from an already existing image scroll
+	 * @param layer the layer to add
+	 * @param speed speed of the layer
 	 */
-	private void updateImages() {
-		float deltaTime = Gdx.graphics.getDeltaTime();
-		for (ImageScroll imageScroll : mImages) {
-			imageScroll.updateImage(deltaTime);
+	public void addLayer(ImageScroll layer, float speed) {
+		addActor(layer);
+		layer.setScrollSpeed(speed);
+		mImages.add(layer);
+		setCorrectSize(layer);
+		layer.setPosition(getPadLeft(), getPadRight());
+
+		if (mScrollWhen == ScrollWhen.NEVER || mScrollWhen == ScrollWhen.HOVER) {
+			layer.setScrollingEnabled(false);
 		}
 	}
+
+	/**
+	 * Add a layer with no speed from an already existing image scroll
+	 * @param layer the layer to add
+	 */
+	public void addLayer(ImageScroll layer) {
+		addLayer(layer, 0);
+	}
+
+	/**
+	 * Set the correct size of a layer
+	 * @param layer
+	 */
+	private void setCorrectSize(ImageScroll layer) {
+		float width = getWidth() - getPadX();
+		float height = getHeight() - getPadY();
+		layer.setPosition(getPadLeft(), getPadRight());
+		layer.setSize(width, height);
+	}
+
 
 	@Override
 	public void setWidth(float width) {
 		super.setWidth(width);
 
-		invalidateSizes();
+		resetSizes();
 	}
 
 	@Override
 	public void setHeight(float height) {
 		super.setHeight(height);
 
-		invalidateSizes();
+		resetSizes();
 	}
 
 	@Override
 	public void setSize(float width, float height) {
 		super.setSize(width, height);
 
-		invalidateSizes();
+		resetSizes();
 	};
 
 	@Override
@@ -105,121 +127,30 @@ public class ImageScrollButton extends Button {
 	/**
 	 * Update size of all images
 	 */
-	private void invalidateSizes() {
+	private void resetSizes() {
 		if (mImages != null) {
 			for (ImageScroll imageScroll : mImages) {
-				imageScroll.invalidateSize();
+				setCorrectSize(imageScroll);
 			}
 		}
 	}
 
-	/**
-	 * Wrapper for an image to scroll and its scroll speed
-	 */
-	private class ImageScroll {
-		/**
-		 * Set image and scroll speed
-		 * @param texture the image to show
-		 * @param speed scroll speed of image, can be negative.
-		 */
-		ImageScroll(Texture texture, float speed) {
-			mTexture = texture;
-			mSpeed = speed;
+	@Override
+	public void act(float delta) {
+		super.act(delta);
 
-			mRegion = new TextureRegion(mTexture);
-			mImage = new Image(mRegion);
-			addActor(mImage);
-			mImage.setPosition(getPadLeft(), getPadBottom());
-		}
-
-		/**
-		 * Invalidate size
-		 */
-		void invalidateSize() {
-			mValidSize = false;
-		}
-
-		/**
-		 * Updates the size of the image
-		 */
-		void updateSize() {
-			int width = (int) (getWidth() - getPadX());
-			int height = (int) (getHeight() - getPadY());
-
-			// Change texture region size
-			float scale = ((float) height) / mTexture.getHeight();
-			int regionWidth = (int) (width / scale);
-			mRegion.setRegion((int) mOffset, 0, regionWidth, mTexture.getHeight());
-
-			// Set image size
-			mImage.setSize(width, height);
-			mValidSize = true;
-		}
-
-		/**
-		 * Update image scrolling
-		 * @param deltaTime time elapsed since last frame
-		 */
-		void updateImage(float deltaTime) {
-			switch (mScrollWhen) {
-			case ALWAYS:
-				scroll(deltaTime);
-				break;
-
-			case HOVER:
-				if (isOver()) {
-					scroll(deltaTime);
-				}
-				break;
-
-			case NEVER:
-				// Does nothing
-				break;
-			}
-
-			if (!mValidSize) {
-				updateSize();
-			}
-		}
-
-		/**
-		 * Scroll the image
-		 * @param deltaTime time elapsed since last frame
-		 */
-		void scroll(float deltaTime) {
-			int oldOffset = (int) mOffset;
-			mOffset += mSpeed * deltaTime;
-
-			if (oldOffset != mOffset) {
-				mRegion.setRegion((int) mOffset, 0, mRegion.getRegionWidth(), mTexture.getHeight());
-				mImage.invalidate();
-			}
-		}
-
-		/** Offset coordinate */
-		float mOffset = 0;
-		/** Texture region to draw */
-		TextureRegion mRegion;
-		/** Image to scroll */
-		Image mImage;
-		/** Texture for image */
-		Texture mTexture;
-		/** Scroll speed */
-		float mSpeed;
-		/** Valid size */
-		boolean mValidSize = false;
+		updateScrollForHover();
 	}
 
 	/**
-	 * Scroll when
+	 * Update scrolling for hover
 	 */
-	public enum ScrollWhen {
-		/** All the time */
-		ALWAYS,
-		/** Only on hover */
-		HOVER,
-		/** Never */
-		NEVER,
+	private void updateScrollForHover() {
+		if (mScrollWhen == ScrollWhen.HOVER) {
+			for (ImageScroll imageScroll : mImages) {
+				imageScroll.setScrollingEnabled(isOver());
+			}
+		}
 	}
 
 	/** When to scroll */

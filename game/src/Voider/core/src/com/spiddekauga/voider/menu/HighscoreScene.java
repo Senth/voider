@@ -73,35 +73,6 @@ public class HighscoreScene extends Scene implements IResponseListener {
 		} else {
 			continueToNextScene();
 		}
-
-		// REMOVE
-		// switch (response.status) {
-		// case FAILED_CONNECTION:
-		// mNotification.show(MessageStyles.ERROR, "Failed to connect to the server");
-		// break;
-		//
-		// case FAILED_INTERNAL:
-		// mNotification.show(MessageStyles.ERROR, "Internal server error");
-		// break;
-		//
-		// case FAILED_USER_NOT_LOGGED_IN:
-		// mNotification.show(MessageStyles.ERROR, "You are not logged in to the server");
-		// break;
-		//
-		// case FAILED_LEVEL_NOT_FOUND:
-		// mNotification.show(MessageStyles.ERROR,
-		// "Could not find any highscores for this level");
-		// break;
-		//
-		// case FAILED_HIGHSCORES_NOT_FOUND:
-		// mNotification.show(MessageStyles.ERROR,
-		// "Didn't find any highscores for this level");
-		// break;
-		//
-		// case SUCCESS:
-		//
-		// break;
-		// }
 	}
 
 	@Override

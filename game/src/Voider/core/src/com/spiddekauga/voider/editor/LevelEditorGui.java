@@ -35,9 +35,9 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
-import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
+import com.spiddekauga.utils.scene.ui.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
@@ -47,6 +47,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
+import com.spiddekauga.voider.game.LevelBackground;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -874,10 +875,10 @@ class LevelEditorGui extends EditorGui {
 		Themes theme = mLevelEditor.getTheme();
 
 		button.clearLayers();
-		// Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
-		// Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
-		// button.addLayer(bottomLayer);
-		// button.addLayer(topLayer);
+
+		LevelBackground background = theme.createBackground((int) button.getHeight());
+		button.addLayer(background.getBottomLayer());
+		button.addLayer(background.getTopLayer());
 	}
 
 	/**
@@ -893,15 +894,18 @@ class LevelEditorGui extends EditorGui {
 	 * Show theme selection message box
 	 */
 	private void showThemeSelectWindow() {
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Theme");
+
+		boolean checkable = true;
+		ButtonListener listener = null;
 		// Show message box
 		if (Gdx.app.getType() == ApplicationType.Desktop) {
+			checkable = true;
 			final String THEME_DELIMETER = "theme-select";
-
-			MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Theme");
 			mInvoker.pushDelimiter(THEME_DELIMETER);
 
 			// Listener that set the theme
-			ButtonListener listener = new ButtonListener() {
+			listener = new ButtonListener() {
 				@Override
 				protected void onChecked(Button button, boolean checked) {
 					Object userObject = button.getUserObject();
@@ -919,21 +923,6 @@ class LevelEditorGui extends EditorGui {
 				}
 			};
 
-			// Calculate width/height for scroll pane
-			// Try to fit 3 themes on one screen
-			float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
-			float width = Gdx.graphics.getWidth() - 2 * mUiFactory.getStyles().vars.paddingSeparator;
-
-			float buttonWidth = (width - (Themes.values().length - 1) * mUiFactory.getStyles().vars.paddingInner) / Themes.values().length;
-			float buttonHeight = buttonWidth / ratio;
-			float height = buttonHeight + mUiFactory.getStyles().vars.rowHeight * 2;
-
-			// Create scroll pane
-			AlignTable content = new AlignTable();
-			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, true, listener, mLevelEditor.getTheme());
-			content.add(scrollPane).setSize(width, height);
-			content.setSize(width, height);
-			msgBox.content(content);
 
 			// Cancel button and undo theme settings
 			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, THEME_DELIMETER, false));
@@ -943,40 +932,41 @@ class LevelEditorGui extends EditorGui {
 
 		// Mobile device, show scene instead
 		else if (Gdx.app.getType() == ApplicationType.Android) {
-			MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Theme");
-
+			checkable = false;
 			// Listener to open full screen theme scene
-			ButtonListener listener = new ButtonListener() {
+			listener = new ButtonListener() {
 				@Override
 				protected void onPressed(Button button) {
-					Object userObject = button.getUserObject();
+					if (mInitialized) {
+						Object userObject = button.getUserObject();
 
-					if (userObject instanceof ThemeSelectorData) {
-						ThemeSelectorData data = (ThemeSelectorData) userObject;
-						SceneSwitcher.switchTo(new ThemeSelectScene(data.theme));
+						if (userObject instanceof ThemeSelectorData) {
+							ThemeSelectorData data = (ThemeSelectorData) userObject;
+							SceneSwitcher.switchTo(new ThemeSelectScene(data.theme));
+						}
 					}
 				}
 			};
 
-			// Calculate width/height for scroll pane
-			// Try to fit all 4 themes on one screen
-			float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
-			float width = Gdx.graphics.getWidth() - 2 * mUiFactory.getStyles().vars.paddingSeparator;
-
-			float buttonWidth = (width - (Themes.values().length - 1) * mUiFactory.getStyles().vars.paddingInner) / Themes.values().length;
-			float buttonHeight = buttonWidth / ratio;
-			float height = buttonHeight + mUiFactory.getStyles().vars.rowHeight * 2;
-
-			// Create scroll pane
-			AlignTable content = new AlignTable();
-			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, false, listener, mLevelEditor.getTheme());
-			content.add(scrollPane).setSize(width, height);
-			content.setSize(width, height);
-			msgBox.content(content);
-
 			// Back buttons
 			msgBox.addCancelButtonAndKeys("Back");
 		}
+
+		// Calculate width/height for scroll pane
+		// Try to fit 3 themes on one screen
+		float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
+		float width = Gdx.graphics.getWidth() - 2 * mUiFactory.getStyles().vars.paddingSeparator;
+
+		float buttonWidth = (width - (Themes.values().length - 1) * mUiFactory.getStyles().vars.paddingInner) / Themes.values().length;
+		float buttonHeight = buttonWidth / ratio;
+		float height = buttonHeight + mUiFactory.getStyles().vars.rowHeight * 2;
+
+		// Create scroll pane
+		AlignTable content = new AlignTable();
+		ScrollPane scrollPane = mUiFactory.createThemeList(width, height, checkable, listener, mLevelEditor.getTheme());
+		content.add(scrollPane).setSize(width, height);
+		content.setSize(width, height);
+		msgBox.content(content);
 	}
 
 	@Override

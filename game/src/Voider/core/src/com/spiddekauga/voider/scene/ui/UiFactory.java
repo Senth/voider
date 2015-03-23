@@ -33,14 +33,15 @@ import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.ColorTintPicker;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
-import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
+import com.spiddekauga.utils.scene.ui.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
+import com.spiddekauga.voider.game.LevelBackground;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsSliderListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -245,16 +246,9 @@ public class UiFactory {
 
 			// Create image
 			ImageScrollButton button = new ImageScrollButton(buttonStyle, ScrollWhen.ALWAYS);
-			button.addListener(listener);
 			if (checkable) {
 				buttonGroup.add(button);
 			}
-
-			// Add layers
-			// Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
-			// Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
-			// button.addLayer(bottomLayer, bottomLayerSpeed);
-			// button.addLayer(topLayer, topLayerSpeed);
 
 			// Add to table and get label
 			createdActors.clear();
@@ -265,11 +259,17 @@ public class UiFactory {
 
 			button.setUserObject(new ThemeSelectorData(theme, label));
 
+			// Add layers
+			LevelBackground levelBackground = theme.createBackground((int) button.getHeight());
+			button.addLayer(levelBackground.getBottomLayer(), bottomLayerSpeed);
+			button.addLayer(levelBackground.getTopLayer(), topLayerSpeed);
+
 			// Set correct selected
 			if (theme == selectedTheme) {
 				button.setChecked(true);
 				label.setStyle(LabelStyles.HIGHLIGHT.getStyle());
 			}
+			button.addListener(listener);
 		}
 
 		// Remove padding from last table
