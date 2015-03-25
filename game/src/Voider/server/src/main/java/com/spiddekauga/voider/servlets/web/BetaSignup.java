@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.servlets.web;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -39,6 +41,11 @@ public class BetaSignup extends VoiderController {
 						parameters += "=";
 					} else {
 						parameters += "&" + post.getKey() + "=";
+					}
+					try {
+						value = URLEncoder.encode(value, "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
 					}
 					parameters += value;
 				}
@@ -125,6 +132,13 @@ public class BetaSignup extends VoiderController {
 	 * @param confirmKey
 	 */
 	private void sendConfirmationMail(String email, String confirmKey) {
+		// Encode confirm key
+		try {
+			confirmKey = URLEncoder.encode(confirmKey, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
 		String body = "";
 
 		body += "You have signed up to the Voider beta. Please confirm this by clicking the link below within one week. "

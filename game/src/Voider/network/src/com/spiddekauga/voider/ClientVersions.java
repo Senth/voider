@@ -143,6 +143,10 @@ public enum ClientVersions {
 			"	Fixed issue where creating a new level on lower resolutions would cause the game to crash",
 			"	Can now return to the main menu without crashing the game"
 			),
+	V0_5_2(false,
+			"Bug fixes",
+			"	Server issues regarding to beta keys"
+			),
 
 
 	;

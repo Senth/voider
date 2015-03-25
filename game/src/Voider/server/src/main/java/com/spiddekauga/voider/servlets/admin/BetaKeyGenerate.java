@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.servlets.admin;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -88,7 +90,13 @@ public class BetaKeyGenerate extends VoiderController {
 			String hash = (String) entity.getProperty(CBetaGroup.HASH);
 
 			if (name != null && hash != null) {
-				groups.add(new Group(name, hash));
+				try {
+					name = URLEncoder.encode(name, "UTF-8");
+					hash = URLEncoder.encode(hash, "UTF-8");
+					groups.add(new Group(name, hash));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

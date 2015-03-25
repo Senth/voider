@@ -55,6 +55,7 @@ public class BetaKeys extends VoiderController {
 		String name = getParameter("group");
 		String hash = getParameter("hash");
 
+
 		// Get the group and check so the has is correct
 		Entity groupEntity = DatastoreUtils.getSingleEntity(DatastoreTables.BETA_GROUP, new FilterWrapper(CBetaGroup.NAME, name));
 		if (groupEntity == null) {
