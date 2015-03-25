@@ -147,6 +147,12 @@ public enum ClientVersions {
 			"Bug fixes",
 			"	Server issues regarding to beta keys"
 			),
+	V0_5_3(false,
+			"Improvements",
+			"	Bullet speed can be set to be relative to the level speed (default) or not",
+			"Bug fixes",
+			"	Starting to draw a terrain now displays it correctly"
+			),
 
 
 	;

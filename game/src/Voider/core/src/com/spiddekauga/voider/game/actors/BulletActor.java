@@ -17,18 +17,20 @@ public class BulletActor extends Actor {
 	 * @param direction the direction of the bullet
 	 * @param speed of the bullet
 	 * @param hitDamage how much life the bullet will inflict when it hits another actor
+	 * @param relativeToLevelSpeed true if the bullet speed should be relative to the
+	 *        level speed
 	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot
 	 *        this bullet
 	 * @see #shoot(Vector2,Vector2,float,boolean) to use a velocity of the bullet directly
 	 */
-	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean shotByPlayer) {
+	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean relativeToLevelSpeed, boolean shotByPlayer) {
 		// Velocity
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(direction).nor().scl(speed);
 
 
 		// Add speed from the level
-		if (!mEditorActive) {
+		if (!mEditorActive && relativeToLevelSpeed) {
 			float ratio = Math.abs(velocity.x / speed);
 			float addSpeed = mLevel.getSpeed() * ratio;
 			velocity.x += addSpeed;
@@ -46,8 +48,8 @@ public class BulletActor extends Actor {
 	 * @param hitDamage how much life the bullet will inflict when it hits another actor
 	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot
 	 *        this bullet
-	 * @see #shoot(Vector2,Vector2,float,float,boolean) to use a direction and speed to
-	 *      calculate the velocity
+	 * @see #shoot(Vector2,Vector2,float,float,boolean,boolean) to use a direction and
+	 *      speed to calculate the velocity
 	 */
 	private void shoot(Vector2 position, Vector2 velocity, float hitDamage, boolean shotByPlayer) {
 		mShotByPlayer = shotByPlayer;

@@ -100,6 +100,22 @@ public class WeaponDef {
 		return mBulletActorDef;
 	}
 
+	/**
+	 * Set if the bullet speed should be relative to the level speed
+	 * @param relativeToLevelSpeed true if the bullet speed should be relative to the
+	 *        bullet speed
+	 */
+	public void setSpeedRelativeToLevel(boolean relativeToLevelSpeed) {
+		mRelativeToLevelSpeed = relativeToLevelSpeed;
+	}
+
+	/**
+	 * @return true if the bullet speed should be relative to the current level speed
+	 */
+	public boolean isSpeedRelativeToLevelSpeed() {
+		return mRelativeToLevelSpeed;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -109,6 +125,7 @@ public class WeaponDef {
 		result = prime * result + Float.floatToIntBits(mCooldownMax);
 		result = prime * result + Float.floatToIntBits(mCooldownMin);
 		result = prime * result + Float.floatToIntBits(mDamage);
+		result = prime * result + (mRelativeToLevelSpeed ? 1 : 0);
 		return result;
 	}
 
@@ -143,24 +160,24 @@ public class WeaponDef {
 		if (Float.floatToIntBits(mDamage) != Float.floatToIntBits(other.mDamage)) {
 			return false;
 		}
+		if (mRelativeToLevelSpeed != other.mRelativeToLevelSpeed) {
+			return false;
+		}
 		return true;
 	}
 
 	/** Type and visuals of the bullet */
 	private BulletActorDef mBulletActorDef = null;
 	/** Id of the bullet actor */
-	@Tag(104)
-	private UUID mBulletActorDefId = null;
+	@Tag(104) private UUID mBulletActorDefId = null;
 	/** Bullet speed */
-	@Tag(92)
-	private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
+	@Tag(92) private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
 	/** Damage when bullet hits */
-	@Tag(93)
-	private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
+	@Tag(93) private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
 	/** Minimum weapon cooldown */
-	@Tag(94)
-	private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
+	@Tag(94) private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
 	/** Maximum weapon cooldown */
-	@Tag(95)
-	private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
+	@Tag(95) private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
+	/** The bullet speed is relative to the level speed */
+	@Tag(143) private boolean mRelativeToLevelSpeed = true;
 }

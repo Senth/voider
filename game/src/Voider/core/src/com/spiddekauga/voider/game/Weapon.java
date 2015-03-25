@@ -86,7 +86,7 @@ public class Weapon {
 		if (getDef().getBulletActorDef() != null) {
 			BulletActor bullet = Pools.bullet.obtain();
 			bullet.setDef(getDef().getBulletActorDef());
-			bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), false);
+			bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), getDef().isSpeedRelativeToLevelSpeed(), false);
 
 			// Add to bullet destroyer
 			SceneSwitcher.getBulletDestroyer().add(bullet);

@@ -2,7 +2,6 @@ package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -75,18 +74,14 @@ public class BulletDestroyer implements Disposable {
 	 * @note because some bullets might come on to the screen again bullets it will
 	 *       enlarge the minPos and maxPos by 3 times. I.e. the screen size is the XX
 	 *       size. \code __________ |__|__|__| |__|XX|__| |__|__|__| \endCode
-	 * @param minPos minimum position of the screen (lower left corner). This variable
-	 *        will be changed!
-	 * @param maxPos maximum position of the screen (upper right corner). This variable
-	 *        will be changed!
+	 * @param boundingBox everything inside this bounding box will be kept. Also read the
+	 *        note.
 	 */
-	public void removeOutOfBondsBullets(Vector2 minPos, Vector2 maxPos) {
+	public void removeOutOfBondsBullets(BoundingBox boundingBox) {
 		float elapsedTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 
-		Vector2 diffVector = new Vector2();
-		diffVector.set(maxPos).sub(minPos);
-		minPos.sub(diffVector);
-		maxPos.add(diffVector);
+		BoundingBox enlargedBox = new BoundingBox(boundingBox);
+		enlargedBox.scale(3);
 
 		for (int i = 0; i < mBullets.size(); ++i) {
 			// Only check out of bounds it some time has elapsed since last check
@@ -94,23 +89,10 @@ public class BulletDestroyer implements Disposable {
 				mBullets.get(i).time = elapsedTime;
 
 				boolean outOfBounds = false;
-				if (mBullets.get(i).bulletActor.isActive()) {
-					// Is the bullet out of bounds
-					Vector2 position = mBullets.get(i).bulletActor.getBody().getPosition();
-					// LEFT
-					if (position.x < minPos.x) {
-						outOfBounds = true;
-					}
-					// RIGHT
-					else if (position.x > maxPos.x) {
-						outOfBounds = true;
-					}
-					// BOTTOM
-					else if (position.y < minPos.y) {
-						outOfBounds = true;
-					}
-					// TOP
-					else if (position.y > maxPos.y) {
+				BulletActor bulletActor = mBullets.get(i).bulletActor;
+				if (bulletActor.isActive()) {
+
+					if (!enlargedBox.overlaps(bulletActor.getBoundingBox())) {
 						outOfBounds = true;
 					}
 				}

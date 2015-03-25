@@ -237,7 +237,7 @@ class LevelEditorGui extends EditorGui {
 		}
 
 		ArrayList<EnemyActorDef> enemyDefs = mLevelEditor.getAddEnemies();
-
+		EnemyActorDef selectedEnemyActor = mLevelEditor.getSelectedEnemyToCreate();
 
 		mWidgets.enemyAdd.scrollTable.dispose(true);
 
@@ -279,6 +279,10 @@ class LevelEditorGui extends EditorGui {
 
 			enemyButtonCell = mWidgets.enemyAdd.scrollTable.add(button).setKeepAspectRatio(true).setFillWidth(true);
 			cColumEnemy++;
+
+			if (enemyDef.equals(selectedEnemyActor)) {
+				button.setChecked(true);
+			}
 		}
 
 		// Fill rest of row with empty cell
@@ -1002,7 +1006,6 @@ class LevelEditorGui extends EditorGui {
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
-		// mWidgets.enemyAdd.scrollTable.setHasPreferredWidth(false).setHasPreferredHeight(false);
 		mWidgets.enemyAdd.scrollTable.setName("scroll-table");
 		mWidgets.enemyAdd.scrollTable.setBackgroundImage(new Background(mUiFactory.getStyles().color.widgetInnerBackground));
 		AlignTable table = mWidgets.enemyAdd.table;

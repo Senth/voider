@@ -464,7 +464,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Removes an enemy from teh add enemy table
+	 * Removes an enemy from the add enemy table
 	 * @param enemyId the enemy id to remove.
 	 * @return true if the enemy was successfully removed, false if it was not found.
 	 */
@@ -1154,6 +1154,21 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
+	 * @return get the enemy actor to create, null if none is selected
+	 */
+	EnemyActorDef getSelectedEnemyToCreate() {
+		ActorAddTool actorAddTool = ((ActorAddTool) Tools.ENEMY_ADD.getTool());
+		if (actorAddTool != null) {
+			ActorDef actorDef = actorAddTool.getActorDef();
+			if (actorDef instanceof EnemyActorDef) {
+				return (EnemyActorDef) actorDef;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * @return selected enemy name, null if none is selected
 	 */
 	String getSelectedEnemyName() {
@@ -1709,7 +1724,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Called when selecting the enemy type
+	 * Called when selecting the enemy type to create
 	 * @param enemyDef the enemy type to create
 	 */
 	void createNewEnemy(EnemyActorDef enemyDef) {

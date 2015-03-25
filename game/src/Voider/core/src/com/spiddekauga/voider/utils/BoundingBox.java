@@ -34,6 +34,14 @@ public class BoundingBox {
 	}
 
 	/**
+	 * Create a bounding box from an already existing one
+	 * @param boundingBox the bounding box to copy the values from
+	 */
+	public BoundingBox(BoundingBox boundingBox) {
+		set(boundingBox);
+	}
+
+	/**
 	 * Check if this and the specified bounding box overlap
 	 * @param otherBox
 	 * @return true if this and the specified bounding box overlap
@@ -93,6 +101,22 @@ public class BoundingBox {
 		mRight = radius;
 		mTop = radius;
 		mBottom = -radius;
+	}
+
+	/**
+	 * Scale the bounding box
+	 * @param scale how much to scale the bounding box
+	 */
+	public void scale(float scale) {
+		// Calculate horizontal center
+		float xDiff = (mRight - mLeft) * 0.5f * scale;
+		mLeft -= xDiff;
+		mRight += xDiff;
+
+		// Calculate vertical center
+		float yDiff = (mTop - mBottom) * 0.5f * scale;
+		mTop += yDiff;
+		mBottom -= yDiff;
 	}
 
 	/**

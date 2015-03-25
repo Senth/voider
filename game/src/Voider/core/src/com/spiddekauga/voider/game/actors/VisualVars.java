@@ -38,6 +38,7 @@ import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Graphics;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Class for all shape variables
@@ -302,7 +303,22 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		case CUSTOM:
 		case IMAGE:
-			mBoundingBox = Geometry.getBoundingBox(mCorners);
+			// Regular shape
+			if (mCorners.size() >= 3) {
+				mBoundingBox = Geometry.getBoundingBox(mCorners);
+			}
+			// Circle shape
+			else if (mCorners.size() == 2) {
+				Vector2 diffVector = Pools.vector2.obtain();
+				diffVector.set(mCorners.get(1)).sub(mCorners.get(0));
+				float radius = diffVector.len();
+				mBoundingBox.setFromCircle(radius);
+				Pools.vector2.free(diffVector);
+			}
+			// Circle shape with default width
+			else if (mCorners.size() == 1) {
+				mBoundingBox.setFromCircle(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
+			}
 			break;
 		}
 
@@ -477,9 +493,14 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
-		// mCorners.add(index, Pools.vector2.obtain().set(corner));
 		mCorners.add(index, new Vector2(corner));
 		fixtureChanged();
+
+		// If this was the first corner, fix the bounding box so this
+		// resource will be drawn
+		if (mCorners.size() == 1) {
+			calculateBoundingBox();
+		}
 	}
 
 	@Override

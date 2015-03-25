@@ -159,6 +159,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.damage.setValue(mEnemyEditor.getWeaponDamage());
 		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
 		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
+		mWidgets.weapon.relativeToLevelSpeed.setChecked(mEnemyEditor.isBulletSpeedRelativeToLevelSpeed());
 
 		// TODO set bullet image
 
@@ -651,6 +652,16 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", "EnemyWeapon_BulletSpeed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX,
 				Weapon.BULLET_SPEED_STEP_SIZE, sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
 
+		// Speed is relative to the level speed
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mEnemyEditor.setBulletSpeedRelativeToLevelSpeed(checked);
+			}
+		};
+		mWidgets.weapon.relativeToLevelSpeed = mUiFactory.button.addPanelCheckBox("Relative to level speed?", buttonListener, table,
+				onTab.getHider(), mDisabledWhenPublished);
+
 		// Damage
 		sliderListener = new SliderListener(mInvoker) {
 			@Override
@@ -933,7 +944,7 @@ public class EnemyEditorGui extends ActorGui {
 			Slider damage = null;
 			Slider cooldownMin = null;
 			Slider cooldownMax = null;
-
+			Button relativeToLevelSpeed = null;
 
 			// Aim
 			Button aimOnPlayer = null;

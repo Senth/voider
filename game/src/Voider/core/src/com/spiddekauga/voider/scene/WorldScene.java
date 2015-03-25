@@ -104,10 +104,8 @@ public abstract class WorldScene extends Scene {
 
 		// Remove unwanted bullets
 		updateBoundingBox();
-		Vector2 minScreenPos = getWorldMinCoordinates();
-		Vector2 maxScreenPos = getWorldMaxCoordinates();
 		mBulletDestroyer.update(deltaTime);
-		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
+		mBulletDestroyer.removeOutOfBondsBullets(getBoundingBoxWorld());
 
 		// Sync border position with screen
 		if (mBorderBody != null) {

@@ -794,6 +794,28 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
+	 * Set the bullet speed to be relative to the level speed
+	 * @param relativeToLevelSpeed
+	 */
+	void setBulletSpeedRelativeToLevelSpeed(boolean relativeToLevelSpeed) {
+		if (mDef != null) {
+			mDef.getWeaponDef().setSpeedRelativeToLevel(relativeToLevelSpeed);
+			setUnsaved();
+		}
+	}
+
+	/**
+	 * @return true if the bullet speed is relative to the level speed
+	 */
+	boolean isBulletSpeedRelativeToLevelSpeed() {
+		if (mDef != null) {
+			return mDef.getWeaponDef().isSpeedRelativeToLevelSpeed();
+		} else {
+			return true;
+		}
+	}
+
+	/**
 	 * Sets the weapon damage
 	 * @param damage how much damage the bullets will take when they hit something
 	 */
