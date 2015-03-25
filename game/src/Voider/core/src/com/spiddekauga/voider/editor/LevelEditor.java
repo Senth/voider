@@ -242,7 +242,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		boolean oldIsPublished = isPublished();
 
 		if (mLevel != null) {
-			if (level != null && mLevel.equals(level.getId())) {
+			if (level != null && mLevel.equals(level)) {
 				sameLevel = true;
 				if (mLevel.equals(level)) {
 					sameRevision = true;

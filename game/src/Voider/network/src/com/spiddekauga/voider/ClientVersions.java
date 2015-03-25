@@ -138,7 +138,10 @@ public enum ClientVersions {
 			),
 	V0_5_1(false,
 			"Level Backgrounds",
-			"	Re-enabled preview when selecting these in the editor"
+			"	Re-enabled preview when selecting these in the editor",
+			"Bug Fixes",
+			"	Fixed issue where creating a new level on lower resolutions would cause the game to crash",
+			"	Can now return to the main menu without crashing the game"
 			),
 
 

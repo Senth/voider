@@ -104,12 +104,12 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param deltaTime elapsed seconds since last frame
 	 */
 	public void update(float deltaTime) {
-		if (mBackground == null) {
-			createBackground();
-		}
-
 		// Make the map move forward
 		if (mRunning) {
+			if (mBackground == null) {
+				createBackground();
+			}
+
 			updateCoordinates();
 
 			if (mPlayerActor != null && mPlayerActor.getBody() != null) {

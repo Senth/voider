@@ -172,11 +172,11 @@ public class MainMenu extends Scene implements IEventListener {
 				if (loginInfo.updateInfo != null) {
 					switch (loginInfo.updateInfo.type) {
 					case UPDATE_AVAILABLE:
-						getGui().showUpdateAvailable(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
+						((MainMenuGui) getGui()).showUpdateAvailable(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
 						break;
 
 					case UPDATE_REQUIRED:
-						getGui().showUpdateNeeded(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
+						((MainMenuGui) getGui()).showUpdateNeeded(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
 						break;
 
 					default:
@@ -185,7 +185,7 @@ public class MainMenu extends Scene implements IEventListener {
 				}
 				// Check if the client was updated since last login
 				else if (infoRepo.isClientVersionNewSinceLastLogin()) {
-					getGui().showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
+					((MainMenuGui) getGui()).showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
 					infoRepo.updateClientVersion();
 				}
 
@@ -229,7 +229,7 @@ public class MainMenu extends Scene implements IEventListener {
 
 				ArrayList<Motd> motds = new ArrayList<>();
 				motds.add(motd);
-				getGui().showMotds(motds);
+				((MainMenuGui) getGui()).showMotds(motds);
 			} else if (keycode == Input.Keys.F10) {
 			} else if (keycode == Input.Keys.F11) {
 			} else if (keycode == Input.Keys.F12) {
@@ -401,7 +401,7 @@ public class MainMenu extends Scene implements IEventListener {
 		}
 		// Quit game
 		else {
-			getGui().showQuitMsgBox();
+			((MainMenuGui) getGui()).showQuitMsgBox();
 		}
 	}
 
@@ -428,7 +428,7 @@ public class MainMenu extends Scene implements IEventListener {
 			}
 		});
 
-		getGui().showMotds(motds);
+		((MainMenuGui) getGui()).showMotds(motds);
 	}
 
 	/**
@@ -441,8 +441,8 @@ public class MainMenu extends Scene implements IEventListener {
 	}
 
 	@Override
-	protected MainMenuGui getGui() {
-		return (MainMenuGui) super.getGui();
+	protected MenuGui getGui() {
+		return (MenuGui) super.getGui();
 	}
 
 	private static final User mUser = User.getGlobalUser();
