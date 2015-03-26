@@ -165,77 +165,7 @@ public class MsgBoxFactory {
 	 * Show a custom bug report window
 	 */
 	public void bugReport() {
-		MsgBoxExecuter msgBox = add("Bug Report / Feature Request");
-
-		AlignTable content = new AlignTable();
-		float width = mStyles.vars.textFieldWidth * 2 + mStyles.vars.paddingInner;
-		content.setWidth(width);
-		content.setKeepWidth(true);
-
-		AlignTable left = new AlignTable();
-		AlignTable right = new AlignTable();
-		left.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-
-
-		// Info text
-		Label infoLabel = mUiFactory.text.create("Report a bug or send a feature request. All bugs and features requests are read :)\n "
-				+ "Thank you for reporting a bug or sending a feature request :)\n //Matteus");
-		infoLabel.setAlignment(Align.left);
-		infoLabel.setWrap(true);
-		content.row().setFillWidth(true);
-		content.add(infoLabel).setWidth(width).setPadBottom(mUiFactory.getStyles().vars.paddingInner);
-
-		Gui gui = SceneSwitcher.getGui();
-		final CBugReportSend bugReportSend = new CBugReportSend(gui);
-
-		// Bug / Feature
-		TabRadioWrapper bugTab = mUiFactory.button.createTabRadioWrapper("Bug Report");
-		TabRadioWrapper featureTab = mUiFactory.button.createTabRadioWrapper("Feature Request");
-
-		bugTab.setListener(new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				bugReportSend.setType(BugReportTypes.BUG_CUSTOM);
-			}
-		});
-		featureTab.setListener(new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				bugReportSend.setType(BugReportTypes.FEATURE);
-			}
-		});
-
-		mUiFactory.button.addTabs(content, null, false, null, null, bugTab, featureTab);
-
-		// Subject
-		TextFieldListener subjectListener = new TextFieldListener() {
-			@Override
-			protected void onDone(String newText) {
-				bugReportSend.setSubject(newText);
-			}
-		};
-		TextField subject = mUiFactory.addTextField("Subject", true, "[EX: Can't place enemy]", width, subjectListener, content, null);
-		Label subjectError = mUiFactory.text.getLastCreatedErrorLabel();
-		subject.setMaxLength(50);
-		VFieldLength validateSubjectLength = new VFieldLength(subjectListener, subjectError, 6);
-
-		// Description
-		TextFieldListener descriptionListener = new TextFieldListener() {
-			@Override
-			protected void onDone(String newText) {
-				bugReportSend.setDescription(newText);
-			}
-		};
-		mUiFactory.addTextArea("Detailed description", true,
-				"[EX: Doesn't work to place any stationary enemy in the level editor. Tried with two...]", width, descriptionListener, content, null);
-		Label descriptionError = mUiFactory.text.getLastCreatedErrorLabel();
-		content.getCell().setHeight(content.getCell().getHeight() * 1.5f);
-		VFieldLength validateDescriptionLength = new VFieldLength(descriptionListener, descriptionError, 30);
-
-		msgBox.content(content);
-		msgBox.button("Cancel");
-		msgBox.button("Send", bugReportSend, validateDescriptionLength, validateSubjectLength);
+		bugReport(null);
 	}
 
 	/**
@@ -243,7 +173,7 @@ public class MsgBoxFactory {
 	 * @param exception the exception that was thrown, null if no exception was thrown
 	 */
 	public void bugReport(final Exception exception) {
-		MsgBoxExecuter msgBox = add("Bug Report");
+		MsgBoxExecuter msgBox = exception != null ? add("Bug Report") : add("Bug Report / Feature Request");
 
 		AlignTable content = new AlignTable();
 		float width = mStyles.vars.textFieldWidth * 2 + mStyles.vars.paddingInner;
@@ -255,17 +185,46 @@ public class MsgBoxFactory {
 		left.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 
+		final CBugReportSend bugReportSend = new CBugReportSend(SceneSwitcher.getGui(), exception);
 
+		// Info text
+		if (exception == null) {
+			// Info text
+			Label infoLabel = mUiFactory.text.create("Report a bug or send a feature request. All bugs and features requests are read :)\n "
+					+ "Thank you for reporting a bug or sending a feature request :)\n //Matteus");
+			infoLabel.setAlignment(Align.left);
+			infoLabel.setWrap(true);
+			content.row().setFillWidth(true);
+			content.add(infoLabel).setWidth(width).setPadBottom(mUiFactory.getStyles().vars.paddingInner);
+
+			// Bug / Feature
+			TabRadioWrapper bugTab = mUiFactory.button.createTabRadioWrapper("Bug Report");
+			TabRadioWrapper featureTab = mUiFactory.button.createTabRadioWrapper("Feature Request");
+
+			bugTab.setListener(new ButtonListener() {
+				@Override
+				protected void onPressed(Button button) {
+					bugReportSend.setType(BugReportTypes.BUG_CUSTOM);
+				}
+			});
+			featureTab.setListener(new ButtonListener() {
+				@Override
+				protected void onPressed(Button button) {
+					bugReportSend.setType(BugReportTypes.FEATURE);
+				}
+			});
+
+			mUiFactory.button.addTabs(content, null, false, null, null, bugTab, featureTab);
+		}
 		// Error text
-		Label errorLabel = mUiFactory.text.create(Messages.Error.BUG_REPORT_INFO, LabelStyles.WARNING);
-		errorLabel.setAlignment(Align.center);
-		errorLabel.setWrap(true);
-		content.row().setFillWidth(true);
-		content.add(errorLabel).setWidth(width).setPadBottom(mUiFactory.getStyles().vars.paddingSeparator);
-		content.row();
-
-		Gui gui = SceneSwitcher.getGui();
-		final CBugReportSend bugReportSend = new CBugReportSend(gui, exception);
+		else {
+			Label errorLabel = mUiFactory.text.create(Messages.Error.BUG_REPORT_INFO, LabelStyles.WARNING);
+			errorLabel.setAlignment(Align.center);
+			errorLabel.setWrap(true);
+			content.row().setFillWidth(true);
+			content.add(errorLabel).setWidth(width).setPadBottom(mUiFactory.getStyles().vars.paddingSeparator);
+			content.row();
+		}
 
 		// Subject
 		TextFieldListener subjectListener = new TextFieldListener() {
@@ -274,10 +233,14 @@ public class MsgBoxFactory {
 				bugReportSend.setSubject(newText);
 			}
 		};
-		TextField subject = mUiFactory.addTextField("Subject", false, "[EX: Can't place enemy]", subjectListener, content, null);
-		subject.setMaxLength(50);
-		content.getCell().setWidth(width);
-
+		boolean useErrorLabel = exception == null;
+		TextField subject = mUiFactory.addTextField("Subject", useErrorLabel, "[EX: Can't place enemy]", width, subjectListener, content, null);
+		subject.setMaxLength(75);
+		VFieldLength validateSubjectLength = null;
+		if (useErrorLabel) {
+			Label subjectError = mUiFactory.text.getLastCreatedErrorLabel();
+			validateSubjectLength = new VFieldLength(subjectListener, subjectError, 6);
+		}
 
 		// Description
 		TextFieldListener descriptionListener = new TextFieldListener() {
@@ -286,61 +249,71 @@ public class MsgBoxFactory {
 				bugReportSend.setDescription(newText);
 			}
 		};
-		mUiFactory.addTextArea("Detailed description (optional)", false,
-				"[EX: Doesn't work to place any stationary enemy in the level editor. Tried with two...]", descriptionListener, content, null);
-		content.getCell().setWidth(width);
+		mUiFactory.addTextArea("Detailed description (optional)", useErrorLabel,
+				"[EX: Doesn't work to place any stationary enemy in the level editor. Tried with two...]", width, descriptionListener, content, null);
 		content.getCell().setHeight(content.getCell().getHeight() * 1.5f);
+		VFieldLength validateDescriptionLength = null;
+		if (useErrorLabel) {
+			Label descriptionError = mUiFactory.text.getLastCreatedErrorLabel();
+			validateDescriptionLength = new VFieldLength(descriptionListener, descriptionError, 30);
+		}
 
 
-		CGameQuit quit = new CGameQuit();
+		if (exception != null) {
+			// Send anonymously
+			ButtonListener buttonListener = new ButtonListener() {
+				@Override
+				protected void onChecked(Button button, boolean checked) {
+					bugReportSend.setSendAnonymously(checked);
+					SettingRepo.getInstance().network().setBugReportSendAnonymously(checked);
+				}
+			};
+			Button button = mUiFactory.button.addCheckBoxRow("Send anonymously (I can't answer you or ask further questions)",
+					CheckBoxStyles.CHECK_BOX, buttonListener, null, content);
+			button.setChecked(SettingRepo.getInstance().network().isBugReportSentAnonymously());
 
 
-		// Send anonymously
-		ButtonListener buttonListener = new ButtonListener() {
-			@Override
-			protected void onChecked(Button button, boolean checked) {
-				bugReportSend.setSendAnonymously(checked);
-				SettingRepo.getInstance().network().setBugReportSendAnonymously(checked);
-			}
-		};
-		Button button = mUiFactory.button.addCheckBoxRow("Send anonymously (I can't answer you or ask further questions)", CheckBoxStyles.CHECK_BOX,
-				buttonListener, null, content);
-		button.setChecked(SettingRepo.getInstance().network().isBugReportSentAnonymously());
+			// Additional information that is sent
+			buttonListener = new ButtonListener() {
+				@Override
+				protected void onPressed(Button button) {
+					MsgBoxExecuter msgBox = add("Additional Error Information");
+
+					AlignTable outerTable = new AlignTable();
+					AlignTable table = new AlignTable();
+					ScrollPane scrollPane = new ScrollPane(table);
+					outerTable.setPaddingRowDefault(0, 0, mUiFactory.getStyles().vars.paddingInner, 0);
 
 
-		// Additional information that is sent
-		buttonListener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = add("Additional Error Information");
+					mUiFactory.text.add("Additional information sent in the bug report\n(might appear to be unreadable)", outerTable,
+							LabelStyles.WARNING);
+					outerTable.row();
+					outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
+					msgBox.content(outerTable);
 
-				AlignTable outerTable = new AlignTable();
-				AlignTable table = new AlignTable();
-				ScrollPane scrollPane = new ScrollPane(table);
-				outerTable.setPaddingRowDefault(0, 0, mUiFactory.getStyles().vars.paddingInner, 0);
+					mUiFactory.text.add(Strings.exceptionToString(exception), table);
+					table.getCell().setPadBottom(mUiFactory.getStyles().vars.paddingInner);
+					table.row();
+					mUiFactory.text.add(AnalyticsRepo.getInstance().getSessionDebug(), table);
 
+					msgBox.addCancelButtonAndKeys("Back");
+				}
+			};
 
-				mUiFactory.text
-						.add("Additional information sent in the bug report\n(might appear to be unreadable)", outerTable, LabelStyles.WARNING);
-				outerTable.row();
-				outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
-				msgBox.content(outerTable);
+			content.row().setPadTop(mUiFactory.getStyles().vars.paddingInner);
+			mUiFactory.button.addText("View additional information that is sent", TextButtonStyles.LINK, content, buttonListener, null, null);
 
-				mUiFactory.text.add(Strings.exceptionToString(exception), table);
-				table.getCell().setPadBottom(mUiFactory.getStyles().vars.paddingInner);
-				table.row();
-				mUiFactory.text.add(AnalyticsRepo.getInstance().getSessionDebug(), table);
-
-				msgBox.addCancelButtonAndKeys("Back");
-			}
-		};
-
-		content.row().setPadTop(mUiFactory.getStyles().vars.paddingInner);
-		mUiFactory.button.addText("View additional information that is sent", TextButtonStyles.LINK, content, buttonListener, null, null);
+		}
 
 		msgBox.content(content);
-		msgBox.button("Quit Game", quit);
-		msgBox.button("Send Report and Quit Game", bugReportSend);
+
+		if (exception != null) {
+			msgBox.button("Quit Game", new CGameQuit());
+			msgBox.button("Send Report and Quit Game", bugReportSend);
+		} else {
+			msgBox.button("Cancel");
+			msgBox.button("Send", bugReportSend, validateDescriptionLength, validateSubjectLength);
+		}
 	}
 
 	/**

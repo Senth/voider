@@ -153,7 +153,8 @@ public enum ClientVersions {
 			"	Bullet speed now slowly decreases over time (so they stay on-screen)",
 			"Bug fixes",
 			"	Starting to draw a terrain now displays it correctly",
-			"	Fixed game crash when pressing play when no level has been selected"
+			"	Fixed game crash when pressing play when no level has been selected",
+			"	Bug reports contain your last actions again as this info was accidentally removed"
 			),
 
 

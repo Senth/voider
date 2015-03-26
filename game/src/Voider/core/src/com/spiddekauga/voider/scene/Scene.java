@@ -160,8 +160,8 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	@Override
 	public synchronized void handleException(Exception exception) {
 		if (mGui.isInitialized()) {
-			mAnalyticsRepo.endSession();
 			UiFactory.getInstance().msgBox.bugReport(exception);
+			mAnalyticsRepo.endSession();
 		}
 	}
 

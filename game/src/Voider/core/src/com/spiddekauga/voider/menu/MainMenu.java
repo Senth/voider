@@ -14,7 +14,6 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.PrototypeScene;
-import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.CampaignEditor;
 import com.spiddekauga.voider.editor.EnemyEditor;
@@ -25,7 +24,6 @@ import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.resource.DefEntity;
@@ -205,18 +203,16 @@ public class MainMenu extends Scene implements IEventListener {
 		}
 
 		// Testing
-		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
+		if (Config.Debug.isBuildOrBelow(Builds.BETA)) {
 			if (keycode == Input.Keys.F5) {
-				if (KeyHelper.isAltPressed()) {
-					SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.LOAD));
+				if (KeyHelper.isCtrlPressed()) {
+
 				} else if (KeyHelper.isShiftPressed()) {
 					SceneSwitcher.switchTo(new PrototypeScene());
 				} else {
-					SceneSwitcher.switchTo(new TestUiScene());
+					throw new RuntimeException("Test Bug Report");
 				}
 			} else if (keycode == Input.Keys.F6) {
-				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
-				mNotification.show(message);
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
