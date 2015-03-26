@@ -438,6 +438,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(enemyId);
 			if (enemyActorDef != null) {
 				if (!mAddEnemies.contains(enemyActorDef)) {
+					if (Tools.ENEMY_ADD.mTool != null) {
+						((EnemyAddTool) Tools.ENEMY_ADD.mTool).setActorDef(enemyActorDef);
+					}
 					mAddEnemies.add(0, enemyActorDef);
 					getGui().resetEnemyAddTable();
 					return true;
@@ -691,10 +694,28 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Tests to run a game from the current location
+	 * Tests to run the level from the current location
 	 * @param invulnerable makes the player invulnerable
 	 */
 	public void runFromHere(boolean invulnerable) {
+		runFromPos(invulnerable, getRunFromHerePosition());
+	}
+
+	/**
+	 * Test run the level from the start
+	 * @param invulnerable makes the player invulnerable
+	 */
+	public void runFromStart(boolean invulnerable) {
+		mLevel.calculateStartEndPosition();
+		runFromPos(invulnerable, mLevel.getLevelDef().getStartXCoord());
+	}
+
+	/**
+	 * Run from the specified position
+	 * @param invulnerable makes the player invulnerable
+	 * @param xPosition run from this position
+	 */
+	private void runFromPos(boolean invulnerable, float xPosition) {
 		if (!isSaved()) {
 			saveDef();
 		}
@@ -702,10 +723,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		boolean testRun = !ResourceLocalRepo.isPublished(mLevel.getId());
 		GameScene testGame = new GameScene(testRun, invulnerable);
 		Level copyLevel = mLevel.copy();
-		// Because of scaling decrease the x position
-		float xPosition = getRunFromHerePosition();
+
 		copyLevel.setStartPosition(xPosition);
-		copyLevel.calculateEndPosition();
 		copyLevel.createDefaultTriggers();
 		removeTriggersBeforeRun(copyLevel);
 		testGame.setLevelToRun(copyLevel);

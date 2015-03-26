@@ -203,7 +203,7 @@ public class MainMenu extends Scene implements IEventListener {
 		}
 
 		// Testing
-		if (Config.Debug.isBuildOrBelow(Builds.BETA)) {
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			if (keycode == Input.Keys.F5) {
 				if (KeyHelper.isCtrlPressed()) {
 

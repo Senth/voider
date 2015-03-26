@@ -151,10 +151,12 @@ public enum ClientVersions {
 			"Improvements",
 			"	Bullet speed can be set to be relative to the level speed (default) or not",
 			"	Bullet speed now slowly decreases over time (so they stay on-screen)",
+			"	Added run from start button (looks same for now) in the level editor",
 			"Bug fixes",
 			"	Starting to draw a terrain now displays it correctly",
 			"	Fixed game crash when pressing play when no level has been selected",
-			"	Bug reports contain your last actions again as this info was accidentally removed"
+			"	Bug reports contain your last actions again as this info was accidentally removed",
+			"	Zoom in/out buttons in level editor now works correctly"
 			),
 
 

@@ -149,7 +149,7 @@ top-1-0
   orig: 1020, 60
   offset: 0, 0
   index: -1
-top-1-2
+top-1-4
   rotate: false
   xy: 1024, 1674
   size: 1020, 60
@@ -163,7 +163,7 @@ top-1-3
   orig: 1020, 60
   offset: 0, 0
   index: -1
-top-1-4
+top-1-2
   rotate: false
   xy: 1024, 1674
   size: 1020, 60

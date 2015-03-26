@@ -235,6 +235,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: run_disabled
 	},
 	
+	run_from_start: {
+		imageUp: run_from_start,
+		imageOver: run_from_start_over,
+		imageDown: run_from_start_down,
+		imageDisabled: run_from_start_disabled
+	}
+	
 	grid:  {
 		imageUp: grid,
 		imageOver: grid_over,

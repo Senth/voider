@@ -100,13 +100,13 @@ public class Messages {
 		 * Title of message box when player is asked to select if s/he shall be
 		 * invulnerable
 		 */
-		public final static String RUN_INVULNERABLE_TITLE = "Test run the level";
+		public final static String RUN_INVULNERABLE_TITLE = "Test play level";
 		/**
 		 * Message when the player is asked to select if s/he shall be invulnerable when
 		 * testing the level.
 		 */
-		public final static String RUN_INVULNERABLE_CONTENT = "Do you want to be invulnerable when " + "you're testing the level?\n\n"
-				+ "Hit Escape or Back when you want to stop the test.";
+		public final static String RUN_INVULNERABLE_CONTENT = "Do you want to be invulnerable when you're testing the level?\n\n"
+				+ "Hit Escape or Back when you want to go back.";
 		/** Header for successfully completing the level */
 		public final static String COMPLETED_HEADER = "Congratulations!";
 		/** Header for game over */
@@ -301,7 +301,8 @@ public class Messages {
 		ACTION_GRID_ABOVE("Toggle grid above actors", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),
 		ACTION_SHOW_BACKGROUND("Toggle background", "https://www.youtube.com/watch?v=jhUNPagEd7Y"),
 		ACTION_ENEMY_SPAWN("Toggle enemy outline spawns", "https://www.youtube.com/watch?v=dM9aY8YqbAc"),
-		ACTION_PLAY("Test-run this level"),
+		ACTION_PLAY_FROM_HERE("Test play level from current position"),
+		ACTION_PLAY_FROM_START("Test play level"),
 
 		// Path tab (level editor)
 		PATH_LOOP("Enemies loop", "https://www.youtube.com/watch?v=DWeUECW8o2w", TAB_PATH),

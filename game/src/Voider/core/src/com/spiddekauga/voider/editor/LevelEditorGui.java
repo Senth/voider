@@ -507,7 +507,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Zoom in
 		mToolMenu.row();
-		mWidgets.tool.zoomIn = mUiFactory.button.addTool(EditorIcons.ZOOM_IN, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomIn = mUiFactory.button.addTool(EditorIcons.ZOOM_IN, null, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomIn, Messages.EditorTooltips.TOOL_ZOOM_IN_LEVEL);
 		new ButtonListener(mWidgets.tool.zoomIn) {
 			@Override
@@ -517,7 +517,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Zoom out
-		mWidgets.tool.zoomOut = mUiFactory.button.addTool(EditorIcons.ZOOM_OUT, buttonGroup, mToolMenu, null);
+		mWidgets.tool.zoomOut = mUiFactory.button.addTool(EditorIcons.ZOOM_OUT, null, mToolMenu, null);
 		mTooltip.add(mWidgets.tool.zoomOut, Messages.EditorTooltips.TOOL_ZOOM_OUT_LEVEL);
 		new ButtonListener(mWidgets.tool.zoomOut) {
 			@Override

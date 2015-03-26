@@ -173,6 +173,8 @@ public class SkinNames {
 		RESET_CENTER,
 		/** Test run the current level */
 		RUN,
+		/** Test run the level from the start */
+		RUN_FROM_START,
 		/** Save the resource */
 		SAVE,
 		/** Screen shot */

@@ -553,7 +553,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	/**
 	 * Calculate the end position of the level
 	 */
-	public void calculateEndPosition() {
+	private void calculateEndPosition() {
 		float endPosition = Float.MIN_VALUE;
 
 		ArrayList<IResourcePosition> resources = mResourceBinder.getResources(IResourcePosition.class);

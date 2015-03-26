@@ -466,9 +466,9 @@ public abstract class EditorGui extends Gui {
 				}
 			};
 
-			// Run
-			button = mUiFactory.button.addImage(EditorIcons.RUN, mEditMenu, null, null);
-			mTooltip.add(button, Messages.EditorTooltips.ACTION_PLAY);
+			// Run from start
+			button = mUiFactory.button.addImage(EditorIcons.RUN_FROM_START, mEditMenu, null, null);
+			mTooltip.add(button, Messages.EditorTooltips.ACTION_PLAY_FROM_START);
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed(Button button) {
@@ -476,8 +476,23 @@ public abstract class EditorGui extends Gui {
 
 					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
 					msgBox.addCancelButtonAndKeys();
-					msgBox.button("Can die", new CLevelRun(false, (LevelEditor) mEditor));
-					msgBox.button("Invulnerable", new CLevelRun(true, (LevelEditor) mEditor));
+					msgBox.button("Can die", new CLevelRun(false, true, (LevelEditor) mEditor));
+					msgBox.button("Invulnerable", new CLevelRun(true, true, (LevelEditor) mEditor));
+				}
+			};
+
+			// Run from here
+			button = mUiFactory.button.addImage(EditorIcons.RUN, mEditMenu, null, null);
+			mTooltip.add(button, Messages.EditorTooltips.ACTION_PLAY_FROM_HERE);
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed(Button button) {
+					MsgBoxExecuter msgBox = mUiFactory.msgBox.add(Messages.Level.RUN_INVULNERABLE_TITLE);
+
+					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
+					msgBox.addCancelButtonAndKeys();
+					msgBox.button("Can die", new CLevelRun(false, false, (LevelEditor) mEditor));
+					msgBox.button("Invulnerable", new CLevelRun(true, false, (LevelEditor) mEditor));
 				}
 			};
 		}
