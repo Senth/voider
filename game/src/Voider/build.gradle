@@ -281,7 +281,8 @@ def deployGame(buildName) {
 	def dropboxDir = "/home/senth/Dropbox/Voider exec/"
 	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
 	def dropboxCopyTo = ""
-	def exportFile = projectDir.absolutePath + "/build/";
+	def exportDir = projectDir.absolutePath + "/build/";
+	def exportFile = ""
 	switch ( buildName ) {
 		case "NIGHTLY_DEV":
 			dropboxCopyTo = "Voider - editable resources/Voider.jar"
@@ -292,22 +293,24 @@ def deployGame(buildName) {
 			break
 		
 		case "BETA":
-			exportFile += "Voider-beta.jar"
+			exportFile = "Voider-beta.jar"
+			dropboxCopyTo = "Voider/Voider-beta.jar"
 			break
 
 		case "RELEASE":
-			exportFile += "Voider.jar"
+			exportFile = "Voider.jar"
 			break
 	}
 
 	// Copy to dropbox
 	if (dropboxCopyTo != "") {
 		dropboxCopyTo = dropboxDir + dropboxCopyTo
-		Files.move(Paths.get(desktopFile), Paths.get(dropboxCopyTo), StandardCopyOption.REPLACE_EXISTING)
+		Files.copy(Paths.get(desktopFile), Paths.get(dropboxCopyTo), StandardCopyOption.REPLACE_EXISTING)
 	}
 	// Copy to appengine
-	else {
-		Files.move(Paths.get(desktopFile), Paths.get(exportFile), StandardCopyOption.REPLACE_EXISTING)
+	if (exportFile != "") {
+		exportFile = exportDir + exportFile
+		Files.copy(Paths.get(desktopFile), Paths.get(exportFile), StandardCopyOption.REPLACE_EXISTING)
 	}
 	replaceBuildName(project.defaultBuild)
 }
