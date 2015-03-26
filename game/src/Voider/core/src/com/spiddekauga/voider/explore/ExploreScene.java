@@ -268,11 +268,15 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param defEntity the resource to download
 	 */
 	protected void downloadResource(DefEntity defEntity) {
-		if (!ResourceLocalRepo.exists(defEntity.resourceId)) {
-			mResourceRepo.download(this, defEntity.resourceId);
-			getGui().showWaitWindow("Downloading " + defEntity.name);
+		if (defEntity != null) {
+			if (!ResourceLocalRepo.exists(defEntity.resourceId)) {
+				mResourceRepo.download(this, defEntity.resourceId);
+				getGui().showWaitWindow("Downloading " + defEntity.name);
+			} else {
+				onResourceDownloaded(mAction);
+			}
 		} else {
-			onResourceDownloaded(mAction);
+			mNotification.showHighlight("None selected!");
 		}
 	}
 

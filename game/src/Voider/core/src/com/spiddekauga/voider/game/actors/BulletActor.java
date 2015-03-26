@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -62,6 +63,7 @@ public class BulletActor extends Actor {
 		angle = Math.toRadians(angle) + getDef().getBodyDef().angle;
 		getBody().setTransform(position, (float) angle);
 		getBody().setLinearVelocity(velocity);
+		getBody().setLinearDamping(Config.Actor.Bullet.FRICTION);
 		setPosition(position);
 
 		mDamage = hitDamage;

@@ -150,8 +150,10 @@ public enum ClientVersions {
 	V0_5_3(false,
 			"Improvements",
 			"	Bullet speed can be set to be relative to the level speed (default) or not",
+			"	Bullet speed now slowly decreases over time (so they stay on-screen)",
 			"Bug fixes",
-			"	Starting to draw a terrain now displays it correctly"
+			"	Starting to draw a terrain now displays it correctly",
+			"	Fixed game crash when pressing play when no level has been selected"
 			),
 
 

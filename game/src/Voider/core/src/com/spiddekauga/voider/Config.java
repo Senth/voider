@@ -42,6 +42,8 @@ public class Config {
 			public final static float CHECK_OUT_OF_BOUNDS_TIME = 1;
 			/** Maximum number of bullets */
 			public final static int BULLETS_MAX = 1000;
+			/** Linear damping of the bullet */
+			public final static float FRICTION = 0.025f;
 		}
 
 		/**
