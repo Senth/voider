@@ -250,10 +250,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 
 			// Unload the old level
+			mLevel.dispose();
 			if (ResourceCacheFacade.isLoaded(mLevel.getId()) && !sameRevision) {
 				ResourceCacheFacade.unload(mLevel.getId(), mLevel.getRevision());
-			} else {
-				mLevel.dispose();
 			}
 		}
 
@@ -730,7 +729,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		testGame.setLevelToRun(copyLevel);
 
 		mPngBytesBeforeTestRun = copyLevel.getDef().getPngImage();
-
 
 		SceneSwitcher.switchTo(testGame);
 	}

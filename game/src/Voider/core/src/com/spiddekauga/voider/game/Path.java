@@ -327,7 +327,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			destroyBodyCorners();
 		}
 		destroyVertices();
-		mCorners.clear();
 	}
 
 	/**

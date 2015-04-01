@@ -43,6 +43,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
 import com.spiddekauga.voider.game.LevelBackground;
 import com.spiddekauga.voider.game.Themes;
+import com.spiddekauga.voider.repo.analytics.listener.AnalyticsColorTintPickerListener;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsSliderListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
@@ -534,7 +535,7 @@ public class UiFactory {
 		table.add(slider).setFillWidth(true);
 
 		// Analytics
-		new AnalyticsSliderListener(eventName, slider);
+		slider.addListener(new AnalyticsSliderListener(eventName));
 
 		// Text field
 		TextField textField = new TextField("", mStyles.textField.standard);
@@ -608,6 +609,7 @@ public class UiFactory {
 		ColorTintPicker picker = new ColorTintPicker(false, mStyles.slider.colorPicker, colors);
 		table.add(picker).setFillWidth(true);
 
+		picker.addListener(new AnalyticsColorTintPickerListener(name));
 
 		doExtraActionsOnActors(hider, createdActors, picker);
 

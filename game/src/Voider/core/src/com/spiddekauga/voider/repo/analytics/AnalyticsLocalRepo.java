@@ -173,8 +173,19 @@ class AnalyticsLocalRepo {
 
 		if (session != null) {
 			StringBuilder stringBuilder = new StringBuilder();
-
 			sortScenes(session);
+
+			// HTML
+			if (!session.scenes.isEmpty()) {
+				appendLastActions(session.scenes.get(session.scenes.size() - 1), stringBuilder);
+				stringBuilder.append("</br></br>\n\n");
+			}
+			stringBuilder.append("<h3>Scenes</h3>");
+			for (AnalyticsSceneEntity scene : session.scenes) {
+				appendScene(scene, stringBuilder);
+			}
+
+			// Trac
 			if (!session.scenes.isEmpty()) {
 				appendLastActions(session.scenes.get(session.scenes.size() - 1), stringBuilder);
 				stringBuilder.append("</br></br>\n\n");

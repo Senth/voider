@@ -158,6 +158,11 @@ public enum ClientVersions {
 			"	Bug reports contain your last actions again as this info was accidentally removed",
 			"	Zoom in/out buttons in level editor now works correctly"
 			),
+//	V0_5_4(true,
+//			"Improvements",
+//			"	Analytics event on exceptions are now more readable to the player",
+//			""
+//			),
 
 
 	;

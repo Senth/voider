@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo.analytics.listener;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.spiddekauga.utils.scene.ui.ColorTintPicker;
 import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
 
@@ -8,19 +9,22 @@ import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AnalyticsColorTintPickerListener extends AnalyticsSliderListener {
+
 	/**
-	 * @param eventName analytics event name
-	 * @param colorTintPicker
+	 * @param eventName name of the event
 	 */
-	public AnalyticsColorTintPickerListener(String eventName, ColorTintPicker colorTintPicker) {
-		super(eventName, colorTintPicker);
-		mColorTintPicker = colorTintPicker;
+	public AnalyticsColorTintPickerListener(String eventName) {
+		super(eventName);
 	}
+
 
 	@Override
-	protected void onChange(float newValue) {
-		mAnalyticsRepo.addEvent(getName(), AnalyticsEventTypes.SLIDER, mColorTintPicker.getPickColor().toString());
+	public void changed(ChangeEvent event, Actor actor) {
+		if (actor instanceof ColorTintPicker) {
+			ColorTintPicker colorTintPicker = (ColorTintPicker) actor;
+			mAnalyticsRepo.addEvent(getName(), AnalyticsEventTypes.SLIDER, colorTintPicker.getPickColor().toString());
+		} else {
+			super.changed(event, actor);
+		}
 	}
-
-	private ColorTintPicker mColorTintPicker;
 }

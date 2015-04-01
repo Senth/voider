@@ -39,14 +39,19 @@ public class CGuiSlider extends CGui implements ICommandCombinable {
 
 	@Override
 	public boolean execute() {
-		boolean success = setTemporaryName(mSlider);
-		if (success) {
-			mSlider.setValue(mNewValue);
-			mSlider.fire(new ChangeListener.ChangeEvent());
-			setOriginalName(mSlider);
-		}
+		if (!mFirstTime) {
+			boolean success = setTemporaryName(mSlider);
+			if (success) {
+				mSlider.setValue(mNewValue);
+				mSlider.fire(new ChangeListener.ChangeEvent());
+				setOriginalName(mSlider);
+			}
 
-		return success;
+			return success;
+		} else {
+			mFirstTime = false;
+			return true;
+		}
 	}
 
 	@Override
@@ -57,6 +62,8 @@ public class CGuiSlider extends CGui implements ICommandCombinable {
 		return true;
 	}
 
+	/** Skip executing first time */
+	private boolean mFirstTime = true;
 	/** Slider to change the value on */
 	private Slider mSlider;
 	/** New value of the slider (on execute) */
