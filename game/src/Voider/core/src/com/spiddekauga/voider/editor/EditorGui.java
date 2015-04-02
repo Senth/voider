@@ -715,7 +715,7 @@ public abstract class EditorGui extends Gui {
 			}
 
 			// Add name
-			mUiFactory.text.add(mEditor.getName(), depTable, LabelStyles.PUBLISH_NAME);
+			mUiFactory.text.add(dependency.getName(), depTable, LabelStyles.PUBLISH_NAME);
 			depTable.getCell().setPadLeft(imagePad);
 		}
 

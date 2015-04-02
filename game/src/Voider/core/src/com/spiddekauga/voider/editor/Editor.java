@@ -589,11 +589,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		if (def != null) {
 			ArrayList<Def> resources = ResourceRepo.getNonPublishedDependencies(def);
 
-			// Add itself first
-			if (resources != null) {
-				resources.add(0, def);
-			}
-
 			return resources;
 		} else {
 			return new ArrayList<>();
@@ -684,6 +679,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			saveImpl(command);
 		} else if (isPublished()) {
 			mNotification.showHighlight("Cannot save a published " + getGui().getResourceTypeName());
+		} else if (command != null) {
+			command.execute();
 		} else if (isSaved()) {
 			mNotification.show("Already saved");
 		}

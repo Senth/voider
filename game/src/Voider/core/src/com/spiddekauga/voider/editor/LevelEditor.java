@@ -413,6 +413,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			if (mPngBytesBeforeTestRun != mLevel.getDef().getPngImage()) {
 				setUnsaved();
 				getGui().resetImage();
+				saveDef();
 			}
 		}
 		// Theme selected

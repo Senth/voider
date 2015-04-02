@@ -412,19 +412,24 @@ public class ResourceRepo extends Repo {
 	 * @param dependencies all non-published dependencies
 	 */
 	private static final void getNonPublishedDependencies(Def def, Set<UUID> foundUuids, ArrayList<Def> dependencies) {
-		for (Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
-			if (!foundUuids.contains(entry.getKey()) && !ResourceLocalRepo.isPublished(def.getId())) {
-				foundUuids.add(entry.getKey());
+		// Add to found IDs
+		if (!foundUuids.contains(def.getId())) {
+			foundUuids.add(def.getId());
 
-				Def dependency = ResourceCacheFacade.get(entry.getKey());
-				if (dependency != null) {
-					dependencies.add(dependency);
+			// Add if this resource isn't published
+			if (!ResourceLocalRepo.isPublished(def.getId())) {
+				dependencies.add(def);
 
-					getNonPublishedDependencies(dependency, foundUuids, dependencies);
-				} else {
-					Gdx.app.error("ResourceRepo", "Could not find dependency when publishing...");
+				for (Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
+					Def dependency = ResourceCacheFacade.get(entry.getKey());
+					if (dependency != null) {
+						getNonPublishedDependencies(dependency, foundUuids, dependencies);
+					} else {
+						Gdx.app.error("ResourceRepo", "Could not find dependency when publishing...");
+					}
 				}
 			}
+
 		}
 	}
 
