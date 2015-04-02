@@ -7,16 +7,17 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
- * Switches to the a specified scene. If an instance of this scene already exists
- * it will switch to that one first. If the scene doesn't exist it will create a
- * new one (only works if the scene has a default constructor) and place it at the
- * top of the stack.
- * 
+ * Switches to the a specified scene. If an instance of this scene already exists it will
+ * switch to that one first. If the scene doesn't exist it will create a new one (only
+ * works if the scene has a default constructor) and place it at the top of the stack.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CSceneSwitch extends Command {
 	/**
-	 * Creates a switch command that will switch to the specified scene type
+	 * Switches to the a specified scene. If an instance of this scene already exists it
+	 * will switch to that one first. If the scene doesn't exist it will create a new one
+	 * (only works if the scene has a default constructor) and place it at the top of the
+	 * stack.
 	 * @param sceneType the scene type to switch to
 	 */
 	public CSceneSwitch(Class<? extends Scene> sceneType) {

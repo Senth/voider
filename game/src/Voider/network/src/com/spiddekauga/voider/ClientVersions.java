@@ -164,6 +164,7 @@ public enum ClientVersions {
 			"	Analytics event on exceptions are now more readable to the player",
 			"	Changed some dark text to brighter text",
 			"	A bullet image is now displayed for the weapon in level editor",
+			"	Added ability to switch to other editor in first pop-up",
 			"Bug fixes",
 			"	Publishing levels, enemies and bullets now works again",
 			"	List of resources to publish now uses the correct name",

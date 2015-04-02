@@ -274,11 +274,32 @@ public abstract class EditorGui extends Gui {
 	 */
 	void showFirstTimeMenu() {
 		MsgBoxExecuter msgBox = mUiFactory.msgBox.add(null);
+
+		// New
 		msgBox.button("New", new CEditorNew(mEditor));
 		msgBox.buttonRow();
 		msgBox.button("Load", new CEditorLoad(mEditor));
+		msgBox.getButtonCell().setPadBottom(mUiFactory.getStyles().vars.paddingInner);
+
+		// Editors
+		if (this.getClass() != LevelEditorGui.class) {
+			msgBox.buttonRow();
+			msgBox.button("Level Editor", new CSceneSwitch(LevelEditor.class));
+		}
+		if (this.getClass() != EnemyEditorGui.class) {
+			msgBox.buttonRow();
+			msgBox.button("Enemy Editor", new CSceneSwitch(EnemyEditor.class));
+		}
+		if (this.getClass() != BulletEditorGui.class) {
+			msgBox.buttonRow();
+			msgBox.button("Bullet Editor", new CSceneSwitch(BulletEditor.class));
+		}
+
+
+		// Back
+		msgBox.getButtonCell().setPadBottom(mUiFactory.getStyles().vars.paddingInner);
 		msgBox.buttonRow();
-		msgBox.button("Main Menu", new CSceneReturn(MainMenu.class));
+		msgBox.addCancelButtonAndKeys("Main Menu", new CSceneReturn(MainMenu.class));
 	}
 
 	/**
