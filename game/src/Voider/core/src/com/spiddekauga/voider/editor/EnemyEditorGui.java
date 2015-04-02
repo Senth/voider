@@ -18,6 +18,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.ResourceTextureImage;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
@@ -160,8 +161,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
 		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
 		mWidgets.weapon.relativeToLevelSpeed.setChecked(mEnemyEditor.isBulletSpeedRelativeToLevelSpeed());
-
-		// TODO set bullet image
+		mWidgets.weapon.bulletImage.setResource(mEnemyEditor.getSelectedBulletDef());
 
 		// Aim
 		mWidgets.weapon.aimRotateSpeed.setValue(mEnemyEditor.getAimRotateSpeed());
@@ -628,8 +628,8 @@ public class EnemyEditorGui extends ActorGui {
 		// Select bullet type
 		mUiFactory.text.addPanelSection("Select Bullet Type", table, onTab.getHider());
 
-		// Bullet image
-		table.row();
+		// Select bullet button
+		table.row().setFillWidth(true);
 		ImageButton imageButton = mUiFactory.button.addImage(SkinNames.EditorIcons.BULLET_SELECT, table, onTab.getHider(), mDisabledWhenPublished);
 		new ButtonListener(imageButton) {
 			@Override
@@ -638,6 +638,11 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 
+		// Bullet image
+		table.add().setFillWidth(true);
+		ResourceTextureImage image = new ResourceTextureImage();
+		mWidgets.weapon.bulletImage = image;
+		table.add(image).setSize(mUiFactory.getStyles().vars.rowHeightSection, mUiFactory.getStyles().vars.rowHeightSection);
 
 		// Bullet settings
 		mUiFactory.text.addPanelSection("Bullet Settings", table, onTab.getHider());
@@ -939,7 +944,7 @@ public class EnemyEditorGui extends ActorGui {
 			Button off = null;
 
 			// Bullet
-			// Cell bulletImage = null;
+			ResourceTextureImage bulletImage = null;
 			Slider bulletSpeed = null;
 			Slider damage = null;
 			Slider cooldownMin = null;
