@@ -162,9 +162,11 @@ public enum ClientVersions {
 			"Improvements",
 			"	Added Update button on new versions (appears as text on older clients)",
 			"	Analytics event on exceptions are now more readable to the player",
+			"	Changed some dark text to brighter text",
 			"Bug fixes",
 			"	Publishing levels, enemies and bullets now works again",
-			"	List of resources to publish now uses the correct name"
+			"	List of resources to publish now uses the correct name",
+			"	Description is now wrapped correctly when loading/playing levels"
 			),
 
 

@@ -179,7 +179,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	
 	panel_section: {
 		font: default12,
-		fontColor: grey_dark,
+		fontColor: grey_light,
 	},
 	
 	header: {

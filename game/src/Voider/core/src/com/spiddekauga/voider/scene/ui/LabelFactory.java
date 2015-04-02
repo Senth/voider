@@ -116,11 +116,11 @@ public class LabelFactory extends BaseFactory {
 	 * @return created label
 	 */
 	public Label addPanel(String text, AlignTable table, LabelStyles labelStyle) {
-		table.row().setFillWidth(true).setAlign(Vertical.TOP);
+		table.row().setFillWidth(true).setAlign(Vertical.MIDDLE);
 		Label label = add(text, true, table, labelStyle);
 		label.setName("panel-text");
 		label.setAlignment(Align.center);
-		table.getCell().setFillWidth(true).setPadTop(mStyles.vars.paddingSeparator).setPadBottom(mStyles.vars.paddingOuter);
+		table.getCell().setFillWidth(true).setPadTop(mStyles.vars.paddingOuter).setPadBottom(mStyles.vars.paddingOuter);
 
 		return label;
 	}

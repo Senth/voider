@@ -44,6 +44,7 @@ import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -734,12 +735,12 @@ abstract class ExploreGui extends Gui {
 	 */
 	protected void initInfo(AlignTable table, HideListener hider) {
 		// Name
-		mWidgets.info.name = mUiFactory.text.addPanelSection("", table, null);
+		mWidgets.info.name = mUiFactory.text.addPanel("", table, LabelStyles.HIGHLIGHT);
 		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
 
 		// Description
 		table.row(Horizontal.CENTER, Vertical.TOP);
-		mWidgets.info.description = mUiFactory.text.add("", true, table);
+		mWidgets.info.description = mUiFactory.text.addPanel("", table, LabelStyles.DEFAULT);
 
 		// Created by
 		mUiFactory.text.addPanelSection("Created By", table, null);

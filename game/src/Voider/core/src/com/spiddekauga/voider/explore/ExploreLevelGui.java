@@ -313,8 +313,8 @@ class ExploreLevelGui extends ExploreGui {
 
 		HideListener onlineHider = mWidgets.onlineHider;
 
-		// Insert Rating after name
-		table.row(1, Horizontal.CENTER, Vertical.TOP);
+		// Insert Rating after description
+		table.row(3, Horizontal.CENTER, Vertical.TOP);
 		mWidgets.info.rating = mUiFactory.createRatingWidget(Touchable.disabled);
 		onlineHider.addToggleActor(mWidgets.info.rating);
 		table.add(mWidgets.info.rating);
