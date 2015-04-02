@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.spiddekauga.utils.IIdStore;
+import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
@@ -21,8 +22,10 @@ public class BugReportEntity implements IEntity {
 	public String description;
 	/** Date of the report */
 	public Date date;
-	/** Additional information such as exception or last actions, optional */
+	/** Additional information such as exception, optional */
 	public String additionalInformation = "";
+	/** Analytics information (events, scenes, last actions...), optional */
+	public AnalyticsSessionEntity analyticsSession = null;
 	/** System information */
 	public String systemInformation;
 	/** id of the report, only used locally */

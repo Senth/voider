@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.network.analytics.AnalyticsEventTypes;
 import com.spiddekauga.voider.network.analytics.AnalyticsMethod;
 import com.spiddekauga.voider.network.analytics.AnalyticsResponse;
+import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -87,6 +88,13 @@ public class AnalyticsRepo extends Repo {
 	 */
 	public String getSessionDebug() {
 		return mLocalRepo.getSessionDebug();
+	}
+
+	/**
+	 * @return current (if available) or previous analytics session
+	 */
+	public AnalyticsSessionEntity getSession() {
+		return mLocalRepo.getSession();
 	}
 
 	/**

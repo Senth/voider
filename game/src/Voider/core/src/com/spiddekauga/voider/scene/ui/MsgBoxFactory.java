@@ -293,9 +293,16 @@ public class MsgBoxFactory {
 					outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
 					msgBox.content(outerTable);
 
+					// System information
+					mUiFactory.text.add(CBugReportSend.getSystemInformation(), table);
+					table.row().setPadTop(mStyles.vars.paddingSeparator);
+
+					// Exception
 					mUiFactory.text.add(Strings.exceptionToString(exception), table);
 					table.getCell().setPadBottom(mUiFactory.getStyles().vars.paddingInner);
-					table.row();
+					table.row().setPadTop(mStyles.vars.paddingSeparator);
+
+					// Analytics
 					mUiFactory.text.add(AnalyticsRepo.getInstance().getSessionDebug(), table);
 
 					msgBox.addCancelButtonAndKeys("Back");
@@ -311,7 +318,7 @@ public class MsgBoxFactory {
 
 		if (exception != null) {
 			msgBox.button("Quit Game", new CGameQuit());
-			msgBox.button("Send Report and Quit Game", bugReportSend);
+			msgBox.button("Send and Quit Game", bugReportSend);
 		} else {
 			msgBox.button("Cancel");
 			msgBox.button("Send", bugReportSend, validateDescriptionLength, validateSubjectLength);

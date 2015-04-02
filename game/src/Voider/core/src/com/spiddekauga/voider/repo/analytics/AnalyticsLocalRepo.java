@@ -58,6 +58,7 @@ class AnalyticsLocalRepo {
 		if (mSessionId != null) {
 			mSqliteGateway.endSession(mSessionId, new Date(), getScreenSize());
 		}
+		mSessionIdPrev = mSessionId;
 		mSessionId = null;
 	}
 
@@ -160,37 +161,16 @@ class AnalyticsLocalRepo {
 	 * @return formatted debug string for the current session
 	 */
 	String getSessionDebug() {
-		ArrayList<AnalyticsSessionEntity> sessions = mSqliteGateway.getAnalytics();
-
-		// Get current session
-		AnalyticsSessionEntity session = null;
-		for (AnalyticsSessionEntity sessionEntity : sessions) {
-			if (sessionEntity.sessionId.equals(mSessionId)) {
-				session = sessionEntity;
-				break;
-			}
-		}
+		AnalyticsSessionEntity session = getSession();
 
 		if (session != null) {
 			StringBuilder stringBuilder = new StringBuilder();
-			sortScenes(session);
 
-			// HTML
 			if (!session.scenes.isEmpty()) {
 				appendLastActions(session.scenes.get(session.scenes.size() - 1), stringBuilder);
-				stringBuilder.append("</br></br>\n\n");
+				stringBuilder.append("\n\n-------------------------------\n\n");
 			}
-			stringBuilder.append("<h3>Scenes</h3>");
-			for (AnalyticsSceneEntity scene : session.scenes) {
-				appendScene(scene, stringBuilder);
-			}
-
-			// Trac
-			if (!session.scenes.isEmpty()) {
-				appendLastActions(session.scenes.get(session.scenes.size() - 1), stringBuilder);
-				stringBuilder.append("</br></br>\n\n");
-			}
-			stringBuilder.append("<h3>Scenes</h3>");
+			stringBuilder.append("Scenes\n\n");
 			for (AnalyticsSceneEntity scene : session.scenes) {
 				appendScene(scene, stringBuilder);
 			}
@@ -199,6 +179,30 @@ class AnalyticsLocalRepo {
 		} else {
 			return "";
 		}
+	}
+
+	/**
+	 * @return the current session (or last session if no current session is available)
+	 */
+	AnalyticsSessionEntity getSession() {
+		ArrayList<AnalyticsSessionEntity> sessions = mSqliteGateway.getAnalytics();
+
+		UUID sessionId = mSessionId;
+		if (sessionId == null) {
+			sessionId = mSessionIdPrev;
+		}
+
+		// Search for the session
+		if (sessionId != null) {
+			for (AnalyticsSessionEntity sessionEntity : sessions) {
+				if (sessionEntity.sessionId.equals(sessionId)) {
+					sortScenes(sessionEntity);
+					return sessionEntity;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -222,7 +226,7 @@ class AnalyticsLocalRepo {
 			endIndex = 0;
 		}
 
-		stringBuilder.append("<h3>Last 10 actions in <b>" + scene.name + "</b> scene</h3>");
+		stringBuilder.append("Last 10 actions in " + scene.name + " scene");
 		tableHeader(stringBuilder);
 
 		for (int i = startIndex; i >= endIndex; --i) {
@@ -237,15 +241,15 @@ class AnalyticsLocalRepo {
 	 * @param stringBuilder where to append the scene with events
 	 */
 	private static void appendScene(AnalyticsSceneEntity scene, StringBuilder stringBuilder) {
-		stringBuilder.append("<h4>" + scene.name + " events</h4>\n");
-		stringBuilder.append("<table>\n");
+		stringBuilder.append(scene.name);
+		// stringBuilder.append("\n");
 		tableHeader(stringBuilder);
 
 		for (AnalyticsEventEntity event : scene.events) {
 			appendEvent(scene, event, stringBuilder);
 		}
 
-		stringBuilder.append("</table>\n");
+		stringBuilder.append("\n\n");
 	}
 
 	/**
@@ -310,9 +314,10 @@ class AnalyticsLocalRepo {
 	 * @param stringBuilder
 	 */
 	private static void tableHeader(String header, StringBuilder stringBuilder) {
-		stringBuilder.append("<th style=\"border: 1px solid black;\">");
+		// stringBuilder.append("<th style=\"border: 1px solid black;\">");
 		stringBuilder.append(header);
-		stringBuilder.append("</th>\n");
+		stringBuilder.append(TAB_STRING);
+		// stringBuilder.append("</th>\n");
 	}
 
 	/**
@@ -334,9 +339,10 @@ class AnalyticsLocalRepo {
 	 * @param stringBuilder
 	 */
 	private static void tableColumn(String value, StringBuilder stringBuilder) {
-		stringBuilder.append("<td style=\"border: 1px solid black;\">");
+		// stringBuilder.append("<td style=\"border: 1px solid black;\">");
 		stringBuilder.append(value);
-		stringBuilder.append("</td>\n");
+		stringBuilder.append(TAB_STRING);
+		// stringBuilder.append("</td>\n");
 	}
 
 	/**
@@ -344,7 +350,7 @@ class AnalyticsLocalRepo {
 	 * @param stringBuilder
 	 */
 	private static void tableRowStart(StringBuilder stringBuilder) {
-		stringBuilder.append("<tr>\n");
+		stringBuilder.append("\n");
 	}
 
 	/**
@@ -352,7 +358,7 @@ class AnalyticsLocalRepo {
 	 * @param stringBuilder
 	 */
 	private static void tableRowEnd(StringBuilder stringBuilder) {
-		stringBuilder.append("</tr>\n");
+		// stringBuilder.append("");
 	}
 
 	/** When a scene started loading */
@@ -361,8 +367,11 @@ class AnalyticsLocalRepo {
 	private float mSceneLoadTime = 0;
 	/** Current session id */
 	private UUID mSessionId = null;
+	/** Previous session id */
+	private UUID mSessionIdPrev = null;
 	/** Current scene id */
 	private UUID mSceneId = null;
 	private AnalyticsSqliteGateway mSqliteGateway = new AnalyticsSqliteGateway();
 	private static AnalyticsLocalRepo mInstance = null;
+	private static final String TAB_STRING = "   ";
 }

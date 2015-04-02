@@ -75,15 +75,14 @@ public class CBugReportSend extends Command implements IResponseListener {
 			mBugReport.type = BugReportTypes.BUG_EXCEPTION;
 
 			// Get analytics
-			String analytics = AnalyticsRepo.getInstance().getSessionDebug();
-			mBugReport.additionalInformation += analytics;
+			mBugReport.analyticsSession = AnalyticsRepo.getInstance().getSession();
 		}
 	}
 
 	/**
 	 * @return string with system information
 	 */
-	private static String getSystemInformation() {
+	public static String getSystemInformation() {
 		String systemInformation;
 
 		switch (Gdx.app.getType()) {
@@ -111,6 +110,10 @@ public class CBugReportSend extends Command implements IResponseListener {
 			systemInformation = "";
 			break;
 		}
+
+		// Screen size
+		systemInformation += "\n";
+		systemInformation += "Screen size: " + Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
 
 		return systemInformation;
 	}

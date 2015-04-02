@@ -160,7 +160,7 @@ public enum ClientVersions {
 			),
 	V0_5_4(true,
 			"Improvements",
-			"	Added download URL for updates (appears as text on older clients)",
+			"	Added Update button on new versions (appears as text on older clients)",
 			"	Analytics event on exceptions are now more readable to the player",
 			"Bug fixes",
 			"	Publishing levels, enemies and bullets now works again",
