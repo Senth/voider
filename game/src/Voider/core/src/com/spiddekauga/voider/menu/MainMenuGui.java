@@ -17,9 +17,9 @@ import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
-import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.commands.CUserLogout;
+import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 
 /**
@@ -168,23 +168,11 @@ class MainMenuGui extends MenuGui {
 	}
 
 	/**
-	 * Show update needed
-	 * @param newVersion new client version
-	 * @param changeLog
+	 * Show update information
+	 * @param updateInfo all update information
 	 */
-	void showUpdateNeeded(String newVersion, String changeLog) {
-		String message = Messages.Version.getRequiredUpdate(newVersion);
-		mUiFactory.msgBox.updateMessage(true, message, changeLog);
-	}
-
-	/**
-	 * Show update available
-	 * @param newVersion new client version
-	 * @param changeLog
-	 */
-	void showUpdateAvailable(String newVersion, String changeLog) {
-		String message = Messages.Version.getOptionalUpdate(newVersion);
-		mUiFactory.msgBox.updateMessage(false, message, changeLog);
+	void showUpdateInfo(UpdateEvent updateInfo) {
+		mUiFactory.msgBox.updateMessage(updateInfo);
 	}
 
 	/**

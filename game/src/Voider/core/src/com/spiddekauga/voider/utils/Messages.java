@@ -199,13 +199,13 @@ public class Messages {
 		/** Update required message */
 		private static final String UPDATE_REQUIRED = "You are offline!\n"
 				+ "A _mandatory_ update is available for Voider. "
-				+ "Please update Voider to get all online features.\n\n"
+				+ "Please update Voider access online features.\n\n"
 				+ "Your version: " + OLD_VERSION_STRING + "\n"
 				+ "Latest version: " + NEW_VERSION_STRING;
 
 		/** Update available message */
 		private static final String UPDATE_OPTIONAL = "An optional update is available for Voider. "
-				+ "Please update Voider for bugfixes and new features.\n\n"
+				+ "Please update Voider for bugfixes, improvements and new features.\n\n"
 				+ "Your version: " + OLD_VERSION_STRING + "\n"
 				+ "Latest version: " + NEW_VERSION_STRING;
 

@@ -140,7 +140,4 @@ class ClientPrefsGateway {
 	/** Client id */
 	private static final String CLIENT__ID = "client_id";
 
-	// REGISTER
-	@Deprecated private static final String REGISTER__HAS_REGISTERED = "register_hasRegistered";
-
 }

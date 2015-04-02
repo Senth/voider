@@ -305,11 +305,8 @@ public class LoginScene extends Scene implements IResponseListener {
 				if (mLoginInfo.updateInfo != null) {
 					switch (mLoginInfo.updateInfo.type) {
 					case UPDATE_AVAILABLE:
-						getGui().showUpdateAvailable(mLoginInfo.updateInfo.latestClientVersion, mLoginInfo.updateInfo.changeLog);
-						break;
-
 					case UPDATE_REQUIRED:
-						getGui().showUpdateRequired(mLoginInfo.updateInfo.latestClientVersion, mLoginInfo.updateInfo.changeLog);
+						getGui().showUpdateInfo(mLoginInfo.updateInfo);
 						break;
 
 					default:

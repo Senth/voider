@@ -549,6 +549,13 @@ public class MsgBox extends Dialog {
 		mButtonPad = pad;
 	}
 
+	/**
+	 * @return current button padding
+	 */
+	public float getButtonPad() {
+		return mButtonPad;
+	}
+
 	@Override
 	public void setSkin(Skin skin) {
 		mSkin = skin;

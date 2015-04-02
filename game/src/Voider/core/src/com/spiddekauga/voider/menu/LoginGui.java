@@ -18,7 +18,7 @@ import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
-import com.spiddekauga.voider.utils.Messages;
+import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * GUI for login
@@ -657,23 +657,11 @@ public class LoginGui extends Gui {
 	}
 
 	/**
-	 * Show update needed
-	 * @param newVersion new client version
-	 * @param changeLog
+	 * Show update information
+	 * @param updateInfo all update information
 	 */
-	void showUpdateRequired(String newVersion, String changeLog) {
-		String message = Messages.Version.getRequiredUpdate(newVersion);
-		mUiFactory.msgBox.updateMessage(true, message, changeLog);
-	}
-
-	/**
-	 * Show update available
-	 * @param newVersion new client version
-	 * @param changeLog
-	 */
-	void showUpdateAvailable(String newVersion, String changeLog) {
-		String message = Messages.Version.getOptionalUpdate(newVersion);
-		mUiFactory.msgBox.updateMessage(false, message, changeLog);
+	void showUpdateInfo(UpdateEvent updateInfo) {
+		mUiFactory.msgBox.updateMessage(updateInfo);
 	}
 
 	/** The login scene */

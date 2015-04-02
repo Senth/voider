@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.CBugReportSend;
 import com.spiddekauga.utils.commands.CGameQuit;
+import com.spiddekauga.utils.commands.CRun;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -44,6 +45,7 @@ import com.spiddekauga.voider.utils.commands.CMotdViewed;
 import com.spiddekauga.voider.utils.commands.CSyncFixConflict;
 import com.spiddekauga.voider.utils.commands.CUserConnect;
 import com.spiddekauga.voider.utils.commands.CUserSetAskGoOnline;
+import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * Message box factory
@@ -335,32 +337,59 @@ public class MsgBoxFactory {
 
 	/**
 	 * Create 'update message box' to show an update message dialog
-	 * @param updateRequired true if an update is required, false if update is optional
-	 * @param message message to display
-	 * @param changeLog all new changes to display
+	 * @param updateInfo all information regarding the update
 	 */
-	public void updateMessage(boolean updateRequired, final String message, final String changeLog) {
-		String title = updateRequired ? "Update Required" : "Update Available";
+	public void updateMessage(final UpdateEvent updateInfo) {
+		String title = "";
+		String message = "";
+
+		switch (updateInfo.type) {
+		case UPDATE_AVAILABLE:
+			title = "Update Available";
+			message = Messages.Version.getOptionalUpdate(updateInfo.newestVersion);
+			break;
+
+		case UPDATE_REQUIRED:
+			title = "Update Required";
+			message = Messages.Version.getRequiredUpdate(updateInfo.newestVersion);
+			break;
+
+		default:
+			// Skip
+			break;
+		}
+
 		MsgBoxExecuter msgBox = add(title);
 
 		final int width = (int) (Gdx.graphics.getWidth() * 0.7f);
 
-		Label label = new Label(message, LabelStyles.HIGHLIGHT.getStyle());
-		label.setWrap(true);
-		label.setWidth(width);
-		label.setAlignment(Align.center);
-		msgBox.content(label);
+		Label info = mUiFactory.text.create(message, true, LabelStyles.HIGHLIGHT);
+		info.setWidth(width);
+		info.setAlignment(Align.center);
+		msgBox.content(info);
 
 		// Add change-log
-		msgBox.button("ChangeLog");
+		msgBox.button("View Changes");
 		new ButtonListener((Button) msgBox.getButtonCell().getActor()) {
 			@Override
 			protected void onPressed(Button button) {
-				changeLog("ChangeLog", "New changes since your version", changeLog);
+				changeLog("ChangeLog", "New changes since your version", updateInfo.changeLog);
 			}
 		};
 
-		msgBox.addCancelButtonAndKeys("OK");
+		msgBox.addCancelButtonAndKeys("Ok");
+
+		// Download URL (if exists)
+		if (updateInfo.downloadUrl != null) {
+			msgBox.button("Update", new CRun() {
+				@Override
+				public boolean execute() {
+					Gdx.net.openURI(updateInfo.downloadUrl);
+					Gdx.app.exit();
+					return true;
+				}
+			});
+		}
 	}
 
 	/**

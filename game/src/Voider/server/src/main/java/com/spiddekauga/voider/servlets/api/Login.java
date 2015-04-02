@@ -17,10 +17,12 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
+import com.spiddekauga.voider.network.misc.NetworkConfig;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.network.user.LoginResponse.Statuses;
+import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
@@ -70,6 +72,15 @@ public class Login extends VoiderServlet {
 				mResponse.clientVersionStatus = ClientVersionStatuses.NEW_VERSION_AVAILABLE;
 			}
 			mResponse.changeLogMessage = ClientVersions.getChangeLogs(method.clientVersion);
+
+			// Add download URL
+			Builds build = Builds.getCurrent();
+			if (build != null) {
+				String downloadUrl = build.getDownloadDesktopUrl();
+				if (downloadUrl != null) {
+					mResponse.changeLogMessage += NetworkConfig.SPLIT_TOKEN + downloadUrl;
+				}
+			}
 		} else {
 			mResponse.clientVersionStatus = ClientVersionStatuses.UP_TO_DATE;
 		}

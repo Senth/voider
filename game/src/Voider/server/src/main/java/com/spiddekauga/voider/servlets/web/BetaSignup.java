@@ -51,7 +51,7 @@ public class BetaSignup extends VoiderController {
 				}
 			}
 
-			super.redirect(ServerConfig.BETA_URL + "beta-signup?" + parameters);
+			super.redirect(Builds.BETA.getUrl() + "beta-signup?" + parameters);
 			return;
 		}
 
@@ -159,7 +159,7 @@ public class BetaSignup extends VoiderController {
 		String redirectUrl = "";
 		// Beta client should always redirect to the release home page
 		if (Builds.BETA.isCurrent()) {
-			redirectUrl = ServerConfig.RELEASE_URL;
+			redirectUrl = Builds.RELEASE.getUrl();
 		}
 
 		redirectUrl += "beta-signup-confirmation.jsp?" + url;
@@ -230,7 +230,7 @@ public class BetaSignup extends VoiderController {
 		body += "-----------------------------------------<br />";
 		body += "This key is used when regestring the game.<br /><br />";
 
-		body += "<a href=\"" + ServerConfig.BETA_CLIENT_URL + "\">Download Voider Beta PC Client</a><br />";
+		body += "<a href=\"" + Builds.BETA.getDownloadDesktopUrl() + "\">Download Voider Beta PC Client</a><br />";
 		body += "Check out useful beta information tutorials at <a href=\"" + ServerConfig.BETA_INFO_URL + "\">" + ServerConfig.BETA_INFO_URL
 				+ "</a>";
 

@@ -170,11 +170,8 @@ public class MainMenu extends Scene implements IEventListener {
 				if (loginInfo.updateInfo != null) {
 					switch (loginInfo.updateInfo.type) {
 					case UPDATE_AVAILABLE:
-						((MainMenuGui) getGui()).showUpdateAvailable(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
-						break;
-
 					case UPDATE_REQUIRED:
-						((MainMenuGui) getGui()).showUpdateNeeded(loginInfo.updateInfo.latestClientVersion, loginInfo.updateInfo.changeLog);
+						((MainMenuGui) getGui()).showUpdateInfo(loginInfo.updateInfo);
 						break;
 
 					default:

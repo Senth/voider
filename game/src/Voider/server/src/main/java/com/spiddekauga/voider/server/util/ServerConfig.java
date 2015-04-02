@@ -272,35 +272,33 @@ public class ServerConfig {
 	public static final InternetAddress EMAIL_ADMIN;
 	/** No-reply email address */
 	public static final InternetAddress EMAIL_NO_REPLY;
-	/** Voider release URL */
-	public static final String RELEASE_URL = "http://voider-game.com/";
-	/** Voider beta URL */
-	public static final String BETA_URL = "http://voider-beta.appspot.com/";
-	/** Beta download location */
-	public static final String BETA_CLIENT_URL = RELEASE_URL + "Voider-beta.jar";
 	/** Beta information location */
-	public static final String BETA_INFO_URL = RELEASE_URL + "beta.jsp";
+	public static final String BETA_INFO_URL = Builds.RELEASE.getUrl() + "beta.jsp";
 
 	/**
 	 * All different servers builds
 	 */
 	public enum Builds {
 		/** Development server */
-		DEV("voider-dev"),
+		DEV("voider-dev", "http://voider-dev.appspot.com/", "Voider-beta"),
 		/** Nightly server */
-		NIGHTLY("voider-nightly"),
+		NIGHTLY("voider-nightly", "http://voider-nightly.appspot.com/", null),
 		/** Beta server */
-		BETA("voider-beta"),
+		BETA("voider-beta", "http://voider-beta.appspot.com/", "Voider-beta"),
 		/** Release server */
-		RELEASE("voider-thegame"),
+		RELEASE("voider-thegame", "http://voider-game.com/", null),
 
 		;
 
 		/**
 		 * @param appId application id of the build
+		 * @param url URL for this app
+		 * @param downloadName for downloading stuff, null to not use
 		 */
-		private Builds(String appId) {
+		private Builds(String appId, String url, String downloadName) {
 			mAppId = appId;
+			mUrl = url;
+			mDownloadName = downloadName;
 		}
 
 		/**
@@ -310,7 +308,42 @@ public class ServerConfig {
 			return SystemProperty.applicationId.get().equals(mAppId);
 		}
 
+		/**
+		 * @return download URL for desktop client
+		 */
+		public String getDownloadDesktopUrl() {
+			if (mDownloadName != null) {
+				return DOWNLOAD_URL_PREFIX + mDownloadName + DESKTOP_SUFFIX;
+			} else {
+				return null;
+			}
+		}
+
+		/**
+		 * @return URL for this app
+		 */
+		public String getUrl() {
+			return mUrl;
+		}
+
+		/**
+		 * @return get the current build, null if none was found
+		 */
+		public static Builds getCurrent() {
+			for (Builds build : Builds.values()) {
+				if (build.isCurrent()) {
+					return build;
+				}
+			}
+			return null;
+		}
+
 		private String mAppId;
+		private String mUrl;
+		private String mDownloadName;
+
+		private static final String DOWNLOAD_URL_PREFIX = "http://storage.googleapis.com/voider-shared/app/";
+		private static final String DESKTOP_SUFFIX = ".jar";
 	}
 
 	/** Public Search tokenize sizes */

@@ -201,9 +201,9 @@ public class ButtonFactory extends BaseFactory {
 	}
 
 	/**
-	 * Create a text button. Not that this text button will not use all the extra styles
-	 * available in
-	 * {@link #addText(String, TextButtonStyles, AlignTable, ButtonListener, GuiHider, ArrayList)}
+	 * Create a text button
+	 * @note that this text button will not use all the extra styles available in
+	 *       {@link #addText(String, TextButtonStyles, AlignTable, ButtonListener, GuiHider, ArrayList)}
 	 * @param text the text that should be shown in the text button
 	 * @param style which button style to use
 	 * @return created text button
