@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -40,8 +42,8 @@ import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.resource.PublishMethod;
 import com.spiddekauga.voider.network.resource.PublishResponse;
-import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.network.resource.PublishResponse.Statuses;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CDependency;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
@@ -81,6 +83,9 @@ public class Publish extends VoiderServlet {
 		if (methodEntity instanceof PublishMethod) {
 			mMethod = (PublishMethod) methodEntity;
 			mBlobKeys = getUploadedBlobs();
+
+			// For safety reasons, check for duplicates and remove them
+			removeDuplicates();
 
 			// Check if any of the resources have been
 			boolean alreadyPublished = hasBeenPublishedAlready();
@@ -127,6 +132,22 @@ public class Publish extends VoiderServlet {
 		}
 
 		return mResponse;
+	}
+
+	/**
+	 * Remove duplicates to publish
+	 */
+	private void removeDuplicates() {
+		Set<UUID> resources = new HashSet<>();
+		Iterator<DefEntity> defIterator = mMethod.defs.iterator();
+		while (defIterator.hasNext()) {
+			UUID resourceId = defIterator.next().resourceId;
+			if (resources.contains(resourceId)) {
+				defIterator.remove();
+			} else {
+				resources.add(resourceId);
+			}
+		}
 	}
 
 	/**
@@ -214,6 +235,7 @@ public class Publish extends VoiderServlet {
 			if (DatastoreUtils.exists(DatastoreTables.PUBLISHED, new FilterWrapper(CPublished.RESOURCE_ID, def.resourceId))) {
 				mResponse.alreadyPublished.add(def.resourceId);
 				alreadyPublished = true;
+				break;
 			}
 		}
 
@@ -238,17 +260,25 @@ public class Publish extends VoiderServlet {
 
 	/**
 	 * Add all dependencies for all resources
-	 * @return true if successful
+	 * @return true if successful, false if unsuccessful
 	 */
 	private boolean addDependencies() {
 		mLogger.fine("Adding resource dependencies");
-		for (DefEntity defEntity : mMethod.defs) {
-			boolean success = addDependencies(defEntity);
+		ArrayList<Entity> entitiesToAdd = new ArrayList<>();
 
-			if (!success) {
-				mLogger.severe("Failed to add all dependencies");
+		for (DefEntity defEntity : mMethod.defs) {
+			try {
+				addDependencies(defEntity, entitiesToAdd);
+			} catch (ResourceNotFoundException e) {
 				return false;
 			}
+		}
+
+		// Add dependencies
+		List<Key> keys = DatastoreUtils.put(entitiesToAdd);
+		if (keys.size() != entitiesToAdd.size()) {
+			mLogger.severe("Failled to add all dependencies");
+			return false;
 		}
 
 		return true;
@@ -257,32 +287,26 @@ public class Publish extends VoiderServlet {
 	/**
 	 * Add all dependencies for the specified resource
 	 * @param defEntity the definition to add dependencies for
-	 * @return true if successful
+	 * @param entitiesToAdd add new entities here
+	 * @throws ResourceNotFoundException if the dependency wasn't found
 	 */
-	private boolean addDependencies(DefEntity defEntity) {
+	private void addDependencies(DefEntity defEntity, ArrayList<Entity> entitiesToAdd) throws ResourceNotFoundException {
 		if (!defEntity.dependencies.isEmpty()) {
-			Key datastoreKey = mDatastoreKeys.get(defEntity.resourceId);
+			Key publishKey = mDatastoreKeys.get(defEntity.resourceId);
 
 			for (UUID dependency : defEntity.dependencies) {
 				Key dependencyKey = getResourceKey(dependency, mDatastoreKeys);
 
 				if (dependencyKey != null) {
-					Entity entity = new Entity(DatastoreTables.DEPENDENCY, datastoreKey);
+					Entity entity = new Entity(DatastoreTables.DEPENDENCY, publishKey);
 					entity.setProperty(CDependency.DEPENDENCY, dependencyKey);
-					Key key = DatastoreUtils.put(entity);
-
-					if (key == null) {
-						mLogger.severe("Could not add dependency for " + dependency);
-						return false;
-					}
+					entitiesToAdd.add(entity);
 				} else {
 					mLogger.severe("Could not find dependency key for " + dependency);
-					return false;
+					throw new ResourceNotFoundException(dependency);
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -324,9 +348,9 @@ public class Publish extends VoiderServlet {
 	/**
 	 * Create empty level statistics
 	 * @param key datastore key of the level entity to add empty statistics for
-	 * @return true if successful, false otherwise
+	 * @param statisticsEntities new statistics entities to add
 	 */
-	private boolean createEmptyLevelStatistics(Key key) {
+	private void createEmptyLevelStatistics(Key key, ArrayList<Entity> statisticsEntities) {
 		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), key);
 
 		entity.setProperty(CLevelStat.PLAY_COUNT, 0);
@@ -336,9 +360,7 @@ public class Publish extends VoiderServlet {
 		entity.setProperty(CLevelStat.RATING_AVG, 0.0);
 		entity.setProperty(CLevelStat.CLEAR_COUNT, 0);
 
-		Key statKey = DatastoreUtils.put(entity);
-
-		return statKey != null;
+		statisticsEntities.add(entity);
 	}
 
 	/**
@@ -348,15 +370,14 @@ public class Publish extends VoiderServlet {
 	private boolean addEntitiesToDatastore() {
 		mLogger.fine("Add entities to datastore");
 
+		ArrayList<Entity> levelStatistics = new ArrayList<>();
+
 		for (DefEntity defEntity : mMethod.defs) {
 			Key datastoreKey = addEntityToDatastore(defEntity);
 
 			if (datastoreKey != null) {
 				if (defEntity instanceof LevelDefEntity) {
-					boolean success = createEmptyLevelStatistics(datastoreKey);
-					if (!success) {
-						return false;
-					}
+					createEmptyLevelStatistics(datastoreKey, levelStatistics);
 				}
 
 				setSyncDownloadDate(datastoreKey);
@@ -367,6 +388,13 @@ public class Publish extends VoiderServlet {
 				mLogger.severe("Failed to add all entities to the datastore, removing all");
 				return false;
 			}
+		}
+
+		// Add level statistic entities
+		List<Key> levelStatKeys = DatastoreUtils.put(levelStatistics);
+		if (levelStatistics.size() != levelStatKeys.size()) {
+			mLogger.severe("Failed to add all level statistics");
+			return false;
 		}
 
 		return true;
@@ -702,8 +730,18 @@ public class Publish extends VoiderServlet {
 		appendDefEntity(builder, campaignDefEntity);
 	}
 
-	/** Logger */
-	private Logger mLogger = Logger.getLogger(Publish.class.getName());
+	/**
+	 * Exception when a resource wasn't found
+	 */
+	private static class ResourceNotFoundException extends Exception {
+		/**
+		 * @param uuid id of the resource that wasn't found
+		 */
+		public ResourceNotFoundException(UUID uuid) {
+			super(uuid.toString());
+		}
+	}
+
 	/** Created search documents */
 	private HashMap<UploadTypes, ArrayList<Document>> mSearchDocumentsToAdd = new HashMap<>();
 	private Map<UUID, BlobKey> mBlobKeys = null;

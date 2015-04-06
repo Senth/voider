@@ -165,7 +165,6 @@ public class ResourceRepo extends Repo {
 		ArrayList<IResource> resources = new ArrayList<>();
 
 		resources.addAll(getNonPublishedDependencies(actorDef));
-		resources.add(actorDef);
 
 		publish(responseListener, progressListener, resources);
 	}
@@ -181,7 +180,6 @@ public class ResourceRepo extends Repo {
 
 		resources.addAll(getNonPublishedDependencies(level.getDef()));
 		resources.add(level);
-		resources.add(level.getDef());
 
 		publish(responseListener, progressListener, resources);
 	}

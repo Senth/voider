@@ -47,12 +47,16 @@ public class Upgrade extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		createMotd();
+
 
 		getResponse().setContentType("text/html");
 		getResponse().getWriter().append("DONE !");
 
 		return null;
+	}
+
+	private void removeDuplicateLevels() {
+
 	}
 
 	private void createMotd() {
