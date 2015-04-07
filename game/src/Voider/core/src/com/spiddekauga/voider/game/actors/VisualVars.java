@@ -523,7 +523,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		// If this was the first corner, fix the bounding box so this
 		// resource will be drawn
 		if (mCorners.size() == 1) {
-			calculateBoundingBox();
+			mBoundingBox = Geometry.getBoundingBox(mCorners);
 		}
 	}
 
@@ -1347,7 +1347,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** Class structure revision */
-	protected final int CLASS_REVISION = 1;
+	private static final int CLASS_REVISION = 1;
 
 	// Fixture def values
 	private float mDensity = 0;

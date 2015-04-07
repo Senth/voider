@@ -19,7 +19,7 @@ public class EnemyDefEntity extends DefEntity {
 	/** If the enemy uses a weapon */
 	public boolean hasWeapon = false;
 	/** Movement type */
-	public MovementTypes movementType = null;
+	public MovementTypes movementType = MovementTypes.PATH;
 	/** Movement speed d */
 	public float movementSpeed = 0;
 	/** Bullet speed */

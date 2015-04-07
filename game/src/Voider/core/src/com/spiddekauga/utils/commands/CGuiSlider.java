@@ -9,15 +9,29 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
  */
 public class CGuiSlider extends CGui implements ICommandCombinable {
 	/**
-	 * Creates a slider command that will change the value of the slider
+	 * Creates a slider command that will change the value of the slider. Doesn't execute
+	 * the first time this is called
 	 * @param slider the slider to change the value of
 	 * @param newValue the new value of the slider
 	 * @param oldValue the old value of the slider
 	 */
 	public CGuiSlider(Slider slider, float newValue, float oldValue) {
+		this(slider, newValue, oldValue, true);
+	}
+
+	/**
+	 * Creates a slider command that will change the value of the slider. Doesn't execute
+	 * the first time this is called
+	 * @param slider the slider to change the value of
+	 * @param newValue the new value of the slider
+	 * @param oldValue the old value of the slider
+	 * @param skipFirstTime skip to execute the first time this is executed
+	 */
+	public CGuiSlider(Slider slider, float newValue, float oldValue, boolean skipFirstTime) {
 		mSlider = slider;
 		mNewValue = newValue;
 		mOldValue = oldValue;
+		mSkipFirstTime = skipFirstTime;
 	}
 
 	@Override
@@ -39,7 +53,7 @@ public class CGuiSlider extends CGui implements ICommandCombinable {
 
 	@Override
 	public boolean execute() {
-		if (!mFirstTime) {
+		if (!mSkipFirstTime) {
 			boolean success = setTemporaryName(mSlider);
 			if (success) {
 				mSlider.setValue(mNewValue);
@@ -49,7 +63,7 @@ public class CGuiSlider extends CGui implements ICommandCombinable {
 
 			return success;
 		} else {
-			mFirstTime = false;
+			mSkipFirstTime = false;
 			return true;
 		}
 	}
@@ -63,7 +77,7 @@ public class CGuiSlider extends CGui implements ICommandCombinable {
 	}
 
 	/** Skip executing first time */
-	private boolean mFirstTime = true;
+	private boolean mSkipFirstTime = true;
 	/** Slider to change the value on */
 	private Slider mSlider;
 	/** New value of the slider (on execute) */

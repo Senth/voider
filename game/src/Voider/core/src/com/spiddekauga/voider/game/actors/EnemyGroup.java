@@ -72,7 +72,7 @@ public class EnemyGroup extends Resource {
 
 		// Add
 		while (cEnemies > mEnemies.size()) {
-			EnemyActor copyEnemy = mEnemies.get(0).copyNewResource();
+			EnemyActor copyEnemy = mEnemies.get(0).copyForGroup();
 			copyEnemy.destroyBody();
 
 			// Set activate trigger

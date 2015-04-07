@@ -440,8 +440,6 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 		ResourceType copy = super.copyNewResource();
 
 		EnemyActor enemyCopy = (EnemyActor) copy;
-		// enemyCopy.mPath = mPath;
-		// enemyCopy.mGroup = mGroup;
 
 		// Never make a copy a group leader?
 		enemyCopy.mGroupLeader = false;
@@ -472,6 +470,19 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 			mPathOnceReachedEnd = fromEnemy.mPathOnceReachedEnd;
 			mPathForward = fromEnemy.mPathForward;
 		}
+	}
+
+	/**
+	 * Creates a new copy of this enemy for an enemy group. I.e. sort of deep copy
+	 * @return new enemy to be used for the same group
+	 */
+	EnemyActor copyForGroup() {
+		EnemyActor enemyActor = new EnemyActor();
+		enemyActor.setDef(getDef());
+		enemyActor.setPosition(getPosition());
+		enemyActor.mGroup = mGroup;
+		enemyActor.mPath = mPath;
+		return enemyActor;
 	}
 
 	/**

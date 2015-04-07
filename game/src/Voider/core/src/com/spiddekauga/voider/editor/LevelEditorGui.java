@@ -347,13 +347,15 @@ class LevelEditorGui extends EditorGui {
 
 			// Update enemy count slider values
 			if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
-				mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue()), true);
+				mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue(), false),
+						true);
 			}
 
 			// Update enemy delay slider values
 			if (mLevelEditor.getEnemySpawnDelay() >= 0 && mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
 				mInvoker.execute(
-						new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue()), true);
+						new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue(), false),
+						true);
 			}
 
 			// Has activate trigger -> Show trigger delay
@@ -362,7 +364,8 @@ class LevelEditorGui extends EditorGui {
 
 				float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
 				if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
-					mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue()));
+					mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue(), false),
+							true);
 				}
 			} else {
 				mWidgets.enemy.hiderActivateDelay.hide();
@@ -375,7 +378,8 @@ class LevelEditorGui extends EditorGui {
 
 				float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
 				if (deactivateDelay >= 0 && deactivateDelay != mWidgets.enemy.deactivateDelay.getValue()) {
-					mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
+					mInvoker.execute(
+							new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue(), false), true);
 				}
 			} else {
 				mWidgets.enemy.hiderDeactivateDelay.hide();
@@ -1065,7 +1069,13 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemy.cEnemies = mUiFactory.addSlider("Copies", "LevelEnemy_Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX,
 				Level.Enemy.ENEMIES_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished);
 
-		HideSliderValue delayHider = new HideSliderValue(mWidgets.enemy.cEnemies, 2, Float.MAX_VALUE);
+		HideSliderValue delayHider = new HideSliderValue(mWidgets.enemy.cEnemies, 2, Float.MAX_VALUE) {
+			@Override
+			protected void onShow() {
+				mWidgets.enemy.betweenDelay.setValue(mLevelEditor.getEnemySpawnDelay());
+			}
+		};
+
 		mWidgets.enemy.hiderTable.addChild(delayHider);
 
 
