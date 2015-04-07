@@ -54,10 +54,11 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	/**
 	 * @param gui all UI elements
 	 * @param pickRadius picking radius
+	 * @param defType what we editor in this editor
 	 * @param actorType the actor type used in this editor
 	 */
-	public ActorEditor(Gui gui, float pickRadius, Class<? extends Actor> actorType) {
-		super(gui, pickRadius);
+	public ActorEditor(Gui gui, float pickRadius, Class<? extends Def> defType, Class<? extends Actor> actorType) {
+		super(gui, pickRadius, defType);
 		mActorType = actorType;
 
 
@@ -503,6 +504,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 
 		((DrawAppendTool) mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mActorDef);
+		mInvoker.dispose();
 	}
 
 	@Override
@@ -620,6 +622,17 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 
 		setSaved();
+	}
+
+	@Override
+	public void duplicateDef(String name, String description) {
+		if (mActorDef != null) {
+			setActorDef((ActorDef) mActorDef.copyNewResource());
+			mActorDef.setName(name);
+			mActorDef.setDescription(description);
+			setUnsaved();
+			saveDef();
+		}
 	}
 
 	/**

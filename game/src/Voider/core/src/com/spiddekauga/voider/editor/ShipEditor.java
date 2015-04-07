@@ -12,8 +12,6 @@ import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
-import com.spiddekauga.voider.explore.ExploreActions;
-import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -21,7 +19,6 @@ import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
@@ -34,7 +31,7 @@ public class ShipEditor extends ActorEditor {
 	 * Default constructor
 	 */
 	public ShipEditor() {
-		super(new ShipEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, PlayerActor.class);
+		super(new ShipEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, PlayerActorDef.class, PlayerActor.class);
 
 		getGui().setShipEditor(this);
 	}
@@ -278,19 +275,6 @@ public class ShipEditor extends ActorEditor {
 		}
 
 		mMouseJointDef.bodyB = mActor.getBody();
-	}
-
-	@Override
-	public void loadDef() {
-		SceneSwitcher.switchTo(ExploreFactory.create(PlayerActorDef.class, ExploreActions.LOAD));
-	}
-
-	@Override
-	public void duplicateDef() {
-		mDef = mDef.copyNewResource();
-		getGui().resetValues();
-		mInvoker.dispose();
-		saveDef();
 	}
 
 	@Override

@@ -240,6 +240,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 		mWidgets.info.description = mUiFactory.addTextArea("Description", false,
 				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), listener, mInfoTable, mDisabledWhenPublished);
+		mWidgets.info.description.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 	}
 
 	/**

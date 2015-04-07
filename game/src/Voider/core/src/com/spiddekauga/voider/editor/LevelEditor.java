@@ -85,7 +85,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * Constructor for the level editor
 	 */
 	public LevelEditor() {
-		super(new LevelEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
+		super(new LevelEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_LEVEL_EDITOR, LevelDef.class);
 		getGui().setLevelEditor(this);
 	}
 
@@ -830,12 +830,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public void loadDef() {
-		SceneSwitcher.switchTo(ExploreFactory.create(LevelDef.class, ExploreActions.LOAD));
-		setSaved();
-	}
-
-	@Override
 	public void newDef() {
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
@@ -844,7 +838,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public void duplicateDef() {
+	public void duplicateDef(String name, String description) {
 		Level level = mLevel.copyNewResource();
 
 		setLevel(level);

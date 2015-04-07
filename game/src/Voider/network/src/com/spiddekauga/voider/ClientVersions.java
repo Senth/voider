@@ -163,13 +163,19 @@ public enum ClientVersions {
 			"	Added Update button on new versions (appears as text on older clients)",
 			"	Analytics event on exceptions are now more readable to the player",
 			"	Changed some dark text to brighter text",
-			"	A bullet image is now displayed for the weapon in level editor",
+			"	A bullet image is now displayed for the weapon in enemy editor",
 			"	Added ability to switch to other editor in first pop-up",
 			"Bug fixes",
 			"	Publishing levels, enemies and bullets now works again",
 			"	List of resources to publish now uses the correct name",
 			"	Description is now wrapped correctly when loading/playing levels"
 			),
+	V0_5_5(false,
+			"Improvements",
+			"	Specifying a large amount of enemies in the level editor now is a lot faster",
+			"Bug fixes",
+			"	Can now create a copy of the current level, enemy, or bullet"
+			)
 
 
 	;

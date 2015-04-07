@@ -21,6 +21,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Debug;
@@ -38,13 +39,12 @@ import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Class for all shape variables
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class VisualVars implements KryoSerializable, Disposable, IResourceCorner {
+public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposable, IResourceCorner {
 	/**
 	 * Sets the appropriate default values
 	 * @param actorType the default values depends on which actor type is set
@@ -66,6 +66,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		@SuppressWarnings("unused")
 		int classRevision = input.readInt(true);
 
+		setDefaultFixtureValues();
+		createFixtureDef();
+		calculateBounds();
+	}
+
+	@Override
+	public void copy(Object fromOriginal) {
 		setDefaultFixtureValues();
 		createFixtureDef();
 		calculateBounds();
@@ -280,9 +287,23 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
+	 * @return width (bounding box width) of the actor
+	 */
+	public float getWidth() {
+		return mBoundingBox.getRight() - mBoundingBox.getLeft();
+	}
+
+	/**
+	 * @return height (bounding box height) of the actor
+	 */
+	public float getHeight() {
+		return mBoundingBox.getTop() - mBoundingBox.getBottom();
+	}
+
+	/**
 	 * Calculate bounding box and radius bounds
 	 */
-	private void calculateBounds() {
+	public void calculateBounds() {
 		calculateBoundingRadius();
 		calculateBoundingBox();
 	}
@@ -291,36 +312,39 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Calculate bounding box
 	 */
 	private void calculateBoundingBox() {
-		switch (mShapeType) {
-		case CIRCLE:
-			mBoundingBox.setFromCircle(mShapeCircleRadius);
-			break;
+		mBoundingBox = Geometry.getBoundingBox(mPolygon, mStartAngle, mCenterOffset);
 
-		case RECTANGLE:
-		case TRIANGLE:
-			mBoundingBox = Geometry.getBoundingBox(mVertices);
-			break;
-
-		case CUSTOM:
-		case IMAGE:
-			// Regular shape
-			if (mCorners.size() >= 3) {
-				mBoundingBox = Geometry.getBoundingBox(mCorners);
-			}
-			// Circle shape
-			else if (mCorners.size() == 2) {
-				Vector2 diffVector = Pools.vector2.obtain();
-				diffVector.set(mCorners.get(1)).sub(mCorners.get(0));
-				float radius = diffVector.len();
-				mBoundingBox.setFromCircle(radius);
-				Pools.vector2.free(diffVector);
-			}
-			// Circle shape with default width
-			else if (mCorners.size() == 1) {
-				mBoundingBox.setFromCircle(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
-			}
-			break;
-		}
+		// REMOVE
+		// switch (mShapeType) {
+		// case CIRCLE:
+		// mBoundingBox.setFromCircle(mShapeCircleRadius);
+		// break;
+		//
+		// case RECTANGLE:
+		// case TRIANGLE:
+		// mBoundingBox = Geometry.getBoundingBox(mPolygon);
+		// break;
+		//
+		// case CUSTOM:
+		// case IMAGE:
+		// // Regular shape
+		// if (mCorners.size() >= 3) {
+		// mBoundingBox = Geometry.getBoundingBox(mCorners);
+		// }
+		// // Circle shape
+		// else if (mCorners.size() == 2) {
+		// Vector2 diffVector = Pools.vector2.obtain();
+		// diffVector.set(mCorners.get(1)).sub(mCorners.get(0));
+		// float radius = diffVector.len();
+		// mBoundingBox.setFromCircle(radius);
+		// Pools.vector2.free(diffVector);
+		// }
+		// // Circle shape with default width
+		// else if (mCorners.size() == 1) {
+		// mBoundingBox.setFromCircle(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
+		// }
+		// break;
+		// }
 
 		// Offset bounding box with the center
 		mBoundingBox.offset(mCenterOffset);
@@ -1272,6 +1296,14 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		return mImage;
 	}
 
+	/**
+	 * Set the starting angle, used for calculating the bounding box
+	 * @param angle in degrees
+	 */
+	void setStartAngle(float angle) {
+		mStartAngle = angle;
+		calculateBoundingBox();
+	}
 
 	@Tag(52) private Color mColor = new Color();
 	@Tag(49) private ActorShapeTypes mShapeType = null;
@@ -1285,6 +1317,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@Tag(126) private IImageNames mImageName = null;
 	@Tag(127) private Vector2 mImageOffset = new Vector2();
 	@Tag(128) private float mImageScaleWorld = 1;
+	@Tag(144) private float mStartAngle = 0;
 
 	/** Temporary raw image contour points of the actor */
 	private ArrayList<Vector2> mContourRaw = null;
@@ -1310,7 +1343,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<>();
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
-	/** Bounding box */
 	private BoundingBox mBoundingBox = new BoundingBox();
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;

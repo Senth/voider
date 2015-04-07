@@ -59,7 +59,7 @@ public class EnemyEditor extends ActorEditor {
 	 * Creates the enemy editor
 	 */
 	public EnemyEditor() {
-		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, EnemyActor.class);
+		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, EnemyActorDef.class, EnemyActor.class);
 
 		getGui().setEnemyEditor(this);
 	}
@@ -970,25 +970,6 @@ public class EnemyEditor extends ActorEditor {
 		}
 
 		SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.SELECT));
-	}
-
-
-	/**
-	 * Switches scene to load an enemy
-	 */
-	@Override
-	public void loadDef() {
-		SceneSwitcher.switchTo(ExploreFactory.create(EnemyActorDef.class, ExploreActions.LOAD));
-	}
-
-	/**
-	 * Duplicates the current enemy
-	 */
-	@Override
-	public void duplicateDef() {
-		setActorDef((EnemyActorDef) mDef.copyNewResource());
-		getGui().resetValues();
-		saveDef();
 	}
 
 	/**

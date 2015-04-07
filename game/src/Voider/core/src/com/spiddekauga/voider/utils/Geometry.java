@@ -1143,6 +1143,26 @@ public class Geometry {
 	}
 
 	/**
+	 * Calculate bounding box from vertices
+	 * @param vertices all vertices to get the bounding box from
+	 * @param rotateAngle how much to rotate the vertices, in degrees
+	 * @param center where to rotate around
+	 * @return bounding box from the specified vertices
+	 */
+	public static BoundingBox getBoundingBox(Iterable<Vector2> vertices, float rotateAngle, Vector2 center) {
+		ArrayList<Vector2> rotatedVertices = new ArrayList<>();
+
+		for (Vector2 vertex : vertices) {
+			Vector2 copy = vertex.cpy();
+			copy.sub(center);
+			copy.rotate(rotateAngle);
+			rotatedVertices.add(copy);
+		}
+
+		return getBoundingBox(rotatedVertices);
+	}
+
+	/**
 	 * Calculates the vertex farthest away from the specified point
 	 * @param point the point to check the vertices against
 	 * @param vertices the vertices to check

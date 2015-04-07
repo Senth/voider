@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.explore.ExploreActions;
-import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.ActorDef;
@@ -16,7 +14,6 @@ import com.spiddekauga.voider.network.resource.BulletDefEntity;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -28,7 +25,7 @@ public class BulletEditor extends ActorEditor {
 	 * Creates a bullet editor.
 	 */
 	public BulletEditor() {
-		super(new BulletEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, BulletActor.class);
+		super(new BulletEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, BulletActorDef.class, BulletActor.class);
 
 		getGui().setBulletEditor(this);
 	}
@@ -124,20 +121,6 @@ public class BulletEditor extends ActorEditor {
 		getGui().resetValues();
 		setSaved();
 		mInvoker.dispose();
-	}
-
-	@Override
-	public void loadDef() {
-		SceneSwitcher.switchTo(ExploreFactory.create(BulletActorDef.class, ExploreActions.LOAD));
-	}
-
-	@Override
-	public void duplicateDef() {
-		mDef = mDef.copyNewResource();
-		mWeapon.getDef().setBulletActorDef(mDef);
-		getGui().resetValues();
-		mInvoker.dispose();
-		saveDef();
 	}
 
 	/**

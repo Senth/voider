@@ -816,6 +816,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.description = mUiFactory.addTextArea("Description", false,
 				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), textFieldListener, right,
 				mDisabledWhenPublished);
+		mWidgets.info.description.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 
 
 		// Prologue
@@ -827,6 +828,7 @@ class LevelEditorGui extends EditorGui {
 		};
 		mWidgets.info.prologue = mUiFactory.addTextArea("Prologue", false, Messages.Level.PROLOGUE_DEFAULT, textFieldListener, right,
 				mDisabledWhenPublished);
+		mWidgets.info.prologue.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 
 		// Epilogue
 		textFieldListener = new TextFieldListener(mInvoker) {
@@ -837,6 +839,7 @@ class LevelEditorGui extends EditorGui {
 		};
 		mWidgets.info.epilogue = mUiFactory.addTextArea("Epilogue", false, Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right,
 				mDisabledWhenPublished);
+		mWidgets.info.prologue.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 
 		mInfoTable.layout();
 	}

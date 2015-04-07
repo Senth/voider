@@ -110,8 +110,8 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		defCopy.mCopyParentId = mUniqueId;
 		defCopy.mRevisedBy = mUser.getUsername();
 		defCopy.mRevisedByKey = mUser.getServerKey();
-		/** @todo create numbering of copy name if already a copy */
 		defCopy.mName = defCopy.mName + " (copy)";
+		defCopy.mRevision = 0;
 
 		return copy;
 	}

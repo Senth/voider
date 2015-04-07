@@ -37,8 +37,10 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TabWidget;
+import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
+import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
@@ -570,10 +572,7 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Duplicate");
-				msgBox.content(Messages.replaceName(Messages.Editor.DUPLICATE_BOX, getResourceTypeName()));
-				msgBox.addCancelButtonAndKeys("No");
-				msgBox.button("Yes", new CEditorDuplicate(mEditor));
+				mEditor.duplicateDef();
 			}
 		};
 
@@ -800,6 +799,53 @@ public abstract class EditorGui extends Gui {
 		Command save = new CDefHasValidName(msgBox, this, mEditor, getResourceTypeName());
 		msgBox.button("Save", save);
 		msgBox.key(Input.Keys.ENTER, save);
+	}
+
+	/**
+	 * Show duplicate information message box
+	 */
+	protected void showDuplicateDialog() {
+		AlignTable table = new AlignTable();
+		table.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		table.setPad(mUiFactory.getStyles().vars.paddingInner);
+		TextFieldListener listener;
+
+		String oldName = mEditor.getName();
+		String oldDescription = mEditor.getDescription();
+
+		final CEditorDuplicate editorDuplicate = new CEditorDuplicate(mEditor, oldName, oldDescription);
+
+		// Name
+		listener = new TextFieldListener(mInvoker) {
+			@Override
+			protected void onChange(String newText) {
+				editorDuplicate.setName(newText);
+			}
+		};
+		TextField name = mUiFactory.addTextField("New Name", true, "New name", listener, table, null);
+		name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		name.setText(oldName);
+		Label nameError = mUiFactory.text.getLastCreatedErrorLabel();
+		VFieldLength validateNameLength = new VFieldLength(listener, nameError, Config.Actor.NAME_LENGTH_MIN);
+
+
+		// Description
+		listener = new TextFieldListener(mInvoker) {
+			@Override
+			protected void onChange(String newText) {
+				editorDuplicate.setDescription(newText);
+			}
+		};
+		TextField description = mUiFactory.addTextArea("Description", false, null, listener, table, null);
+		description.setText(oldDescription);
+		description.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
+
+
+		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Set copy information");
+		msgBox.content(table);
+		msgBox.addCancelButtonAndKeys();
+		msgBox.button("Create Copy", editorDuplicate, validateNameLength);
 	}
 
 	/**

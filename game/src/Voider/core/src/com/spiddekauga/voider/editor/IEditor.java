@@ -40,9 +40,16 @@ public interface IEditor {
 	void loadDef();
 
 	/**
-	 * Duplicates the current definition
+	 * Tries to duplicate the current definition
 	 */
 	void duplicateDef();
+
+	/**
+	 * Actually duplicates the current definition
+	 * @param name new name for the definition
+	 * @param description new description for the definition
+	 */
+	void duplicateDef(String name, String description);
 
 	/**
 	 * @return true if the editor is currently drawing

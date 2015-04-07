@@ -1,13 +1,15 @@
 package com.spiddekauga.voider.game.actors;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
@@ -18,7 +20,7 @@ import com.spiddekauga.voider.resources.Resource;
  * life is the variables in the Actor class.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class ActorDef extends Def {
+public abstract class ActorDef extends Def implements KryoPreWrite, KryoSerializable {
 	/**
 	 * Sets the visual variable to the specified type
 	 * @param actorType the actor type to which set the default values of the visual
@@ -49,6 +51,8 @@ public abstract class ActorDef extends Def {
 	public void setStartAngleRad(float angle) {
 		getBodyDef().angle = angle;
 		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
+
+		mVisualVars.setStartAngle(getStartAngleDeg());
 	}
 
 	/**
@@ -71,80 +75,6 @@ public abstract class ActorDef extends Def {
 	 */
 	public float getStartAngleDeg() {
 		return getStartAngleRad() * MathUtils.radiansToDegrees;
-	}
-
-	/**
-	 * Calculates the height of the actor definition. Only works if the actor has created
-	 * vertices. This takes into account the starting angle of the actor.
-	 * @return actual height of the actor. 0 if no vertices has been created.
-	 */
-	public float getHeight() {
-		if (!getVisual().isPolygonShapeValid()) {
-			return 0;
-		}
-
-		ArrayList<Vector2> vertices = getVisual().getPolygonShape();
-
-		float rotation = getStartAngleDeg();
-
-		float highest = Float.MIN_VALUE;
-		float lowest = Float.MAX_VALUE;
-
-		// Rotate vertex and check if it's the highest lowest y-value
-		Vector2 tempRotatedVertex = new Vector2();
-		for (Vector2 vertex : vertices) {
-			tempRotatedVertex.set(vertex);
-
-			// Rotate vertex
-			tempRotatedVertex.rotate(rotation);
-
-			// Check highest and lowest
-			if (tempRotatedVertex.y > highest) {
-				highest = tempRotatedVertex.y;
-			}
-			if (tempRotatedVertex.y < lowest) {
-				lowest = tempRotatedVertex.y;
-			}
-		}
-
-		return highest - lowest;
-	}
-
-	/**
-	 * Calculates the width of the actor definition. Only works if the actor has created
-	 * vertices. This takes into account the starting angle of the actor.
-	 * @return actual width of the actor. 0 if no vertices has been created.
-	 */
-	public float getWidth() {
-		if (!getVisual().isPolygonShapeValid()) {
-			return 0;
-		}
-
-		ArrayList<Vector2> vertices = getVisual().getPolygonShape();
-
-		float rotation = getStartAngleDeg();
-
-		float highest = -Float.MAX_VALUE;
-		float lowest = Float.MAX_VALUE;
-
-		// Rotate vertex and check if it's the highest lowest y-value
-		Vector2 tempRotatedVertex = new Vector2();
-		for (Vector2 vertex : vertices) {
-			tempRotatedVertex.set(vertex);
-
-			// Rotate vertex
-			tempRotatedVertex.rotate(rotation);
-
-			// Check highest and lowest
-			if (tempRotatedVertex.x > highest) {
-				highest = tempRotatedVertex.x;
-			}
-			if (tempRotatedVertex.x < lowest) {
-				lowest = tempRotatedVertex.x;
-			}
-		}
-
-		return highest - lowest;
 	}
 
 	/**
@@ -295,8 +225,31 @@ public abstract class ActorDef extends Def {
 		return getRotationSpeedRad() * MathUtils.radiansToDegrees;
 	}
 
+	@Override
+	public void preWrite() {
+
+		mClassRevision = CLASS_REVISION;
+
+	}
+
+	@Override
+	public void write(Kryo kryo, Output output) {
+		// Does nothing
+	}
+
+	@Override
+	public void read(Kryo kryo, Input input) {
+		if (mClassRevision == 0) {
+			mVisualVars.setStartAngle(getStartAngleDeg());
+		}
+	}
+
+
 	/** When the body was changed last time */
 	protected float mBodyChangeTime = 0;
+
+	private static final int CLASS_REVISION = 1;
+	@Tag(145) private int mClassRevision = 0;
 
 	/** Maximum life of the actor, usually starting amount of life */
 	@Tag(44) private float mMaxLife = 0;
@@ -308,7 +261,4 @@ public abstract class ActorDef extends Def {
 	@Tag(47) private boolean mDestroyOnCollide = false;
 	/** Visual variables */
 	@Tag(48) protected VisualVars mVisualVars = null;
-
-	// DON'T FORGET TO ADD TO JUNIT TEST! ActorDefTest
-
 }

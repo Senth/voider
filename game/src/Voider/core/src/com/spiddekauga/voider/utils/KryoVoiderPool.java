@@ -187,13 +187,13 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		/** TimePos */
 		TIME_POS(TimePos.class),
 		/** ArrayList */
-		ARRAY_LIST(ArrayList.class), // Created from pool
+		ARRAY_LIST(ArrayList.class),
 		/** BodyDef */
 		BODY_DEF(BodyDef.class),
 		/** BodyType */
 		BODY_TYPE(BodyType.class),
 		/** HashSet */
-		HASH_SET(HashSet.class), // Created from pool
+		HASH_SET(HashSet.class),
 		/** Date */
 		DATE(Date.class),
 		/** ActorShapeTypes */

@@ -409,7 +409,7 @@ public class UiFactory {
 	 */
 	public TextArea addTextArea(String sectionText, boolean errorLabel, String defaultText, float width, TextFieldListener listener,
 			AlignTable table, ArrayList<Actor> createdActors) {
-		TextArea textArea = new TextArea(defaultText, mStyles.textField.standard);
+		TextArea textArea = new TextArea("", mStyles.textField.standard);
 		addTextField(textArea, sectionText, errorLabel, defaultText, width, listener, table, createdActors);
 		table.getCell().setSize(width, mStyles.vars.textAreaHeight);
 		return textArea;

@@ -992,9 +992,32 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public BoundingBox getBoundingBox() {
-		mBoundingBox.set(mDef.getVisual().getBoundingBox());
+		// Actor rotates
+		if (!MathUtils.isEqual(getDef().getRotationSpeedRad(), 0)) {
+			ArrayList<Vector2> polygon = getDef().getVisual().getPolygonShape();
+			mBoundingBox = Geometry.getBoundingBox(polygon, mBody.getAngle() * MathUtils.radiansToDegrees, getDef().getVisual().getCenterOffset());
+		}
+		// No rotation
+		else {
+			mBoundingBox.set(mDef.getVisual().getBoundingBox());
+		}
+
 		mBoundingBox.offset(mPosition);
 		return mBoundingBox;
+	}
+
+	/**
+	 * @return current width of the actor
+	 */
+	public float getWidth() {
+		return getBoundingBox().getRight() - getBoundingBox().getLeft();
+	}
+
+	/**
+	 * @return current height of the actor
+	 */
+	public float getHeight() {
+		return getBoundingBox().getTop() - getBoundingBox().getLeft();
 	}
 
 	/**

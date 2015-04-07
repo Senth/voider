@@ -1,36 +1,66 @@
 package com.spiddekauga.voider.editor.commands;
 
-import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.commands.CRun;
 import com.spiddekauga.voider.editor.IEditor;
 
 /**
- * Duplicates the actor in the current editor
- * 
+ * Duplicates a definition in the current editor
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CEditorDuplicate extends Command {
+public class CEditorDuplicate extends CRun {
 	/**
-	 * Creates a command which will duplicate the current actor in
-	 * the actor editor
-	 * @param editor the editor to duplicate the enemy in
+	 * Either a) Open up a dialog where the user can set a new name and description for
+	 * the new copy; or b) if a name is set through {@link #setName(String)} it will
+	 * actually duplicate the current definition. The description doesn't have to be set.
+	 * @param editor the editor to duplicate the definition in
 	 */
 	public CEditorDuplicate(IEditor editor) {
 		mEditor = editor;
 	}
 
+	/**
+	 * Duplicates the definition with a new name and description. Note that these
+	 * variables can be changed by calling {@link #setName(String)} and
+	 * {@link #setDescription(String)}
+	 * @param editor the editor to duplicate the definition in
+	 * @param name new name of the definition
+	 * @param description new description of the definition
+	 */
+	public CEditorDuplicate(IEditor editor, String name, String description) {
+		mEditor = editor;
+		mName = name;
+		mDescription = description;
+	}
+
 	@Override
 	public boolean execute() {
-		mEditor.saveDef();
-		mEditor.duplicateDef();
+		if (mName != null) {
+			mEditor.duplicateDef(mName, mDescription);
+		} else {
+			mEditor.duplicateDef();
+		}
 		return true;
 	}
 
-	@Override
-	public boolean undo() {
-		// Cannot undo duplicate
-		return false;
+	/**
+	 * Set a new name for the duplicate.
+	 * @param name new name. If not null this will actually cause the command to duplicate
+	 *        the definition. If null it will instead open a dialog where a name and
+	 *        description can be set.
+	 */
+	public void setName(String name) {
+		mName = name;
 	}
 
-	/** Editor to duplicate the enemy in */
+	/**
+	 * Set a description for the editor
+	 * @param description new description
+	 */
+	public void setDescription(String description) {
+		mDescription = description;
+	}
+
 	private IEditor mEditor;
+	private String mName = null;
+	private String mDescription = "";
 }

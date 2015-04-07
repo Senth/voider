@@ -28,6 +28,9 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
+import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
+import com.spiddekauga.voider.explore.ExploreActions;
+import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -63,10 +66,12 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	/**
 	 * @param gui GUI to be used with the editor
 	 * @param pickRadius picking radius of the editor
+	 * @param defType the definition we edit in this editor
 	 */
-	public Editor(Gui gui, float pickRadius) {
+	public Editor(Gui gui, float pickRadius, Class<? extends Def> defType) {
 		super(gui, pickRadius);
 
+		mDefType = defType;
 		mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
 		mSpriteBatch.enableBlending();
 		mSpriteBatch.setBlendFunction(Config.Graphics.BLEND_SRC_FACTOR, Config.Graphics.BLEND_DST_FACTOR);
@@ -105,6 +110,20 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}
+		}
+	}
+
+	@Override
+	public void loadDef() {
+		SceneSwitcher.switchTo(ExploreFactory.create(mDefType, ExploreActions.LOAD));
+	}
+
+	@Override
+	public void duplicateDef() {
+		if (isPublished() || !isSaved()) {
+			saveDef(new CEditorDuplicate(this));
+		} else {
+			getGui().showDuplicateDialog();
 		}
 	}
 
@@ -503,8 +522,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * definition.
 	 */
 	private void createActorDefTexture() {
-		float width = mSavingActorDef.getWidth();
-		float height = mSavingActorDef.getHeight();
+		float width = mSavingActorDef.getVisual().getWidth();
+		float height = mSavingActorDef.getVisual().getHeight();
 
 		// Skip if actor doesn't have a valid shape
 		if (width == 0 || height == 0) {
@@ -544,13 +563,14 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		// Center to the rectangle screenshot area.
 		Vector2 offset = new Vector2();
 		offset.set(0, 0);
-		height = copy.getHeight();
+		copy.getVisual().calculateBounds();
+		height = copy.getVisual().getHeight();
 		float maxSize = Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio;
 		if (height < maxSize) {
 			float offsetHeight = (maxSize - height) * 0.5f;
 			offset.sub(0, offsetHeight);
 		}
-		width = copy.getWidth();
+		width = copy.getVisual().getWidth();
 		if (width < maxSize) {
 			float offsetWidth = (maxSize - width) * 0.5f;
 			offset.sub(offsetWidth, 0);
@@ -764,6 +784,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	private boolean mCollisionBoxesBeenCreated = false;
 	/** Default/Initial projection matrix */
 	private Matrix4 mProjectionMatrixDefault = new Matrix4();
+	/** Def type this editor uses */
+	private Class<? extends Def> mDefType;
 
 	/** Synchronizer */
 	protected static Synchronizer mSynchronizer = Synchronizer.getInstance();
