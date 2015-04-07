@@ -171,8 +171,10 @@ public enum ClientVersions {
 			"	Description is now wrapped correctly when loading/playing levels"
 			),
 	V0_5_5(false,
-			"Improvements",
-			"	Specifying a large amount of enemies in the level editor now is a lot faster",
+			"Level Editor",
+			"	Enemy copies are now created a lot faster",
+			"	Deleting an enemy in a group now deletes the entire group",
+			"	Enemy options (copies/spawn delay) are now updated when selecting another enemy",
 			"Bug fixes",
 			"	Can now create a copy of the current level, enemy, or bullet"
 			)

@@ -7,9 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug;
-import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
-import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
@@ -68,18 +65,10 @@ public class EnemyGroup extends Resource {
 			}
 		}
 
-		TriggerInfo activateTrigger = TriggerInfo.getTriggerInfoByAction(mEnemies.get(0), Actions.ACTOR_ACTIVATE);
-
 		// Add
 		while (cEnemies > mEnemies.size()) {
 			EnemyActor copyEnemy = mEnemies.get(0).copyForGroup();
 			copyEnemy.destroyBody();
-
-			// Set activate trigger
-			if (activateTrigger != null) {
-				TriggerInfo copyTriggerInfo = TriggerInfo.getTriggerInfoByAction(copyEnemy, Actions.ACTOR_ACTIVATE);
-				copyTriggerInfo.delay = activateTrigger.delay + mTriggerDelay * mEnemies.size();
-			}
 
 			mEnemies.add(copyEnemy);
 
@@ -123,12 +112,6 @@ public class EnemyGroup extends Resource {
 	 */
 	public void setSpawnTriggerDelay(float delay) {
 		mTriggerDelay = delay;
-
-		// Update delay in triggers
-		TriggerInfo leaderTriggerInfo = TriggerInfo.getTriggerInfoByAction(mEnemies.get(0), Actions.ACTOR_ACTIVATE);
-		if (leaderTriggerInfo != null) {
-			updateTrigger(leaderTriggerInfo);
-		}
 	}
 
 	/**
@@ -139,31 +122,18 @@ public class EnemyGroup extends Resource {
 	}
 
 	/**
-	 * Updates the specified TriggerInfo in the enemies, but not the leader
-	 * @param leaderTrigger trigger of the leader which values to copy from
+	 * Get the spawning position (index) of the specified enemy
+	 * @param enemyActor
+	 * @return spawning position [1, getEnemyCount()], -1 if the enemy wasn't found in
+	 *         this group
 	 */
-	private void updateTrigger(TriggerInfo leaderTrigger) {
-		for (int i = 1; i < mEnemies.size(); ++i) {
-			TriggerInfo enemyTrigger = TriggerInfo.getTriggerInfoByDuplicate(mEnemies.get(i), leaderTrigger);
-
-			// If action is to activate, this is a special case where the delay is
-			// multiplied by the group delay
-			if (leaderTrigger.action == Actions.ACTOR_ACTIVATE) {
-				enemyTrigger.delay = leaderTrigger.delay + mTriggerDelay * i;
-			} else {
-				enemyTrigger.action = leaderTrigger.action;
+	public int getEnemySpawnIndex(EnemyActor enemyActor) {
+		for (int i = 0; i < mEnemies.size(); ++i) {
+			if (mEnemies.get(i) == enemyActor) {
+				return i + 1;
 			}
 		}
-
-		if (Debug.DEBUG_TESTS) {
-			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
-
-			for (int i = 1; i < mEnemies.size(); ++i) {
-				if (mEnemies.get(i).getTriggerInfos().size() != leaderSize) {
-					Gdx.app.error("EnemyGroup", "Not the same amount of triggers in the group!");
-				}
-			}
-		}
+		return -1;
 	}
 
 	/**
@@ -173,56 +143,6 @@ public class EnemyGroup extends Resource {
 	void setPosition(Vector2 leaderPosition) {
 		for (int i = 1; i < mEnemies.size(); ++i) {
 			mEnemies.get(i).setPosition(leaderPosition);
-		}
-	}
-
-	/**
-	 * Adds another Trigger to the other enemies, not the leader
-	 * @param leaderTrigger trigger of the leader to add in the other enemies
-	 */
-	public void addTrigger(TriggerInfo leaderTrigger) {
-		for (int i = 1; i < mEnemies.size(); ++i) {
-			TriggerInfo copyTriggerInfo = leaderTrigger.copy();
-
-			if (leaderTrigger.action == Actions.ACTOR_ACTIVATE) {
-				copyTriggerInfo.delay = leaderTrigger.delay + mTriggerDelay * i;
-			} else {
-				copyTriggerInfo.delay = leaderTrigger.delay;
-			}
-
-			mEnemies.get(i).addTrigger(copyTriggerInfo);
-		}
-
-		if (Debug.DEBUG_TESTS) {
-			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
-
-			for (int i = 1; i < mEnemies.size(); ++i) {
-				if (mEnemies.get(i).getTriggerInfos().size() != leaderSize) {
-					Gdx.app.error("EnemyGroup", "Not the same amount of triggers in the group!");
-				}
-			}
-		}
-	}
-
-	/**
-	 * Removes a Trigger from the other enemies, not the leader
-	 * @param leaderTrigger trigger of the leader to remove in the other enemies
-	 */
-	public void removeTrigger(TriggerInfo leaderTrigger) {
-		for (int i = 1; i < mEnemies.size(); ++i) {
-			TriggerInfo enemyTrigger = TriggerInfo.getTriggerInfoByDuplicate(mEnemies.get(i), leaderTrigger);
-			mEnemies.get(i).removeTrigger(enemyTrigger);
-		}
-
-
-		if (Debug.DEBUG_TESTS) {
-			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
-
-			for (int i = 1; i < mEnemies.size(); ++i) {
-				if (mEnemies.get(i).getTriggerInfos().size() != leaderSize) {
-					Gdx.app.error("EnemyGroup", "Not the same amount of triggers in the group!");
-				}
-			}
 		}
 	}
 

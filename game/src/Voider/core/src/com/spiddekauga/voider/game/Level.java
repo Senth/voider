@@ -406,29 +406,24 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	public void createDefaultTriggers() {
 		ArrayList<EnemyActor> enemies = mResourceBinder.getResources(EnemyActor.class);
 		for (EnemyActor enemy : enemies) {
-			// Check enemy group
-			EnemyGroup enemyGroup = enemy.getEnemyGroup();
-			if (enemyGroup == null || enemy.isGroupLeader()) {
+			// Create activate trigger
+			if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE) == null) {
+				TriggerInfo defaultTrigger = enemy.createDefaultActivateTrigger(this);
 
-				// Check already have an activate trigger
-				if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE) == null) {
-					TriggerInfo defaultTrigger = enemy.createDefaultActivateTrigger(this);
+				if (defaultTrigger != null) {
+					addResource(defaultTrigger.trigger);
+					enemy.addTrigger(defaultTrigger);
+				}
+			}
+
+			// AI enemies, add an deactivate trigger
+			if (enemy.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+				if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_DEACTIVATE) == null) {
+					TriggerInfo defaultTrigger = enemy.createDefaultDeactivateTrigger();
 
 					if (defaultTrigger != null) {
 						addResource(defaultTrigger.trigger);
 						enemy.addTrigger(defaultTrigger);
-					}
-				}
-
-				// AI enemies, add an deactivate trigger
-				if (enemy.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-					if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_DEACTIVATE) == null) {
-						TriggerInfo defaultTrigger = enemy.createDefaultDeactivateTrigger();
-
-						if (defaultTrigger != null) {
-							addResource(defaultTrigger.trigger);
-							enemy.addTrigger(defaultTrigger);
-						}
 					}
 				}
 			}

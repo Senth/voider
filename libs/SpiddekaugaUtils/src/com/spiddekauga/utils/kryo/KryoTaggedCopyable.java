@@ -2,7 +2,6 @@ package com.spiddekauga.utils.kryo;
 
 /**
  * Copies some parts of an already tagged copied object
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface KryoTaggedCopyable {

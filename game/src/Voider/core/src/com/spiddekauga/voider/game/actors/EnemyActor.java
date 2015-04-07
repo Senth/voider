@@ -281,32 +281,6 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 	}
 
 	/**
-	 * Adds a trigger to the enemy actor
-	 * @param triggerInfo trigger information
-	 */
-	@Override
-	public void addTrigger(TriggerInfo triggerInfo) {
-		super.addTrigger(triggerInfo);
-
-		if (mGroupLeader && mGroup != null) {
-			mGroup.addTrigger(triggerInfo);
-		}
-	}
-
-	/**
-	 * Removes the specified trigger from this enemy
-	 * @param triggerInfo trigger information
-	 */
-	@Override
-	public void removeTrigger(TriggerInfo triggerInfo) {
-		super.removeTrigger(triggerInfo);
-
-		if (mGroupLeader && mGroup != null) {
-			mGroup.removeTrigger(triggerInfo);
-		}
-	}
-
-	/**
 	 * Creates the default activate trigger.
 	 * @param level the current active level
 	 * @return trigger info that was created
@@ -342,8 +316,10 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 
 		// Decrease position if we are in an enemy group
 		if (mGroup != null) {
+			int cEnemies = mGroup.getEnemyCount();
+			int spawnIndex = mGroup.getEnemySpawnIndex(this);
 			float distancePerEnemy = levelSpeed * mGroup.getSpawnTriggerDelay();
-			float offset = (mGroup.getEnemyCount() - 1) * distancePerEnemy;
+			float offset = (cEnemies - spawnIndex) * distancePerEnemy;
 			xCoord -= offset;
 		}
 
@@ -523,6 +499,7 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 
 
 	@Override
+	@Deprecated
 	public boolean addBoundResource(IResource boundResource) {
 		boolean success = super.addBoundResource(boundResource);
 
