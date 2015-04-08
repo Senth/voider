@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -19,6 +20,8 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.utils.kryo.KryoPostWrite;
 import com.spiddekauga.utils.kryo.KryoPreWrite;
@@ -47,6 +50,7 @@ import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 
 /**
@@ -351,10 +355,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 */
 	public void addResource(IResource resource) {
 		mResourceBinder.addResource(resource);
-
-		if (resource instanceof Actor) {
-			addActor((Actor) resource);
-		}
 	}
 
 	/**
@@ -384,9 +384,17 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	public void removeResource(UUID resourceId) {
 		IResource removedResource = mResourceBinder.removeResource(resourceId, true);
 
-		if (removedResource instanceof Actor) {
-			removeActor((Actor) removedResource);
+		if (removedResource instanceof EnemyActor) {
+			removeEnemy((EnemyActor) removedResource);
 		}
+	}
+
+	/**
+	 * Removes a resource from the level
+	 * @param resource the resource to remove
+	 */
+	public void removeResource(IResource resource) {
+		removeResource(resource.getId());
 	}
 
 	/**
@@ -431,30 +439,33 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
-	 * Adds an actor to the level
-	 * @param actor the actor to add to the level
+	 * Removes an enemy from the level
+	 * @param enemyActor the enemy to remove
 	 */
-	private void addActor(Actor actor) {
-		// Add to dependency, if it doesn't load its own def
-		if (!actor.savesDef()) {
-			mLevelDef.addDependency(actor.getDef());
-		}
-	}
+	private void removeEnemy(EnemyActor enemyActor) {
+		final EnemyGroup enemyGroup = enemyActor.getEnemyGroup();
+		if (enemyGroup != null && enemyActor.isGroupLeader()) {
+			// As this enemy has already been removed from the group it's not in there
+			final List<EnemyActor> enemies = enemyGroup.getEnemies();
 
-	/**
-	 * Removes an actor from the level
-	 * @param actor the actor to remove
-	 */
-	private void removeActor(Actor actor) {
-		if (actor != null) {
-			actor.destroyBody();
+			Command command = new Command() {
+				@Override
+				public boolean undo() {
+					addResource(enemies);
+					addResource(enemyGroup);
+					return true;
+				}
 
-			// Remove dependency
-			if (!actor.savesDef()) {
-				mLevelDef.removeDependency(actor.getDef().getId());
-			}
-		} else {
-			Gdx.app.error("Level", "Could not find the actor to remove");
+				@Override
+				public boolean execute() {
+					removeResource(enemyGroup);
+					removeResources(enemies);
+					return true;
+				}
+			};
+
+			Invoker invoker = SceneSwitcher.getInvoker();
+			invoker.execute(command);
 		}
 	}
 
@@ -576,30 +587,12 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			resource.prepareWrite();
 		}
 
-
-		// Remove multiple enemies from the group, i.e. only save the leader.
-		if (Actor.isEditorActive()) {
-			ArrayList<EnemyActor> removeEnemies = new ArrayList<>();
-
-			for (EnemyActor enemyActor : mResourceBinder.getResources(EnemyActor.class)) {
-				int cEnemiesBefore = removeEnemies.size();
-
-				EnemyGroup enemyGroup = enemyActor.getEnemyGroup();
-
-				if (enemyActor.isGroupLeader() && enemyGroup != null) {
-					enemyGroup.setEnemyCount(1, null, removeEnemies);
-
-					// Save number of enemies in the group
-					mGroupEnemiesSave.put(enemyGroup, removeEnemies.size() - cEnemiesBefore + 1);
-				}
+		// Set external dependencies of the level
+		mLevelDef.clearExternalDependencies();
+		for (Actor actor : mResourceBinder.getResources(Actor.class)) {
+			if (!actor.savesDef()) {
+				mLevelDef.addDependency(actor.getDef());
 			}
-
-			// Actually remove the enemies
-			for (EnemyActor removeEnemy : removeEnemies) {
-				mResourceBinder.removeResource(removeEnemy.getId(), false);
-				removeEnemy.dispose();
-			}
-			removeEnemies = null;
 		}
 	}
 
@@ -610,27 +603,31 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 	@Override
 	public void postRead() {
-		// Add all the removed enemies again
-		if (!mGroupEnemiesSave.isEmpty()) {
-			ArrayList<EnemyActor> addEnemies = new ArrayList<>();
-
-			for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
-				EnemyGroup enemyGroup = entry.getKey();
-				enemyGroup.setEnemyCount(entry.getValue(), addEnemies, null);
-			}
-			mGroupEnemiesSave.clear();
-
-			// Actually add all the enemies
-			for (EnemyActor addEnemy : addEnemies) {
-				mResourceBinder.addResource(addEnemy);
-			}
-			addEnemies = null;
-		}
+		super.postRead();
 
 		// Set correct base speed if this isn't a save file
 		if (mClassVersion >= 2) {
 			if (mXCoord == mLevelDef.getStartXCoord()) {
 				mSpeed = mLevelDef.getBaseSpeed();
+			}
+		}
+
+		// Add all the removed enemies again
+		if (mClassVersion <= 2) {
+			if (!mGroupEnemiesSave.isEmpty()) {
+				ArrayList<EnemyActor> addEnemies = new ArrayList<>();
+
+				for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
+					EnemyGroup enemyGroup = entry.getKey();
+					enemyGroup.setEnemyCount(entry.getValue(), addEnemies, null);
+				}
+				mGroupEnemiesSave.clear();
+
+				// Actually add all the enemies
+				for (EnemyActor addEnemy : addEnemies) {
+					mResourceBinder.addResource(addEnemy);
+				}
+				addEnemies = null;
 			}
 		}
 	}
@@ -712,9 +709,9 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	/** Read class version */
 	private int mClassVersion = CLASS_REVISION;
 	/** Multiple enemies in a group, but just save the leader and number of enemies */
-	@Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
+	@Deprecated @Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
 
 
 	/** Revision this class structure */
-	protected static final int CLASS_REVISION = 2;
+	protected static final int CLASS_REVISION = 3;
 }

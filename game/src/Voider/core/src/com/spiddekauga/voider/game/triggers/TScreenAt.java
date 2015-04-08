@@ -128,6 +128,11 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		destroyVertices();
 	}
 
+	@Override
+	public boolean hasBody() {
+		return mBody != null;
+	}
+
 	/**
 	 * Because we only use the x-coordinate, y will always be set to 0 here.
 	 */

@@ -1,6 +1,9 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.List;
 import java.util.UUID;
+
+import com.spiddekauga.utils.commands.Command;
 
 /**
  * Holds a unique id, can be used as a reference for others and can hold references to
@@ -20,19 +23,13 @@ public interface IResource {
 	void setId(UUID id);
 
 	/**
-	 * Removes a bound resource
+	 * Removes a bound resources from this resource. This method should not actually
+	 * unbind the resource but add a command to the commands list.
 	 * @param boundResource the resource to remove
-	 * @return true if the resource could be removed
+	 * @param commands list of commands to unbound the resources, also used to undo
+	 *        unbounds.
 	 */
-	boolean removeBoundResource(IResource boundResource);
-
-	/**
-	 * Adds a resource to be bound
-	 * @param boundResource the resource to add and bind
-	 * @return true if the resource was added successfully
-	 */
-	@Deprecated
-	boolean addBoundResource(IResource boundResource);
+	void removeBoundResource(IResource boundResource, List<Command> commands);
 
 	/**
 	 * Adds an on changed listener to the resource. This listener will be called whenever

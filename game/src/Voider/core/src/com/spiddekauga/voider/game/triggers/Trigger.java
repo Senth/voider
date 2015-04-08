@@ -2,10 +2,12 @@ package com.spiddekauga.voider.game.triggers;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceSelectable;
@@ -15,7 +17,6 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Base class for all triggers
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Trigger extends Resource implements IResourceUpdate, IResourceEditorRender, IResourceSelectable {
@@ -60,8 +61,8 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	}
 
 	/**
-	 * Checks if the trigger has triggered all listeners. You can safetly remove
-	 * the trigger now
+	 * Checks if the trigger has triggered all listeners. You can safely remove the
+	 * trigger now
 	 * @return true if all listeners have been triggered
 	 */
 	public boolean hasAllTriggered() {
@@ -114,9 +115,41 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 		return removed;
 	}
 
+	/**
+	 * Get the trigger info listener for the listener with the specified ID
+	 * @param listenerId the listener id to get the trigger info for
+	 * @return Trigger info if found, null if not
+	 */
+	public TriggerInfo getTriggerInfo(UUID listenerId) {
+		for (TriggerInfo triggerInfo : mListeners) {
+			if (triggerInfo.listener.getId().equals(listenerId)) {
+				return triggerInfo;
+			}
+		}
+		return null;
+	}
+
 	@Override
-	public boolean removeBoundResource(IResource resource) {
-		return removeListener(resource.getId());
+	public void removeBoundResource(IResource boundResource, List<Command> commands) {
+		super.removeBoundResource(boundResource, commands);
+
+		final TriggerInfo triggerInfo = getTriggerInfo(boundResource.getId());
+		if (triggerInfo != null) {
+			Command command = new Command() {
+				@Override
+				public boolean undo() {
+					mListeners.add(triggerInfo);
+					return true;
+				}
+
+				@Override
+				public boolean execute() {
+					mListeners.remove(triggerInfo);
+					return true;
+				}
+			};
+			commands.add(command);
+		}
 	}
 
 	/**
@@ -127,8 +160,8 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	}
 
 	/**
-	 * Removes/Clears all the listeners. This will also remove the trigger from
-	 * the listener
+	 * Removes/Clears all the listeners. This will also remove the trigger from the
+	 * listener
 	 */
 	public void clearListeners() {
 	}
@@ -148,7 +181,7 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	 * player be able to select it.
 	 * @param hidden set to true to hide
 	 */
-	public void setHidden(boolean hidden)  {
+	public void setHidden(boolean hidden) {
 		mHidden = hidden;
 	}
 

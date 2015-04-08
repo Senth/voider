@@ -304,6 +304,11 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		}
 	}
 
+	@Override
+	public boolean hasBody() {
+		return mBody != null;
+	}
+
 	/**
 	 * Checks what index the specified position has.
 	 * @param position the position of a corner
@@ -647,6 +652,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 	@Override
 	public void postRead() {
+		super.postRead();
+
 		updateBoundingBox();
 	}
 

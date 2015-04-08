@@ -1,12 +1,15 @@
 package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
@@ -89,7 +92,6 @@ public class EnemyGroup extends Resource {
 	 * Clears all enemies. This will remove them from the group. Although the leader isn't
 	 * in the returned array it is too removed from the group.
 	 * @return all enemies that were removed from the group, except the group leader.
-	 *         Don't forget to free the array.
 	 */
 	public ArrayList<EnemyActor> clear() {
 		ArrayList<EnemyActor> removedEnemies = new ArrayList<>();
@@ -144,6 +146,40 @@ public class EnemyGroup extends Resource {
 		for (int i = 1; i < mEnemies.size(); ++i) {
 			mEnemies.get(i).setPosition(leaderPosition);
 		}
+	}
+
+	@Override
+	public void removeBoundResource(IResource boundResource, List<Command> commands) {
+		super.removeBoundResource(boundResource, commands);
+
+		if (boundResource instanceof EnemyActor) {
+			final EnemyActor enemyActor = (EnemyActor) boundResource;
+
+			final int index = mEnemies.indexOf(enemyActor);
+			if (index != -1) {
+				Command command = new Command() {
+					@Override
+					public boolean undo() {
+						mEnemies.add(index, enemyActor);
+						return true;
+					}
+
+					@Override
+					public boolean execute() {
+						mEnemies.remove(index);
+						return true;
+					}
+				};
+				commands.add(command);
+			}
+		}
+	}
+
+	/**
+	 * @return all enemies in this group
+	 */
+	public List<EnemyActor> getEnemies() {
+		return mEnemies;
 	}
 
 	/** All the enemies */

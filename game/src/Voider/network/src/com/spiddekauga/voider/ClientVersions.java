@@ -175,6 +175,8 @@ public enum ClientVersions {
 			"	Enemy copies are now created a lot faster",
 			"	Deleting an enemy in a group now deletes the entire group",
 			"	Enemy options (copies/spawn delay) are now updated when selecting another enemy",
+			"	Improved how camera pan undoes on Ctrl+Z",
+			"	Fixed several undo/redo problems",
 			"Bug fixes",
 			"	Can now create a copy of the current level, enemy, or bullet"
 			)

@@ -21,6 +21,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
@@ -1109,13 +1110,8 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	}
 
 	@Override
-	public boolean removeBoundResource(IResource boundResource) {
-		return false;
-	}
-
-	@Override
-	public boolean addBoundResource(IResource boundResource) {
-		return false;
+	public void removeBoundResource(IResource boundResource, List<Command> commands) {
+		// Does nothing
 	}
 
 	@Override

@@ -1,21 +1,23 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Base class for all resources
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Resource implements IResource {
+public abstract class Resource implements IResource, KryoPostRead {
 	@Override
 	public UUID getId() {
 		return mUniqueId;
@@ -95,31 +97,38 @@ public abstract class Resource implements IResource {
 	}
 
 	@Override
+	public void postRead() {
+		if (mListeners == null) {
+			mListeners = new ArrayList<>();
+		}
+	}
+
+	@Override
 	public int hashCode() {
 		return mUniqueId.hashCode();
 	}
 
 	@Override
-	@Deprecated
-	public boolean addBoundResource(IResource boundResource) {
-		Debug.deprecatedException();
-
+	public void removeBoundResource(IResource boundResource, List<Command> commands) {
 		if (boundResource instanceof IResourceChangeListener) {
-			addChangeListener((IResourceChangeListener) boundResource);
-			return true;
+			final IResourceChangeListener changeListener = (IResourceChangeListener) boundResource;
+			if (mListeners.contains(changeListener)) {
+				Command command = new Command() {
+					@Override
+					public boolean undo() {
+						mListeners.add(changeListener);
+						return true;
+					}
+
+					@Override
+					public boolean execute() {
+						mListeners.remove(changeListener);
+						return true;
+					}
+				};
+				commands.add(command);
+			}
 		}
-
-		return false;
-	}
-
-	@Override
-	public boolean removeBoundResource(IResource boundResource) {
-		if (boundResource instanceof IResourceChangeListener) {
-			removeChangeListener((IResourceChangeListener) boundResource);
-			return true;
-		}
-
-		return false;
 	}
 
 	@Override
@@ -160,6 +169,6 @@ public abstract class Resource implements IResource {
 	/** Unique id of the resource */
 	@Tag(1) protected UUID mUniqueId = null;
 	/** Listeners of the resource */
-	@Tag(2) private ArrayList<IResourceChangeListener> mListeners = null;
+	@Tag(2) private ArrayList<IResourceChangeListener> mListeners = new ArrayList<>();
 
 }

@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor.commands;
 
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.ICommandCombinable;
@@ -19,21 +19,25 @@ public class CCameraMove extends Command implements ICommandCombinable {
 	 * @param newPos the new position of the camera
 	 * @param oldPos old/previous position of the camera
 	 */
-	public CCameraMove(Camera camera, Vector2 newPos, Vector2 oldPos) {
+	public CCameraMove(OrthographicCamera camera, Vector2 newPos, Vector2 oldPos) {
 		mNewPos.set(newPos);
 		mCamera = camera;
-		mOldPos.set(mCamera.position.x, mCamera.position.y);
+		mOldPos.set(oldPos);
 	}
 
 	@Override
 	public boolean combine(ICommandCombinable otherCommand) {
 		if (otherCommand instanceof CCameraMove) {
-			if (((CCameraMove) otherCommand).mCamera == mCamera) {
-				boolean executeSuccess = ((CCameraMove) otherCommand).execute();
-
-				if (executeSuccess) {
-					mNewPos.set(((CCameraMove) otherCommand).mNewPos);
-					return true;
+			CCameraMove cameraMove = (CCameraMove) otherCommand;
+			if (cameraMove.mCamera == mCamera) {
+				// Are they close enough to each other?
+				Vector2 diff = new Vector2(mNewPos).sub(cameraMove.mNewPos);
+				if (diff.len2() <= COMBINE_DIST_SQ * mCamera.zoom) {
+					boolean executeSuccess = cameraMove.execute();
+					if (executeSuccess) {
+						mNewPos.set(cameraMove.mNewPos);
+						return true;
+					}
 				}
 			}
 		}
@@ -67,9 +71,12 @@ public class CCameraMove extends Command implements ICommandCombinable {
 	}
 
 	/** The camera to move */
-	private Camera mCamera;
+	private OrthographicCamera mCamera;
 	/** New position of the camera (execute()) */
 	private Vector2 mNewPos = new Vector2();
 	/** Old position of the camera (undo()) */
 	private Vector2 mOldPos = new Vector2();
+	/** How close the camera positions should be to be be combined */
+	private static final float COMBINE_DIST = 6;
+	private static final float COMBINE_DIST_SQ = COMBINE_DIST * COMBINE_DIST;
 }

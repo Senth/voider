@@ -49,6 +49,16 @@ public interface IResourceDependency extends IResource {
 	public void removeDependency(InternalDeps dependency);
 
 	/**
+	 * Clear internal dependencies
+	 */
+	public void clearInternalDependencies();
+
+	/**
+	 * Clear external dependencies
+	 */
+	public void clearExternalDependencies();
+
+	/**
 	 * @return all external dependencies
 	 */
 	Map<UUID, AtomicInteger> getExternalDependencies();

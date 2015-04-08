@@ -21,6 +21,21 @@ public class Invoker implements Disposable {
 	}
 
 	/**
+	 * Execute all the specified commands
+	 * @param commands all commands to be executed
+	 * @param chained true if all commands (except the first one) should be chained
+	 * @param firstChained true if the first command should be chained
+	 */
+	public void execute(Iterable<Command> commands, boolean chained, boolean firstChained) {
+		boolean chain = firstChained;
+
+		for (Command command : commands) {
+			execute(command, chain);
+			chain = chained;
+		}
+	}
+
+	/**
 	 * Executes the specified action. Only pushes this command onto the undo stack if it
 	 * was successful.
 	 * @param command the command to execute

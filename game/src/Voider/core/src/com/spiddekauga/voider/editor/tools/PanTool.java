@@ -46,8 +46,7 @@ public class PanTool extends TouchTool {
 		if (willScroll) {
 			// Already scrolling, create scroll command to stop the scrolling
 			if (mScroller.isScrolling()) {
-				Vector2 scrollCameraCurrent = new Vector2(mCamera.position.x, mCamera.position.y);
-				mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
+				createCameraMoveCommand();
 			}
 
 			mScroller.touchDown((int) mScreenCurrent.x, (int) mScreenCurrent.y);
@@ -75,6 +74,11 @@ public class PanTool extends TouchTool {
 		if (mScroller.isScrollingByHand()) {
 			if (isActive() || KeyHelper.isScrolling(button)) {
 				mScroller.touchUp((int) mScreenCurrent.x, (int) mScreenCurrent.y);
+
+				if (!mScroller.isScrolling()) {
+					// mCreatedScrollCommand = false;
+				}
+
 				return true;
 			}
 		}
@@ -101,12 +105,17 @@ public class PanTool extends TouchTool {
 			mCamera.update();
 			EventDispatcher.getInstance().fire(new GameEvent(EventTypes.CAMERA_MOVED));
 		} else if (!mCreatedScrollCommand) {
-			Vector2 scrollCameraCurrent = new Vector2(mCamera.position.x, mCamera.position.y);
-
-			mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
-
+			createCameraMoveCommand();
 			mCreatedScrollCommand = true;
 		}
+	}
+
+	/**
+	 * Create camera move command in the current location
+	 */
+	private void createCameraMoveCommand() {
+		Vector2 scrollCameraCurrent = new Vector2(mCamera.position.x, mCamera.position.y);
+		mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
 	}
 
 	/**

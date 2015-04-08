@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,6 +14,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.LevelEditor;
@@ -497,33 +500,51 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 		return mGroupLeader;
 	}
 
-
 	@Override
-	@Deprecated
-	public boolean addBoundResource(IResource boundResource) {
-		boolean success = super.addBoundResource(boundResource);
+	public void removeBoundResource(IResource boundResource, List<Command> commands) {
+		super.removeBoundResource(boundResource, commands);
 
-		if (boundResource instanceof Path) {
-			setPath((Path) boundResource);
+		if (boundResource == mPath) {
+			Command command = new Command() {
+				@Override
+				public boolean undo() {
+					setPath(mOldPath);
+					return true;
+				}
+
+				@Override
+				public boolean execute() {
+					setPath(null);
+					return true;
+				}
+
+				private Path mOldPath = mPath;
+			};
+			commands.add(command);
 		}
-		// Enemy group is always in charge of binding/unbinding all
 
-		return success;
-	}
+		// Group
+		if (boundResource == mGroup) {
+			Command command = new Command() {
+				@Override
+				public boolean undo() {
+					mGroup = mOldEnemyGroup;
+					mGroupLeader = mOldGroupLeader;
+					return true;
+				}
 
-	@Override
-	public boolean removeBoundResource(IResource boundResource) {
-		boolean success = super.removeBoundResource(boundResource);
+				@Override
+				public boolean execute() {
+					mGroup = null;
+					mGroupLeader = false;
+					return true;
+				}
 
-		if (boundResource instanceof Path) {
-			if (boundResource == mPath) {
-				setPath(null);
-				success = true;
-			}
+				private boolean mOldGroupLeader = mGroupLeader;
+				private EnemyGroup mOldEnemyGroup = mGroup;
+			};
+			commands.add(command);
 		}
-		// Enemy group is always in charge of binding/unbinding all
-
-		return success;
 	}
 
 	/**

@@ -2,7 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +29,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
@@ -187,61 +188,31 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	@Override
-	@Deprecated
-	public boolean addBoundResource(IResource boundResource) {
-		Config.Debug.deprecatedException();
+	public void removeBoundResource(IResource boundResource, List<Command> commands) {
+		super.removeBoundResource(boundResource, commands);
 
-		boolean success = super.addBoundResource(boundResource);
-
-		// Find all listeners for this actor. Then check for trigger info
-		// that isn't in this actors trigger list; that should be the added
-		// trigger
+		// Trigger
 		if (boundResource instanceof Trigger) {
-			ArrayList<TriggerInfo> thisListeners = new ArrayList<TriggerInfo>();
+			Trigger trigger = (Trigger) boundResource;
+			for (final TriggerInfo triggerInfo : mTriggerInfos) {
+				if (triggerInfo.trigger == trigger) {
+					Command command = new Command() {
+						@Override
+						public boolean undo() {
+							mTriggerInfos.add(triggerInfo);
+							return true;
+						}
 
-			// Find all listeners for this actor
-			for (TriggerInfo triggerInfo : ((Trigger) boundResource).getListeners()) {
-				if (triggerInfo.listener == this) {
-					thisListeners.add(triggerInfo);
-				}
-			}
-
-			// Is a trigger info missing?
-			boolean foundMissing = false;
-			for (TriggerInfo fromTrigger : thisListeners) {
-				if (!mTriggerInfos.contains(fromTrigger)) {
-					mTriggerInfos.add(fromTrigger);
-					foundMissing = true;
-				}
-			}
-
-			if (foundMissing) {
-				success = true;
-			} else {
-				Gdx.app.error("Actor", "Didn't find the missing trigger when readding it");
-			}
-		}
-
-		return success;
-	}
-
-	@Override
-	public boolean removeBoundResource(IResource boundResource) {
-		boolean success = super.removeBoundResource(boundResource);
-
-		// Find and remove the trigger
-		if (boundResource instanceof Trigger) {
-			Iterator<TriggerInfo> iterator = mTriggerInfos.iterator();
-			while (iterator.hasNext()) {
-				TriggerInfo triggerInfo = iterator.next();
-				if (triggerInfo.trigger == boundResource) {
-					iterator.remove();
-					success = true;
+						@Override
+						public boolean execute() {
+							mTriggerInfos.remove(triggerInfo);
+							return true;
+						}
+					};
+					commands.add(command);
 				}
 			}
 		}
-
-		return success;
 	}
 
 	/**
@@ -769,6 +740,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/**
 	 * @return true if the actor has created a body
 	 */
+	@Override
 	public boolean hasBody() {
 		return mBody != null;
 	}

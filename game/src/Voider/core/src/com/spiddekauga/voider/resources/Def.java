@@ -206,6 +206,16 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		mInternalDependencies.remove(dependency);
 	}
 
+	@Override
+	public void clearInternalDependencies() {
+		mInternalDependencies.clear();
+	}
+
+	@Override
+	public void clearExternalDependencies() {
+		mExternalDependencies.clear();
+	}
+
 	/**
 	 * Update the date to the current date
 	 * @see #setDate(Date)
@@ -337,6 +347,8 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 
 	@Override
 	public void postRead() {
+		super.postRead();
+
 		// Remove NULL
 		if (!mInternalDependencies.isEmpty()) {
 			if (mInternalDependencies.contains(null)) {

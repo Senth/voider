@@ -11,9 +11,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
@@ -65,6 +65,11 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	}
 
 	@Override
+	public boolean hasBody() {
+		return mBody != null;
+	}
+
+	@Override
 	public RenderOrders getRenderOrder() {
 		return RenderOrders.TRIGGER_ACTOR_ACTIVATE;
 	}
@@ -106,38 +111,33 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 
 	@Override
 	public void postRead() {
+		super.postRead();
+
 		setActorListener();
 	}
 
 	@Override
-	@Deprecated
-	public boolean addBoundResource(IResource boundResource) {
-		Debug.deprecatedException();
-
-		boolean success = super.addBoundResource(boundResource);
-
-		if (boundResource instanceof Actor) {
-			mActor = (Actor) boundResource;
-
-			setActorListener();
-		}
-
-		return success;
-	}
-
-	@Override
-	public boolean removeBoundResource(IResource boundResource) {
-		boolean success = super.removeBoundResource(boundResource);
+	public void removeBoundResource(IResource boundResource, List<Command> commands) {
+		super.removeBoundResource(boundResource, commands);
 
 		if (boundResource.equals(mActor)) {
-			mActor = null;
+			Command command = new Command() {
+				@Override
+				public boolean undo() {
+					mActor = oldActor;
+					return true;
+				}
 
-			if (Actor.isEditorActive()) {
-				boundResource.removeChangeListener(this);
-			}
+				@Override
+				public boolean execute() {
+					mActor = null;
+					return true;
+				}
+
+				private Actor oldActor = mActor;
+			};
+			commands.add(command);
 		}
-
-		return success;
 	}
 
 	@Override
