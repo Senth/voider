@@ -22,6 +22,42 @@ public class IC_Editor extends IniClass {
 	public IC_Bullet bullet;
 	public IC_Enemy enemy;
 	public IC_Ship ship;
+	public IC_General general;
+
+	/**
+	 * General Editor settings
+	 */
+	public class IC_General extends IniClass {
+		protected float autoSaveTime;
+		protected float autoSaveTimeOnInactivity;
+		protected int nameLengthMax;
+		protected int descriptionLengthMax;
+		protected int storyLengthMax;
+
+		private IC_General(Ini ini, Section classSection) {
+			super(ini, classSection);
+		}
+
+		public float getAutoSaveTime() {
+			return autoSaveTime;
+		}
+
+		public float getAutoSaveTimeOnInactivity() {
+			return autoSaveTimeOnInactivity;
+		}
+
+		public int getNameLengthMax() {
+			return nameLengthMax;
+		}
+
+		public int getDescriptionLengthMax() {
+			return descriptionLengthMax;
+		}
+
+		public int getStoryLengthMax() {
+			return storyLengthMax;
+		}
+	}
 
 	/**
 	 * Common Actor Editor values

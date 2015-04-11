@@ -315,38 +315,6 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	private void calculateBoundingBox() {
 		mBoundingBox = Geometry.getBoundingBox(mPolygon, mStartAngle, mCenterOffset);
 
-		// REMOVE
-		// switch (mShapeType) {
-		// case CIRCLE:
-		// mBoundingBox.setFromCircle(mShapeCircleRadius);
-		// break;
-		//
-		// case RECTANGLE:
-		// case TRIANGLE:
-		// mBoundingBox = Geometry.getBoundingBox(mPolygon);
-		// break;
-		//
-		// case CUSTOM:
-		// case IMAGE:
-		// // Regular shape
-		// if (mCorners.size() >= 3) {
-		// mBoundingBox = Geometry.getBoundingBox(mCorners);
-		// }
-		// // Circle shape
-		// else if (mCorners.size() == 2) {
-		// Vector2 diffVector = Pools.vector2.obtain();
-		// diffVector.set(mCorners.get(1)).sub(mCorners.get(0));
-		// float radius = diffVector.len();
-		// mBoundingBox.setFromCircle(radius);
-		// Pools.vector2.free(diffVector);
-		// }
-		// // Circle shape with default width
-		// else if (mCorners.size() == 1) {
-		// mBoundingBox.setFromCircle(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
-		// }
-		// break;
-		// }
-
 		// Offset bounding box with the center
 		mBoundingBox.offset(mCenterOffset);
 	}

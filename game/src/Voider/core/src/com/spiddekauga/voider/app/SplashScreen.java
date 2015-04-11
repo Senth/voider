@@ -59,6 +59,35 @@ public class SplashScreen extends LoadingScene {
 	}
 
 	@Override
+	protected boolean onKeyDown(int keycode) {
+		boolean handled = super.onKeyDown(keycode);
+
+		if (!handled) {
+			skip();
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		boolean handled = super.touchDown(screenX, screenY, pointer, button);
+
+		if (!handled) {
+			skip();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Skip the scene, i.e. sets the display time to the end
+	 */
+	private void skip() {
+		mDisplayTime = ConfigIni.getInstance().menu.time.getSplashScreenTime();
+	}
+
+	@Override
 	protected void render() {
 		enableBlendingWithDefaults();
 		super.render();

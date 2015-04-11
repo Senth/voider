@@ -421,16 +421,6 @@ public class Config {
 		public final static int GRID_STEP_SIZE = 2;
 		/** Milestone step size. Should be a multiplier of GRID_STEP_SIZE! */
 		public final static int GRID_MILESTONE_STEP = GRID_STEP_SIZE * 5;
-		/** Maximum name length */
-		public final static int NAME_LENGTH_MAX = 25;
-		/** Maximum length of description */
-		public final static int DESCRIPTION_LENGTH_MAX = 256;
-		/** Maximum length of story */
-		public final static int STORY_LENGTH_MAX = 512;
-		/** Auto save time, in seconds */
-		public final static float AUTO_SAVE_TIME_FORCED = 240;
-		/** Auto save time after inactivity, in seconds */
-		public final static float AUTO_SAVE_TIME_ON_INACTIVITY = 20;
 
 		/** Corner pick color */
 		public final static Color CORNER_COLOR = new Color(0.75f, 0, 0, 1);

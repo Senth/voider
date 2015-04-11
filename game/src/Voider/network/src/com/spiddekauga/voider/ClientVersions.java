@@ -177,6 +177,10 @@ public enum ClientVersions {
 			"	Enemy options (copies/spawn delay) are now updated when selecting another enemy",
 			"	Improved how camera pan undoes on Ctrl+Z",
 			"	Fixed several undo/redo problems",
+			"		Deleting an enemy and undoing cause all other enemies to become invisible",
+			"	Auto saves more often",
+			"Improvements",
+			"	Can skip splash screen and loading screen (with story text)",
 			"Bug fixes",
 			"	Can now create a copy of the current level, enemy, or bullet"
 			)

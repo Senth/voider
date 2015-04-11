@@ -22,7 +22,6 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Collision;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
@@ -227,7 +226,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 		mWidgets.info.name = mUiFactory.addTextField("Name", true, Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
 				listener, mInfoTable, mDisabledWhenPublished);
-		mWidgets.info.name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		mWidgets.info.name.setMaxLength(ConfigIni.getInstance().editor.general.getNameLengthMax());
 		mWidgets.info.nameError = mUiFactory.text.getLastCreatedErrorLabel();
 
 
@@ -240,7 +239,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 		mWidgets.info.description = mUiFactory.addTextArea("Description", false,
 				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), listener, mInfoTable, mDisabledWhenPublished);
-		mWidgets.info.description.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
+		mWidgets.info.description.setMaxLength(ConfigIni.getInstance().editor.general.getDescriptionLengthMax());
 	}
 
 	/**

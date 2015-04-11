@@ -227,9 +227,7 @@ public abstract class ActorDef extends Def implements KryoPreWrite, KryoSerializ
 
 	@Override
 	public void preWrite() {
-
 		mClassRevision = CLASS_REVISION;
-
 	}
 
 	@Override

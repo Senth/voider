@@ -46,6 +46,8 @@ import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_General;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.game.LevelBackground;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -705,6 +707,8 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes level info content for message box
 	 */
 	private void initInfo() {
+		IC_General icGeneral = ConfigIni.getInstance().editor.general;
+
 		mInfoTable.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
 		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 
@@ -732,7 +736,7 @@ class LevelEditorGui extends EditorGui {
 		};
 		mWidgets.info.name = mUiFactory.addTextField("Name", true, Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
 				textFieldListener, left, mDisabledWhenPublished);
-		mWidgets.info.name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		mWidgets.info.name.setMaxLength(icGeneral.getNameLengthMax());
 		mWidgets.info.nameError = mUiFactory.text.getLastCreatedErrorLabel();
 
 		// Theme
@@ -820,7 +824,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.description = mUiFactory.addTextArea("Description", false,
 				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), textFieldListener, right,
 				mDisabledWhenPublished);
-		mWidgets.info.description.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
+		mWidgets.info.description.setMaxLength(icGeneral.getDescriptionLengthMax());
 
 
 		// Prologue
@@ -832,7 +836,7 @@ class LevelEditorGui extends EditorGui {
 		};
 		mWidgets.info.prologue = mUiFactory.addTextArea("Prologue", false, Messages.Level.PROLOGUE_DEFAULT, textFieldListener, right,
 				mDisabledWhenPublished);
-		mWidgets.info.prologue.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
+		mWidgets.info.prologue.setMaxLength(icGeneral.getStoryLengthMax());
 
 		// Epilogue
 		textFieldListener = new TextFieldListener(mInvoker) {
@@ -843,7 +847,7 @@ class LevelEditorGui extends EditorGui {
 		};
 		mWidgets.info.epilogue = mUiFactory.addTextArea("Epilogue", false, Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right,
 				mDisabledWhenPublished);
-		mWidgets.info.prologue.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
+		mWidgets.info.prologue.setMaxLength(icGeneral.getStoryLengthMax());
 
 		mInfoTable.layout();
 	}

@@ -21,7 +21,7 @@ public class LoadingTextScene extends LoadingScene {
 		super(new LoadingTextSceneGui(text));
 
 		IC_Time icTime = ConfigIni.getInstance().menu.time;
-		mDisplayTime = icTime.getDisplayTime(text);
+		mDisplayTimeDone = icTime.getDisplayTime(text);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class LoadingTextScene extends LoadingScene {
 			switch (mState) {
 			case DISPLAY:
 				mDisplayTimeCurrent += Gdx.graphics.getDeltaTime();
-				if (mDisplayTimeCurrent >= mDisplayTime && !ResourceCacheFacade.isLoading()) {
+				if (mDisplayTimeCurrent >= mDisplayTimeDone && !ResourceCacheFacade.isLoading()) {
 					getGui().fadeOut();
 					mState = States.FADING;
 				}
@@ -70,6 +70,35 @@ public class LoadingTextScene extends LoadingScene {
 		return (LoadingTextSceneGui) super.getGui();
 	}
 
+	@Override
+	protected boolean onKeyDown(int keycode) {
+		boolean handled = super.onKeyDown(keycode);
+
+		if (!handled) {
+			skip();
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		boolean handled = super.touchDown(screenX, screenY, pointer, button);
+
+		if (!handled) {
+			skip();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Skip the scene, i.e. sets the display time to the end
+	 */
+	private void skip() {
+		mDisplayTimeCurrent = mDisplayTimeDone;
+	}
+
 	/**
 	 * States of the loading text scene
 	 */
@@ -81,7 +110,7 @@ public class LoadingTextScene extends LoadingScene {
 	}
 
 	/** How long the text shall be displayed */
-	private float mDisplayTime;
+	private float mDisplayTimeDone;
 	/** How long the text has been displayed */
 	private float mDisplayTimeCurrent = 0;
 	private States mState = States.DISPLAY;

@@ -43,6 +43,7 @@ import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -824,7 +825,7 @@ public abstract class EditorGui extends Gui {
 			}
 		};
 		TextField name = mUiFactory.addTextField("New Name", true, "New name", listener, table, null);
-		name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		name.setMaxLength(ConfigIni.getInstance().editor.general.getNameLengthMax());
 		name.setText(oldName);
 		Label nameError = mUiFactory.text.getLastCreatedErrorLabel();
 		VFieldLength validateNameLength = new VFieldLength(listener, nameError, Config.Actor.NAME_LENGTH_MIN);
@@ -839,7 +840,7 @@ public abstract class EditorGui extends Gui {
 		};
 		TextField description = mUiFactory.addTextArea("Description", false, null, listener, table, null);
 		description.setText(oldDescription);
-		description.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
+		description.setMaxLength(ConfigIni.getInstance().editor.general.getDescriptionLengthMax());
 
 
 		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Set copy information");

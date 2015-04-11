@@ -28,6 +28,8 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_General;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
@@ -83,12 +85,14 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 */
 	protected boolean shallAutoSave() {
 		if (!isSaved() && !isDrawing() && !isPublished()) {
+			IC_General general = ConfigIni.getInstance().editor.general;
+
 			float totalTimeElapsed = getGameTime().getTotalTimeElapsed();
 			// Save after X seconds of inactivity or always save after Y minutes
 			// regardless.
-			if (totalTimeElapsed - mActivityTimeLast >= Config.Editor.AUTO_SAVE_TIME_ON_INACTIVITY) {
+			if (totalTimeElapsed - mActivityTimeLast >= general.getAutoSaveTimeOnInactivity()) {
 				return true;
-			} else if (totalTimeElapsed - mUnsavedTime >= Config.Editor.AUTO_SAVE_TIME_FORCED) {
+			} else if (totalTimeElapsed - mUnsavedTime >= general.getAutoSaveTime()) {
 				return true;
 			}
 		}

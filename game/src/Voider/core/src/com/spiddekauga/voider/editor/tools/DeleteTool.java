@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
-import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
-import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
 
 /**
@@ -70,9 +68,10 @@ public class DeleteTool extends TouchTool {
 
 			mInvoker.execute(new CSelectionSet(mSelection));
 			for (IResource resource : copySelectedResources) {
-				if (resource instanceof Actor) {
-					mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) resource).getDef(), false), true);
-				}
+				// if (resource instanceof Actor) {
+				// mInvoker.execute(new CActorDefFixCustomFixtures(((Actor)
+				// resource).getDef(), false), true);
+				// }
 				mInvoker.execute(new CResourceRemove(resource, mEditor), true);
 			}
 		}
