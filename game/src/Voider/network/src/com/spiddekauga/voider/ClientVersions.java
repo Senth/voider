@@ -189,8 +189,10 @@ public enum ClientVersions {
 			"	Creating a copy of an entire Level/Enemy/Bullet has been improved",
 			"		Shows a dialog for a new name and description and ability to abort",
 			"		Camera stays at the same place in level editor",
+			"	Test-playing music in the level editor",
 			"Bug fixes",
 			"	Skipping splash screen now works correctly on all devices",
+			"	Doesn't hang the game when pressing cancel after changed music in level editor",
 			"Various",
 			"	Added terms when registering"
 			),

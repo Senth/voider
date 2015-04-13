@@ -757,7 +757,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Music
 		left.row();
-		SelectBoxListener<Music> selectBoxListener = new SelectBoxListener<Music>(mInvoker) {
+		SelectBoxListener<Music> selectBoxListener = new SelectBoxListener<Music>() {
 			@Override
 			protected void onSelectionChanged(int itemIndex) {
 				Music music = mSelectBox.getSelected();
