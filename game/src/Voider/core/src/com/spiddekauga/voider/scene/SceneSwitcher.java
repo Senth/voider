@@ -86,7 +86,6 @@ public class SceneSwitcher {
 			} else {
 				foundScene.reloadResourcesOnActivate(Outcomes.NOT_APPLICAPLE, null);
 				activateCurrentScene(Outcomes.NOT_APPLICAPLE, null);
-				Gdx.input.setInputProcessor(foundScene.getInputMultiplexer());
 			}
 
 			return true;
@@ -146,7 +145,6 @@ public class SceneSwitcher {
 			} else {
 				activateScene.reloadResourcesOnActivate(Outcomes.NOT_APPLICAPLE, null);
 				activateCurrentScene(Outcomes.NOT_APPLICAPLE, null);
-				Gdx.input.setInputProcessor(activateScene.getInputMultiplexer());
 			}
 		}
 
@@ -515,7 +513,6 @@ public class SceneSwitcher {
 					e.printStackTrace();
 					activateCurrentScene(Outcomes.NOT_APPLICAPLE, e.toString(), Outcomes.LOADING_FAILED_CORRUPT_FILE);
 				}
-				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			}
 			// Scene is done, pop it
 			else if (currentScene.isDone()) {
@@ -587,7 +584,6 @@ public class SceneSwitcher {
 
 		poppedScene.onDeactivate();
 		poppedScene.onDispose();
-		Gdx.input.setInputProcessor(null);
 
 		// Unload resources from the old scene
 		if (poppedScene.isResourcesLoaded()) {
@@ -627,7 +623,6 @@ public class SceneSwitcher {
 				}
 				previousScene.reloadResourcesOnActivate(outcome, outcomeMessage);
 				activateCurrentScene(outcome, outcomeMessage, loadingOutcome);
-				Gdx.input.setInputProcessor(previousScene.getInputMultiplexer());
 			}
 		}
 	}
@@ -661,6 +656,7 @@ public class SceneSwitcher {
 		currentScene.loadResources();
 
 		if (currentScene instanceof LoadingScene) {
+			currentScene.onInit();
 			currentScene.onActivate(Outcomes.NOT_APPLICAPLE, null, Outcomes.NOT_APPLICAPLE);
 		}
 	}
@@ -673,10 +669,6 @@ public class SceneSwitcher {
 			Scene previousScene = mScenes.peek();
 			if (previousScene.isInitialized()) {
 				previousScene.onDeactivate();
-			}
-
-			if (Gdx.input != null) {
-				Gdx.input.setInputProcessor(null);
 			}
 
 			// Should we unload resources?

@@ -343,10 +343,14 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @param loadingOutcome outcome from a loading scene
 	 */
 	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		Gdx.input.setInputProcessor(mInputMultiplexer);
+
 		if (!mGui.isInitialized()) {
 			Gdx.app.error("Scene", "Failed to load scene!");
 		} else {
-			mAnalyticsRepo.startScene(getClass().getSimpleName());
+			if (!(this instanceof LoadingScene)) {
+				mAnalyticsRepo.startScene(getClass().getSimpleName());
+			}
 			mGui.resetValues();
 		}
 	}
@@ -358,7 +362,9 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 *       stack).
 	 */
 	protected void onDeactivate() {
-		mAnalyticsRepo.endScene();
+		if (!(this instanceof LoadingScene)) {
+			mAnalyticsRepo.endScene();
+		}
 	}
 
 	/**

@@ -183,7 +183,10 @@ public enum ClientVersions {
 			"	Can skip splash screen and loading screen (with story text)",
 			"Bug fixes",
 			"	Can now create a copy of the current level, enemy, or bullet"
-			)
+			),
+	V0_5_6(false,
+			"Bug fixes"
+			),
 
 
 	;
