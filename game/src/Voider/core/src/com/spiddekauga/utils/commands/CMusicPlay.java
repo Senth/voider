@@ -8,7 +8,7 @@ import com.spiddekauga.voider.sound.MusicPlayer;
  * Play a music track
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CMusicPlay extends Command {
+public class CMusicPlay extends CRun {
 	/**
 	 * Play the specified music
 	 * @param music
@@ -36,11 +36,6 @@ public class CMusicPlay extends Command {
 		}
 
 		return true;
-	}
-
-	@Override
-	public boolean undo() {
-		return false;
 	}
 
 	private Music mMusic;

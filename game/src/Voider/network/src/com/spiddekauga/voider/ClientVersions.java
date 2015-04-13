@@ -192,7 +192,7 @@ public enum ClientVersions {
 			"Bug fixes",
 			"	Skipping splash screen now works correctly on all devices",
 			"Various",
-			"	Added terms when regestring"
+			"	Added terms when registering"
 			),
 
 

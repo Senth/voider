@@ -763,8 +763,11 @@ class LevelEditorGui extends EditorGui {
 				Music music = mSelectBox.getSelected();
 				if (mLevelEditor.getMusic() != music) {
 					mLevelEditor.setMusic(music);
-					togglePlayVisibility(true);
-					MusicPlayer.getInstance().play(music, MusicInterpolations.CROSSFADE);
+
+					// Is playing then we change music
+					if (mWidgets.info.stopHider.isVisible()) {
+						MusicPlayer.getInstance().play(music, MusicInterpolations.CROSSFADE);
+					}
 				}
 			}
 		};

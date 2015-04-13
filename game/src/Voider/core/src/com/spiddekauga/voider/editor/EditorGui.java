@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang.WordUtils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -24,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.spiddekauga.utils.commands.CEventConnect;
 import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
+import com.spiddekauga.utils.commands.CMusicStop;
 import com.spiddekauga.utils.commands.CSceneReturn;
 import com.spiddekauga.utils.commands.CSceneSwitch;
 import com.spiddekauga.utils.commands.CSequence;
@@ -62,6 +62,7 @@ import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 import com.spiddekauga.voider.utils.User;
@@ -795,11 +796,24 @@ public abstract class EditorGui extends Gui {
 		if (mEditor.isJustCreated()) {
 			msgBox.addCancelButtonAndKeys(new CEditorUndoJustCreated(mEditor));
 		} else {
-			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, OPTION_DELIMITER, false));
+			// Stop the music
+			Command cancelCommand = null;
+			Command undoToDelimiter = new CInvokerUndoToDelimiter(mInvoker, OPTION_DELIMITER, false);
+			if (this instanceof LevelEditorGui) {
+				cancelCommand = new CSequence(undoToDelimiter, new CMusicStop(MusicInterpolations.FADE_OUT));
+			} else {
+				cancelCommand = undoToDelimiter;
+			}
+			msgBox.addCancelButtonAndKeys(cancelCommand);
 		}
-		Command save = new CDefHasValidName(msgBox, this, mEditor, getResourceTypeName());
+		Command saveValidate = new CDefHasValidName(msgBox, this, mEditor, getResourceTypeName());
+		Command save = null;
+		if (this instanceof LevelEditorGui) {
+			save = new CSequence(saveValidate, new CMusicStop(MusicInterpolations.FADE_OUT));
+		} else {
+			save = saveValidate;
+		}
 		msgBox.button("Save", save);
-		msgBox.key(Input.Keys.ENTER, save);
 	}
 
 	/**
