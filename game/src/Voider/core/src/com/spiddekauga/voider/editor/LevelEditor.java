@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -262,6 +263,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			// Reset camera position to the start
 			if (!sameLevel) {
 				mCamera.position.x = mLevel.getLevelDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
+				mCamera.position.y = 0;
+				mCamera.zoom = 1;
 				mCamera.update();
 			}
 			((PanTool) Tools.PAN.getTool()).stop();
@@ -839,13 +842,26 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void duplicateDef(String name, String description) {
+		// Remove this level from the level
+		mLevel.removeResource(mLevel);
+
 		Level level = mLevel.copyNewResource();
+		LevelDef levelDef = level.getDef();
+		levelDef.setName(name);
+		levelDef.setDescription(description);
+
+		// Save camera variables
+		Vector3 cameraPos = new Vector3(mCamera.position);
+		float cameraZoom = mCamera.zoom;
 
 		setLevel(level);
-
-		getGui().resetValues();
-		mInvoker.dispose();
+		setUnsaved();
 		saveDef();
+
+		// Reset camera position
+		mCamera.position.set(cameraPos);
+		mCamera.zoom = cameraZoom;
+		mCamera.update();
 	}
 
 	@Override

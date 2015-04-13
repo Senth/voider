@@ -124,7 +124,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 
 	@Override
 	public void duplicateDef() {
-		if (isPublished() || !isSaved()) {
+		if (!isSaved() && !isPublished()) {
 			saveDef(new CEditorDuplicate(this));
 		} else {
 			getGui().showDuplicateDialog();

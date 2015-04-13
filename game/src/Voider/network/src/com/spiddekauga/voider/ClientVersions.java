@@ -185,7 +185,12 @@ public enum ClientVersions {
 			"	Can now create a copy of the current level, enemy, or bullet"
 			),
 	V0_5_6(false,
-			"Bug fixes"
+			"Improvements",
+			"	Creating a copy of an entire Level/Enemy/Bullet has been improved",
+			"		Shows a dialog for a new name and description and ability to abort",
+			"		Camera stays at the same place in level editor",
+			"Bug fixes",
+			"	Skipping splash screen now works correctly on all devices"
 			),
 
 
