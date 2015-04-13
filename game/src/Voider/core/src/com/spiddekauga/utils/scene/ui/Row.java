@@ -611,9 +611,10 @@ public class Row implements Poolable, IPadding<Row> {
 	/**
 	 * Add a cell to the row. Sets the alignment for the actor
 	 * @param cell new cell with actor to append
+	 * @param index where to add the cell
 	 */
-	void add(Cell cell) {
-		mCells.add(cell);
+	void add(Cell cell, int index) {
+		mCells.add(index, cell);
 		cell.setAlign(mAlign.horizontal, mAlign.vertical);
 	}
 

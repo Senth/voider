@@ -761,6 +761,8 @@ public class SkinNames {
 		BUTTON_SELECTED(ButtonStyle.class, "selected"),
 		/** Displayed as selected, but has over and down states */
 		BUTTON_SELECTED_PRESSABLE(ButtonStyle.class, "selected_pressable"),
+		/** A regular button that looks like a checkbox */
+		BUTTON_CHECK_BOX(ImageButtonStyle.class, "checkbox"),
 		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
 		/** Check box that uses the radio button style */

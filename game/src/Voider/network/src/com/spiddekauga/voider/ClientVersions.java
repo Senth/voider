@@ -190,7 +190,9 @@ public enum ClientVersions {
 			"		Shows a dialog for a new name and description and ability to abort",
 			"		Camera stays at the same place in level editor",
 			"Bug fixes",
-			"	Skipping splash screen now works correctly on all devices"
+			"	Skipping splash screen now works correctly on all devices",
+			"Various",
+			"	Added terms when regestring"
 			),
 
 

@@ -46,6 +46,7 @@ public class LoginScene extends Scene implements IResponseListener {
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.MUSIC_TITLE);
 		ResourceCacheFacade.load(InternalDeps.UI_SFX);
+		ResourceCacheFacade.load(InternalNames.TXT_TERMS);
 
 		super.loadResources();
 	}
@@ -55,6 +56,7 @@ public class LoginScene extends Scene implements IResponseListener {
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.MUSIC_TITLE);
 		ResourceCacheFacade.unload(InternalDeps.UI_SFX);
+		ResourceCacheFacade.unload(InternalNames.TXT_TERMS);
 
 		super.unloadResources();
 	}
@@ -209,6 +211,13 @@ public class LoginScene extends Scene implements IResponseListener {
 	void resetPassword(String email, String password, String token) {
 		UserWebRepo.getInstance().passwordReset(email, password, token, this);
 		getGui().showWaitWindow("Resetting password");
+	}
+
+	/**
+	 * @return terms for registering
+	 */
+	String getTerms() {
+		return ResourceCacheFacade.get(InternalNames.TXT_TERMS);
 	}
 
 	/**

@@ -66,11 +66,15 @@ public enum InternalNames {
 	SHADER_DEFAULT("default", ShaderProgram.class),
 
 
-	// Text files
+	// Ini files
 	/** Credits to display */
 	INI_CREDITS("credits.ini", Ini.class),
 	/** Config file */
 	INI_CONFIG("config.ini", Ini.class),
+
+
+	// Text files
+	TXT_TERMS("terms.txt", String.class),
 
 
 	// Music
@@ -196,6 +200,7 @@ public enum InternalNames {
 			mResourcePaths.put(TextureAtlas.class, "");
 			mResourcePaths.put(Sound.class, SOUND_PATH);
 			mResourcePaths.put(Ini.class, TEXT_PATH);
+			mResourcePaths.put(String.class, TEXT_PATH);
 			mResourcePaths.put(Music.class, MUSIC_PATH);
 		}
 

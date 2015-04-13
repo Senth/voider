@@ -77,11 +77,11 @@ class ResourceLoader {
 		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<>(externalFileHandleResolver, PlayerStats.class));
 		mAssetManager.setLoader(BugReportDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, BugReportDef.class));
 
+
 		// Internal
 		FileHandleResolver internalFileHandleResolver = null;
 		if (Config.File.USE_EXTERNAL_RESOURCES) {
 			internalFileHandleResolver = new AbsoluteFileHandleResolver();
-
 		} else {
 			internalFileHandleResolver = new InternalFileHandleResolver();
 		}
@@ -91,6 +91,7 @@ class ResourceLoader {
 		mAssetManager.setLoader(Music.class, new MusicLoader(internalFileHandleResolver));
 		mAssetManager.setLoader(Sound.class, new SoundLoader(internalFileHandleResolver));
 		mAssetManager.setLoader(TextureAtlas.class, new TextureAtlasLoader(internalFileHandleResolver));
+		mAssetManager.setLoader(String.class, new TextLoader(internalFileHandleResolver));
 	}
 
 	/**

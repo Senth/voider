@@ -157,7 +157,7 @@ public class MsgBoxFactory {
 
 		label = mUiFactory.text.create(motd.content, true, labelStyle);
 		label.setAlignment(Align.center);
-		label.setWidth((int) (Gdx.graphics.getWidth() * 0.7f));
+		label.setWidth(WIDTH_MAX);
 		msgBox.content(label);
 
 		msgBox.addCancelButtonAndKeys("OK", new CMotdViewed(motd));
@@ -290,7 +290,7 @@ public class MsgBoxFactory {
 					mUiFactory.text.add("Additional information sent in the bug report\n(might appear to be unreadable)", outerTable,
 							LabelStyles.WARNING);
 					outerTable.row();
-					outerTable.add(scrollPane).setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.6f);
+					outerTable.add(scrollPane).setSize(WIDTH_MAX, HEIGHT_MAX);
 					msgBox.content(outerTable);
 
 					// System information
@@ -368,10 +368,8 @@ public class MsgBoxFactory {
 
 		MsgBoxExecuter msgBox = add(title);
 
-		final int width = (int) (Gdx.graphics.getWidth() * 0.7f);
-
 		Label info = mUiFactory.text.create(message, true, LabelStyles.HIGHLIGHT);
-		info.setWidth(width);
+		info.setWidth(WIDTH_MAX);
 		info.setAlignment(Align.center);
 		msgBox.content(info);
 
@@ -408,11 +406,8 @@ public class MsgBoxFactory {
 	public void changeLog(String title, String topMessage, String changeLog) {
 		MsgBoxExecuter changeLogMsgBox = add(title);
 
-		final int width = (int) (Gdx.graphics.getWidth() * 0.7f);
-		final int maxHeight = Gdx.graphics.getHeight() / 2;
-
 		Label label = mUiFactory.text.create(topMessage, true);
-		label.setWidth(width);
+		label.setWidth(WIDTH_MAX);
 		label.setAlignment(Align.center);
 
 		changeLogMsgBox.content(label).padBottom(mStyles.vars.paddingSeparator);
@@ -423,16 +418,40 @@ public class MsgBoxFactory {
 
 		// Too high, use scroll pane
 		label.layout();
-		if (label.getHeight() > maxHeight) {
+		if (label.getHeight() > HEIGHT_MAX) {
 			ScrollPane scrollPane = new ScrollPane(label, mStyles.scrollPane.noBackground);
 			scrollPane.setFadeScrollBars(false);
-			changeLogMsgBox.content(scrollPane).size(width, maxHeight);
+			changeLogMsgBox.content(scrollPane).size(WIDTH_MAX, HEIGHT_MAX);
 		} else {
 			changeLogMsgBox.content(label);
 		}
 
 
 		changeLogMsgBox.addCancelButtonAndKeys("OK");
+	}
+
+	/**
+	 * Create a message box with wrapped and scrollable text
+	 * @param title the title of the message box
+	 * @param text the text to display
+	 */
+	public void scrollable(String title, String text) {
+		MsgBoxExecuter msgBox = add(title);
+
+		Label label = mUiFactory.text.create(text, true);
+		label.setWidth(WIDTH_MAX - 32);
+		label.layout();
+
+		if (label.getHeight() > HEIGHT_MAX) {
+			ScrollPane scrollPane = new ScrollPane(label, mStyles.scrollPane.noBackground);
+			scrollPane.setFadeScrollBars(false);
+			msgBox.content(scrollPane).size(WIDTH_MAX, HEIGHT_MAX);
+		} else {
+			msgBox.content(label);
+		}
+
+
+		msgBox.addCancelButtonAndKeys("OK");
 	}
 
 	/**
@@ -482,6 +501,9 @@ public class MsgBoxFactory {
 	public synchronized void free(MsgBoxExecuter msgBox) {
 		mFreeMsgBoxes.push(msgBox);
 	}
+
+	private static final int HEIGHT_MAX = (int) (Gdx.graphics.getHeight() * 0.6f);
+	private static final int WIDTH_MAX = (int) (Gdx.graphics.getWidth() * 0.7f);
 
 	/** Inactive/free message boxes */
 	private Stack<MsgBoxExecuter> mFreeMsgBoxes = new Stack<>();

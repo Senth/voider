@@ -341,6 +341,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		checkedOver: button_default_checked_over,
 	},
 	
+	checkbox: {
+		up: checkbox_off,
+		down: checkbox_on,
+		checked: checkbox_on,
+	},
+	
 	/** Menu - Main */
 	
 	play: {

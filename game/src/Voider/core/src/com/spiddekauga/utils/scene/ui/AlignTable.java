@@ -496,23 +496,33 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	 * @return cell that was added
 	 */
 	public Cell add(Actor actor) {
+		int lastIndex = 0;
+		if (mLastCreatedRow != null) {
+			lastIndex = mLastCreatedRow.getCellCount();
+		}
+		return add(lastIndex, actor);
+	}
+
+	/**
+	 * Adds an actor at the specified position
+	 * @param index where to add the actor. Index should be >= 0 and <= cells in current
+	 *        row
+	 * @param actor the actor to add
+	 * @return cell that was added
+	 */
+	public Cell add(int index, Actor actor) {
 		// Add a row if none exists
 		if (mLastCreatedRow == null) {
 			row();
 		}
 
-		if (actor instanceof Layout) {
-			((Layout) actor).invalidate();
+		if (index < 0 || index > mLastCreatedRow.getCellCount()) {
+			throw new IllegalArgumentException("index outside of scope [0," + mLastCreatedRow.getCellCount() + "]: " + index);
 		}
 
-		Cell newCell = Pools.cell.obtain().setActor(actor);
-		newCell.setPad(mCellPaddingDefault);
+		Cell newCell = create(actor);
 
-		mLastCreatedRow.add(newCell);
-
-		if (actor != null) {
-			super.addActor(actor);
-		}
+		mLastCreatedRow.add(newCell, index);
 
 		invalidateHierarchy();
 
@@ -520,12 +530,29 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	/**
-	 * @deprecated Use {@link #add(Actor)} instead.
+	 * Create a new cell with the specified actor
+	 * @param actor actor of the cell (can be null)
+	 * @return created cell
 	 */
-	@Deprecated
+	private Cell create(Actor actor) {
+		if (actor instanceof Layout) {
+			((Layout) actor).invalidate();
+		}
+
+		Cell newCell = Pools.cell.obtain().setActor(actor);
+		newCell.setPad(mCellPaddingDefault);
+
+		if (actor != null) {
+			super.addActor(actor);
+		}
+
+		return newCell;
+	}
+
+
 	@Override
 	public void addActor(Actor actor) {
-		throw new UnsupportedOperationException("Use #add(Actor) instead");
+		add(actor);
 	}
 
 	/**

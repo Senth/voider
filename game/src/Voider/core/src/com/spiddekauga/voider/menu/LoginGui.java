@@ -2,7 +2,9 @@ package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -204,6 +206,10 @@ public class LoginGui extends Gui {
 		mWidgets.register.usernameError.setText("");
 		mWidgets.register.passwordError.setText("");
 		mWidgets.register.emailError.setText("");
+		if (mWidgets.register.keyError != null) {
+			mWidgets.register.keyError.setText("");
+		}
+		mWidgets.register.acceptTermsError.setText("");
 	}
 
 	/**
@@ -228,6 +234,14 @@ public class LoginGui extends Gui {
 	 */
 	void setRegisterEmailError(String text) {
 		mWidgets.register.emailError.setText(text);
+	}
+
+	/**
+	 * Set register accept terms error
+	 * @param text error text
+	 */
+	void setRegisterAcceptTermsError(String text) {
+		mWidgets.register.acceptTermsError.setText(text);
 	}
 
 	/**
@@ -294,6 +308,11 @@ public class LoginGui extends Gui {
 			setRegisterEmailError("is empty");
 			failed = true;
 		}
+		// Terms
+		if (!mWidgets.register.acceptTerms.isChecked()) {
+			setRegisterAcceptTermsError("please check");
+			failed = true;
+		}
 
 		// Register key
 		if (Config.Debug.BUILD == Builds.BETA) {
@@ -338,7 +357,6 @@ public class LoginGui extends Gui {
 		mWidgets.register.email = mUiFactory.addTextField("Email", true, "your@email.com", mWidgets.register.emailListener, table, null);
 		mWidgets.register.emailError = mUiFactory.text.getLastCreatedErrorLabel();
 
-
 		// Beta key
 		if (Config.Debug.BUILD == Builds.BETA) {
 			mWidgets.register.keyListener = new RegisterListener();
@@ -346,6 +364,22 @@ public class LoginGui extends Gui {
 			mWidgets.register.keyError = mUiFactory.text.getLastCreatedErrorLabel();
 		}
 
+		// Accept terms
+		mWidgets.register.acceptTermsError = mUiFactory.text.addError("Accept ", true, table, null);
+		TextButton termsButton = mUiFactory.button.createText("Terms", TextButtonStyles.LINK);
+		AlignTable innerTable = (AlignTable) table.getCell().getActor();
+		innerTable.add(1, termsButton);
+		table.row();
+		mWidgets.register.acceptTerms = mUiFactory.button.addImage(SkinNames.General.BUTTON_CHECK_BOX, table, null, null);
+		table.row();
+		ButtonListener buttonListener = new ButtonListener(termsButton) {
+			@Override
+			protected void onPressed(Button button) {
+				showTerms();
+			}
+		};
+		// mUiFactory.button.addText("Read Terms", TextButtonStyles.LINK, table,
+		// buttonListener, null, null);
 
 		// Set fixed width
 		table.layout();
@@ -354,7 +388,7 @@ public class LoginGui extends Gui {
 
 		// Back
 		table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(mUiFactory.getStyles().vars.paddingButton);
-		ButtonListener buttonListener = new ButtonListener() {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
 				mWidgets.register.hider.hide();
@@ -379,6 +413,17 @@ public class LoginGui extends Gui {
 
 		// Add to stage
 		addActor(mWidgets.register.table);
+	}
+
+	/**
+	 * Show terms
+	 */
+	private void showTerms() {
+		String terms = mLoginScene.getTerms();
+
+		if (terms != null) {
+			mUiFactory.msgBox.scrollable("Terms and Conditions", terms);
+		}
 	}
 
 	/**
@@ -723,6 +768,7 @@ public class LoginGui extends Gui {
 			TextField confirmPassword = null;
 			TextField email = null;
 			TextField key = null;
+			ImageButton acceptTerms = null;
 
 			// Listeners
 			TextFieldListener usernameListener = null;
@@ -735,6 +781,7 @@ public class LoginGui extends Gui {
 			Label passwordError = null;
 			Label emailError = null;
 			Label keyError = null;
+			Label acceptTermsError = null;
 
 			private Register() {
 				init();
