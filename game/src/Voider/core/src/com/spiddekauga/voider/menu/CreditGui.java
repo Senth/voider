@@ -134,26 +134,6 @@ class CreditGui extends Gui {
 	private void initCredits() {
 		ArrayList<CreditSection> creditSections = mScene.getCredits();
 
-		// ButtonListener buttonListener = new ButtonListener() {
-		// @Override
-		// protected void onPressed(Button button) {
-		// Object object = button.getUserObject();
-		//
-		// if (object instanceof CreditName) {
-		// CreditName creditName = (CreditName) object;
-		//
-		// // Twitter
-		// if (creditName.hasTwitter()) {
-		// Gdx.net.openURI(creditName.getTwitterLink());
-		// }
-		// // Regular link
-		// else if (creditName.hasLink()) {
-		// Gdx.net.openURI(creditName.url);
-		// }
-		// }
-		// }
-		// };
-
 		float padNames = mUiFactory.getStyles().vars.paddingInner / 2;
 
 		// Sections
@@ -168,19 +148,10 @@ class CreditGui extends Gui {
 
 				label = new Label(creditName.firstName, mNameStyle);
 				label.setAlignment(Align.right);
-				mCreditTable.add(label).setPadRight(padNames).setWidth(200);
+				mCreditTable.add(label).setPadRight(padNames);
 
 				label = new Label(creditName.lastName, mNameStyle);
-				mCreditTable.add(label).setPadLeft(padNames).setWidth(200);
-
-				// if (creditName.hasTwitter() || creditName.hasLink()) {
-				// Cell linkCell = mUiFactory
-				// .addTextButton(creditName.linkText, TextButtonStyles.LINK,
-				// mCreditTable, buttonListener, null, null);
-				// linkCell.setPadLeft(mUiFactory.getStyles().vars.paddingSeparator);
-				// linkCell.getActor().setUserObject(creditName);
-				// linkCell.getActor().setTouchable(Touchable.enabled);
-				// }
+				mCreditTable.add(label).setPadLeft(padNames);
 			}
 		}
 	}
