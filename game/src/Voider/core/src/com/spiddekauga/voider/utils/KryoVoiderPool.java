@@ -35,6 +35,7 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.PlayerStats;
+import com.spiddekauga.voider.game.PlayerStats.ScorePart;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -246,6 +247,8 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		GENERAL_IMAGES(SkinNames.GeneralImages.class),
 		/** Music themes */
 		MUSIC(Music.class),
+		/** ScorePart */
+		SCORE_PART(ScorePart.class, SerializerType.TAGGED),
 
 		;
 

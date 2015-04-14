@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.LevelDefEntity;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -284,7 +284,7 @@ public class LevelDef extends Def {
 	 * Base speed of the level, the actual level speed may vary as it can be changed by
 	 * triggers
 	 */
-	@Tag(83) private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
+	@Tag(83) private float mSpeed = ConfigIni.getInstance().editor.level.getSpeedDefault();
 	/** End of the map (right screen edge) */
 	@Tag(84) private float mEndXCoord = 100;
 	/** Theme of the level */

@@ -32,7 +32,6 @@ import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -74,7 +73,6 @@ class ResourceLoader {
 		mAssetManager.setLoader(Level.class, new KryoLoaderAsync<>(externalFileHandleResolver, Level.class));
 		mAssetManager.setLoader(GameSave.class, new KryoLoaderSync<>(externalFileHandleResolver, GameSave.class));
 		mAssetManager.setLoader(GameSaveDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, GameSaveDef.class));
-		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<>(externalFileHandleResolver, PlayerStats.class));
 		mAssetManager.setLoader(BugReportDef.class, new KryoLoaderAsync<>(externalFileHandleResolver, BugReportDef.class));
 
 

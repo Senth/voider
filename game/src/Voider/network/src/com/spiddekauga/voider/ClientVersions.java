@@ -184,7 +184,11 @@ public enum ClientVersions {
 			"Bug fixes",
 			"	Can now create a copy of the current level, enemy, or bullet"
 			),
-	V0_5_6(false,
+	V0_5_6(true,
+			"New Score Calculation",
+			"	Each level now has a max score of 10 000 000 points",
+			"	When you get hit the multiplier decreases by 20%",
+			"		Continues to decrease every 0.5 seconds if you're still hit",
 			"Improvements",
 			"	Creating a copy of an entire Level/Enemy/Bullet has been improved",
 			"		Shows a dialog for a new name and description and ability to abort",

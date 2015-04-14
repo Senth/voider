@@ -13,6 +13,8 @@ import com.spiddekauga.utils.IniClass;
 public class IC_Game extends IniClass {
 	private float layerTopSpeed;
 	private float layerBottomSpeed;
+	private double multiplierDecrement;
+	private float multiplierCollisionCooldown;
 
 
 	IC_Game(Ini ini, Section classSection) {
@@ -25,5 +27,13 @@ public class IC_Game extends IniClass {
 
 	public float getLayerBottomSpeed() {
 		return layerBottomSpeed;
+	}
+
+	public double getMultiplierDecrement() {
+		return multiplierDecrement;
+	}
+
+	public float getMultiplierCollisionCooldown() {
+		return multiplierCollisionCooldown;
 	}
 }

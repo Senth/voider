@@ -23,6 +23,62 @@ public class IC_Editor extends IniClass {
 	public IC_Enemy enemy;
 	public IC_Ship ship;
 	public IC_General general;
+	public IC_Level level;
+
+	/**
+	 * Level editor Values
+	 */
+	public class IC_Level extends IniClass {
+		protected float publishLengthMin;
+		protected float speedMin;
+		protected float speedMax;
+		protected float speedDefault;
+		protected float speedStepSize;
+		protected float zoomMin;
+		protected float zoomMax;
+		protected float enemySnapDistance;
+		protected float enemySnapDistanceSq;
+
+		private IC_Level(Ini ini, Section classSection) {
+			super(ini, classSection);
+		}
+
+		public float getPublishLengthMin() {
+			return publishLengthMin;
+		}
+
+		public float getSpeedMin() {
+			return speedMin;
+		}
+
+		public float getSpeedMax() {
+			return speedMax;
+		}
+
+		public float getSpeedDefault() {
+			return speedDefault;
+		}
+
+		public float getSpeedStepSize() {
+			return speedStepSize;
+		}
+
+		public float getZoomMin() {
+			return zoomMin;
+		}
+
+		public float getZoomMax() {
+			return zoomMax;
+		}
+
+		public float getEnemySnapDistance() {
+			return enemySnapDistance;
+		}
+
+		public float getEnemySnapDistanceSq() {
+			return enemySnapDistanceSq;
+		}
+	}
 
 	/**
 	 * General Editor settings

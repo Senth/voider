@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Invoker;
-import com.spiddekauga.voider.Config.Editor;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Level;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CEnemySetPath;
@@ -88,7 +89,8 @@ public class EnemyAddTool extends ActorAddTool {
 			// Is the position close to a path?
 			PathDistanceWrapper closestPath = getClosestPath(snappedPosition, levelEditor);
 			if (closestPath != null) {
-				if (closestPath.distance <= Editor.Level.ENEMY_SNAP_PATH_DISTANCE_SQ) {
+				IC_Level icLevel = ConfigIni.getInstance().editor.level;
+				if (closestPath.distance <= icLevel.getEnemySnapDistanceSq()) {
 					snappedPosition.set(closestPath.path.getCornerPosition(0));
 					usesPath = true;
 				}

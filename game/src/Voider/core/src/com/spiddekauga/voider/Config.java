@@ -350,25 +350,6 @@ public class Config {
 				/** Width of trigger on enemies */
 				public final static float ENEMY_WIDTH = 0.4f;
 			}
-
-			/** Minimum level length for publishing a level, in seconds */
-			public final static float LEVEL_LENGTH_PUBLISH_MIN = 30;
-			/** Enemy snap distance to a path */
-			public final static float ENEMY_SNAP_PATH_DISTANCE = 2;
-			/** Enemy snap distance squared */
-			public final static float ENEMY_SNAP_PATH_DISTANCE_SQ = ENEMY_SNAP_PATH_DISTANCE * ENEMY_SNAP_PATH_DISTANCE;
-			/** Minimum level speed */
-			public final static float LEVEL_SPEED_MIN = 1;
-			/** Maximum level speed */
-			public final static float LEVEL_SPEED_MAX = 50;
-			/** Default level speed */
-			public final static float LEVEL_SPEED_DEFAULT = 15;
-			/** Step size of level speed */
-			public final static float LEVEL_SPEED_STEP_SIZE = 1;
-			/** Minimum zoom */
-			public final static float ZOOM_MIN = 0.2f;
-			/** Maximum zoom */
-			public final static float ZOOM_MAX = 10;
 		}
 
 		/**
@@ -543,10 +524,12 @@ public class Config {
 	 * Some general game settings
 	 */
 	public static class Game {
-		/** Score multiplier, used to create a greater score */
-		@Deprecated public final static float SCORE_MULTIPLIER = 10;
 		/** Border threshold, when border is too out of sync, it will get synced */
 		public final static float BORDER_SYNC_THRESHOLD = 0.1f;
+		/** Max score for a level */
+		public final static double SCORE_MAX = 10000000;
+		/** Max multiplier for a level, calculated from the maximum score */
+		public final static double MULTIPLIER_MAX = -0.5 + Math.sqrt(0.25 + SCORE_MAX * 2);
 	}
 
 	/**

@@ -44,6 +44,7 @@ import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Level;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -625,7 +626,8 @@ public abstract class EditorGui extends Gui {
 						}
 
 						float levelLength = ((LevelEditor) mEditor).getLevel().getLevelDef().getLengthInTime();
-						if (showPublish && levelLength < Config.Editor.Level.LEVEL_LENGTH_PUBLISH_MIN) {
+						IC_Level icLevel = ConfigIni.getInstance().editor.level;
+						if (showPublish && levelLength < icLevel.getPublishLengthMin()) {
 							showPublish = false;
 
 							MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Level Too Short");

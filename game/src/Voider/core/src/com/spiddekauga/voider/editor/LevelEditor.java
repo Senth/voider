@@ -17,6 +17,8 @@ import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Level;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.ActorAddTool;
@@ -100,7 +102,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		super.onInit();
 
-		mZoomTool = new ZoomTool(this, Config.Editor.Level.ZOOM_MIN, Config.Editor.Level.ZOOM_MAX);
+		IC_Level icLevel = ConfigIni.getInstance().editor.level;
+		mZoomTool = new ZoomTool(this, icLevel.getZoomMin(), icLevel.getZoomMax());
 
 		// Initialize tools
 		Tools.ZOOM_IN.setTool(mZoomTool);

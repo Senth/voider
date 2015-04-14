@@ -382,6 +382,7 @@ public class GameScene extends WorldScene {
 
 		Actor.setPlayerActor(null);
 		mSoundEffectListener.dispose();
+		mPlayerStats.dispose();
 
 		super.onDispose();
 	}
@@ -444,6 +445,7 @@ public class GameScene extends WorldScene {
 	 */
 	private void checkCompletedLevel() {
 		if (mLevel.isCompletedLevel()) {
+			mPlayerStats.calculateEndScore();
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 			mMusicPlayer.play(Music.LEVEL_COMPLETED, MusicInterpolations.FADE_OUT);
 		}
@@ -459,6 +461,7 @@ public class GameScene extends WorldScene {
 				mPlayerStats.decreaseExtraLives();
 				updateLives();
 			} else {
+				mPlayerStats.calculateEndScore();
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 				mMusicPlayer.play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
 			}
@@ -801,7 +804,8 @@ public class GameScene extends WorldScene {
 			mPlayerActor.createBody();
 			resetPlayerPosition();
 
-			mPlayerStats = new PlayerStats(mLevel.getLevelDef().getStartXCoord(), mLevel.getSpeed(), mPlayerActor);
+			LevelDef levelDef = mLevel.getLevelDef();
+			mPlayerStats = new PlayerStats(levelDef.getStartXCoord(), levelDef.getEndXCoord(), levelDef.getLengthInTime());
 			mLevel.addResource(mPlayerStats);
 		} else {
 			mPlayerActor.createBody();

@@ -44,10 +44,10 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_General;
+import com.spiddekauga.voider.config.IC_Editor.IC_Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.game.LevelBackground;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -806,8 +806,9 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setLevelStartingSpeed(newValue);
 			}
 		};
-		mWidgets.info.speed = mUiFactory.addSlider(null, "Level_Speed", Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX,
-				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, mDisabledWhenPublished);
+		IC_Level icLevel = ConfigIni.getInstance().editor.level;
+		mWidgets.info.speed = mUiFactory.addSlider(null, "Level_Speed", icLevel.getSpeedMin(), icLevel.getSpeedMax(), icLevel.getSpeedStepSize(),
+				sliderListener, left, null, mDisabledWhenPublished);
 
 		// Screenshot image
 		mUiFactory.text.addSection("Level/Screenshot Image", left, null);

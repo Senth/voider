@@ -2,43 +2,61 @@ package com.spiddekauga.voider.game;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Stack;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.IResourceChangeListener;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 
 /**
- * Container for all player statistics when playing a level and calculates the score.
+ * Container for all player statistics when playing a level. This class calculates the
+ * score.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class PlayerStats extends Resource implements IResourceChangeListener {
+public class PlayerStats extends Resource implements Disposable {
 	/**
 	 * Create a new PlayerStats and sets the starting position of the level
 	 * @param startCoordinate starting coordinate of the level, this is used for
 	 *        calculating the multiplier.
-	 * @param levelSpeed speed of the level, used for calculating the multiplier
-	 * @param playerActor binds these stats to listen to the player
+	 * @param endCoordinate end coordinate, this is used for calculating the score
+	 * @param levelLength in time. Used to calculate the shown multiplier
 	 */
-	public PlayerStats(float startCoordinate, float levelSpeed, PlayerActor playerActor) {
-		mHitCoordinateLast = startCoordinate;
-		mMultiplierChangeCoordinate = startCoordinate;
-		mLevelSpeed = levelSpeed;
+	public PlayerStats(float startCoordinate, float endCoordinate, float levelLength) {
+		this();
+		mCoordStart = startCoordinate;
+		mCoordCurrent = startCoordinate;
+		mCoordEnd = endCoordinate;
 		mUniqueId = UUID.randomUUID();
 
-		playerActor.addChangeListener(this);
+
+		// Calculate multiplies per coordinate
+		double coordDiff = mCoordEnd - mCoordStart;
+		mMultiplierPerCoord = Config.Game.MULTIPLIER_MAX / coordDiff;
+
+		// Normalize multiplier
+		mMultiplierNormalized = levelLength / Config.Game.MULTIPLIER_MAX;
 	}
 
 	/**
 	 * Default constructor for Kryo
 	 */
-	@SuppressWarnings("unused")
 	private PlayerStats() {
-		// Does nothing
+		mEventDipatcher.connect(EventTypes.GAME_ACTOR_HEALTH_CHANGED, mCollisionListener);
+	}
+
+	@Override
+	public void dispose() {
+		mEventDipatcher.disconnect(EventTypes.GAME_ACTOR_HEALTH_CHANGED, mCollisionListener);
 	}
 
 	/**
@@ -46,50 +64,35 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	 * @param coordinate current coordinate for the level
 	 */
 	public void updateScore(float coordinate) {
-		float diffCoord = coordinate - mHitCoordinateLast;
-		float nextMultiplierCoord = mMultiplierChangeCoordinate + mLevelSpeed;
+		mCoordCurrent = coordinate;
 
-		// Calculate the coordinates we have left on the current multiplier
-		boolean increaseMultiplier = false;
-		if (coordinate <= nextMultiplierCoord) {
-			mScore += getScoreMultiplied(diffCoord);
-		} else {
-			diffCoord = coordinate - nextMultiplierCoord;
-			mScore += getScoreMultiplied(nextMultiplierCoord - mHitCoordinateLast);
-			increaseMultiplier = true;
+		if (mCoordCurrent > mCoordEnd) {
+			mCoordCurrent = mCoordEnd;
 		}
 
-
-		// Increase multiplier and add rest of the score
-		if (increaseMultiplier) {
-			mMultiplierChangeCoordinate = nextMultiplierCoord;
-			mMultiplier++;
-
-			// Add any full score
-			while (diffCoord >= mLevelSpeed) {
-				diffCoord = diffCoord - mLevelSpeed;
-				mMultiplier++;
-				mScore += getScoreMultiplied(mLevelSpeed);
-				mMultiplierChangeCoordinate += mLevelSpeed;
-			}
-
-			// Add rest score
-			mScore += getScoreMultiplied(diffCoord);
-		}
-
-
-		mHitCoordinateLast = coordinate;
+		updateMultiplier();
+		updateTotalScore();
 	}
 
 	/**
-	 * Multiplies the coordinates with the current multiplier to get the correct score
-	 * @param coordinate number of coordinates to calculate the score on
-	 * @return score for these coordinates
-	 * @note Does not wrap if the coordinates would increase the multiplier, this is
-	 *       instead done by #update(float).
+	 * Calculate end score. Call this once the player finished playing the level
 	 */
-	private float getScoreMultiplied(float coordinate) {
-		return coordinate / mLevelSpeed * mMultiplier * Config.Game.SCORE_MULTIPLIER;
+	public void calculateEndScore() {
+		if (mScoreParts.isEmpty()) {
+			mScore = Config.Game.SCORE_MAX;
+		} else {
+			mCoordCurrent = mCoordEnd;
+			updateMultiplier();
+			updateTotalScore();
+		}
+	}
+
+	/**
+	 * Update the current multiplier
+	 */
+	private void updateMultiplier() {
+		double diffCoord = mCoordCurrent - getCoordLastHit();
+		mMultiplier = getMultiplierLastHit() + diffCoord * mMultiplierPerCoord;
 	}
 
 	/**
@@ -116,10 +119,11 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	}
 
 	/**
-	 * @return current multiplier value
+	 * @return current multiplier value to be displayer
 	 */
 	public String getMultiplierString() {
-		return Integer.toString(mMultiplier);
+		double multiplierShow = mMultiplier * mMultiplierNormalized;
+		return Integer.toString((int) (multiplierShow + 0.5));
 	}
 
 	/**
@@ -158,29 +162,145 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 		return mNewHighscore;
 	}
 
-	@Override
-	public void onResourceChanged(IResource resource, EventTypes type) {
-		if (type == EventTypes.LIFE_DECREASED) {
-			mMultiplier = 1;
+	/**
+	 * Get a new multiplier value after a ship was hit
+	 * @param multiplierBefore multiplier before the ship was hit
+	 * @return multiplier after the ship was hit
+	 */
+	private static double calculateNewMultiplier(double multiplierBefore) {
+		return multiplierBefore * ConfigIni.getInstance().game.getMultiplierDecrement();
+	}
+
+	/**
+	 * Container class for part of the score
+	 */
+	public class ScorePart {
+		private ScorePart() {
+			// Coord start
+			if (mScoreParts.isEmpty()) {
+				mMultiplierStart = 1;
+			} else {
+				ScorePart prevScorePart = mScoreParts.peek();
+				mMultiplierStart = prevScorePart.mMultiplierAfter;
+			}
+
+			calculateScore();
+		}
+
+		/**
+		 * Calculates the score
+		 */
+		private void calculateScore() {
+			// (Xe + Xs) * (Xe - Xs + 1) / 2
+			mScore = (mMultiplierEnd + mMultiplierStart) * (mMultiplierEnd - mMultiplierStart + 1) * 0.5;
+		}
+
+		/**
+		 * @return score of this part
+		 */
+		public double getScore() {
+			return mScore;
+		}
+
+		@Tag(147) private float mCoordEnd = mCoordCurrent;
+		@Tag(148) private double mMultiplierStart;
+		@Tag(149) private double mMultiplierEnd = mMultiplier;
+		@Tag(154) private double mMultiplierAfter = calculateNewMultiplier(mMultiplier);
+		@Tag(150) private double mScore;
+	}
+
+	/**
+	 * Create and add a new score part
+	 */
+	private void createScorePart() {
+		ScorePart scorePart = new ScorePart();
+		mScoreParts.push(scorePart);
+	}
+
+	/**
+	 * Calculates the total score
+	 */
+	private void updateTotalScore() {
+		ScorePart endScorePart = new ScorePart();
+		mScore = endScorePart.getScore();
+
+		for (ScorePart scorePart : mScoreParts) {
+			mScore += scorePart.getScore();
+		}
+
+		// Clamp to max score
+		if (mScore > Config.Game.SCORE_MAX) {
+			mScore = Config.Game.SCORE_MAX;
 		}
 	}
+
+	/**
+	 * @return last coordinate when the player ship was hit
+	 */
+	private float getCoordLastHit() {
+		if (mScoreParts.isEmpty()) {
+			return mCoordStart;
+		} else {
+			return mScoreParts.peek().mCoordEnd;
+		}
+	}
+
+	/**
+	 * @return last multiplier when the player ship was hit
+	 */
+	private double getMultiplierLastHit() {
+		if (mScoreParts.isEmpty()) {
+			return 1;
+		} else {
+			return mScoreParts.peek().mMultiplierAfter;
+		}
+	}
+
+	/** Listens to whenever the player collides with something */
+	private IEventListener mCollisionListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			float currentTime = GameTime.getTotalGlobalTimeElapsed();
+			float cooldownTime = ConfigIni.getInstance().game.getMultiplierCollisionCooldown();
+
+			if (currentTime >= mCollisionTime + cooldownTime) {
+				mCollisionTime = currentTime;
+				createScorePart();
+				Gdx.app.debug("PlayerStats", "Decrease multiplier");
+			}
+		}
+	};
 
 	/** Number of starting lives */
 	private static final int STARTING_LIVES = 3;
 	/** Number of lives left */
 	@Tag(20) private int mExtraLives = STARTING_LIVES - 1;
-	/** Speed of the level, used for calculating multiplier values */
-	@Tag(21) private float mLevelSpeed;
+	/** How often the multiplier is increase, or rather multiplier per coordinate */
+	@Tag(25) private double mMultiplierPerCoord = 0;
+	/** End coordinate of the level */
+	@Tag(23) private float mCoordEnd;
+	/** Start coordinate of the level */
+	@Tag(24) private float mCoordStart;
+	/** Current coordinate of the level */
+	@Tag(21) private float mCoordCurrent = 1;
+	/** All scores */
+	@Tag(151) private Stack<ScorePart> mScoreParts = new Stack<>();
+	/** Last time we collided */
+	@Tag(152) private float mCollisionTime = 0;
+	/** Total score */
+	@Tag(146) private double mScore = 0;
 	/** Current multiplier */
-	@Tag(22) private int mMultiplier = 1;
-	/** Last change of multiplier coordinate */
-	@Tag(23) private float mMultiplierChangeCoordinate;
-	/** Last hit coordinate */
-	@Tag(24) private float mHitCoordinateLast;
-	/** Score of the level */
-	@Tag(25) private double mScore = 0;
+	@Tag(153) private double mMultiplier = 1;
+	/** Multiplier normalized in regard to level length */
+	@Tag(155) private double mMultiplierNormalized = 0;
+
+
 	/** New highscore for the player */
 	private boolean mNewHighscore = false;
-	/** Number format */
+
 	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.getDefault());
+	private static EventDispatcher mEventDipatcher = EventDispatcher.getInstance();
+
+	@Deprecated @Tag(22) private int mNotUsed2 = 1;
+
 }
