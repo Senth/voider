@@ -116,13 +116,10 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 			updateCoordinates();
 
-			if (mPlayerActor != null && mPlayerActor.getBody() != null) {
-				mPlayerActor.getBody().setLinearVelocity(mSpeed, 0.0f);
-			}
-
 			if (!mCompletedLevel) {
 				if (mXCoord >= mLevelDef.getEndXCoord()) {
 					mCompletedLevel = true;
+					mXCoord = mLevelDef.getEndXCoord();
 				}
 			}
 

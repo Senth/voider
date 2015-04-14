@@ -20,7 +20,6 @@ public class DesktopLauncher {
 
 
 		// Add icons
-
 		FileType fileType = Config.File.USE_EXTERNAL_RESOURCES ? FileType.Absolute : FileType.Internal;
 		config.addIcon(InternalNames.ICON_256.getFilePath(), fileType);
 		config.addIcon(InternalNames.ICON_128.getFilePath(), fileType);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -249,6 +250,8 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		MUSIC(Music.class),
 		/** ScorePart */
 		SCORE_PART(ScorePart.class, SerializerType.TAGGED),
+		/** Stack */
+		STACK(Stack.class),
 
 		;
 

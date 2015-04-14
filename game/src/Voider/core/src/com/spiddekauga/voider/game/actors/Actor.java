@@ -47,7 +47,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
-import com.spiddekauga.voider.resources.IResourceChangeListener.EventTypes;
+import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
@@ -61,6 +61,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 
 /**
@@ -469,6 +470,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
+	 * Kill the actor, sets the health to 0
+	 */
+	public void kill() {
+		if (mLife > 0) {
+			decreaseHealth(mLife + 1);
+		}
+	}
+
+	/**
 	 * Resets the life
 	 */
 	public void resetHealth() {
@@ -485,10 +495,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mLife > 0) {
 			float oldLife = mLife;
 			mLife -= amount;
-			sendChangeEvent(EventTypes.LIFE_DECREASED);
 			sendChangeHealthEvent(oldLife);
 			if (this instanceof PlayerActor && mLife <= 0) {
-				mEventDispatcher.fire(new GameEvent(com.spiddekauga.voider.utils.event.EventTypes.GAME_PLAYER_SHIP_LOST));
+				mEventDispatcher.fire(new GameEvent(EventTypes.GAME_PLAYER_SHIP_LOST));
 			}
 		}
 	}
@@ -661,7 +670,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			createBodyCorners();
 		}
 
-		sendChangeEvent(EventTypes.POSITION);
+		sendChangeEvent(IResourceChangeListener.EventTypes.POSITION);
 	}
 
 	@Override

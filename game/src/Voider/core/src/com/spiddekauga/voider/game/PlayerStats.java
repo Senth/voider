@@ -5,7 +5,6 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
@@ -260,13 +259,17 @@ public class PlayerStats extends Resource implements Disposable {
 	private IEventListener mCollisionListener = new IEventListener() {
 		@Override
 		public void handleEvent(GameEvent event) {
-			float currentTime = GameTime.getTotalGlobalTimeElapsed();
-			float cooldownTime = ConfigIni.getInstance().game.getMultiplierCollisionCooldown();
+			// Only if life was decreased
+			HealthChangeEvent healthChangeEvent = (HealthChangeEvent) event;
+			if (healthChangeEvent.actor.getHealth() < healthChangeEvent.oldHealth) {
 
-			if (currentTime >= mCollisionTime + cooldownTime) {
-				mCollisionTime = currentTime;
-				createScorePart();
-				Gdx.app.debug("PlayerStats", "Decrease multiplier");
+				// Check cooldown -> Decrease multiplier
+				float currentTime = GameTime.getTotalGlobalTimeElapsed();
+				float cooldownTime = ConfigIni.getInstance().game.getMultiplierCollisionCooldown();
+				if (currentTime >= mCollisionTime + cooldownTime) {
+					mCollisionTime = currentTime;
+					createScorePart();
+				}
 			}
 		}
 	};

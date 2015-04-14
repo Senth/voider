@@ -398,15 +398,13 @@ public class GameScene extends WorldScene {
 		mBodyShepherd.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
 
 		mLevel.update(deltaTime);
-		super.update(deltaTime);
 
 		updateCameraPosition();
 
+		checkAndResetPlayerPosition();
 		checkPlayerLives();
 		checkCompletedLevel();
 		mPlayerStats.updateScore(mLevel.getXCoord());
-		checkAndResetPlayerPosition();
-
 
 		// GUI
 		getGui().resetValues();
@@ -418,6 +416,7 @@ public class GameScene extends WorldScene {
 	private void checkAndResetPlayerPosition() {
 		if (!Geometry.isPointWithinBox(mPlayerActor.getPosition(), getWorldMinCoordinates(), getWorldMaxCoordinates())) {
 			resetPlayerPosition();
+			mPlayerActor.kill();
 		}
 	}
 
@@ -497,15 +496,15 @@ public class GameScene extends WorldScene {
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}
-			mShapeRenderer.setProjectionMatrix(mCamera.combined);
-			mSpriteBatch.setProjectionMatrix(mProjectionMatrixDefault);
 
 			// Render Background
+			mSpriteBatch.setProjectionMatrix(mProjectionMatrixDefault);
 			mSpriteBatch.begin();
 			mLevel.renderBackground(mSpriteBatch);
 			mSpriteBatch.end();
 
 			// Render shape actors
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
 			enableBlendingWithDefaults();
 
@@ -525,8 +524,6 @@ public class GameScene extends WorldScene {
 				takeScreenshotNow();
 				fixCamera();
 			}
-
-
 		}
 	}
 
@@ -713,6 +710,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (mPlayerPointer == pointer && mMovingPlayer) {
+			mPlayerActor.getBody().setLinearVelocity(new Vector2(mLevel.getSpeed(), 0));
 			mCursorScreen.set(x, y);
 			mPlayerPointer = INVALID_POINTER;
 			mMovingPlayer = false;
@@ -810,6 +808,8 @@ public class GameScene extends WorldScene {
 		} else {
 			mPlayerActor.createBody();
 		}
+
+		mPlayerActor.getBody().setLinearVelocity(new Vector2(mLevel.getSpeed(), 0));
 
 		// Set lives
 		mLevel.setPlayer(mPlayerActor);
