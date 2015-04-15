@@ -9,10 +9,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Maths;
@@ -106,12 +106,6 @@ public abstract class WorldScene extends Scene {
 		updateBoundingBox();
 		mBulletDestroyer.update(deltaTime);
 		mBulletDestroyer.removeOutOfBondsBullets(getBoundingBoxWorld());
-
-		// Sync border position with screen
-		if (mBorderBody != null) {
-			synchronizeBorder(mBorderBody);
-		}
-
 	}
 
 	/**
@@ -119,11 +113,17 @@ public abstract class WorldScene extends Scene {
 	 * @param border the border to synchronize
 	 */
 	protected void synchronizeBorder(Body border) {
-		Vector2 maxScreenPos = getWorldMaxCoordinates();
-		float borderDiffPosition = border.getPosition().x - maxScreenPos.x;
+		float borderDiffPosition = border.getPosition().x - mCamera.position.x;
 		if (!Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
-			border.setTransform(maxScreenPos.x, border.getPosition().y, 0);
+			border.setTransform(mCamera.position.x, border.getPosition().y, 0);
 		}
+	}
+
+	/**
+	 * Calls {@link #synchronizeBorder(Body)} with the correct body
+	 */
+	protected final void synchronizeBorder() {
+		synchronizeBorder(mBorderBody);
 	}
 
 	@Override
@@ -241,23 +241,39 @@ public abstract class WorldScene extends Scene {
 		}
 
 
-		Vector2[] corners = getBorderCorners();
+		Vector2[][] boxes = getBorderBoxes();
 
-
-		// Create fixture
-		ChainShape shape = new ChainShape();
-		shape.createLoop(corners);
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = shape;
-		fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
-		fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
-		mBorderBody.createFixture(fixtureDef);
+		for (Vector2[] box : boxes) {
+			FixtureDef fixtureDef = createBorderFixture(box);
+			mBorderBody.createFixture(fixtureDef);
+			fixtureDef.shape.dispose();
+		}
 
 		// Set position
 		synchronizeBorder(mBorderBody);
+	}
 
-		// Free stuff
-		shape.dispose();
+	/**
+	 * Create border fixture
+	 * @param vertices all the vertices for a fixture, should be of length 4
+	 * @return new fixture definition from the vertices
+	 */
+	protected FixtureDef createBorderFixture(Vector2[] vertices) {
+		if (vertices.length != 4) {
+			throw new IllegalArgumentException("vertices not of length 4");
+		}
+		Geometry.makePolygonCounterClockwise(vertices);
+
+		PolygonShape polygonShape = new PolygonShape();
+		polygonShape.set(vertices);
+
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = polygonShape;
+		fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
+		fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
+		fixtureDef.density = 1;
+
+		return fixtureDef;
 	}
 
 	/**
@@ -265,15 +281,45 @@ public abstract class WorldScene extends Scene {
 	 * dimensions.
 	 * @return all 4 border corners/vertices
 	 */
-	protected Vector2[] getBorderCorners() {
-		// Get world coordinates for the screen's corners
-		Vector2[] corners = Collections.fillNew(new Vector2[4], Vector2.class);
-		corners[0].set(0, -getWorldHeight() * 0.5f);
-		corners[1].set(-getWorldWidth(), -getWorldHeight() * 0.5f);
-		corners[2].set(-getWorldWidth(), getWorldHeight() * 0.5f);
-		corners[3].set(0, getWorldHeight() * 0.5f);
+	protected Vector2[][] getBorderBoxes() {
+		Vector2[][] boxes = new Vector2[4][4];
 
-		return corners;
+		updateBoundingBox();
+		BoundingBox boundingBox = getBoundingBoxWorld();
+		Vector2 cameraPos = getCameraPos();
+
+		float left = boundingBox.getLeft() - cameraPos.x;
+		float right = boundingBox.getRight() - cameraPos.x;
+		float top = boundingBox.getTop() - cameraPos.y;
+		float bottom = boundingBox.getBottom() - cameraPos.y;
+
+		float width = 10;
+
+		// Left side
+		boxes[0][0] = new Vector2(left, bottom - width);
+		boxes[0][1] = new Vector2(left - width, bottom - width);
+		boxes[0][2] = new Vector2(left - width, top + width);
+		boxes[0][3] = new Vector2(left, top + width);
+
+		// Right side
+		boxes[1][0] = new Vector2(right + width, bottom - width);
+		boxes[1][1] = new Vector2(right, bottom - width);
+		boxes[1][2] = new Vector2(right, top + width);
+		boxes[1][3] = new Vector2(right + width, top + width);
+
+		// Bottom side
+		boxes[2][0] = new Vector2(right, bottom - width);
+		boxes[2][1] = new Vector2(left, bottom - width);
+		boxes[2][2] = new Vector2(left, bottom);
+		boxes[2][3] = new Vector2(right, bottom);
+
+		// Top side
+		boxes[3][0] = new Vector2(right, top);
+		boxes[3][1] = new Vector2(left, top);
+		boxes[3][2] = new Vector2(left, top + width);
+		boxes[3][3] = new Vector2(right, top + width);
+
+		return boxes;
 	}
 
 	@Override
@@ -340,6 +386,13 @@ public abstract class WorldScene extends Scene {
 		mWindowBox.setRight(max.x);
 		mWindowBox.setTop(max.y);
 		mWindowBox.setBottom(min.y);
+	}
+
+	/**
+	 * @return camera position
+	 */
+	protected Vector2 getCameraPos() {
+		return new Vector2(mCamera.position.x, mCamera.position.y);
 	}
 
 	/** Window bounding box */

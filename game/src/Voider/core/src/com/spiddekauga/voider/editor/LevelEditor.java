@@ -590,16 +590,20 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 		}
 
-		// Tools
+		// Tools - General
 		if (KeyHelper.isNoModifiersPressed()) {
 			if (keycode == Input.Keys.S) {
 				switchTool(Tools.SELECTION);
+				return true;
 			} else if (keycode == Input.Keys.P) {
 				switchTool(Tools.PATH_ADD);
+				return true;
 			} else if (keycode == Input.Keys.M) {
 				switchTool(Tools.MOVE);
+				return true;
 			} else if (keycode == Input.Keys.E) {
 				switchTool(Tools.ENEMY_ADD);
+				return true;
 			}
 		}
 
@@ -607,14 +611,18 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (keycode == Input.Keys.D) {
 			if (KeyHelper.isShiftPressed()) {
 				switchTool(Tools.TERRAIN_DRAW_ERASE);
+				return true;
 			} else if (KeyHelper.isNoModifiersPressed()) {
 				switchTool(Tools.TERRAIN_DRAW_APPEND);
+				return true;
 			}
 		} else if (keycode == Input.Keys.C) {
 			if (KeyHelper.isShiftPressed()) {
 				switchTool(Tools.ADD_MOVE_CORNER);
+				return true;
 			} else if (KeyHelper.isNoModifiersPressed()) {
 				switchTool(Tools.REMOVE_CORNER);
+				return true;
 			}
 		}
 
@@ -622,8 +630,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		else if (keycode == Input.Keys.T) {
 			if (KeyHelper.isShiftPressed()) {
 				switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+				return true;
 			} else if (KeyHelper.isNoModifiersPressed()) {
 				switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
+				return true;
 			}
 		}
 
@@ -631,8 +641,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		else if (keycode == Input.Keys.Z) {
 			if (KeyHelper.isShiftPressed()) {
 				switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+				return true;
 			} else if (KeyHelper.isNoModifiersPressed()) {
 				switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
+				return true;
 			}
 		}
 
@@ -672,6 +684,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		getGui().resetColor();
+		getGui().resetTools();
 	}
 
 	/**

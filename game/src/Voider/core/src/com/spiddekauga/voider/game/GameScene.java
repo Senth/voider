@@ -20,7 +20,6 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -390,16 +389,15 @@ public class GameScene extends WorldScene {
 	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
+		updateCameraPosition();
+		synchronizeBorder();
 
-		updateBorderSpeed();
 		updateMousePosition();
 
 		updateBodyShepherdPositions();
 		mBodyShepherd.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
 
 		mLevel.update(deltaTime);
-
-		updateCameraPosition();
 
 		checkAndResetPlayerPosition();
 		checkPlayerLives();
@@ -418,6 +416,11 @@ public class GameScene extends WorldScene {
 			resetPlayerPosition();
 			mPlayerActor.kill();
 		}
+
+		// Always force player velocity if we're not picking the player
+		if (!mMovingPlayer) {
+			setPlayerVelocityToLevel();
+		}
 	}
 
 	/**
@@ -427,15 +430,6 @@ public class GameScene extends WorldScene {
 		if (mMouseBody != null && mMovingPlayer) {
 			screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
 			mMouseJoint.setTarget(mCursorWorld);
-		}
-	}
-
-	/**
-	 * Update border speed
-	 */
-	private void updateBorderSpeed() {
-		if (mBorderBody != null) {
-			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
 		}
 	}
 
@@ -536,10 +530,8 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected void synchronizeBorder(Body border) {
-		float borderDiffPosition = border.getPosition().x - mLevel.getXCoord();
-		if (!Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
-			border.setTransform(mLevel.getXCoord(), border.getPosition().y, 0);
-		}
+		super.synchronizeBorder(border);
+		border.setLinearVelocity(mLevel.getSpeed(), 0);
 	}
 
 	@Override
@@ -633,7 +625,16 @@ public class GameScene extends WorldScene {
 		}
 
 		else if (mLevelToLoad != null) {
+			// Actually load this level too if it hasn't been loaded by this scene
+			if (!ResourceCacheFacade.isLoaded(mLevelToLoad.getId(), this)) {
+				ResourceCacheFacade.load(this, mLevelToLoad.getId(), false);
+			}
+
 			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), mLevelToLoad.getId());
+
+			if (ResourceCacheFacade.isLoaded(mLevelToLoad.getLevelId())) {
+				ResourceCacheFacade.reload(mLevelToLoad.getLevelId());
+			}
 		}
 
 		else if (mGameSaveDef != null) {
@@ -669,6 +670,13 @@ public class GameScene extends WorldScene {
 		}
 
 		return loadingScene;
+	}
+
+	/**
+	 * Set player velocity to the level speed
+	 */
+	private void setPlayerVelocityToLevel() {
+		mPlayerActor.getBody().setLinearVelocity(new Vector2(mLevel.getSpeed(), 0));
 	}
 
 	// --------------------------------
@@ -710,7 +718,6 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (mPlayerPointer == pointer && mMovingPlayer) {
-			mPlayerActor.getBody().setLinearVelocity(new Vector2(mLevel.getSpeed(), 0));
 			mCursorScreen.set(x, y);
 			mPlayerPointer = INVALID_POINTER;
 			mMovingPlayer = false;

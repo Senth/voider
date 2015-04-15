@@ -15,6 +15,7 @@ public class IC_Game extends IniClass {
 	private float layerBottomSpeed;
 	private double multiplierDecrement;
 	private float multiplierCollisionCooldown;
+	private float invulnerableTimeOnShipLost;
 
 
 	IC_Game(Ini ini, Section classSection) {
@@ -35,5 +36,9 @@ public class IC_Game extends IniClass {
 
 	public float getMultiplierCollisionCooldown() {
 		return multiplierCollisionCooldown;
+	}
+
+	public float getInvulnerableTimeOnShipLost() {
+		return invulnerableTimeOnShipLost;
 	}
 }

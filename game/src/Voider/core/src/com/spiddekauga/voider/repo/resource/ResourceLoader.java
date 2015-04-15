@@ -2,6 +2,7 @@ package com.spiddekauga.voider.repo.resource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -125,33 +126,102 @@ class ResourceLoader {
 		uuidRevision.resourceId = resourceId;
 		uuidRevision.revision = getCorrectRevision(resourceId, revision);
 
-		// If loaded or loading -> do nothing
-		if (mLoadedResources.containsKey(uuidRevision) || mLoadingQueue.containsKey(uuidRevision)) {
-			return;
+		// Get the loaded resource
+		LoadedResource loadedResource = mLoadedResources.get(uuidRevision);
+		if (loadedResource == null) {
+			loadedResource = mLoadingQueue.get(uuidRevision);
+		}
+
+		// Add scene to resource if it hasn't been
+		if (loadedResource != null) {
+			if (!loadedResource.scenes.contains(scene)) {
+				loadedResource.scenes.add(scene);
+			}
+		}
+		// Else no resource loaded create new
+		else {
+			loadedResource = new LoadedResource();
+			loadedResource.scenes.add(scene);
+
+			// Set filepath
+			if (uuidRevision.revision > 0) {
+				loadedResource.filepath = ResourceLocalRepo.getRevisionFilepath(resourceId, revision);
+			} else {
+				loadedResource.filepath = ResourceLocalRepo.getFilepath(resourceId);
+			}
+
+
+			ExternalTypes type = ResourceLocalRepo.getType(resourceId);
+			if (type != null) {
+				mAssetManager.load(loadedResource.filepath, type.getClassType());
+			} else {
+				mUuidRevisionPool.free(uuidRevision);
+				throw new ResourceNotFoundException(loadedResource.filepath, resourceId);
+			}
+
+			mLoadingQueue.put(uuidRevision, loadedResource);
+		}
+	}
+
+	/**
+	 * Check if the resource is being loaded into the specified scene
+	 * @param resourceId if this resource has been loaded
+	 * @param revision if this revision has been loaded
+	 * @param scene if this resource has been loaded into this scene, null to use any
+	 * @return true if the resource is being loaded into the specified scene
+	 */
+	boolean isResourceLoading(UUID resourceId, int revision, Scene scene) {
+		int correctRevision = getCorrectRevision(resourceId, revision);
+		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
+
+		boolean found = false;
+		LoadedResource loadedResource = mLoadingQueue.get(uuidRevision);
+		if (loadedResource != null) {
+			if (scene != null) {
+				found = loadedResource.scenes.contains(scene);
+			} else {
+				found = true;
+			}
 		}
 
 
-		LoadedResource loadedResource = new LoadedResource();
-		loadedResource.scene = scene;
+		mUuidRevisionPool.free(uuidRevision);
+		return found;
+	}
 
+	/**
+	 * Check if the resource has been loaded into the specified scene
+	 * @param resourceId if this resource has been loaded
+	 * @param revision if this revision has been loaded
+	 * @param scene if this resource has been loaded into this scene, null to use any
+	 * @return true if the resource has been loaded into the specified scene
+	 */
+	boolean isResourceLoaded(UUID resourceId, int revision, Scene scene) {
+		int correctRevision = getCorrectRevision(resourceId, revision);
+		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
 
-		// Set filepath
-		if (uuidRevision.revision > 0) {
-			loadedResource.filepath = ResourceLocalRepo.getRevisionFilepath(resourceId, revision);
-		} else {
-			loadedResource.filepath = ResourceLocalRepo.getFilepath(resourceId);
+		boolean found = false;
+		LoadedResource loadedResource = mLoadedResources.get(uuidRevision);
+		if (loadedResource != null) {
+			if (scene != null) {
+				found = loadedResource.scenes.contains(scene);
+			} else {
+				found = true;
+			}
 		}
 
+		mUuidRevisionPool.free(uuidRevision);
+		return found;
+	}
 
-		ExternalTypes type = ResourceLocalRepo.getType(resourceId);
-		if (type != null) {
-			mAssetManager.load(loadedResource.filepath, type.getClassType());
-		} else {
-			mUuidRevisionPool.free(uuidRevision);
-			throw new ResourceNotFoundException(loadedResource.filepath, resourceId);
-		}
-
-		mLoadingQueue.put(uuidRevision, loadedResource);
+	/**
+	 * Check if the resource has been loaded into the specified scene
+	 * @param resourceId if this resource has been loaded
+	 * @param scene if this resource has been loaded into this scene
+	 * @return true if the resource has been loaded into the specified scene
+	 */
+	boolean isResourceLoaded(UUID resourceId, Scene scene) {
+		return isResourceLoaded(resourceId, LATEST_REVISION, scene);
 	}
 
 	/**
@@ -160,11 +230,7 @@ class ResourceLoader {
 	 * @return true if the resource has been loaded
 	 */
 	boolean isResourceLoaded(UUID resourceId, int revision) {
-		int correctRevision = getCorrectRevision(resourceId, revision);
-		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
-		boolean found = mLoadedResources.containsKey(uuidRevision);
-		mUuidRevisionPool.free(uuidRevision);
-		return found;
+		return isResourceLoaded(resourceId, revision, null);
 	}
 
 	/**
@@ -242,10 +308,14 @@ class ResourceLoader {
 			Entry<UuidRevision, LoadedResource> entry = iterator.next();
 
 			LoadedResource loadedResource = entry.getValue();
-			if (loadedResource.scene == scene) {
-				mAssetManager.unload(loadedResource.filepath);
-				iterator.remove();
-				mUuidRevisionPool.free(entry.getKey());
+			if (loadedResource.scenes.contains(scene)) {
+				loadedResource.scenes.remove(scene);
+
+				if (loadedResource.scenes.isEmpty()) {
+					mAssetManager.unload(loadedResource.filepath);
+					iterator.remove();
+					mUuidRevisionPool.free(entry.getKey());
+				}
 			}
 		}
 	}
@@ -528,7 +598,7 @@ class ResourceLoader {
 		/** File path of the resource */
 		String filepath = null;
 		/** Which scene this resource should be loaded into */
-		Scene scene = null;
+		HashSet<Scene> scenes = new HashSet<>();
 		/** The actual resource that was loaded */
 		IResource resource = null;
 	}

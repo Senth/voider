@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
+import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -42,12 +44,60 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 		}
 	}
 
+	@Override
+	public void resetHealth() {
+		super.resetHealth();
+		makeInvulnerable();
+	}
+
+	/**
+	 * Make the player invulnerable
+	 */
+	private void makeInvulnerable() {
+		mInvulnerableTimeLeft = ConfigIni.getInstance().game.getInvulnerableTimeOnShipLost();
+
+		reloadFixtures();
+	}
+
+	/**
+	 * Make the player ship vulnerable
+	 */
+	private void makeVulnerable() {
+		mInvulnerableTimeLeft = 0;
+
+		reloadFixtures();
+	}
+
+	/**
+	 * @return true if the player is invulnerable
+	 */
+	public boolean isInvulnerable() {
+		return mInvulnerableTimeLeft > 0;
+	}
+
+	@Override
+	public void update(float deltaTime) {
+		super.update(deltaTime);
+
+		if (mInvulnerableTimeLeft > 0) {
+			mInvulnerableTimeLeft -= deltaTime;
+
+			if (mInvulnerableTimeLeft <= 0) {
+				makeVulnerable();
+			}
+		}
+	}
+
 	/**
 	 * @return player filter category
 	 */
 	@Override
 	protected short getFilterCategory() {
-		return ActorFilterCategories.PLAYER;
+		if (isInvulnerable()) {
+			return ActorFilterCategories.PLAYER;
+		} else {
+			return ActorFilterCategories.PLAYER;
+		}
 	}
 
 	/**
@@ -56,7 +106,11 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	 */
 	@Override
 	protected short getFilterCollidingCategories() {
-		return (short) (ActorFilterCategories.ENEMY | ActorFilterCategories.PICKUP | ActorFilterCategories.STATIC_TERRAIN | ActorFilterCategories.SCREEN_BORDER);
+		if (isInvulnerable()) {
+			return ActorFilterCategories.SCREEN_BORDER;
+		} else {
+			return (short) (ActorFilterCategories.ENEMY | ActorFilterCategories.PICKUP | ActorFilterCategories.STATIC_TERRAIN | ActorFilterCategories.SCREEN_BORDER);
+		}
 	}
 
 	@Override
@@ -81,4 +135,6 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 			mEventDispatcher.fire(new GameEvent(EventTypes.GAME_PLAYER_COLLISION_END));
 		}
 	}
+
+	@Tag(156) private float mInvulnerableTimeLeft = 0;
 }

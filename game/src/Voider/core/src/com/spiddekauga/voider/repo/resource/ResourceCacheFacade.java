@@ -205,6 +205,18 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Checks whether a resource has been loaded into the specified scene. Uses the latest
+	 * revision
+	 * @param resourceId unique id of the object to test if it's loaded
+	 * @param scene if the resource has been loaded into this scene
+	 * @return true if the object has been loaded
+	 */
+	public static boolean isLoaded(UUID resourceId, Scene scene) {
+		return mResourceLoader.isResourceLoaded(resourceId, scene);
+	}
+
+
+	/**
 	 * Checks whether a resource has been loaded or not. Uses the latest revision
 	 * @param resourceId unique id of the object to test if it's loaded
 	 * @return true if the object has been loaded

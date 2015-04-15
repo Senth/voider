@@ -76,15 +76,17 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 		Level level = (Level) resource;
 		mCompletedLevel = level.mCompletedLevel;
-		mGroupEnemiesSave = level.mGroupEnemiesSave;
 		mLevelDef = level.mLevelDef;
 		mResourceBinder = level.mResourceBinder;
 		mRenderShapes = level.mRenderShapes;
+		mRenderSprites = level.mRenderSprites;
 		mResourceUpdates = level.mResourceUpdates;
 		mRunning = level.mRunning;
 		mSpeed = level.mSpeed;
 		mXCoord = level.mXCoord;
+		mXCoordBody = level.mXCoordBody;
 		mBackground = level.mBackground;
+		mPlayerActor = level.mPlayerActor;
 	}
 
 	/**
@@ -708,6 +710,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	/** Multiple enemies in a group, but just save the leader and number of enemies */
 	@Deprecated @Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
 
+	// !!!!!!!!!!!!! ADD to #set() method !!!!!!!!!!!!!!
 
 	/** Revision this class structure */
 	protected static final int CLASS_REVISION = 3;

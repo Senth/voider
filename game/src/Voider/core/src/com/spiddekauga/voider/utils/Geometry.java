@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -359,6 +360,14 @@ public class Geometry {
 	}
 
 	/**
+	 * Makes a polygon counter-clockwise if it isn't
+	 * @param vertices all vertices of the polygon
+	 */
+	public static void makePolygonCounterClockwise(Vector2[] vertices) {
+		makePolygonCounterClockwise(Arrays.asList(vertices));
+	}
+
+	/**
 	 * Checks if the vertices of a polygon are counter-clockwise
 	 * @param vertices all vertices of the polygon
 	 * @return true if the polygon is counter-clockwise
@@ -371,6 +380,15 @@ public class Geometry {
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * Checks if the vertices of a polygon are counter-clockwise
+	 * @param vertices all vertices of the polygon
+	 * @return true if the polygon is counter-clockwise
+	 */
+	public static boolean isPolygonCounterClockwise(Vector2[] vertices) {
+		return isPolygonCounterClockwise(Arrays.asList(vertices));
 	}
 
 	// @formatter:off
@@ -607,6 +625,16 @@ public class Geometry {
 		}
 
 		return area * 0.5f;
+	}
+
+	/**
+	 * Calculates the area of a polygon
+	 * @param vertices all vertices of the polygon
+	 * @return positive value if the polygon is counter-clockwise, negative for clockwise
+	 *         polygons.
+	 */
+	public static float calculatePolygonArea(Vector2[] vertices) {
+		return calculatePolygonArea(Arrays.asList(vertices));
 	}
 
 	/**
