@@ -94,7 +94,7 @@ public abstract class WorldScene extends Scene {
 	 * @return screen to world scale
 	 */
 	public float getScreenToWorldScale() {
-		return mScreenToWorldScale;
+		return mScreenToWorldScale * mCamera.zoom;
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public abstract class WorldScene extends Scene {
 	protected void synchronizeBorder(Body border) {
 		float borderDiffPosition = border.getPosition().x - mCamera.position.x;
 		if (!Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
-			border.setTransform(mCamera.position.x, border.getPosition().y, 0);
+			border.setTransform(mCamera.position.x, mCamera.position.y, 0);
 		}
 	}
 

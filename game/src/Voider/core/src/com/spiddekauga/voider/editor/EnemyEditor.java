@@ -44,11 +44,13 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Editor for creating and editing enemies
@@ -62,15 +64,6 @@ public class EnemyEditor extends ActorEditor {
 		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, EnemyActorDef.class, EnemyActor.class);
 
 		getGui().setEnemyEditor(this);
-	}
-
-	@Override
-	protected void onDeactivate() {
-		getGui().clearCollisionBoxes();
-
-		Actor.setPlayerActor(null);
-
-		super.onDeactivate();
 	}
 
 	@Override
@@ -138,6 +131,18 @@ public class EnemyEditor extends ActorEditor {
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			getGui().popMsgBoxes();
 		}
+
+		EventDispatcher.getInstance().connect(EventTypes.CAMERA_ZOOM_CHANGE, mBorderLlistener);
+		EventDispatcher.getInstance().connect(EventTypes.CAMERA_MOVED, mBorderLlistener);
+	}
+
+	@Override
+	protected void onDeactivate() {
+		EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_ZOOM_CHANGE, mBorderLlistener);
+		EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_MOVED, mBorderLlistener);
+		getGui().clearCollisionBoxes();
+		Actor.setPlayerActor(null);
+		super.onDeactivate();
 	}
 
 	/**
@@ -1140,10 +1145,11 @@ public class EnemyEditor extends ActorEditor {
 	 * Resets the player position
 	 */
 	private void resetPlayerPosition() {
-		Vector2 playerPosition = new Vector2();
-		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
-		mPlayerActor.setPosition(playerPosition);
-		mPlayerActor.getBody().setLinearVelocity(0, 0);
+		// Vector2 playerPosition = new Vector2();
+		// Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f,
+		// Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
+		// mPlayerActor.setPosition(playerPosition);
+		// mPlayerActor.getBody().setLinearVelocity(0, 0);
 	}
 
 	/**
@@ -1217,6 +1223,14 @@ public class EnemyEditor extends ActorEditor {
 	protected EnemyEditorGui getGui() {
 		return (EnemyEditorGui) super.getGui();
 	}
+
+	private IEventListener mBorderLlistener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			createBorder();
+			getGui().resetCollisionBoxes();
+		}
+	};
 
 	/** Current enemy actor */
 	private EnemyActor mEnemyActor = new EnemyActor();

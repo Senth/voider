@@ -961,8 +961,8 @@ public abstract class EditorGui extends Gui {
 			mCollisionBoxVars.shape.setAsBox(worldWidth, worldHeight);
 
 			// Convert screen to world coordinates
-			Scene.screenToWorldCoord(mEditor.getCamera(), x + width * 0.5f, y + height * 0.5f, mCollisionBoxVars.bodyDef.position, false);
-			mCollisionBoxVars.bodyDef.position.y *= -1;
+			Scene.screenToWorldCoord(mEditor.getCamera(), x + width * 0.5f, Gdx.graphics.getHeight() - (y + height * 0.5f),
+					mCollisionBoxVars.bodyDef.position, false);
 
 			// Create body
 			Body body = mEditor.getWorld().createBody(mCollisionBoxVars.bodyDef);
@@ -1031,7 +1031,6 @@ public abstract class EditorGui extends Gui {
 
 		{
 			bodyDef.type = BodyType.StaticBody;
-
 			fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
 			fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
 			fixtureDef.shape = shape;
