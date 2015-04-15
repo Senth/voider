@@ -203,6 +203,7 @@ public enum ClientVersions {
 			"	Level speed is now correct (was double before)",
 			"	Restarting a level doesn't cause a crash",
 			"	Fixed crash when changing editor tools with hotkeys",
+			"	You can't manually cause the ship to go outside the screen any longer",
 			"Various",
 			"	Added terms when registering"
 			),

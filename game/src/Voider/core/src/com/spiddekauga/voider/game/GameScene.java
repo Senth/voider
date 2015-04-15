@@ -128,7 +128,7 @@ public class GameScene extends WorldScene {
 			}
 			mCamera.position.y = barHeight * Config.Graphics.WORLD_SCALE * 0.5f;
 		}
-		// Just use
+		// Just use regular fix camera
 		else {
 			super.fixCamera();
 		}
@@ -532,6 +532,21 @@ public class GameScene extends WorldScene {
 	protected void synchronizeBorder(Body border) {
 		super.synchronizeBorder(border);
 		border.setLinearVelocity(mLevel.getSpeed(), 0);
+	}
+
+	@Override
+	protected Vector2[][] getBorderBoxes() {
+		Vector2[][] boxes = super.getBorderBoxes();
+
+		// If test run, move the top box
+		if (isTestRun()) {
+			float barHeight = getBarHeightInWorldCoordinates() * Config.Graphics.WORLD_SCALE;
+			for (Vector2 vertex : boxes[3]) {
+				vertex.y -= barHeight;
+			}
+		}
+
+		return boxes;
 	}
 
 	@Override
