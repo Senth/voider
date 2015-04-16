@@ -2,7 +2,7 @@
       <hr>
       <div class="row">
         <div class="col-md-4" align="left">
-          <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">YouTube</a>
+          <a href="https://facebook.com/voiderthegame">Facebook</a> | <a href="https://twitter.com/VoiderTheGame">Twitter</a> | <a href="https://www.youtube.com/user/SpiddekaugaGames">YouTube</a>
         </div>
         <div class="col-md-8">
           <div align="right">
