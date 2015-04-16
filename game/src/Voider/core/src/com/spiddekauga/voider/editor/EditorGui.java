@@ -78,14 +78,6 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class EditorGui extends Gui {
-	/**
-	 * Default constructor
-	 */
-	public EditorGui() {
-		// Does nothing
-	}
-
-
 	@Override
 	public void dispose() {
 		mEditorMenu.dispose();
@@ -312,27 +304,6 @@ public abstract class EditorGui extends Gui {
 	 */
 	private void initEditorMenu() {
 		Button button;
-
-		// Campaign editor
-		// if (this.getClass() == CampaignEditorGui.class) {
-		// button = mUiFactory.button.addImageButton(EditorIcons.CAMPAIGN_EDITOR_SELECTED,
-		// mEditorMenu, null, null);
-		// } else {
-		// button = mUiFactory.button.addImageButton(EditorIcons.CAMPAIGN_EDITOR,
-		// mEditorMenu,
-		// null, null);
-		// }
-		// if (this.getClass() != CampaignEditorGui.class) {
-		// new ButtonListener(button) {
-		// @Override
-		// protected void onPressed(Button button) {
-		// switchReturnTo("Campaign Editor", new CSceneSwitch(CampaignEditor.class),
-		// UnsavedActions.CAMPAIGN_EDITOR);
-		// }
-		// };
-		// }
-		// mTooltip.add(button, Messages.EditorTooltips.EDITOR_CAMPAIGN);
-
 
 		// Level editor
 		if (this.getClass() == LevelEditorGui.class) {

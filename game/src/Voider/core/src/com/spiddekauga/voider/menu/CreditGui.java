@@ -20,21 +20,19 @@ import com.spiddekauga.voider.menu.CreditScene.CreditSection;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.CreditImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
-import com.spiddekauga.voider.scene.Gui;
 
 /**
  * UI for the credit scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class CreditGui extends Gui {
+class CreditGui extends MenuGui {
 
 	@Override
 	public void initGui() {
 		super.initGui();
 
-		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
-
 		mCreditTable.setName("credit-table");
+		setDisposeAfterResize(true);
 
 		initVars();
 		initScrollPane();
@@ -55,11 +53,17 @@ class CreditGui extends Gui {
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				mScene.back();
+				mScene.endScene();
 			}
 		};
 
 		addActor(mUiFactory.button.createBackButton(buttonListener));
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+
 	}
 
 	/**

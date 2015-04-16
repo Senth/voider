@@ -12,7 +12,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.voider.menu.MainMenu.Menus;
+import com.spiddekauga.voider.menu.MainMenu.Scenes;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
@@ -32,6 +32,14 @@ class MainMenuGui extends MenuGui {
 	 */
 	public MainMenuGui() {
 		// Does nothing
+	}
+
+	/**
+	 * Set the main menu scene
+	 * @param scene
+	 */
+	void setScene(MainMenu scene) {
+		mScene = scene;
 	}
 
 	@Override
@@ -95,7 +103,7 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.gotoExplore();
+				mScene.gotoExplore();
 			}
 		};
 		mUiFactory.button.addSound(button);
@@ -107,7 +115,7 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.pushMenu(Menus.EDITOR);
+				mScene.gotoScene(Scenes.EDITOR);
 			}
 		};
 		mUiFactory.button.addSound(button);
@@ -119,7 +127,7 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.pushMenu(Menus.SETTINGS);
+				mScene.gotoScene(Scenes.SETTINGS);
 			}
 		};
 		mUiFactory.button.addSound(button);
@@ -139,7 +147,7 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.pushMenu(Menus.CREDITS);
+				mScene.gotoScene(Scenes.CREDITS);
 			}
 		};
 		mUiFactory.button.addSound(button);
@@ -197,4 +205,6 @@ class MainMenuGui extends MenuGui {
 	private AlignTable mPlayerInfoTable = new AlignTable();
 	private AlignTable mLogoutTable = new AlignTable();
 	private AlignTable mSpiddekaugaTable = new AlignTable();
+
+	private MainMenu mScene = null;
 }

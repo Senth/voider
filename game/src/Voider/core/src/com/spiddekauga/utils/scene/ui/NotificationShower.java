@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -40,7 +39,7 @@ public class NotificationShower {
 	 */
 	private void init() {
 		if (!mInitialized && SkinNames.isLoaded(SkinNames.GeneralVars.NOTIFICATION_BACKGROUND_COLOR)) {
-			mOuterTable.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+			mOuterTable.setAlign(Horizontal.LEFT, Vertical.BOTTOM);
 			mOuterTable.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 			mOuterTable.setWidth((float) SkinNames.getResource(SkinNames.GeneralVars.NOTIFICATION_WIDTH));
 			mOuterTable.setKeepWidth(true);
@@ -131,14 +130,13 @@ public class NotificationShower {
 					mOuterTable.add(messageTable).setFillWidth(true);
 					Image image = style.createIcon();
 
+					// Icon
+					messageTable.add(image).setPadRight(mUiFactory.getStyles().vars.paddingInner);
+
 					// Label
 					Label label = style.createMessage(message);
 					label.pack();
-					label.setAlignment(Align.right);
 					messageTable.add(label).setFillWidth(true);
-
-					// Icon
-					messageTable.add(image).setPadLeft(mUiFactory.getStyles().vars.paddingInner);
 
 					// If pressed remove directly
 					messageTable.addListener(new InputListener() {

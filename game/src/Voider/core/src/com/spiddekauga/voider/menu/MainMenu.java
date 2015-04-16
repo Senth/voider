@@ -14,11 +14,6 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.PrototypeScene;
-import com.spiddekauga.voider.editor.BulletEditor;
-import com.spiddekauga.voider.editor.CampaignEditor;
-import com.spiddekauga.voider.editor.EnemyEditor;
-import com.spiddekauga.voider.editor.LevelEditor;
-import com.spiddekauga.voider.editor.ShipEditor;
 import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -30,10 +25,8 @@ import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
-import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
@@ -53,39 +46,23 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  * Main menu of the scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MainMenu extends Scene implements IEventListener {
+public class MainMenu extends MenuScene implements IEventListener {
 	/**
 	 * Default constructor for main menu
 	 */
 	public MainMenu() {
 		super(new MainMenuGui());
-		getGui().setMenuScene(this);
+		getGui().setScene(this);
 		mGuiStack.add(getGui());
 	}
 
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.load(InternalNames.MUSIC_TITLE);
+
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
-		ResourceCacheFacade.load(InternalDeps.UI_SFX);
 
-		// REMOVE
-		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
-			ResourceCacheFacade.load(InternalDeps.GAME_SFX);
-			ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_INTRO);
-			ResourceCacheFacade.load(InternalNames.MUSIC_GAME_OVER_LOOP);
-		}
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalNames.MUSIC_TITLE);
-		ResourceCacheFacade.unload(InternalDeps.UI_SFX);
 	}
 
 	@Override
@@ -149,11 +126,6 @@ public class MainMenu extends Scene implements IEventListener {
 			}
 		}
 
-		getGui().dispose();
-		getGui().initGui();
-		getGui().resetValues();
-
-
 		// Show if logged in online
 		if (outcome == Outcomes.LOGGED_IN) {
 			// Synchronize
@@ -171,7 +143,7 @@ public class MainMenu extends Scene implements IEventListener {
 					switch (loginInfo.updateInfo.type) {
 					case UPDATE_AVAILABLE:
 					case UPDATE_REQUIRED:
-						((MainMenuGui) getGui()).showUpdateInfo(loginInfo.updateInfo);
+						getGui().showUpdateInfo(loginInfo.updateInfo);
 						break;
 
 					default:
@@ -180,7 +152,7 @@ public class MainMenu extends Scene implements IEventListener {
 				}
 				// Check if the client was updated since last login
 				else if (infoRepo.isClientVersionNewSinceLastLogin()) {
-					((MainMenuGui) getGui()).showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
+					getGui().showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
 					infoRepo.updateClientVersion();
 				}
 
@@ -195,7 +167,7 @@ public class MainMenu extends Scene implements IEventListener {
 	@Override
 	public boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
-			popMenu();
+			getGui().showQuitMsgBox();
 			return true;
 		}
 
@@ -222,7 +194,7 @@ public class MainMenu extends Scene implements IEventListener {
 
 				ArrayList<Motd> motds = new ArrayList<>();
 				motds.add(motd);
-				((MainMenuGui) getGui()).showMotds(motds);
+				getGui().showMotds(motds);
 			} else if (keycode == Input.Keys.F10) {
 			} else if (keycode == Input.Keys.F11) {
 			} else if (keycode == Input.Keys.F12) {
@@ -280,50 +252,13 @@ public class MainMenu extends Scene implements IEventListener {
 		SceneSwitcher.switchTo(ExploreFactory.create(LevelDef.class, ExploreActions.PLAY));
 	}
 
-	// -- Create/Editors --
-	/**
-	 * Go to campaign editor
-	 */
-	void gotoCampaignEditor() {
-		SceneSwitcher.switchTo(new CampaignEditor());
-	}
-
-	/**
-	 * Go to level editor
-	 */
-	void gotoLevelEditor() {
-		SceneSwitcher.switchTo(new LevelEditor());
-	}
-
-	/**
-	 * Go to enemy editor
-	 */
-	void gotoEnemyEditor() {
-		SceneSwitcher.switchTo(new EnemyEditor());
-	}
-
-	/**
-	 * Go to bullet editor
-	 */
-	void gotoBulletEditor() {
-		SceneSwitcher.switchTo(new BulletEditor());
-	}
-
-	/**
-	 * Go to ship editor
-	 */
-	void gotoShipEditor() {
-		SceneSwitcher.switchTo(new ShipEditor());
-	}
 
 	/**
 	 * All different available menus
 	 */
-	enum Menus {
-		/** Main menu, or first menu the player sees */
-		MAIN(MainMenuGui.class),
+	enum Scenes {
 		/** Editor menu */
-		EDITOR(EditorSelectionGui.class),
+		EDITOR(EditorSelectScene.class),
 		/** Credits */
 		CREDITS(CreditScene.class),
 		/** Game settings */
@@ -347,54 +282,23 @@ public class MainMenu extends Scene implements IEventListener {
 		 * Creates the enumeration with a GUI or Scene class
 		 * @param type can either be a MenuGui class or Scene class
 		 */
-		private Menus(Class<?> type) {
-			if (MenuGui.class.isAssignableFrom(type)) {
-				mType = type;
-			} else if (Scene.class.isAssignableFrom(type)) {
-				mType = type;
-			}
+		private Scenes(Class<? extends Scene> type) {
+			mType = type;
 		}
 
 		/** The GUI or Scene class to create for this menu */
-		private Class<?> mType = null;
+		private Class<? extends Scene> mType = null;
 	}
 
 	/**
 	 * Pushes another GUI menu to the stack
-	 * @param menu the menu to push to the stack
+	 * @param scene the menu to push to the stack
 	 */
-	void pushMenu(Menus menu) {
-		Object newObject = menu.newInstance();
-		if (newObject instanceof MenuGui) {
-			MenuGui newGui = (MenuGui) newObject;
-			if (newGui != null) {
-				newGui.setMenuScene(this);
-				newGui.initGui();
-				mInputMultiplexer.removeProcessor(getGui().getStage());
-				setGui(newGui);
-				mGuiStack.push(newGui);
-				mInputMultiplexer.addProcessor(0, newGui.getStage());
-				newGui.resetValues();
-			}
-		} else if (newObject instanceof Scene) {
+	void gotoScene(Scenes scene) {
+		Object newObject = scene.newInstance();
+		if (newObject instanceof Scene) {
 			Scene newScene = (Scene) newObject;
 			SceneSwitcher.switchTo(newScene);
-		}
-	}
-
-	/**
-	 * Pops the current menu from the stack. Can not pop Main Menu from the stack.
-	 */
-	void popMenu() {
-		if (getGui().getClass() != MainMenuGui.class) {
-			mInputMultiplexer.removeProcessor(getGui().getStage());
-			mGuiStack.pop().dispose();
-			setGui(mGuiStack.peek());
-			mInputMultiplexer.addProcessor(0, getGui().getStage());
-		}
-		// Quit game
-		else {
-			((MainMenuGui) getGui()).showQuitMsgBox();
 		}
 	}
 
@@ -421,7 +325,7 @@ public class MainMenu extends Scene implements IEventListener {
 			}
 		});
 
-		((MainMenuGui) getGui()).showMotds(motds);
+		getGui().showMotds(motds);
 	}
 
 	/**
@@ -434,8 +338,8 @@ public class MainMenu extends Scene implements IEventListener {
 	}
 
 	@Override
-	protected MenuGui getGui() {
-		return (MenuGui) super.getGui();
+	protected MainMenuGui getGui() {
+		return (MainMenuGui) super.getGui();
 	}
 
 	private static final User mUser = User.getGlobalUser();

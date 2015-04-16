@@ -352,6 +352,10 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 				mAnalyticsRepo.startScene(getClass().getSimpleName());
 			}
 			mGui.resetValues();
+
+			if (mNotification != null) {
+				mNotification.setStage(mGui.getStage());
+			}
 		}
 	}
 

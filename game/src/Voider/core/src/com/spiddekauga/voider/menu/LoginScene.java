@@ -309,6 +309,7 @@ public class LoginScene extends Scene implements IResponseListener {
 
 			case USER_LOGIN_FAILED:
 				getGui().hideWaitWindow();
+				getGui().focusPasswordField();
 
 				// Show client update information
 				if (mLoginInfo.updateInfo != null) {

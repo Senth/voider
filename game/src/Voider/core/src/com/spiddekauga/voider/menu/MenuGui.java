@@ -14,15 +14,4 @@ class MenuGui extends Gui {
 
 		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
 	}
-
-	/**
-	 * Sets the menu scene
-	 * @param menuScene the menu scene to set
-	 */
-	void setMenuScene(MainMenu menuScene) {
-		mMenuScene = menuScene;
-	}
-
-	/** The main menu scene */
-	protected MainMenu mMenuScene = null;
 }

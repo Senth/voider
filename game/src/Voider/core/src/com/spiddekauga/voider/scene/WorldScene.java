@@ -94,7 +94,11 @@ public abstract class WorldScene extends Scene {
 	 * @return screen to world scale
 	 */
 	public float getScreenToWorldScale() {
-		return mScreenToWorldScale * mCamera.zoom;
+		float cameraZoom = 1;
+		if (mCamera != null) {
+			cameraZoom = mCamera.zoom;
+		}
+		return mScreenToWorldScale * cameraZoom;
 	}
 
 	@Override

@@ -78,6 +78,13 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	@Override
+	protected void onResize(int width, int height) {
+		super.onResize(width, height);
+
+		updatePathLabelsPositions();
+	}
+
+	@Override
 	public void initGui() {
 		super.initGui();
 

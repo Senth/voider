@@ -207,6 +207,12 @@ public enum ClientVersions {
 			"Various",
 			"	Added terms when registering"
 			),
+	V0_5_7(false,
+			"Improvements",
+			"	Notifications are now displayed to the lower left",
+			"Bug Fixes",
+			"	Toggling fullscreen now updated the UI correctly",
+			"	Enemy editor can be opened again"),
 
 
 	;

@@ -106,25 +106,39 @@ public class UiFactory {
 	public void addBar(BarLocations barLocation, Stage stage) {
 		// Top
 		if (barLocation.contains(BarLocations.TOP)) {
-			addBar(Gdx.graphics.getHeight() - mStyles.vars.barUpperLowerHeight, stage);
+			addSingleBar(BarLocations.TOP, stage);
 		}
 
 		// Bottom
 		if (barLocation.contains(BarLocations.BOTTOM)) {
-			addBar(0, stage);
+			addSingleBar(BarLocations.BOTTOM, stage);
 		}
 	}
 
 	/**
 	 * Adds a bar at the specified coordinate
-	 * @param y
+	 * @param singleLocation one location to add the bar to
 	 * @param stage the stage to add the bar to
 	 */
-	private void addBar(float y, Stage stage) {
-		Background background = new Background(mStyles.color.widgetBackground);
-		float height = mStyles.vars.barUpperLowerHeight;
-		background.setSize(Gdx.graphics.getWidth(), height);
-		background.setPosition(0, y);
+	private void addSingleBar(final BarLocations singleLocation, Stage stage) {
+		final float height = mStyles.vars.barUpperLowerHeight;
+		Background background = new Background(mStyles.color.widgetBackground) {
+			@Override
+			public void validate() {
+				// Set width
+				setWidth(Gdx.graphics.getWidth());
+
+				// Set y position
+				float y = 0;
+				if (singleLocation == BarLocations.TOP) {
+					y = Gdx.graphics.getHeight() - height;
+				}
+				setPosition(0, y);
+
+				super.validate();
+			}
+		};
+		background.setHeight(height);
 		stage.addActor(background);
 		background.setZIndex(0);
 	}

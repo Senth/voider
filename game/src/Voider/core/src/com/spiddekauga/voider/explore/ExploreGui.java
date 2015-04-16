@@ -57,13 +57,6 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  */
 abstract class ExploreGui extends Gui {
 	/**
-	 * Hidden constructor
-	 */
-	protected ExploreGui() {
-		// Does nothing
-	}
-
-	/**
 	 * Set the explore scene
 	 * @param exploreScene
 	 */
@@ -104,6 +97,20 @@ abstract class ExploreGui extends Gui {
 		disconnectUserListeners();
 
 		super.dispose();
+	}
+
+	@Override
+	protected void onResize(int width, int height) {
+		super.onResize(width, height);
+
+		// Fix top bar
+		mWidgets.topBar.setWidth(width);
+		mWidgets.topBar.setPosition(0, height - mWidgets.topBar.getHeight());
+
+
+		// Reset content
+		resetContentMargins();
+		resetContent();
 	}
 
 	@Override

@@ -130,13 +130,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		updateCameraLimits();
 	}
 
-	@Override
-	protected void onResize(int width, int height) {
-		super.onResize(width, height);
-		getGui().dispose();
-		getGui().initGui();
-	}
-
 	/**
 	 * Update camera/world limits
 	 */

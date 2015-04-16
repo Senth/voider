@@ -5,16 +5,14 @@ import java.util.ArrayList;
 import org.ini4j.Ini;
 import org.ini4j.Profile.Section;
 
-import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Scene for credits
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class CreditScene extends Scene {
+class CreditScene extends MenuScene {
 	/**
 	 * Default constructor
 	 */
@@ -23,23 +21,6 @@ class CreditScene extends Scene {
 
 		CreditGui gui = getGui();
 		gui.setScene(this);
-	}
-
-	@Override
-	protected boolean onKeyDown(int keycode) {
-		if (KeyHelper.isBackPressed(keycode)) {
-			back();
-			return true;
-		}
-
-		return super.onKeyDown(keycode);
-	};
-
-	/**
-	 * Move back to the previous scene
-	 */
-	void back() {
-		setOutcome(Outcomes.NOT_APPLICAPLE);
 	}
 
 	/**
@@ -103,16 +84,14 @@ class CreditScene extends Scene {
 
 	@Override
 	protected void loadResources() {
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		super.loadResources();
+
 		ResourceCacheFacade.load(InternalNames.UI_CREDITS);
 		ResourceCacheFacade.load(InternalNames.INI_CREDITS);
-
-		super.loadResources();
 	}
 
 	@Override
 	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.UI_CREDITS);
 		ResourceCacheFacade.unload(InternalNames.INI_CREDITS);
 

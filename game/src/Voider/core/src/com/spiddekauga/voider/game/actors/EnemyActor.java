@@ -408,7 +408,11 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 				}
 			}
 		} else {
-			if (enemyDef.hasWeapon()) {
+			if (mWeapon == null) {
+				mWeapon = new Weapon();
+			}
+
+			if (mWeapon.getDef() == null || enemyDef.hasWeapon()) {
 				mWeapon.setWeaponDef(enemyDef.getWeaponDef());
 			}
 		}

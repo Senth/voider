@@ -192,14 +192,6 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	@Override
-	protected void onResize(int width, int height) {
-		super.onResize(width, height);
-		getGui().dispose();
-		getGui().initGui();
-		getGui().updatePathLabelsPositions();
-	}
-
-	@Override
 	protected void onDispose() {
 		mPlayerActor.dispose();
 		mEnemyActor.dispose();

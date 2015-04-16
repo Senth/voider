@@ -76,6 +76,14 @@ public class LoginGui extends Gui {
 	}
 
 	/**
+	 * Focus password field
+	 */
+	void focusPasswordField() {
+		getStage().setKeyboardFocus(mWidgets.login.password);
+		mWidgets.login.password.selectAll();
+	}
+
+	/**
 	 * Initializes the login table
 	 */
 	private void initLoginTable() {

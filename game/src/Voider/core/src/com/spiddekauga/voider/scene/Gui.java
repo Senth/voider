@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -55,6 +57,7 @@ public abstract class Gui implements Disposable {
 		if (mMainTable != null) {
 			mMainTable.dispose();
 		}
+		reset();
 		mInitialized = false;
 	}
 
@@ -66,16 +69,73 @@ public abstract class Gui implements Disposable {
 	public void resize(int width, int height) {
 		if (isInitialized()) {
 			mIsResizing = true;
-			dispose();
 			if (mStage != null) {
 				mStage.getViewport().setWorldSize(width, height);
 				mStage.getViewport().update(width, height, true);
 				updateBackground();
 			}
-			initGui();
-			resetValues();
+			if (isDisposedAfterResize()) {
+				dispose();
+				initGui();
+				resetValues();
+			} else {
+				invalidateAllActors();
+				onResize(width, height);
+			}
 			mIsResizing = false;
 		}
+	}
+
+	/**
+	 * Called whenever the UI has been resized, but only if
+	 * {@link #isDisposedAfterResize()} returns false.
+	 * @param width new window width
+	 * @param height new window height
+	 */
+	protected void onResize(int width, int height) {
+		// Does nothing
+	}
+
+	/**
+	 * Invalidate all actors
+	 */
+	protected void invalidateAllActors() {
+		if (mStage != null) {
+			invalidateAllActors(mStage.getRoot());
+		}
+	}
+
+	/**
+	 * Invalidate all actors in the group and all children (recursive)
+	 * @param group invalidate all actors in this group and all its children
+	 */
+	protected void invalidateAllActors(Group group) {
+		for (Actor actor : group.getChildren()) {
+			if (actor instanceof Layout) {
+				((Layout) actor).invalidate();
+			}
+
+			if (actor instanceof Group) {
+				invalidateAllActors((Group) actor);
+			}
+		}
+	}
+
+	/**
+	 * @return true if you want the UI to be disposed and reinitialized after a window
+	 *         resize
+	 */
+	protected boolean isDisposedAfterResize() {
+		return mDisposeAfterResize;
+	}
+
+	/**
+	 * Set if the UI should be disposed and reinitialized after a window resize
+	 * @param disposeAfterResize true if the UI should be disposed and reinitialized after
+	 *        a window resize.
+	 */
+	protected void setDisposeAfterResize(boolean disposeAfterResize) {
+		mDisposeAfterResize = disposeAfterResize;
 	}
 
 	/**
@@ -462,9 +522,6 @@ public abstract class Gui implements Disposable {
 			mUiFactory.init();
 		}
 
-
-		// MsgBoxExecuter.fadeDuration = 0.01f;
-
 		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
 			// Notification messages
 			if (!mIsResizing) {
@@ -537,9 +594,6 @@ public abstract class Gui implements Disposable {
 	 * Resets the value of the GUI
 	 */
 	public void resetValues() {
-		if (mNotification != null && !mIsResizing) {
-			mNotification.setStage(mStage);
-		}
 	}
 
 	/**
@@ -602,6 +656,7 @@ public abstract class Gui implements Disposable {
 		return mVisible;
 	}
 
+	private boolean mDisposeAfterResize = false;
 	private boolean mIsResizing = false;
 	/** UI Factory for creating UI elements */
 	protected static UiFactory mUiFactory = UiFactory.getInstance();

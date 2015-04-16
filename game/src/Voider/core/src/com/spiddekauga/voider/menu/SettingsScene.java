@@ -1,15 +1,13 @@
 package com.spiddekauga.voider.menu;
 
-import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Scene for game settings
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class SettingsScene extends Scene {
+public class SettingsScene extends MenuScene {
 	/**
 	 * Creates a settings scene
 	 */
@@ -17,22 +15,6 @@ public class SettingsScene extends Scene {
 		super(new SettingsGui());
 
 		getGui().setScene(this);
-	}
-
-	@Override
-	protected boolean onKeyDown(int keycode) {
-		if (KeyHelper.isBackPressed(keycode)) {
-			back();
-		}
-
-		return super.onKeyDown(keycode);
-	}
-
-	/**
-	 * Move back to the previous scene
-	 */
-	void back() {
-		setOutcome(Outcomes.NOT_APPLICAPLE);
 	}
 
 	/**

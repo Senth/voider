@@ -13,12 +13,13 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
  * GUI for enemy editor
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class EditorSelectionGui extends MenuGui {
+class EditorSelectGui extends MenuGui {
 	/**
-	 * Public constructor
+	 * Set the editor selection scene
+	 * @param scene
 	 */
-	public EditorSelectionGui() {
-		// Does nothing
+	void setScene(EditorSelectScene scene) {
+		mScene = scene;
 	}
 
 	@Override
@@ -35,7 +36,7 @@ class EditorSelectionGui extends MenuGui {
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.popMenu();
+				mScene.endScene();
 			}
 		};
 
@@ -52,7 +53,7 @@ class EditorSelectionGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.gotoLevelEditor();
+				mScene.gotoLevelEditor();
 			}
 		};
 
@@ -61,7 +62,7 @@ class EditorSelectionGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.gotoEnemyEditor();
+				mScene.gotoEnemyEditor();
 			}
 		};
 		mUiFactory.button.addPadding(mMainTable);
@@ -71,7 +72,7 @@ class EditorSelectionGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				mMenuScene.gotoBulletEditor();
+				mScene.gotoBulletEditor();
 			}
 		};
 		mUiFactory.button.addPadding(mMainTable);
@@ -82,10 +83,12 @@ class EditorSelectionGui extends MenuGui {
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed(Button button) {
-					mMenuScene.gotoShipEditor();
+					mScene.gotoShipEditor();
 				}
 			};
 			mUiFactory.button.addPadding(mMainTable);
 		}
 	}
+
+	private EditorSelectScene mScene = null;
 }

@@ -20,7 +20,6 @@ import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
@@ -28,7 +27,7 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
  * GUI for game settings
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class SettingsGui extends Gui {
+public class SettingsGui extends MenuGui {
 
 	/**
 	 * Sets the settings scene
@@ -49,8 +48,6 @@ public class SettingsGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
-
 		initHeader();
 		initTabs();
 		initGeneral();
@@ -67,7 +64,7 @@ public class SettingsGui extends Gui {
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				mScene.back();
+				mScene.endScene();
 			}
 		};
 
