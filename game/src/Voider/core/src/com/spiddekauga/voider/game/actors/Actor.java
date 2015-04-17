@@ -316,6 +316,17 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			shapeRenderer.pop();
 		}
 
+		// Draw bounding box
+		if (Config.Graphics.USE_DEBUG_RENDERER) {
+			shapeRenderer.push(ShapeType.Line);
+
+			BoundingBox boundingBox = getBoundingBox();
+			shapeRenderer.setColor(Config.Actor.BOUNDING_BOX_COLOR);
+			shapeRenderer.rect(boundingBox.getLeft(), boundingBox.getBottom(), boundingBox.getRight(), boundingBox.getTop(), true);
+
+			shapeRenderer.pop();
+		}
+
 		RenderOrders.resetZValueOffset(shapeRenderer, this);
 	}
 

@@ -1182,7 +1182,7 @@ public class Geometry {
 
 		for (Vector2 vertex : vertices) {
 			Vector2 copy = vertex.cpy();
-			copy.sub(center);
+			copy.add(center);
 			copy.rotate(rotateAngle);
 			rotatedVertices.add(copy);
 		}
