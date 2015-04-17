@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
@@ -18,11 +19,13 @@ import com.spiddekauga.voider.scene.ui.UiFactory;
 public class HighscoreScene extends Scene implements IResponseListener {
 	/**
 	 * Creates highscore scene
+	 * @param score how much the player scored this time
 	 */
-	public HighscoreScene() {
+	public HighscoreScene(int score) {
 		super(new HighscoreSceneGui());
 		getGui().setHighscoreScene(this);
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
+		mScore = score;
 	}
 
 	@Override
@@ -56,23 +59,32 @@ public class HighscoreScene extends Scene implements IResponseListener {
 	}
 
 	/**
-	 * Continue to the next scene
-	 */
-	void continueToNextScene() {
-		setOutcome(Outcomes.NOT_APPLICAPLE);
-	}
-
-	/**
 	 * Handle get user scores
 	 * @param response server response
 	 */
 	private void handleGetUserScores(HighscoreGetResponse response) {
 		if (response.isSuccessful()) {
+			setIsNewHighscore(response.userScore);
 			getGui().setFirstPlace(response.firstPlace);
-			getGui().populateUserScores(response.userScore, response.userPlace, response.beforeUser, response.afterUser);
+			getGui().populateUserScores(mScore, response.userScore, response.userPlace, response.beforeUser, response.afterUser);
 		} else {
-			continueToNextScene();
+			endScene();
 		}
+	}
+
+	/**
+	 * Check if it's a new highscore and sets this to true or false
+	 * @param userHighscore current player highscore
+	 */
+	private void setIsNewHighscore(HighscoreEntity userHighscore) {
+		mIsHighscoreThisTime = userHighscore.score == mScore;
+	}
+
+	/**
+	 * @return true if it's a highscore this time
+	 */
+	boolean isHighScoreThisTime() {
+		return mIsHighscoreThisTime;
 	}
 
 	@Override
@@ -80,6 +92,8 @@ public class HighscoreScene extends Scene implements IResponseListener {
 		return (HighscoreSceneGui) super.getGui();
 	}
 
-	/** Web responses to be processed */
+	/** Score this time */
+	private int mScore;
+	private boolean mIsHighscoreThisTime = false;
 	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
 }

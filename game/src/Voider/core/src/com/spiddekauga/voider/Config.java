@@ -86,6 +86,8 @@ public class Config {
 
 		/** Border width of all actors */
 		public final static float BORDER_WIDTH = 0.5f;
+		/** Bounding box color */
+		public final static Color BOUNDING_BOX_COLOR = Color.CYAN;
 		/** Outline color */
 		public final static Color OUTLINE_COLOR = Color.ORANGE;
 		/** Closing outline color (color from corner.end -> corner.begin) */

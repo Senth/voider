@@ -33,9 +33,10 @@ public enum Tags implements ISearchStore {
 	FUN(15),
 	/** Unfinished level */
 	UNFINISHED(16),
+	RELAXING(17),
 
 
-	// NEXT ID TO USE => 17
+	// NEXT ID TO USE => 18
 
 	;
 	/**

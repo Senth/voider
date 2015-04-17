@@ -54,10 +54,16 @@ public abstract class Gui implements Disposable {
 
 	@Override
 	public void dispose() {
-		if (mMainTable != null) {
-			mMainTable.dispose();
+		if (mStage != null) {
+			for (Actor actor : mStage.getRoot().getChildren()) {
+				if (actor instanceof AlignTable) {
+					((AlignTable) actor).dispose(true);
+				} else if (actor instanceof Disposable) {
+					((Disposable) actor).dispose();
+				}
+			}
 		}
-		reset();
+
 		mInitialized = false;
 	}
 

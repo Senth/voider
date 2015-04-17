@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -49,12 +49,14 @@ public class HighscoreSceneGui extends Gui {
 
 	/**
 	 * Populate user scores
-	 * @param userScore player score
+	 * @param userScore player score this time
+	 * @param userHighscore player highscore
 	 * @param userPlace player placement
 	 * @param beforeUser scores before the player, i.e. higher scores
 	 * @param afterUser scores after the player, i.e. lower scores
 	 */
-	void populateUserScores(HighscoreEntity userScore, int userPlace, ArrayList<HighscoreEntity> beforeUser, ArrayList<HighscoreEntity> afterUser) {
+	void populateUserScores(int userScore, HighscoreEntity userHighscore, int userPlace, ArrayList<HighscoreEntity> beforeUser,
+			ArrayList<HighscoreEntity> afterUser) {
 		mWidgets.scoreTable.dispose(true);
 
 		// Add scores before the user
@@ -64,8 +66,13 @@ public class HighscoreSceneGui extends Gui {
 			addScoreToTable(placement, highscore.playerName, highscore.score);
 		}
 
+		// Add player score this time
+		if (!mScene.isHighScoreThisTime()) {
+			addScoreToTable(0, userHighscore.playerName, userScore);
+		}
+
 		// Add player score
-		addScoreToTable(userPlace, userScore.playerName, userScore.score);
+		addScoreToTable(userPlace, userHighscore.playerName, userHighscore.score);
 
 		// Add scores after the user
 		placement = userPlace;
@@ -74,6 +81,7 @@ public class HighscoreSceneGui extends Gui {
 			addScoreToTable(placement, highscore.playerName, highscore.score);
 		}
 	}
+
 
 	/**
 	 * Add a score to score table
@@ -84,17 +92,18 @@ public class HighscoreSceneGui extends Gui {
 	private void addScoreToTable(int placement, String name, int score) {
 		AlignTable table = mWidgets.scoreTable;
 
-		LabelStyles labelStyle;
-		if (name.equals(User.getGlobalUser().getUsername())) {
-			labelStyle = LabelStyles.HIGHLIGHT;
-		} else {
-			labelStyle = LabelStyles.DEFAULT;
-		}
+		LabelStyles labelStyle = getLabelStyle(name, placement == 0);
 
 		table.row().setFillWidth(true).setHeight(mRowHegiht);
 
 		// Placement
-		mUiFactory.text.add("" + placement + ".", table, labelStyle);
+		String placementString = "";
+		if (placement == 0) {
+			placementString = "Now.";
+		} else {
+			placementString = "" + placement + ".";
+		}
+		mUiFactory.text.add(placementString, table, labelStyle);
 		table.getCell().setWidth(mPlacementWidth);
 
 		// Name
@@ -104,6 +113,32 @@ public class HighscoreSceneGui extends Gui {
 		// Score
 		String scoreString = PlayerStats.formatScore(score);
 		mUiFactory.text.add(scoreString, table, labelStyle);
+	}
+
+	/**
+	 * Get the correct style for the labels
+	 * @param name player name for the score
+	 * @param localOnly true if this score is local only
+	 * @return the LabelStyle to use for the score
+	 */
+	private LabelStyles getLabelStyle(String name, boolean localOnly) {
+		LabelStyles labelStyle = LabelStyles.DEFAULT;
+
+		// It's this user
+		if (name.equals(User.getGlobalUser().getUsername()) || localOnly) {
+
+			if (mScene.isHighScoreThisTime()) {
+				labelStyle = LabelStyles.HIGHLIGHT;
+			} else {
+				if (localOnly) {
+					labelStyle = LabelStyles.HIGHLIGHT;
+				} else {
+					labelStyle = LabelStyles.WARNING;
+				}
+			}
+		}
+
+		return labelStyle;
 	}
 
 	/**
@@ -124,7 +159,7 @@ public class HighscoreSceneGui extends Gui {
 		mMainTable.setPaddingRowDefault(mUiFactory.getStyles().vars.paddingInner, 0, 0, 0);
 
 		// Level highscores label
-		mUiFactory.text.addHeader("Level Scores", mMainTable);
+		mUiFactory.text.addHeader("Global Highscores", mMainTable);
 
 		// First place
 		mMainTable.row().setFillWidth(true).setHeight(mRowHegiht);
@@ -147,7 +182,7 @@ public class HighscoreSceneGui extends Gui {
 		ButtonListener listener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				mScene.continueToNextScene();
+				mScene.endScene();
 			}
 		};
 		mUiFactory.button.addText("Continue", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);

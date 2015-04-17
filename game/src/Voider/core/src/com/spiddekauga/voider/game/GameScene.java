@@ -567,7 +567,7 @@ public class GameScene extends WorldScene {
 				// Display highscores and tags
 				boolean online = User.getGlobalUser().isOnline();
 				if (online && isPublished()) {
-					HighscoreScene highscoreScene = new HighscoreScene();
+					HighscoreScene highscoreScene = new HighscoreScene(mPlayerStats.getScore());
 					HighscoreRepo.getInstance().getPlayerServerScore(getLevelId(), highscoreScene);
 					highscoreScene.setNextScene(nextScene);
 					nextScene = highscoreScene;

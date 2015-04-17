@@ -57,7 +57,9 @@ public class Cell implements Poolable, IPadding<Cell> {
 
 			if (disposeActor) {
 				mActor.clearActions();
-				if (mActor instanceof Disposable) {
+				if (mActor instanceof AlignTable) {
+					((AlignTable) mActor).dispose(disposeActor);
+				} else if (mActor instanceof Disposable) {
 					((Disposable) mActor).dispose();
 				}
 			}

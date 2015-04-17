@@ -208,15 +208,18 @@ public enum ClientVersions {
 			"	Added terms when registering"
 			),
 	V0_5_7(true,
-			"FIXED critical error! Crashed the game instantly after logging in",
-			"	If you played a level with a rotating enemy or bullet in it",
+			"!!!CRITICAL FIX!!!",
+			"	Game crashed if you played a level with a rotating enemy or bullet in it",
+			"	The game then crashed whenever you successfully logged in",
 			"Improvements",
 			"	Notifications are now displayed to the lower left",
+			"	Global highscores now include your score from current session",
 			"Bug Fixes",
 			"	Toggling fullscreen now updated the UI correctly",
 			"	Enemy editor can be opened again",
 			"	My Highscore text doesn't overlap with the text",
-			"	Rating is now saved for the next instance"
+			"	Rating is now saved for the next instance",
+			"	Rotating actors (enemies/bullets) are now shown correctly"
 			),
 
 
