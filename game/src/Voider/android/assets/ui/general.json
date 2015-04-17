@@ -132,8 +132,7 @@ java.lang.Float: {
 	
 	
 	/** Score screen */
-	
-	score_screen_width: {value: 360},
+	score_screen_width: {value: 480},
 	// Row height of "My Score" and "My Highscore" text
 	score_label_height: {value: 40},
 	

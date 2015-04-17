@@ -11,7 +11,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.IRatingListener;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
-import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
@@ -37,7 +36,7 @@ public class ScoreSceneGui extends Gui {
 		if (mScoreScene.isPublished()) {
 			mWidgets.bookmark.setChecked(mScoreScene.isBookmarked());
 			mWidgets.rating.setRating(mScoreScene.getRating());
-			mWidgets.comment.setText(mScoreScene.getComment());
+			// mWidgets.comment.setText(mScoreScene.getComment());
 		}
 	};
 
@@ -97,17 +96,19 @@ public class ScoreSceneGui extends Gui {
 				}
 			};
 
-			// Comment
-			TextFieldListener textFieldListener = new TextFieldListener() {
-				@Override
-				protected void onDone(String newText) {
-					mScoreScene.setComment(newText);
-				}
-			};
-			mWidgets.comment = mUiFactory.addTextArea(null, false, "Comment on the level you just played", tableWidth, textFieldListener, mMainTable, null);
+			// // Comment
+			// TextFieldListener textFieldListener = new TextFieldListener() {
+			// @Override
+			// protected void onDone(String newText) {
+			// mScoreScene.setComment(newText);
+			// }
+			// };
+			// mWidgets.comment = mUiFactory.addTextArea(null, false,
+			// "Comment on the level you just played", tableWidth, textFieldListener,
+			// mMainTable,
+			// null);
 		} else {
-			String text = "Highscore, rate, bookmark, and comment features are disabled for unpublished levels. "
-					+ "They will be available once you publish your level :D";
+			String text = "Highscore, rate and bookmark are available for published levels :)";
 			mMainTable.row().setPadTop(mUiFactory.getStyles().vars.rowHeight);
 			mUiFactory.text.add(text, true, mMainTable);
 			mMainTable.getCell().setWidth(tableWidth);

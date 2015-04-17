@@ -238,13 +238,21 @@ class AnalyticsSqliteGateway extends SqliteGateway {
 
 		while (cursor.next()) {
 			AnalyticsSceneEntity scene = new AnalyticsSceneEntity();
-			scene.sessionId = UUID.fromString(cursor.getString(0));
-			scene.sceneId = UUID.fromString(cursor.getString(1));
-			scene.startTime = new Date(cursor.getLong(2));
-			scene.endTime = new Date(cursor.getLong(3));
-			scene.name = cursor.getString(4);
-			scene.loadTime = cursor.getFloat(5);
-			scenes.put(scene.sceneId, scene);
+
+			// Check for valid sessionId
+			String sessionString = cursor.getString(0);
+			if (sessionString != null && !sessionString.equals("null")) {
+				scene.sessionId = UUID.fromString(cursor.getString(0));
+				scene.sceneId = UUID.fromString(cursor.getString(1));
+				scene.startTime = new Date(cursor.getLong(2));
+				scene.endTime = new Date(cursor.getLong(3));
+				scene.name = cursor.getString(4);
+				scene.loadTime = cursor.getFloat(5);
+				scenes.put(scene.sceneId, scene);
+			} else {
+				String sceneId = cursor.getString(1);
+				execSQL("DELETE FROM analytics_scene WHERE sceneId='" + sceneId + "';");
+			}
 		}
 		cursor.close();
 

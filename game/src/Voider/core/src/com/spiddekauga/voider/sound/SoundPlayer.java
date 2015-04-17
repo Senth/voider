@@ -163,6 +163,7 @@ public class SoundPlayer {
 				float timeDiff = GameTime.getTotalGlobalTimeElapsed() - startTime;
 				Sound track = mSound.getTrack();
 				if (track == null) {
+					mSound.setLoopId(Sounds.INVALID_ID);
 					return;
 				}
 

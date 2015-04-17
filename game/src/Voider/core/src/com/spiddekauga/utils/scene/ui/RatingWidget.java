@@ -88,16 +88,10 @@ public class RatingWidget extends WidgetGroup {
 			throw new IllegalArgumentException("rating has to be between 0 and " + mStars.length);
 		}
 
-
-		// Special case, if we want to set the rating to which it already is, set it to 0
-		// instead
-		if (mRatingCurrent == rating) {
-			mRatingCurrent = 0;
-		} else {
+		if (mRatingCurrent != rating) {
 			mRatingCurrent = rating;
+			sendChangeEvent();
 		}
-
-		sendChangeEvent();
 	}
 
 	/**
@@ -254,7 +248,16 @@ public class RatingWidget extends WidgetGroup {
 
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
-			setRating(mRating);
+			// Special case, if we want to set the rating to which it already is, set it
+			// to 0
+			// instead
+			if (mRatingCurrent == mRating) {
+				mRatingCurrent = 0;
+			} else {
+				mRatingCurrent = mRating;
+			}
+
+			sendChangeEvent();
 		}
 
 		/** Index of the star */

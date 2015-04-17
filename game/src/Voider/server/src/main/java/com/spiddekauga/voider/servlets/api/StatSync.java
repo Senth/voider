@@ -350,7 +350,10 @@ public class StatSync extends VoiderServlet {
 			// Calculate new average rating
 			long sum = (long) levelEntity.getProperty(CLevelStat.RATING_SUM);
 			long cRatings = (long) levelEntity.getProperty(CLevelStat.RATINGS);
-			double average = ((double) sum) / cRatings;
+			double average = 0;
+			if (cRatings > 0) {
+				average = ((double) sum) / cRatings;
+			}
 			levelEntity.setProperty(CLevelStat.RATING_AVG, average);
 		}
 

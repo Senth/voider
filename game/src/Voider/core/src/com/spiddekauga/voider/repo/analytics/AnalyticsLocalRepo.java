@@ -70,6 +70,9 @@ class AnalyticsLocalRepo {
 		if (mSceneId != null) {
 			Gdx.app.error("AnalyticsLocalRepo", "Scene wasn't null when a new scene was created");
 		}
+		if (mSessionId == null) {
+			Gdx.app.error("AnalyticsLocalRepo", "Session id is null when creating scene");
+		}
 
 		endLoadTimer();
 

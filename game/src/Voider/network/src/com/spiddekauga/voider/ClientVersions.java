@@ -207,12 +207,17 @@ public enum ClientVersions {
 			"Various",
 			"	Added terms when registering"
 			),
-	V0_5_7(false,
+	V0_5_7(true,
+			"FIXED critical error! Crashed the game instantly after logging in",
+			"	If you played a level with a rotating enemy or bullet in it",
 			"Improvements",
 			"	Notifications are now displayed to the lower left",
 			"Bug Fixes",
 			"	Toggling fullscreen now updated the UI correctly",
-			"	Enemy editor can be opened again"),
+			"	Enemy editor can be opened again",
+			"	My Highscore text doesn't overlap with the text",
+			"	Rating is now saved for the next instance"
+			),
 
 
 	;
