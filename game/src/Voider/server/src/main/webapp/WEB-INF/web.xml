@@ -249,6 +249,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>BetaKeyGenerate</servlet-name>
 		<url-pattern>/admin/generate-beta-keys</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>Motd</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Motd</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Motd</servlet-name>
+		<url-pattern>/admin/motd</url-pattern>
+	</servlet-mapping>
 	
 	<!--———————————————
 	 	  SECURITY

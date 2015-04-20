@@ -109,7 +109,7 @@ public class BetaKeyGenerate extends VoiderController {
 	}
 
 	/**
-	 *
+	 * Beta key group
 	 */
 	public class Group {
 		/**
@@ -122,13 +122,6 @@ public class BetaKeyGenerate extends VoiderController {
 			this.hash = hash;
 			this.link = getRootUrl() + "beta-keys?group=" + name + "&hash=" + hash;
 		}
-
-		/** Name of the beta key group */
-		private String name;
-		/** Hash to identify the group */
-		private String hash;
-		/** Link to the group */
-		private String link;
 
 		/**
 		 * @return the name
@@ -150,5 +143,12 @@ public class BetaKeyGenerate extends VoiderController {
 		public String getLink() {
 			return link;
 		}
+
+		/** Name of the beta key group */
+		private String name;
+		/** Hash to identify the group */
+		private String hash;
+		/** Link to the group */
+		private String link;
 	}
 }
