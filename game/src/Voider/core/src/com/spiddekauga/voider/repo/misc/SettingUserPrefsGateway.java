@@ -61,7 +61,7 @@ class SettingUserPrefsGateway extends PrefsGateway {
 	 * @param date latest date
 	 */
 	void setLatestMotdDate(Date date) {
-		mPreferences.putLong(MOTD__LATEST_DATE, date.getTime());
+		mPreferences.putLong(MOTD__LATEST_DATE, date.getTime() + 1);
 		mPreferences.flush();
 	}
 

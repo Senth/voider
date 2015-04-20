@@ -1,12 +1,8 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
-
-import net._01001111.text.LoremIpsum;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -19,8 +15,6 @@ import com.spiddekauga.voider.explore.ExploreFactory;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.network.misc.Motd;
-import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
@@ -135,31 +129,11 @@ public class MainMenu extends MenuScene implements IEventListener {
 
 			SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
 
-			if (message instanceof LoginInfo) {
-				LoginInfo loginInfo = (LoginInfo) message;
 
-				// Update information
-				if (loginInfo.updateInfo != null) {
-					switch (loginInfo.updateInfo.type) {
-					case UPDATE_AVAILABLE:
-					case UPDATE_REQUIRED:
-						getGui().showUpdateInfo(loginInfo.updateInfo);
-						break;
-
-					default:
-						break;
-					}
-				}
-				// Check if the client was updated since last login
-				else if (infoRepo.isClientVersionNewSinceLastLogin()) {
-					getGui().showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
-					infoRepo.updateClientVersion();
-				}
-
-				// MOTD
-				if (loginInfo.motds != null && !loginInfo.motds.isEmpty()) {
-					showNewMotd(loginInfo.motds);
-				}
+			// Check if the client was updated since last login
+			if (infoRepo.isClientVersionNewSinceLastLogin()) {
+				getGui().showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
+				infoRepo.updateClientVersion();
 			}
 		}
 	}
@@ -185,16 +159,6 @@ public class MainMenu extends MenuScene implements IEventListener {
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
-				Motd motd = new Motd();
-				LoremIpsum loremIpsum = new LoremIpsum();
-				motd.content = loremIpsum.paragraphs(2);
-				motd.title = loremIpsum.randomWord();
-				motd.created = new Date();
-				motd.type = MotdTypes.INFO;
-
-				ArrayList<Motd> motds = new ArrayList<>();
-				motds.add(motd);
-				getGui().showMotds(motds);
 			} else if (keycode == Input.Keys.F10) {
 			} else if (keycode == Input.Keys.F11) {
 			} else if (keycode == Input.Keys.F12) {
@@ -300,41 +264,6 @@ public class MainMenu extends MenuScene implements IEventListener {
 			Scene newScene = (Scene) newObject;
 			SceneSwitcher.switchTo(newScene);
 		}
-	}
-
-	/**
-	 * Show new MOTD
-	 * @param motds
-	 */
-	private void showNewMotd(ArrayList<Motd> motds) {
-		// Remove MOTD we already have shown the user
-		SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
-		infoRepo.filterMotds(motds);
-
-		// Sort these by created date (oldest first)
-		Collections.sort(motds, new Comparator<Motd>() {
-			@Override
-			public int compare(Motd o1, Motd o2) {
-				if (o1.created.before(o2.created)) {
-					return -1;
-				}
-				if (o1.created.after(o2.created)) {
-					return 1;
-				}
-				return 0;
-			}
-		});
-
-		getGui().showMotds(motds);
-	}
-
-	/**
-	 * Call this once a message of the day has been clicked away
-	 * @param motd the MOTD
-	 */
-	void motdViewed(Motd motd) {
-		SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
-		infoRepo.setLatestMotdDate(motd);
 	}
 
 	@Override

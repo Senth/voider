@@ -56,7 +56,6 @@ public class MsgBoxFactory {
 	 * Package constructor
 	 */
 	MsgBoxFactory() {
-		// Does nothing
 	}
 
 	/**
@@ -126,7 +125,7 @@ public class MsgBoxFactory {
 	 * Show a message of the day
 	 * @param motd the message of the day to show
 	 */
-	public void motd(Motd motd) {
+	void motd(Motd motd) {
 		SettingDateRepo dateRepo = SettingRepo.getInstance().date();
 		String date = dateRepo.getDateTime(motd.created);
 
@@ -346,7 +345,7 @@ public class MsgBoxFactory {
 	 * Create 'update message box' to show an update message dialog
 	 * @param updateInfo all information regarding the update
 	 */
-	public void updateMessage(final UpdateEvent updateInfo) {
+	void updateMessage(final UpdateEvent updateInfo) {
 		String title = "";
 		String message = "";
 

@@ -336,20 +336,6 @@ public class User {
 		}
 
 		private void handleLoginResponse(LoginResponse response) {
-			switch (response.clientVersionStatus) {
-			case NEW_VERSION_AVAILABLE:
-				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.latestClientVersion, response.changeLogMessage));
-				break;
-
-			case UPDATE_REQUIRED:
-				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_REQUIRED, response.latestClientVersion, response.changeLogMessage));
-				break;
-
-			case UNKNOWN:
-			case UP_TO_DATE:
-				break;
-			}
-
 			if (response.isSuccessful()) {
 				// Was already logged in -> Only connected
 				if (User.this == mGlobalUser && mLoggedIn) {
@@ -407,6 +393,20 @@ public class User {
 					// Does nothing
 					break;
 				}
+			}
+
+			switch (response.clientVersionStatus) {
+			case NEW_VERSION_AVAILABLE:
+				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.latestClientVersion, response.changeLogMessage));
+				break;
+
+			case UPDATE_REQUIRED:
+				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_REQUIRED, response.latestClientVersion, response.changeLogMessage));
+				break;
+
+			case UNKNOWN:
+			case UP_TO_DATE:
+				break;
 			}
 		}
 

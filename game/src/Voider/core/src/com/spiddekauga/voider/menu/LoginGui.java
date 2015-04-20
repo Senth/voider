@@ -20,7 +20,6 @@ import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
-import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * GUI for login
@@ -707,14 +706,6 @@ public class LoginGui extends Gui {
 		mWidgets.register.hider.hide();
 		mWidgets.send.hider.hide();
 		mWidgets.login.hider.show();
-	}
-
-	/**
-	 * Show update information
-	 * @param updateInfo all update information
-	 */
-	void showUpdateInfo(UpdateEvent updateInfo) {
-		mUiFactory.msgBox.updateMessage(updateInfo);
 	}
 
 	/** The login scene */

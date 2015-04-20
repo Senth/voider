@@ -141,7 +141,7 @@ public class Login extends VoiderServlet {
 	 */
 	private void getMessageOfTheDay() {
 		// Could not login, skip message of the day
-		if (mResponse.status != Statuses.SUCCESS) {
+		if (!mResponse.isSuccessful()) {
 			return;
 		}
 

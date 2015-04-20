@@ -222,7 +222,9 @@ public enum ClientVersions {
 			"	Rotating actors (enemies/bullets) are now shown correctly"
 			),
 	V0_5_8(false,
-			"Improvements"
+			"Improvements",
+			"Bug Fixes",
+			"	Server messages are now shown"
 			),
 
 

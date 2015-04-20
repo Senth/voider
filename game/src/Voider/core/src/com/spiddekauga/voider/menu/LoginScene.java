@@ -24,8 +24,6 @@ import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 import com.spiddekauga.voider.utils.event.IEventListener;
-import com.spiddekauga.voider.utils.event.MotdEvent;
-import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * Login scene
@@ -68,9 +66,6 @@ public class LoginScene extends Scene implements IResponseListener {
 		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 		eventDispatcher.connect(EventTypes.USER_LOGIN, mLoginListener);
 		eventDispatcher.connect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
-		eventDispatcher.connect(EventTypes.UPDATE_AVAILABLE, mUpdateListener);
-		eventDispatcher.connect(EventTypes.UPDATE_REQUIRED, mUpdateListener);
-		eventDispatcher.connect(EventTypes.MOTD_CURRENT, mMotdListener);
 
 		mMusicPlayer.play(Music.TITLE, MusicInterpolations.FADE_IN);
 
@@ -82,9 +77,6 @@ public class LoginScene extends Scene implements IResponseListener {
 		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 		eventDispatcher.disconnect(EventTypes.USER_LOGIN, mLoginListener);
 		eventDispatcher.disconnect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
-		eventDispatcher.disconnect(EventTypes.UPDATE_AVAILABLE, mUpdateListener);
-		eventDispatcher.disconnect(EventTypes.UPDATE_REQUIRED, mUpdateListener);
-		eventDispatcher.disconnect(EventTypes.MOTD_CURRENT, mMotdListener);
 
 		super.onDispose();
 	}
@@ -299,30 +291,18 @@ public class LoginScene extends Scene implements IResponseListener {
 	}
 
 	private IEventListener mLoginListener = new IEventListener() {
+
 		@Override
 		public void handleEvent(GameEvent event) {
 			switch (event.type) {
 			case USER_LOGIN:
 				getGui().hideWaitWindow();
-				setOutcome(Outcomes.LOGGED_IN, mLoginInfo);
+				setOutcome(Outcomes.LOGGED_IN);
 				break;
 
 			case USER_LOGIN_FAILED:
 				getGui().hideWaitWindow();
 				getGui().focusPasswordField();
-
-				// Show client update information
-				if (mLoginInfo.updateInfo != null) {
-					switch (mLoginInfo.updateInfo.type) {
-					case UPDATE_AVAILABLE:
-					case UPDATE_REQUIRED:
-						getGui().showUpdateInfo(mLoginInfo.updateInfo);
-						break;
-
-					default:
-						break;
-					}
-				}
 				break;
 
 			default:
@@ -333,25 +313,6 @@ public class LoginScene extends Scene implements IResponseListener {
 		}
 	};
 
-	private IEventListener mUpdateListener = new IEventListener() {
-		@Override
-		public void handleEvent(GameEvent event) {
-			if (event instanceof UpdateEvent) {
-				mLoginInfo.updateInfo = (UpdateEvent) event;
-			}
-		}
-	};
-
-	private IEventListener mMotdListener = new IEventListener() {
-		@Override
-		public void handleEvent(GameEvent event) {
-			if (event instanceof MotdEvent) {
-				mLoginInfo.motds = ((MotdEvent) event).motds;
-			}
-		}
-	};
-
-	private LoginInfo mLoginInfo = new LoginInfo();
 	/** Logging in user */
 	private User mLoggingInUser = new User();
 	private UserLocalRepo mUserLocalRepo = UserLocalRepo.getInstance();

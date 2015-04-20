@@ -367,6 +367,15 @@ public abstract class Gui implements Disposable {
 			msgBox.setVisible(true);
 			mActiveMsgBoxes.push(msgBox);
 		}
+
+		// Wait for the stage to be initialized
+		while (mStage == null) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+			}
+		}
+
 		msgBox.show(mStage);
 	}
 

@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.menu;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.commands.CGameQuit;
@@ -13,13 +11,11 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.menu.MainMenu.Scenes;
-import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.commands.CUserLogout;
-import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 
 /**
@@ -176,14 +172,6 @@ class MainMenuGui extends MenuGui {
 	}
 
 	/**
-	 * Show update information
-	 * @param updateInfo all update information
-	 */
-	void showUpdateInfo(UpdateEvent updateInfo) {
-		mUiFactory.msgBox.updateMessage(updateInfo);
-	}
-
-	/**
 	 * Shows client changes since last login
 	 * @param changeLog new changes
 	 */
@@ -191,15 +179,6 @@ class MainMenuGui extends MenuGui {
 		mUiFactory.msgBox.changeLog("ChangeLog", "New changes since you last logged in on this device", changeLog);
 	}
 
-	/**
-	 * Show all message of the day
-	 * @param motds all messages
-	 */
-	void showMotds(final ArrayList<Motd> motds) {
-		for (final Motd motd : motds) {
-			mUiFactory.msgBox.motd(motd);
-		}
-	}
 
 	private AlignTable mOptionTable = new AlignTable();
 	private AlignTable mPlayerInfoTable = new AlignTable();

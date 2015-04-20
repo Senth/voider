@@ -28,6 +28,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceChecker;
 import com.spiddekauga.voider.repo.user.UserLocalRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.ui.InfoDisplayer;
 import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -50,6 +51,7 @@ public class VoiderGame implements ApplicationListener {
 		MessageGateway.getInstance();
 		Synchronizer.getInstance();
 		ResourceChecker.init();
+		InfoDisplayer.getInstance();
 
 		updateResolution();
 
