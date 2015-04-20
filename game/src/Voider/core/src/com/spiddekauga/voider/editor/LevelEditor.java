@@ -1570,23 +1570,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Sets if enemies that will be used when test running the level from here should be
-	 * highlighted.
-	 * @param highlight set to true to highlight the enemies
-	 */
-	void setEnemyHighlight(boolean highlight) {
-		mEnemyHighlight = highlight;
-	}
-
-	/**
-	 * @return true if the enemy should be highlighted if the will be used when test
-	 *         running a level from the current position
-	 */
-	public boolean isEnemyHighlightOn() {
-		return mEnemyHighlight;
-	}
-
-	/**
 	 * Sets if the level background should be rendered
 	 * @param show set to true to show the background
 	 */

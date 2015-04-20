@@ -840,7 +840,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	private Actor mDrawingActor = null;
 	private TouchTool[] mTools = new TouchTool[Tools.values().length];
 	/** Last active after a deactivation */
-	private Tools mLastTool = Tools.MOVE;
+	private Tools mLastTool = Tools.DRAW_APPEND;
 	/** Current tool state */
 	private Tools mActiveTool = Tools.NONE;
 	/** Current selection */

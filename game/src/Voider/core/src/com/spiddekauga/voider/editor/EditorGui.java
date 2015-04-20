@@ -221,12 +221,6 @@ public abstract class EditorGui extends Gui {
 			mGridRenderAbove.setChecked(mEditor.isGridRenderAboveResources());
 		}
 
-		if (mEnemyHighlight != null) {
-			if (mEditor instanceof LevelEditor) {
-				mEnemyHighlight.setChecked(((LevelEditor) mEditor).isEnemyHighlightOn());
-			}
-		}
-
 		if (mShowBackground != null) {
 			if (mEditor instanceof LevelEditor) {
 				mShowBackground.setChecked(((LevelEditor) mEditor).isBackgroundShown());
@@ -448,18 +442,6 @@ public abstract class EditorGui extends Gui {
 				@Override
 				protected void onChecked(Button button, boolean checked) {
 					((LevelEditor) mEditor).setShowBackground(checked);
-				}
-			};
-
-			// Highlight enemy if it will spawn when test running the level from
-			// the current position
-			button = mUiFactory.button.addImage(EditorIcons.ENEMY_SPAWN_HIGHLIGHT, mEditMenu, null, null);
-			mTooltip.add(button, Messages.EditorTooltips.ACTION_ENEMY_SPAWN);
-			mEnemyHighlight = button;
-			new ButtonListener(button) {
-				@Override
-				protected void onChecked(Button button, boolean checked) {
-					((LevelEditor) mEditor).setEnemyHighlight(checked);
 				}
 			};
 

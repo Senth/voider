@@ -182,47 +182,44 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 		Scene scene = SceneSwitcher.getActiveScene(false);
 		if (scene instanceof LevelEditor) {
 			LevelEditor levelEditor = (LevelEditor) scene;
-			if (levelEditor.isEnemyHighlightOn()) {
+			if (mNotSpawnSprite == null) {
+				TextureRegion region = SkinNames.getRegion(EditorImages.ENEMY_NOT_SPAWNED);
+				mNotSpawnSprite = new Sprite(region);
+				mNotSpawnSprite.setScale(Config.Graphics.WORLD_SCALE);
+				float originX = mNotSpawnSprite.getWidth() * Config.Graphics.WORLD_SCALE / 2;
+				float originY = mNotSpawnSprite.getHeight() * Config.Graphics.WORLD_SCALE / 2;
+				mNotSpawnSprite.setOrigin(-originX, -originY);
 
 				if (mNotSpawnSprite == null) {
-					TextureRegion region = SkinNames.getRegion(EditorImages.ENEMY_NOT_SPAWNED);
-					mNotSpawnSprite = new Sprite(region);
-					mNotSpawnSprite.setScale(Config.Graphics.WORLD_SCALE);
-					float originX = mNotSpawnSprite.getWidth() * Config.Graphics.WORLD_SCALE / 2;
-					float originY = mNotSpawnSprite.getHeight() * Config.Graphics.WORLD_SCALE / 2;
-					mNotSpawnSprite.setOrigin(-originX, -originY);
-
-					if (mNotSpawnSprite == null) {
-						return;
-					}
+					return;
 				}
-				mNotSpawnSprite.setPosition(getPosition().x, getPosition().y);
+			}
+			mNotSpawnSprite.setPosition(getPosition().x, getPosition().y);
 
-				float levelStartCoord = levelEditor.getRunFromHereLeftPosition();
-				float enemyActivationCoord = Float.MIN_VALUE;
+			float levelStartCoord = levelEditor.getRunFromHereLeftPosition();
+			float enemyActivationCoord = Float.MIN_VALUE;
 
-				// Enemy has a dedicated trigger
-				TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
-				if (triggerInfo != null) {
-					if (triggerInfo.trigger instanceof TScreenAt) {
-						enemyActivationCoord = ((TScreenAt) triggerInfo.trigger).getPosition().x;
-					}
+			// Enemy has a dedicated trigger
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
+			if (triggerInfo != null) {
+				if (triggerInfo.trigger instanceof TScreenAt) {
+					enemyActivationCoord = ((TScreenAt) triggerInfo.trigger).getPosition().x;
 				}
+			}
 
-				// Enemy will use default trigger
-				if (enemyActivationCoord == Float.MIN_VALUE) {
-					enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
-				}
+			// Enemy will use default trigger
+			if (enemyActivationCoord == Float.MIN_VALUE) {
+				enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
+			}
 
-				boolean enemyWillSpawn = false;
-				if (levelStartCoord <= enemyActivationCoord) {
-					enemyWillSpawn = true;
-				}
+			boolean enemyWillSpawn = false;
+			if (levelStartCoord <= enemyActivationCoord) {
+				enemyWillSpawn = true;
+			}
 
-				// Enemy will spawn
-				if (!enemyWillSpawn) {
-					mNotSpawnSprite.draw(spriteBatch);
-				}
+			// Enemy will spawn
+			if (!enemyWillSpawn) {
+				mNotSpawnSprite.draw(spriteBatch);
 			}
 		}
 	}

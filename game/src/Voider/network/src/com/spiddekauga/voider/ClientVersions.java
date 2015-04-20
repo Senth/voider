@@ -223,6 +223,7 @@ public enum ClientVersions {
 			),
 	V0_5_8(false,
 			"Improvements",
+			"	Enemy options, changed text so it's more easily understood",
 			"Bug Fixes",
 			"	Server messages are now shown"
 			),

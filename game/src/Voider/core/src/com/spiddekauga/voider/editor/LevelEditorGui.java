@@ -1073,8 +1073,8 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
 			}
 		};
-		mUiFactory.text.addPanelSection("Enemy", table, null);
-		mWidgets.enemy.cEnemies = mUiFactory.addSlider("Copies", "LevelEnemy_Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX,
+		mUiFactory.text.addPanelSection("Enemy Copies", table, null);
+		mWidgets.enemy.cEnemies = mUiFactory.addSlider(null, "LevelEnemy_Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX,
 				Level.Enemy.ENEMIES_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished);
 
 		HideSliderValue delayHider = new HideSliderValue(mWidgets.enemy.cEnemies, 2, Float.MAX_VALUE) {
@@ -1094,8 +1094,8 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEnemySpawnDelay(newValue);
 			}
 		};
-		mUiFactory.text.addPanelSection("Spawn", table, delayHider);
-		mWidgets.enemy.betweenDelay = mUiFactory.addSlider("Delay", "LevelEnemy_SpawnDelay", Level.Enemy.DELAY_BETWEEN_MIN,
+		mUiFactory.text.addPanelSection("Time Between Enemies", table, delayHider);
+		mWidgets.enemy.betweenDelay = mUiFactory.addSlider(null, "LevelEnemy_SpawnDelay", Level.Enemy.DELAY_BETWEEN_MIN,
 				Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_SPAWN_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
@@ -1109,8 +1109,8 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedEnemyActivateTriggerDelay(newValue);
 			}
 		};
-		mUiFactory.text.addPanelSection("Activation", table, mWidgets.enemy.hiderActivateDelay);
-		mWidgets.enemy.activateDelay = mUiFactory.addSlider("Delay", "LevelEnemy_ActivationDelay", Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN,
+		mUiFactory.text.addPanelSection("Spawn Delay", table, mWidgets.enemy.hiderActivateDelay);
+		mWidgets.enemy.activateDelay = mUiFactory.addSlider(null, "LevelEnemy_ActivationDelay", Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN,
 				Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
 				mWidgets.enemy.hiderActivateDelay, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_ACTIVATION_DELAY);
@@ -1125,8 +1125,8 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedEnemyDeactivateTriggerDelay(newValue);
 			}
 		};
-		mUiFactory.text.addPanelSection("Deactivation", table, mWidgets.enemy.hiderDeactivateDelay);
-		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider("Delay", "LevelEnemy_DeactivationDelay", Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
+		mUiFactory.text.addPanelSection("Despawn delay", table, mWidgets.enemy.hiderDeactivateDelay);
+		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider(null, "LevelEnemy_DeactivationDelay", Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
 				Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
 				mWidgets.enemy.hiderDeactivateDelay, createdActors);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_DEACTIVATION_DELAY);

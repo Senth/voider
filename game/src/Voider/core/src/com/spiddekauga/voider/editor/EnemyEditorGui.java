@@ -110,15 +110,17 @@ public class EnemyEditorGui extends ActorGui {
 		switch (mEnemyEditor.getMovementType()) {
 		case PATH:
 			mWidgets.movement.pathBox.setChecked(true);
-
+			mWidgets.movement.currentType.setText("Path");
 			break;
 
 		case STATIONARY:
 			mWidgets.movement.stationaryBox.setChecked(true);
+			mWidgets.movement.currentType.setText("Stationary");
 			break;
 
 		case AI:
 			mWidgets.movement.aiBox.setChecked(true);
+			mWidgets.movement.currentType.setText("AI");
 			break;
 		}
 
@@ -673,6 +675,7 @@ public class EnemyEditorGui extends ActorGui {
 		};
 		mWidgets.weapon.relativeToLevelSpeed = mUiFactory.button.addPanelCheckBox("Relative to level speed?", buttonListener, table,
 				onTab.getHider(), mDisabledWhenPublished);
+		table.getRow().setHeight(mUiFactory.getStyles().vars.rowHeight);
 
 		// Damage
 		sliderListener = new SliderListener(mInvoker) {

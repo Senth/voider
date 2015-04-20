@@ -314,8 +314,8 @@ public class Messages {
 
 		// Enemy settings tab (level editor)
 		ENEMY_SPAWN_DELAY("Spawn time between copies", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
-		ENEMY_ACTIVATION_DELAY("Delay for first spawn", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
-		ENEMY_DEACTIVATION_DELAY("Deactivate delay after triggered", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
+		ENEMY_ACTIVATION_DELAY("Spawn delay", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
+		ENEMY_DEACTIVATION_DELAY("Despawn delay", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
 
 		// Enemy movement tab (enemy editor)
 		MOVEMENT_PATH("Path movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, 2),
