@@ -497,8 +497,8 @@ public class UiFactory {
 		Slider minSlider = addSlider("Min", eventName + "_min", min, max, stepSize, minSliderListener, table, hider, createdActors);
 		Slider maxSlider = addSlider("Max", eventName + "_max", min, max, stepSize, maxSliderListener, table, hider, createdActors);
 
-		minSliderListener.setGreaterSlider(maxSlider);
-		maxSliderListener.setLesserSlider(minSlider);
+		minSliderListener.setGreaterSlider(maxSliderListener);
+		maxSliderListener.setLesserSlider(minSliderListener);
 
 		SliderMinMaxWrapper minMaxWrapper = new SliderMinMaxWrapper();
 		minMaxWrapper.min = minSlider;
@@ -557,7 +557,7 @@ public class UiFactory {
 		table.add(textField).setWidth(mStyles.vars.textFieldNumberWidth).setPadLeft(mStyles.vars.paddingInner);
 
 		// Set slider listener
-		sliderListener.init(slider, textField);
+		sliderListener.add(slider, textField);
 
 		if (label != null) {
 			doExtraActionsOnActors(hider, createdActors, label, slider, textField);

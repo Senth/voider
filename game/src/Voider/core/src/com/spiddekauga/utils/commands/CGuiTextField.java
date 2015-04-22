@@ -2,9 +2,6 @@ package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.spiddekauga.utils.Maths;
-import com.spiddekauga.voider.Config.Gui;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Command for changing a text field's value
@@ -21,8 +18,6 @@ public class CGuiTextField extends CGui implements ICommandCombinable {
 		mTextField = textField;
 		mBefore = before;
 		mAfter = after;
-
-		mCreatedTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 	}
 
 	@Override
@@ -30,15 +25,15 @@ public class CGuiTextField extends CGui implements ICommandCombinable {
 		boolean executeSuccess = false;
 
 		if (otherCommand instanceof CGuiTextField) {
-			// Must be same text field
-			if (((CGuiTextField) otherCommand).mTextField == mTextField) {
-				if (Maths.approxCompare(mCreatedTime, ((CGuiTextField) otherCommand).mCreatedTime, Gui.TEXT_FIELD_COMBINABLE_WITHIN)) {
-					executeSuccess = ((CGuiTextField) otherCommand).execute();
+			CGuiTextField otherTextField = (CGuiTextField) otherCommand;
 
-					if (executeSuccess) {
-						mAfter = ((CGuiTextField) otherCommand).mAfter;
-						mCreatedTime = ((CGuiTextField) otherCommand).mCreatedTime;
-					}
+			// Combine
+			if (otherTextField.mTextField == mTextField && isCombinable()) {
+				executeSuccess = otherTextField.execute();
+
+				if (executeSuccess) {
+					mAfter = otherTextField.mAfter;
+					setExecuteTime();
 				}
 			}
 		}
@@ -60,10 +55,10 @@ public class CGuiTextField extends CGui implements ICommandCombinable {
 				}
 			}
 			setOriginalName(mTextField);
-			return true;
-		} else {
-			return false;
 		}
+		setExecuteTime();
+
+		return success;
 	}
 
 	@Override
@@ -89,6 +84,4 @@ public class CGuiTextField extends CGui implements ICommandCombinable {
 	private String mBefore;
 	/** String after the change (on execute) */
 	private String mAfter;
-	/** When the command was created */
-	private float mCreatedTime;
 }

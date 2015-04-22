@@ -401,50 +401,34 @@ public abstract class ActorGui extends EditorGui {
 
 		// Rectangle
 		// Width
-		sliderListener = new SliderListener(mInvoker) {
+		SliderListener widthListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeWidth(newValue);
-				mWidgets.visual.triangleWidth.setValue(newValue);
 			}
 		};
 		mWidgets.visual.rectangleWidth = mUiFactory.addSlider("Width", type + "Visual_RectangleWidth", icVisual.getSizeMin(), icVisual.getSizeMax(),
-				icVisual.getSizeStepSize(), sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
+				icVisual.getSizeStepSize(), widthListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
-		sliderListener = new SliderListener(mInvoker) {
+		SliderListener heightListener = new SliderListener(mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeHeight(newValue);
-				mWidgets.visual.triangleHeight.setValue(newValue);
 			}
 		};
 		mWidgets.visual.rectangleHeight = mUiFactory.addSlider("Height", type + "Visual_RectangleHeight", icVisual.getSizeMin(),
-				icVisual.getSizeMax(), icVisual.getSizeStepSize(), sliderListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
+				icVisual.getSizeMax(), icVisual.getSizeStepSize(), heightListener, table, rectangleTab.getHider(), mDisabledWhenPublished);
 
 
 		// Triangle
 		// Width
-		sliderListener = new SliderListener(mInvoker) {
-			@Override
-			protected void onChange(float newValue) {
-				mActorEditor.setShapeWidth(newValue);
-				mWidgets.visual.rectangleWidth.setValue(newValue);
-			}
-		};
 		mWidgets.visual.triangleWidth = mUiFactory.addSlider("Width", type + "Visual_TriangleWidth", icVisual.getSizeMin(), icVisual.getSizeMax(),
-				icVisual.getSizeStepSize(), sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
+				icVisual.getSizeStepSize(), widthListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Height
-		sliderListener = new SliderListener(mInvoker) {
-			@Override
-			protected void onChange(float newValue) {
-				mActorEditor.setShapeHeight(newValue);
-				mWidgets.visual.rectangleHeight.setValue(newValue);
-			}
-		};
 		mWidgets.visual.triangleHeight = mUiFactory.addSlider("Height", type + "Visual_TriangleHeight", icVisual.getSizeMin(), icVisual.getSizeMax(),
-				icVisual.getSizeStepSize(), sliderListener, table, triangleTab.getHider(), mDisabledWhenPublished);
+				icVisual.getSizeStepSize(), heightListener, table, triangleTab.getHider(), mDisabledWhenPublished);
 
 		// Image
 		if (imageTab != null) {

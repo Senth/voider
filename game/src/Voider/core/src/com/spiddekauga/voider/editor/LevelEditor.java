@@ -164,9 +164,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
-			if (mShowBackground) {
-				renderBackground();
-			}
+			renderBackground();
 		}
 
 		super.render();
@@ -1570,21 +1568,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Sets if the level background should be rendered
-	 * @param show set to true to show the background
-	 */
-	void setShowBackground(boolean show) {
-		mShowBackground = show;
-	}
-
-	/**
-	 * @return true if the background is shown
-	 */
-	boolean isBackgroundShown() {
-		return mShowBackground;
-	}
-
-	/**
 	 * @return current level
 	 */
 	public Level getLevel() {
@@ -1874,13 +1857,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	private LevelBackground mBackground = null;
 	private byte[] mPngBytesBeforeTestRun = null;
-	private boolean mShowBackground = true;
 	private ArrayList<EnemyActorDef> mAddEnemies = new ArrayList<>();
 	private Level mLevel = null;
 	private LevelDef mLoadingLevel = null;
 	private ISelection mSelection = null;
 	private Tools mTool = Tools.SELECTION;
 	private ZoomTool mZoomTool = null;
-	private boolean mEnemyHighlight = true;
 	private Color mDefaultTerrainColor = new Color();
 }

@@ -776,8 +776,8 @@ public class Config {
 		 * them)
 		 */
 		public final static String TEXT_FIELD_DISABLED_NAME = "DISABLED";
-		/** Seconds before text field commands aren't combinable */
-		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
+		/** Seconds before any GUI commands aren't combinable */
+		public final static float COMMAND_COMBINABLE_WITHIN = 2;
 		/** Time to wait for message boxes to be shown after a wait window or progress bar */
 		public final static float MSG_BOX_SHOW_WAIT_TIME = 0f;
 	}

@@ -129,18 +129,6 @@ public interface IEditor {
 
 	// ------------ Grid ----------------
 	/**
-	 * Make the grid render above all resources
-	 * @param above set to true to render the grid above all resources, false to render
-	 *        below
-	 */
-	void setGridRenderAboveResources(boolean above);
-
-	/**
-	 * @return true if the grid is rendered above all resources, false if below
-	 */
-	boolean isGridRenderAboveResources();
-
-	/**
 	 * Turn on or off the grid
 	 * @param on true if the grid shall be turned on, false if turned off
 	 */

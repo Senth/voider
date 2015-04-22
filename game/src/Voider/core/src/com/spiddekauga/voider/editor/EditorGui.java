@@ -34,7 +34,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
@@ -216,15 +215,8 @@ public abstract class EditorGui extends Gui {
 	public void resetValues() {
 		super.resetValues();
 
-		if (mGridRender != null && mGridRenderAbove != null) {
+		if (mGridRender != null) {
 			mGridRender.setChecked(mEditor.isGridOn());
-			mGridRenderAbove.setChecked(mEditor.isGridRenderAboveResources());
-		}
-
-		if (mShowBackground != null) {
-			if (mEditor instanceof LevelEditor) {
-				mShowBackground.setChecked(((LevelEditor) mEditor).isBackgroundShown());
-			}
 		}
 
 		// Name
@@ -411,40 +403,16 @@ public abstract class EditorGui extends Gui {
 			button = mUiFactory.button.addImage(EditorIcons.GRID, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_TOGGLE);
 			mGridRender = button;
-			DisableListener disableListener = new DisableListener(button);
 			new ButtonListener(button) {
 				@Override
 				protected void onChecked(Button button, boolean checked) {
 					mEditor.setGrid(checked);
 				}
 			};
-
-			// Grid above
-			button = mUiFactory.button.addImage(EditorIcons.GRID_ABOVE, mEditMenu, null, null);
-			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_ABOVE);
-			mGridRenderAbove = button;
-			disableListener.addToggleActor(button);
-			new ButtonListener(button) {
-				@Override
-				protected void onChecked(Button button, boolean checked) {
-					mEditor.setGridRenderAboveResources(checked);
-				}
-			};
 		}
 
 		// Level Editor -> Run & Enemy highlight
 		if (mEditor instanceof LevelEditor) {
-			// Background
-			button = mUiFactory.button.addImage(EditorIcons.SHOW_BACKGROUND, mEditMenu, null, null);
-			mTooltip.add(button, Messages.EditorTooltips.ACTION_SHOW_BACKGROUND);
-			mShowBackground = button;
-			new ButtonListener(button) {
-				@Override
-				protected void onChecked(Button button, boolean checked) {
-					((LevelEditor) mEditor).setShowBackground(checked);
-				}
-			};
-
 			// Run from start
 			button = mUiFactory.button.addImage(EditorIcons.RUN_FROM_START, mEditMenu, null, null);
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_PLAY_FROM_START);
@@ -997,14 +965,8 @@ public abstract class EditorGui extends Gui {
 	protected Invoker mInvoker = null;
 	/** UI elements that should be disabled during publish */
 	protected ArrayList<Actor> mDisabledWhenPublished = new ArrayList<>();
-	/** Enemy highlight button */
-	private Button mEnemyHighlight = null;
 	/** Grid button */
 	private Button mGridRender = null;
-	/** Grid above button */
-	private Button mGridRenderAbove = null;
-	/** Render level editor background */
-	private Button mShowBackground = null;
 	/** Editor scene */
 	protected Editor mEditor = null;
 	/** Editor menu table (upper left) */

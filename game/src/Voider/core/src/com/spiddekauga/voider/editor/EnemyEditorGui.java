@@ -779,24 +779,6 @@ public class EnemyEditorGui extends ActorGui {
 		mTooltip.add(directionTab.getButton(), Messages.EditorTooltips.AIM_DIRECTION);
 		mTooltip.add(rotateTab.getButton(), Messages.EditorTooltips.AIM_ROTATE);
 
-		// // Labels
-		// // On Player
-		// mUiFactory.addPanelSection("On Player", table, onPlayerTab.hider);
-		//
-		// // In front of player
-		// mUiFactory.addPanelSection("In Front Of Player", table,
-		// inFrontPlayerTab.hider);
-		//
-		// // Movement direction
-		// mUiFactory.addPanelSection("Enemy Movement Direction", table,
-		// moveDirTab.hider);
-		//
-		// // Specific direction
-		// mUiFactory.addPanelSection("Fixed Direction", table, directionTab.hider);
-		//
-		// // Rotate
-		// mUiFactory.addPanelSection("Rotate", table, rotateTab.hider);
-
 
 		// Specific settings
 		IC_Weapon icWeapon = ConfigIni.getInstance().editor.enemy.weapon;
@@ -806,7 +788,6 @@ public class EnemyEditorGui extends ActorGui {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setAimStartAngle(newValue);
-				mWidgets.weapon.aimRotateStartAngle.setValue(newValue);
 			}
 		};
 		mWidgets.weapon.aimDirectionAngle = mUiFactory
@@ -815,13 +796,6 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Rotate options
 		// Angle
-		sliderListener = new SliderListener(mInvoker) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setAimStartAngle(newValue);
-				mWidgets.weapon.aimDirectionAngle.setValue(newValue);
-			}
-		};
 		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", "EnemyWeapon_AimRotateDirection", icWeapon.getStartAngleMin(),
 				icWeapon.getStartAngleMax(), icWeapon.getStartAngleStepSize(), sliderListener, table, rotateTab.getHider(), mDisabledWhenPublished);
 

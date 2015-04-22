@@ -268,11 +268,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		enableBlendingWithDefaults();
 
 		// Offset
-		if (mGridRenderAboveResources) {
-			RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.GRID_ABOVE);
-		} else {
-			RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.GRID_BELOW);
-		}
+		RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.GRID_BELOW);
 
 		mShapeRenderer.push(ShapeType.Line);
 
@@ -338,11 +334,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		mShapeRenderer.pop();
 
 		// Reset offset
-		if (mGridRenderAboveResources) {
-			RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.GRID_ABOVE);
-		} else {
-			RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.GRID_BELOW);
-		}
+		RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.GRID_BELOW);
 	}
 
 	/**
@@ -671,16 +663,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	@Override
-	public void setGridRenderAboveResources(boolean above) {
-		mGridRenderAboveResources = above;
-	}
-
-	@Override
-	public boolean isGridRenderAboveResources() {
-		return mGridRenderAboveResources;
-	}
-
-	@Override
 	public boolean isJustCreated() {
 		return getDef() == null || !ResourceLocalRepo.exists(getDef().getId());
 	}
@@ -778,8 +760,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	private Command mExecutedAfterSaved = null;
 	/** If grid shall be rendered */
 	private boolean mGridRender = true;
-	/** If grid shall be rendered in front of the resources */
-	private boolean mGridRenderAboveResources = false;
 	/** For rendering sprites */
 	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 	/** Synchronized queue for handling web response in main thread */

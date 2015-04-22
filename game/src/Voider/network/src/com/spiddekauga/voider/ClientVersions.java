@@ -225,7 +225,8 @@ public enum ClientVersions {
 			"Improvements",
 			"	Enemy options, changed text so it's more easily understood",
 			"Bug Fixes",
-			"	Server messages are now shown"
+			"	Server messages are now shown",
+			"	Fixed undo/redo on sliders in the editor"
 			),
 
 
