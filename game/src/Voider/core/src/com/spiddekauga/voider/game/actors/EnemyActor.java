@@ -698,6 +698,7 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 			// Set angle
 			if (getDef(EnemyActorDef.class).isTurning()) {
 				getBody().setTransform(getPosition(), (float) Math.toRadians(mTargetDirection.angle()));
+				getBody().setLinearVelocity(0, 0);
 			}
 
 			moveToTarget(mTargetDirection, deltaTime);

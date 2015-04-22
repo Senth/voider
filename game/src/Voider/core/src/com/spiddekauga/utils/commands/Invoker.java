@@ -189,7 +189,7 @@ public class Invoker implements Disposable {
 
 			// Is next redo chained? -> Execute it too
 			if (canRedo()) {
-				Command nextRedo = mRedoCommands.getFirst();
+				Command nextRedo = mRedoCommands.peek();
 
 				chained = nextRedo.isChained();
 			}
@@ -235,6 +235,14 @@ public class Invoker implements Disposable {
 			command.dispose();
 		}
 		mRedoCommands.clear();
+	}
+
+	/**
+	 * @return last executed command. Not undo commands. E.g. if C1 is executed, then C2,
+	 *         then undo, this will return C1.
+	 */
+	public Command getLastExecuted() {
+		return mUndoCommands.peek();
 	}
 
 	/** The stack with undo commands */

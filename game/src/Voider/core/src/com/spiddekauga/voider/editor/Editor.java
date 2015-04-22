@@ -199,6 +199,13 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 			getGui().showInfoDialog();
 		}
 
+		// Unsaved as some command change the resource state
+		if (isSaved()) {
+			if (mInvoker.getLastExecuted() != mLastCommandOnSave) {
+				setUnsaved();
+			}
+		}
+
 		if (shallAutoSave()) {
 			saveDef();
 		}
@@ -432,6 +439,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * Set the editor as saved
 	 */
 	protected void setSaved() {
+		mLastCommandOnSave = mInvoker.getLastExecuted();
 		mSaved = true;
 	}
 
@@ -742,6 +750,11 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Invoker */
 	protected Invoker mInvoker = new Invoker();
+	/**
+	 * Saved on the specified invoker command. Some commands change the resource but
+	 * doesn't change the editor state to unsaved
+	 */
+	private Command mLastCommandOnSave = null;
 	/** Is the resource currently saved? */
 	private boolean mSaved = false;
 	/** Is the resource currently saving, this means it takes a screenshot of the image */
