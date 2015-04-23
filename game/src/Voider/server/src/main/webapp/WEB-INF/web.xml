@@ -257,6 +257,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Motd</servlet-name>
 		<url-pattern>/admin/motd</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>Fixit</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Fixit</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Fixit</servlet-name>
+		<url-pattern>/admin/fixit</url-pattern>
+	</servlet-mapping>
 	
 	<!--———————————————
 	 	  SECURITY
