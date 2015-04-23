@@ -226,7 +226,10 @@ public enum ClientVersions {
 			"	Enemy options, changed text so it's more easily understood",
 			"Bug Fixes",
 			"	Server messages are now shown",
-			"	Fixed undo/redo on sliders in the editor"
+			"	Fixed undo/redo on sliders in the editor",
+			"Minor Fixes",
+			"	Enemy path labels are in the correct location",
+			"	Path enemies now start in the correct direction in Enemy Editor"
 			),
 
 

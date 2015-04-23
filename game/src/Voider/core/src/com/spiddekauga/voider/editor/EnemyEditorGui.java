@@ -107,6 +107,10 @@ public class EnemyEditorGui extends ActorGui {
 	 * Reset movement variables
 	 */
 	void resetMovementValues() {
+		if (mEnemyEditor.getDef() == null) {
+			return;
+		}
+
 		switch (mEnemyEditor.getMovementType()) {
 		case PATH:
 			mWidgets.movement.pathBox.setChecked(true);
@@ -138,10 +142,8 @@ public class EnemyEditorGui extends ActorGui {
 			mWidgets.movement.aiTurnSpeedOff.setChecked(true);
 		}
 
-		mWidgets.movement.pathSpeedSlider.setValue(mEnemyEditor.getSpeed());
-		mWidgets.movement.aiSpeedSlider.setValue(mEnemyEditor.getSpeed());
-		mWidgets.movement.pathTurnSpeedSlider.setValue(mEnemyEditor.getTurnSpeed());
-		mWidgets.movement.aiTurnSpeedSlider.setValue(mEnemyEditor.getTurnSpeed());
+		mWidgets.movement.speedListener.setValue(mEnemyEditor.getSpeed());
+		mWidgets.movement.turnSpeedListener.setValue(mEnemyEditor.getTurnSpeed());
 
 
 		// AI movement
@@ -329,6 +331,22 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes movement path / AI
 	 */
 	private void initMovement() {
+		// Create speed slider listeners
+		mWidgets.movement.speedListener = new SliderListener(mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setSpeed(newValue);
+			}
+		};
+
+		mWidgets.movement.turnSpeedListener = new SliderListener(mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setTurnSpeed(newValue);
+			}
+		};
+
+
 		createMovementUi(MovementTypes.PATH);
 		initMovementAi();
 	}
@@ -443,21 +461,8 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Movement Speed
 		mUiFactory.text.addPanelSection("Movement Speed", table, hider);
-		SliderListener sliderListener = new SliderListener(mInvoker) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setSpeed(newValue);
-				mWidgets.movement.pathSpeedSlider.setValue(newValue);
-				mWidgets.movement.aiSpeedSlider.setValue(newValue);
-			}
-		};
-		Slider slider = mUiFactory.addSlider(null, "EnemyMovement_Speed", icMovement.getMoveSpeedMin(), icMovement.getMoveSpeedMax(),
-				icMovement.getMoveSpeedStepSize(), sliderListener, table, hider, mDisabledWhenPublished);
-		if (movementType == MovementTypes.PATH) {
-			mWidgets.movement.pathSpeedSlider = slider;
-		} else if (movementType == MovementTypes.AI) {
-			mWidgets.movement.aiSpeedSlider = slider;
-		}
+		mUiFactory.addSlider(null, "EnemyMovement_Speed", icMovement.getMoveSpeedMin(), icMovement.getMoveSpeedMax(),
+				icMovement.getMoveSpeedStepSize(), mWidgets.movement.speedListener, table, hider, mDisabledWhenPublished);
 
 
 		// Turning
@@ -512,21 +517,8 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		// Slider
-		sliderListener = new SliderListener(mInvoker) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setTurnSpeed(newValue);
-				mWidgets.movement.pathTurnSpeedSlider.setValue(newValue);
-				mWidgets.movement.aiTurnSpeedSlider.setValue(newValue);
-			}
-		};
-		slider = mUiFactory.addSlider(null, "EnemyMovement_TurnSpeed", icMovement.getTurnSpeedMin(), icMovement.getTurnSpeedMax(),
-				icMovement.getTurnSpeedStepSize(), sliderListener, table, onTab.getHider(), mDisabledWhenPublished);
-		if (movementType == MovementTypes.PATH) {
-			mWidgets.movement.pathTurnSpeedSlider = slider;
-		} else if (movementType == MovementTypes.AI) {
-			mWidgets.movement.aiTurnSpeedSlider = slider;
-		}
+		mUiFactory.addSlider(null, "EnemyMovement_TurnSpeed", icMovement.getTurnSpeedMin(), icMovement.getTurnSpeedMax(),
+				icMovement.getTurnSpeedStepSize(), mWidgets.movement.turnSpeedListener, table, onTab.getHider(), mDisabledWhenPublished);
 	}
 
 	/**
@@ -540,12 +532,17 @@ public class EnemyEditorGui extends ActorGui {
 		// Create radio tabs
 		// Path
 		TabImageWrapper pathTab = mUiFactory.button.createTabImageWrapper(SkinNames.EditorIcons.MOVEMENT_PATH);
+		pathTab.setHider(new HideListener(true) {
+			@Override
+			protected void onShow() {
+				updatePathLabelsPositions();
+			}
+		});
 		pathTab.setListener(new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
 				mEnemyEditor.setMovementType(MovementTypes.PATH);
 				mWidgets.movement.currentType.setText("Path");
-				updatePathLabelsPositions();
 			}
 		});
 		mPathHider = pathTab.getHider();
@@ -595,10 +592,9 @@ public class EnemyEditorGui extends ActorGui {
 		mTooltip.add(stationaryTab.getButton(), Messages.EditorTooltips.MOVEMENT_STATIONARY);
 
 		// Hider for path labels
-		HideListener pathLabelHider = new HideListener(true, pathTab.getButton());
-		pathLabelHider.addToggleActor(mWidgets.path.backForth);
-		pathLabelHider.addToggleActor(mWidgets.path.once);
-		pathLabelHider.addToggleActor(mWidgets.path.loop);
+		mPathHider.addToggleActor(mWidgets.path.backForth);
+		mPathHider.addToggleActor(mWidgets.path.once);
+		mPathHider.addToggleActor(mWidgets.path.loop);
 	}
 
 	/**
@@ -880,8 +876,11 @@ public class EnemyEditorGui extends ActorGui {
 
 			{
 				once.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+				once.setName("path_once");
 				backForth.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+				backForth.setName("path_backForth");
 				loop.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+				loop.setName("path_loop");
 				once.setPositionManually(true);
 				backForth.setPositionManually(true);
 				loop.setPositionManually(true);
@@ -904,14 +903,12 @@ public class EnemyEditorGui extends ActorGui {
 			Button aiBox = null;
 
 			// Generic movement variables
-			Slider pathSpeedSlider = null;
 			Button pathTurnSpeedOn = null;
 			Button pathTurnSpeedOff = null;
-			Slider pathTurnSpeedSlider = null;
-			Slider aiSpeedSlider = null;
 			Button aiTurnSpeedOn = null;
 			Button aiTurnSpeedOff = null;
-			Slider aiTurnSpeedSlider = null;
+			SliderListener speedListener = null;
+			SliderListener turnSpeedListener = null;
 
 
 			// AI Movement
