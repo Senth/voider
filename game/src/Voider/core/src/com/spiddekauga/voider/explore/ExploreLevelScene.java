@@ -86,6 +86,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 					break;
 				}
 			}
+			getGui().resetViewButtons();
 		}
 	}
 
@@ -154,10 +155,10 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 	@Override
 	protected void repopulateContent() {
+		super.repopulateContent();
 		if (getView().isOnline()) {
 			mLevelFetch.fetch();
 		}
-		super.repopulateContent();
 	}
 
 	/**
@@ -474,8 +475,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 
 				setSelectedLevel(null);
 				setSelected(null);
-				getGui().resetContent();
 				mIsFetching = true;
+				getGui().resetContent();
 				mResourceWebRepo.getLevels(mLastFetch, false, ExploreLevelScene.this);
 			}
 		}
@@ -506,9 +507,9 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @param response
 		 */
 		void handleWebResponse(LevelFetchMethod method, LevelFetchResponse response) {
+			mIsFetching = false;
 			// Only do something if this was the one we last called
 			if (isLastMethod(method)) {
-				mIsFetching = false;
 
 				if (response.isSuccessful()) {
 					createDrawables(response.levels);

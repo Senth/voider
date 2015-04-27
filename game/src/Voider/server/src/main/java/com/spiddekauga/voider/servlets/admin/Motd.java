@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -41,6 +42,10 @@ public class Motd extends VoiderController {
 			if (isAddParamatersOk()) {
 				createMotd();
 			}
+		}
+		// Expire
+		else if (isParameterSet("expire") && isParameterSet("key")) {
+			expireMotd();
 		}
 		// TODO edit
 
@@ -112,6 +117,23 @@ public class Motd extends VoiderController {
 
 
 		return valid;
+	}
+
+	/**
+	 * Expire the MOTD
+	 */
+	private void expireMotd() {
+		String keyString = getParameter("key");
+		try {
+			Key key = KeyFactory.stringToKey(keyString);
+			Entity entity = DatastoreUtils.getEntity(key);
+			if (entity != null) {
+				entity.setProperty(CMotd.EXPIRES, new Date());
+				DatastoreUtils.put(entity);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

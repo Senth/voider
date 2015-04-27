@@ -348,8 +348,6 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 */
 	protected void setView(ExploreViews view) {
 		mView = view;
-		getGui().resetViewButtons();
-		getGui().resetContent();
 		getGui().resetContentMargins();
 		repopulateContent();
 	}

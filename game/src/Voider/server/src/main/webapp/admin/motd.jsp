@@ -47,29 +47,33 @@
 			<h3 class="text-Left">Messages</h3>
 			<table>
 				<tr>
-					<th>Created</th>
-					<th>Expires</th>
-					<th>Level</th>
-					<th>Title</th>
+					<th style="white-space: nowrap;">Created</th>
+					<th style="white-space: nowrap;">Expires</th>
+					<th style="white-space: nowrap;">Level</th>
+					<th style="white-space: nowrap;">Title</th>
 					<th>Message</th>
+					<th style="white-space: nowrap;">Expire</th>
 				</tr>
 				<c:set var="rowStyleDefault" value="padding: 2px 5px;"/>
 				<c:forEach items="${messages}" var="motd">
 					<c:choose>
 						<c:when test="${motd.expired}">
 							<c:set var="rowStyle" value="${rowStyleDefault} color: #888888;"/>
+							<c:set var="expireText" value="EXPIRED"/>
 						</c:when>
 						
 						<c:otherwise>
 							<c:set var="rowStyle" value="${rowStyleDefault} color: #00ffff;"/>
+							<c:set var="expireText" value="<a href=\"motd?expire&key=${motd.key}\">EXPIRE</a>"/>
 						</c:otherwise>
 					</c:choose>
 					<tr>
-						<td style="${rowStyle}">${motd.createDate}</td>
-						<td style="${rowStyle}">${motd.expireDate}</td>
-						<td style="${rowStyle}">${motd.type}</td>
-						<td style="${rowStyle} text-align: center;">${motd.title}</td>
+						<td style="white-space: nowrap; ${rowStyle}">${motd.createDate}</td>
+						<td style="white-space: nowrap; ${rowStyle}">${motd.expireDate}</td>
+						<td style="white-space: nowrap; ${rowStyle}">${motd.type}</td>
+						<td style="${rowStyle} white-space: nowrap; text-align: center;">${motd.title}</td>
 						<td style="${rowStyle}">${motd.message}</td>
+						<td style="${rowStyle} white-space: nowrap;">${expireText}</td>
 					</tr>
 				</c:forEach>
 			</table>
