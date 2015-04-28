@@ -28,6 +28,12 @@
         </div>
       </div>
       <hr />
+      <div id="tutorials" class="row">
+        <div class="col-md-12">
+          <h3 class="text-Left"><a href="https://youtu.be/KRPMoLZ2ZN8">Tutorial On Creating Your Own Content</a></h3>
+        </div>
+      </div>
+      <hr />
       <div class="row">
       	<div class="col-md-12" style="padding: 40px 0px 40px 0px;">
       		<h2 class="text-center">Helpful Information for Beta Testers</h2>
@@ -95,34 +101,6 @@
           <h4>Editor tools</h4>
           The tooltip will display the hotkey for the tool if it has any (e.g. "Draw Terrain (D)" )
 
-        </div>
-      </div>
-      <hr />
-      <div id="tutorials" class="row">
-        <div class="col-md-12">
-          <h3 class="text-Left">YouTube Tutorials (VERY OLD!!! Will be updated soon)</h3>
-          <ol>
-          <li><a href="https://www.youtube.com/watch?v=6qYusryW59w&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=1," target="blank">Introduction</a></li>
-          <li><a href="https://www.youtube.com/watch?v=MiQCTPsKMS0&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=2," target="blank">Create a Level</a></li>
-          <li><a href="https://www.youtube.com/watch?v=UbOF_KgpLzI&index=3&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Create Terrain</a></li>
-          <li><a href="https://www.youtube.com/watch?v=7R1rK2b8jaU&index=4&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Selection Tool</a></li>
-          <li><a href="https://www.youtube.com/watch?v=UFmqy6YWMRk&index=5&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Move Tool</a></li>
-          <li><a href="https://www.youtube.com/watch?v=96S2M17STaI&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=6," target="blank">Delete Tool</a></li>
-          <li><a href="https://www.youtube.com/watch?v=WThGYvHQSHU&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=7," target="blank">Panning</a></li>
-          <li><a href="https://www.youtube.com/watch?v=MKDrEu0leYA&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=8," target="blank">Create a simple enemy</a></li>
-          <li><a href="https://www.youtube.com/watch?v=q9BmR6E5JvM&index=9&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Enemy and bullet custom shapes</a></li>
-          <li><a href="https://www.youtube.com/watch?v=whL_LQK64PA&index=10&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Enemy movement (Path &amp; Stationary)</a></li>
-          <li><a href="https://www.youtube.com/watch?v=_k92tFhgiC8&index=11&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Enemy movement (AI)</a></li>
-          <li><a href="https://www.youtube.com/watch?v=ZbKIrmIbrjk&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=12," target="blank">Enemy collision damage</a></li>
-          <li><a href="https://www.youtube.com/watch?v=guOTjFNKRJU&index=13&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Bullet editor</a></li>
-          <li><a href="https://www.youtube.com/watch?v=SxzoVL5YTHc&index=14&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Enemy weapons</a></li>
-          <li><a href="https://www.youtube.com/watch?v=n3d31c4gaf8&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=15," target="blank">Adding enemies to a level</a></li>
-          <li><a href="https://www.youtube.com/watch?v=DWeUECW8o2w&index=16&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Adding enemies with path movement to a level</a></li>
-          <li><a href="https://www.youtube.com/watch?v=tzHQkAxrx94&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=17," target="blank">Spawn multiple enemies</a></li>
-          <li><a href="https://www.youtube.com/watch?v=dM9aY8YqbAc&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=18," target="blank">Testing enemies in a level</a></li>
-          <li><a href="https://www.youtube.com/watch?v=eCTuQdG3v98&index=19&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8," target="blank">Enemy activate &amp; deactivate triggers</a></li>
-          <li><a href="https://www.youtube.com/watch?v=jhUNPagEd7Y&list=PLth0PV80s30QXu67N1_DL6hZHVc8xZPQ8&index=20," target="blank">Miscellaneous tools and hotkeys</a></li>
-          </ol>
         </div>
       </div>
 <jsp:include page="include/footer.jsp" />

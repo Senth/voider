@@ -217,10 +217,10 @@ public class Messages {
 	@SuppressWarnings("javadoc")
 	public enum EditorTooltips implements ITooltip {
 		// Level tabs
-		TAB_ENEMY_ADD("Add enemy tab", "07m21s"),
+		TAB_ENEMY_ADD("Add enemy tab", "7m21s"),
 		TAB_ENEMY("Enemy settings"),
-		TAB_PATH("Path settings", "09m05s"),
-		TAB_COLOR_LEVEL("Terrain color", "05m13s"),
+		TAB_PATH("Path settings", "9m05s"),
+		TAB_COLOR_LEVEL("Terrain color", "5m13s"),
 
 		// Actor tabs
 		TAB_VISUAL("Shape settings", "18m53s", 1),
@@ -235,34 +235,34 @@ public class Messages {
 		TAB_BULLET_TEST("Test bullet on weapons", "22m35s", 1),
 
 		// Tools
-		TOOL_SELECTION("Selection tool (S)", , 1),
-		TOOL_PAN_LEVEL("Pan tool", , 1),
-		TOOL_PAN_ACTOR(TOOL_PAN_LEVEL.mText, TOOL_PAN_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
-		TOOL_MOVE_LEVEL("Move tool (M)", , 1),
-		TOOL_MOVE_ACTOR(TOOL_MOVE_LEVEL.mText, TOOL_MOVE_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
-		TOOL_DELETE_LEVEL("Delete tool (Del)", , 1),
-		TOOL_DELETE_ACTOR(TOOL_DELETE_LEVEL.mText, TOOL_DELETE_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
-		TOOL_CLEAR_SELECTION("Clear selection (Esc/Back)", ),
-		TOOL_ZOOM_IN_LEVEL("Zoom in", , 1),
-		TOOL_ZOOM_OUT_LEVEL("Zoom out", , 1),
-		TOOL_ZOOM_RESET_LEVEL("Reset zoom", , 1),
-		TOOL_ZOOM_IN_ACTOR(TOOL_ZOOM_IN_LEVEL.mText, TOOL_ZOOM_IN_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
-		TOOL_ZOOM_OUT_ACTOR(TOOL_ZOOM_OUT_LEVEL.mText, TOOL_ZOOM_OUT_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
-		TOOL_ZOOM_RESET_ACTOR(TOOL_ZOOM_RESET_LEVEL.mText, TOOL_ZOOM_RESET_LEVEL.mYoutubeLink, TAB_VISUAL, 2),
-		TOOL_DRAW_APPEND_TERRAIN("Draw terrain (D)", , 1),
-		TOOL_DRAW_ERASE_TERRAIN("Add/Remove area to/from terrain (Shift+D)", , 1),
-		TOOL_DRAW_CORNER_ADD_TERRAIN("Add/Move terrain corners", , 1),
-		TOOL_DRAW_CORNER_REMOVE_TERRAIN("Remove terrain corners", , 1),
-		TOOL_DRAW_APPEND_ACTOR("Draw shape (T)", , TAB_VISUAL, 2),
-		TOOL_DRAW_ERASE_ACTOR("Add/Remove area to/from shape (Shift+T)", , TAB_VISUAL, 2),
-		TOOL_DRAW_CORNER_ADD_ACTOR("Add/Move shape corners (C)", , TAB_VISUAL, 2),
-		TOOL_DRAW_CORNER_REMOVE_ACTOR("Remove shape corners (Shift+C)", , TAB_VISUAL, 2),
-		TOOL_ENEMY_ADD("Add enemies (E)", , 1),
-		TOOL_PATH("Add paths for enemies (P)", , 1),
-		TOOL_TRIGGER_ACTIVATE("Set enemy activate triggers (T)", , 1),
-		TOOL_TRIGGER_DEACTIVATE("Set enemy deactivate triggers (Shift+T)", , 1),
-		TOOL_CENTER_SET("Set center", , TAB_VISUAL, 2),
-		TOOL_CENTER_RESET("Reset center", , TAB_VISUAL, 2),
+		TOOL_SELECTION("Selection tool (S)", "5m26s", 1),
+		TOOL_PAN_LEVEL("Pan tool", "6m36s", 1),
+		TOOL_PAN_ACTOR(TOOL_PAN_LEVEL.mText, TOOL_PAN_LEVEL.mYoutubeTime, TAB_VISUAL, 2),
+		TOOL_MOVE_LEVEL("Move tool (M)", "5m53s", 1),
+		TOOL_MOVE_ACTOR(TOOL_MOVE_LEVEL.mText, TOOL_MOVE_LEVEL.mYoutubeTime, TAB_VISUAL, 2),
+		TOOL_DELETE_LEVEL("Delete tool (Del)", "6m12s", 1),
+		TOOL_DELETE_ACTOR(TOOL_DELETE_LEVEL.mText, TOOL_DELETE_LEVEL.mYoutubeTime, TAB_VISUAL, 2),
+		TOOL_CLEAR_SELECTION("Clear selection (Esc/Back)", TOOL_SELECTION.mYoutubeTime),
+		TOOL_ZOOM_IN_LEVEL("Zoom in", "7m", 1),
+		TOOL_ZOOM_OUT_LEVEL("Zoom out", "7m" , 1),
+		TOOL_ZOOM_RESET_LEVEL("Reset zoom", "7m", 1),
+		TOOL_ZOOM_IN_ACTOR(TOOL_ZOOM_IN_LEVEL.mText, TOOL_ZOOM_IN_LEVEL.mYoutubeTime, TAB_VISUAL, 2),
+		TOOL_ZOOM_OUT_ACTOR(TOOL_ZOOM_OUT_LEVEL.mText, TOOL_ZOOM_OUT_LEVEL.mYoutubeTime, TAB_VISUAL, 2),
+		TOOL_ZOOM_RESET_ACTOR(TOOL_ZOOM_RESET_LEVEL.mText, TOOL_ZOOM_RESET_LEVEL.mYoutubeTime, TAB_VISUAL, 2),
+		TOOL_DRAW_APPEND_TERRAIN("Draw terrain (D)", "3m48s", 1),
+		TOOL_DRAW_ERASE_TERRAIN("Add/Remove area to/from terrain (Shift+D)", "4m33s", 1),
+		TOOL_DRAW_CORNER_ADD_TERRAIN("Add/Move terrain corners", "4m45s" , 1),
+		TOOL_DRAW_CORNER_REMOVE_TERRAIN("Remove terrain corners", "5m2s", 1),
+		TOOL_DRAW_APPEND_ACTOR("Draw shape (T)", "20m", TAB_VISUAL, 2),
+		TOOL_DRAW_ERASE_ACTOR("Add/Remove area to/from shape (Shift+T)", "20m", TAB_VISUAL, 2),
+		TOOL_DRAW_CORNER_ADD_ACTOR("Add/Move shape corners (C)", "20m", TAB_VISUAL, 2),
+		TOOL_DRAW_CORNER_REMOVE_ACTOR("Remove shape corners (Shift+C)", "20m", TAB_VISUAL, 2),
+		TOOL_ENEMY_ADD("Add enemies (E)", "7m21s", 1),
+		TOOL_PATH("Add paths for enemies (P)", "8m30s", 1),
+		TOOL_TRIGGER_ACTIVATE("Set enemy spawn triggers (T)", "10m08s", 1),
+		TOOL_TRIGGER_DEACTIVATE("Set enemy despawn triggers (Shift+T)", "10m08s", 1),
+		TOOL_CENTER_SET("Set center", "20m49s", TAB_VISUAL, 2),
+		TOOL_CENTER_RESET("Reset center", "20m49s", TAB_VISUAL, 2),
 
 		// File
 		FILE_NEW_CAMPAIGN("New campaign"),
@@ -270,69 +270,68 @@ public class Messages {
 		FILE_NEW_ENEMY("New enemy"),
 		FILE_NEW_BULLET("New bullet"),
 		FILE_NEW_SHIP("New ship"),
-		FILE_DUPLICATE_LEVEL("Create a copy of this level", ),
-		FILE_DUPLICATE_ENEMY("Create a copy of this enemy", ),
-		FILE_DUPLICATE_BULLET("Create a copy of this bullet", ),
-		FILE_DUPLICATE_SHIP("Create a copy of this ship", ),
+		FILE_DUPLICATE_LEVEL("Create a copy of this level", "1m17s"),
+		FILE_DUPLICATE_ENEMY("Create a copy of this enemy", "1m17s"),
+		FILE_DUPLICATE_BULLET("Create a copy of this bullet","1m17s" ),
+		FILE_DUPLICATE_SHIP("Create a copy of this ship","1m17s" ),
 		FILE_SAVE("Save"),
 		FILE_OPEN("Open"),
 		FILE_PUBLISH_CAMPAIGN("Publish campaign with levels"),
-		FILE_PUBLISH_LEVEL("Publish level with actors", ),
-		FILE_PUBLISH_ENEMY("Publish this enemy", ),
-		FILE_PUBLISH_BULLET("Publish this bullet", ),
+		FILE_PUBLISH_LEVEL("Publish level with actors", "2m37s"),
+		FILE_PUBLISH_ENEMY("Publish this enemy", "2m37s"),
+		FILE_PUBLISH_BULLET("Publish this bullet", "2m37s"),
 		FILE_INFO_CAMPAIGN("Campaign settings"),
-		FILE_INFO_LEVEL("Level settings", ),
+		FILE_INFO_LEVEL("Level settings", ""),
 		FILE_INFO_ENEMY("Enemy settings"),
 		FILE_INFO_BULLET("Bullet settings"),
 		FILE_INFO_SHIP("Ship name"),
 
 		// Editors
 		EDITOR_CAMPAIGN("Campaign editor"),
-		EDITOR_LEVEL("Level editor", ),
-		EDITOR_ENEMY("Enemy editor", ),
-		EDITOR_BULLET("Bullet editor", ),
+		EDITOR_LEVEL("Level editor", "33s"),
+		EDITOR_ENEMY("Enemy editor", "12m45s"),
+		EDITOR_BULLET("Bullet editor", "22m23s"),
 		EDITOR_SHIP("Ship editor"),
 
 		// Top bar middle actions
-		ACTION_UNDO("Undo", ),
-		ACTION_REDO("Redo", ),
-		ACTION_BUG_REPORT("Bug Report"),
-		ACTION_GRID_TOGGLE("Toggle grid", ),
-		ACTION_GRID_ABOVE("Toggle grid above actors", ),
-		ACTION_PLAY_FROM_HERE("Test play level from current position", ),
-		ACTION_PLAY_FROM_START("Test play level", ),
+		ACTION_UNDO("Undo", "47s"),
+		ACTION_REDO("Redo", "47s"),
+		ACTION_BUG_REPORT("Bug Report", "50s"),
+		ACTION_GRID_TOGGLE("Toggle grid", "53s"),
+		ACTION_PLAY_FROM_HERE("Test play level from current position", "1m1s"),
+		ACTION_PLAY_FROM_START("Test play level", "57s"),
 
 		// Path tab (level editor)
-		PATH_LOOP("Enemies loop", , TAB_PATH),
-		PATH_ONCE("Enemies follow path once", , TAB_PATH),
-		PATH_BACK_AND_FORTH("Enemies goes back and forth", , TAB_PATH),
+		PATH_LOOP("Enemies loop", "9m5s", TAB_PATH),
+		PATH_ONCE("Enemies follow path once", "9m5s", TAB_PATH),
+		PATH_BACK_AND_FORTH("Enemies goes back and forth", "9m5s", TAB_PATH),
 
 		// Enemy add tab (level editor)
 		ENEMY_ADD_TO_LIST("Add enemy to list"),
 
 		// Enemy settings tab (level editor)
-		ENEMY_SPAWN_DELAY("Spawn time between copies", , TAB_ENEMY),
-		ENEMY_ACTIVATION_DELAY("Spawn delay", , TAB_ENEMY),
-		ENEMY_DEACTIVATION_DELAY("Despawn delay", , TAB_ENEMY),
+		ENEMY_SPAWN_DELAY("Spawn time between copies", "9m43s", TAB_ENEMY),
+		ENEMY_ACTIVATION_DELAY("Spawn delay", "10m45s", TAB_ENEMY),
+		ENEMY_DEACTIVATION_DELAY("Despawn delay", "10m45s", TAB_ENEMY),
 
 		// Enemy movement tab (enemy editor)
-		MOVEMENT_PATH("Path movement", , TAB_MOVEMENT, 2),
-		MOVEMENT_STATIONARY("Stationary enemy", , TAB_MOVEMENT, 2),
-		MOVEMENT_AI("AI movement", , TAB_MOVEMENT, 2),
-		MOVEMENT_AI_RANDOM_COOLDOWN("Cooldown for new movement direction", , MOVEMENT_AI),
+		MOVEMENT_PATH("Path movement", "13m16s", TAB_MOVEMENT, 2),
+		MOVEMENT_STATIONARY("Stationary enemy", "15m29s", TAB_MOVEMENT, 2),
+		MOVEMENT_AI("AI movement", "14:15", TAB_MOVEMENT, 2),
+		MOVEMENT_AI_RANDOM_COOLDOWN("Cooldown for new movement direction", "14m45s", MOVEMENT_AI),
 
 		// Enemy weapon tab (enemy editor)
-		AIM_ON_PLAYER("Aim on player", , TAB_WEAPON),
-		AIM_IN_FRONT_OF_PLAYER("Aim in front of player",, TAB_WEAPON),
-		AIM_MOVEMENT_DIRECTION("Shoot in enemy movement direction", , TAB_WEAPON),
-		AIM_DIRECTION("Shoot in a specific direction", , TAB_WEAPON),
-		AIM_ROTATE("Shoot in a rotating manner", , TAB_WEAPON),
+		AIM_ON_PLAYER("Aim on player", "17m15s", TAB_WEAPON),
+		AIM_IN_FRONT_OF_PLAYER("Aim in front of player","17m15s", TAB_WEAPON),
+		AIM_MOVEMENT_DIRECTION("Shoot in enemy movement direction", "17m15s", TAB_WEAPON),
+		AIM_DIRECTION("Shoot in a specific direction","17m15s" , TAB_WEAPON),
+		AIM_ROTATE("Shoot in a rotating manner", "17m15s", TAB_WEAPON),
 
 		// Visual tab (actor editor)
-		VISUAL_CUSTOM("Draw custom shape", , TAB_VISUAL),
+		VISUAL_CUSTOM("Draw custom shape", "20m" , TAB_VISUAL),
 
 		// Collision tab (enemy editor)
-		COLLISION_DESTROY("Destroy enemy if it collides with player", , TAB_COLLISION),
+		COLLISION_DESTROY("Destroy enemy if it collides with player", "21m43s", TAB_COLLISION),
 
 
 		;
@@ -434,7 +433,7 @@ public class Messages {
 		@Override
 		public String getYoutubeLink() {
 			if (mYoutubeTime != null) {
-			return YOUTUBE_URL + "#t=" + mYoutubeTime;
+				return YOUTUBE_URL + "#t=" + mYoutubeTime;
 			} else {
 				return null;
 			}
