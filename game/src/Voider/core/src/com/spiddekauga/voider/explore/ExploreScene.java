@@ -161,8 +161,8 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * Repopulate content
 	 */
 	protected void repopulateContent() {
-		getGui().resetContent();
 		if (getView().isLocal()) {
+			getGui().resetContent();
 			updateLocalContent();
 		}
 	}
@@ -299,8 +299,10 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 *        for any
 	 */
 	protected void setPublished(Boolean published) {
-		mFilter.published = published;
-		repopulateContent();
+		if (mFilter.published != published) {
+			mFilter.published = published;
+			repopulateContent();
+		}
 	}
 
 	/**
@@ -315,8 +317,10 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param onlyMine search only for player's own actors
 	 */
 	protected void setOnlyMine(boolean onlyMine) {
-		mFilter.onlyMine = onlyMine;
-		repopulateContent();
+		if (mFilter.onlyMine != onlyMine) {
+			mFilter.onlyMine = onlyMine;
+			repopulateContent();
+		}
 	}
 
 	/**
@@ -331,8 +335,10 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param searchString what to search for
 	 */
 	protected void setSearchString(String searchString) {
-		mFilter.searchString = searchString;
-		repopulateContent();
+		if (!mFilter.searchString.equals(searchString)) {
+			mFilter.searchString = searchString;
+			repopulateContent();
+		}
 	}
 
 	/**
@@ -347,9 +353,10 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param view the new active view
 	 */
 	protected void setView(ExploreViews view) {
-		mView = view;
-		getGui().resetContentMargins();
-		repopulateContent();
+		if (mView != view) {
+			mView = view;
+			repopulateContent();
+		}
 	}
 
 	/**

@@ -35,6 +35,7 @@ import com.spiddekauga.voider.network.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.resource.LevelFetchResponse;
 import com.spiddekauga.voider.network.resource.PublishMethod;
 import com.spiddekauga.voider.network.resource.PublishResponse;
+import com.spiddekauga.voider.network.resource.PublishResponse.Statuses;
 import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
@@ -43,7 +44,6 @@ import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
 import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.resource.UserResourceSyncMethod;
 import com.spiddekauga.voider.network.resource.UserResourceSyncResponse;
-import com.spiddekauga.voider.network.resource.PublishResponse.Statuses;
 import com.spiddekauga.voider.network.stat.CommentEntity;
 import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.repo.Cache;
@@ -576,7 +576,7 @@ public class ResourceWebRepo extends WebRepo {
 		if (cache != null) {
 			response.levels = cache.levels;
 		}
-		fetch(levelFetchMethod, null, fetchMore, responseListeners, response);
+		fetch(levelFetchMethod, cache, fetchMore, responseListeners, response);
 	}
 
 	/**
@@ -588,8 +588,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param responseListeners callers to send the response to
 	 * @param response response to use if cache was used
 	 */
-	private void fetch(FetchMethod method, ServerCache<?> cache, boolean fetchMore, IResponseListener[] responseListeners,
-			FetchResponse response) {
+	private void fetch(FetchMethod method, ServerCache<?> cache, boolean fetchMore, IResponseListener[] responseListeners, FetchResponse response) {
 		// Fetch more from server
 		if (cache == null || (fetchMore && !cache.fetchedAll)) {
 			if (cache != null) {

@@ -33,7 +33,7 @@ public class ButtonEnumListener<EnumType extends Enum<?>> extends ButtonListener
 	/**
 	 * @return the first checked enumeration, null if none were checked
 	 */
-	protected EnumType getCheckedFirst() {
+	public EnumType getCheckedFirst() {
 		for (EnumType enumeration : mEnums) {
 			Button button = mButtons[enumeration.ordinal()];
 			if (button.isChecked()) {
@@ -47,7 +47,7 @@ public class ButtonEnumListener<EnumType extends Enum<?>> extends ButtonListener
 	/**
 	 * @return all checked buttons as enumerations
 	 */
-	protected ArrayList<EnumType> getChecked() {
+	public ArrayList<EnumType> getChecked() {
 		ArrayList<EnumType> list = new ArrayList<>();
 
 		for (EnumType enumeration : mEnums) {

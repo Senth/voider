@@ -43,31 +43,13 @@
       <div class="row">
         <div class="col-md-12">
           <h3 class="text-Left">Start Here</h3>
-          <p>So you've gotten hand on the Voider beta. What do you do now? If it's still in the early stages of the beta there might not be many levels to play. In that case my suggestion for you is to:</p>
+          <p>So you've gotten hand on the Voider beta. What do you do now?</p>
           <ol>
-          <li>Look at the first <a href="#tutorials">7 YouTube tutorials</a>.</li>
-          <li>Check out useful <a href="#hotkeys">Hotkeys</a>.</li>
-          <li>When you're comfortable enough continue watching the tutorials and adding enemies to your level.</li>
+          <li>Play some levels</li>
+          <li>Create you own content by watching the <a href="https://youtu.be/KRPMoLZ2ZN8">YouTube tutorials</a>.</li>
           <li>Publish your level when it's done</li>
           </ol>
-          <p>Levels that are liked by the community will get transferred to the released version of the game :) Nothing else will be transfered to the release version as it looks now</p>
-        </div>
-      </div>
-      <hr />
-      <div class="row">
-        <div class="col-md-12">
-          <h3 class="text-Left">Upcoming features</h3>
-          <ol>
-          </ol>
-        </div>
-      </div>
-      <hr />
-      <div class="row">
-        <div class="col-md-12">
-          <h3 class="text-Left">Known Problems</h3>
-          <ol>
-          	<li>No possibility to delete resources</li>
-          </ol>
+          <p>Levels that are liked by the community might get transferred to the released version of the game :) Nothing else will be transfered to the release version as it looks now</p>
         </div>
       </div>
       <hr />
@@ -78,29 +60,6 @@
           	<li>You can report a bug in the desktop client by pressing 'Insert' or</li>
           	<li>In all editors, clicking the bug-report icon (to the right of undo/redo at the top bar)</li>
           </ul> 
-        </div>
-      </div>
-      <hr />
-      <div id="hotkeys" class="row">
-        <div class="col-md-12">
-          <h3 class="text-Left">Hotkeys</h3>
-          <h4>Anywhere</h4>
-          <ul>
-          <li><span class="def">Toggle Fullscreen</span>Alt + Enter</li>
-          <li><span class="def">Report Bug/Feature Request Window</span>Insert</li> 
-          </ul> 
-          <h4>Editors</h4>
-          <ul>
-          <li><span class="def">Pan Screen</span>Middle Mouse Button OR Space + Left Mouse</li>
-          <li><span class="def">Zoom in/out</span>Ctrl + Scroll Up/Down</li>
-          <li><span class="def">Undo</span>Ctrl + Z</li>
-          <li><span class="def">Redo</span>Ctrl + Y OR Ctrl + Shift + Z</li>
-          <li><span class="def">Save</span>Ctrl + S</li>
-          </ul>
-          
-          <h4>Editor tools</h4>
-          The tooltip will display the hotkey for the tool if it has any (e.g. "Draw Terrain (D)" )
-
         </div>
       </div>
 <jsp:include page="include/footer.jsp" />

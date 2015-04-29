@@ -746,13 +746,16 @@ public class TabWidget extends AlignTable {
 	private void handleVisibilityChange(Button tab) {
 		// Visible
 		if (tab.isVisible()) {
-			// Show and select tab
+			// Set the correct visible tab
+			if (tab.isChecked()) {
+				setContentVisibility(true);
+			}
+
+			// Show Tabs (select default one if none have been)
 			if (!isVisible()) {
 				setVisible(true);
 				if (!isContentHideable()) {
 					tab.setChecked(true);
-				} else if (tab.isChecked()) {
-					setContentVisibility(true);
 				}
 			}
 		}

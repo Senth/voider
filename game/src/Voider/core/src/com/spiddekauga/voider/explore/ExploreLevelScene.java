@@ -249,10 +249,13 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	/**
 	 * Set all tags we should filter by
 	 * @param tags
+	 * @param fetch set true to fetch new results
 	 */
-	void setTags(ArrayList<Tags> tags) {
+	void setTags(ArrayList<Tags> tags, boolean fetch) {
 		mSearchCriteriaTemp.tags = tags;
-		updateSearchCriteria();
+		if (fetch) {
+			updateSearchCriteria();
+		}
 	}
 
 	/**
@@ -455,7 +458,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * Fetch initial levels (again).
 		 */
 		void fetch() {
-			if (!mIsFetching && mUser.isOnline()) {
+			if (mUser.isOnline()) {
 				if (mLastFetch == null) {
 					mLastFetch = mSearchCriteria.copy();
 				}
@@ -507,10 +510,9 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 * @param response
 		 */
 		void handleWebResponse(LevelFetchMethod method, LevelFetchResponse response) {
-			mIsFetching = false;
 			// Only do something if this was the one we last called
-			if (isLastMethod(method)) {
-
+			if (mIsFetching && isLastMethod(method)) {
+				mIsFetching = false;
 				if (response.isSuccessful()) {
 					createDrawables(response.levels);
 					getGui().addContent(response.levels);

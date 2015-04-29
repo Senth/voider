@@ -82,8 +82,6 @@ public class HideListener extends GuiHider implements EventListener {
 		return false;
 	}
 
-	// /** Button to listen for */
-	// protected ArrayList<Button> mButtons = new ArrayList<>();
 	/** Shows the actors when the button is checked */
 	private boolean mShowWhenChecked;
 	/** Last state */

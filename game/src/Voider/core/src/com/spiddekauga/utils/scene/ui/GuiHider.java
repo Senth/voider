@@ -64,6 +64,14 @@ public abstract class GuiHider implements Disposable {
 	}
 
 	/**
+	 * Called after object visibility has changed
+	 * @param visible if the object is visible or not
+	 */
+	protected void onChange(boolean visible) {
+		// Does nothing
+	}
+
+	/**
 	 * Updates all toggle actors
 	 */
 	protected void updateToggleActors() {
@@ -71,10 +79,12 @@ public abstract class GuiHider implements Disposable {
 			mVisible = true;
 			updateActorVisibility();
 			onShow();
+			onChange(true);
 		} else {
 			mVisible = false;
 			updateActorVisibility();
 			onHide();
+			onChange(false);
 		}
 	}
 

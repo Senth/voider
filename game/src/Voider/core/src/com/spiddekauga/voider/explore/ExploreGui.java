@@ -161,6 +161,8 @@ abstract class ExploreGui extends Gui {
 
 		if (mScene != null && mScene.isFetchingContent()) {
 			addWaitIconToContent();
+		} else {
+			mWidgets.content.waitIconRow = null;
 		}
 	}
 
