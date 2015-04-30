@@ -59,16 +59,16 @@ import com.spiddekauga.voider.utils.User;
 public class GameScene extends WorldScene {
 	/**
 	 * Initializes the game scene.
-	 * @param testing if we're testing the level. This allows the player to go back using
-	 *        ESC or BACK key
+	 * @param runningFromEditor if we're testing the level. This allows the player to go
+	 *        back using ESC or BACK key
 	 * @param invulnerable set to true to make the player invulnerable while testing.
 	 *        Scoring will still be used (player could be testing scoring.
 	 */
-	public GameScene(boolean testing, boolean invulnerable) {
+	public GameScene(boolean runningFromEditor, boolean invulnerable) {
 		super(new GameSceneGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
 		getGui().setGameScene(this);
 
-		mTesting = testing;
+		mRunningFromEditor = runningFromEditor;
 		mInvulnerable = invulnerable;
 		mSpriteBatch = new SpriteBatch();
 		mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
@@ -107,7 +107,7 @@ public class GameScene extends WorldScene {
 			mCamera.zoom = 1;
 		}
 
-		if (isTestRun() && !mTakeScreenshot) {
+		if (isRunningFromEditor() && !isPublished() && !mTakeScreenshot) {
 			float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
 
 			// Decrease scale of width depending on height scaled
@@ -199,10 +199,10 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
-	 * @return true if the level is test running
+	 * @return true if the level was started from the level editor
 	 */
-	boolean isTestRun() {
-		return mTesting;
+	boolean isRunningFromEditor() {
+		return mRunningFromEditor;
 	}
 
 	/**
@@ -354,7 +354,7 @@ public class GameScene extends WorldScene {
 	@Override
 	protected void onDispose() {
 		// Save the level
-		if (!mTesting) {
+		if (!mRunningFromEditor) {
 			// Remove old saved game
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE, true);
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF, true);
@@ -375,7 +375,7 @@ public class GameScene extends WorldScene {
 			}
 		}
 
-		if (mLevel != null && (mTesting || mGameSave != null)) {
+		if (mLevel != null && (mRunningFromEditor || mGameSave != null)) {
 			mLevel.dispose();
 		}
 
@@ -440,7 +440,10 @@ public class GameScene extends WorldScene {
 		if (mLevel.isCompletedLevel()) {
 			mPlayerStats.calculateEndScore();
 			setOutcome(Outcomes.LEVEL_COMPLETED);
-			mMusicPlayer.play(Music.LEVEL_COMPLETED, MusicInterpolations.FADE_OUT);
+
+			if (!mRunningFromEditor) {
+				mMusicPlayer.play(Music.LEVEL_COMPLETED, MusicInterpolations.FADE_OUT);
+			}
 		}
 	}
 
@@ -456,7 +459,10 @@ public class GameScene extends WorldScene {
 			} else {
 				mPlayerStats.calculateEndScore();
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
-				mMusicPlayer.play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
+
+				if (!mRunningFromEditor) {
+					mMusicPlayer.play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
+				}
 			}
 		}
 	}
@@ -538,8 +544,8 @@ public class GameScene extends WorldScene {
 	protected Vector2[][] getBorderBoxes() {
 		Vector2[][] boxes = super.getBorderBoxes();
 
-		// If test run, move the top box
-		if (isTestRun()) {
+		// If running from the editor (and not published) move the top box
+		if (isRunningFromEditor() && !isPublished()) {
 			float barHeight = getBarHeightInWorldCoordinates() * Config.Graphics.WORLD_SCALE;
 			for (Vector2 vertex : boxes[3]) {
 				vertex.y -= barHeight;
@@ -551,7 +557,7 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected Scene getNextScene() {
-		if (mTesting) {
+		if (mRunningFromEditor) {
 			return null;
 		}
 
@@ -631,7 +637,7 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.load(InternalDeps.GAME_MUSIC);
 		ResourceCacheFacade.load(InternalDeps.GAME_SFX);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
-		if (mTesting) {
+		if (mRunningFromEditor) {
 			ResourceCacheFacade.load(InternalNames.UI_EDITOR);
 		}
 
@@ -666,7 +672,7 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.unload(InternalDeps.GAME_MUSIC);
 		ResourceCacheFacade.unload(InternalDeps.GAME_SFX);
 
-		if (mTesting) {
+		if (mRunningFromEditor) {
 			ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
 		}
 	}
@@ -750,7 +756,7 @@ public class GameScene extends WorldScene {
 	public boolean onKeyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
 		if (KeyHelper.isBackPressed(keycode)) {
-			if (mTesting) {
+			if (mRunningFromEditor) {
 				setOutcome(Outcomes.LEVEL_QUIT);
 			} else {
 				getGui().showMenu();
@@ -890,7 +896,8 @@ public class GameScene extends WorldScene {
 	private LevelDef mLevelToLoad = null;
 	private Level mLevelToRun = null;
 	private Level mLevel = null;
-	private boolean mTesting = false;
+	/** Running from editor */
+	private boolean mRunningFromEditor = false;
 	private boolean mInvulnerable = false;
 	/** Resumed game save definition, will only be set if resumed a game */
 	private GameSaveDef mGameSaveDef = null;

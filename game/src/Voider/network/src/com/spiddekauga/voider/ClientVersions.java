@@ -240,7 +240,8 @@ public enum ClientVersions {
 			"	Links to new YouTube tutorials in editors",
 			"	Editors now save only when the resource has been chanaged",
 			"Bug Fixes",
-			"	Can edit slider text fields again"
+			"	Can edit slider text fields again",
+			"	Fixed crash when test playing a published level from the editor"
 			),
 	;
 	// @formatter:on

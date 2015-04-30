@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
@@ -387,7 +388,8 @@ public abstract class SliderListener implements EventListener {
 	 */
 	private TextField getFocusedTextField() {
 		for (TextField textField : mTextFields) {
-			if (textField.getStage().getKeyboardFocus() == textField) {
+			Stage stage = textField.getStage();
+			if (stage != null && stage.getKeyboardFocus() == textField) {
 				return textField;
 			}
 		}

@@ -67,7 +67,7 @@ class GameSceneGui extends Gui {
 
 
 		// Top debug bar
-		if (mGameScene.isTestRun()) {
+		if (mGameScene.isRunningFromEditor() && !mGameScene.isPublished()) {
 			initTestRunOptionBar();
 		}
 	}

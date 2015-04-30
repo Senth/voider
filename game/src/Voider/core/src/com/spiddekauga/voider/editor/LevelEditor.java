@@ -730,8 +730,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			saveDef();
 		}
 
-		boolean testRun = !ResourceLocalRepo.isPublished(mLevel.getId());
-		GameScene testGame = new GameScene(testRun, invulnerable);
+		GameScene testGame = new GameScene(true, invulnerable);
 		Level copyLevel = mLevel.copy();
 
 		copyLevel.setStartPosition(xPosition);
