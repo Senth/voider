@@ -26,6 +26,7 @@ import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
+import com.spiddekauga.voider.network.resource.ResourceDownloadResponse.Statuses;
 import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
 import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.resource.RevisionEntity;
@@ -332,7 +333,7 @@ public class ResourceRepo extends Repo {
 	 */
 	private void handleDownloadResponse(ResourceDownloadMethod method, ResourceDownloadResponse response) {
 		// Add all downloaded resources to the local database
-		if (response.isSuccessful()) {
+		if (response.isSuccessful() && !method.redownload) {
 			addDownloaded(response.resources);
 		}
 	}
@@ -368,21 +369,56 @@ public class ResourceRepo extends Repo {
 	}
 
 	/**
-	 * Download a resource and its dependencies
+	 * Redownload an existing published resource that has become corrupt or is missing
+	 * @param resourceId the resource to download again
 	 * @param responseListener listens to the web response
-	 * @param resourceId the resource to download
 	 */
-	public void download(IResponseListener responseListener, UUID resourceId) {
+	public void redownload(UUID resourceId, IResponseListener responseListener) {
+		redownload(resourceId, -1, responseListener);
+	}
+
+	/**
+	 * Redownload an existing user resource that has become corrupt or is missing
+	 * @param resourceId the resource to download again
+	 * @param revision specified revision of the user resource, if -1 it's a published
+	 *        resource
+	 * @param responseListener listens to the web response
+	 */
+	public void redownload(UUID resourceId, int revision, IResponseListener responseListener) {
+		ResourceDownloadMethod method = new ResourceDownloadMethod();
+		method.redownload = true;
+		method.resourceId = resourceId;
+		method.revision = revision;
+
+		// Only try to redownload resource we have downloaded
+		if (ResourceLocalRepo.exists(resourceId)) {
+			mWebRepo.download(method, this, responseListener);
+		}
+		// Does not exists
+		else {
+			ResourceDownloadResponse response = new ResourceDownloadResponse();
+			response.status = Statuses.FAILED_DOWNLOAD;
+			responseListener.handleWebResponse(method, response);
+		}
+	}
+
+	/**
+	 * Download a resource and its dependencies
+	 * @param resourceId the resource to download
+	 * @param responseListener listens to the web response
+	 */
+	public void download(UUID resourceId, IResponseListener responseListener) {
+		ResourceDownloadMethod method = new ResourceDownloadMethod();
+		method.resourceId = resourceId;
+
 		// Download if we don't have the resource already
 		if (!ResourceLocalRepo.exists(resourceId)) {
-			mWebRepo.download(resourceId, this, responseListener);
+			mWebRepo.download(method, this, responseListener);
 		}
 		// Already downloaded -> send response
 		else {
 			ResourceDownloadResponse response = new ResourceDownloadResponse();
 			response.status = ResourceDownloadResponse.Statuses.SUCCESS;
-			ResourceDownloadMethod method = new ResourceDownloadMethod();
-			method.resourceId = resourceId;
 			responseListener.handleWebResponse(method, response);
 		}
 	}

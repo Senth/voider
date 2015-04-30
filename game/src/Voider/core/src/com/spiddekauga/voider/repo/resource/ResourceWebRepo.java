@@ -121,14 +121,11 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Downloads all the specified resources
-	 * @param resourceId id of the resource to download
+	 * Download or redownload the specified resource
+	 * @param method download method
 	 * @param responseListeners listens to the web response
 	 */
-	void download(UUID resourceId, IResponseListener... responseListeners) {
-		ResourceDownloadMethod method = new ResourceDownloadMethod();
-		method.resourceId = resourceId;
-
+	void download(ResourceDownloadMethod method, IResponseListener... responseListeners) {
 		sendInNewThread(method, responseListeners);
 	}
 

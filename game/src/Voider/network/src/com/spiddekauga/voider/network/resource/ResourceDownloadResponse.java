@@ -7,13 +7,12 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response for downloading a resource
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class ResourceDownloadResponse implements IEntity, ISuccessStatuses {
 	/** Status of the response */
-	public Statuses status = null;
+	public Statuses status = Statuses.FAILED_DOWNLOAD;
 	/** All files to download */
 	public ArrayList<ResourceBlobEntity> resources = new ArrayList<>();
 

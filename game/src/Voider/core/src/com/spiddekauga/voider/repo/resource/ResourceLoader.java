@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.ini4j.Ini;
 
@@ -27,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.VoiderGame;
 import com.spiddekauga.voider.game.GameSave;
@@ -38,7 +41,12 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
 import com.spiddekauga.voider.network.resource.RevisionEntity;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
@@ -46,6 +54,7 @@ import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
 import com.spiddekauga.voider.utils.Pool;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Handles loading resources
@@ -121,7 +130,7 @@ class ResourceLoader {
 	 *        will not load another revision of the resource as only one revision is
 	 *        allowed.
 	 */
-	void load(Scene scene, UUID resourceId, int revision) {
+	synchronized void load(Scene scene, UUID resourceId, int revision) {
 		UuidRevision uuidRevision = mUuidRevisionPool.obtain();
 		uuidRevision.resourceId = resourceId;
 		uuidRevision.revision = getCorrectRevision(resourceId, revision);
@@ -170,7 +179,7 @@ class ResourceLoader {
 	 * @param scene if this resource has been loaded into this scene, null to use any
 	 * @return true if the resource is being loaded into the specified scene
 	 */
-	boolean isResourceLoading(UUID resourceId, int revision, Scene scene) {
+	synchronized boolean isResourceLoading(UUID resourceId, int revision, Scene scene) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
 		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
 
@@ -196,7 +205,7 @@ class ResourceLoader {
 	 * @param scene if this resource has been loaded into this scene, null to use any
 	 * @return true if the resource has been loaded into the specified scene
 	 */
-	boolean isResourceLoaded(UUID resourceId, int revision, Scene scene) {
+	synchronized boolean isResourceLoaded(UUID resourceId, int revision, Scene scene) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
 		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
 
@@ -220,7 +229,7 @@ class ResourceLoader {
 	 * @param scene if this resource has been loaded into this scene
 	 * @return true if the resource has been loaded into the specified scene
 	 */
-	boolean isResourceLoaded(UUID resourceId, Scene scene) {
+	synchronized boolean isResourceLoaded(UUID resourceId, Scene scene) {
 		return isResourceLoaded(resourceId, LATEST_REVISION, scene);
 	}
 
@@ -229,7 +238,7 @@ class ResourceLoader {
 	 * @param revision if the specified revision is loaded
 	 * @return true if the resource has been loaded
 	 */
-	boolean isResourceLoaded(UUID resourceId, int revision) {
+	synchronized boolean isResourceLoaded(UUID resourceId, int revision) {
 		return isResourceLoaded(resourceId, revision, null);
 	}
 
@@ -237,7 +246,7 @@ class ResourceLoader {
 	 * @param resourceId the resource to check if it has been loaded
 	 * @return true if the resource has been loaded
 	 */
-	boolean isResourceLoaded(UUID resourceId) {
+	synchronized boolean isResourceLoaded(UUID resourceId) {
 		return isResourceLoaded(resourceId, LATEST_REVISION);
 	}
 
@@ -255,7 +264,7 @@ class ResourceLoader {
 	 * @param resourceId id of the resource to return
 	 * @return the loaded resource with the specified id, null if not loaded
 	 */
-	<ResourceType extends IResource> ResourceType getLoadedResource(UUID resourceId) {
+	synchronized <ResourceType extends IResource> ResourceType getLoadedResource(UUID resourceId) {
 		return getLoadedResource(resourceId, LATEST_REVISION);
 	}
 
@@ -266,7 +275,7 @@ class ResourceLoader {
 	 * @return the loaded resource with the specified id, null if not loaded
 	 */
 	@SuppressWarnings("unchecked")
-	<ResourceType extends IResource> ResourceType getLoadedResource(UUID resourceId, int revision) {
+	synchronized <ResourceType extends IResource> ResourceType getLoadedResource(UUID resourceId, int revision) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
 		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
 		LoadedResource loadedResource = mLoadedResources.get(uuidRevision);
@@ -284,7 +293,7 @@ class ResourceLoader {
 	 * @return all loaded resources of the specified type
 	 */
 	@SuppressWarnings("unchecked")
-	<ResourceType extends IResource> ArrayList<ResourceType> getAllLoadedResourcesOf(ExternalTypes type) {
+	synchronized <ResourceType extends IResource> ArrayList<ResourceType> getAllLoadedResourcesOf(ExternalTypes type) {
 		ArrayList<ResourceType> resources = new ArrayList<>();
 
 		for (Entry<UuidRevision, LoadedResource> entry : mLoadedResources.entrySet()) {
@@ -300,7 +309,7 @@ class ResourceLoader {
 	 * Unloads all resources allocated in the specified scene
 	 * @param scene unload all resources in this scene
 	 */
-	void unload(Scene scene) {
+	synchronized void unload(Scene scene) {
 		Set<Entry<UuidRevision, LoadedResource>> entrySet = mLoadedResources.entrySet();
 		Iterator<Entry<UuidRevision, LoadedResource>> iterator = entrySet.iterator();
 
@@ -333,7 +342,7 @@ class ResourceLoader {
 	 * @param resourceId the resource to unload
 	 * @param revision the revision of the resource to unload
 	 */
-	void unload(UUID resourceId, int revision) {
+	synchronized void unload(UUID resourceId, int revision) {
 		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, revision);
 		LoadedResource loadedResource = mLoadedResources.get(uuidRevision);
 
@@ -360,7 +369,7 @@ class ResourceLoader {
 	 * @param resource the resource to be set as latest resource
 	 * @param oldRevision old revision that the resource was loaded into
 	 */
-	void setLatestResource(Resource resource, int oldRevision) {
+	synchronized void setLatestResource(Resource resource, int oldRevision) {
 		Resource latestResource = getLoadedResource(resource.getId());
 
 		if (latestResource != null) {
@@ -393,7 +402,7 @@ class ResourceLoader {
 	 * resource during sync.
 	 * @param resourceId id of the resource to reload
 	 */
-	void reload(UUID resourceId) {
+	synchronized void reload(UUID resourceId) {
 		final Resource oldResource = getLoadedResource(resourceId);
 
 		if (oldResource != null) {
@@ -432,7 +441,7 @@ class ResourceLoader {
 	 * @param exception the exception to handle
 	 */
 	void handleException(GdxRuntimeException exception) {
-		RuntimeException throwException = exception;
+		// RuntimeException throwException = exception;
 
 		if (exception.getCause() != null && exception.getCause().getCause() != null && exception.getCause().getCause().getCause() != null) {
 			Throwable source = exception.getCause().getCause().getCause();
@@ -445,16 +454,26 @@ class ResourceLoader {
 				resourceException = new ResourceCorruptException(source.getMessage());
 			}
 
-			// Remove the loading resource
+			// TODO Redownload the resource
 			if (resourceException != null) {
-				UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceException.getId(), resourceException.getRevision());
-				mLoadingQueue.remove(uuidRevision);
-				mUuidRevisionPool.free(uuidRevision);
-				throwException = resourceException;
+				UuidRevision uuidRevision = new UuidRevision().set(resourceException.getId(), resourceException.getRevision());
+				mRedownloading.add(uuidRevision);
+				ResourceRepo.getInstance().redownload(uuidRevision.resourceId, uuidRevision.revision, mRedownloadListener);
+				// throwException = resourceException;
+			}
+
+
+			NotificationShower notification = NotificationShower.getInstance();
+			if (User.getGlobalUser().isOnline()) {
+				notification.showError("Found a corrupt or missing file, redownloading...");
+				notification.showHighlight("This may take a while...");
+			} else {
+				notification.showError("Found a corrupt or missing file, skipping to load...");
+				notification.showHighlight("Go online and it will redownload itself next time its loaded");
 			}
 		}
 
-		throw throwException;
+		// throw throwException;
 	}
 
 	/**
@@ -625,6 +644,43 @@ class ResourceLoader {
 		boolean unloaded = false;
 	}
 
+	private IResponseListener mRedownloadListener = new IResponseListener() {
+		@Override
+		public void handleWebResponse(IMethodEntity method, IEntity response) {
+			if (method instanceof ResourceDownloadMethod && response instanceof ResourceDownloadResponse) {
+				handle((ResourceDownloadMethod) method, (ResourceDownloadResponse) response);
+			}
+		}
+
+		private void handle(ResourceDownloadMethod method, ResourceDownloadResponse response) {
+			if (response.isSuccessful()) {
+				UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(method.resourceId, method.revision);
+
+				// Find resource
+				boolean removed = mRedownloading.remove(uuidRevision);
+				if (removed) {
+					loadAgain(uuidRevision);
+				} else {
+					Gdx.app.error("ResourceLoader", "Didn't find the specified resource that was redownloading");
+				}
+			}
+		}
+
+		/**
+		 * Try to load the specified resource again
+		 * @param uuidRevision the resource to try to load
+		 */
+		private void loadAgain(UuidRevision uuidRevision) {
+			// Load the resource again
+			LoadedResource loadedResource = mLoadingQueue.get(uuidRevision);
+
+			ExternalTypes type = ResourceLocalRepo.getType(uuidRevision.resourceId);
+			if (type != null) {
+				mAssetManager.load(loadedResource.filepath, type.getClassType());
+			}
+		}
+	};
+
 	/** Latest resource */
 	private static final int LATEST_REVISION = -1;
 	/** Pool for UuidRevision */
@@ -633,6 +689,8 @@ class ResourceLoader {
 	private HashMap<UuidRevision, LoadedResource> mLoadedResources = new HashMap<>();
 	/** All resources that are currently loading */
 	private HashMap<UuidRevision, LoadedResource> mLoadingQueue = new HashMap<>();
+	/** All resources that are being redownloaded */
+	private BlockingQueue<UuidRevision> mRedownloading = new LinkedBlockingQueue<>();
 	/** Unload queue */
 	private ArrayList<ReloadResource> mReloadQueue = new ArrayList<>();
 	/** Unload queue */

@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.servlet.ServletException;
 
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
@@ -20,10 +21,13 @@ import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
-import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.network.resource.ResourceDownloadResponse.Statuses;
+import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
+import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -36,6 +40,7 @@ public class ResourceDownload extends VoiderServlet {
 	protected void onInit() {
 		mResponse.status = Statuses.FAILED_SERVER_INTERAL;
 		mResponse.resources.clear();
+		mParameters = null;
 		mAddedResources.clear();
 	}
 
@@ -44,20 +49,101 @@ public class ResourceDownload extends VoiderServlet {
 		if (mUser.isLoggedIn()) {
 			boolean success = false;
 			if (methodEntity instanceof ResourceDownloadMethod) {
-				success = setInformationAndDependenciesToResponse(((ResourceDownloadMethod) methodEntity).resourceId);
-			}
+				mParameters = (ResourceDownloadMethod) methodEntity;
 
-			// Set download date and send sync message
-			if (success && !mAddedResources.isEmpty()) {
-				setUserDownloadDate();
-				mResponse.status = Statuses.SUCCESS;
-				sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
+				// New download
+				if (!mParameters.redownload) {
+					success = setInformationAndDependenciesToResponse(mParameters.resourceId);
+
+					// Set download date and send sync message
+					if (success && !mAddedResources.isEmpty()) {
+						setUserDownloadDate();
+						mResponse.status = Statuses.SUCCESS;
+						sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
+					}
+				}
+				// Redownload
+				else {
+					redownloadResource();
+				}
 			}
 		} else {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 		}
 
 		return mResponse;
+	}
+
+	/**
+	 * Redownload resource
+	 */
+	private void redownloadResource() {
+		// Get blob
+		ResourceBlobEntity blobEntity = getDownloadBlob();
+
+		// Set blob
+		if (blobEntity != null) {
+			mResponse.resources.add(blobEntity);
+			mResponse.status = Statuses.SUCCESS;
+		}
+	}
+
+	/**
+	 * @return found resource blob entity to redownload
+	 */
+	private ResourceBlobEntity getDownloadBlob() {
+		ResourceBlobEntity foundBlob = null;
+
+		// Published
+		if (mParameters.revision == -1) {
+			BlobKey blobKey = null;
+			UploadTypes uploadType = null;
+
+			// Resource id
+			FilterWrapper resourceIdFilter = new FilterWrapper(CPublished.RESOURCE_ID, mParameters.resourceId);
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED, resourceIdFilter);
+
+			if (entity != null) {
+				blobKey = (BlobKey) entity.getProperty(CPublished.BLOB_KEY);
+				uploadType = DatastoreUtils.getPropertyIdStore(entity, CPublished.TYPE, UploadTypes.class);
+
+				// Level id
+			} else {
+				FilterWrapper levelIdFilter = new FilterWrapper(CPublished.LEVEL_ID, mParameters.resourceId);
+				entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED, levelIdFilter);
+
+				if (entity != null) {
+					blobKey = (BlobKey) entity.getProperty(CPublished.LEVEL_BLOB_KEY);
+					uploadType = UploadTypes.LEVEL;
+				}
+			}
+
+			// Set blob info
+			if (blobKey != null) {
+				foundBlob = new ResourceBlobEntity();
+				foundBlob.blobKey = blobKey.getKeyString();
+				foundBlob.resourceId = mParameters.resourceId;
+				foundBlob.uploadType = uploadType;
+			}
+		}
+		// User resource
+		else {
+			FilterWrapper resourceIdFilter = new FilterWrapper(CUserResources.RESOURCE_ID, mParameters.resourceId);
+			FilterWrapper resourceRevisionFilter = new FilterWrapper(CUserResources.REVISION, mParameters.revision);
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.USER_RESOURCES, resourceIdFilter, resourceRevisionFilter);
+
+			if (entity != null) {
+				BlobKey blobKey = (BlobKey) entity.getProperty(CUserResources.BLOB_KEY);
+
+				foundBlob = new ResourceRevisionBlobEntity();
+				foundBlob.blobKey = blobKey.getKeyString();
+				foundBlob.resourceId = mParameters.resourceId;
+				foundBlob.uploadType = DatastoreUtils.getPropertyIdStore(entity, CUserResources.TYPE, UploadTypes.class);
+				((ResourceRevisionBlobEntity) foundBlob).revision = mParameters.revision;
+			}
+		}
+
+		return foundBlob;
 	}
 
 	/**
@@ -152,6 +238,8 @@ public class ResourceDownload extends VoiderServlet {
 		return keys;
 	}
 
+	/** Method */
+	private ResourceDownloadMethod mParameters = null;
 	/** Method response */
 	private ResourceDownloadResponse mResponse = new ResourceDownloadResponse();
 	/** All added resources */
