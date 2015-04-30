@@ -45,12 +45,14 @@ sourceSets {
 
 repositories {
 	mavenCentral()
+	maven { url "http://maven.senth.org/snapshots" }
+    maven { url "http://maven.senth.org/releases" }
 	mavenLocal()
 }
 
 dependencies {
 	compile 'com.spiddekauga:spiddekauga-utils:0.1.0-SNAPSHOT'
-    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.18'
+    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.19'
     compile 'javax.servlet:servlet-api:2.5'
 	deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 }
