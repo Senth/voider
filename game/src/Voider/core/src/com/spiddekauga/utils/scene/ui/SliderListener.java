@@ -145,9 +145,11 @@ public abstract class SliderListener implements EventListener {
 		float newValue = mOldValue;
 
 		// Slider was changed
+		boolean sliderChangedValue = false;
 		if (event.getTarget() instanceof Slider) {
 			Slider slider = (Slider) event.getTarget();
 			newValue = slider.getValue();
+			sliderChangedValue = true;
 		}
 		// Text field was changed
 		else if (event.getTarget() instanceof TextField) {
@@ -155,10 +157,14 @@ public abstract class SliderListener implements EventListener {
 
 			// Focus out -> Set clamped value
 			if (event instanceof FocusEvent) {
-				if (!((FocusEvent) event).isFocused()) {
+				FocusEvent focusEvent = (FocusEvent) event;
+				if (focusEvent.isFocused()) {
+					mEditingText++;
+				} else {
 					setTextFieldValues(mOldValue);
-					return true;
+					mEditingText--;
 				}
+				return true;
 			}
 			// key was was pressed
 			else if (event instanceof InputEvent) {
@@ -234,7 +240,19 @@ public abstract class SliderListener implements EventListener {
 				}
 			}
 
+			int currentEditingText = mEditingText;
+			TextField focusedTextField = getFocusedTextField();
+			int cursorPos = (focusedTextField != null) ? focusedTextField.getCursorPosition() : 0;
+			if (sliderChangedValue) {
+				mEditingText = 0;
+			}
 			setValue(newValue);
+			if (sliderChangedValue) {
+				mEditingText = currentEditingText;
+				if (focusedTextField != null) {
+					focusedTextField.setCursorPosition(cursorPos);
+				}
+			}
 		}
 
 
@@ -345,8 +363,11 @@ public abstract class SliderListener implements EventListener {
 			newText = Integer.toString((int) rounded);
 		}
 
+		TextField focusedTextField = getFocusedTextField();
 		for (TextField textField : mTextFields) {
-			textField.setText(newText);
+			if (mEditingText == 0 || textField != focusedTextField) {
+				textField.setText(newText);
+			}
 		}
 	}
 
@@ -361,6 +382,19 @@ public abstract class SliderListener implements EventListener {
 		return null;
 	}
 
+	/**
+	 * @return focused text field if one exists, null if none exists
+	 */
+	private TextField getFocusedTextField() {
+		for (TextField textField : mTextFields) {
+			if (textField.getStage().getKeyboardFocus() == textField) {
+				return textField;
+			}
+		}
+
+		return null;
+	}
+
 	/** Extra optional object used for validating the change */
 	protected Object mValidingObject = null;
 	/** All sliders */
@@ -368,7 +402,8 @@ public abstract class SliderListener implements EventListener {
 	/** All text fields */
 	protected Set<TextField> mTextFields = new HashSet<>();
 
-
+	/** True if we're editing text */
+	private int mEditingText = 0;
 	/** Shall always be less or equal to mSlider */
 	private SliderListener mLesserSlider = null;
 	/** Shall always be greater or equal to mSlider */

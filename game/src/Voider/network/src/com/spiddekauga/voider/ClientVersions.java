@@ -232,12 +232,14 @@ public enum ClientVersions {
 			"	Path enemies now start in the correct direction in Enemy Editor"
 			),
 	V0_5_9(false,
-			"Improvements",
-			"	Links to new YouTube tutorials in editors",
 			"Explore Levels",
 			"	Now much faster (uses cache correctly)",
 			"	Levels are shown correctly when changing between sort and search",
-			"	Tag list is now kept open correctly"
+			"	Tag list is now kept open correctly",
+			"Improvements",
+			"	Links to new YouTube tutorials in editors",
+			"Bug Fixes",
+			"	Can edit slider text fields again"
 			),
 	;
 	// @formatter:on
