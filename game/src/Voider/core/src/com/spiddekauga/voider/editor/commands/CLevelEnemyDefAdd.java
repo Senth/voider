@@ -2,39 +2,33 @@ package com.spiddekauga.voider.editor.commands;
 
 import java.util.UUID;
 
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.LevelEditor;
 
 /**
  * Adds an enemy definition to the add enemy list
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CLevelEnemyDefAdd extends Command {
+public class CLevelEnemyDefAdd extends CEditor<LevelEditor> {
 	/**
 	 * Creates a command that will add an enemy to the list
 	 * @param id enemy id to add to the list
 	 * @param levelEditor level editor to select the enemy in
 	 */
 	public CLevelEnemyDefAdd(UUID id, LevelEditor levelEditor) {
+		super(levelEditor);
 		mId = id;
-		mLevelEditor = levelEditor;
 	}
 
 	@Override
 	public boolean execute() {
-		boolean success = mLevelEditor.addEnemyDef(mId);
-		return success;
+		return mEditor.addEnemyDef(mId);
 	}
 
 	@Override
 	public boolean undo() {
-		boolean success = mLevelEditor.removeEnemyDef(mId);
-		return success;
+		return mEditor.removeEnemyDef(mId);
 	}
 
 	/** The enemy to add to the list */
 	private UUID mId;
-	/** Level editor to select the enemy in */
-	private LevelEditor mLevelEditor;
 }

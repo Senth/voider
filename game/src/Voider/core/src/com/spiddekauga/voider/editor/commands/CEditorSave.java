@@ -5,10 +5,9 @@ import com.spiddekauga.voider.editor.IEditor;
 
 /**
  * Saves the current actor
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CEditorSave extends Command {
+public class CEditorSave extends CEditor<IEditor> {
 
 	/**
 	 * Creates a save command for the current editor
@@ -19,14 +18,13 @@ public class CEditorSave extends Command {
 	}
 
 	/**
-	 * Creates a save command for the current editor and executes
-	 * an optional command after the resource has been saved
+	 * Creates a save command for the current editor and executes an optional command
+	 * after the resource has been saved
 	 * @param editor the active editor to call saveDef()
-	 * @param executeAfterSaved command to execute after the resource has
-	 * been saved.
+	 * @param executeAfterSaved command to execute after the resource has been saved.
 	 */
 	public CEditorSave(IEditor editor, Command executeAfterSaved) {
-		mEditor = editor;
+		super(editor);
 		mExecuteAfterSaved = executeAfterSaved;
 	}
 
@@ -36,14 +34,6 @@ public class CEditorSave extends Command {
 		return true;
 	}
 
-	@Override
-	public boolean undo() {
-		// Cannot undo a save...
-		return false;
-	}
-
-	/** Enemy editor to invoke the save on */
-	IEditor mEditor;
 	/** Optional command to execute after the resource has been saved */
 	Command mExecuteAfterSaved;
 }

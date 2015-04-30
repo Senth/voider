@@ -168,6 +168,7 @@ public class EnemyEditor extends ActorEditor {
 			}
 
 			getGui().resetValues();
+			setUnsaved();
 		} catch (Exception e) {
 			Gdx.app.error("EnemyEditor", e.toString());
 			e.printStackTrace();

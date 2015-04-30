@@ -543,7 +543,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void onResourceChanged(IResource resource) {
-		setUnsaved();
+		super.onResourceChanged(resource);
 
 		if (resource instanceof EnemyActor) {
 			getGui().resetEnemyOptions();

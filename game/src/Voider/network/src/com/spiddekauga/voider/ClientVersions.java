@@ -238,6 +238,7 @@ public enum ClientVersions {
 			"	Tag list is now kept open correctly",
 			"Improvements",
 			"	Links to new YouTube tutorials in editors",
+			"	Editors now save only when the resource has been chanaged",
 			"Bug Fixes",
 			"	Can edit slider text fields again"
 			),

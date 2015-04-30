@@ -6,7 +6,6 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
 
 /**
  * Sets the enemy's path
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CEnemySetPath extends CResourceChange {
@@ -29,13 +28,15 @@ public class CEnemySetPath extends CResourceChange {
 			return false;
 		}
 
-		((EnemyActor)mResource).setPath(mNewPath);
+		((EnemyActor) mResource).setPath(mNewPath);
+		sendOnChange();
 		return true;
 	}
 
 	@Override
 	public boolean undo() {
-		((EnemyActor)mResource).setPath(mOldPath);
+		((EnemyActor) mResource).setPath(mOldPath);
+		sendOnChange();
 		return true;
 	}
 

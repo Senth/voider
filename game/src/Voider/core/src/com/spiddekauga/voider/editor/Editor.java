@@ -46,6 +46,7 @@ import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.LoadingProgressScene;
 import com.spiddekauga.voider.scene.LoadingScene;
@@ -63,7 +64,8 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  * Common class for all editors
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Editor extends WorldScene implements IEditor, IResponseListener, IOutstreamProgressListener, IEventListener {
+public abstract class Editor extends WorldScene implements IEditor, IResourceChangeEditor, IResponseListener, IOutstreamProgressListener,
+		IEventListener {
 
 	/**
 	 * @param gui GUI to be used with the editor
@@ -197,13 +199,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		// Show info dialog after the resource has been created
 		if (getDef().getName().equals(Config.Actor.NAME_DEFAULT)) {
 			getGui().showInfoDialog();
-		}
-
-		// Unsaved as some command change the resource state
-		if (isSaved()) {
-			if (mInvoker.getLastExecuted() != mLastCommandOnSave) {
-				setUnsaved();
-			}
 		}
 
 		if (shallAutoSave()) {
@@ -439,14 +434,14 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * Set the editor as saved
 	 */
 	protected void setSaved() {
-		mLastCommandOnSave = mInvoker.getLastExecuted();
 		mSaved = true;
 	}
 
 	/**
 	 * Set the editor as unsaved
 	 */
-	protected void setUnsaved() {
+	@Override
+	public void setUnsaved() {
 		mSaved = false;
 		mUnsavedTime = getGameTime().getTotalTimeElapsed();
 		mActivityTimeLast = getGameTime().getTotalTimeElapsed();
@@ -701,6 +696,11 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	@Override
+	public void onResourceChanged(IResource resource) {
+		setUnsaved();
+	}
+
+	@Override
 	protected EditorGui getGui() {
 		return (EditorGui) super.getGui();
 	}
@@ -750,11 +750,6 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Invoker */
 	protected Invoker mInvoker = new Invoker();
-	/**
-	 * Saved on the specified invoker command. Some commands change the resource but
-	 * doesn't change the editor state to unsaved
-	 */
-	private Command mLastCommandOnSave = null;
 	/** Is the resource currently saved? */
 	private boolean mSaved = false;
 	/** Is the resource currently saving, this means it takes a screenshot of the image */

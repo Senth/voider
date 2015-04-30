@@ -1,20 +1,18 @@
 package com.spiddekauga.voider.editor.commands;
 
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.IEditor;
 
 /**
  * Tries to publish the definition.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CEditorPublish extends Command {
+public class CEditorPublish extends CEditor<IEditor> {
 	/**
 	 * Try to publish the definition.
 	 * @param editor the editor to call publish in
 	 */
 	public CEditorPublish(IEditor editor) {
-		mEditor = editor;
+		super(editor);
 	}
 
 	@Override
@@ -22,12 +20,4 @@ public class CEditorPublish extends Command {
 		mEditor.publishDef();
 		return true;
 	}
-
-	@Override
-	public boolean undo() {
-		return false;
-	}
-
-	/** Editor to call publish in */
-	private IEditor mEditor;
 }

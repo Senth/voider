@@ -538,11 +538,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	@Override
-	public void onResourceChanged(IResource resource) {
-		// Does nothing
-	}
-
-	@Override
 	public void setColor(Color color) {
 		if (mActorDef != null) {
 			mActorDef.getVisual().setColor(color);

@@ -62,6 +62,11 @@ public interface IEditor {
 	boolean isSaved();
 
 	/**
+	 * Set the editor in a state of unsaved
+	 */
+	void setUnsaved();
+
+	/**
 	 * @return all non-published dependencies of the current definition
 	 */
 	ArrayList<Def> getNonPublishedDependencies();

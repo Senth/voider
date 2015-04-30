@@ -1,13 +1,12 @@
 package com.spiddekauga.voider.editor.commands;
 
-import com.spiddekauga.utils.commands.CRun;
 import com.spiddekauga.voider.editor.IEditor;
 
 /**
  * Duplicates a definition in the current editor
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CEditorDuplicate extends CRun {
+public class CEditorDuplicate extends CEditor<IEditor> {
 	/**
 	 * Either a) Open up a dialog where the user can set a new name and description for
 	 * the new copy; or b) if a name is set through {@link #setName(String)} it will
@@ -15,7 +14,7 @@ public class CEditorDuplicate extends CRun {
 	 * @param editor the editor to duplicate the definition in
 	 */
 	public CEditorDuplicate(IEditor editor) {
-		mEditor = editor;
+		super(editor);
 	}
 
 	/**
@@ -27,7 +26,7 @@ public class CEditorDuplicate extends CRun {
 	 * @param description new description of the definition
 	 */
 	public CEditorDuplicate(IEditor editor, String name, String description) {
-		mEditor = editor;
+		super(editor);
 		mName = name;
 		mDescription = description;
 	}
@@ -60,7 +59,6 @@ public class CEditorDuplicate extends CRun {
 		mDescription = description;
 	}
 
-	private IEditor mEditor;
 	private String mName = null;
 	private String mDescription = "";
 }
