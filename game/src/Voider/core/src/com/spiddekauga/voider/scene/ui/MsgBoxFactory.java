@@ -426,7 +426,6 @@ public class MsgBoxFactory {
 			changeLogMsgBox.content(label);
 		}
 
-
 		changeLogMsgBox.addCancelButtonAndKeys("OK");
 	}
 

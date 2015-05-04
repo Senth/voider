@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.2.2'
         classpath 'org.robovm:robovm-gradle-plugin:1.0.0-beta-04'
 		classpath 'com.google.appengine:gradle-appengine-plugin:1.9.19'
     }
@@ -84,6 +84,15 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
     }
+
+	android {
+		packagingOptions {
+			exclude 'META-INF/LICENSE.txt'
+			exclude 'META-INF/LICENSE'
+			exclude 'META-INF/NOTICE.txt'
+			exclude 'META-INF/NOTICE'
+		}
+	}
 }
 
 project(":ios") {
