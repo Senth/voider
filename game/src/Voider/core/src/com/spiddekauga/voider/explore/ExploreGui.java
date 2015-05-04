@@ -482,9 +482,9 @@ abstract class ExploreGui extends Gui {
 	 */
 	private void showSelectRevisionMsgBox() {
 		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Revision");
-		msgBox.content(mWidgets.revision.scrollPane);
-
-		mWidgets.revision.scrollPane.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
+		float width = mWidgets.revision.scrollPane.getWidth();
+		float height = mWidgets.revision.scrollPane.getHeight();
+		msgBox.content(mWidgets.revision.scrollPane).size(width, height);
 
 		updateRevisionList();
 
@@ -524,7 +524,7 @@ abstract class ExploreGui extends Gui {
 		com.badlogic.gdx.scenes.scene2d.ui.List<String> list = new com.badlogic.gdx.scenes.scene2d.ui.List<>(
 				(ListStyle) SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
 		mWidgets.revision.list = list;
-		mWidgets.revision.scrollPane = new ScrollPane(list, mUiFactory.getStyles().scrollPane.noBackground);
+		mWidgets.revision.scrollPane = mUiFactory.msgBox.createScrollPane(list);
 	}
 
 	/**

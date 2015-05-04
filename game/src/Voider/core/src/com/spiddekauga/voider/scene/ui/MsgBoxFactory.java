@@ -3,6 +3,7 @@ package com.spiddekauga.voider.scene.ui;
 import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -129,7 +130,7 @@ public class MsgBoxFactory {
 		SettingDateRepo dateRepo = SettingRepo.getInstance().date();
 		String date = dateRepo.getDateTime(motd.created);
 
-		MsgBoxExecuter msgBox = add("Message from Creator :)    (" + date + ")");
+		MsgBoxExecuter msgBox = add("Message from Voider :)    (" + date + ")");
 
 		Label label = mUiFactory.text.create(motd.title, LabelStyles.HEADER);
 		label.setAlignment(Align.center);
@@ -499,6 +500,17 @@ public class MsgBoxFactory {
 	 */
 	public synchronized void free(MsgBoxExecuter msgBox) {
 		mFreeMsgBoxes.push(msgBox);
+	}
+
+	/**
+	 * Create scroll pane for message box
+	 * @param content content of the scroll pane
+	 * @return scroll pane for a message box with correct size
+	 */
+	public ScrollPane createScrollPane(Actor content) {
+		ScrollPane scrollPane = new ScrollPane(content, mStyles.scrollPane.noBackground);
+		scrollPane.setSize(WIDTH_MAX, HEIGHT_MAX);
+		return scrollPane;
 	}
 
 	private static final int HEIGHT_MAX = (int) (Gdx.graphics.getHeight() * 0.6f);

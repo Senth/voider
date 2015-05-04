@@ -244,7 +244,8 @@ public enum ClientVersions {
 			"	Can edit slider text fields again",
 			"	Fixed crash when test playing a published level from the editor",
 			"	In editor, color is now kept correctly when deleting and undoing terrain",
-			"	Fixed a random crash when a resource was synced in an editor"
+			"	Fixed a random crash when a resource was synced in an editor",
+			"	Loading another revision now shows a correct dialog"
 			),
 	;
 	// @formatter:on
