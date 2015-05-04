@@ -468,7 +468,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	private ArrayList<DefEntity> mFilteredResults = new ArrayList<>();
 	private DefEntity mSelected = null;
 
-	private ExploreViews mView = ExploreViews.LOCAL;
+	private ExploreViews mView = null;
 	private ExploreActions mAction;
 	/** Synchronized web responses */
 	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<WebWrapper>();
