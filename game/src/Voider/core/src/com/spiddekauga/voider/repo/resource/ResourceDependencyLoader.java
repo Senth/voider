@@ -45,7 +45,7 @@ class ResourceDependencyLoader implements Disposable {
 	 *        dependencies
 	 * @param revision the revision of the resource, -1 to use latest revision
 	 */
-	<ResourceType> void load(Scene scene, UUID resourceId, int revision) {
+	synchronized <ResourceType> void load(Scene scene, UUID resourceId, int revision) {
 		// Load the resource
 		mResourceLoader.load(scene, resourceId, revision);
 
@@ -63,7 +63,7 @@ class ResourceDependencyLoader implements Disposable {
 	 * that shall be loaded. If so it will add these to the queue.
 	 * @return true if it has finished all the loading
 	 */
-	boolean update() {
+	synchronized boolean update() {
 		try {
 			mResourceLoader.update();
 		} catch (ResourceException e) {
@@ -172,7 +172,7 @@ class ResourceDependencyLoader implements Disposable {
 	/**
 	 * @return true if this class is loading
 	 */
-	boolean isLoading() {
+	synchronized boolean isLoading() {
 		return mLoadingDefs.size() != 0;
 	}
 

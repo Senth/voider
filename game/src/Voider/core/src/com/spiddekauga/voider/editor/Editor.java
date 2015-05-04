@@ -691,7 +691,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResourceCha
 		} else if (command != null) {
 			command.execute();
 		} else if (isSaved()) {
-			mNotification.show("Already saved");
+			mNotification.showSuccess("Saved...");
 		}
 	}
 
