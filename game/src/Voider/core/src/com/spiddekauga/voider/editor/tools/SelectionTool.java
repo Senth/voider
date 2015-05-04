@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import com.badlogic.gdx.physics.box2d.Body;
@@ -109,7 +110,7 @@ public class SelectionTool extends TouchTool {
 		// Draw selection box
 		if (isActive()) {
 			mRectangleBrush = new RectangleBrush(Config.Editor.BRUSH_SELECTION_COLOR, mTouchCurrent);
-			mEditor.onResourceAdded(mRectangleBrush);
+			mEditor.onResourceAdded(mRectangleBrush, true);
 		}
 		// Test if we shall add or remove any actors
 		else {
@@ -243,7 +244,7 @@ public class SelectionTool extends TouchTool {
 	/** Rectangle brush */
 	private RectangleBrush mRectangleBrush = null;
 	/** All hit resources */
-	private ArrayList<IResource> mHitResources = new ArrayList<IResource>();
+	private HashSet<IResource> mHitResources = new HashSet<IResource>();
 
 
 }

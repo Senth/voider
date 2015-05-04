@@ -27,7 +27,7 @@ public class CResourceAdd extends Command {
 		if (mResource instanceof IResourceBody) {
 			((IResourceBody) mResource).createBody();
 		}
-		mEditor.onResourceAdded(mResource);
+		mEditor.onResourceAdded(mResource, true);
 		return true;
 	}
 

@@ -53,6 +53,7 @@ public class DeleteTool extends TouchTool {
 	public boolean keyDown(int keycode) {
 		if (KeyHelper.isDeletePressed(keycode)) {
 			removeSelectedResources();
+			return true;
 		}
 		return false;
 	}
@@ -68,10 +69,6 @@ public class DeleteTool extends TouchTool {
 
 			mInvoker.execute(new CSelectionSet(mSelection));
 			for (IResource resource : copySelectedResources) {
-				// if (resource instanceof Actor) {
-				// mInvoker.execute(new CActorDefFixCustomFixtures(((Actor)
-				// resource).getDef(), false), true);
-				// }
 				mInvoker.execute(new CResourceRemove(resource, mEditor), true);
 			}
 		}

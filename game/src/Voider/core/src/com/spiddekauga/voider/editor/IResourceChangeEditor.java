@@ -11,8 +11,9 @@ public interface IResourceChangeEditor extends IEditor {
 	/**
 	 * Called when an resource is added
 	 * @param resource the resource that was created
+	 * @param isNew if the resource is new and not readded.
 	 */
-	void onResourceAdded(IResource resource);
+	void onResourceAdded(IResource resource, boolean isNew);
 
 	/**
 	 * Called when an resource is removed

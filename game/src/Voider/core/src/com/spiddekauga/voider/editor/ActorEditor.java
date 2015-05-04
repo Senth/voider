@@ -517,7 +517,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	@Override
-	public void onResourceAdded(IResource resource) {
+	public void onResourceAdded(IResource resource, boolean isNew) {
 		if (resource instanceof Actor) {
 			mDrawingActor = (Actor) resource;
 			setUnsaved();

@@ -522,13 +522,15 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public void onResourceAdded(IResource resource) {
+	public void onResourceAdded(IResource resource, boolean isNew) {
 		getGui().resetValues();
 		mLevel.addResource(resource);
 
 		// Set default color
-		if (resource instanceof StaticTerrainActor) {
-			((StaticTerrainActor) resource).getDef().getVisual().setColor(mDefaultTerrainColor);
+		if (isNew) {
+			if (resource instanceof StaticTerrainActor) {
+				((StaticTerrainActor) resource).getDef().getVisual().setColor(mDefaultTerrainColor);
+			}
 		}
 
 		setUnsaved();

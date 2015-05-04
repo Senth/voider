@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.commands.Command;
@@ -27,7 +28,7 @@ public class CSelectionSet extends Command implements Disposable {
 	 * @param selection the selection container
 	 * @param resources the resources to select
 	 */
-	public CSelectionSet(ISelection selection, ArrayList<IResource> resources) {
+	public CSelectionSet(ISelection selection, Collection<IResource> resources) {
 		mSelection = selection;
 
 		mResources = new IResource[resources.size()];

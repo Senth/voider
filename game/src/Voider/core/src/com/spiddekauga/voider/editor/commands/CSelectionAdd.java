@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor.commands;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.tools.ISelection;
@@ -8,7 +8,6 @@ import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Adds resources to the current selection
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CSelectionAdd extends Command {
@@ -27,7 +26,7 @@ public class CSelectionAdd extends Command {
 	 * @param selection the selection to add to
 	 * @param resources the resources to select
 	 */
-	public CSelectionAdd(ISelection selection, ArrayList<IResource> resources) {
+	public CSelectionAdd(ISelection selection, Collection<IResource> resources) {
 		mSelection = selection;
 
 		mResources = new IResource[resources.size()];

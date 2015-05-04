@@ -116,7 +116,7 @@ public class CampaignEditor extends Editor {
 	}
 
 	@Override
-	public void onResourceAdded(IResource resource) {
+	public void onResourceAdded(IResource resource, boolean isNew) {
 		// TODO Auto-generated method stub
 
 	}

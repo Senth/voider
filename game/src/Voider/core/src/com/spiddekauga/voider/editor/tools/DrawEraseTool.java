@@ -57,7 +57,7 @@ public class DrawEraseTool extends ActorTool {
 			} else {
 				mDrawEraseBrush = new VectorBrush(false);
 			}
-			mEditor.onResourceAdded(mDrawEraseBrush);
+			mEditor.onResourceAdded(mDrawEraseBrush, true);
 			mDrawEraseBrush.addCorner(mTouchCurrent);
 			mDragOrigin.set(mTouchCurrent);
 			setDrawing(true);

@@ -43,7 +43,7 @@ public class CResourceRemove extends Command {
 			}
 		}
 
-		mEditor.onResourceAdded(mResource);
+		mEditor.onResourceAdded(mResource, false);
 
 		return true;
 	}

@@ -242,7 +242,8 @@ public enum ClientVersions {
 			"	Editors now save only when the resource has been chanaged",
 			"Bug Fixes",
 			"	Can edit slider text fields again",
-			"	Fixed crash when test playing a published level from the editor"
+			"	Fixed crash when test playing a published level from the editor",
+			"	In editor, color is kept when deleting and undoing terrain"
 			),
 	;
 	// @formatter:on

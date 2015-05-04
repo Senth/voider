@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor.commands;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.tools.ISelection;
@@ -8,12 +8,12 @@ import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Removes resources from the current selection
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CSelectionRemove extends Command {
 	/**
-	 * Creates a command that will remove the specified resources from the current selection
+	 * Creates a command that will remove the specified resources from the current
+	 * selection
 	 * @param selection the selection to remove from
 	 * @param resources the resources to deselect
 	 */
@@ -23,11 +23,12 @@ public class CSelectionRemove extends Command {
 	}
 
 	/**
-	 * Creates a command that will remove the specified resources from the current selection
+	 * Creates a command that will remove the specified resources from the current
+	 * selection
 	 * @param selection the selection to remove from
 	 * @param resources the resources to deselect
 	 */
-	public CSelectionRemove(ISelection selection, ArrayList<IResource> resources) {
+	public CSelectionRemove(ISelection selection, Collection<IResource> resources) {
 		mSelection = selection;
 
 		mResources = new IResource[resources.size()];
