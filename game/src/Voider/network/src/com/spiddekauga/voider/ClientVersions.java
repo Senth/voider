@@ -236,6 +236,7 @@ public enum ClientVersions {
 			"	Now much faster (uses cache correctly)",
 			"	Levels are shown correctly when changing between sort and search",
 			"	Tag list is now kept open correctly",
+			"	If a downloaded level is missing or has been corrupted it will be redownloaded",
 			"Improvements",
 			"	Links to new YouTube tutorials in editors",
 			"	Editors now save only when the resource has been chanaged",

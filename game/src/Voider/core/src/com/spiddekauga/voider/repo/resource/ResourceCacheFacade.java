@@ -10,7 +10,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
-import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalDeps;
@@ -18,7 +17,6 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.User;
 
 
 /**
@@ -356,14 +354,7 @@ public class ResourceCacheFacade {
 				mResourceLoader.load(toLoad.scene, toLoad.id, toLoad.revision);
 			}
 		} catch (ResourceException e) {
-			NotificationShower notification = NotificationShower.getInstance();
-			if (User.getGlobalUser().isOnline()) {
-				notification.showError("Found a corrupt or missing file, redownloading...");
-				notification.showHighlight("This may take a while...");
-			} else {
-				notification.showError("Found a corrupt or missing file, skipping to load...");
-				notification.showHighlight("Go online and it will redownload itself next time its loaded");
-			}
+
 		}
 
 		// Try to unload stuff

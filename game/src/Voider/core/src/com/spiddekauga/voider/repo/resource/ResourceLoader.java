@@ -441,7 +441,7 @@ class ResourceLoader {
 	 * @param exception the exception to handle
 	 */
 	void handleException(GdxRuntimeException exception) {
-		// RuntimeException throwException = exception;
+		RuntimeException throwException = exception;
 
 		if (exception.getCause() != null && exception.getCause().getCause() != null && exception.getCause().getCause().getCause() != null) {
 			Throwable source = exception.getCause().getCause().getCause();
@@ -454,26 +454,32 @@ class ResourceLoader {
 				resourceException = new ResourceCorruptException(source.getMessage());
 			}
 
-			// TODO Redownload the resource
-			if (resourceException != null) {
-				UuidRevision uuidRevision = new UuidRevision().set(resourceException.getId(), resourceException.getRevision());
-				mRedownloading.add(uuidRevision);
-				ResourceRepo.getInstance().redownload(uuidRevision.resourceId, uuidRevision.revision, mRedownloadListener);
-				// throwException = resourceException;
-			}
-
-
 			NotificationShower notification = NotificationShower.getInstance();
 			if (User.getGlobalUser().isOnline()) {
 				notification.showError("Found a corrupt or missing file, redownloading...");
-				notification.showHighlight("This may take a while...");
+				notification.showHighlight("This may take a while");
 			} else {
-				notification.showError("Found a corrupt or missing file, skipping to load...");
+				notification.showError("Found a corrupt or missing file, aborting load");
 				notification.showHighlight("Go online and it will redownload itself next time its loaded");
+			}
+
+			// Redownload the resource
+			if (resourceException != null) {
+				UuidRevision uuidRevision = new UuidRevision().set(resourceException.getId(), resourceException.getRevision());
+				if (User.getGlobalUser().isOnline()) {
+					mRedownloading.add(uuidRevision);
+					ResourceRepo.getInstance().redownload(uuidRevision.resourceId, uuidRevision.revision, mRedownloadListener);
+					throwException = null;
+				} else {
+					mLoadingQueue.remove(uuidRevision);
+					throwException = resourceException;
+				}
 			}
 		}
 
-		// throw throwException;
+		if (throwException != null) {
+			throw throwException;
+		}
 	}
 
 	/**
@@ -653,8 +659,8 @@ class ResourceLoader {
 		}
 
 		private void handle(ResourceDownloadMethod method, ResourceDownloadResponse response) {
+			UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(method.resourceId, method.revision);
 			if (response.isSuccessful()) {
-				UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(method.resourceId, method.revision);
 
 				// Find resource
 				boolean removed = mRedownloading.remove(uuidRevision);
@@ -663,6 +669,12 @@ class ResourceLoader {
 				} else {
 					Gdx.app.error("ResourceLoader", "Didn't find the specified resource that was redownloading");
 				}
+				NotificationShower.getInstance().showSuccess("Redownload successful!");
+			}
+			// Remove from redownload list
+			else {
+				mLoadingQueue.remove(uuidRevision);
+				NotificationShower.getInstance().showError("Failed to redownload resource!");
 			}
 		}
 
