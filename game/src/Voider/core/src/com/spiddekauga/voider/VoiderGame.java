@@ -9,6 +9,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.physics.box2d.Box2D;
+import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.utils.Strings;
@@ -43,7 +44,12 @@ public class VoiderGame implements ApplicationListener {
 	public void create() {
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 		Box2D.init();
-		// Log.ERROR();
+
+		if (Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
+			Log.INFO();
+		} else {
+			Log.ERROR();
+		}
 
 		// Init various classes
 		ConfigIni.getInstance();

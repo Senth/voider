@@ -1,26 +1,25 @@
 package com.spiddekauga.voider.repo;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.MultipartEntityWithProgressBuilder;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.net.IOutstreamProgressListener;
@@ -97,6 +96,61 @@ public class WebGateway {
 		return sendRequest(uploadUrl, entity, files, progressListenersList);
 	}
 
+	/**
+	 * Add content to the HTTP request
+	 * @param output output for the writer
+	 * @param writer the writer which uses the output
+	 * @param name name of the field
+	 * @param object the object to write
+	 * @param filename optional filename, set to null to skip
+	 * @throws IOException
+	 */
+	private static void addContent(OutputStream output, PrintWriter writer, String name, Object object, String filename) throws IOException {
+		writer.append("--" + BOUNDARY).append(CRLF);
+		writer.append("Content-Disposition: form-data; name=\"" + ENTITY_NAME + "\"");
+		if (filename != null && !filename.isEmpty()) {
+			writer.append("; filename=\"").append(filename).append("\"");
+		}
+		writer.append(CRLF);
+
+		// Method in byte array
+		if (object instanceof byte[]) {
+			writer.append("Content-Type: application/octet-stream").append(CRLF);
+			writer.append("Content-Transfer-Encoding: binary").append(CRLF);
+			writer.append(CRLF).flush();
+			output.write((byte[]) object);
+			output.flush();
+		}
+		// Method in Base64
+		else if (object instanceof String) {
+			writer.append("Content-Type: text/plain; charset=" + CHARSET).append(CRLF);
+			writer.append(CRLF).append((String) object);
+		}
+		// Files
+		else if (object instanceof File) {
+			File file = (File) object;
+			writer.append("Content-Type: application/octet-stream").append(CRLF);
+			writer.append("Content-Transfer-Encoding: binary").append(CRLF);
+			writer.append(CRLF).flush();
+			Files.copy(file.toPath(), output);
+			output.flush();
+		}
+		writer.append(CRLF).flush();
+
+		// Add method entity as base64
+		writer.append("--" + BOUNDARY).append(CRLF);
+		writer.append("Content-Disposition: form-data; name=\"" + ENTITY_NAME + "\"").append(CRLF);
+
+		writer.append(CRLF).flush();
+	}
+
+	/**
+	 * End the content
+	 * @param writer output to the request
+	 */
+	private static void endContent(PrintWriter writer) {
+		writer.append("--" + BOUNDARY + "--").append(CRLF).flush();
+	}
 
 	/**
 	 * Sends an entity and optional files over HTTP
@@ -109,42 +163,43 @@ public class WebGateway {
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<FieldNameFileWrapper> files,
 			List<IOutstreamProgressListener> progressListeners) {
-		initHttpClient();
 
 		try {
-			MultipartEntityWithProgressBuilder entityBuilder = MultipartEntityWithProgressBuilder.create();
-			Charset charset = Charset.forName("UTF-8");
-			entityBuilder.setCharset(charset);
-
+			HttpURLConnection httpConnection = getNewConnection(uploadUrl);
+			OutputStream output = httpConnection.getOutputStream();
+			PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, CHARSET));
 
 			// Add files
-			if (files != null) {
+			if (files != null && !files.isEmpty()) {
 				for (FieldNameFileWrapper fieldNameFile : files) {
-					ContentBody contentBody = new FileBody(fieldNameFile.file);
-					entityBuilder.addPart(fieldNameFile.fieldName, contentBody);
+					addContent(output, writer, fieldNameFile.fieldName, fieldNameFile.file, fieldNameFile.fieldName);
 				}
 
-				// Add binary body as BASE64
-				String base64 = DatatypeConverter.printBase64Binary(entity);
-				entityBuilder.addTextBody(ENTITY_NAME, base64, ContentType.TEXT_PLAIN);
+				// Add method entity as base64
+				addContent(output, writer, ENTITY_NAME, DatatypeConverter.printBase64Binary(entity), null);
 			}
-			// Add usual binary body
+			// Add method entity
 			else {
-				entityBuilder.addBinaryBody(ENTITY_NAME, entity, ContentType.APPLICATION_OCTET_STREAM, null);
+				addContent(output, writer, ENTITY_NAME, entity, null);
 			}
 
-			if (progressListeners != null) {
-				entityBuilder.addProgressListener(progressListeners);
+			// End of multipart form data
+			endContent(writer);
+
+			// Get response
+			InputStream response = httpConnection.getInputStream();
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			int n = -1;
+			byte[] buffer = new byte[4096];
+			while ((n = response.read(buffer)) != -1) {
+				byteArrayOutputStream.write(buffer, 0, n);
 			}
 
+			if (mCookies == null) {
+				mCookies = httpConnection.getHeaderFields().get("Set-Cookie");
+			}
 
-			HttpPost httpPost = new HttpPost(uploadUrl);
-			httpPost.setEntity(entityBuilder.build());
-
-			CloseableHttpResponse httpResponse = mHttpClient.execute(httpPost);
-			byte[] responseEntity = getEntity(httpResponse);
-			httpResponse.close();
-			return responseEntity;
+			return byteArrayOutputStream.toByteArray();
 		} catch (IOException e) {
 			Gdx.app.log("Network", "Could not connect to server");
 		}
@@ -160,72 +215,74 @@ public class WebGateway {
 	 * @return true if file was written successfully, false if an error occurred
 	 */
 	public static boolean downloadRequest(String methodName, byte[] entity, String filePath) {
-		initHttpClient();
 
-		CloseableHttpResponse httpResponse = null;
-
-		try {
-			String url = Config.Network.SERVER_HOST + methodName;
-			MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-			entityBuilder.addBinaryBody(ENTITY_NAME, entity);
-
-			HttpPost httpPost = new HttpPost(url);
-			httpPost.setEntity(entityBuilder.build());
-
-			httpResponse = mHttpClient.execute(httpPost);
-		} catch (IOException e) {
-			Gdx.app.log("Network", "Could not connect to server");
-			e.printStackTrace();
-		}
-
-		if (httpResponse != null) {
-			try {
-				BufferedInputStream bis = new BufferedInputStream(httpResponse.getEntity().getContent());
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-				int inByte;
-				while ((inByte = bis.read()) != -1) {
-					bos.write(inByte);
-				}
-
-				bis.close();
-				bos.close();
-				httpResponse.close();
-
-				return true;
-			} catch (IOException e) {
-				Gdx.app.log("Network", "Error downloading file");
-				e.printStackTrace();
-			}
-		}
+		// REMOVE
+		// initHttpClient();
+		//
+		// CloseableHttpResponse httpResponse = null;
+		//
+		// try {
+		// String url = Config.Network.SERVER_HOST + methodName;
+		// MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+		// entityBuilder.addBinaryBody(ENTITY_NAME, entity);
+		//
+		// HttpPost httpPost = new HttpPost(url);
+		// httpPost.setEntity(entityBuilder.build());
+		//
+		// // httpResponse = mHttpClient.execute(httpPost);
+		// } catch (IOException e) {
+		// Gdx.app.log("Network", "Could not connect to server");
+		// e.printStackTrace();
+		// }
+		//
+		// if (httpResponse != null) {
+		// try {
+		// BufferedInputStream bis = new
+		// BufferedInputStream(httpResponse.getEntity().getContent());
+		// BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new
+		// File(filePath)));
+		// int inByte;
+		// while ((inByte = bis.read()) != -1) {
+		// bos.write(inByte);
+		// }
+		//
+		// bis.close();
+		// bos.close();
+		// httpResponse.close();
+		//
+		// return true;
+		// } catch (IOException e) {
+		// Gdx.app.log("Network", "Error downloading file");
+		// e.printStackTrace();
+		// }
+		// }
 
 
 		return false;
 	}
 
 	/**
-	 * Reads the entity bytes from a HTTP response
-	 * @param response the HTTP response to read the bytes from
-	 * @return the entity bytes. Length 0 if no response was found. null if an error
-	 *         occurred.
+	 * @param url the url to send the request to
+	 * @return new HttpURLConnection with all default parameters set
+	 * @throws IOException
+	 * @throws MalformedURLException
 	 */
-	private static byte[] getEntity(CloseableHttpResponse response) {
-		try {
-			return EntityUtils.toByteArray(response.getEntity());
+	private static HttpURLConnection getNewConnection(String url) throws MalformedURLException, IOException {
+		HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection();
+		httpConnection.setDoOutput(true);
+		httpConnection.setDoInput(true);
+		httpConnection.setRequestProperty("Accept-Charset", CHARSET);
+		httpConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		if (mCookies != null) {
+			for (String cookie : mCookies) {
+				httpConnection.addRequestProperty("Cookie", cookie.split(";", 2)[0]);
+			}
+		} else {
+			CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 		}
-	}
 
-	/**
-	 * Initializes HTTP Client
-	 */
-	private static void initHttpClient() {
-		if (mHttpClient == null) {
-			mHttpClient = HttpClients.custom().setMaxConnTotal(Config.Network.CONNECTIONS_MAX).setMaxConnPerRoute(Config.Network.CONNECTIONS_MAX)
-					.build();
-		}
+		return httpConnection;
 	}
 
 	/**
@@ -238,9 +295,12 @@ public class WebGateway {
 		public File file = null;
 	}
 
-	/** HTTP Client for the client side */
-	private static CloseableHttpClient mHttpClient = null;
 
-	/** Entity post name */
+	// Cookie information
+	private static List<String> mCookies = null;
+
 	private static final String ENTITY_NAME = "entity";
+	private static final String CHARSET = StandardCharsets.UTF_8.name();
+	private static final String BOUNDARY = UUID.randomUUID().toString();
+	private static final String CRLF = "\r\n";
 }

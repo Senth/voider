@@ -3,6 +3,7 @@ package com.spiddekauga.voider.server.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,10 +41,20 @@ public class NetworkGateway {
 					FileItemStream item = itemIt.next();
 					mLogger.finest("Found field: " + item.getFieldName());
 
-					if (item.getContentType().equals("application/octet-stream") && item.getFieldName().equals(ENTITY_NAME)) {
-						mLogger.finer("Found entity");
-						InputStream inputStream = item.openStream();
-						return IOUtils.toByteArray(inputStream);
+					if (item.getFieldName().equals(ENTITY_NAME)) {
+						// Binary
+						if (item.getContentType().equals("application/octet-stream")) {
+							mLogger.finer("Found entity");
+							InputStream inputStream = item.openStream();
+							return IOUtils.toByteArray(inputStream);
+						}
+						// Base 64
+						else if (item.getContentType().contains("text/plain")) {
+							mLogger.finer("Found Base64 entity");
+							InputStream inputStream = item.openStream();
+							String base64Entity = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+							return DatatypeConverter.parseBase64Binary(base64Entity);
+						}
 					}
 				}
 

@@ -8,13 +8,12 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * All resources that should be downloaded (synced) from the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class DownloadSyncResponse implements IEntity, ISuccessStatuses {
 	/** All published resources to download */
-	public ArrayList<ResourceBlobEntity> resources = null;
+	public ArrayList<ResourceBlobEntity> resources = new ArrayList<>();
 	/** Sync time */
 	public Date syncTime = null;
 	/** Status of the sync */

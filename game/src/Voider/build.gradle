@@ -24,7 +24,7 @@ ext.defaultBuild = "DEV_LOCAL"
 allprojects {
     apply plugin: "eclipse"
     
-    version = '0-5-9'
+    version = '0-5-10'
     ext {
         appName = 'Voider'
         gdxVersion = '1.5.5-SNAPSHOT'
@@ -74,6 +74,7 @@ project(":android") {
 
     dependencies {
         compile project(":core")
+		compile "org.apache.httpcomponents:httpclient:4.3.6"
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-sqlite-android:0.1"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
@@ -135,7 +136,7 @@ project(":core") {
     	compile project(":network")
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        compile "org.ini4j:ini4j:0.5.4"
+        compile "org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT"
 		compile "edu.gvsu.cis.masl:java-channels-api:0.1"
 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.esotericsoftware:kryo:3.0.0"
