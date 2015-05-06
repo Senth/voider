@@ -45,6 +45,7 @@ public class ServerConfig {
 		// Users
 		public static class CUsers {
 			public static final String USERNAME = "username";
+			public static final String USERNAME_LOWCASE = "username_lowcase";
 			public static final String EMAIL = "email";
 			public static final String PASSWORD = "password";
 			public static final String CREATED = "created";

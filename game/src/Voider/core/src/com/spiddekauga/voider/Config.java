@@ -213,7 +213,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_LOCAL;
+		public static final Builds BUILD = Builds.BETA;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */
@@ -853,7 +853,7 @@ public class Config {
 				break;
 
 			case DEV_SERVER:
-				SERVER_HOST = "http://voider-dev.appspot.com/";
+				SERVER_HOST = "https://voider-dev.appspot.com/";
 				break;
 
 			case DEV_LOCAL:

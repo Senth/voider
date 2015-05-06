@@ -24,7 +24,7 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 	/** User key */
 	public String userKey = null;
 	/** Date format */
-	public String dateFormat = null;
+	@Deprecated public String dateFormat = null;
 	/** Client version status */
 	public ClientVersionStatuses clientVersionStatus = ClientVersionStatuses.UNKNOWN;
 	/** Latest client version */

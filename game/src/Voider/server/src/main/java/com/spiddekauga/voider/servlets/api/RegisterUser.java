@@ -2,6 +2,7 @@ package com.spiddekauga.voider.servlets.api;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -42,8 +43,8 @@ public class RegisterUser extends VoiderServlet {
 		if (methodEntity instanceof RegisterUserMethod) {
 			mParameters = (RegisterUserMethod) methodEntity;
 
-			FilterWrapper usernameProperty = new FilterWrapper("username", mParameters.username);
-			FilterWrapper emailProperty = new FilterWrapper("email", mParameters.email);
+			FilterWrapper usernameProperty = new FilterWrapper(CUsers.USERNAME_LOWCASE, mParameters.username.toLowerCase(Locale.ENGLISH));
+			FilterWrapper emailProperty = new FilterWrapper(CUsers.EMAIL, mParameters.email.toLowerCase(Locale.ENGLISH));
 			boolean validFields = true;
 
 			// Check username length
@@ -57,12 +58,12 @@ public class RegisterUser extends VoiderServlet {
 				validFields = false;
 			}
 			// Check if username is free
-			else if (DatastoreUtils.exists(DatastoreTables.USERS.toString(), usernameProperty)) {
+			else if (DatastoreUtils.exists(DatastoreTables.USERS, usernameProperty)) {
 				mResponse.status = Statuses.FAIL_USERNAME_EXISTS;
 				validFields = false;
 			}
 			// Check email
-			else if (DatastoreUtils.exists(DatastoreTables.USERS.toString(), emailProperty)) {
+			else if (DatastoreUtils.exists(DatastoreTables.USERS, emailProperty)) {
 				mResponse.status = Statuses.FAIL_EMAIL_EXISTS;
 				validFields = false;
 			}
@@ -140,10 +141,10 @@ public class RegisterUser extends VoiderServlet {
 		Entity datastoreEntity = new Entity(DatastoreTables.USERS.toString());
 
 		datastoreEntity.setProperty(CUsers.USERNAME, mParameters.username);
+		datastoreEntity.setProperty(CUsers.USERNAME_LOWCASE, mParameters.username.toLowerCase(Locale.ENGLISH));
 		datastoreEntity.setUnindexedProperty(CUsers.CREATED, new Date());
 		datastoreEntity.setUnindexedProperty(CUsers.LOGGED_IN, new Date());
 		datastoreEntity.setProperty(CUsers.EMAIL, mParameters.email);
-		datastoreEntity.setUnindexedProperty(CUsers.DATE_FORMAT, "MM/dd/yyyy HH:mm:ss");
 
 		// Private key
 		UUID privateKey = UUID.randomUUID();

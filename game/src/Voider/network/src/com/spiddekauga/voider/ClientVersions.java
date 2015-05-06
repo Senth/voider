@@ -231,7 +231,7 @@ public enum ClientVersions {
 			"	Enemy path labels are in the correct location",
 			"	Path enemies now start in the correct direction in Enemy Editor"
 			),
-	V0_5_9(false,
+	V0_5_9(true,
 			"Explore Levels",
 			"	Now much faster (uses cache correctly)",
 			"	Levels are shown correctly when changing between sort and search",
@@ -249,6 +249,10 @@ public enum ClientVersions {
 			),
 	V0_5_10(false,
 			"Fixed an issue where Android devices to couldn't connect to the server"
+			),
+	V0_5_11(false,
+			"Improvements",
+			"	Username/Email is no longer case-sensitive when logging in"
 			),
 	;
 	// @formatter:on

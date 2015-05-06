@@ -2,6 +2,7 @@ package com.spiddekauga.voider.servlets.api;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -92,12 +93,12 @@ public class Login extends VoiderServlet {
 	 */
 	private void login(LoginMethod method) {
 		// Check username vs username first
-		FilterWrapper property = new FilterWrapper(CUsers.USERNAME, method.username);
-		Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
+		FilterWrapper property = new FilterWrapper(CUsers.USERNAME_LOWCASE, method.username.toLowerCase(Locale.ENGLISH));
+		Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS, property);
 		// Check username vs email
 		if (datastoreEntity == null) {
-			property = new FilterWrapper(CUsers.EMAIL, method.username);
-			datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
+			property = new FilterWrapper(CUsers.EMAIL, method.username.toLowerCase(Locale.ENGLISH));
+			datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS, property);
 		}
 
 		if (datastoreEntity != null) {
@@ -113,7 +114,6 @@ public class Login extends VoiderServlet {
 				mResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
 				mResponse.privateKey = DatastoreUtils.getPropertyUuid(datastoreEntity, CUsers.PRIVATE_KEY);
 				mResponse.username = (String) datastoreEntity.getProperty(CUsers.USERNAME);
-				mResponse.dateFormat = (String) datastoreEntity.getProperty(CUsers.DATE_FORMAT);
 				updateLastLoggedIn(datastoreEntity);
 
 				// Only login online if we have a valid version
