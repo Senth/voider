@@ -173,11 +173,7 @@ public abstract class WebRepo {
 				File file = new File(filepath);
 
 				if (file.exists()) {
-					FieldNameFileWrapper fieldNameFile = new FieldNameFileWrapper();
-					fieldNameFile.fieldName = resourceName + "_" + revisionEntity.revision;
-					fieldNameFile.file = file;
-
-					files.add(fieldNameFile);
+					files.add(new FieldNameFileWrapper(resourceName + "_" + revisionEntity.revision, file));
 				} else {
 					Gdx.app.error("WebRepo", "File does not exist: " + filepath);
 				}
@@ -202,11 +198,7 @@ public abstract class WebRepo {
 			File file = new File(filepath);
 
 			if (file.exists()) {
-				FieldNameFileWrapper fieldNameFile = new FieldNameFileWrapper();
-				fieldNameFile.fieldName = resource.getId().toString();
-				fieldNameFile.file = file;
-
-				files.add(fieldNameFile);
+				files.add(new FieldNameFileWrapper(resource.getId().toString(), file));
 			} else {
 				Gdx.app.error("ResourceWebRepo", "File does not exist: " + filepath);
 			}

@@ -676,7 +676,7 @@ public class Geometry {
 
 		int segments = calculateCircleSegments(radius, zoom);
 
-		float angle = 2 * 3.1415926f / segments;
+		float angle = (float) (2 * Math.PI / segments);
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;

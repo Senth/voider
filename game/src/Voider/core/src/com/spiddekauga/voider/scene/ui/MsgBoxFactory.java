@@ -153,6 +153,8 @@ public class MsgBoxFactory {
 		case HIGHLIGHT:
 			labelStyle = LabelStyles.HIGHLIGHT;
 			break;
+		default:
+			labelStyle = LabelStyles.DEFAULT;
 		}
 
 		label = mUiFactory.text.create(motd.content, true, labelStyle);

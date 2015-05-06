@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
@@ -185,6 +184,6 @@ public class ScoreSceneGui extends Gui {
 	private class InnerWidgets {
 		RatingWidget rating = null;
 		Button bookmark = null;
-		TextArea comment = null;
+		// TextArea comment = null;
 	}
 }

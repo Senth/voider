@@ -1,12 +1,16 @@
 package com.spiddekauga.voider.repo;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -167,12 +171,12 @@ public class WebGateway {
 		try {
 			HttpURLConnection httpConnection = getNewConnection(uploadUrl);
 			OutputStream output = httpConnection.getOutputStream();
-			PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, CHARSET));
+			PrintWriter writer = getPrintWriter(output);
 
 			// Add files
 			if (files != null && !files.isEmpty()) {
 				for (FieldNameFileWrapper fieldNameFile : files) {
-					addContent(output, writer, fieldNameFile.fieldName, fieldNameFile.file, fieldNameFile.fieldName);
+					addContent(output, writer, fieldNameFile.mFieldName, fieldNameFile.mFile, fieldNameFile.mFieldName);
 				}
 
 				// Add method entity as base64
@@ -199,6 +203,8 @@ public class WebGateway {
 				mCookies = httpConnection.getHeaderFields().get("Set-Cookie");
 			}
 
+			httpConnection.disconnect();
+
 			return byteArrayOutputStream.toByteArray();
 		} catch (IOException e) {
 			Gdx.app.log("Network", "Could not connect to server");
@@ -216,49 +222,46 @@ public class WebGateway {
 	 */
 	public static boolean downloadRequest(String methodName, byte[] entity, String filePath) {
 
-		// REMOVE
-		// initHttpClient();
-		//
-		// CloseableHttpResponse httpResponse = null;
-		//
-		// try {
-		// String url = Config.Network.SERVER_HOST + methodName;
-		// MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-		// entityBuilder.addBinaryBody(ENTITY_NAME, entity);
-		//
-		// HttpPost httpPost = new HttpPost(url);
-		// httpPost.setEntity(entityBuilder.build());
-		//
-		// // httpResponse = mHttpClient.execute(httpPost);
-		// } catch (IOException e) {
-		// Gdx.app.log("Network", "Could not connect to server");
-		// e.printStackTrace();
-		// }
-		//
-		// if (httpResponse != null) {
-		// try {
-		// BufferedInputStream bis = new
-		// BufferedInputStream(httpResponse.getEntity().getContent());
-		// BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new
-		// File(filePath)));
-		// int inByte;
-		// while ((inByte = bis.read()) != -1) {
-		// bos.write(inByte);
-		// }
-		//
-		// bis.close();
-		// bos.close();
-		// httpResponse.close();
-		//
-		// return true;
-		// } catch (IOException e) {
-		// Gdx.app.log("Network", "Error downloading file");
-		// e.printStackTrace();
-		// }
-		// }
+		try {
+			HttpURLConnection httpConnection = getNewConnection(Config.Network.SERVER_HOST + methodName);
+			OutputStream output = httpConnection.getOutputStream();
+			PrintWriter writer = getPrintWriter(output);
 
+			// Add method entity
+			addContent(output, writer, ENTITY_NAME, entity, null);
+			endContent(writer);
+
+			// Write the response to a file
+			BufferedInputStream response = new BufferedInputStream(httpConnection.getInputStream());
+			FileOutputStream fileOutputStream = new FileOutputStream(new File(filePath));
+			BufferedOutputStream fileOut = new BufferedOutputStream(fileOutputStream);
+
+			int inByte;
+			while ((inByte = response.read()) != -1) {
+				fileOut.write(inByte);
+			}
+
+			response.close();
+			fileOut.close();
+			httpConnection.disconnect();
+
+			return true;
+		} catch (IOException e) {
+			Gdx.app.log("Network", "Error downloading file " + filePath);
+			e.printStackTrace();
+		}
 
 		return false;
+	}
+
+	/**
+	 * Get a print writer for the HTTP output
+	 * @param output output for the HTTP connection
+	 * @return new PrintWriter
+	 * @throws UnsupportedEncodingException
+	 */
+	private static PrintWriter getPrintWriter(OutputStream output) throws UnsupportedEncodingException {
+		return new PrintWriter(new OutputStreamWriter(output, CHARSET));
 	}
 
 	/**
@@ -289,10 +292,20 @@ public class WebGateway {
 	 * Wrapper class for a file and field name
 	 */
 	public static class FieldNameFileWrapper {
+		/**
+		 * @param fieldName name of the field
+		 * @param file the file to upload
+		 */
+		public FieldNameFileWrapper(String fieldName, File file) {
+			mFieldName = fieldName;
+			mFile = file;
+		}
+
 		/** Field name in the form */
-		public String fieldName = null;
+		private String mFieldName;
 		/** The file to upload */
-		public File file = null;
+		private File mFile;
+
 	}
 
 

@@ -247,6 +247,9 @@ public enum ClientVersions {
 			"	Fixed a random crash when a resource was synced in an editor",
 			"	Loading another revision now shows a correct dialog"
 			),
+	V0_5_10(false,
+			"Fixed an issue where Android devices to couldn't connect to the server"
+			),
 	;
 	// @formatter:on
 
