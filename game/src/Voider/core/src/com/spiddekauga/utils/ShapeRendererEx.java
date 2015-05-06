@@ -830,7 +830,7 @@ public class ShapeRendererEx implements Disposable {
 		checkDirty();
 		checkFlush(segments * 2 + 2);
 
-		float angle = 2 * 3.1415926f / segments;
+		float angle = (float) (2 * Math.PI / segments);
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
@@ -904,7 +904,7 @@ public class ShapeRendererEx implements Disposable {
 		}
 		checkDirty();
 		checkFlush(segments * 4 + 2);
-		float angle = 2 * 3.1415926f / segments;
+		float angle = (float) (2 * Math.PI / segments);
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;

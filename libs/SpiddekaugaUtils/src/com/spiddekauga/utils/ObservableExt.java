@@ -7,7 +7,7 @@ package com.spiddekauga.utils;
  * notifyObservers()
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Observable extends java.util.Observable {
+public class ObservableExt extends java.util.Observable {
 
 	@Override
 	public void notifyObservers() {
