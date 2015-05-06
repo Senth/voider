@@ -1,10 +1,10 @@
 package com.spiddekauga.voider.repo;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,14 +18,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.xml.bind.DatatypeConverter;
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Base64Coder;
 import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 
@@ -126,9 +125,11 @@ public class WebGateway {
 			output.flush();
 		}
 		// Method in Base64
-		else if (object instanceof String) {
+		else if (object instanceof char[]) {
+			char[] base64 = (char[]) object;
+			String string = new String(base64);
 			writer.append("Content-Type: text/plain; charset=" + CHARSET).append(CRLF);
-			writer.append(CRLF).append((String) object);
+			writer.append(CRLF).append(string);
 		}
 		// Files
 		else if (object instanceof File) {
@@ -136,15 +137,13 @@ public class WebGateway {
 			writer.append("Content-Type: application/octet-stream").append(CRLF);
 			writer.append("Content-Transfer-Encoding: binary").append(CRLF);
 			writer.append(CRLF).flush();
-			Files.copy(file.toPath(), output);
+			DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
+			byte[] bytes = new byte[(int) file.length()];
+			dataInputStream.readFully(bytes);
+			dataInputStream.close();
+			output.write(bytes);
 			output.flush();
 		}
-		writer.append(CRLF).flush();
-
-		// Add method entity as base64
-		writer.append("--" + BOUNDARY).append(CRLF);
-		writer.append("Content-Disposition: form-data; name=\"" + ENTITY_NAME + "\"").append(CRLF);
-
 		writer.append(CRLF).flush();
 	}
 
@@ -180,7 +179,7 @@ public class WebGateway {
 				}
 
 				// Add method entity as base64
-				addContent(output, writer, ENTITY_NAME, DatatypeConverter.printBase64Binary(entity), null);
+				addContent(output, writer, ENTITY_NAME, Base64Coder.encode(entity), null);
 			}
 			// Add method entity
 			else {
@@ -233,16 +232,10 @@ public class WebGateway {
 
 			// Write the response to a file
 			BufferedInputStream response = new BufferedInputStream(httpConnection.getInputStream());
-			FileOutputStream fileOutputStream = new FileOutputStream(new File(filePath));
-			BufferedOutputStream fileOut = new BufferedOutputStream(fileOutputStream);
-
-			int inByte;
-			while ((inByte = response.read()) != -1) {
-				fileOut.write(inByte);
-			}
+			FileHandle file = Gdx.files.external(filePath);
+			file.write(response, false);
 
 			response.close();
-			fileOut.close();
 			httpConnection.disconnect();
 
 			return true;

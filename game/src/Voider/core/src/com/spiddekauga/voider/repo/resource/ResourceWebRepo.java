@@ -327,8 +327,7 @@ public class ResourceWebRepo extends WebRepo {
 				}
 			}
 
-			String filePath = Gdx.files.getExternalStoragePath() + resourceFileName;
-			toDownload.add(new DownloadResourceWrapper(filePath, resourceInfo));
+			toDownload.add(new DownloadResourceWrapper(resourceFileName, resourceInfo));
 		}
 
 		downloadInThreads(toDownload, progressListener);
