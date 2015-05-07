@@ -151,7 +151,6 @@ project(":core") {
 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
-		compile "org.apache.httpcomponents:httpmime:4.3.6"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
     }
 }
