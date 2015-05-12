@@ -1,5 +1,8 @@
 package com.spiddekauga.voider;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.util.concurrent.Semaphore;
 
 import com.badlogic.gdx.Application.ApplicationType;
@@ -44,6 +47,7 @@ public class VoiderGame implements ApplicationListener {
 	public void create() {
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 		Box2D.init();
+		CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 
 		if (Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 			Log.INFO();

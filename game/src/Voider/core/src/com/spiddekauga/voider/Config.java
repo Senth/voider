@@ -122,7 +122,9 @@ public class Config {
 	 */
 	public static class Community {
 		/** How many hours until a level/campaign is taggable again */
-		public static final int TAGGABLE_DELAY = 12;
+		public static final long TAGGABLE_DELAY = 12;
+		/** Taggable delay in ms */
+		public static final long TAGGABLE_DELAY_MS = TAGGABLE_DELAY * 3600 * 1000;
 		/** How many tags to display when tagging */
 		public static final int TAGS_TO_DISPLAY = 7;
 		/** Tags per row */
@@ -213,7 +215,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_SERVER;
+		public static final Builds BUILD = Builds.BETA;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */

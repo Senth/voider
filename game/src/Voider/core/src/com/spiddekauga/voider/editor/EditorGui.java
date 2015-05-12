@@ -1,8 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-
-import org.apache.commons.lang.WordUtils;
+import java.util.Locale;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
@@ -932,7 +931,8 @@ public abstract class EditorGui extends Gui {
 	 * @return resource type name with capital first letters
 	 */
 	protected String getResourceTypeNameCapital() {
-		return WordUtils.capitalize(getResourceTypeName());
+		String name = getResourceTypeName();
+		return name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
 	}
 
 	/**

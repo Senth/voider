@@ -78,7 +78,7 @@ project(":android") {
 		compile 'com.esotericsoftware:minlog:1.3.0'
 		compile 'com.googlecode.openbeans:openbeans:1.0'
         compile 'org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT'
-		compile "edu.gvsu.cis.masl:java-channels-api:0.1"
+		compile "edu.gvsu.cis.masl:java-channels:0.2.0"
 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
@@ -147,7 +147,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT"
-		compile "edu.gvsu.cis.masl:java-channels-api:0.1"
+		compile "edu.gvsu.cis.masl:java-channels:0.2.0"
 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"

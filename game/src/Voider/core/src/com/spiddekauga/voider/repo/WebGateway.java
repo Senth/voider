@@ -11,9 +11,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -198,10 +195,6 @@ public class WebGateway {
 				byteArrayOutputStream.write(buffer, 0, n);
 			}
 
-			if (mCookies == null) {
-				mCookies = httpConnection.getHeaderFields().get("Set-Cookie");
-			}
-
 			httpConnection.disconnect();
 
 			return byteArrayOutputStream.toByteArray();
@@ -270,14 +263,6 @@ public class WebGateway {
 		httpConnection.setRequestProperty("Accept-Charset", CHARSET);
 		httpConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
 
-		if (mCookies != null) {
-			for (String cookie : mCookies) {
-				httpConnection.addRequestProperty("Cookie", cookie.split(";", 2)[0]);
-			}
-		} else {
-			CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-		}
-
 		return httpConnection;
 	}
 
@@ -301,9 +286,6 @@ public class WebGateway {
 
 	}
 
-
-	// Cookie information
-	private static List<String> mCookies = null;
 
 	private static final String ENTITY_NAME = "entity";
 	private static final String CHARSET = StandardCharsets.UTF_8.name();

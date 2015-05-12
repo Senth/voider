@@ -82,7 +82,10 @@ public abstract class VoiderController extends HttpServlet {
 	 * @return parameter value or null if it doesn't exist
 	 */
 	protected String getParameter(String name) {
-		return mRequest.getParameter(name);
+		// Check regular parameter
+		String value = mRequest.getParameter(name);
+
+		return value;
 	}
 
 	/**

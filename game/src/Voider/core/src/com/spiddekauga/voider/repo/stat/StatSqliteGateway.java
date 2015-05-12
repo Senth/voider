@@ -3,13 +3,11 @@ package com.spiddekauga.voider.repo.stat;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.commons.lang.time.DateUtils;
-
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.network.stat.StatSyncEntity.LevelStat;
+import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.SqliteGateway;
 
 /**
@@ -229,6 +227,6 @@ class StatSqliteGateway extends SqliteGateway {
 	 * @return old tagging date
 	 */
 	private static Date getOldDate() {
-		return DateUtils.addHours(new Date(), -Config.Community.TAGGABLE_DELAY);
+		return new Date(System.currentTimeMillis() - Config.Community.TAGGABLE_DELAY_MS);
 	}
 }

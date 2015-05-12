@@ -12,7 +12,6 @@ import com.google.appengine.api.channel.ChannelServiceFactory;
 
 /**
  * Creates a chat connection (or closes one)
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -37,6 +36,5 @@ public class ChatCreate extends HttpServlet {
 		response.getWriter().write(sb.toString());
 	}
 
-	/** Channel service */
 	private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
 }

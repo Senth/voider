@@ -185,7 +185,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 
 
 	<!--———————————————
-	 		BACKEND
+	 		CHANNEL
 	———————————————–-->
 	<servlet>
 		<servlet-name>ChatCreate</servlet-name>
@@ -202,6 +202,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet-mapping>
 		<servlet-name>ChatConnected</servlet-name>
 		<url-pattern>/_ah/channel/connected/</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatReceive</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.backend.ChatReceive</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatReceive</servlet-name>
+		<url-pattern>/chat-receive</url-pattern>
 	</servlet-mapping>
 	
 	
