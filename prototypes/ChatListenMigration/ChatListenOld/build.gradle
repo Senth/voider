@@ -1,0 +1,18 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+	mavenLocal()
+   	maven { url "http://maven.senth.org/snapshots" }
+   	maven { url "http://maven.senth.org/releases" }
+	mavenCentral()
+}
+
+dependencies {
+	compile 'edu.gvsu.cis.masl:java-channels:0.1'
+	compile 'com.google.code.gson:gson:2.2.4'
+}
+
+eclipse.project {
+	name = 'ChatListenOld'
+}

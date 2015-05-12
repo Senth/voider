@@ -1,0 +1,23 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+configurations.all {
+	resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+repositories {
+	mavenLocal()
+    maven { url "http://maven.senth.org/snapshots" }
+    maven { url "http://maven.senth.org/releases" }
+	mavenCentral()
+}
+
+dependencies {
+	compile 'edu.gvsu.cis.masl:java-channels:0.2.0-SNAPSHOT'
+	compile 'com.google.code.gson:gson:2.2.4'
+}
+
+eclipse.project {
+	name = 'ChatListenNew'
+}
