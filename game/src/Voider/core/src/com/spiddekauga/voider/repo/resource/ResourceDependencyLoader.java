@@ -3,6 +3,7 @@ package com.spiddekauga.voider.repo.resource;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.resource.ResourceLoader.UuidRevision;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceDependency;
 import com.spiddekauga.voider.resources.ResourceException;
@@ -59,6 +61,16 @@ class ResourceDependencyLoader implements Disposable {
 	}
 
 	/**
+	 * Remove a loading resource
+	 * @param resourceId the resource to skip loading
+	 */
+	private void removeFromLoadingQueue(UUID resourceId) {
+		ResourceItem searchResourceItem = new ResourceItem();
+		searchResourceItem.id = resourceId;
+		mLoadingDefs.remove(searchResourceItem);
+	}
+
+	/**
 	 * Checks whether the resources have been loaded and then if it has any dependencies
 	 * that shall be loaded. If so it will add these to the queue.
 	 * @return true if it has finished all the loading
@@ -68,11 +80,15 @@ class ResourceDependencyLoader implements Disposable {
 			mResourceLoader.update();
 		} catch (ResourceException e) {
 			// Remove the queue item
-			ResourceItem searchResourceItem = new ResourceItem();
-			searchResourceItem.id = e.getId();
-			mLoadingDefs.remove(searchResourceItem);
+			removeFromLoadingQueue(e.getId());
 
 			throw e;
+		}
+
+		// Check if some resources failed to be loaded
+		BlockingQueue<UuidRevision> failedResources = mResourceLoader.getFailed();
+		for (UuidRevision uuidRevision : failedResources) {
+			removeFromLoadingQueue(uuidRevision.resourceId);
 		}
 
 		// Skip update if we aren't waiting for any definitions to be done loading

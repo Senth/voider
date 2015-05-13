@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -20,6 +21,8 @@ public class UserResourceSyncResponse implements IEntity, ISuccessStatuses {
 	public boolean downloadStatus = true;
 	/** All conflicting resources */
 	public HashMap<UUID, ResourceConflictEntity> conflicts = new HashMap<>();
+	/** Failed uploads */
+	public HashMap<UUID, HashSet<Integer>> failedUploads = new HashMap<>();
 	/** Resources to download */
 	public HashMap<UUID, ArrayList<ResourceRevisionBlobEntity>> blobsToDownload = new HashMap<>();
 	/** Resources to remove */
@@ -37,7 +40,9 @@ public class UserResourceSyncResponse implements IEntity, ISuccessStatuses {
 	public enum UploadStatuses implements ISuccessStatuses {
 		/** Successfully uploaded and synced all resources */
 		SUCCESS_ALL,
-		/** Successfully uploaded some resources */
+		/** Successfully uploaded some resources, but conflicts exists */
+		SUCCESS_CONFLICTS,
+		/** Successfully uploaded some resources, but failed on some */
 		SUCCESS_PARTIAL,
 		/** Failed internal server error */
 		FAILED_INTERNAL,

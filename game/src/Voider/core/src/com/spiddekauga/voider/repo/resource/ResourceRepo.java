@@ -209,27 +209,51 @@ public class ResourceRepo extends Repo {
 	}
 
 	/**
+	 * Set successful user resource revisions as synced
+	 * @param method
+	 * @param response
+	 */
+	private void setSuccessfulAsSynced(UserResourceSyncMethod method, UserResourceSyncResponse response) {
+		// Set the successful revisions as uploaded/synced
+		for (ResourceRevisionEntity resource : method.resources) {
+			if (!resource.revisions.isEmpty()) {
+				int fromRevision = resource.revisions.get(0).revision;
+				int toRevision = resource.revisions.get(resource.revisions.size() - 1).revision;
+
+				// Same amount of revisions
+				assert (toRevision - fromRevision == resource.revisions.size() - 1);
+
+				// All revisions were uploaded correctly
+				boolean allUploaded = !response.conflicts.containsKey(resource.resourceId)
+						&& !response.failedUploads.containsKey(resource.resourceId);
+				if (allUploaded) {
+					ResourceLocalRepo.setSyncedUserResource(resource.resourceId, fromRevision, toRevision);
+				}
+				// Set sync for revisions that were successfully updated
+				else if (!response.conflicts.containsKey(resource.resourceId)) {
+					Set<Integer> failedRevisions = response.failedUploads.get(resource.resourceId);
+
+					// If failed revisions isn't set all failed
+					if (failedRevisions != null) {
+						for (int revision = fromRevision; revision <= toRevision; ++revision) {
+							if (!failedRevisions.contains(revision)) {
+								ResourceLocalRepo.setSyncedUserResource(resource.resourceId, revision);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Handles sync user resource revisions response.
 	 * @param method
 	 * @param response
 	 */
 	private void handleSyncUserResourcesResponse(UserResourceSyncMethod method, UserResourceSyncResponse response) {
 		if (response.uploadStatus.isSuccessful()) {
-			// Set the successful revisions as uploaded/synced
-			for (ResourceRevisionEntity resource : method.resources) {
-				if (!resource.revisions.isEmpty()) {
-					int fromRevision = resource.revisions.get(0).revision;
-					int toRevision = resource.revisions.get(resource.revisions.size() - 1).revision;
-
-					// Same amount of revisions
-					assert (toRevision - fromRevision == resource.revisions.size() - 1);
-
-					// Set as uploaded
-					if (!response.conflicts.containsKey(resource.resourceId)) {
-						ResourceLocalRepo.setSyncedUserResource(resource.resourceId, fromRevision, toRevision);
-					}
-				}
-			}
+			setSuccessfulAsSynced(method, response);
 
 
 			// Delete resources that should be deleted

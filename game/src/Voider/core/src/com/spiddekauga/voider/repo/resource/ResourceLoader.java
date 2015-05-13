@@ -555,9 +555,16 @@ class ResourceLoader {
 	}
 
 	/**
+	 * @return all resources that failed to be downloaded
+	 */
+	BlockingQueue<UuidRevision> getFailed() {
+		return mFailed;
+	}
+
+	/**
 	 * Wrapper for unique UUID together with a revision
 	 */
-	private static class UuidRevision implements Poolable {
+	static class UuidRevision implements Poolable {
 		/**
 		 * Sets the resource and revision
 		 * @param resourceId the resource id
@@ -673,7 +680,9 @@ class ResourceLoader {
 			}
 			// Remove from redownload list
 			else {
+				mFailed.add(uuidRevision);
 				mLoadingQueue.remove(uuidRevision);
+				mRedownloading.remove(uuidRevision);
 				NotificationShower.getInstance().showError("Failed to redownload resource!");
 			}
 		}
@@ -703,6 +712,8 @@ class ResourceLoader {
 	private HashMap<UuidRevision, LoadedResource> mLoadingQueue = new HashMap<>();
 	/** All resources that are being redownloaded */
 	private BlockingQueue<UuidRevision> mRedownloading = new LinkedBlockingQueue<>();
+	/** Resources that failed to load and redownload */
+	private BlockingQueue<UuidRevision> mFailed = new LinkedBlockingQueue<>();
 	/** Unload queue */
 	private ArrayList<ReloadResource> mReloadQueue = new ArrayList<>();
 	/** Unload queue */

@@ -229,9 +229,11 @@ public class SettingsGui extends MenuGui {
 	}
 
 	private void resetDisplay() {
-		mWidgets.display.fullscreen.setChecked(mScene.isFullscreen());
-		mWidgets.display.resolutionFullscreen.setSelected(mScene.getResolutionFullscreen());
-		mWidgets.display.resolutionWindowed.setSelected(mScene.getResolutionWindowed());
+		if (mWidgets.display.fullscreen != null) {
+			mWidgets.display.fullscreen.setChecked(mScene.isFullscreen());
+			mWidgets.display.resolutionFullscreen.setSelected(mScene.getResolutionFullscreen());
+			mWidgets.display.resolutionWindowed.setSelected(mScene.getResolutionWindowed());
+		}
 	}
 
 	private void resetGeneral() {

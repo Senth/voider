@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -86,9 +87,7 @@ public class UserResourceSync extends VoiderServlet {
 			if (mResponse.isSuccessful()) {
 				if (!userMethod.resources.isEmpty() || !userMethod.resourceToRemove.isEmpty()
 						|| (userMethod.conflictKeepLocal != null && userMethod.conflictKeepLocal)) {
-					ChatMessage<Object> chatMessage = new ChatMessage<>();
-					chatMessage.skipClient = mUser.getClientId();
-					chatMessage.type = MessageTypes.SYNC_USER_RESOURCES;
+					ChatMessage<Object> chatMessage = new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId());
 					sendMessage(chatMessage);
 				}
 			}
@@ -258,12 +257,23 @@ public class UserResourceSync extends VoiderServlet {
 		// Iterate through each resource id
 		for (ResourceRevisionEntity entity : methodEntity.resources) {
 			Map<Integer, BlobKey> blobKeys = blobResources.get(entity.resourceId);
-			ArrayList<Key> revisions = new ArrayList<>();
+			if (blobKeys == null) {
+				mLogger.severe("Couldn't find any blobs for resource: " + entity.resourceId);
+				addFailedUpload(entity.resourceId, -1);
+				continue;
+			}
 
+
+			ArrayList<Key> revisions = new ArrayList<>();
 			// Add revision with blob key to datastore
 			if (!mResponse.conflicts.containsKey(entity.resourceId)) {
 				for (RevisionEntity revisionEntity : entity.revisions) {
-					revisions.add(insertUserResourceRevision(entity, revisionEntity, blobKeys));
+					Key addedRevision = insertUserResourceRevision(entity, revisionEntity, blobKeys);
+					if (addedRevision != null) {
+						revisions.add(addedRevision);
+					} else {
+						addFailedUpload(entity.resourceId, revisionEntity.revision);
+					}
 				}
 			}
 			// Remove uploaded blob keys
@@ -276,10 +286,37 @@ public class UserResourceSync extends VoiderServlet {
 			BlobUtils.delete(blobsToRemove);
 		}
 
-		if (mResponse.conflicts.isEmpty()) {
+		if (mResponse.conflicts.isEmpty() && mResponse.failedUploads.isEmpty()) {
 			mResponse.uploadStatus = UploadStatuses.SUCCESS_ALL;
-		} else {
+		} else if (!mResponse.conflicts.isEmpty()) {
+			mResponse.uploadStatus = UploadStatuses.SUCCESS_CONFLICTS;
+		} else if (!mResponse.failedUploads.isEmpty()) {
 			mResponse.uploadStatus = UploadStatuses.SUCCESS_PARTIAL;
+		}
+	}
+
+	/**
+	 * Add a failed upload
+	 * @param resourceId
+	 * @param revision the revision. If set to -1 the revision isn't used
+	 */
+	private void addFailedUpload(UUID resourceId, int revision) {
+		HashSet<Integer> revisions = mResponse.failedUploads.get(resourceId);
+
+		if (revisions == null) {
+			// New revisions
+			if (revision != -1) {
+				revisions = new HashSet<>();
+				mResponse.failedUploads.put(resourceId, revisions);
+			}
+			// All failed
+			else {
+				mResponse.failedUploads.put(resourceId, null);
+			}
+		}
+
+		if (revision != -1) {
+			revisions.add(revision);
 		}
 	}
 
@@ -355,15 +392,20 @@ public class UserResourceSync extends VoiderServlet {
 	 */
 	private Key insertUserResourceRevision(ResourceRevisionEntity resourceRevisionEntity, RevisionEntity revisionEntity,
 			Map<Integer, BlobKey> blobKeys) {
-		Entity entity = new Entity(DatastoreTables.USER_RESOURCES, mUser.getKey());
-		DatastoreUtils.setProperty(entity, CUserResources.RESOURCE_ID, resourceRevisionEntity.resourceId);
-		entity.setProperty(CUserResources.REVISION, revisionEntity.revision);
-		entity.setUnindexedProperty(CUserResources.TYPE, resourceRevisionEntity.type.toId());
-		entity.setProperty(CUserResources.CREATED, revisionEntity.date);
-		entity.setProperty(CUserResources.UPLOADED, mSyncDate);
-		entity.setUnindexedProperty(CUserResources.BLOB_KEY, blobKeys.get(revisionEntity.revision));
+		if (blobKeys != null) {
+			Entity entity = new Entity(DatastoreTables.USER_RESOURCES, mUser.getKey());
+			DatastoreUtils.setProperty(entity, CUserResources.RESOURCE_ID, resourceRevisionEntity.resourceId);
+			entity.setProperty(CUserResources.REVISION, revisionEntity.revision);
+			entity.setUnindexedProperty(CUserResources.TYPE, resourceRevisionEntity.type.toId());
+			entity.setProperty(CUserResources.CREATED, revisionEntity.date);
+			entity.setProperty(CUserResources.UPLOADED, mSyncDate);
+			entity.setUnindexedProperty(CUserResources.BLOB_KEY, blobKeys.get(revisionEntity.revision));
 
-		return DatastoreUtils.put(entity);
+			return DatastoreUtils.put(entity);
+		} else {
+			mLogger.severe("Could not find blob for resource: " + resourceRevisionEntity.resourceId + ", rev: " + revisionEntity.revision);
+			return null;
+		}
 	}
 
 	/** Sync date */

@@ -83,6 +83,7 @@ project(":android") {
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
+		compile 'com.spiddekauga.http:http-url-utils:0.2.0-SNAPSHOT'
 		// ANDROID STUFF
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-sqlite-android:0.1"
@@ -152,6 +153,7 @@ project(":core") {
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
+		compile 'com.spiddekauga.http:http-url-utils:0.2.0-SNAPSHOT'
     }
 }
 

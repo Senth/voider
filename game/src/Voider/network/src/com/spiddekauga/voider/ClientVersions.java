@@ -250,9 +250,11 @@ public enum ClientVersions {
 	V0_5_10(false,
 			"Fixed an issue where Android devices to couldn't connect to the server"
 			),
-	V0_5_11(false,
+	V0_5_11(true,
 			"Improvements",
-			"	Username/Email is no longer case-sensitive when logging in"
+			"	Username/Email is no longer case-sensitive when logging in",
+			"Android",
+			"	Fixed a ton of bugs. Still not playable though :P"
 			),
 	;
 	// @formatter:on

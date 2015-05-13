@@ -7,10 +7,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
-import com.badlogic.gdx.Gdx;
 import com.spiddekauga.net.IDownloadProgressListener;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
@@ -160,7 +160,7 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 			break;
 
 		case USER_RESOURCE_FIX_CONFLICTS:
-			Gdx.app.error("Synchronizer", "Cannot fix user resource conflict through synchronize() method");
+			Config.Debug.debugException("Cannot fix user resource conflict through synchronize() method");
 			break;
 		}
 
@@ -312,9 +312,9 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 */
 	private void handleSyncHighscoreResponse(HighscoreSyncResponse response) {
 		if (response.isSuccessful()) {
-			mNotification.show(NotificationTypes.SUCCESS, "Highscores synced");
+			mNotification.showSuccess("Highscores synced");
 		} else {
-			mNotification.show(NotificationTypes.ERROR, "Highscores sync failed");
+			mNotification.showError("Highscores sync failed");
 		}
 	}
 
@@ -325,10 +325,10 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	private void handleSyncDownloadResponse(DownloadSyncResponse response) {
 		if (response.isSuccessful()) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS));
-			mNotification.show(NotificationTypes.SUCCESS, "Downloaded resources synced");
+			mNotification.showSuccess("Published resources synced");
 		} else {
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD_FAILED));
-			mNotification.show(NotificationTypes.ERROR, "Downloaded resources sync failed");
+			mNotification.showError("Published resources sync failed");
 		}
 	}
 
@@ -343,15 +343,15 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		case FAILED_SERVER_CONNECTION:
 		case FAILED_SERVER_ERROR:
 		case FAILED_USER_NOT_LOGGED_IN:
-			mNotification.show(NotificationTypes.ERROR, "Couldn't send saved bug reports");
+			mNotification.showError("Couldn't send saved bug reports");
 			break;
 
 		case SUCCESS:
-			mNotification.show(NotificationTypes.SUCCESS, "Sent saved bug reports");
+			mNotification.showSuccess("Sent saved bug reports");
 			break;
 
 		case SUCCESS_PARTIAL:
-			mNotification.show(NotificationTypes.HIGHLIGHT, "Sent some bug reports?");
+			mNotification.showHighlight("Sent some bug reports?");
 			break;
 		}
 
@@ -378,9 +378,9 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		case FAILED_INTERNAL:
 		case FAILED_USER_NOT_LOGGED_IN:
 			if (response.downloadStatus) {
-				mNotification.show(NotificationTypes.ERROR, "Downloaded player resources; failed to upload");
+				mNotification.showError("Failed to upload player resources");
 			} else {
-				mNotification.show(NotificationTypes.ERROR, "Player resources sync failed");
+				mNotification.showError("Player resources sync failed");
 			}
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_FAILED));
 			break;
@@ -389,22 +389,27 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 			// No Conflicts
 			if (method.conflictKeepLocal == null) {
 				if (response.downloadStatus) {
-					mNotification.show(NotificationTypes.SUCCESS, "Player resources synced");
+					mNotification.showSuccess("Player resources synced");
 				} else {
-					mNotification.show(NotificationTypes.ERROR, "Uploaded player resources; failed to download");
+					mNotification.showError("Download of new resources failed");
 				}
 			}
 			// Conflicts
 			else {
-				mNotification.show(NotificationTypes.SUCCESS, "Conflicts resolved");
+				mNotification.showSuccess("Conflicts resolved");
 			}
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS));
 			break;
 
-		case SUCCESS_PARTIAL:
+		case SUCCESS_CONFLICTS:
 			mConflictsFound = response.conflicts;
 			UiFactory.getInstance().msgBox.conflictWindow();
 			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_CONFLICT));
+			break;
+
+		case SUCCESS_PARTIAL:
+			mNotification.showError("Failed to upload some resources");
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES_UPLOAD_PARTIAL));
 			break;
 		}
 

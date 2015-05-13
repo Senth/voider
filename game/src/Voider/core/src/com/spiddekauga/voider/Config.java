@@ -215,7 +215,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.BETA;
+		public static final Builds BUILD = Builds.DEV_LOCAL;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */
@@ -242,6 +242,31 @@ public class Config {
 			}
 		}
 
+		/**
+		 * Call this method to throw a debug assertion exception. I.e. this should never
+		 * be called. But if it is then it only throws an exception in development servers
+		 * @param message the message why this should never be called
+		 */
+		public static void debugException(String message) {
+			if (isBuildOrBelow(Builds.DEV_SERVER)) {
+				throw new DebugException(message);
+			}
+		}
+
+		/**
+		 * Debug exception
+		 */
+		public static class DebugException extends RuntimeException {
+			/**
+			 * @param message the message why this exception is thrown
+			 */
+			public DebugException(String message) {
+				super(message);
+			}
+
+			private static final long serialVersionUID = -4071174543732515552L;
+
+		}
 
 		/**
 		 * Deprecated exception

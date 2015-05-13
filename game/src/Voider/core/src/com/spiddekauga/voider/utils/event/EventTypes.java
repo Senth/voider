@@ -35,6 +35,8 @@ public enum EventTypes {
 	SYNC_USER_RESOURCES_UPLOAD_SUCCESS,
 	/** Failed to upload user resources */
 	SYNC_USER_RESOURCES_UPLOAD_FAILED,
+	/** Only a partial of the resources were uploaded */
+	SYNC_USER_RESOURCES_UPLOAD_PARTIAL,
 	/** Conflict when uploading user resources */
 	SYNC_USER_RESOURCES_UPLOAD_CONFLICT,
 	/** Downloaded new community resources */
