@@ -15,6 +15,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	
 	<servlet>
+		<servlet-name>Cleanup</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.Cleanup</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Cleanup</servlet-name>
+		<url-pattern>/cleanup</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 	<servlet-name>mapreduce</servlet-name>
 		<servlet-class>
 			com.google.appengine.tools.mapreduce.MapReduceServlet

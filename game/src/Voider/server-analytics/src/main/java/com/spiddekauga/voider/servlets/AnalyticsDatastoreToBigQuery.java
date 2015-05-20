@@ -22,6 +22,9 @@ public class AnalyticsDatastoreToBigQuery extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		PipelineService pipelineService = PipelineServiceFactory.newPipelineService();
 		String rootHandle = pipelineService.startNewPipeline(new AnalyticsToBigQueryJob(), AnalyticsConfig.getJobSettings());
-		resp.sendRedirect("/_ah/pipeline/status.html?root=" + rootHandle);
+
+		if (req.getParameter("redirect") != null) {
+			resp.sendRedirect("/_ah/pipeline/status.html?root=" + rootHandle);
+		}
 	}
 }

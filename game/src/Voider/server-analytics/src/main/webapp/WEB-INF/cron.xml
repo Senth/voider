@@ -8,6 +8,16 @@
 		<target>analytics</target>
 		<timezone>Europe/Stockholm</timezone>
 	</cron>
+	
+	<!-- Cleanup -->
+	<cron>
+		<description>Cleanup of pipelines</description>
+		<url>/cleanup</url>
+		<schedule>every day 23:00</schedule>
+		<target>analytics</target>
+		<timezone>Europe/Stockholm</timezone>
+	</cron>
+	
 	<!-- Weekly Report
 	<cron>
 		<description>Weekly Report</description>
