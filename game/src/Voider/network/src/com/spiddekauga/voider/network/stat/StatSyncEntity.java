@@ -33,6 +33,10 @@ public class StatSyncEntity implements IEntity {
 		public int cCleared = 0;
 		/** Clear count to sync (only from client) */
 		public int cClearsToSync = 0;
+		/** Total death count (incl. deaths to sync) */
+		public int cDeaths = 0;
+		/** Death count to sync (only from client) */
+		public int cDeathsToSync = 0;
 		/** Rating rating of the level/campaign */
 		public int rating = 0;
 		/** User comment */

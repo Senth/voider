@@ -120,7 +120,7 @@ public class StatSync extends VoiderServlet {
 			LevelStat serverStats = mUserStatsToClient.get(clientStats.id);
 
 			// Found conflict -> Update to correct amount of played and clear count on
-			// both server and cilent. Choose other settings from the latest settings
+			// both server and client. Choose other settings from the latest settings
 			if (serverStats != null) {
 				fixPlayAndClearCountConflict(clientStats, serverStats);
 				fixMiscUserLevelStatConflict(clientStats, serverStats);
@@ -141,6 +141,10 @@ public class StatSync extends VoiderServlet {
 		int cCleared = serverStats.cCleared + clientStats.cClearsToSync;
 		serverStats.cCleared = cCleared;
 		clientStats.cCleared = cCleared;
+
+		int cDeaths = serverStats.cDeaths + clientStats.cDeathsToSync;
+		serverStats.cDeaths = cDeaths;
+		clientStats.cDeaths = cDeaths;
 	}
 
 	/**
@@ -271,6 +275,7 @@ public class StatSync extends VoiderServlet {
 		userEntity.setUnindexedProperty(CUserLevelStat.RATING, levelStat.rating);
 		userEntity.setUnindexedProperty(CUserLevelStat.PLAY_COUNT, levelStat.cPlayed);
 		userEntity.setUnindexedProperty(CUserLevelStat.CLEAR_COUNT, levelStat.cCleared);
+		userEntity.setUnindexedProperty(CUserLevelStat.DEATH_COUNT, levelStat.cDeaths);
 		userEntity.setUnindexedProperty(CUserLevelStat.BOOKMARK, levelStat.bookmark);
 		userEntity.setProperty(CUserLevelStat.UPDATED, mResponse.syncEntity.syncDate);
 
@@ -321,6 +326,9 @@ public class StatSync extends VoiderServlet {
 
 		// Clear count
 		incrementProperty(levelEntity, CLevelStat.CLEAR_COUNT, clientStat.cClearsToSync);
+
+		// Death count
+		incrementProperty(levelEntity, CLevelStat.DEATH_COUNT, clientStat.cDeathsToSync);
 
 
 		// Removed bookmark
@@ -493,6 +501,7 @@ public class StatSync extends VoiderServlet {
 		levelStats.bookmark = (boolean) serverEntity.getProperty(CUserLevelStat.BOOKMARK);
 		levelStats.cCleared = ((Long) serverEntity.getProperty(CUserLevelStat.CLEAR_COUNT)).intValue();
 		levelStats.cPlayed = ((Long) serverEntity.getProperty(CUserLevelStat.PLAY_COUNT)).intValue();
+		levelStats.cDeaths = ((Long) serverEntity.getProperty(CUserLevelStat.DEATH_COUNT)).intValue();
 		levelStats.lastPlayed = (Date) serverEntity.getProperty(CUserLevelStat.LAST_PLAYED);
 		levelStats.rating = ((Long) serverEntity.getProperty(CUserLevelStat.RATING)).intValue();
 		levelStats.updated = (Date) serverEntity.getProperty(CUserLevelStat.UPDATED);

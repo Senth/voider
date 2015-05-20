@@ -49,6 +49,8 @@ import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.SoundPlayer;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Synchronizer;
+import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -294,6 +296,11 @@ public class GameScene extends WorldScene {
 		super.onActivate(outcome, message, loadingOutcome);
 
 		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
+			// Set last played
+			if (isPublished()) {
+				mStatRepo.updateLastPlayed(getLevelId());
+			}
+
 			fixCamera();
 
 			// Start a level
@@ -307,6 +314,10 @@ public class GameScene extends WorldScene {
 				level.setStartPosition(level.getLevelDef().getStartXCoord());
 				level.createDefaultTriggers();
 				setLevel(level);
+
+				if (isPublished()) {
+					mStatRepo.increasePlayCount(getLevelId());
+				}
 			}
 
 			// Resume a level
@@ -328,17 +339,14 @@ public class GameScene extends WorldScene {
 				}
 			}
 
+			Synchronizer.getInstance().synchronize(SyncTypes.STATS);
+
 			// Play music
 			mMusicPlayer.play(mLevel.getLevelDef().getMusic(), MusicInterpolations.CROSSFADE);
 
 			createPlayerShip();
 			createMouseJoint();
 			getGui().resetValues();
-
-			// Set last played
-			if (isPublished()) {
-				StatLocalRepo.getInstance().updateLastPlayed(getLevelId());
-			}
 		}
 
 		Actor.setPlayerActor(mPlayerActor);
@@ -370,7 +378,13 @@ public class GameScene extends WorldScene {
 			else if (getOutcome() == Outcomes.LEVEL_COMPLETED || getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
 				if (isPublished()) {
 					setNewHighscore();
-					updatePlayCount();
+
+					if (getOutcome() == Outcomes.LEVEL_COMPLETED) {
+						mStatRepo.increaseClearCount(getLevelId());
+					} else if (getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
+						mStatRepo.increaseDeathCount(getLevelId());
+					}
+					Synchronizer.getInstance().synchronize(SyncTypes.STATS);
 				}
 			}
 		}
@@ -465,15 +479,6 @@ public class GameScene extends WorldScene {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Updates the play count for the player
-	 */
-	private void updatePlayCount() {
-		StatLocalRepo statLocalRepo = StatLocalRepo.getInstance();
-		boolean cleared = Outcomes.LEVEL_COMPLETED == getOutcome();
-		statLocalRepo.increasePlayCount(getLevelId(), cleared);
 	}
 
 	/**
@@ -885,7 +890,8 @@ public class GameScene extends WorldScene {
 		return (GameSceneGui) super.getGui();
 	}
 
-	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
+	private static ResourceRepo mResourceRepo = ResourceRepo.getInstance();
+	private static StatLocalRepo mStatRepo = StatLocalRepo.getInstance();
 	/** Bar height in world coordinates */
 	private float mBarHeight = -1;
 	private SpriteBatch mSpriteBatch = null;

@@ -253,6 +253,7 @@ public enum ClientVersions {
 	V0_5_11(true,
 			"Improvements",
 			"	Username/Email is no longer case-sensitive when logging in",
+			"	Play, clear, and death count",
 			"Android",
 			"	Fixed a ton of bugs. Still not playable though :P"
 			),

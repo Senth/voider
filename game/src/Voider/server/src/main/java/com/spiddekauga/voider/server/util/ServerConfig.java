@@ -51,7 +51,6 @@ public class ServerConfig {
 			public static final String CREATED = "created";
 			public static final String LOGGED_IN = "logged-in";
 			public static final String PRIVATE_KEY = "private_key";
-			public static final String DATE_FORMAT = "date_format";
 		}
 
 		// Reset Password Tokens
@@ -98,6 +97,7 @@ public class ServerConfig {
 			public static final String LAST_PLAYED = "last_played";
 			public static final String RATING = "rating";
 			public static final String PLAY_COUNT = "play_count";
+			public static final String DEATH_COUNT = "death_count";
 			public static final String CLEAR_COUNT = "clear_count";
 			public static final String TAGS = "tags";
 			public static final String BOOKMARK = "bookmark";
@@ -113,6 +113,7 @@ public class ServerConfig {
 			public static final String RATING_AVG = "rating_avg";
 			public static final String CLEAR_COUNT = "clear_count";
 			public static final String BOOKMARS = "bookmarks";
+			public static final String DEATH_COUNT = "death_count";
 		}
 
 		// Level tag
@@ -126,11 +127,6 @@ public class ServerConfig {
 			public static final String USERNAME = "username";
 			public static final String COMMENT = "comment";
 			public static final String DATE = "date";
-		}
-
-		// Actor stat
-		public static class CActorStat {
-
 		}
 
 		// Sync published

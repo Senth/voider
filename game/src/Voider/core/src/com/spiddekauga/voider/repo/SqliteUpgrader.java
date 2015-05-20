@@ -85,6 +85,11 @@ class SqliteUpgrader {
 			if (fromVersion < 6) {
 				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN comment TEXT DEFAULT '';");
 			}
+			// 9 - Added death count to level stats
+			if (fromVersion < 9) {
+				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN death_count INTEGER DEFAULT 0;");
+				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN deaths_to_sync INTEGER DEFAULT 0;");
+			}
 		}
 
 
@@ -158,7 +163,9 @@ class SqliteUpgrader {
 				+ "rating INTEGER DEFAULT 0, "
 				+ "last_played INTEGER, "
 				+ "synced INTEGER DEFAULT 0, "
-				+ "comment TEXT DEFAULT '');");
+				+ "comment TEXT DEFAULT '',"
+				+ "death_count INTEGER DEFAULT 0,"
+				+ "deaths_to_sync INTEGER DEFAULT 0);");
 
 		// Level tags to sync
 		mNotFoundTables.add("level_tag");
@@ -222,7 +229,7 @@ class SqliteUpgrader {
 	/** Create table queries for all tables */
 	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 	/** DB version */
-	private static final int DB_VERSION = 8;
+	private static final int DB_VERSION = 9;
 	/** Create version table */
 	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
 }

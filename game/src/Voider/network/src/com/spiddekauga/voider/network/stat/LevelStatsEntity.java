@@ -18,6 +18,8 @@ public class LevelStatsEntity implements IEntity {
 	public int cCleared = 0;
 	/** number of ratings */
 	public int cRatings = 0;
+	/** number of deaths */
+	public int cDeaths = 0;
 	/** sum of all ratings */
 	public int ratingSum = 0;
 	/** Average rating */

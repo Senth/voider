@@ -32,10 +32,25 @@ public class StatLocalRepo {
 	 * Increases the play count of a level, automatically updates last played date. If no
 	 * statistics exist for the level it will be created.
 	 * @param id level/campaign id
-	 * @param cleared true if the level/campaign was cleared
 	 */
-	public void increasePlayCount(UUID id, boolean cleared) {
-		mSqliteGateway.increasePlayCount(id, cleared);
+	public void increasePlayCount(UUID id) {
+		mSqliteGateway.increasePlayCount(id);
+	}
+
+	/**
+	 * Increase clear count
+	 * @param id level id
+	 */
+	public void increaseClearCount(UUID id) {
+		mSqliteGateway.increaseClearCount(id);
+	}
+
+	/**
+	 * Increase the death count on a specific level
+	 * @param id level id
+	 */
+	public void increaseDeathCount(UUID id) {
+		mSqliteGateway.increaseDeathCount(id);
 	}
 
 	/**

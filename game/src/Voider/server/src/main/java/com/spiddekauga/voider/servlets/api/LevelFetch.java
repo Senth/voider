@@ -215,6 +215,7 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty(CLevelStat.BOOKMARS)).intValue();
 		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty(CLevelStat.PLAY_COUNT)).intValue();
 		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty(CLevelStat.RATINGS)).intValue();
+		levelStatsEntity.cDeaths = ((Long) datastoreEntity.getProperty(CLevelStat.DEATH_COUNT)).intValue();
 		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty(CLevelStat.RATING_AVG)).floatValue();
 		levelStatsEntity.ratingSum = ((Long) datastoreEntity.getProperty(CLevelStat.RATING_SUM)).intValue();
 	}

@@ -347,18 +347,19 @@ public class Publish extends VoiderServlet {
 
 	/**
 	 * Create empty level statistics
-	 * @param key datastore key of the level entity to add empty statistics for
+	 * @param levelKey datastore key of the level entity to add empty statistics for
 	 * @param statisticsEntities new statistics entities to add
 	 */
-	private void createEmptyLevelStatistics(Key key, ArrayList<Entity> statisticsEntities) {
-		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), key);
+	private void createEmptyLevelStatistics(Key levelKey, ArrayList<Entity> statisticsEntities) {
+		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), levelKey);
 
 		entity.setProperty(CLevelStat.PLAY_COUNT, 0);
 		entity.setProperty(CLevelStat.BOOKMARS, 0);
-		entity.setProperty(CLevelStat.RATING_SUM, 0);
-		entity.setProperty(CLevelStat.RATINGS, 0);
 		entity.setProperty(CLevelStat.RATING_AVG, 0.0);
-		entity.setProperty(CLevelStat.CLEAR_COUNT, 0);
+		entity.setUnindexedProperty(CLevelStat.RATING_SUM, 0);
+		entity.setUnindexedProperty(CLevelStat.RATINGS, 0);
+		entity.setUnindexedProperty(CLevelStat.CLEAR_COUNT, 0);
+		entity.setUnindexedProperty(CLevelStat.DEATH_COUNT, 0);
 
 		statisticsEntities.add(entity);
 	}

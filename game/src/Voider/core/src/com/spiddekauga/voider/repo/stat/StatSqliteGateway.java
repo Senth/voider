@@ -16,20 +16,30 @@ import com.spiddekauga.voider.repo.SqliteGateway;
  */
 class StatSqliteGateway extends SqliteGateway {
 	/**
-	 * Increases the play count of a level, automatically updates last played date. If no
-	 * statistics exist for the level it will be created.
+	 * Increases the play count of a level. If no statistics exist for the level it will
+	 * be created.
 	 * @param id level/campaign id
-	 * @param cleared true if the level/campaign was cleared
 	 */
-	void increasePlayCount(UUID id, boolean cleared) {
+	void increasePlayCount(UUID id) {
+		String sql = "UPDATE level_stat SET synced=0, play_count=play_count+1, plays_to_sync=plays_to_sync+1 WHERE uuid='" + id + "';";
+		execSQL(sql);
+	}
 
-		String sql = "UPDATE level_stat SET synced=0, play_count=play_count+1, plays_to_sync=plays_to_sync+1";
+	/**
+	 * Increase clear count
+	 * @param id level id
+	 */
+	void increaseClearCount(UUID id) {
+		String sql = "UPDATE level_stat SET synced=0, clear_count=clear_count+1, clears_to_sync=clears_to_sync+1 WHERE uuid='" + id + "';";
+		execSQL(sql);
+	}
 
-		if (cleared) {
-			sql += ", clear_count=clear_count+1, clears_to_sync=clears_to_sync+1";
-		}
-
-		sql += " WHERE uuid='" + id + "';";
+	/**
+	 * Increase the death count on the specific level
+	 * @param id level id
+	 */
+	void increaseDeathCount(UUID id) {
+		String sql = "UPDATE level_stat SET synced=0, death_count=death_count+1, deaths_to_sync=deaths_to_sync+1 WHERE uuid='" + id + "';";
 		execSQL(sql);
 	}
 
@@ -205,6 +215,8 @@ class StatSqliteGateway extends SqliteGateway {
 			levelStats.lastPlayed = new Date(cursor.getLong(7));
 			// synced is column 8
 			levelStats.comment = cursor.getString(9);
+			levelStats.cDeaths = cursor.getInt(10);
+			levelStats.cDeathsToSync = cursor.getInt(11);
 
 			// Add tags
 			DatabaseCursor tagCursor = rawQuery("SELECT tag FROM level_tag WHERE uuid='" + levelStats.id + "' AND synced=0;");
