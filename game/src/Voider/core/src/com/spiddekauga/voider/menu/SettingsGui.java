@@ -61,18 +61,7 @@ public class SettingsGui extends MenuGui {
 			// initNetwork();
 		}
 
-		initBackButton();
-	}
-
-	private void initBackButton() {
-		ButtonListener buttonListener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.endScene();
-			}
-		};
-
-		addActor(mUiFactory.button.createBackButton(buttonListener));
+		addBackButton();
 	}
 
 	private void initHeader() {

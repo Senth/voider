@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.menu.CreditScene.CreditName;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
@@ -39,7 +37,8 @@ class CreditGui extends MenuGui {
 		initHeader();
 		initCredits();
 		initFooter();
-		initBackButton();
+
+		addBackButton();
 	};
 
 	@Override
@@ -47,17 +46,6 @@ class CreditGui extends MenuGui {
 		super.update();
 
 		scrollCredits();
-	}
-
-	private void initBackButton() {
-		ButtonListener buttonListener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.endScene();
-			}
-		};
-
-		addActor(mUiFactory.button.createBackButton(buttonListener));
 	}
 
 	@Override

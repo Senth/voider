@@ -249,6 +249,8 @@ public class MainMenu extends MenuScene implements IEventListener {
 		CREDITS(CreditScene.class),
 		/** Game settings */
 		SETTINGS(SettingsScene.class),
+		/** User settings */
+		USER(UserScene.class),
 
 		;
 

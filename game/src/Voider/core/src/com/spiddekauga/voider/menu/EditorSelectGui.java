@@ -29,18 +29,8 @@ class EditorSelectGui extends MenuGui {
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
 		initMenu();
-		initBackButton();
-	}
 
-	private void initBackButton() {
-		ButtonListener buttonListener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.endScene();
-			}
-		};
-
-		addActor(mUiFactory.button.createBackButton(buttonListener));
+		addBackButton();
 	}
 
 	/**

@@ -133,7 +133,7 @@ class MainMenuGui extends MenuGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				// TODO go to info
+				mScene.gotoScene(Scenes.USER);
 			}
 		};
 		mUiFactory.button.addSound(button);
