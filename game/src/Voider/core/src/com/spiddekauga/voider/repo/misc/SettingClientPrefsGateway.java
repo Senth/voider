@@ -177,6 +177,26 @@ class SettingClientPrefsGateway {
 		return mPreferences.getFloat(SOUND__UI_VOLUME, icSound.getUi());
 	}
 
+	// ----------------
+	// Network
+	// ----------------
+	/**
+	 * Sets if we're allowed to use mobile data connections
+	 * @param allow true if we're allowed to use mobile data
+	 */
+	void setNetworkWifiOnly(boolean allow) {
+		mPreferences.putBoolean(NETWORK__MOBILE_DATA_ALLOW, allow);
+		mPreferences.flush();
+	}
+
+	/**
+	 * @return true if we are allowed to use mobile data connection
+	 */
+	boolean isNetworkWifiOnly() {
+		return mPreferences.getBoolean(NETWORK__MOBILE_DATA_ALLOW, true);
+	}
+
+
 	private static final String DISPLAY__RESOLUTION_WINDOWED = "display_resolutionWindowed";
 	private static final String DISPLAY__RESOLUTION_FULLSCREEN = "display_resolutionFullscreen";
 	private static final String DISPLAY__FULLSCREEN = "display_fullscreen";
@@ -185,6 +205,8 @@ class SettingClientPrefsGateway {
 	private static final String SOUND__EFFECTS_VOLUME = "sound_effectsVolume";
 	private static final String SOUND__UI_VOLUME = "sound_uiVolume";
 	private static final String SOUND__MUSIC_VOLUME = "sound_musicVolume";
+
+	private static final String NETWORK__MOBILE_DATA_ALLOW = "network_mobileDataAllow";
 
 	private Preferences mPreferences;
 	private static final String PREFERENCES_NAME = Config.File.PREFERENCE_PREFIX + "_setting";

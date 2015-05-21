@@ -6,7 +6,10 @@ import java.util.Iterator;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.ClientVersions;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -118,6 +121,43 @@ class SettingLocalRepo {
 				if (motd.created.before(previousDate)) {
 					it.remove();
 				}
+			}
+		}
+
+		/**
+		 * Check if there are new terms since last startup.
+		 * @return true if new terms exist
+		 */
+		boolean isTermsNew() {
+			// Check that terms are loaded...
+			if (ResourceCacheFacade.isLoaded(InternalNames.TXT_TERMS)) {
+				String terms = ResourceCacheFacade.get(InternalNames.TXT_TERMS);
+
+				long termsLengthPrev = mUserPrefsGateway.getTermsLength();
+				if (termsLengthPrev != 0) {
+					if (terms.length() != termsLengthPrev) {
+						return true;
+					}
+				} else {
+					mUserPrefsGateway.setTermsLength(terms.length());
+				}
+
+			} else {
+				Config.Debug.debugException("Terms not loaded when calling isTermsNew()");
+			}
+			return false;
+		}
+
+		/**
+		 * Accept terms
+		 */
+		void acceptTerms() {
+			// Check that terms are loaded...
+			if (ResourceCacheFacade.isLoaded(InternalNames.TXT_TERMS)) {
+				String terms = ResourceCacheFacade.get(InternalNames.TXT_TERMS);
+				mUserPrefsGateway.setTermsLength(terms.length());
+			} else {
+				Config.Debug.debugException("Terms not loaded when calling acceptTerms()");
 			}
 		}
 	}
@@ -316,6 +356,21 @@ class SettingLocalRepo {
 		 */
 		void setBugReportSendAnonymously(boolean anonymously) {
 			mUserPrefsGateway.setBugReportSendAnonymously(anonymously);
+		}
+
+		/**
+		 * Sets if we're allowed to use mobile data connections
+		 * @param allow true if we're allowed to use mobile data
+		 */
+		void setMobileDataAllowed(boolean allow) {
+			mClientPrefsGateway.setNetworkWifiOnly(allow);
+		}
+
+		/**
+		 * @return true if we are allowed to use mobile data connection
+		 */
+		boolean isMobileDataAllowed() {
+			return mClientPrefsGateway.isNetworkWifiOnly();
 		}
 	}
 

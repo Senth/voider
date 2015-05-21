@@ -179,6 +179,31 @@ class MainMenuGui extends MenuGui {
 		mUiFactory.msgBox.changeLog("ChangeLog", "New changes since you last logged in on this device", changeLog);
 	}
 
+	/**
+	 * Show terms
+	 * @param terms
+	 */
+	void showTerms(final String terms) {
+		final MsgBoxExecuter msgBox = mUiFactory.msgBox.add("New terms and conditions");
+		msgBox.content("Terms and conditions have been changed since\nyou last logged in on this device.\n\nPlease accept these.");
+
+		msgBox.button("Read Terms", new CRun() {
+			@Override
+			public boolean execute() {
+				mUiFactory.msgBox.scrollable("Terms and Conditions", terms);
+				return false;
+			}
+		});
+
+		msgBox.button("Accept", new CRun() {
+			@Override
+			public boolean execute() {
+				mScene.acceptTerms();
+				return true;
+			}
+		});
+	}
+
 
 	private AlignTable mOptionTable = new AlignTable();
 	private AlignTable mPlayerInfoTable = new AlignTable();

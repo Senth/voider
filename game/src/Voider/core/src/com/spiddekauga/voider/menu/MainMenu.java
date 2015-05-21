@@ -19,6 +19,7 @@ import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
+import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.ResourceItem;
@@ -54,9 +55,16 @@ public class MainMenu extends MenuScene implements IEventListener {
 	protected void loadResources() {
 		super.loadResources();
 
+		ResourceCacheFacade.load(InternalNames.TXT_TERMS);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
+	}
 
+	@Override
+	protected void unloadResources() {
+		ResourceCacheFacade.unload(InternalNames.TXT_TERMS);
+
+		super.unloadResources();
 	}
 
 	@Override
@@ -135,7 +143,21 @@ public class MainMenu extends MenuScene implements IEventListener {
 				getGui().showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
 				infoRepo.updateClientVersion();
 			}
+
+			// Check for new terms
+			if (infoRepo.isTermsNew()) {
+				String terms = ResourceCacheFacade.get(InternalNames.TXT_TERMS);
+				getGui().showTerms(terms);
+			}
 		}
+	}
+
+	/**
+	 * Accept the terms
+	 */
+	void acceptTerms() {
+		SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
+		infoRepo.acceptTerms();
 	}
 
 	@Override

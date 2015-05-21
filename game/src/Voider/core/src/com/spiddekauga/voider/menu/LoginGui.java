@@ -385,8 +385,6 @@ public class LoginGui extends Gui {
 				showTerms();
 			}
 		};
-		// mUiFactory.button.addText("Read Terms", TextButtonStyles.LINK, table,
-		// buttonListener, null, null);
 
 		// Set fixed width
 		table.layout();

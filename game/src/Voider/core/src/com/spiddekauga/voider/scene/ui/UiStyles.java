@@ -103,6 +103,8 @@ public class UiStyles {
 		WARNING,
 		SUCCESS,
 		TOOLTIP,
+		/** Extra information */
+		INFO_EXTRA,
 		/** Names of the resources that will be publish */
 		PUBLISH_NAME,
 		/** Larger text */
@@ -294,6 +296,7 @@ public class UiStyles {
 		LabelStyles.SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 		LabelStyles.PUBLISH_NAME.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PUBLISH_NAME));
 		LabelStyles.PATH.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PATH));
+		LabelStyles.INFO_EXTRA.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_INFO_EXTRA));
 
 
 		// Button styles

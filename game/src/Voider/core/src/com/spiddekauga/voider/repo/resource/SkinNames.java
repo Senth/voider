@@ -817,6 +817,8 @@ public class SkinNames {
 		LABEL_PUBLISH_NAME(LabelStyle.class, "publish_name"),
 		/** Labels for path */
 		LABEL_PATH(LabelStyle.class, "path"),
+		/** Extra info */
+		LABEL_INFO_EXTRA(LabelStyle.class, "info_extra"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

@@ -186,6 +186,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: white,
 	},
 	
+	// Extra information, sort of like a comment
+	info_extra: {
+		font: default12,
+		fontColor: grey_light,
+	}
+	
 	// Default text for text fields - NOT IMPLEMTED YET
 	textfield_default: {
 		font: default_font,
@@ -202,15 +208,9 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	},
 	
 	// Date for the comment
-	comment_date: {
-		font: default12,
-		fontColor: grey_light,
-	},
+	comment_date: info_extra,
 	
-	comment: {
-		font: default_font,
-		fontColor: white,
-	},
+	comment: default,
 	
 	
 	/** Editor */

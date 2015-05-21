@@ -35,6 +35,7 @@ allprojects {
         appengineVersion = '1.9.20'
         spiddekaugaUtilsVersion = '0.1.0-SNAPSHOT'
         appengineUtilsVersion = '0.1.0-SNAPSHOT'
+		httpUrlUtilsVersion = '0.2.1'
     }
 
     repositories {
@@ -83,7 +84,7 @@ project(":android") {
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
-		compile 'com.spiddekauga.http:http-url-utils:0.2.0-SNAPSHOT'
+		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
 		// ANDROID STUFF
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-sqlite-android:0.1"
@@ -153,7 +154,7 @@ project(":core") {
 		compile "com.esotericsoftware:kryo:3.0.0"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
-		compile 'com.spiddekauga.http:http-url-utils:0.2.0-SNAPSHOT'
+		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
     }
 }
 

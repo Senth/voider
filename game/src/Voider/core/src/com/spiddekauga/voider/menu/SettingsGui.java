@@ -57,6 +57,10 @@ public class SettingsGui extends MenuGui {
 			initDisplay();
 		}
 
+		if (Gdx.app.getType() == ApplicationType.Android) {
+			// initNetwork();
+		}
+
 		initBackButton();
 	}
 
@@ -82,6 +86,10 @@ public class SettingsGui extends MenuGui {
 			mUiFactory.button.addTab(SkinNames.General.SETTINGS_DISPLAY, mWidgets.display.table, mWidgets.display.hider, tabWidget);
 		}
 		mUiFactory.button.addTab(SkinNames.General.SETTINGS_SOUND, mWidgets.sound.table, tabWidget);
+		if (Gdx.app.getType() == ApplicationType.Android) {
+			// mUiFactory.button.addTab(SkinNames.General.SETTINGS_NETWORK,
+			// mWidgets.network.table, tabWidget);
+		}
 		mUiFactory.button.addTab(SkinNames.General.SETTINGS_GENERAL, mWidgets.general.table, tabWidget);
 	}
 
@@ -198,6 +206,27 @@ public class SettingsGui extends MenuGui {
 	}
 
 	/**
+	 * Initialize network settings
+	 */
+	@SuppressWarnings("unused")
+	private void initNetwork() {
+		AlignTable table = mWidgets.network.table;
+		initTable(table, "Network");
+
+		// Only connect to the Internet through WIFI
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				mScene.setMobileDataAllowed(checked);
+			}
+		};
+		mWidgets.network.mobileDataAllow = mUiFactory.button.addCheckBoxRow("Allow Mobile Data", CheckBoxStyles.CHECK_BOX, buttonListener, null,
+				table);
+		table.row();
+		mUiFactory.text.add("(If unchecked, this device will only use WIFI connection)", true, table, LabelStyles.INFO_EXTRA);
+	}
+
+	/**
 	 * Initializes the table with a header
 	 * @param table the table to initialize
 	 * @param header the header text
@@ -219,6 +248,7 @@ public class SettingsGui extends MenuGui {
 		resetSound();
 		resetDisplay();
 		resetGeneral();
+		resetNetwork();
 	}
 
 	private void resetSound() {
@@ -245,11 +275,18 @@ public class SettingsGui extends MenuGui {
 		}
 	}
 
+	private void resetNetwork() {
+		if (mWidgets.network.mobileDataAllow != null) {
+			mWidgets.network.mobileDataAllow.setChecked(mScene.isMobileDataAllowed());
+		}
+	}
+
 	private class Widgets implements Disposable {
 		TabWidget tabWidget = null;
 		Sound sound = new Sound();
 		General general = new General();
 		Display display = new Display();
+		Network network = new Network();
 
 
 		private class Sound implements Disposable {
@@ -303,6 +340,16 @@ public class SettingsGui extends MenuGui {
 			private void init() {
 				hider.addChild(showFullscreenResolution);
 				hider.addChild(showWindowedResolution);
+			}
+		}
+
+		private class Network implements Disposable {
+			AlignTable table = new AlignTable();
+			Button mobileDataAllow = null;
+
+			@Override
+			public void dispose() {
+				table.dispose();
 			}
 		}
 

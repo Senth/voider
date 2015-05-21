@@ -37,7 +37,11 @@ public class MsgBoxExecuter extends MsgBox {
 	@Override
 	public void result(Object object) {
 		if (object instanceof Command) {
-			((Command) object).execute();
+			boolean success = ((Command) object).execute();
+			if (!success) {
+				cancel();
+			}
+
 			((Command) object).dispose();
 		}
 	}

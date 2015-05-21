@@ -2,9 +2,11 @@ Human-readable terms summary
 ----------------------------
 To protect ourselves from legal trouble. Everything you create in Voider is owned by Spiddekauga Games, but you yourself are liable for creating levels, enemies, and bullets that conform to our terms. I.e. don't use copyrighted materials and or create hate against other people. Use common-sense :) You also agree that any other person can create a copy of your creations and modify them freely, the original creator still gets credit for them though.
 
-You agree that anonymous statistics are logged and sent to the server. This information is used for a) Bug reports, it's around 2-20 times easier to find bugs using this. I.e. fixes will be out much faster :) b) Checking how long people stay on specific screens and if they have trouble finding what they want, i.e. improving the system for you and c) Random statistics are just fun.
+You agree that anonymous statistics are logged and sent to the server. This information is used for a) Bug reports, it's around 2-20 times faster to find bugs using this. I.e. fixes will be out much faster :) b) Checking how long people stay on specific screens and if they have trouble finding what they want, i.e. improving the system for you and c) Random statistics are just fun.
 
-During or after the beta all levels might be cleared, i.e. your account will be reset. You agree that this is OK.
+During or after the beta all levels might be erased, i.e. your account will be reset. You agree that this is OK.
+
+Be aware that additional fees may apply on mobile devices when connected to the Internet. You can turn on WIFI-only connection on mobile devices.
 
 
 TERMS OF SERVICE
@@ -20,6 +22,8 @@ TERMS OF SERVICE
 
 3. Anonymous statistics are sent to the server. Currently this includes platform, OS, screen resolution, unique client id (can't be identified with your account), time on each screen, button presses. More statistics might be added later.
 
-4. Beta specific. If you have access to the beta you agree that your entire account can be reset without any prior notice.
+4. On mobile devices additional fees may be applied by your provider.
 
-5. After agreeing to these terms you agree that these terms might change. If you disagree with the terms you are free to stop using Voider. But as long as you do you agree to these terms and any future terms.
+5. Beta specific. If you have access to the beta you agree that your entire account can be reset without any prior notice.
+
+6. After agreeing to these terms you agree that these terms might change. If you disagree with the terms you are free to stop using Voider. But as long as you do you agree to these terms and any future terms.

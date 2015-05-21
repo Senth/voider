@@ -73,6 +73,22 @@ class SettingUserPrefsGateway extends PrefsGateway {
 		return new Date(dateTime);
 	}
 
+	/**
+	 * Set the length of the current terms document
+	 * @param length
+	 */
+	void setTermsLength(long length) {
+		mPreferences.putLong(TERMS__LENGTH, length);
+		mPreferences.flush();
+	}
+
+	/**
+	 * @return length of the terms file
+	 */
+	long getTermsLength() {
+		return mPreferences.getLong(TERMS__LENGTH, 0);
+	}
+
 	// ----------------
 	// Network
 	// ----------------
@@ -96,6 +112,7 @@ class SettingUserPrefsGateway extends PrefsGateway {
 	private static final String MOTD__LATEST_DATE = "motd_latestDate";
 	private static final String CLIENT__LAST_VERSION = "client_lastVersion";
 	private static final String DATE__DATE_TIME_FORMAT = "date_dateTimeFormat";
+	private static final String TERMS__LENGTH = "terms_length";
 
 	private static final String NETWORK__SEND_BUG_REPORT_ANONYMOUSLY = "network_sendBugReportAnonymously";
 }

@@ -152,6 +152,21 @@ public class SettingsScene extends MenuScene {
 		return mSettingRepo.display().getResolutionWindowed();
 	}
 
+	/**
+	 * Sets if we're allowed to use mobile data connections
+	 * @param allow true if we're allowed to use mobile data
+	 */
+	void setMobileDataAllowed(boolean allow) {
+		mSettingRepo.network().setMobileDataAllowed(allow);
+	}
+
+	/**
+	 * @return true if we are allowed to use mobile data connection
+	 */
+	boolean isMobileDataAllowed() {
+		return mSettingRepo.network().isMobileDataAllowed();
+	}
+
 	@Override
 	protected SettingsGui getGui() {
 		return (SettingsGui) super.getGui();

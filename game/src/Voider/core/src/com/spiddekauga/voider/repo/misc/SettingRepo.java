@@ -131,6 +131,21 @@ public class SettingRepo extends Repo {
 			mLocalRepo.filterMotds(motds);
 		}
 
+		/**
+		 * Check if there are new terms since last startup.
+		 * @return true if new terms exist
+		 */
+		public boolean isTermsNew() {
+			return mLocalRepo.isTermsNew();
+		}
+
+		/**
+		 * Accept terms
+		 */
+		public void acceptTerms() {
+			mLocalRepo.acceptTerms();
+		}
+
 		private SettingGeneralLocalRepo mLocalRepo = SettingLocalRepo.getInstance().general;
 	}
 
@@ -460,6 +475,21 @@ public class SettingRepo extends Repo {
 		 */
 		public void setBugReportSendAnonymously(boolean anonymously) {
 			mLocalRepo.setBugReportSendAnonymously(anonymously);
+		}
+
+		/**
+		 * Sets if we're allowed to use mobile data connections
+		 * @param allow true if we're allowed to use mobile data
+		 */
+		public void setMobileDataAllowed(boolean allow) {
+			mLocalRepo.setMobileDataAllowed(allow);
+		}
+
+		/**
+		 * @return true if we are allowed to use mobile data connection
+		 */
+		public boolean isMobileDataAllowed() {
+			return mLocalRepo.isMobileDataAllowed();
 		}
 
 		private SettingNetworkLocalRepo mLocalRepo = SettingLocalRepo.getInstance().network;
