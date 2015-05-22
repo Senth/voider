@@ -8,14 +8,14 @@ import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.LogoutResponse;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Called when a user tries to logout
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Logout extends VoiderServlet {
+public class Logout extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		// Does nothing

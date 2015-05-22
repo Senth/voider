@@ -28,9 +28,9 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Scene for exploring new content

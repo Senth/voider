@@ -7,8 +7,8 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.BulletFetchMethod;
 import com.spiddekauga.voider.network.resource.BulletFetchResponse;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Scene for finding or loading bullets

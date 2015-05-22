@@ -29,13 +29,12 @@ import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDisplayRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceChecker;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.InfoDisplayer;
 import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Synchronizer;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * The main application, i.e. start point
@@ -125,7 +124,6 @@ public class VoiderGame implements ApplicationListener {
 		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();
 		Config.dispose();
-		UserLocalRepo.getInstance().dispose();;
 		ResourceChecker.dispose();
 	}
 

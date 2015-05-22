@@ -15,14 +15,14 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserLevelStat;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Does an upgrade for the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings({ "serial" })
-public class Upgrade extends VoiderServlet {
+public class Upgrade extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		// Does nothing

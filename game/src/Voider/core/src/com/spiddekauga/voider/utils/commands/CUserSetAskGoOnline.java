@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.utils.commands;
 
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.repo.user.User;
 
 /**
  * Sets if the user should be asked to go online or not this session

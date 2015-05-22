@@ -40,6 +40,7 @@ import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.LoadingTextScene;
@@ -51,7 +52,6 @@ import com.spiddekauga.voider.sound.SoundPlayer;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * The main game. Starts with a level and could either be in regular or testing mode.

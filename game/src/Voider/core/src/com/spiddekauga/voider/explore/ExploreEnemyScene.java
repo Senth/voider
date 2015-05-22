@@ -19,8 +19,8 @@ import com.spiddekauga.voider.network.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Scene for finding or loading enemies

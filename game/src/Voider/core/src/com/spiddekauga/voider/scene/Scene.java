@@ -26,9 +26,9 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.MusicPlayer;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes: Game, Menus,

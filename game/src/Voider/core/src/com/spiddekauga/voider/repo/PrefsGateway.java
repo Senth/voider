@@ -3,7 +3,7 @@ package com.spiddekauga.voider.repo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;

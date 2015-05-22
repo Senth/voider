@@ -12,7 +12,7 @@ public class PasswordResetMethod implements IMethodEntity {
 	public String email;
 	/** New password for the user */
 	public String password;
-	/** Token */
+	/** Token when resetting password */
 	public String token;
 
 	@Override

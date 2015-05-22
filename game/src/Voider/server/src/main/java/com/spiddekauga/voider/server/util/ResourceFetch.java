@@ -24,7 +24,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
  * @param <ReturnType>
  */
 @SuppressWarnings("serial")
-public abstract class ResourceFetch<ReturnType> extends VoiderServlet {
+public abstract class ResourceFetch<ReturnType> extends VoiderApiServlet {
 	/**
 	 * Set a def entity from a datastore entity. If ReturnType isn't an extension of
 	 * DefEntity overload this method

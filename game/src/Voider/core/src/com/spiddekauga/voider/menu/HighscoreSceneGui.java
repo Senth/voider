@@ -11,10 +11,10 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for the highscore scene

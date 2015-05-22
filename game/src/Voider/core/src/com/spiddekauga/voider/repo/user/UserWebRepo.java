@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.user.AccountChangeMethod;
+import com.spiddekauga.voider.network.user.AccountChangeResponse;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LogoutMethod;
@@ -16,14 +18,13 @@ import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
-import com.spiddekauga.voider.utils.User;
 
 
 /**
  * Repository for handling server calls regarding the user
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class UserWebRepo extends WebRepo {
+class UserWebRepo extends WebRepo {
 	/**
 	 * @return instance of this class
 	 */
@@ -48,7 +49,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param clientId unique client id
 	 * @param responseListeners listens to the web response
 	 */
-	public void login(User user, UUID clientId, IResponseListener... responseListeners) {
+	void login(User user, UUID clientId, IResponseListener... responseListeners) {
 		LoginMethod loginMethod = new LoginMethod();
 		loginMethod.clientId = clientId;
 		loginMethod.username = user.getUsername();
@@ -65,7 +66,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param clientId unique client id
 	 * @param responseListeners listens to the web response
 	 */
-	public void register(User user, UUID clientId, IResponseListener... responseListeners) {
+	void register(User user, UUID clientId, IResponseListener... responseListeners) {
 		RegisterUserMethod registerMethod = new RegisterUserMethod();
 		registerMethod.clientId = clientId;
 		registerMethod.email = user.getEmail();
@@ -80,7 +81,7 @@ public class UserWebRepo extends WebRepo {
 	 * Tries to logout the current user
 	 * @param responseListeners listens to the web response
 	 */
-	public void logout(IResponseListener... responseListeners) {
+	void logout(IResponseListener... responseListeners) {
 		LogoutMethod logoutMethod = new LogoutMethod();
 
 		sendInNewThread(logoutMethod, responseListeners);
@@ -91,7 +92,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param email user's email
 	 * @param responseListeners listens to the web response
 	 */
-	public void passwordResetSendToken(String email, IResponseListener... responseListeners) {
+	void passwordResetSendToken(String email, IResponseListener... responseListeners) {
 		PasswordResetSendTokenMethod method = new PasswordResetSendTokenMethod();
 		method.email = email;
 
@@ -105,11 +106,25 @@ public class UserWebRepo extends WebRepo {
 	 * @param token reset password token
 	 * @param responseListeners listens to the web response
 	 */
-	public void passwordReset(String email, String password, String token, IResponseListener... responseListeners) {
+	void passwordReset(String email, String password, String token, IResponseListener... responseListeners) {
 		PasswordResetMethod method = new PasswordResetMethod();
 		method.email = email;
 		method.password = password;
 		method.token = token;
+
+		sendInNewThread(method, responseListeners);
+	}
+
+	/**
+	 * Tries to change the password
+	 * @param oldPassword
+	 * @param newPassword
+	 * @param responseListeners listens to the web response
+	 */
+	void changePassword(String oldPassword, String newPassword, IResponseListener... responseListeners) {
+		AccountChangeMethod method = new AccountChangeMethod();
+		method.oldPassword = oldPassword;
+		method.newPassword = newPassword;
 
 		sendInNewThread(method, responseListeners);
 	}
@@ -154,6 +169,14 @@ public class UserWebRepo extends WebRepo {
 				responseToSend = response;
 			} else {
 				responseToSend = new PasswordResetResponse();
+			}
+		}
+		// Account change
+		else if (methodEntity instanceof AccountChangeMethod) {
+			if (response instanceof AccountChangeResponse) {
+				responseToSend = response;
+			} else {
+				responseToSend = new AccountChangeResponse();
 			}
 		}
 

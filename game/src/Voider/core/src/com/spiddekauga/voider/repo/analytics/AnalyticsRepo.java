@@ -12,7 +12,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
+import com.spiddekauga.voider.repo.user.UserRepo;
 
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
@@ -127,7 +127,7 @@ public class AnalyticsRepo extends Repo {
 	 * @return Unique analytics user id
 	 */
 	private UUID getUserAnalyticsId() {
-		return UserLocalRepo.getInstance().getAnalyticsId();
+		return UserRepo.getInstance().getAnalyticsId();
 	}
 
 	/**

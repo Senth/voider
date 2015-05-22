@@ -22,14 +22,14 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsEvent;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsScene;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsSession;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Analytics for Voider
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Analytics extends VoiderServlet {
+public class Analytics extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		mResponse = new AnalyticsResponse();

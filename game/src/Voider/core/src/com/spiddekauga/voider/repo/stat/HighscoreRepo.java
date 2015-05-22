@@ -11,8 +11,8 @@ import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
 import com.spiddekauga.voider.network.stat.HighscoreGetMethod.Fetch;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.utils.Synchronizer;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Common highscore repository for both web and local.

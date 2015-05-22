@@ -28,7 +28,7 @@ import com.spiddekauga.voider.network.misc.ChatMessage;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public abstract class VoiderServlet extends HttpServlet {
+public abstract class VoiderApiServlet extends HttpServlet {
 	/**
 	 * Called by the server to handle a post or get call.
 	 * @param methodEntity the entity that was sent to the method

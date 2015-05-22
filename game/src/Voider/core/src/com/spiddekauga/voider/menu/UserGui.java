@@ -91,9 +91,7 @@ public class UserGui extends MenuGui {
 	 * Tries to change the password if all fields are correct
 	 */
 	private void changePassword() {
-		mWidget.account.oldPasswordError.setText("");
-		mWidget.account.newPasswordError.setText("");
-		mWidget.account.confirmPasswordError.setText("");
+		clearErrors();
 
 		// Validate
 		boolean allValid = true;
@@ -122,6 +120,31 @@ public class UserGui extends MenuGui {
 		table.add().setFillWidth(true);
 		mUiFactory.text.add(header, table, LabelStyles.HIGHLIGHT);
 		table.add().setFillWidth(true);
+	}
+
+	/**
+	 * Clear all error texts
+	 */
+	void clearErrors() {
+		mWidget.account.oldPasswordError.setText("");
+		mWidget.account.newPasswordError.setText("");
+		mWidget.account.confirmPasswordError.setText("");
+	}
+
+	/**
+	 * Sets the new password error text
+	 * @param text
+	 */
+	void setNewPasswordErrorText(String text) {
+		mWidget.account.newPasswordError.setText(text);
+	}
+
+	/**
+	 * Sets the old password error text
+	 * @param text
+	 */
+	void setOldPasswordErrorText(String text) {
+		mWidget.account.oldPasswordError.setText(text);
 	}
 
 	private class ChangePasswordListener extends TextFieldListener {

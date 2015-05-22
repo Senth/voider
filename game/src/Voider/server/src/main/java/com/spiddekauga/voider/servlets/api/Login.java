@@ -27,14 +27,14 @@ import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Tries to login to the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Login extends VoiderServlet {
+public class Login extends VoiderApiServlet {
 
 	@Override
 	protected void onInit() {

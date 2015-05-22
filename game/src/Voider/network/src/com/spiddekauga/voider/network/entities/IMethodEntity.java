@@ -55,6 +55,8 @@ public abstract interface IMethodEntity extends IEntity {
 		PASSWORD_RESET_SEND_TOKEN,
 		/** Reset password -> New password from token */
 		PASSWORD_RESET,
+		/** Change account settings */
+		ACCOUNT_CHANGE,
 
 		// Stats
 		/** Highscore sync */

@@ -47,6 +47,7 @@ import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
 import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
@@ -54,7 +55,6 @@ import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
 import com.spiddekauga.voider.utils.Pool;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Handles loading resources

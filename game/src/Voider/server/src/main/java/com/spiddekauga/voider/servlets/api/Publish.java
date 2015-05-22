@@ -56,14 +56,14 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SEnemy;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Tries to publish one or more definitions
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Publish extends VoiderServlet {
+public class Publish extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		mSearchDocumentsToAdd.clear();

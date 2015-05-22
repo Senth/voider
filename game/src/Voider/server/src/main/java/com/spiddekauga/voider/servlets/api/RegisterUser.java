@@ -23,14 +23,14 @@ import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaKey;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Registers a user
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class RegisterUser extends VoiderServlet {
+public class RegisterUser extends VoiderApiServlet {
 
 	@Override
 	protected void onInit() {

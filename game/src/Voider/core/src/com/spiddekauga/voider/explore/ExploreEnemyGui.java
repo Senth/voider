@@ -20,9 +20,9 @@ import com.spiddekauga.voider.network.resource.CollisionDamageSearchRanges;
 import com.spiddekauga.voider.network.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.resource.EnemySpeedSearchRanges;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for finding or loading enemies

@@ -7,8 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.ChatMessage;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
-import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.repo.user.User;
+import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -117,7 +117,7 @@ public class MessageGateway implements ChannelService {
 
 		ChatMessage<?> chatMessage = mGson.fromJson(message, ChatMessage.class);
 		if (chatMessage != null) {
-			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(mUserLocalRepo.getClientId())) {
+			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(mUserRepo.getClientId())) {
 				for (IMessageListener listener : mListeners) {
 					listener.onMessage(chatMessage);
 				}
@@ -178,7 +178,7 @@ public class MessageGateway implements ChannelService {
 	private ArrayList<IMessageListener> mListeners = new ArrayList<>();
 	private ChannelAPI mChannel = null;
 	private Gson mGson = new Gson();
-	private UserLocalRepo mUserLocalRepo = UserLocalRepo.getInstance();
+	private UserRepo mUserRepo = UserRepo.getInstance();
 
 	private static MessageGateway mInstance = null;
 }

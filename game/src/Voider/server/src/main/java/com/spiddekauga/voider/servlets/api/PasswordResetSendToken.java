@@ -30,14 +30,14 @@ import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPasswordReset;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Sends a key to the user's mail to
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class PasswordResetSendToken extends VoiderServlet {
+public class PasswordResetSendToken extends VoiderApiServlet {
 
 	@Override
 	protected void onInit() {

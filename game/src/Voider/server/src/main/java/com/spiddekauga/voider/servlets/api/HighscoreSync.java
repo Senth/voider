@@ -22,14 +22,14 @@ import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.stat.HighscoreSyncMethod;
 import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Synchronizes highscores with clients
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class HighscoreSync extends VoiderServlet {
+public class HighscoreSync extends VoiderApiServlet {
 
 	/**
 	 * Initializes the sync

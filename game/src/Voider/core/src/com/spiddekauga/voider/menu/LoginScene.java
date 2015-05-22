@@ -13,13 +13,12 @@ import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
-import com.spiddekauga.voider.repo.user.UserWebRepo;
+import com.spiddekauga.voider.repo.user.User;
+import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
-import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -101,7 +100,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * Try to login using stored username and private key
 	 */
 	void login() {
-		User userInfo = mUserLocalRepo.getLastUser();
+		User userInfo = mUserRepo.getLastUser();
 
 		if (userInfo != null && userInfo.isOnline()) {
 			mLoggingInUser.set(userInfo);
@@ -190,7 +189,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param email the email to send the token to
 	 */
 	void passwordResetSendToken(String email) {
-		UserWebRepo.getInstance().passwordResetSendToken(email, this);
+		mUserRepo.passwordResetSendToken(email, this);
 		getGui().showWaitWindow("Sending reset token to email...");
 	}
 
@@ -201,7 +200,7 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param token
 	 */
 	void resetPassword(String email, String password, String token) {
-		UserWebRepo.getInstance().passwordReset(email, password, token, this);
+		mUserRepo.passwordReset(email, password, token, this);
 		getGui().showWaitWindow("Resetting password");
 	}
 
@@ -315,5 +314,5 @@ public class LoginScene extends Scene implements IResponseListener {
 
 	/** Logging in user */
 	private User mLoggingInUser = new User();
-	private UserLocalRepo mUserLocalRepo = UserLocalRepo.getInstance();
+	private UserRepo mUserRepo = UserRepo.getInstance();
 }

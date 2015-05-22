@@ -19,8 +19,8 @@ import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions shall

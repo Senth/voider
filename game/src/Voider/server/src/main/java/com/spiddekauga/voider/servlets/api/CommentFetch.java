@@ -27,14 +27,14 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Get resource comments in batches
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class CommentFetch extends VoiderServlet {
+public class CommentFetch extends VoiderApiServlet {
 
 	@Override
 	protected void onInit() {

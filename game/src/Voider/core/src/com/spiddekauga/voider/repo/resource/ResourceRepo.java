@@ -34,12 +34,12 @@ import com.spiddekauga.voider.network.resource.UserResourceSyncMethod;
 import com.spiddekauga.voider.network.resource.UserResourceSyncResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Common resource repository for both web and local. Handles requests that affects both.

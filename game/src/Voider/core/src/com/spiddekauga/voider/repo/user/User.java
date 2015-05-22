@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.utils;
+package com.spiddekauga.voider.repo.user;
 
 import java.util.UUID;
 
@@ -9,13 +9,13 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.user.AccountChangeResponse;
+import com.spiddekauga.voider.network.user.AccountChangeResponse.AccountChangeStatuses;
 import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
-import com.spiddekauga.voider.repo.user.UserLocalRepo;
-import com.spiddekauga.voider.repo.user.UserWebRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -54,13 +54,24 @@ public class User {
 	}
 
 	/**
+	 * Tries to change the password of the user. Can fire game events:
+	 * USER_PASSWORD_CHANGE_MISMATCH, USER_PASSWORD_CHANGE_TOO_SHORT,
+	 * USER_PASSWORD_CHANGED
+	 * @param oldPassword
+	 * @param newPassword
+	 */
+	public void changePassword(String oldPassword, String newPassword) {
+		mUserRepo.changePassword(oldPassword, newPassword, mResponseListener);
+	}
+
+	/**
 	 * Logs out the user, only works for the global user
 	 */
 	public void logout() {
 		// Update user path
 		if (this == mGlobalUser) {
 			if (isOnline()) {
-				UserWebRepo.getInstance().logout();
+				UserRepo.getInstance().logout();
 			}
 
 			mEmail = null;
@@ -72,7 +83,6 @@ public class User {
 			mUsername = "(None)";
 
 			Config.File.setUserPaths(mUsername);
-			mUserLocalRepo.removeLastUser();
 			SceneSwitcher.dispose();
 			AnalyticsRepo analyticsRepo = AnalyticsRepo.getInstance();
 			analyticsRepo.endSession();
@@ -120,7 +130,6 @@ public class User {
 		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN));
 
 		if (online) {
-			mUserLocalRepo.setLastUser(username, privateKey, serverKey);
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
 			mNotification.show(NotificationTypes.SUCCESS, username + " is now online!");
 		} else {
@@ -166,13 +175,9 @@ public class User {
 		listeners[0] = mResponseListener;
 
 
-		// Connect if offline
-		if (mGlobalUser == this && mLoggedIn && !mOnline) {
-			mWebRepo.login(this, mUserLocalRepo.getClientId(), listeners);
-		}
-		// Login
-		else if (mGlobalUser != this) {
-			mWebRepo.login(this, mUserLocalRepo.getClientId(), listeners);
+		// Login || Connect if offline
+		if (mGlobalUser != this || (mGlobalUser == this && mLoggedIn && !mOnline)) {
+			mUserRepo.login(this, listeners);
 		}
 		// Error
 		else if (mGlobalUser == this) {
@@ -186,7 +191,7 @@ public class User {
 	 */
 	public void register(IResponseListener responseListener) {
 		if (mGlobalUser != this) {
-			mWebRepo.register(this, mUserLocalRepo.getClientId(), mResponseListener, responseListener);
+			mUserRepo.register(this, mResponseListener, responseListener);
 		}
 	}
 
@@ -330,8 +335,12 @@ public class User {
 				handleLoginResponse((LoginResponse) response);
 			}
 			// Register
-			if (response instanceof RegisterUserResponse) {
+			else if (response instanceof RegisterUserResponse) {
 				handleRegisterResponse((RegisterUserResponse) response);
+			}
+			// Account change
+			else if (response instanceof AccountChangeResponse) {
+				handleAccountChangeResponse((AccountChangeResponse) response);
 			}
 		}
 
@@ -342,7 +351,7 @@ public class User {
 					if (response.clientVersionStatus != ClientVersionStatuses.UPDATE_REQUIRED) {
 						connectGlobalUser();
 					} else {
-						mNotification.show(NotificationTypes.HIGHLIGHT, "Update required to go online");
+						mNotification.showHighlight("Update required to go online");
 					}
 				}
 				// Logged in
@@ -374,7 +383,7 @@ public class User {
 					if (User.this != mGlobalUser && mPrivateKey != null) {
 						loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
 					} else {
-						mNotification.show(NotificationTypes.ERROR, "Could not connect to server");
+						mNotification.showError("Could not connect to server");
 						mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
 					}
 					break;
@@ -382,9 +391,9 @@ public class User {
 				case FAILED_USERNAME_PASSWORD_MISMATCH:
 					// Auto-login
 					if (mPrivateKey != null) {
-						mNotification.show(NotificationTypes.ERROR, "Could not auto-login " + mUsername + ". Password has been changed");
+						mNotification.showError("Could not auto-login " + mUsername + ". Password has been changed");
 					} else {
-						mNotification.show(NotificationTypes.ERROR, "No username with that password exists");
+						mNotification.showError("No username with that password exists");
 					}
 					mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
 					break;
@@ -416,19 +425,33 @@ public class User {
 				if (User.this != mGlobalUser) {
 					mPrivateKey = response.privateKey;
 					mServerKey = response.userKey;
-					mUserLocalRepo.setLastUser(mUsername, response.privateKey, response.userKey);
 				}
-				mNotification.show(NotificationTypes.SUCCESS, "User registered");
+				mNotification.showSuccess("User registered");
 			} else {
-				mNotification.show(NotificationTypes.ERROR, "Failed to register user");
+				mNotification.showError("Failed to register user");
+			}
+		}
+
+		private void handleAccountChangeResponse(AccountChangeResponse response) {
+			if (response.isSuccessful()) {
+				for (AccountChangeStatuses changeStatus : response.changeStatuses) {
+					if (changeStatus == AccountChangeStatuses.PASSWORD_SUCCESS) {
+						mPrivateKey = response.privateKey;
+						mNotification.showSuccess("Password changed successfully!");
+						mEventDispatcher.fire(new GameEvent(EventTypes.USER_PASSWORD_CHANGED));
+					} else if (changeStatus == AccountChangeStatuses.PASSWORD_NEW_TOO_SHORT) {
+						mEventDispatcher.fire(new GameEvent(EventTypes.USER_PASSWORD_CHANGE_TOO_SHORT));
+					} else if (changeStatus == AccountChangeStatuses.PASSWORD_OLD_MISMATCH) {
+						mEventDispatcher.fire(new GameEvent(EventTypes.USER_PASSWORD_CHANGE_MISMATCH));
+					}
+				}
 			}
 		}
 	};
 
 	private static NotificationShower mNotification = NotificationShower.getInstance();
 	private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
-	private static UserWebRepo mWebRepo = UserWebRepo.getInstance();
-	private static UserLocalRepo mUserLocalRepo = UserLocalRepo.getInstance();
+	private static UserRepo mUserRepo = UserRepo.getInstance();
 	/** Global user */
 	private static User mGlobalUser = new User();
 	private String mUsername = "(None)";

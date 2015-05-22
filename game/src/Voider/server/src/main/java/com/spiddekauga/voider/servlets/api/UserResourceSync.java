@@ -38,14 +38,14 @@ import com.spiddekauga.voider.network.resource.UserResourceSyncResponse.UploadSt
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResourcesDeleted;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Synchronizes user resource revisions
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class UserResourceSync extends VoiderServlet {
+public class UserResourceSync extends VoiderApiServlet {
 
 	/**
 	 * Initializes the sync

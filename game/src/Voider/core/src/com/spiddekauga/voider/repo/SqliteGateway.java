@@ -12,7 +12,7 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;

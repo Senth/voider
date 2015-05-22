@@ -19,7 +19,7 @@ import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.network.resource.DownloadSyncResponse.Statuses;
 import com.spiddekauga.voider.server.util.ResourceUtils;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Checks if there are new published resources to sync to the client depending on the time
@@ -27,7 +27,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class DownloadSync extends VoiderServlet {
+public class DownloadSync extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		// Does nothing

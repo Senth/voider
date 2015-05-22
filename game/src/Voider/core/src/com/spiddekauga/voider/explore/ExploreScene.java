@@ -21,11 +21,11 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Common class for all explore scenes

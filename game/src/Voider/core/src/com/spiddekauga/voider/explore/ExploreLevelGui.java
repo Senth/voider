@@ -37,9 +37,9 @@ import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for explore level scene

@@ -2,18 +2,16 @@ package com.spiddekauga.voider.repo.user;
 
 import java.util.UUID;
 
-import com.spiddekauga.voider.utils.User;
-
 /**
  * Local repository for users
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class UserLocalRepo {
+class UserLocalRepo {
 	/**
 	 * Private constructor to enforce singleton pattern
 	 */
 	private UserLocalRepo() {
-		// TODO auto-generated method
+		// Does nothing
 	}
 
 	/**
@@ -27,35 +25,19 @@ public class UserLocalRepo {
 	}
 
 	/**
-	 * Disposes all resources
-	 */
-	public void dispose() {
-	}
-
-	/**
 	 * Set last logged in (online) user
 	 * @param username username or email of the user that was logged in
 	 * @param privateKey the private key which will be used for automatic login
 	 * @param serverKey user id on the server in the future.
 	 */
-	public void setLastUser(String username, UUID privateKey, String serverKey) {
+	void setLastUser(String username, UUID privateKey, String serverKey) {
 		mClientPrefsGateway.setLastUser(username, privateKey, serverKey);
-	}
-
-	/**
-	 * Set last logged in (offline) user
-	 * @param username username or email of the user that was logged in
-	 * @param password
-	 */
-	@Deprecated
-	public void setLastUser(String username, String password) {
-		mClientPrefsGateway.setLastUser(username, password);
 	}
 
 	/**
 	 * Removes the last logged in user
 	 */
-	public void removeLastUser() {
+	void removeLastUser() {
 		mClientPrefsGateway.removeLastUser();
 	}
 
@@ -63,7 +45,7 @@ public class UserLocalRepo {
 	 * Get information of the last user that was logged in
 	 * @return last user logged in, null if not found
 	 */
-	public User getLastUser() {
+	User getLastUser() {
 		return mClientPrefsGateway.getLastUser();
 	}
 
@@ -71,7 +53,7 @@ public class UserLocalRepo {
 	/**
 	 * @return client id, creates a new client id if one doesn't exist
 	 */
-	public UUID getClientId() {
+	UUID getClientId() {
 		UUID clientId = mClientPrefsGateway.getClientId();
 		if (clientId == null) {
 			clientId = UUID.randomUUID();
@@ -84,8 +66,16 @@ public class UserLocalRepo {
 	/**
 	 * @return user analytics id for this client
 	 */
-	public UUID getAnalyticsId() {
+	UUID getAnalyticsId() {
 		return mUserPrefsGateway.getAnalyticsId();
+	}
+
+	/**
+	 * Change the private key of the current user
+	 * @param privateKey new private key
+	 */
+	void setPrivateKey(UUID privateKey) {
+		mClientPrefsGateway.setPrivateKey(privateKey);
 	}
 
 	private UserPrefsGateway mUserPrefsGateway = new UserPrefsGateway();

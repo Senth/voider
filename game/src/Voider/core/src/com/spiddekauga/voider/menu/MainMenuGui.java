@@ -12,9 +12,9 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.menu.MainMenu.Scenes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
-import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.commands.CUserLogout;
 
 

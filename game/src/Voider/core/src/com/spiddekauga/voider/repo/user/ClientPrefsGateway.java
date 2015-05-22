@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.User;
 
 /**
  * Preference gateway for user repository
@@ -48,25 +47,8 @@ class ClientPrefsGateway {
 	 */
 	void setLastUser(String username, UUID privateKey, String serverKey) {
 		mPreferences.putString(LAST_USER__USERNAME, username);
-		mPreferences.putBoolean(LAST_USER__ONLINE, true);
 		mPreferences.putString(LAST_USER__PRIVATE_KEY, privateKey.toString());
 		mPreferences.putString(LAST_USER__SERVER_KEY, serverKey);
-		mPreferences.remove(LAST_USER__PASSWORD);
-		mPreferences.flush();
-	}
-
-	/**
-	 * Set last logged in (offline) user
-	 * @param username username or email of the user that was logged in
-	 * @param password
-	 */
-	@Deprecated
-	void setLastUser(String username, String password) {
-		mPreferences.putString(LAST_USER__USERNAME, username);
-		mPreferences.putBoolean(LAST_USER__ONLINE, false);
-		mPreferences.putString(LAST_USER__PASSWORD, password);
-		mPreferences.remove(LAST_USER__PRIVATE_KEY);
-		mPreferences.remove(LAST_USER__SERVER_KEY);
 		mPreferences.flush();
 	}
 
@@ -77,8 +59,15 @@ class ClientPrefsGateway {
 		mPreferences.remove(LAST_USER__USERNAME);
 		mPreferences.remove(LAST_USER__PRIVATE_KEY);
 		mPreferences.remove(LAST_USER__SERVER_KEY);
-		mPreferences.remove(LAST_USER__PASSWORD);
-		mPreferences.remove(LAST_USER__ONLINE);
+		mPreferences.flush();
+	}
+
+	/**
+	 * Updates the private key of the last logged in user
+	 * @param privateKey new private key for the user
+	 */
+	void setPrivateKey(UUID privateKey) {
+		mPreferences.putString(LAST_USER__PRIVATE_KEY, privateKey.toString());
 		mPreferences.flush();
 	}
 
@@ -90,7 +79,6 @@ class ClientPrefsGateway {
 		User userInfo = new User();
 
 		userInfo.setUsername(mPreferences.getString(LAST_USER__USERNAME));
-		userInfo.setOnline(mPreferences.getBoolean(LAST_USER__ONLINE));
 
 
 		// Return if missing variables
@@ -111,8 +99,6 @@ class ClientPrefsGateway {
 			if (serverKey != null) {
 				userInfo.setServerKey(serverKey);
 			}
-		} else {
-			userInfo.setPassword(mPreferences.getString(LAST_USER__PASSWORD));
 		}
 
 		if (userInfo.getPassword() == null && userInfo.getPrivateKey() == null) {
@@ -133,8 +119,6 @@ class ClientPrefsGateway {
 	private static final String LAST_USER__USERNAME = "lastUser_username";
 	/** Private key of last user */
 	private static final String LAST_USER__PRIVATE_KEY = "lastUser_privateKey";
-	@Deprecated private static final String LAST_USER__ONLINE = "lastUser_online";
-	@Deprecated private static final String LAST_USER__PASSWORD = "lastUser_password";
 	/** User id on the server */
 	private static final String LAST_USER__SERVER_KEY = "lastUser_serverKey";
 	/** Client id */

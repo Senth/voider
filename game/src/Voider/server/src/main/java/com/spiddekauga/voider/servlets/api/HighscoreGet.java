@@ -24,7 +24,7 @@ import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.stat.HighscoreGetMethod;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse.Statuses;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 
 /**
@@ -32,7 +32,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class HighscoreGet extends VoiderServlet {
+public class HighscoreGet extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		mResponse = new HighscoreGetResponse();

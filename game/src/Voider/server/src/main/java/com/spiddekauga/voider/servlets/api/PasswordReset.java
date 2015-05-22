@@ -19,14 +19,14 @@ import com.spiddekauga.voider.network.user.PasswordResetResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPasswordReset;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Try to reset a password
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class PasswordReset extends VoiderServlet {
+public class PasswordReset extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		mResponse = new PasswordResetResponse();

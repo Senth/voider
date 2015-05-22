@@ -204,6 +204,71 @@ public class NotificationShower {
 	}
 
 	/**
+	 * Adds a new notification message to the screen
+	 * @param notificationMessage
+	 */
+	public void show(NotificationMessage notificationMessage) {
+		show(notificationMessage.mType, notificationMessage.mMessage);
+	}
+
+	/**
+	 * Wrapper for storing notification messages
+	 */
+	public static class NotificationMessage {
+		/**
+		 * Default constructor
+		 */
+		public NotificationMessage() {
+		}
+
+
+		/**
+		 * Set a message with INFO type
+		 * @param message the message to display
+		 */
+		public NotificationMessage(String message) {
+			setMessage(message);
+		}
+
+		/**
+		 * Set the message and type directly
+		 * @param type the type of message
+		 * @param message the message to display
+		 */
+		public NotificationMessage(NotificationTypes type, String message) {
+			setMessage(type, message);
+		}
+
+		/**
+		 * Set the message
+		 * @param message
+		 */
+		public void setMessage(String message) {
+			mMessage = message;
+		}
+
+		/**
+		 * Set the message and type
+		 * @param type
+		 * @param message
+		 */
+		public void setMessage(NotificationTypes type, String message) {
+			mMessage = message;
+			mType = type;
+		}
+
+		/**
+		 * Shows the notification message
+		 */
+		public void show() {
+			NotificationShower.getInstance().show(this);
+		}
+
+		private String mMessage = "";
+		private NotificationTypes mType = NotificationTypes.INFO;
+	}
+
+	/**
 	 * All message styles
 	 */
 	public enum NotificationTypes {

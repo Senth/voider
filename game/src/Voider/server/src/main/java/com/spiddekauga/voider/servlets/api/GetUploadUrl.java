@@ -11,14 +11,14 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.GetUploadUrlMethod;
 import com.spiddekauga.voider.network.misc.GetUploadUrlResponse;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Returns a valid upload url
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class GetUploadUrl extends VoiderServlet {
+public class GetUploadUrl extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		// Does nothing

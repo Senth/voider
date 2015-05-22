@@ -17,6 +17,12 @@ public enum EventTypes {
 	USER_LOGOUT,
 	/** Failed to login user or connect */
 	USER_LOGIN_FAILED,
+	/** Password changed successfully */
+	USER_PASSWORD_CHANGED,
+	/** Password failed to change due to mismatch with server password */
+	USER_PASSWORD_CHANGE_MISMATCH,
+	/** Password failed to change due to new password too short */
+	USER_PASSWORD_CHANGE_TOO_SHORT,
 
 
 	// --- CAMERA ---

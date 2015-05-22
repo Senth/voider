@@ -28,14 +28,14 @@ import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Downloads resources
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class ResourceDownload extends VoiderServlet {
+public class ResourceDownload extends VoiderApiServlet {
 	@Override
 	protected void onInit() {
 		mResponse.status = Statuses.FAILED_SERVER_INTERAL;
