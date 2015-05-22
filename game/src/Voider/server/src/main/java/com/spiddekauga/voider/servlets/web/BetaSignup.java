@@ -3,6 +3,7 @@ package com.spiddekauga.voider.servlets.web;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +82,7 @@ public class BetaSignup extends VoiderController {
 	 */
 	private void handleSignUp() {
 		// Check if the email already exists and hasn't expired
-		String email = getParameter("email");
+		String email = getParameter("email").toLowerCase(Locale.ENGLISH);
 
 		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.BETA_SIGNUP, new FilterWrapper(CBetaSignUp.EMAIL, email));
 

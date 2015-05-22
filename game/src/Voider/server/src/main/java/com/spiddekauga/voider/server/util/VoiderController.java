@@ -194,6 +194,49 @@ public abstract class VoiderController extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Set the status response
+	 * @param type type of the message
+	 * @param message
+	 */
+	protected void setResponseMessage(String type, String message) {
+		mRequest.setAttribute("responseStatus", new ResponseMessage(type, message));
+	}
+
+	/**
+	 * For sending success and error messages
+	 */
+	public class ResponseMessage {
+		/**
+		 * New response message
+		 * @param type type of message (usually success or error)
+		 * @param message text message
+		 */
+		public ResponseMessage(String type, String message) {
+			this.type = type;
+			this.message = message;
+		}
+
+		/**
+		 * @return the message
+		 */
+		public String getMessage() {
+			return message;
+		}
+
+		/**
+		 * @return the type
+		 */
+		public String getType() {
+			return type;
+		}
+
+		/** Type of message */
+		private String type;
+		/** Message */
+		private String message;
+	}
+
 	private String mRootUrl = null;
 	private String mServletUri = null;
 	private HttpServletRequest mRequest = null;
