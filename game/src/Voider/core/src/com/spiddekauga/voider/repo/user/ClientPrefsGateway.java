@@ -79,6 +79,7 @@ class ClientPrefsGateway {
 		User userInfo = new User();
 
 		userInfo.setUsername(mPreferences.getString(LAST_USER__USERNAME));
+		userInfo.setOnline(true);
 
 
 		// Return if missing variables
@@ -86,23 +87,17 @@ class ClientPrefsGateway {
 			return null;
 		}
 
-		if (userInfo.isOnline()) {
-			// Login key
-			String privateKeyString = mPreferences.getString(LAST_USER__PRIVATE_KEY);
+		// Login key
+		String privateKeyString = mPreferences.getString(LAST_USER__PRIVATE_KEY);
 
-			if (privateKeyString != null && !privateKeyString.equals("")) {
-				userInfo.setPrivateKey(UUID.fromString(privateKeyString));
-			}
-
-			// Server key
-			String serverKey = mPreferences.getString(LAST_USER__SERVER_KEY);
-			if (serverKey != null) {
-				userInfo.setServerKey(serverKey);
-			}
+		if (privateKeyString != null && !privateKeyString.equals("")) {
+			userInfo.setPrivateKey(UUID.fromString(privateKeyString));
 		}
 
-		if (userInfo.getPassword() == null && userInfo.getPrivateKey() == null) {
-			return null;
+		// Server key
+		String serverKey = mPreferences.getString(LAST_USER__SERVER_KEY);
+		if (serverKey != null) {
+			userInfo.setServerKey(serverKey);
 		}
 
 		return userInfo;

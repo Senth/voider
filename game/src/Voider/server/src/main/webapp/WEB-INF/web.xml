@@ -50,6 +50,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>PasswordReset</servlet-name>
 		<url-pattern>/api/password-reset</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>AccountChange</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.AccountChange</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AccountChange</servlet-name>
+		<url-pattern>/api/account-change</url-pattern>
+	</servlet-mapping>
 	
 	
 	<!-- Published -->

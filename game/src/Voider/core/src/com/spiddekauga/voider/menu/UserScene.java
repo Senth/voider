@@ -69,6 +69,7 @@ public class UserScene extends MenuScene {
 
 			case USER_PASSWORD_CHANGED:
 				getGui().clearErrors();
+				getGui().clearPasswordFields();
 				break;
 
 			default:

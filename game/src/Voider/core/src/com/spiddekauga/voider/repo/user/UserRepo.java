@@ -32,6 +32,9 @@ public class UserRepo extends Repo {
 	 * @return instance of this class
 	 */
 	public static UserRepo getInstance() {
+		if (mInstance == null) {
+			mInstance = new UserRepo();
+		}
 		return mInstance;
 	}
 
@@ -162,7 +165,7 @@ public class UserRepo extends Repo {
 		}
 	}
 
-	private static UserRepo mInstance = new UserRepo();
+	private static UserRepo mInstance = null;
 	private UserWebRepo mWebRepo = UserWebRepo.getInstance();
 	private UserLocalRepo mLocalRepo = UserLocalRepo.getInstance();
 }

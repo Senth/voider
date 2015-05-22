@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
-import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -61,7 +60,13 @@ public class User {
 	 * @param newPassword
 	 */
 	public void changePassword(String oldPassword, String newPassword) {
-		mUserRepo.changePassword(oldPassword, newPassword, mResponseListener);
+		if (this == mGlobalUser) {
+			if (isOnline()) {
+				mUserRepo.changePassword(oldPassword, newPassword, mResponseListener);
+			} else {
+				mNotification.showHighlight("Cannot change password while offline");
+			}
+		}
 	}
 
 	/**
@@ -131,9 +136,9 @@ public class User {
 
 		if (online) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
-			mNotification.show(NotificationTypes.SUCCESS, username + " is now online!");
+			mNotification.showSuccess(username + " is now online!");
 		} else {
-			mNotification.show(NotificationTypes.HIGHLIGHT, username + " is now offline!");
+			mNotification.showHighlight(username + " is now offline!");
 		}
 	}
 
@@ -145,7 +150,7 @@ public class User {
 			mGlobalUser.mOnline = true;
 
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
-			mNotification.show(NotificationTypes.SUCCESS, mGlobalUser.mUsername + " is now online!");
+			mNotification.showSuccess(mGlobalUser.mUsername + " is now online!");
 		}
 	}
 
@@ -433,7 +438,9 @@ public class User {
 		}
 
 		private void handleAccountChangeResponse(AccountChangeResponse response) {
-			if (response.isSuccessful()) {
+			switch (response.status) {
+			case SUCCESS:
+			case SUCCESS_PARTIAL:
 				for (AccountChangeStatuses changeStatus : response.changeStatuses) {
 					if (changeStatus == AccountChangeStatuses.PASSWORD_SUCCESS) {
 						mPrivateKey = response.privateKey;
@@ -445,6 +452,17 @@ public class User {
 						mEventDispatcher.fire(new GameEvent(EventTypes.USER_PASSWORD_CHANGE_MISMATCH));
 					}
 				}
+				break;
+
+			case FAILED_SERVER_ERROR:
+			case FAILED_SERVER_CONNECTION:
+				mNotification.showError("Failed to connect to the server");
+				break;
+
+			case FAILED_USER_NOT_LOGGED_IN:
+				mNotification.showError("User has been logged out on server");
+				break;
+
 			}
 		}
 	};

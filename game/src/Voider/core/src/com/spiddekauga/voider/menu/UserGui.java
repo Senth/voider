@@ -123,6 +123,15 @@ public class UserGui extends MenuGui {
 	}
 
 	/**
+	 * Clear all password fields
+	 */
+	void clearPasswordFields() {
+		mWidget.account.oldPasswordListener.getTextField().setText("");
+		mWidget.account.newPasswordListener.getTextField().setText("");
+		mWidget.account.confirmPasswordListener.getTextField().setText("");
+	}
+
+	/**
 	 * Clear all error texts
 	 */
 	void clearErrors() {
