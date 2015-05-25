@@ -2,6 +2,9 @@
 	<div class="row">
 		<div class="col-md-12">
 			<h1 class="text-center">Generate Beta Keys</h1>
+			<c:if test="${not empty responseStatus}">
+				<p class="text-center ${responseStatus.type}">${responseStatus.message}</p>
+			</c:if>
 		</div>
 	</div>
 	<hr />

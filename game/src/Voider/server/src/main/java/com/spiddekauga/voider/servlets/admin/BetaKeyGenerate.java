@@ -46,6 +46,13 @@ public class BetaKeyGenerate extends VoiderController {
 	private void generateGroupKeys() {
 		String groupName = getParameter("group");
 		String count = getParameter("count");
+
+		if (groupName.isEmpty()) {
+			setResponseMessage("error", "No group name set!");
+		} else if (count.isEmpty()) {
+			setResponseMessage("error", "No count set!");
+		}
+
 		int cKeysToGenerate = 0;
 		try {
 			cKeysToGenerate = Integer.parseInt(count);
@@ -144,6 +151,8 @@ public class BetaKeyGenerate extends VoiderController {
 				sendBetaKeyToEmail(groupKey, email);
 			}
 
+			setResponseMessage("success", "Sent " + emailList.size() + " beta keys");
+
 		} else {
 			setResponseMessage("error", "Couldn't find group key");
 		}
@@ -168,6 +177,7 @@ public class BetaKeyGenerate extends VoiderController {
 			betaKey = wrapBetaKey.hashKey;
 			userSignupEntity.setProperty(CBetaSignUp.BETA_KEY, wrapBetaKey.datastoreKey);
 			userSignupEntity.setProperty(CBetaSignUp.DATE, new Date());
+			userSignupEntity.setProperty(CBetaSignUp.EMAIL, email);
 
 			DatastoreUtils.put(userSignupEntity);
 		}
@@ -187,9 +197,19 @@ public class BetaKeyGenerate extends VoiderController {
 		}
 
 		if (sendEmail) {
-			String body = "";
+			String body;
 
-			// TODO
+			body = "Hi! :D<br/><br/>";
+			body += "You've receieved a beta key for Voider. You can use this for yourself or give it to a friend if you like. Note that if you give the beta key to your friend you won't be able to signup for another beta key to this email.<br/><br/>";
+
+			body += "You can find download instructions <a href=\"http://voider-game.com>here</a>.";
+
+			body += "<br /><br />";
+			body += "-----------------------------------------<br />";
+			body += betaKey;
+			body += "-----------------------------------------<br /><br />";
+
+			sendEmail(email, "You've received a Voider beta key!", body);
 		}
 	}
 
@@ -203,7 +223,7 @@ public class BetaKeyGenerate extends VoiderController {
 
 		String hashKey = toBase64(UUID.randomUUID());
 		betaKey.setProperty(CBetaKey.KEY, hashKey);
-		betaKey.setProperty(CBetaKey.USED, true);
+		betaKey.setProperty(CBetaKey.USED, false);
 
 		Key datastoreKey = DatastoreUtils.put(betaKey);
 
@@ -261,7 +281,10 @@ public class BetaKeyGenerate extends VoiderController {
 
 		// Cleanup splitted emails and add to the email list
 		for (String splitEmail : splittedEmails) {
-			emailList.add(splitEmail.trim());
+			String trimmed = splitEmail.trim().toLowerCase(Locale.ENGLISH);
+			if (trimmed.contains("@") && trimmed.contains(".")) {
+				emailList.add(trimmed);
+			}
 		}
 
 		return emailList;

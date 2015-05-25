@@ -18,6 +18,14 @@ body {
   margin: 0;
 }
 
+p.success {
+	color: #00BB00;
+}
+
+p.error {
+	color: #BB0000;
+}
+
 a.box, a.box:link, a.box:visited {
 	font-size: 24px;
 	padding: 2px;
