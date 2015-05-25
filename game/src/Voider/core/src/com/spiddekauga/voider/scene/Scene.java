@@ -415,7 +415,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * to overwrite the original outcome.
 	 * @param outcome the outcome of the scene
 	 */
-	protected synchronized final void setOutcome(Outcomes outcome) {
+	protected synchronized void setOutcome(Outcomes outcome) {
 		if (mOutcome == null) {
 			mOutcome = outcome;
 		}
@@ -436,7 +436,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @param outcome the outcome of the scene
 	 * @param message a descriptive outcome message.
 	 */
-	public synchronized final void setOutcome(Outcomes outcome, Object message) {
+	public synchronized void setOutcome(Outcomes outcome, Object message) {
 		if (mOutcome == null) {
 			setOutcome(outcome);
 			mOutcomeMessage = message;

@@ -20,7 +20,7 @@ import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
  * GUI for the highscore scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class HighscoreSceneGui extends Gui {
+public class HighscoreGui extends Gui {
 	/**
 	 * Sets the highscore scene
 	 * @param scene highscore scene

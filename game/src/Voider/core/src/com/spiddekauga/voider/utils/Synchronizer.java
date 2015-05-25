@@ -302,8 +302,10 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	private void handleStatSyncResponse(StatSyncResponse response) {
 		if (response.isSuccessful()) {
 			mNotification.show(NotificationTypes.SUCCESS, "Stats synced");
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_STATS_SUCCESS));
 		} else {
 			mNotification.show(NotificationTypes.ERROR, "Stat sync failed");
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_STATS_FAILED));
 		}
 	}
 
@@ -314,8 +316,10 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	private void handleSyncHighscoreResponse(HighscoreSyncResponse response) {
 		if (response.isSuccessful()) {
 			mNotification.showSuccess("Highscores synced");
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_HIGHSCORE_SUCCESS));
 		} else {
 			mNotification.showError("Highscores sync failed");
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_HIGHSCORE_FAILED));
 		}
 	}
 

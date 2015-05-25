@@ -10,12 +10,12 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.stat.HighscoreGetMethod;
+import com.spiddekauga.voider.network.stat.HighscoreGetMethod.Fetch;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
+import com.spiddekauga.voider.network.stat.HighscoreGetResponse.Statuses;
 import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.stat.HighscoreSyncMethod;
 import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
-import com.spiddekauga.voider.network.stat.HighscoreGetMethod.Fetch;
-import com.spiddekauga.voider.network.stat.HighscoreGetResponse.Statuses;
 import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -145,7 +145,7 @@ class HighscoreWebRepo extends WebRepo {
 	}
 
 	@Override
-	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] esponseListeners) {
+	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] responseListeners) {
 		IEntity responseToSend = null;
 
 		if (methodEntity instanceof HighscoreGetMethod) {
@@ -155,7 +155,7 @@ class HighscoreWebRepo extends WebRepo {
 		}
 
 
-		sendResponseToListeners(methodEntity, responseToSend, esponseListeners);
+		sendResponseToListeners(methodEntity, responseToSend, responseListeners);
 	}
 
 	/**

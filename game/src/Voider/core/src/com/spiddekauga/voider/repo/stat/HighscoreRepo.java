@@ -5,10 +5,10 @@ import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.stat.HighscoreGetMethod.Fetch;
 import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.stat.HighscoreSyncMethod;
 import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
-import com.spiddekauga.voider.network.stat.HighscoreGetMethod.Fetch;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
 import com.spiddekauga.voider.repo.user.User;
@@ -122,7 +122,9 @@ public class HighscoreRepo extends Repo {
 	private void handleSyncResponse(HighscoreSyncMethod method, HighscoreSyncResponse response) {
 		// Set highscores as synced
 		if (response.isSuccessful()) {
-			mLocalRepo.setSynced(method.lastSync, method.highscores);
+			mLocalRepo.setSynced(method.highscores);
+			mLocalRepo.setHighscoresFromServer(response.highscores);
+			mLocalRepo.setSyncDate(response.syncTime);
 		}
 	}
 

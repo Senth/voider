@@ -360,6 +360,22 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
+	protected synchronized void setOutcome(Outcomes outcome) {
+		super.setOutcome(outcome);
+
+		if (!mRunningFromEditor && isPublished() && (outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_PLAYER_DIED)) {
+			setNewHighscore();
+
+			if (getOutcome() == Outcomes.LEVEL_COMPLETED) {
+				mStatRepo.increaseClearCount(getLevelId());
+			} else if (getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
+				mStatRepo.increaseDeathCount(getLevelId());
+			}
+			Synchronizer.getInstance().synchronize(SyncTypes.STATS);
+		}
+	}
+
+	@Override
 	protected void onDispose() {
 		// Save the level
 		if (!mRunningFromEditor) {
@@ -373,19 +389,6 @@ public class GameScene extends WorldScene {
 				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);
 				gameSave.setDef(gameSaveDef);
 				mResourceRepo.save(gameSaveDef, gameSave);
-			}
-			// Died or completed -> Update stats
-			else if (getOutcome() == Outcomes.LEVEL_COMPLETED || getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
-				if (isPublished()) {
-					setNewHighscore();
-
-					if (getOutcome() == Outcomes.LEVEL_COMPLETED) {
-						mStatRepo.increaseClearCount(getLevelId());
-					} else if (getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
-						mStatRepo.increaseDeathCount(getLevelId());
-					}
-					Synchronizer.getInstance().synchronize(SyncTypes.STATS);
-				}
 			}
 		}
 
@@ -490,6 +493,10 @@ public class GameScene extends WorldScene {
 			highscoreRepo.setHighscoreAndSync(mLevel.getDef().getId(), mPlayerStats.getScore());
 			mPlayerStats.setIsNewHighscore(true);
 		}
+
+		if (User.getGlobalUser().isOnline()) {
+			mHighscoreScene = new HighscoreScene(getLevelId(), mPlayerStats.getScore(), mPlayerStats.isNewHighscore());
+		}
 	}
 
 	@Override
@@ -578,8 +585,7 @@ public class GameScene extends WorldScene {
 				// Display highscores and tags
 				boolean online = User.getGlobalUser().isOnline();
 				if (online && isPublished()) {
-					HighscoreScene highscoreScene = new HighscoreScene(mPlayerStats.getScore());
-					HighscoreRepo.getInstance().getPlayerServerScore(getLevelId(), highscoreScene);
+					HighscoreScene highscoreScene = mHighscoreScene;
 					highscoreScene.setNextScene(nextScene);
 					nextScene = highscoreScene;
 
@@ -920,6 +926,8 @@ public class GameScene extends WorldScene {
 	private boolean mTakeScreenshot = false;
 	private SoundEffectListener mSoundEffectListener = null;
 	private SoundPlayer mSoundPlayer = SoundPlayer.getInstance();
+	/** Used for next scene if online and the level is published */
+	private HighscoreScene mHighscoreScene = null;
 
 	// MOUSE JOINT
 	private Vector2 mCursorScreen = new Vector2();

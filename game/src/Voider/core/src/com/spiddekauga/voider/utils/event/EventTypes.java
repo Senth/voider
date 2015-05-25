@@ -49,6 +49,14 @@ public enum EventTypes {
 	SYNC_COMMUNITY_DOWNLOAD_SUCCESS,
 	/** Failed to download community resources */
 	SYNC_COMMUNITY_DOWNLOAD_FAILED,
+	/** Synced player highscore succeeded */
+	SYNC_HIGHSCORE_SUCCESS,
+	/** Synced player highscore failed */
+	SYNC_HIGHSCORE_FAILED,
+	/** Statistics synced successfully */
+	SYNC_STATS_SUCCESS,
+	/** Statistics sync failed */
+	SYNC_STATS_FAILED,
 
 
 	// --- CLIENT VERSION ---

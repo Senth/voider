@@ -49,6 +49,16 @@ class HighscoreLocalRepo {
 
 	/**
 	 * Sets a new highscore as synced
+	 * @param highscores all the highscore to set as synced
+	 */
+	void setHighscoresFromServer(ArrayList<HighscoreSyncEntity> highscores) {
+		for (HighscoreSyncEntity highscore : highscores) {
+			setHighscoreAndSynced(highscore);
+		}
+	}
+
+	/**
+	 * Sets a new highscore as synced
 	 * @param highscore the highscore to set as synced
 	 */
 	void setHighscoreAndSynced(HighscoreSyncEntity highscore) {
@@ -65,14 +75,12 @@ class HighscoreLocalRepo {
 
 	/**
 	 * Sets all specified highscores as synced
-	 * @param syncDate new sync date
 	 * @param highscores all highscores to set as synced
 	 */
-	void setSynced(Date syncDate, ArrayList<HighscoreSyncEntity> highscores) {
+	void setSynced(ArrayList<HighscoreSyncEntity> highscores) {
 		for (HighscoreSyncEntity highscore : highscores) {
 			setSynced(highscore.levelId);
 		}
-		mPrefsGateway.setSyncDate(syncDate);
 	}
 
 	/**
