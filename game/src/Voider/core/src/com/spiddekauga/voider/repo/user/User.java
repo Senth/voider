@@ -364,6 +364,7 @@ public class User {
 					mUsername = response.username;
 					mPrivateKey = response.privateKey;
 					mServerKey = response.userKey;
+
 					// No update is required
 					if (response.clientVersionStatus != ClientVersionStatuses.UPDATE_REQUIRED) {
 						loginGlobalUser(mUsername, mPrivateKey, mServerKey, true);

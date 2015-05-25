@@ -146,7 +146,7 @@ public class UserRepo extends Repo {
 
 	private void handleLogin(LoginMethod method, LoginResponse response) {
 		// Logged in through text (not auto-login) -> Set last user
-		if (response.isSuccessful() && method.privateKey == null) {
+		if (response.isSuccessful() && response.privateKey != null) {
 			mLocalRepo.setLastUser(response.username, response.privateKey, response.userKey);
 		}
 	}
