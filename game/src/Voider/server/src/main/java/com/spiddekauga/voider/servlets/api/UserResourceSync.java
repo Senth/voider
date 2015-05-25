@@ -252,6 +252,21 @@ public class UserResourceSync extends VoiderApiServlet {
 	private void syncNewToServer(UserResourceSyncMethod methodEntity) {
 		Map<UUID, Map<Integer, BlobKey>> blobResources = getUploadedRevisionBlobs();
 
+		if (blobResources != null) {
+			mLogger.info("Found " + blobResources.size() + " resources");
+			String resourceString = "";
+			for (Entry<UUID, Map<Integer, BlobKey>> entry : blobResources.entrySet()) {
+				resourceString += entry.getKey().toString() + ": ";
+				for (Integer integer : entry.getValue().keySet()) {
+					resourceString += integer.toString() + ", ";
+				}
+				resourceString += "\n";
+			}
+			mLogger.info(resourceString);
+		} else {
+			mLogger.info("No resources uploaded");
+		}
+
 		ArrayList<BlobKey> blobsToRemove = new ArrayList<>();
 
 		// Iterate through each resource id
