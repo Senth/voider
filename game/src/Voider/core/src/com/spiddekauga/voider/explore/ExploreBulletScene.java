@@ -142,6 +142,7 @@ public class ExploreBulletScene extends ExploreActorScene {
 		 */
 		void fetchMore() {
 			if (hasMore()) {
+				mIsFetching = true;
 				mResourceWebRepo.getBullets(mLastSearch, true, ExploreBulletScene.this);
 			}
 		}

@@ -489,6 +489,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 */
 		void fetchMore() {
 			if (hasMore()) {
+				mIsFetching = true;
 				mResourceWebRepo.getLevels(mLastFetch, true, ExploreLevelScene.this);
 			}
 		}

@@ -392,6 +392,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 		 */
 		void fetchMore() {
 			if (hasMore()) {
+				mIsFetching = true;
 				mResourceWebRepo.getEnemies(mLastFetch, true, ExploreEnemyScene.this);
 			}
 		}
