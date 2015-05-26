@@ -81,7 +81,7 @@ project(":android") {
         compile 'org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT'
 		compile "edu.gvsu.cis.masl:java-channels:0.2.0"
 		compile "com.google.code.gson:gson:2.2.4"
-		compile "com.esotericsoftware:kryo:3.0.0"
+		compile "com.esotericsoftware:kryo:3.0.1"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
 		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
@@ -151,7 +151,7 @@ project(":core") {
         compile "org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT"
 		compile "edu.gvsu.cis.masl:java-channels:0.2.0"
 		compile "com.google.code.gson:gson:2.2.4"
-		compile "com.esotericsoftware:kryo:3.0.0"
+		compile "com.esotericsoftware:kryo:3.0.1"
 		compile "com.badlogicgames.gdx:gdx-sqlite:0.1"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
 		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"

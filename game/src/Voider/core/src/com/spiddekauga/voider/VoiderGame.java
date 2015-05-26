@@ -47,9 +47,10 @@ public class VoiderGame implements ApplicationListener {
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 		Box2D.init();
 		CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+		Gdx.input.setCatchBackKey(true);
 
 		if (Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
-			Log.INFO();
+			Log.TRACE();
 		} else {
 			Log.ERROR();
 		}

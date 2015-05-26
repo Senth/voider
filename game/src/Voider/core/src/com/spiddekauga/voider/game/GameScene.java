@@ -317,6 +317,7 @@ public class GameScene extends WorldScene {
 
 				if (isPublished()) {
 					mStatRepo.increasePlayCount(getLevelId());
+					Synchronizer.getInstance().synchronize(SyncTypes.STATS);
 				}
 			}
 
@@ -338,8 +339,6 @@ public class GameScene extends WorldScene {
 					Gdx.app.error("GameSave", "Could not find player stats in level!");
 				}
 			}
-
-			Synchronizer.getInstance().synchronize(SyncTypes.STATS);
 
 			// Play music
 			mMusicPlayer.play(mLevel.getLevelDef().getMusic(), MusicInterpolations.CROSSFADE);
