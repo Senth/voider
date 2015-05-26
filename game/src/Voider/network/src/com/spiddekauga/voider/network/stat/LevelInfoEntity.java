@@ -9,8 +9,8 @@ import com.spiddekauga.voider.network.resource.LevelDefEntity;
  * Wrapper for all level information
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class LevelInfoEntity implements IEntity {
+	private static final long serialVersionUID = 1L;
 	/** Level definition entity for the level */
 	public LevelDefEntity defEntity = new LevelDefEntity();
 	/** Level stats */

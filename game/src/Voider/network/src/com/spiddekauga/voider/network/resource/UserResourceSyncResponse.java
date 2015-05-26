@@ -13,8 +13,8 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * Response from when syncing user resource revisions
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class UserResourceSyncResponse implements IEntity, ISuccessStatuses {
+	private static final long serialVersionUID = 1L;
 	/** Upload status */
 	public UploadStatuses uploadStatus = null;
 	/** Download status */

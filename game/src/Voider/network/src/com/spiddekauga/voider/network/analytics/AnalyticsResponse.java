@@ -8,10 +8,11 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * Server response from adding analytics
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class AnalyticsResponse implements IEntity, ISuccessStatuses {
 	/** Status */
 	public GeneralResponseStatuses status = null;
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public boolean isSuccessful() {

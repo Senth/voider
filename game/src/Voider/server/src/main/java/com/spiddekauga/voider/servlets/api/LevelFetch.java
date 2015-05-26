@@ -63,6 +63,12 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 				mParameters = (LevelFetchMethod) methodEntity;
 
 				getAndSetLevelResponse();
+			} else {
+				if (methodEntity == null) {
+					mLogger.severe("Method entity is null");
+				} else {
+					mLogger.severe("Not a LevelFetchMethod " + methodEntity.getClass().getSimpleName());
+				}
 			}
 		} else {
 			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;

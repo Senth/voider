@@ -10,8 +10,8 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * Response of publish method.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class PublishResponse implements IEntity, ISuccessStatuses {
+	private static final long serialVersionUID = 1L;
 	/** If publish was successful */
 	public Statuses status = null;
 	/** Already published resource */

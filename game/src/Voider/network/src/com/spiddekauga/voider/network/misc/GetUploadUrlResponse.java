@@ -4,11 +4,11 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Response from GetUploadUrlMethod
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class GetUploadUrlResponse implements IEntity {
 	/** The upload url */
 	public String uploadUrl = null;
+
+	private static final long serialVersionUID = 1L;
 }

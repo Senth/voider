@@ -8,8 +8,8 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Level statistics a single player
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class UserLevelStatsEntity implements IEntity {
+	private static final long serialVersionUID = 1L;
 	/** If the player has bookmarked the level */
 	public boolean bookmarked = false;
 	/** Last played */

@@ -12,7 +12,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Bug report information
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class BugReportEntity implements IEntity {
 	/** User that's reporting, null if anonymous */
 	public String userKey = null;
@@ -32,6 +31,8 @@ public class BugReportEntity implements IEntity {
 	public UUID id = UUID.randomUUID();
 	/** Bug report type */
 	public BugReportTypes type;
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Bug report types

@@ -8,8 +8,8 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Wrapper for conflicting resources
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class ResourceConflictEntity implements IEntity {
+	private static final long serialVersionUID = 1L;
 	/** Resource id */
 	public UUID resourceId = null;
 	/** From what revision the conflict began */

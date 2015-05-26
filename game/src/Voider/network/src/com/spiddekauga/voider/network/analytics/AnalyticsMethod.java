@@ -8,7 +8,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class AnalyticsMethod implements IMethodEntity {
 	/** All sessions (with scenes and events) */
 	public ArrayList<AnalyticsSessionEntity> sessions = new ArrayList<>();
@@ -18,6 +17,8 @@ public class AnalyticsMethod implements IMethodEntity {
 	public String platform;
 	/** User analytics id, unique to this device and user */
 	public UUID userAnalyticsId;
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public MethodNames getMethodName() {

@@ -10,8 +10,8 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * Response from highscore get method
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class HighscoreGetResponse implements IEntity, ISuccessStatuses {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * First place of the level. Null if no one has first place. Available for
 	 * <ul>

@@ -7,11 +7,10 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Wrapper for resource a resource revision to upload or download
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class ResourceRevisionEntity implements IEntity {
+	private static final long serialVersionUID = 1L;
 	/** Resource id */
 	public UUID resourceId;
 	/** Type */

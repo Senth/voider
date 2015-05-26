@@ -8,8 +8,9 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * Publishes resources
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class PublishMethod implements IMethodEntity {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public MethodNames getMethodName() {
 		return MethodNames.PUBLISH;

@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * @param <DataType> type of data to store
  */
-@SuppressWarnings("serial")
 public class ChatMessage<DataType> implements IEntity {
 	/** Type of message */
 	public MessageTypes type = null;
@@ -17,6 +16,8 @@ public class ChatMessage<DataType> implements IEntity {
 	public UUID skipClient = null;
 	/** Optional data */
 	public DataType data = null;
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates an empty and invalid chat message

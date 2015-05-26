@@ -33,14 +33,14 @@ import com.spiddekauga.voider.utils.Pool;
  * {@code
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
- *
+ * 
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
  * shapeRenderer.pop();
- *
+ * 
  * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);
@@ -279,7 +279,8 @@ public class ShapeRendererEx implements Disposable {
 	 * @param color
 	 */
 	public void setColor(Color color) {
-		this.mColor.set(color);
+		mColor.set(color);
+		updateColorFloatBits();
 	}
 
 	/**
@@ -290,7 +291,15 @@ public class ShapeRendererEx implements Disposable {
 	 * @param a
 	 */
 	public void setColor(float r, float g, float b, float a) {
-		this.mColor.set(r, g, b, a);
+		mColor.set(r, g, b, a);
+		updateColorFloatBits();
+	}
+
+	/**
+	 * Update color float bits
+	 */
+	private void updateColorFloatBits() {
+		mColorFloat = mColor.toFloatBits();
 	}
 
 	/**
@@ -1125,7 +1134,7 @@ public class ShapeRendererEx implements Disposable {
 	 * Wrapper for setting the color of the next vertex. Uses the specified color
 	 */
 	private void color() {
-		mRenderer.color(mColor);
+		mRenderer.color(mColorFloat);
 	}
 
 	/**
@@ -1155,6 +1164,8 @@ public class ShapeRendererEx implements Disposable {
 	private Matrix4 mCombined = new Matrix4();
 	/** Color of the shape */
 	private Color mColor = new Color(1, 1, 1, 1);
+	/** Float bits color */
+	private float mColorFloat = mColor.toFloatBits();
 	/** Stack of shape type */
 	private Stack<ShapeType> mCurrentType = new Stack<ShapeRendererEx.ShapeType>();
 	/** Pool for vector */

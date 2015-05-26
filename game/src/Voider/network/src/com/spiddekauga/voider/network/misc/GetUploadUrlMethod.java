@@ -6,7 +6,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * Gets an upload URL message
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class GetUploadUrlMethod implements IMethodEntity {
 	@Override
 	public MethodNames getMethodName() {
@@ -15,4 +14,6 @@ public class GetUploadUrlMethod implements IMethodEntity {
 
 	/** Redirect method after upload is done */
 	public String redirectMethod = null;
+
+	private static final long serialVersionUID = 1L;
 }

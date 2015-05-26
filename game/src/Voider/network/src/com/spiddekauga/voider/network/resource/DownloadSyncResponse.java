@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * All resources that should be downloaded (synced) from the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class DownloadSyncResponse implements IEntity, ISuccessStatuses {
 	/** All published resources to download */
 	public ArrayList<ResourceBlobEntity> resources = new ArrayList<>();
@@ -18,6 +17,8 @@ public class DownloadSyncResponse implements IEntity, ISuccessStatuses {
 	public Date syncTime = null;
 	/** Status of the sync */
 	public Statuses status = null;
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public boolean isSuccessful() {

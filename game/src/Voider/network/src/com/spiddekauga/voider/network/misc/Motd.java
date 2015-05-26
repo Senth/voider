@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Message of the Day
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class Motd implements IEntity {
 	/** When the message was created */
 	public Date created;
@@ -20,6 +19,8 @@ public class Motd implements IEntity {
 	public String content;
 	/** Message type/severity */
 	public MotdTypes type;
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Various message types. These sorted by severity

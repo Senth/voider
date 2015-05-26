@@ -11,8 +11,8 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * Method for syncing user resources (with revisions)
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class UserResourceSyncMethod implements IMethodEntity {
+	private static final long serialVersionUID = 1L;
 	/** All resource revisions that were uploaded */
 	public ArrayList<ResourceRevisionEntity> resources = new ArrayList<>();
 	/** Resources to remove */

@@ -6,10 +6,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Logger;
+
+import com.spiddekauga.utils.Strings;
 
 /**
  * Serializes the entity into a byte string or vice versa
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class NetworkEntitySerializer {
@@ -31,10 +33,12 @@ public class NetworkEntitySerializer {
 			objectInputStream.close();
 			if (readObject instanceof IEntity) {
 				return (IEntity) readObject;
+			} else {
+				mLogger.warning("Read object was not an entity");
 			}
 
 		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
+			mLogger.severe("Failed to deserialize entity\n" + Strings.exceptionToString(e));
 		}
 
 		return null;
@@ -57,9 +61,11 @@ public class NetworkEntitySerializer {
 
 			return entityBytes;
 		} catch (IOException e) {
-			e.printStackTrace();
+			mLogger.severe("Failed to serialize entity\n" + Strings.exceptionToString(e));
 		}
 
 		return null;
 	}
+
+	private static final Logger mLogger = Logger.getLogger(NetworkEntitySerializer.class.getSimpleName());
 }

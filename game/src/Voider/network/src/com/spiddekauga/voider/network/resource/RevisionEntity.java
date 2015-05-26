@@ -6,11 +6,10 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Revision information wrapper
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class RevisionEntity implements IEntity, Comparable<RevisionEntity> {
+	private static final long serialVersionUID = 1L;
 	/** The revision */
 	public int revision;
 	/** Date the revision was created */

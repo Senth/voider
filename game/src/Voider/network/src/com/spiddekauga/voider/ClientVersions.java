@@ -255,7 +255,10 @@ public enum ClientVersions {
 			"	Username/Email is no longer case-sensitive when logging in",
 			"	Play, clear, and death count",
 			"Android",
-			"	Fixed a ton of bugs. Still not playable though :P",
+			"	Fixed a ton of bugs. Now is playable on Android",
+			"	Improved performance on Android, and a bit on PC :P",
+			"	Fixed network issue between Android and Server",
+					"Connecting to server doesn't work at all in older versions",
 			"Bug Fixes",
 			"	Highscore values are now correct after playing a level",
 			"	Auto-fetching more levels now works correctly when finding new levels"

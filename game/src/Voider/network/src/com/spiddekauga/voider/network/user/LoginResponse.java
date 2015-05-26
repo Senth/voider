@@ -13,8 +13,8 @@ import com.spiddekauga.voider.network.misc.Motd;
  * Response from the login method
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class LoginResponse implements IEntity, ISuccessStatuses {
+	private static final long serialVersionUID = 1L;
 	/** Username, the user could log in with email, thus reply with the real username */
 	public String username = null;
 	/** If the login was successful */

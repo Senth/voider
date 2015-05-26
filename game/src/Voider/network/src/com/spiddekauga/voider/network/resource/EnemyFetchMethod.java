@@ -9,7 +9,6 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
  * Fetches information about enemies
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class EnemyFetchMethod extends FetchMethod {
 	/** Search by text if not empty */
 	public String searchString = "";
@@ -29,6 +28,8 @@ public class EnemyFetchMethod extends FetchMethod {
 	public Boolean destroyOnCollide = null;
 	/** Collision damage categories */
 	public ArrayList<CollisionDamageSearchRanges> collisionDamageRanges = new ArrayList<>();
+
+	private static final long serialVersionUID = 1L;
 
 
 	/**

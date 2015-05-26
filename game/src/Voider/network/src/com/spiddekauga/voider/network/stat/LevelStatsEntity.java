@@ -8,8 +8,8 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Level statistics
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class LevelStatsEntity implements IEntity {
+	private static final long serialVersionUID = 1L;
 	/** Total plays */
 	public int cPlayed = 0;
 	/** Total bookmarks */

@@ -7,7 +7,6 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
  * Enemy definition entity
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class EnemyDefEntity extends DefEntity {
 	/**
 	 * Sets default variables
@@ -32,4 +31,6 @@ public class EnemyDefEntity extends DefEntity {
 	public boolean destroyOnCollide = false;
 	/** Amount of damage the enemy does on the player when colliding */
 	public float collisionDamage = 0;
+
+	private static final long serialVersionUID = 1L;
 }

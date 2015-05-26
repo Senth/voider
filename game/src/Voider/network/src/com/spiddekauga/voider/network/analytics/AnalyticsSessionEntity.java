@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Session analytics
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class AnalyticsSessionEntity implements IEntity {
 	/** Session id */
 	public UUID sessionId;
@@ -22,4 +21,6 @@ public class AnalyticsSessionEntity implements IEntity {
 	public String screenSize;
 	/** All scenes in this session */
 	public ArrayList<AnalyticsSceneEntity> scenes = new ArrayList<>();
+
+	private static final long serialVersionUID = 1L;
 }

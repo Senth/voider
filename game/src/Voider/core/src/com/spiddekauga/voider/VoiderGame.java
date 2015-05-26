@@ -50,7 +50,7 @@ public class VoiderGame implements ApplicationListener {
 		Gdx.input.setCatchBackKey(true);
 
 		if (Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
-			Log.TRACE();
+			Log.INFO();
 		} else {
 			Log.ERROR();
 		}

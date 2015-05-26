@@ -11,12 +11,13 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * Bug report response from the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class BugReportResponse implements IEntity, ISuccessStatuses {
 	/** Bug reports that failed to send */
 	public ArrayList<UUID> failedBugReports = new ArrayList<>();
 	/** Response status */
 	public GeneralResponseStatuses status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public boolean isSuccessful() {

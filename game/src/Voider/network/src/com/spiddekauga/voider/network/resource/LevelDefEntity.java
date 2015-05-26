@@ -6,7 +6,6 @@ import java.util.UUID;
  * Level definition entity
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class LevelDefEntity extends DefEntity {
 	/**
 	 * Sets default variables
@@ -21,4 +20,6 @@ public class LevelDefEntity extends DefEntity {
 	public float levelSpeed = 0;
 	/** Level id, not definition */
 	public UUID levelId = null;
+
+	private static final long serialVersionUID = 1L;
 }

@@ -6,8 +6,12 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * Method for downloading a blob
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class BlobDownloadMethod implements IMethodEntity {
+	/** Blob to download */
+	public String blobKey;
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Default constructor
 	 */
@@ -21,9 +25,6 @@ public class BlobDownloadMethod implements IMethodEntity {
 	public BlobDownloadMethod(String blobKey) {
 		this.blobKey = blobKey;
 	}
-
-	/** Blob to download */
-	public String blobKey;
 
 	@Override
 	public MethodNames getMethodName() {

@@ -8,7 +8,6 @@ import com.spiddekauga.voider.network.stat.CommentEntity;
  * Returns comments for the specified level
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class CommentFetchResponse extends FetchResponse {
 	/** All level comments */
 	public ArrayList<CommentEntity> comments = new ArrayList<>();
@@ -17,4 +16,6 @@ public class CommentFetchResponse extends FetchResponse {
 	 * made a comment on the level.
 	 */
 	public CommentEntity userComment = null;
+
+	private static final long serialVersionUID = 1L;
 }

@@ -8,10 +8,11 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * Method for reporting bugs to the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class BugReportMethod implements IMethodEntity {
 	/** All bugs to report */
 	public ArrayList<BugReportEntity> bugs = new ArrayList<>();
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public MethodNames getMethodName() {

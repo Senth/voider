@@ -44,7 +44,7 @@ public class NetworkGateway {
 					if (item.getFieldName().equals(ENTITY_NAME)) {
 						// Binary
 						if (item.getContentType().equals("application/octet-stream")) {
-							mLogger.finer("Found entity");
+							mLogger.finer("Found binary entity");
 							InputStream inputStream = item.openStream();
 							return IOUtils.toByteArray(inputStream);
 						}
@@ -54,6 +54,8 @@ public class NetworkGateway {
 							InputStream inputStream = item.openStream();
 							String base64Entity = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
 							return DatatypeConverter.parseBase64Binary(base64Entity);
+						} else {
+							mLogger.warning("Entity is neither binary nor base64");
 						}
 					}
 				}
@@ -63,6 +65,8 @@ public class NetworkGateway {
 				if (base64Entity != null) {
 					mLogger.finer("Found Base64 entity");
 					return DatatypeConverter.parseBase64Binary(base64Entity);
+				} else {
+					mLogger.warning("Didn't find any entity");
 				}
 			} catch (FileUploadException | IOException e) {
 				String exceptionString = Strings.exceptionToString(e);

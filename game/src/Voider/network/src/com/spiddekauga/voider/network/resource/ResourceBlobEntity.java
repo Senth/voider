@@ -6,11 +6,10 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Wrapper class for a resource and its type
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class ResourceBlobEntity implements IEntity {
+	private static final long serialVersionUID = 1L;
 	/** Resource id */
 	public UUID resourceId;
 	/** Blob key */

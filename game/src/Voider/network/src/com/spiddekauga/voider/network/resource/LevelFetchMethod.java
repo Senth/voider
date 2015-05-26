@@ -8,8 +8,8 @@ import com.spiddekauga.voider.network.stat.Tags;
  * Fetches information about all levels
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class LevelFetchMethod extends FetchMethod {
+	private static final long serialVersionUID = 1L;
 	/** Sorting */
 	public SortOrders sort = SortOrders.NEWEST;
 	/** All tags that should be included, if empty all tags are used */

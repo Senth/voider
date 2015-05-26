@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Scene analytics information
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class AnalyticsSceneEntity implements IEntity {
 	/** The session this scene belongs to */
 	public UUID sessionId;
@@ -28,4 +27,6 @@ public class AnalyticsSceneEntity implements IEntity {
 	public boolean dropout = false;
 	/** All events in this scene */
 	public ArrayList<AnalyticsEventEntity> events = new ArrayList<>();
+
+	private static final long serialVersionUID = 1L;
 }

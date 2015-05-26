@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Common class for def entities
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class DefEntity implements IEntity {
 	/** Def name */
 	public String name = null;
@@ -42,4 +41,6 @@ public class DefEntity implements IEntity {
 	// Other temporary variables (never used between networks)
 	/** Revision to load */
 	public int revision = -1;
+
+	private static final long serialVersionUID = 1L;
 }

@@ -6,8 +6,8 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * Response when trying to reset the password
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class PasswordResetResponse implements IEntity {
+	private static final long serialVersionUID = 1L;
 	/** Response status */
 	public Statuses status = Statuses.FAILED_SERVER_CONNECTION;
 

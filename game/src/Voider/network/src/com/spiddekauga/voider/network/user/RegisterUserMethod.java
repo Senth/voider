@@ -8,8 +8,9 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * Registers a new user
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class RegisterUserMethod implements IMethodEntity {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public MethodNames getMethodName() {
 		return MethodNames.REGISTER_USER;

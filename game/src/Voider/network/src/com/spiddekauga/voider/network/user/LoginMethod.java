@@ -10,8 +10,9 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * Log in method. Can use either private key or password.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
 public class LoginMethod implements IMethodEntity {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public MethodNames getMethodName() {
 		return MethodNames.LOGIN;
