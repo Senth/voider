@@ -215,7 +215,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_LOCAL;
+		public static final Builds BUILD = Builds.DEV_SERVER;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY_DEV);
 		/** Set to true in JUNIT tests */
@@ -513,34 +513,36 @@ public class Config {
 		}
 
 		static {
+			String initialPrefix = "com.spiddekauga.voider";
+
 			// Set storage
 			if (Debug.JUNIT_TEST) {
-				PREFERENCE_PREFIX = "Voider-JUnit";
+				PREFERENCE_PREFIX = initialPrefix + ".jUnit";
 			} else {
 				switch (Debug.BUILD) {
 				case RELEASE:
-					PREFERENCE_PREFIX = "Voider";
+					PREFERENCE_PREFIX = initialPrefix;
 					break;
 
 				case BETA:
-					PREFERENCE_PREFIX = "Voider-beta";
+					PREFERENCE_PREFIX = initialPrefix + ".beta";
 					break;
 
 				case NIGHTLY_DEV:
 				case NIGHTLY_RELEASE:
-					PREFERENCE_PREFIX = "Voider-nightly";
+					PREFERENCE_PREFIX = initialPrefix + ".nightly";
 					break;
 
 				case DEV_SERVER:
-					PREFERENCE_PREFIX = "Voider-dev-server";
+					PREFERENCE_PREFIX = initialPrefix + ".dev.server";
 					break;
 
 				case DEV_LOCAL:
-					PREFERENCE_PREFIX = "Voider-local";
+					PREFERENCE_PREFIX = initialPrefix + ".local";
 					break;
 
 				default:
-					PREFERENCE_PREFIX = "Voider-unknown";
+					PREFERENCE_PREFIX = initialPrefix + ".unknown";
 					break;
 				}
 			}

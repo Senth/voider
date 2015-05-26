@@ -9,6 +9,10 @@ import com.spiddekauga.voider.repo.PrefsGateway;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class StatPrefsGateway extends PrefsGateway {
+	StatPrefsGateway() {
+		super(true);
+	}
+
 	/**
 	 * Set last sync date of highscores
 	 * @param lastSync date when synced highscores the last time
@@ -28,16 +32,12 @@ class StatPrefsGateway extends PrefsGateway {
 
 
 	@Override
-	protected String getPreferenceName() {
-		return PREFERENCES_NAME;
+	protected PreferenceNames getPreferenceName() {
+		return PreferenceNames.STATS;
 	}
 
 	// Names
 	// SYNC
 	/** Last sync date */
 	private static final String SYNC_DATE = "sync_date";
-
-
-	/** Preferences name */
-	private static final String PREFERENCES_NAME = "stat";
 }

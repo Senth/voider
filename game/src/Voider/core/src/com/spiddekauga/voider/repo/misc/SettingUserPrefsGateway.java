@@ -13,9 +13,16 @@ import com.spiddekauga.voider.repo.PrefsGateway;
  */
 class SettingUserPrefsGateway extends PrefsGateway {
 
+	/**
+	 * Default constructor
+	 */
+	SettingUserPrefsGateway() {
+		super(true);
+	}
+
 	@Override
-	protected String getPreferenceName() {
-		return "settings";
+	protected PreferenceNames getPreferenceName() {
+		return PreferenceNames.SETTING_USER;
 	}
 
 	/**

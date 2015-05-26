@@ -2,23 +2,22 @@ package com.spiddekauga.voider.repo.misc;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
-import com.badlogic.gdx.Preferences;
 import com.spiddekauga.utils.Resolution;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Display;
 import com.spiddekauga.voider.config.IC_Setting.IC_Sound;
+import com.spiddekauga.voider.repo.PrefsGateway;
 
 /**
  * Game settings gateway
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class SettingClientPrefsGateway {
+class SettingClientPrefsGateway extends PrefsGateway {
 	/**
 	 * Initializes the client preferences gateway
 	 */
 	SettingClientPrefsGateway() {
-		mPreferences = Gdx.app.getPreferences(PREFERENCES_NAME);
+		super(false);
 	}
 
 	// -----------------------
@@ -196,6 +195,10 @@ class SettingClientPrefsGateway {
 		return mPreferences.getBoolean(NETWORK__MOBILE_DATA_ALLOW, true);
 	}
 
+	@Override
+	protected PreferenceNames getPreferenceName() {
+		return PreferenceNames.SETTING_GLOBAL;
+	}
 
 	private static final String DISPLAY__RESOLUTION_WINDOWED = "display_resolutionWindowed";
 	private static final String DISPLAY__RESOLUTION_FULLSCREEN = "display_resolutionFullscreen";
@@ -207,7 +210,4 @@ class SettingClientPrefsGateway {
 	private static final String SOUND__MUSIC_VOLUME = "sound_musicVolume";
 
 	private static final String NETWORK__MOBILE_DATA_ALLOW = "network_mobileDataAllow";
-
-	private Preferences mPreferences;
-	private static final String PREFERENCES_NAME = Config.File.PREFERENCE_PREFIX + "_setting";
 }

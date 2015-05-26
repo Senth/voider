@@ -17,11 +17,14 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TabWidget;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * GUI for game settings
@@ -61,6 +64,11 @@ public class SettingsGui extends MenuGui {
 			// initNetwork();
 		}
 
+		// Debug
+		if (Config.Debug.isBuildOrBelow(SHOW_DEBUG)) {
+			initDebug();
+		}
+
 		addBackButton();
 	}
 
@@ -80,6 +88,10 @@ public class SettingsGui extends MenuGui {
 			// mWidgets.network.table, tabWidget);
 		}
 		mUiFactory.button.addTab(SkinNames.General.SETTINGS_GENERAL, mWidgets.general.table, tabWidget);
+
+		if (Config.Debug.isBuildOrBelow(SHOW_DEBUG)) {
+			mUiFactory.button.addTab(SkinNames.General.SETTINGS_DEBUG, mWidgets.debug.table, tabWidget);
+		}
 	}
 
 	private void initGeneral() {
@@ -216,6 +228,26 @@ public class SettingsGui extends MenuGui {
 	}
 
 	/**
+	 * Initialize debug settings
+	 */
+	private void initDebug() {
+		AlignTable table = mWidgets.debug.table;
+		initTable(table, "Debug");
+
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.clearData();
+			}
+		};
+		table.row().setFillWidth(true);
+		mUiFactory.button.addText("Clear all data and logout", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null).setFillWidth(true);
+
+		table.row();
+		mUiFactory.text.add("This clears all local user data and logs out the user.", true, table, LabelStyles.HIGHLIGHT);
+	}
+
+	/**
 	 * Initializes the table with a header
 	 * @param table the table to initialize
 	 * @param header the header text
@@ -276,7 +308,7 @@ public class SettingsGui extends MenuGui {
 		General general = new General();
 		Display display = new Display();
 		Network network = new Network();
-
+		Debug debug = new Debug();
 
 		private class Sound implements Disposable {
 			AlignTable table = new AlignTable();
@@ -342,6 +374,15 @@ public class SettingsGui extends MenuGui {
 			}
 		}
 
+		private class Debug implements Disposable {
+			AlignTable table = new AlignTable();
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
+		}
+
 		@Override
 		public void dispose() {
 			display.dispose();
@@ -352,4 +393,5 @@ public class SettingsGui extends MenuGui {
 
 	private Widgets mWidgets = new Widgets();
 	private SettingsScene mScene = null;
+	private final static Builds SHOW_DEBUG = Builds.NIGHTLY_RELEASE;
 }

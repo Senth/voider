@@ -228,6 +228,20 @@ public abstract class SqliteGateway implements Disposable, IEventListener {
 		return mDatabase;
 	}
 
+	/**
+	 * Delete everything in the database
+	 */
+	public static void clearDatabase() {
+		if (mDatabase != null) {
+			SqliteUpgrader sqliteUpgrader = new SqliteUpgrader(mDatabase);
+			try {
+				sqliteUpgrader.clearTables();
+			} catch (SQLiteGdxException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private Queue<String> mFailQueue = new LinkedList<>();
 	/** Queue exec SQL statements if they fail, and retry at a later point */
 	private boolean mQueueIfFail = false;

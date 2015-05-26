@@ -917,6 +917,8 @@ public class SkinNames {
 		SETTINGS_NETWORK(ImageButtonStyle.class),
 		/** Display settings */
 		SETTINGS_DISPLAY(ImageButtonStyle.class, "settings_resolution"),
+		/** Debug settings */
+		SETTINGS_DEBUG(ImageButtonStyle.class),
 		/** Sound settings */
 		SETTINGS_SOUND(ImageButtonStyle.class),
 		/** Player statistics */

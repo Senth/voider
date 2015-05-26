@@ -10,6 +10,13 @@ import com.spiddekauga.voider.repo.PrefsGateway;
  */
 class ResourcePrefsGateway extends PrefsGateway {
 	/**
+	 * Default constructor
+	 */
+	ResourcePrefsGateway() {
+		super(true);
+	}
+
+	/**
 	 * Set last sync date of published/downloaded resources
 	 * @param lastSync date when synced published/downloaded resources the last time
 	 */
@@ -44,12 +51,9 @@ class ResourcePrefsGateway extends PrefsGateway {
 	}
 
 	@Override
-	protected String getPreferenceName() {
-		return PREFERENCES_NAME;
+	protected PreferenceNames getPreferenceName() {
+		return PreferenceNames.RESOURCE;
 	}
-
-	/** Preferences name */
-	private static final String PREFERENCES_NAME = "resources";
 
 	// Names
 	// SYNC

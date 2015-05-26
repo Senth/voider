@@ -480,6 +480,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageCheckedOver: settings_network_checked_over,
 	},
 	
+	settings_debug: {
+		imageUp: settings_debug,
+		imageOver: settings_debug_over,
+		imageDown: settings_debug_down,
+		imageChecked: settings_debug_checked,
+		imageCheckedOver: settings_debug_checked_over,
+	}
+	
 	
 	/** Menu - User Settings */
 	

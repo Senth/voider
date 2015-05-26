@@ -10,7 +10,7 @@ import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 
 /**
- * Upgrades the SQLite database to the latest version
+ * Upgrades or clears the SQLite database to the latest version
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SqliteUpgrader {
@@ -28,13 +28,27 @@ class SqliteUpgrader {
 	 * @throws SQLiteGdxException thrown when an error occurs
 	 */
 	void initAndUpgrade() throws SQLiteGdxException {
-		if (!mUpgraded) {
+		if (!mUpgradedOrDeleted) {
 			// Create version table
 			mDatabase.execSQL(TABLE_VERSION_CREATE);
 
 			createOrUpgradeTables();
 
-			mUpgraded = true;
+			mUpgradedOrDeleted = true;
+		}
+	}
+
+	/**
+	 * Clear all tables.
+	 * @throws SQLiteGdxException
+	 */
+	void clearTables() throws SQLiteGdxException {
+		if (!mUpgradedOrDeleted) {
+			for (String table : mNotFoundTables) {
+				mDatabase.execSQL("DELETE FROM " + table + ";");
+			}
+
+			mUpgradedOrDeleted = true;
 		}
 	}
 
@@ -222,8 +236,8 @@ class SqliteUpgrader {
 	/** Version version column */
 	private static final int VERSION__TABLE_NAME = 1;
 
-	/** If the database has been upgraded */
-	private boolean mUpgraded = false;
+	/** If the database has been upgraded or deleted */
+	private boolean mUpgradedOrDeleted = false;
 	/** Tables that weren't found in the version table */
 	private Set<String> mNotFoundTables = new HashSet<String>();
 	/** Create table queries for all tables */

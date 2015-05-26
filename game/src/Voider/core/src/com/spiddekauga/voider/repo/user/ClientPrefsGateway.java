@@ -2,20 +2,18 @@ package com.spiddekauga.voider.repo.user;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.PrefsGateway;
 
 /**
  * Preference gateway for user repository
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class ClientPrefsGateway {
+class ClientPrefsGateway extends PrefsGateway {
 	/**
 	 * Initializes the user preferences gateway
 	 */
 	ClientPrefsGateway() {
-		mPreferences = Gdx.app.getPreferences(PREFERENCES_NAME);
+		super(false);
 	}
 
 	/**
@@ -103,10 +101,10 @@ class ClientPrefsGateway {
 		return userInfo;
 	}
 
-	/** Preferences */
-	private Preferences mPreferences;
-	/** Preferences name */
-	private static final String PREFERENCES_NAME = Config.File.PREFERENCE_PREFIX + "_users";
+	@Override
+	protected PreferenceNames getPreferenceName() {
+		return PreferenceNames.USERS;
+	}
 
 	// Names
 	// LAST_USER

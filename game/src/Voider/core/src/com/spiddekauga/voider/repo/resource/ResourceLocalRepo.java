@@ -193,6 +193,16 @@ public class ResourceLocalRepo {
 	}
 
 	/**
+	 * Removes all resources. Equivalent of calling {@link #removeAll(ExternalTypes)} with
+	 * all external types
+	 */
+	public static void removeAll() {
+		for (ExternalTypes externalType : ExternalTypes.values()) {
+			removeAll(externalType);
+		}
+	}
+
+	/**
 	 * Removes all resources of the specified type (including all revisions)
 	 * @param externalType the resource type to remove
 	 * @param addToRemovedDb set to true if the resources should be set as removed

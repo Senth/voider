@@ -9,10 +9,16 @@ import com.spiddekauga.voider.repo.PrefsGateway;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class UserPrefsGateway extends PrefsGateway {
+	/**
+	 * Default constructor
+	 */
+	UserPrefsGateway() {
+		super(true);
+	}
 
 	@Override
-	protected String getPreferenceName() {
-		return "user";
+	protected PreferenceNames getPreferenceName() {
+		return PreferenceNames.USER;
 	}
 
 	/**
