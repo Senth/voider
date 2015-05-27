@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,17 +119,21 @@ public class WebGateway {
 			HttpURLConnection connection = postBuilder.build();
 
 			// Get response
-			InputStream response = connection.getInputStream();
+			BufferedInputStream bufferedResponse = new BufferedInputStream(connection.getInputStream());
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			int n = -1;
 			byte[] buffer = new byte[4096];
-			while ((n = response.read(buffer)) != -1) {
+			while ((n = bufferedResponse.read(buffer)) != -1) {
 				byteArrayOutputStream.write(buffer, 0, n);
 			}
 
+
 			connection.disconnect();
 
-			return byteArrayOutputStream.toByteArray();
+			byte[] responseEntity = byteArrayOutputStream.toByteArray();
+			// Gdx.app.log("Network", "Recieved entity of length: " +
+			// responseEntity.length);
+			return responseEntity;
 		} catch (IOException e) {
 			Gdx.app.log("Network", "Could not connect to server");
 		}

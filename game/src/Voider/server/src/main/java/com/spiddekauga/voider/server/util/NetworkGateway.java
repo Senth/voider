@@ -87,6 +87,7 @@ public class NetworkGateway {
 	public static void sendResponse(HttpServletResponse response, byte[] entity) {
 		try {
 			OutputStream outputStream = response.getOutputStream();
+			mLogger.finer("Writing entity of length " + entity.length);
 			outputStream.write(entity);
 			outputStream.flush();
 			outputStream.close();

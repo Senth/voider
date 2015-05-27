@@ -186,7 +186,6 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			mSearchCriteriaTemp.search = true;
 			mSearchCriteria.search = true;
 		}
-		mLevelFetch.mLastFetch = mSearchCriteria.copy();
 
 		super.setView(view);
 	}
@@ -459,10 +458,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		 */
 		void fetch() {
 			if (mUser.isOnline()) {
-				if (mLastFetch == null) {
+				// Only fetch again if we aren't fetching or it isn't the same fetch
+				if (!mIsFetching || !mSearchCriteria.equals(mLastFetch)) {
 					mLastFetch = mSearchCriteria.copy();
+					fetch(mLastFetch);
 				}
-				fetch(mLastFetch);
 			}
 		}
 

@@ -437,7 +437,7 @@ abstract class ExploreGui extends Gui {
 		mRightPanel = tabWidget;
 
 		// Info
-		mUiFactory.button.addTab(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
+		mUiFactory.button.addTabScroll(SkinNames.General.OVERVIEW, mWidgets.info.table, mWidgets.info.hider, mRightPanel);
 
 		// Add actions
 		// Revision

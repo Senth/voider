@@ -406,7 +406,7 @@ class ExploreLevelGui extends ExploreGui {
 		HideListener hideListener = new HideListener(true);
 		mWidgets.onlineHider.addChild(hideListener);
 		mWidgets.onlineHider.addToggleActor(tagButton);
-		mLeftPanel.addTab(tagButton, table, hideListener);
+		mLeftPanel.addTabScroll(tagButton, table, hideListener);
 
 
 		// Clear button

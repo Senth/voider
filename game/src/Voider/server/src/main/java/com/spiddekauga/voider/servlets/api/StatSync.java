@@ -72,6 +72,8 @@ public class StatSync extends VoiderApiServlet {
 			syncToServer();
 
 			mResponse.status = GeneralResponseStatuses.SUCCESS;
+		} else {
+			mLogger.severe("Entity isn't a StatSyncMethod");
 		}
 
 		return mResponse;
