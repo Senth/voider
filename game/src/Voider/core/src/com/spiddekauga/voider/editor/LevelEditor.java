@@ -19,6 +19,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Level;
+import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.ActorAddTool;
@@ -533,14 +534,21 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 		}
 
-		setUnsaved();
+		// Set unsaved if it isn't a brush
+		if (!(resource instanceof VectorBrush)) {
+			setUnsaved();
+		}
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		getGui().resetValues();
 		mLevel.removeResource(resource.getId());
-		setUnsaved();
+
+		// Set unsaved if it isn't a brush
+		if (!(resource instanceof VectorBrush)) {
+			setUnsaved();
+		}
 	}
 
 	@Override
