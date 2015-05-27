@@ -19,7 +19,6 @@ import com.spiddekauga.voider.utils.event.IEventListener;
 public abstract class PrefsGateway implements IEventListener {
 	/**
 	 * Opens a new empty (invalid) preferences gateway.
-	 * @param userPreferences TODO
 	 * @param userPreferences true if user preferences, false for global prefernces
 	 */
 	protected PrefsGateway(boolean userPreferences) {

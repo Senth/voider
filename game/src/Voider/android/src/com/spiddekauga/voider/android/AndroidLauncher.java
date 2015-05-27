@@ -7,6 +7,10 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.spiddekauga.voider.VoiderGame;
 
+/**
+ * Launches the game on the Android
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ */
 public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

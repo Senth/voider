@@ -173,17 +173,31 @@ public class PlayerStats extends Resource implements Disposable {
 	/**
 	 * Container class for part of the score
 	 */
-	public class ScorePart {
-		private ScorePart() {
+	public static class ScorePart {
+		/**
+		 * Creates a new score part
+		 * @param playerStats player stats
+		 */
+		private ScorePart(PlayerStats playerStats) {
 			// Coord start
-			if (mScoreParts.isEmpty()) {
+			if (playerStats.mScoreParts.isEmpty()) {
 				mMultiplierStart = 1;
 			} else {
-				ScorePart prevScorePart = mScoreParts.peek();
+				ScorePart prevScorePart = playerStats.mScoreParts.peek();
 				mMultiplierStart = prevScorePart.mMultiplierAfter;
 			}
+			mCoordEnd = playerStats.mCoordCurrent;
+			mMultiplierEnd = playerStats.mMultiplier;
+			mMultiplierAfter = calculateNewMultiplier(playerStats.mMultiplier);
 
 			calculateScore();
+		}
+
+		/**
+		 * Default constructor for kryo
+		 */
+		private ScorePart() {
+			// Does nothing
 		}
 
 		/**
@@ -201,10 +215,10 @@ public class PlayerStats extends Resource implements Disposable {
 			return mScore;
 		}
 
-		@Tag(147) private float mCoordEnd = mCoordCurrent;
+		@Tag(147) private float mCoordEnd;
 		@Tag(148) private double mMultiplierStart;
-		@Tag(149) private double mMultiplierEnd = mMultiplier;
-		@Tag(154) private double mMultiplierAfter = calculateNewMultiplier(mMultiplier);
+		@Tag(149) private double mMultiplierEnd;
+		@Tag(154) private double mMultiplierAfter;
 		@Tag(150) private double mScore;
 	}
 
@@ -212,7 +226,7 @@ public class PlayerStats extends Resource implements Disposable {
 	 * Create and add a new score part
 	 */
 	private void createScorePart() {
-		ScorePart scorePart = new ScorePart();
+		ScorePart scorePart = new ScorePart(this);
 		mScoreParts.push(scorePart);
 	}
 
@@ -220,7 +234,7 @@ public class PlayerStats extends Resource implements Disposable {
 	 * Calculates the total score
 	 */
 	private void updateTotalScore() {
-		ScorePart endScorePart = new ScorePart();
+		ScorePart endScorePart = new ScorePart(this);
 		mScore = endScorePart.getScore();
 
 		for (ScorePart scorePart : mScoreParts) {

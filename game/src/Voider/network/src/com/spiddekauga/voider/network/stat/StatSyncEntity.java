@@ -21,6 +21,7 @@ public class StatSyncEntity implements IEntity {
 	 * Level/Campaign stats
 	 */
 	public static class LevelStat implements IEntity {
+		private static final long serialVersionUID = 1L;
 		/** Level/Campaign id */
 		public UUID id = null;
 		/** If the level/campaign is bookmarked */

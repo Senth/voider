@@ -9,6 +9,9 @@ import com.spiddekauga.voider.repo.PrefsGateway;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class HighscorePrefsGateway extends PrefsGateway {
+	/**
+	 * Default constructor
+	 */
 	HighscorePrefsGateway() {
 		super(true);
 	}

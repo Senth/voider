@@ -261,7 +261,8 @@ public enum ClientVersions {
 					"Connecting to server doesn't work at all in older versions",
 			"Bug Fixes",
 			"	Highscore values are now correct after playing a level",
-			"	Auto-fetching more levels now works correctly when finding new levels"
+			"	Auto-fetching more levels now works correctly when finding new levels",
+			"	Can now resume a level correctly"
 			),
 	;
 	// @formatter:on

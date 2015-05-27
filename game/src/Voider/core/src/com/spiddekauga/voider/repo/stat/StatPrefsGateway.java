@@ -9,6 +9,9 @@ import com.spiddekauga.voider.repo.PrefsGateway;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class StatPrefsGateway extends PrefsGateway {
+	/**
+	 * Default constructor
+	 */
 	StatPrefsGateway() {
 		super(true);
 	}
