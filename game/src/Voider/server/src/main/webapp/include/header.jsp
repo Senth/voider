@@ -32,6 +32,9 @@
                   <li class="<%= printIfPage("beta.jsp", "active", "") %>">
                     <a href="<%= link("beta.jsp") %>">Beta Testing</a>
                   </li>
+                  <li>
+                    <a href="http://reddit.com/r/Voider">Community</a>
+                  </li>
                 </ul>
               </div>
             </div>
