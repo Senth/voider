@@ -753,14 +753,14 @@ abstract class ExploreGui extends Gui {
 
 		// Created by
 		mUiFactory.text.addPanelSection("Created By", table, null);
-		mWidgets.info.createbBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
+		mWidgets.info.createbBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAYER, "", false, table, null);
 
 		// Revised by
 		mUiFactory.text.addPanelSection("Revised By", table, mWidgets.info.revisedHider);
-		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, mWidgets.info.revisedHider);
+		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAYER, "", false, table, mWidgets.info.revisedHider);
 
 		// Date
-		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", false, table, null);
+		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_DATE, "", false, table, null);
 	}
 
 	/**

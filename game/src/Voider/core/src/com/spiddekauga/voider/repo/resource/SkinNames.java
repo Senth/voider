@@ -24,6 +24,7 @@ import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
  * All skin names
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
+@SuppressWarnings("javadoc")
 public class SkinNames {
 	/**
 	 * Editor icon names
@@ -96,11 +97,6 @@ public class SkinNames {
 		ENEMY_SET_ACTIVATE_TRIGGER,
 		/** Set deactivate trigger for enemies. I.e. binds the enemy to a trigger */
 		ENEMY_SET_DEACTIVATE_TRIGGER,
-		/**
-		 * When checked it shows which enemies will be spawned when testing the level from
-		 * the current position
-		 */
-		ENEMY_SPAWN_HIGHLIGHT,
 		/** Grid button for turning it on/off */
 		GRID,
 		/** Make the grid to be rendered above all other resources */
@@ -674,42 +670,37 @@ public class SkinNames {
 	 * General images
 	 */
 	public enum GeneralImages implements IImageNames {
-		/** Date */
-		DATE,
-		/** Edited */
-		EDIT,
-		/** Player */
-		PLAYER,
-		/** Number of plays */
-		PLAYS,
-		/** Star */
+		INFO_DATE,
+		INFO_EDIT,
+		INFO_PLAYER("panel_player"),
+		INFO_PLAY_COUNT,
 		STAR,
-		/** Tag */
-		TAG,
-		/** Bookmark */
-		BOOKMARK,
+		INFO_TAGS,
+		INFO_BOOKMARK("bookmark"),
+		INFO_AIM_TYPE,
+		INFO_BULLET_DAMAGE,
+		INFO_BULLET_SPEED,
+		INFO_COLLISION_DAMAGE,
+		INFO_DESTROY_ON_COLLIDE,
+		INFO_ENEMY_HAS_WEAPON,
+		INFO_LEVEL_DIFFICULTY,
+		INFO_LEVEL_FRUSTRATION,
+		INFO_LEVEL_LENGTH,
+		INFO_LEVEL_SPEED,
+		INFO_MOVEMENT_TYPE,
 		/** Screenshot placeholder for levels */
 		SCREENSHOT_PLACEHOLDER,
-		/** Successful message */
 		MESSAGE_SUCCESS,
-		/** Failed message */
 		MESSAGE_ERROR,
-		/** Highlighted, important message */
 		MESSAGE_HIGHLIGHT,
-		/** Information message */
 		MESSAGE_INFO,
-		/** Space background */
 		BACKGROUND_SPACE,
-		/** Sync from cloud */
 		SYNC_CLOUD,
-		/** Sync from device */
 		SYNC_DEVICE,
-		/** Shuttle large */
 		SHUTTLE_LARGE,
-		/** Smaller ship */
-		SHUTTLE_SMALL,
 		/** Background for window settings */
 		WINDOW_SETTINGS,
+
 
 		;
 
@@ -751,8 +742,6 @@ public class SkinNames {
 	public enum General implements ISkinNames {
 		/** Wait animation texture */
 		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
-		/** Bug Report icon */
-		BUG_REPORT(ImageButtonStyle.class),
 		/** Regular press button */
 		BUTTON_PRESS(ButtonStyle.class, "press"),
 		/** Toggle button */
@@ -762,23 +751,20 @@ public class SkinNames {
 		/** Displayed as selected, but has over and down states */
 		BUTTON_SELECTED_PRESSABLE(ButtonStyle.class, "selected_pressable"),
 		/** A regular button that looks like a checkbox */
-		BUTTON_CHECK_BOX(ImageButtonStyle.class, "checkbox"),
+		BUTTON_CHECK_BOX("checkbox"),
 		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
 		/** Check box that uses the radio button style */
 		CHECK_BOX_RADIO(CheckBoxStyle.class, "radio"),
-		/** Create button */
-		CREATE(ImageButtonStyle.class),
-		/** Explore button */
-		EXPLORE(ImageButtonStyle.class),
+		CREATE,
 		/** Image button default */
-		IMAGE_BUTTON_DEFAULT(ImageButtonStyle.class, "default"),
+		IMAGE_BUTTON_DEFAULT("default"),
 		/** Stub image button */
-		IMAGE_BUTTON_STUB(ImageButtonStyle.class, "stub"),
+		IMAGE_BUTTON_STUB("stub"),
 		/** Stub togglable image button */
-		IMAGE_BUTTON_STUB_TOGGLE(ImageButtonStyle.class, "stub_toggle"),
+		IMAGE_BUTTON_STUB_TOGGLE("stub_toggle"),
 		/** Image button toggle */
-		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
+		IMAGE_BUTTON_TOGGLE("toggle"),
 		/** Default label */
 		LABEL_DEFAULT(LabelStyle.class, "default"),
 		/** Error messages style */
@@ -821,37 +807,22 @@ public class SkinNames {
 		LABEL_INFO_EXTRA(LabelStyle.class, "info_extra"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
-		/** Logout button */
-		LOGOUT(ImageButtonStyle.class),
-		/** Play button */
-		PLAY(ImageButtonStyle.class),
+		LOGOUT,
+		PLAY,
 		/** Rating widget default */
 		RATING_DEFAULT(RatingWidgetStyle.class, "default"),
-		/** Scroll pane default, no background */
 		SCROLL_PANE_DEFAULT(ScrollPaneStyle.class, "default"),
-		/** Scroll pane with background */
 		SCROLL_PANE_WINDOW_BACKGROUND(ScrollPaneStyle.class, "background"),
-		/** Select box default */
 		SELECT_BOX_DEFAULT(SelectBoxStyle.class, "default"),
-		/** Slider default */
 		SLIDER_DEFAULT(SliderStyle.class, "default"),
-		/** Loading bar slider */
 		SLIDER_LOADING_BAR(SliderStyle.class, "loading_bar"),
-		/** Color picker */
 		SLIDER_COLOR_PICKER(SliderStyle.class, "color_picker"),
-		/** Text button default style */
 		TEXT_BUTTON_TRANSPARENT_PRESS(TextButtonStyle.class, "transparent"),
-		/** Text button that can toggle */
 		TEXT_BUTTON_TRANSPARENT_TOGGLE(TextButtonStyle.class, "transparent_toggle"),
-		/** Flat text button */
 		TEXT_BUTTON_FLAT_PRESS(TextButtonStyle.class, "flat_press"),
-		/** Flat toggleable text button */
 		TEXT_BUTTON_FLAT_TOGGLE(TextButtonStyle.class, "flat_toggle"),
-		/** Tag button */
 		TEXT_BUTTON_TAG(TextButtonStyle.class, "tag"),
-		/** Link */
 		TEXT_BUTTON_LINK(TextButtonStyle.class, "link"),
-		/** Text field default */
 		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
 		/** Window default style without title */
 		WINDOW_DEFAULT(WindowStyle.class, "default"),
@@ -864,72 +835,72 @@ public class SkinNames {
 		/** Window with title */
 		WINDOW_TITLE(WindowStyle.class, "title"),
 		/** Color tab */
-		COLOR(ImageButtonStyle.class),
-		/** Game continue */
-		GAME_CONTINUE(ImageButtonStyle.class),
-		/** New game */
-		GAME_NEW(ImageButtonStyle.class),
+		COLOR,
 		/** Replay the level */
-		REPLAY(ImageButtonStyle.class),
-		/** Spiddekauga info big */
-		SPIDDEKAUGA_INFO(ImageButtonStyle.class, "info_big"),
-		/** Login big */
-		LOGIN_BIG(ImageButtonStyle.class),
-		/** Player big */
-		PLAYER_BIG(ImageButtonStyle.class),
-		/** Settings big */
-		SETTINGS_BIG(ImageButtonStyle.class),
-		/** Back button big */
-		BACK_BIG(ImageButtonStyle.class),
+		REPLAY,
+		BACK_BIG,
 		/** Comments tab */
-		COMMENTS(ImageButtonStyle.class),
+		COMMENTS,
 		/** Image tab */
-		IMAGES(ImageButtonStyle.class),
+		IMAGES,
 		/** Overview tab */
-		OVERVIEW(ImageButtonStyle.class),
-		/** Tags tab */
-		TAGS(ImageButtonStyle.class),
+		OVERVIEW,
+		TAGS,
 		/** Tag button */
-		TAG(ImageButtonStyle.class),
-		/** Like button */
-		BOOKMARK(ImageButtonStyle.class),
-		/** Browse resources locally */
-		EXPLORE_LOCAL(ImageButtonStyle.class),
-		/** Search for resources online */
-		EXPLORE_ONLINE_SEARCH(ImageButtonStyle.class),
-		/** Browse resource online */
-		EXPLORE_ONLINE(ImageButtonStyle.class),
-		/** Bullet editor icon in menus */
-		EDITOR_BULLET_BIG(ImageButtonStyle.class, "bullet_editor_big"),
-		/** Enemy editor icon in menus */
-		EDITOR_ENEMY_BIG(ImageButtonStyle.class, "enemy_editor_big"),
-		/** Level editor icon in menus */
-		EDITOR_LEVEL_BIG(ImageButtonStyle.class, "level_editor_big"),
-		/** Campaign editor icon in menus */
-		EDITOR_CAMPAIGN_BIG(ImageButtonStyle.class, "campaign_editor_big"),
-		/** Ship editor icon in menus */
-		EDITOR_SHIP_BIG(ImageButtonStyle.class, "ship_editor_big"),
-		/** Account settings */
-		SETTINGS_ACCOUNT(ImageButtonStyle.class),
-		/** General settings */
-		SETTINGS_GENERAL(ImageButtonStyle.class, "settings_interface"),
-		/** Network settings */
-		SETTINGS_NETWORK(ImageButtonStyle.class),
-		/** Display settings */
-		SETTINGS_DISPLAY(ImageButtonStyle.class, "settings_resolution"),
-		/** Debug settings */
-		SETTINGS_DEBUG(ImageButtonStyle.class),
-		/** Sound settings */
-		SETTINGS_SOUND(ImageButtonStyle.class),
-		/** Player statistics */
-		SETTINGS_STATISTICS(ImageButtonStyle.class),
+		TAG,
+		BOOKMARK,
+		EXPLORE_LOCAL,
+		EXPLORE_ONLINE_SEARCH,
+		EXPLORE_ONLINE,
+		EDITOR_BULLET_BIG("bullet_editor_big"),
+		EDITOR_ENEMY_BIG("enemy_editor_big"),
+		EDITOR_LEVEL_BIG("level_editor_big"),
+		EDITOR_CAMPAIGN_BIG("campaign_editor_big"),
+		EDITOR_SHIP_BIG("ship_editor_big"),
+		SETTINGS_ACCOUNT,
+		SETTINGS_GENERAL("settings_interface"),
+		SETTINGS_NETWORK,
+		SETTINGS_DISPLAY("settings_resolution"),
+		SETTINGS_DEBUG,
+		SETTINGS_SOUND,
+		SETTINGS_STATISTICS,
 		/** Search filter options in explore */
-		SEARCH_FILTER(ImageButtonStyle.class),
+		SEARCH_FILTER,
+		PANEL_BUG,
+		PANEL_PLAYER,
+		PANEL_SHOP,
+		PANEL_VOTE,
+		PANEL_ACHIEVEMENTS,
+		PANEL_REDDIT,
+		PANEL_SETTINGS,
+		PANEL_LOGOUT,
+		PANEL_INFO,
+		PANEL_CHANGELOG,
+		PANEL_TERMS,
+		TERMS_BIG,
+		CHANGELOG_BIG,
+		INFO_BIG,
+		CONTINUE,
+
 
 		;
 
 		/**
-		 * Creates a more user-friendly name for the enumeration
+		 * Creates an ImageButtonStyle enum
+		 */
+		private General() {
+			this(ImageButtonStyle.class);
+		}
+
+		/**
+		 * Creates an ImageButtonStyle enum
+		 * @param jsonName name in the json-file
+		 */
+		private General(String jsonName) {
+			this(ImageButtonStyle.class, jsonName);
+		}
+
+		/**
 		 * @param type the class type
 		 */
 		private General(Class<?> type) {
@@ -974,7 +945,6 @@ public class SkinNames {
 	/**
 	 * Credit images/logos. These are shown in this specific order
 	 */
-	@SuppressWarnings("javadoc")
 	public enum CreditImages implements IImageNames {
 		SPIDDEKAUGA_WHITE,
 		LIBGDX,

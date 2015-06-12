@@ -13,8 +13,10 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.menu.MainMenu.Scenes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
+import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.commands.CUserLogout;
 
 
@@ -42,27 +44,17 @@ class MainMenuGui extends MenuGui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mPlayerInfoTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		mOptionTable.setAlign(Horizontal.LEFT, Vertical.BOTTOM);
-		mLogoutTable.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
-		mSpiddekaugaTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-
-		addActor(mPlayerInfoTable);
-		addActor(mOptionTable);
-		addActor(mLogoutTable);
-		addActor(mSpiddekaugaTable);
-
+		initTopBar();
 		initMainMenu();
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
-		mPlayerInfoTable.dispose();
-		mOptionTable.dispose();
+		mBarLeftTable.dispose();
 		mLogoutTable.dispose();
 		mSpiddekaugaTable.dispose();
+		mBarRightTable.dispose();
 	}
 
 	/**
@@ -91,9 +83,70 @@ class MainMenuGui extends MenuGui {
 	}
 
 	/**
+	 * Init top bar
+	 */
+	private void initTopBar() {
+		mUiFactory.addBar(BarLocations.TOP, getStage());
+
+		initLeftTopBar();
+		initRightTopBar();
+	}
+
+	/**
+	 * Init left top bar
+	 */
+	private void initLeftTopBar() {
+		AlignTable table = mBarLeftTable;
+		table.setAlign(Horizontal.LEFT, Vertical.TOP);
+		addActor(table);
+
+		// Player Info
+		Button button = mUiFactory.button.addImage(SkinNames.General.PANEL_PLAYER, table, null, null);
+		ButtonListener buttonListener = new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.gotoScene(Scenes.USER);
+			}
+		};
+		mUiFactory.button.addSound(button);
+
+		// Set username
+		mUiFactory.button.addText(User.getGlobalUser().getUsername(), TextButtonStyles.LINK, table, buttonListener, null, null);
+		table.getRow().setHeight(mUiFactory.getStyles().vars.barUpperLowerHeight);
+	}
+
+	/**
+	 * Init right top bar
+	 */
+	private void initRightTopBar() {
+		AlignTable table = mBarRightTable;
+		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		addActor(table);
+
+		Button button = null;
+
+		// Options
+		button = mUiFactory.button.addImage(SkinNames.General.PANEL_SETTINGS, table, null, null);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.gotoScene(Scenes.SETTINGS);
+			}
+		};
+		mUiFactory.button.addSound(button);
+	}
+
+	/**
 	 * Initializes the main menu
 	 */
 	private void initMainMenu() {
+		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mLogoutTable.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+		mSpiddekaugaTable.setAlign(Horizontal.LEFT, Vertical.BOTTOM);
+
+		addActor(mLogoutTable);
+		addActor(mSpiddekaugaTable);
+
 		// Play
 		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
@@ -104,7 +157,6 @@ class MainMenuGui extends MenuGui {
 		};
 		mUiFactory.button.addSound(button);
 		mUiFactory.button.addPadding(mMainTable);
-
 
 		// Create
 		button = mUiFactory.button.addImageWithLabel(SkinNames.General.CREATE, "Create", Positions.BOTTOM, null, mMainTable, null, null);
@@ -117,29 +169,8 @@ class MainMenuGui extends MenuGui {
 		mUiFactory.button.addSound(button);
 		mUiFactory.button.addPadding(mMainTable);
 
-
-		// Options
-		button = mUiFactory.button.addImage(SkinNames.General.SETTINGS_BIG, mOptionTable, null, null);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.gotoScene(Scenes.SETTINGS);
-			}
-		};
-		mUiFactory.button.addSound(button);
-
-		// Player Info
-		button = mUiFactory.button.addImage(SkinNames.General.PLAYER_BIG, mPlayerInfoTable, null, null);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.gotoScene(Scenes.USER);
-			}
-		};
-		mUiFactory.button.addSound(button);
-
 		// Spiddekauga Info
-		button = mUiFactory.button.addImage(SkinNames.General.SPIDDEKAUGA_INFO, mSpiddekaugaTable, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.INFO_BIG, mSpiddekaugaTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -205,10 +236,10 @@ class MainMenuGui extends MenuGui {
 	}
 
 
-	private AlignTable mOptionTable = new AlignTable();
-	private AlignTable mPlayerInfoTable = new AlignTable();
 	private AlignTable mLogoutTable = new AlignTable();
 	private AlignTable mSpiddekaugaTable = new AlignTable();
+	private AlignTable mBarRightTable = new AlignTable();
+	private AlignTable mBarLeftTable = new AlignTable();
 
 	private MainMenu mScene = null;
 }

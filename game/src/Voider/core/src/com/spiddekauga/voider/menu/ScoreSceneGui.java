@@ -126,7 +126,7 @@ public class ScoreSceneGui extends Gui {
 
 		// Continue
 		mUiFactory.button.addPadding(mMainTable);
-		button = mUiFactory.button.addImageWithLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, null, mMainTable, null, null);
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.CONTINUE, "Continue", Positions.BOTTOM, null, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {

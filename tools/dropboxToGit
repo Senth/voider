@@ -3,7 +3,7 @@
 CAN_SYNC=('ui' 'ui-raw' 'gfx' 'txt' 'export' 'music' 'sfx' 'backgrounds' 'backgrounds-raw')
 UI_RAW=('general' 'game' 'editor' 'credits')
 DROPBOX_DIR="$HOME/Dropbox"
-DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider exec/Voider - editable resources/internal_resources"
+DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider/Voider - editable resources/internal_resources"
 DROPBOX_UI_RAW_DIR="$DROPBOX_ASSET_DIR/ui-editable"
 GIT_SUB_DIR="$GIT_DIR/game"
 GIT_UI_RAW_DIR="$GIT_SUB_DIR/ui"

@@ -321,25 +321,24 @@ class ExploreLevelGui extends ExploreGui {
 		onlineHider.addToggleActor(mWidgets.info.rating);
 		table.add(mWidgets.info.rating);
 
+		// TODO Difficulty
+		// TODO Frustration
+
+		// Length
+		mWidgets.info.length = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_LENGTH, "", true, table, onlineHider);
+
+		// Speed
+		mWidgets.info.speed = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_SPEED, "", true, table, onlineHider);
+
 		// Plays
-		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", false, table, onlineHider);
+		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAY_COUNT, "", false, table, onlineHider);
 
 		// Likes
-		mWidgets.info.bookmarks = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", false, table, onlineHider);
+		mWidgets.info.bookmarks = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_BOOKMARK, "", false, table, onlineHider);
 
 		// Tags
-		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", true, table, onlineHider);
+		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_TAGS, "", true, table, onlineHider);
 		mWidgets.info.tags.setWrap(true);
-
-		// Level Length
-		mUiFactory.text.addPanelSection("Level Length", table, null);
-		table.row();
-		mWidgets.info.length = mUiFactory.text.add("", table);
-
-		// Level Speed
-		mUiFactory.text.addPanelSection("Level Speed", table, null);
-		table.row();
-		mWidgets.info.speed = mUiFactory.text.add("", table);
 	}
 
 	/**

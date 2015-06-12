@@ -387,7 +387,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Bug Report
-		button = mUiFactory.button.addImage(SkinNames.General.BUG_REPORT, mEditMenu, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.PANEL_BUG, mEditMenu, null, null);
 		mTooltip.add(button, Messages.EditorTooltips.ACTION_BUG_REPORT);
 		new ButtonListener(button) {
 			@Override

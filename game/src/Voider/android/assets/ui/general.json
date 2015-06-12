@@ -352,66 +352,115 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: play,
 		imageOver: play_over,
 		imageDown: play_down,
-		imageDisabled: play_disabled
 	},
 	
 	create: {
 		imageUp: create,
 		imageOver: create_over,
 		imageDown: create_down,
-		imageDisabled: create_disabled
 	},
 		
 	logout: {
 		imageUp: logout,
 		imageOver: logout_over,
 		imageDown: logout_down,
-		imageDisabled: logout_disabled
 	},
 	
 	info_big: {
 		imageUp: info_big,
 		imageOver: info_big_over,
 		imageDown: info_big_down,
-		imageDisabled: info_big_disabled
-	},
-	
-	player_big: {
-		imageUp: player_big,
-		imageOver: player_big_over,
-		imageDown: player_big_down,
-		imageDisabled: player_big_disabled
-	},
-	
-	settings_big: {
-		imageUp: settings_big,
-		imageOver: settings_big_over,
-		imageDown: settings_big_down,
-		imageDisabled: settings_big_disabled
 	},
 	
 	back_big: {
 		imageUp: back_big,
 		imageOver: back_big_over,
 		imageDown: back_big_down,
-		imageDisabled: back_big_disabled
 	}
 	
-	/** Menu - Play */
-	
-	game_new: {
-		imageUp: game_new,
-		imageOver: game_new_over,
-		imageDown: game_new_down,
-		imageDisabled: game_new_disabled
+	play: {
+		imageUp: terms_big,
+		imageOver: terms_big_over,
+		imageDown: terms_big_down,
 	},
 	
-	game_continue: {
-		imageUp: game_continue,
-		imageOver: game_continue_over,
-		imageDown: game_continue_down,
-		imageDisabled: game_continue_disabled
+	changelog_big: {
+		imageUp: changelog_big,
+		imageOver: changelog_big_over,
+		imageDown: changelog_big_down,
 	},
+	
+	
+	/** Menu - Top Panel */
+	
+	panel_bug: {
+		imageUp: panel_bug,
+		imageOver: panel_bug_over,
+		imageDown: panel_bug_down,
+	},
+	
+	panel_player: {
+		imageUp: panel_player,
+		imageOver: panel_player_over,
+		imageDown: panel_player_down,
+	},
+	
+	panel_shop: {
+		imageUp: panel_shop,
+		imageOver: panel_shop_over,
+		imageDown: panel_shop_down,
+		imageDisabled: panel_shop_disabled,
+	},
+	
+	panel_vote: {
+		imageUp: panel_vote,
+		imageOver: panel_vote_over,
+		imageDown: panel_vote_down,
+		imageDisabled: panel_vote_disabled,
+	},
+	
+	panel_achievements: {
+		imageUp: panel_achievements,
+		imageOver: panel_achievements_over,
+		imageDown: panel_achievements_down,
+	},
+	
+	panel_reddit: {
+		imageUp: panel_reddit,
+		imageOver: panel_reddit_over,
+		imageDown: panel_reddit_down,
+	},
+	
+	panel_settings: {
+		imageUp: panel_settings,
+		imageOver: panel_settings_over,
+		imageDown: panel_settings_down,
+	},
+	
+	panel_logout: {
+		imageUp: panel_logout,
+		imageOver: panel_logout_over,
+		imageDown: panel_logout_down,
+	},
+	
+	panel_info: {
+		imageUp: panel_info,
+		imageOver: panel_info_over,
+		imageDown: panel_info_down,
+	},
+	
+	panel_changelog: {
+		imageUp: panel_changelog,
+		imageOver: panel_changelog_over,
+		imageDown: panel_changelog_down,
+	},
+	
+	panel_terms: {
+		imageUp: panel_terms,
+		imageOver: panel_terms_over,
+		imageDown: panel_terms_down,
+	},
+	
 	
 	/** Menu - Create */
 	
@@ -516,7 +565,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: explore_local_down,
 		imageChecked: explore_local_checked,
 		imageCheckedOver: explore_local_checked_over,
-		imageDisabled: explore_local_disabled
 	},
 	
 	explore_online: {
@@ -586,17 +634,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: replay,
 		imageOver: replay_over,
 		imageDown: replay_down,
-		imageDisabled: replay_disabled
 	},
 	
-	/** Icons */
-	
-	tag: {
-		imageUp: tag,
-		imageOver: tag_over,
-		imageDown: tag_down,
-		imageDisabled: tag_disabled
-	},
+	continue: {
+		imageUp: continue,
+		imageOver: continue_over,
+		imageDown: continue_down,
+	}
 	
 	bookmark: {
 		imageUp: bookmark,
@@ -604,22 +648,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: bookmark_down,
 		imageChecked: bookmark_checked,
 		imageCheckedOver: bookmark_checked_over,
-		imageDisabled: bookmark_disabled
-	},
-	
-	/** Miscellaneous */
-	
-	login_big: {
-		imageUp: login_big,
-		imageOver: login_big_over,
-		imageDown: login_big_down,
-		imageDisabled: login_big_disabled
-	},
-	
-	bug_report:  {
-		imageUp: bugs,
-		imageOver: bugs_over,
-		imageDown: bugs_down
 	},
 },
 
