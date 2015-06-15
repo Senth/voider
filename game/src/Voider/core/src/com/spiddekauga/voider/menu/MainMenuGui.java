@@ -1,7 +1,9 @@
 package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.commands.CGameQuit;
 import com.spiddekauga.utils.commands.CRun;
 import com.spiddekauga.utils.commands.Command;
@@ -9,6 +11,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.menu.MainMenu.Scenes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -51,10 +54,6 @@ class MainMenuGui extends MenuGui {
 	@Override
 	public void dispose() {
 		super.dispose();
-		mBarLeftTable.dispose();
-		mLogoutTable.dispose();
-		mSpiddekaugaTable.dispose();
-		mBarRightTable.dispose();
 	}
 
 	/**
@@ -86,8 +85,7 @@ class MainMenuGui extends MenuGui {
 	 * Init top bar
 	 */
 	private void initTopBar() {
-		mUiFactory.addBar(BarLocations.TOP, getStage());
-
+		mUiFactory.addBar(BarLocations.TOP, false, getStage());
 		initLeftTopBar();
 		initRightTopBar();
 	}
@@ -96,9 +94,8 @@ class MainMenuGui extends MenuGui {
 	 * Init left top bar
 	 */
 	private void initLeftTopBar() {
-		AlignTable table = mBarLeftTable;
-		table.setAlign(Horizontal.LEFT, Vertical.TOP);
-		addActor(table);
+		AlignTable table = mWidgets.topLeft.table;
+		initTopBarTable(table, Horizontal.LEFT);
 
 		// Player Info
 		Button button = mUiFactory.button.addImage(SkinNames.General.PANEL_PLAYER, table, null, null);
@@ -110,20 +107,72 @@ class MainMenuGui extends MenuGui {
 		};
 		mUiFactory.button.addSound(button);
 
-		// Set username
-		mUiFactory.button.addText(User.getGlobalUser().getUsername(), TextButtonStyles.LINK, table, buttonListener, null, null);
-		table.getRow().setHeight(mUiFactory.getStyles().vars.barUpperLowerHeight);
+		// Username
+		Cell cell = mUiFactory.button.addText("", TextButtonStyles.LINK, table, buttonListener, null, null);
+		mWidgets.topLeft.username = (TextButton) cell.getActor();
+		mUiFactory.button.addSound(mWidgets.topLeft.username);
+	}
+
+	/**
+	 * Reset the username, should be called initially and whenever the online/offline mode
+	 * changes
+	 * @param username
+	 * @param online true if online
+	 */
+	void resetUsername(String username, boolean online) {
+		TextButton button = mWidgets.topLeft.username;
+		if (button != null) {
+			String onlineText = online ? " (online)" : " (offline)";
+			button.setText(username + onlineText);
+			button.pack();
+
+			// Change color
+			if (online) {
+				button.getStyle().fontColor = TextButtonStyles.LINK.getStyle().fontColor;
+			} else {
+				button.getStyle().fontColor = LabelStyles.WARNING.getStyle().fontColor;
+			}
+		}
 	}
 
 	/**
 	 * Init right top bar
 	 */
 	private void initRightTopBar() {
-		AlignTable table = mBarRightTable;
-		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		addActor(table);
+		AlignTable table = mWidgets.topRight.table;
+		initTopBarTable(table, Horizontal.RIGHT);
 
 		Button button = null;
+
+		// Bug Report
+		button = mUiFactory.button.addImage(SkinNames.General.PANEL_BUG, table, null, null);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mUiFactory.msgBox.bugReport();
+			}
+		};
+
+		// Reddit
+		button = mUiFactory.button.addImage(SkinNames.General.PANEL_REDDIT, table, null, null);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Open Reddit Community?");
+				msgBox.content("Do you want to go to the reddit community?\n" + "This will open in your browser");
+
+				Command openReddit = new CRun() {
+					@Override
+					public boolean execute() {
+						mScene.gotoReddit();
+						return true;
+					}
+				};
+
+				msgBox.addCancelButtonAndKeys();
+				msgBox.button("Open Reddit", openReddit);
+			};
+		};
 
 		// Options
 		button = mUiFactory.button.addImage(SkinNames.General.PANEL_SETTINGS, table, null, null);
@@ -137,15 +186,28 @@ class MainMenuGui extends MenuGui {
 	}
 
 	/**
+	 * Initialize a top bar table
+	 * @param table
+	 * @param position
+	 */
+	private void initTopBarTable(AlignTable table, Horizontal position) {
+		table.setAlign(position, Vertical.TOP);
+		table.setMargin(0, mUiFactory.getStyles().vars.paddingOuter, 0, mUiFactory.getStyles().vars.paddingOuter);
+		table.setAlignRow(position, Vertical.MIDDLE);
+		table.row().setHeight(mUiFactory.getStyles().vars.barUpperLowerHeight);
+		addActor(table);
+	}
+
+	/**
 	 * Initializes the main menu
 	 */
 	private void initMainMenu() {
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mLogoutTable.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
-		mSpiddekaugaTable.setAlign(Horizontal.LEFT, Vertical.BOTTOM);
+		mWidgets.bottomRight.table.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+		mWidgets.bottomLeft.table.setAlign(Horizontal.LEFT, Vertical.BOTTOM);
 
-		addActor(mLogoutTable);
-		addActor(mSpiddekaugaTable);
+		addActor(mWidgets.bottomRight.table);
+		addActor(mWidgets.bottomLeft.table);
 
 		// Play
 		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.PLAY, "Play", Positions.BOTTOM, null, mMainTable, null, null);
@@ -170,7 +232,7 @@ class MainMenuGui extends MenuGui {
 		mUiFactory.button.addPadding(mMainTable);
 
 		// Spiddekauga Info
-		button = mUiFactory.button.addImage(SkinNames.General.INFO_BIG, mSpiddekaugaTable, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.INFO_BIG, mWidgets.bottomLeft.table, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -180,7 +242,7 @@ class MainMenuGui extends MenuGui {
 		mUiFactory.button.addSound(button);
 
 		// Logout
-		button = mUiFactory.button.addImage(SkinNames.General.LOGOUT, mLogoutTable, null, null);
+		button = mUiFactory.button.addImage(SkinNames.General.LOGOUT, mWidgets.bottomRight.table, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -236,10 +298,37 @@ class MainMenuGui extends MenuGui {
 	}
 
 
-	private AlignTable mLogoutTable = new AlignTable();
-	private AlignTable mSpiddekaugaTable = new AlignTable();
-	private AlignTable mBarRightTable = new AlignTable();
-	private AlignTable mBarLeftTable = new AlignTable();
-
 	private MainMenu mScene = null;
+	private InnerWidgets mWidgets = new InnerWidgets();
+
+	private class InnerWidgets implements Disposable {
+		private Default bottomLeft = new Default();
+		private Default bottomRight = new Default();
+		private Default topRight = new Default();
+		private TopLeft topLeft = new TopLeft();
+
+		class Default implements Disposable {
+			AlignTable table = new AlignTable();
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
+		}
+
+		class TopLeft implements Disposable {
+			AlignTable table = new AlignTable();
+			TextButton username = null;
+
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
+		}
+
+		@Override
+		public void dispose() {
+
+		}
+	}
 }

@@ -175,7 +175,7 @@ public abstract class EditorGui extends Gui {
 	 * Initializes the top bar and bottom bar
 	 */
 	private void initTopBottomBar() {
-		mUiFactory.addBar(BarLocations.TOP_BOTTOM, getStage());
+		mUiFactory.addBar(BarLocations.TOP_BOTTOM, true, getStage());
 	}
 
 	/**

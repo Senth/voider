@@ -159,7 +159,7 @@ class GameSceneGui extends Gui {
 		}
 
 		// Set bar background
-		mUiFactory.addBar(BarLocations.TOP, getStage());
+		mUiFactory.addBar(BarLocations.TOP, true, getStage());
 
 
 		// Fix so score is vertically centered

@@ -101,26 +101,28 @@ public class UiFactory {
 	/**
 	 * Add top, bottom, or both bars to the scene
 	 * @param barLocation where the bar should be located
+	 * @param moveToBack set to true to move the bar to the back
 	 * @param stage the stage to add the bar to
 	 */
-	public void addBar(BarLocations barLocation, Stage stage) {
+	public void addBar(BarLocations barLocation, boolean moveToBack, Stage stage) {
 		// Top
 		if (barLocation.contains(BarLocations.TOP)) {
-			addSingleBar(BarLocations.TOP, stage);
+			addSingleBar(BarLocations.TOP, moveToBack, stage);
 		}
 
 		// Bottom
 		if (barLocation.contains(BarLocations.BOTTOM)) {
-			addSingleBar(BarLocations.BOTTOM, stage);
+			addSingleBar(BarLocations.BOTTOM, moveToBack, stage);
 		}
 	}
 
 	/**
 	 * Adds a bar at the specified coordinate
 	 * @param singleLocation one location to add the bar to
+	 * @param moveToBack set ot true to move the back to the back
 	 * @param stage the stage to add the bar to
 	 */
-	private void addSingleBar(final BarLocations singleLocation, Stage stage) {
+	private void addSingleBar(final BarLocations singleLocation, boolean moveToBack, Stage stage) {
 		final float height = mStyles.vars.barUpperLowerHeight;
 		Background background = new Background(mStyles.color.widgetBackground) {
 			@Override
@@ -140,7 +142,9 @@ public class UiFactory {
 		};
 		background.setHeight(height);
 		stage.addActor(background);
-		background.setZIndex(0);
+		if (moveToBack) {
+			background.setZIndex(0);
+		}
 	}
 
 	/**

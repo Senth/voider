@@ -230,7 +230,7 @@ public class UiStyles {
 		/**
 		 * @return get the text button style associated with this enumeration
 		 */
-		TextButtonStyle getStyle() {
+		public TextButtonStyle getStyle() {
 			return mStyle;
 		}
 

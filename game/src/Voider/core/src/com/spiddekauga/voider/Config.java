@@ -849,6 +849,8 @@ public class Config {
 	 * Network
 	 */
 	public static class Network {
+		/** Reddit URL */
+		public static final String REDDIT_URL = "http://reddit.com/r/Voider";
 		/** Server host */
 		public static final String SERVER_HOST;
 		/**

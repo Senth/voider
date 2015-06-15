@@ -83,6 +83,11 @@ public class MainMenu extends MenuScene implements IEventListener {
 			ResourceCacheFacade.finishLoading();
 			break;
 
+		case USER_CONNECTED:
+		case USER_DISCONNECTED:
+			updateUsername();
+			break;
+
 		default:
 			break;
 		}
@@ -95,6 +100,8 @@ public class MainMenu extends MenuScene implements IEventListener {
 		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 		eventDispatcher.connect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
 		eventDispatcher.connect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS, this);
+		eventDispatcher.connect(EventTypes.USER_CONNECTED, this);
+		eventDispatcher.connect(EventTypes.USER_DISCONNECTED, this);
 	}
 
 	@Override
@@ -103,6 +110,8 @@ public class MainMenu extends MenuScene implements IEventListener {
 		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 		eventDispatcher.disconnect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
 		eventDispatcher.disconnect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS, this);
+		eventDispatcher.disconnect(EventTypes.USER_CONNECTED, this);
+		eventDispatcher.disconnect(EventTypes.USER_DISCONNECTED, this);
 	}
 
 	@Override
@@ -150,6 +159,16 @@ public class MainMenu extends MenuScene implements IEventListener {
 				getGui().showTerms(terms);
 			}
 		}
+
+		updateUsername();
+	}
+
+	/**
+	 * Update username
+	 */
+	private void updateUsername() {
+		User user = User.getGlobalUser();
+		getGui().resetUsername(user.getUsername(), user.isOnline());
 	}
 
 	/**
@@ -158,6 +177,13 @@ public class MainMenu extends MenuScene implements IEventListener {
 	void acceptTerms() {
 		SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
 		infoRepo.acceptTerms();
+	}
+
+	/**
+	 * Goto reddit community
+	 */
+	void gotoReddit() {
+		Gdx.net.openURI(Config.Network.REDDIT_URL);
 	}
 
 	@Override
