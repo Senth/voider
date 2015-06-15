@@ -378,7 +378,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: back_big_down,
 	}
 	
-	play: {
+	terms_big: {
 		imageUp: terms_big,
 		imageOver: terms_big_over,
 		imageDown: terms_big_down,
