@@ -26,7 +26,7 @@ public class HighscoreGetMethod implements IMethodEntity {
 	public enum Fetch {
 		/** Fetches user score, top score, and scores above/below the user */
 		USER_SCORE,
-		/** Fetches only the top score */
+		/** Fetches only the top score and user place (if available) */
 		FIRST_PLACE,
 		/** Fetches top scores */
 		TOP_SCORES,

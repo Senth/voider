@@ -39,8 +39,12 @@ public class LevelStatsEntity implements IEntity {
 	 * @return get frustration level
 	 */
 	public int getFrustrationLevel() {
-		float frustration = (cCleared + cDeaths) / cPlayed;
-		return (int) (frustration * 100);
+		if (cPlayed > 0) {
+			float frustration = (cCleared + cDeaths) / cPlayed;
+			return (int) (frustration * 100);
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -49,6 +53,11 @@ public class LevelStatsEntity implements IEntity {
 	public String getDifficulty() {
 		float total = cDeaths + cCleared;
 		float cleared = cCleared / total;
-		return LevelDifficultySearchRanges.getRange(cleared).toString();
+		LevelDifficultySearchRanges difficulty = LevelDifficultySearchRanges.getRange(cleared);
+		if (difficulty != null) {
+			return difficulty.toString();
+		} else {
+			return "UNKNOWN";
+		}
 	}
 }

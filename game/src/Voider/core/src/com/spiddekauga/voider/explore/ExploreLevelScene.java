@@ -20,6 +20,9 @@ import com.spiddekauga.voider.network.resource.LevelFetchResponse;
 import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.stat.CommentEntity;
+import com.spiddekauga.voider.network.stat.HighscoreGetMethod;
+import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
+import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -28,6 +31,7 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
+import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
@@ -111,6 +115,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			mLevelFetch.handleWebResponse((LevelFetchMethod) method, (LevelFetchResponse) response);
 		} else if (response instanceof CommentFetchResponse) {
 			mCommentFetch.handleWebResponse((CommentFetchMethod) method, (CommentFetchResponse) response);
+		} else if (response instanceof HighscoreGetResponse) {
+			mScoreFetch.handleWebResponse((HighscoreGetMethod) method, (HighscoreGetResponse) response);
 		} else {
 			super.onWebResponse(method, response);
 		}
@@ -363,6 +369,21 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	}
 
 	/**
+	 * @return player score for the current level, 0 if no score exist
+	 */
+	private int getPlayerScore() {
+		if (mSelectedLevel != null || getSelected() != null) {
+			UUID levelId = mSelectedLevel != null ? mSelectedLevel.defEntity.resourceId : getSelected().resourceId;
+
+			HighscoreSyncEntity highscoreEntity = HighscoreRepo.getInstance().getPlayerHighscore(levelId);
+			if (highscoreEntity != null) {
+				return highscoreEntity.score;
+			}
+		}
+		return 0;
+	}
+
+	/**
 	 * @return the selected level, null if none are selected
 	 */
 	LevelInfoEntity getSelectedLevel() {
@@ -376,8 +397,42 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	void setSelectedLevel(LevelInfoEntity level) {
 		mSelectedLevel = level;
 
-		// Get comments
-		mCommentFetch.fetch(false);
+		getGui().clearTopAndPlayerScore();
+
+		// mCommentFetch.fetch(false);
+		mScoreFetch.fetchFirstPlace();
+	}
+
+
+	/**
+	 * Class for fetching scores
+	 */
+	private class ScoreFetch {
+		/**
+		 * Fetch first place for the current level
+		 */
+		void fetchFirstPlace() {
+			// Test to set get player score
+			int playerScore = getPlayerScore();
+			if (playerScore > 0) {
+				getGui().setPlayerScore(playerScore);
+			}
+
+			if (mSelectedLevel != null && mUser.isOnline()) {
+				getGui().setTopScoreAsLoading();
+				mHighscoreRepo.getFirstPlace(mSelectedLevel.defEntity.resourceId, ExploreLevelScene.this);
+			}
+		}
+
+		void handleWebResponse(HighscoreGetMethod method, HighscoreGetResponse response) {
+			if (mSelectedLevel != null && mSelectedLevel.defEntity.resourceId.equals(method.levelId)) {
+				if (response.isSuccessful()) {
+					getGui().setTopAndPlayerScores(response.firstPlace, getPlayerScore(), response.userPlace);
+				}
+			}
+		}
+
+		HighscoreRepo mHighscoreRepo = HighscoreRepo.getInstance();
 	}
 
 	/**
@@ -548,6 +603,7 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 	private LevelFetchMethod mSearchCriteria = new LevelFetchMethod();
 	private SettingDateRepo mDateRepo = SettingRepo.getInstance().date();
 	private final User mUser = User.getGlobalUser();
+	private ScoreFetch mScoreFetch = new ScoreFetch();
 	private CommentFetch mCommentFetch = new CommentFetch();
 	private LevelFetch mLevelFetch = new LevelFetch();
 	private LevelInfoEntity mSelectedLevel = null;

@@ -612,7 +612,7 @@ public class SkinNames {
 		NOTIFICATION_TIME(Float.class),
 		/** Fade in duration of notification messages, in seconds */
 		NOTIFICATION_FADE_IN(Float.class),
-		/** Fade out duration of notificaiton messages, in seconds */
+		/** Fade out duration of notification messages, in seconds */
 		NOTIFICATION_FADE_OUT(Float.class),
 		/** Width of settings window */
 		SETTINGS_WIDTH(Float.class),
@@ -686,8 +686,10 @@ public class SkinNames {
 		INFO_LEVEL_DIFFICULTY,
 		INFO_LEVEL_FRUSTRATION,
 		INFO_LEVEL_LENGTH,
-		INFO_LEVEL_SPEED,
+		INFO_SPEED,
 		INFO_MOVEMENT_TYPE,
+		INFO_SCORE_TOP,
+		INFO_SCORE_PLAYER,
 		/** Screenshot placeholder for levels */
 		SCREENSHOT_PLACEHOLDER,
 		MESSAGE_SUCCESS,

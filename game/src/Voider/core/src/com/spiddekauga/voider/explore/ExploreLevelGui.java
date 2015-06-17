@@ -28,11 +28,13 @@ import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
+import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.resource.LevelFetchMethod.SortOrders;
 import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
+import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
@@ -88,12 +90,6 @@ class ExploreLevelGui extends ExploreGui {
 			// Set tags
 			String tagList = Strings.toStringList(levelInfo.tags, ", ");
 			mWidgets.info.tags.setText(tagList);
-
-		} else {
-			mWidgets.info.bookmarks.setText("");
-			mWidgets.info.plays.setText("");
-			mWidgets.info.rating.setRating(0);
-			mWidgets.info.tags.setText("");
 		}
 
 		// Other level information
@@ -110,6 +106,88 @@ class ExploreLevelGui extends ExploreGui {
 			mWidgets.info.speed.setText("");
 			mWidgets.info.length.setText("");
 		}
+	}
+
+	/**
+	 * Clear top and player score and hide player score
+	 */
+	void clearTopAndPlayerScore() {
+		mWidgets.info.playerScoreHider.hide();
+		mWidgets.info.playerScore.setText("");;
+		mWidgets.info.topScore.setText("");
+	}
+
+	/**
+	 * Sets the player score without a placement
+	 * @param playerScore
+	 */
+	void setPlayerScore(int playerScore) {
+		mWidgets.info.playerScore.setText(getFormattedPlayerScore(0, playerScore));
+		mWidgets.info.playerScoreHider.show();
+	}
+
+	/**
+	 * Sets the top score as loading
+	 */
+	void setTopScoreAsLoading() {
+		mWidgets.info.topScore.setText("1. Loading...");
+	}
+
+	/**
+	 * Sets the top and player score (with placements)
+	 * @param topScore
+	 * @param playerScore 0 if not used
+	 * @param playerPlace 0 if not used
+	 */
+	void setTopAndPlayerScores(HighscoreEntity topScore, int playerScore, int playerPlace) {
+		if (topScore != null) {
+			mWidgets.info.topScore.setText(getFormattedScore(1, topScore.playerName, topScore.score));
+		} else {
+			mWidgets.info.topScore.setText("NEVER PLAYED");
+		}
+
+		// Hide player score if it's the top score
+		if (playerPlace == 1) {
+			mWidgets.info.playerScoreHider.hide();
+		}
+		// Set player score
+		else if (playerScore > 0) {
+			mWidgets.info.playerScore.setText(getFormattedPlayerScore(playerPlace, playerScore));
+		}
+	}
+
+	/**
+	 * Get formatted player score
+	 * @param position if 0 ?? will be used instead
+	 * @param score player score
+	 * @return formatted player score, automatically sets the player name
+	 */
+	private String getFormattedPlayerScore(int position, int score) {
+		return getFormattedScore(position, User.getGlobalUser().getUsername(), score);
+	}
+
+	/**
+	 * Format score
+	 * @param position if position is 0 ?? will be used instead
+	 * @param name
+	 * @param score
+	 * @return formatted score
+	 */
+	private String getFormattedScore(int position, String name, int score) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		if (position == 0) {
+			stringBuilder.append("??");
+		} else {
+			stringBuilder.append(position);
+		}
+
+		stringBuilder.append(". ");
+		stringBuilder.append(name);
+		stringBuilder.append(" ");
+		stringBuilder.append(PlayerStats.formatScore(score));
+
+		return stringBuilder.toString();
 	}
 
 	/**
@@ -330,7 +408,7 @@ class ExploreLevelGui extends ExploreGui {
 		mWidgets.info.difficulty = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_DIFFICULTY, "", false, table, onlineHider);
 
 		// Speed
-		mWidgets.info.speed = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_SPEED, "", false, table, onlineHider);
+		mWidgets.info.speed = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SPEED, "", false, table, onlineHider);
 
 		// Length
 		mWidgets.info.length = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_LENGTH, "", false, table, onlineHider);
@@ -347,6 +425,13 @@ class ExploreLevelGui extends ExploreGui {
 		// Tags
 		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_TAGS, "", true, table, onlineHider);
 		mWidgets.info.tags.setWrap(true);
+
+		// Top score
+		mWidgets.info.topScore = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SCORE_TOP, "", false, table, onlineHider);
+
+		// Player score
+		mWidgets.info.playerScore = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SCORE_PLAYER, "", false, table,
+				mWidgets.info.playerScoreHider);
 
 		// Push default rows after description to back
 		int moveFromIndex = 2;
@@ -650,6 +735,7 @@ class ExploreLevelGui extends ExploreGui {
 
 		private class Info implements Disposable {
 			AlignTable table = new AlignTable();
+			HideManual playerScoreHider = new HideManual();
 			RatingWidget rating = null;
 			Label plays = null;
 			Label bookmarks = null;
@@ -658,6 +744,8 @@ class ExploreLevelGui extends ExploreGui {
 			Label speed = null;
 			Label frustration = null;
 			Label difficulty = null;
+			Label topScore = null;
+			Label playerScore = null;
 
 			@Override
 			public void dispose() {

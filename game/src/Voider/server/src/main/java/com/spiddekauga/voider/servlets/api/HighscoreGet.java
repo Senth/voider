@@ -56,20 +56,11 @@ public class HighscoreGet extends VoiderApiServlet {
 					switch (mParameters.fetch) {
 					case FIRST_PLACE:
 						fetchFirstPlace();
-						if (mResponse.firstPlace != null) {
-							mResponse.status = Statuses.SUCCESS;
-						} else {
-							mResponse.status = Statuses.FAILED_HIGHSCORES_NOT_FOUND;
-						}
+						fetchUserPos();
 						break;
 
 					case TOP_SCORES:
 						fetchTopScores();
-						if (mResponse.topScores != null) {
-							mResponse.status = Statuses.SUCCESS;
-						} else {
-							mResponse.status = Statuses.FAILED_HIGHSCORES_NOT_FOUND;
-						}
 						break;
 
 					case USER_SCORE:
@@ -77,13 +68,8 @@ public class HighscoreGet extends VoiderApiServlet {
 						fetchUserScore();
 						fetchUserPos();
 						fetchScoreBeforeAndAfterUser();
-						if (mResponse.userScore != null && mResponse.userPlace > 0 && mResponse.afterUser != null && mResponse.beforeUser != null) {
-							mResponse.status = Statuses.SUCCESS;
-						} else {
-							mResponse.status = Statuses.FAILED_HIGHSCORES_NOT_FOUND;
-						}
-						break;
 					}
+					mResponse.status = Statuses.SUCCESS;
 				} else {
 					mResponse.status = Statuses.FAILED_LEVEL_NOT_FOUND;
 				}
@@ -185,7 +171,7 @@ public class HighscoreGet extends VoiderApiServlet {
 	 */
 	private void fetchUserPos() {
 		if (mResponse.userScore == null) {
-			return;
+			fetchUserScore();
 		}
 
 		FilterWrapper scoreFilter = new FilterWrapper("score", FilterOperator.GREATER_THAN, mResponse.userScore.score);

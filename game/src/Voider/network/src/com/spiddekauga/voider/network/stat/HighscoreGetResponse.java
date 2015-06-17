@@ -22,13 +22,13 @@ public class HighscoreGetResponse implements IEntity, ISuccessStatuses {
 	public HighscoreEntity firstPlace = null;
 	/** Player score. Available for Fetch.USER_SCORE */
 	public HighscoreEntity userScore = null;
-	/** User place. Available for Fetch.USER_SCORE */
+	/** User place. Available for Fetch.USER_SCORE and Fetch.FIRST_PLACE */
 	public int userPlace = 0;
 	/** Scores before the user. Available for Fetch.USER_SCORE */
 	public ArrayList<HighscoreEntity> beforeUser = null;
 	/** Scores after the user. Available for Fetch.USER_SCORE */
 	public ArrayList<HighscoreEntity> afterUser = null;
-	/** Top scores. Availaable for Fetch.TOP_SCORES */
+	/** Top scores. Available for Fetch.TOP_SCORES */
 	public ArrayList<HighscoreEntity> topScores = null;
 	/** Response status */
 	public Statuses status = null;

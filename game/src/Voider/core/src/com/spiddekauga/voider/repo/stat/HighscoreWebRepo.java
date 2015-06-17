@@ -97,7 +97,8 @@ class HighscoreWebRepo extends WebRepo {
 	 *         cached version of the level exists
 	 */
 	private HighscoreGetResponse getCached(UUID levelId, Fetch fetchOption) {
-		HighscoreGetResponse response = null;
+		HighscoreGetResponse response = new HighscoreGetResponse();
+		response.status = Statuses.SUCCESS;
 
 		switch (fetchOption) {
 		case FIRST_PLACE: {
@@ -105,9 +106,17 @@ class HighscoreWebRepo extends WebRepo {
 
 			// Use cache
 			if (firstPlaceCache != null) {
-				response = new HighscoreGetResponse();
-				response.status = Statuses.SUCCESS;
 				response.firstPlace = firstPlaceCache.get();
+			}
+			// Try to use top scores
+			else {
+				TopCache topCache = mTopCache.get(levelId);
+
+				if (topCache != null && !topCache.get().isEmpty()) {
+					response.firstPlace = topCache.get().get(0);
+				} else {
+					return null;
+				}
 			}
 			break;
 		}
@@ -117,8 +126,9 @@ class HighscoreWebRepo extends WebRepo {
 
 			// Use cache
 			if (topCache != null) {
-				response = new HighscoreGetResponse();
 				response.topScores = topCache.get();
+			} else {
+				return null;
 			}
 
 			break;
@@ -130,12 +140,13 @@ class HighscoreWebRepo extends WebRepo {
 
 			// Use cache
 			if (userCache != null && firstPlaceCache != null) {
-				response = new HighscoreGetResponse();
 				response.firstPlace = firstPlaceCache.get();
 				response.userPlace = userCache.getUserPlace();
 				response.userScore = userCache.getUserScore();
 				response.beforeUser = userCache.getBefore();
 				response.afterUser = userCache.getAfter();
+			} else {
+				return null;
 			}
 			break;
 		}
