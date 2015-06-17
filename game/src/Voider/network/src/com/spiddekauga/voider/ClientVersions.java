@@ -264,7 +264,8 @@ public enum ClientVersions {
 			"	Highscore values are now correct after playing a level",
 			"	Auto-fetching more levels now works correctly when finding new levels",
 			"	Can now resume a level correctly",
-			"	Panning when zoomed out now works correctly"
+			"	Panning when zoomed out now works correctly",
+			"	Level Background is now rendered correctly in the editor when zoomed in"
 			),
 	;
 	// @formatter:on

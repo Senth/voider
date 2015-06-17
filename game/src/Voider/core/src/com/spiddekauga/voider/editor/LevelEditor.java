@@ -200,8 +200,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private void renderBackground() {
 		float renderHeightDefault = Gdx.graphics.getHeight() * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
 		int renderHeight = (int) (renderHeightDefault / mCamera.zoom);
-		int offsetY = (int) (renderHeightDefault - (renderHeight / 2));
-		offsetY -= mCamera.position.y / mCamera.zoom / getScreenToWorldScale();
+		int offsetY = 0;
+		offsetY = (int) (renderHeightDefault - (renderHeight * 0.5f));
+		offsetY -= mCamera.position.y / getScreenToWorldScale();
 
 
 		if (mBackground == null) {
