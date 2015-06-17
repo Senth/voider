@@ -118,11 +118,15 @@ public class Screens {
 		Vector2 cameraMin = new Vector2(cameraPos).sub(widthHalf, heightHalf);
 		Vector2 cameraMax = new Vector2(cameraPos).add(widthHalf, heightHalf);
 
+		float widthMax = max.x - min.x;
+		float heightMax = max.y - min.y;
+
 		boolean clamped = false;
 
 		// Clamp X
+		// Width is too great -> Center
 		// Both are out of bounds -> Center
-		if (cameraMin.x < min.x && cameraMax.x > max.x) {
+		if ((widthMax <= cameraMax.x - cameraMin.x) || (cameraMin.x < min.x && cameraMax.x > max.x)) {
 			cameraPos.x = (min.x + max.x) / 2;
 			clamped = true;
 		}
@@ -138,8 +142,9 @@ public class Screens {
 		}
 
 		// Clamp Y
+		// Height is too great -> Center
 		// Both are out of bound -> Center
-		if (cameraMin.y < min.y && cameraMax.y > max.y) {
+		if ((heightMax <= cameraMax.y - cameraMin.y) || (cameraMin.y < min.y && cameraMax.y > max.y)) {
 			cameraPos.y = (min.y + max.y) / 2;
 			clamped = true;
 		}

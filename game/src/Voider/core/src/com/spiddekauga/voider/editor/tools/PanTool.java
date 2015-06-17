@@ -101,6 +101,7 @@ public class PanTool extends TouchTool {
 			mCamera.position.x = diffScroll.x * scale + mScrollCameraOrigin.x;
 			mCamera.position.y = -diffScroll.y * scale + mScrollCameraOrigin.y;
 			Screens.clampCamera(mCamera, mWorldMin, mWorldMax);
+			Gdx.app.log("Pan Y", "mCamera.position.y: " + mCamera.position.y);
 
 			mCamera.update();
 			EventDispatcher.getInstance().fire(new GameEvent(EventTypes.CAMERA_MOVED));

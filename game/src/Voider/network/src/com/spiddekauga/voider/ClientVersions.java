@@ -254,6 +254,7 @@ public enum ClientVersions {
 			"Improvements",
 			"	Username/Email is no longer case-sensitive when logging in",
 			"	Play, clear, and death count",
+			"	Created top bar in main menu",
 			"Android",
 			"	Fixed a ton of bugs. Now is playable on Android",
 			"	Improved performance on Android, and a bit on PC :P",
@@ -262,7 +263,8 @@ public enum ClientVersions {
 			"Bug Fixes",
 			"	Highscore values are now correct after playing a level",
 			"	Auto-fetching more levels now works correctly when finding new levels",
-			"	Can now resume a level correctly"
+			"	Can now resume a level correctly",
+			"	Panning when zoomed out now works correctly"
 			),
 	;
 	// @formatter:on
