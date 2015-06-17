@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.stat;
 import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.resource.LevelDifficultySearchRanges;
 
 /**
  * Level statistics
@@ -32,5 +33,22 @@ public class LevelStatsEntity implements IEntity {
 	 */
 	public int getIntRating() {
 		return (int) (ratingAverage + 0.5f);
+	}
+
+	/**
+	 * @return get frustration level
+	 */
+	public int getFrustrationLevel() {
+		float frustration = (cCleared + cDeaths) / cPlayed;
+		return (int) (frustration * 100);
+	}
+
+	/**
+	 * @return get level difficulty
+	 */
+	public String getDifficulty() {
+		float total = cDeaths + cCleared;
+		float cleared = cCleared / total;
+		return LevelDifficultySearchRanges.getRange(cleared).toString();
 	}
 }

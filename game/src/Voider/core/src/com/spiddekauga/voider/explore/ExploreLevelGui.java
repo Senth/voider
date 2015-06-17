@@ -82,10 +82,13 @@ class ExploreLevelGui extends ExploreGui {
 			mWidgets.info.bookmarks.setText(String.valueOf(levelInfo.stats.cBookmarks));
 			mWidgets.info.plays.setText(String.valueOf(levelInfo.stats.cPlayed));
 			mWidgets.info.rating.setRating((levelInfo.stats.getIntRating()));
+			mWidgets.info.difficulty.setText(levelInfo.stats.getDifficulty());
+			mWidgets.info.frustration.setText(String.valueOf(levelInfo.stats.getFrustrationLevel()) + "%");
 
 			// Set tags
 			String tagList = Strings.toStringList(levelInfo.tags, ", ");
 			mWidgets.info.tags.setText(tagList);
+
 		} else {
 			mWidgets.info.bookmarks.setText("");
 			mWidgets.info.plays.setText("");
@@ -313,22 +316,27 @@ class ExploreLevelGui extends ExploreGui {
 	protected void initInfo(AlignTable table, HideListener hider) {
 		super.initInfo(table, hider);
 
+		int cDefaultRows = table.getRowCount();
+
 		HideListener onlineHider = mWidgets.onlineHider;
 
-		// Insert Rating after description
-		table.row(3, Horizontal.CENTER, Vertical.TOP);
+		// Rating
+		table.row(Horizontal.CENTER, Vertical.TOP);
 		mWidgets.info.rating = mUiFactory.createRatingWidget(Touchable.disabled);
 		onlineHider.addToggleActor(mWidgets.info.rating);
 		table.add(mWidgets.info.rating);
 
-		// TODO Difficulty
-		// TODO Frustration
-
-		// Length
-		mWidgets.info.length = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_LENGTH, "", true, table, onlineHider);
+		// Difficulty
+		mWidgets.info.difficulty = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_DIFFICULTY, "", false, table, onlineHider);
 
 		// Speed
-		mWidgets.info.speed = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_SPEED, "", true, table, onlineHider);
+		mWidgets.info.speed = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_SPEED, "", false, table, onlineHider);
+
+		// Length
+		mWidgets.info.length = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_LENGTH, "", false, table, onlineHider);
+
+		// Frustration
+		mWidgets.info.frustration = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_FRUSTRATION, "", false, table, onlineHider);
 
 		// Plays
 		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAY_COUNT, "", false, table, onlineHider);
@@ -339,6 +347,12 @@ class ExploreLevelGui extends ExploreGui {
 		// Tags
 		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_TAGS, "", true, table, onlineHider);
 		mWidgets.info.tags.setWrap(true);
+
+		// Push default rows after description to back
+		int moveFromIndex = 2;
+		for (int i = moveFromIndex; i < cDefaultRows; ++i) {
+			table.moveRowToBottom(moveFromIndex);
+		}
 	}
 
 	/**
@@ -642,6 +656,8 @@ class ExploreLevelGui extends ExploreGui {
 			Label tags = null;
 			Label length = null;
 			Label speed = null;
+			Label frustration = null;
+			Label difficulty = null;
 
 			@Override
 			public void dispose() {

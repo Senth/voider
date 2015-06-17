@@ -367,7 +367,7 @@ public class GameScene extends WorldScene {
 
 			if (getOutcome() == Outcomes.LEVEL_COMPLETED) {
 				mStatRepo.increaseClearCount(getLevelId());
-			} else if (getOutcome() == Outcomes.LEVEL_PLAYER_DIED) {
+			} else if (getOutcome() == Outcomes.LEVEL_PLAYER_DIED || getOutcome() == Outcomes.LEVEL_RESTART) {
 				mStatRepo.increaseDeathCount(getLevelId());
 			}
 			Synchronizer.getInstance().synchronize(SyncTypes.STATS);

@@ -672,6 +672,43 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 	}
 
 	/**
+	 * Moves the specified row to the top
+	 * @param index row index
+	 * @return this for chaining
+	 */
+	public AlignTable moveRowToTop(int index) {
+		return moveRow(index, 0);
+	}
+
+	/**
+	 * Moves the specified row to the bottom
+	 * @param index row index
+	 * @return this for chaining
+	 */
+	public AlignTable moveRowToBottom(int index) {
+		return moveRow(index, mRows.size());
+	}
+
+	/**
+	 * Moves the specified row to another index
+	 * @param fromIndex current row index
+	 * @param toIndex where to move the row to
+	 * @return this for chaining
+	 */
+	public AlignTable moveRow(int fromIndex, int toIndex) {
+		// Fix to-index as we remove
+		int fixedToIndex = toIndex;
+		if (toIndex > fromIndex) {
+			fixedToIndex--;
+		}
+
+		Row row = mRows.remove(fromIndex);
+		mRows.add(fixedToIndex, row);
+
+		return this;
+	}
+
+	/**
 	 * Sets the preferences of this table from another table. Such as default cell padding
 	 * default row padding, table alignment, default row alignment.
 	 * @param preferencesTable the table to get all the preferences for.

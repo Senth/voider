@@ -748,8 +748,11 @@ abstract class ExploreGui extends Gui {
 		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
 
 		// Description
-		table.row(Horizontal.CENTER, Vertical.TOP);
 		mWidgets.info.description = mUiFactory.text.addPanel("", table, LabelStyles.DEFAULT);
+		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
+
+		// Date
+		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_DATE, "", false, table, null);
 
 		// Created by
 		mUiFactory.text.addPanelSection("Created By", table, null);
@@ -758,9 +761,6 @@ abstract class ExploreGui extends Gui {
 		// Revised by
 		mUiFactory.text.addPanelSection("Revised By", table, mWidgets.info.revisedHider);
 		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAYER, "", false, table, mWidgets.info.revisedHider);
-
-		// Date
-		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_DATE, "", false, table, null);
 	}
 
 	/**

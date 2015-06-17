@@ -254,6 +254,7 @@ public enum ClientVersions {
 			"Improvements",
 			"	Username/Email is no longer case-sensitive when logging in",
 			"	Play, clear, and death count",
+			"	Level difficulty and frustration is now shown (automatically calculated)",
 			"	Created top bar in main menu",
 			"Android",
 			"	Fixed a ton of bugs. Now is playable on Android",

@@ -672,7 +672,7 @@ public class SkinNames {
 	public enum GeneralImages implements IImageNames {
 		INFO_DATE,
 		INFO_EDIT,
-		INFO_PLAYER("panel_player"),
+		INFO_PLAYER,
 		INFO_PLAY_COUNT,
 		STAR,
 		INFO_TAGS,
