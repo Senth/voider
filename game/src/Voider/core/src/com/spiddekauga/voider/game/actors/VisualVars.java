@@ -22,13 +22,14 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
-import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.repo.resource.SkinNames.GeneralImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
@@ -45,7 +46,7 @@ import com.spiddekauga.voider.utils.Graphics;
  * Class for all shape variables
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposable, IResourceCorner {
+public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposable, IResourceCorner, KryoPreWrite {
 	/**
 	 * Sets the appropriate default values
 	 * @param actorType the default values depends on which actor type is set
@@ -58,14 +59,31 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	}
 
 	@Override
+	public void preWrite() {
+		mClassRevision = CLASS_REVISION;
+	}
+
+	@Override
 	public void write(Kryo kryo, Output output) {
-		output.writeInt(CLASS_REVISION, true);
 	}
 
 	@Override
 	public void read(Kryo kryo, Input input) {
-		@SuppressWarnings("unused")
-		int classRevision = input.readInt(true);
+		// Read old school class revision
+		if (mClassRevision == 0) {
+			mClassRevision = input.readInt(true);
+		}
+
+		// 1 -> 2
+		if (mClassRevision <= 1) {
+			// Fix image name
+			if (mDeprecatedImageName instanceof GeneralImages) {
+				GeneralImages generalImages = (GeneralImages) mDeprecatedImageName;
+				if (generalImages.ordinal() == 15) {
+					mDrawName = DrawImages.SHUTTLE_LARGE;
+				}
+			}
+		}
 
 		setDefaultFixtureValues();
 		createFixtureDef();
@@ -1154,10 +1172,10 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 
 	/**
 	 * Sets the image name for the actor
-	 * @param imageName
+	 * @param drawName
 	 */
-	public void setImageName(IImageNames imageName) {
-		mImageName = imageName;
+	public void setDrawName(DrawImages drawName) {
+		mDrawName = drawName;
 
 		mContourRaw = null;
 	}
@@ -1165,8 +1183,8 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	/**
 	 * @return image name for the actor, null if not used
 	 */
-	public IImageNames getImageName() {
-		return mImageName;
+	public DrawImages getDrawName() {
+		return mDrawName;
 	}
 
 	private void disposeImage() {
@@ -1196,7 +1214,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @param worldScale amount of world scale
 	 */
 	public void updateImageShape(float distMin, Float angleMin, float worldScale) {
-		if (mImageName == null) {
+		if (mDrawName == null) {
 			return;
 		}
 
@@ -1207,8 +1225,12 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 			if (mImageOffset == null) {
 				mImageOffset = new Vector2();
 			}
-			TextureRegion region = SkinNames.getRegion(mImageName);
-			mContourRaw = Graphics.getContour(region, 0.5f, 1.02f, mImageOffset);
+			TextureRegion region = mDrawName.getRegion();
+			if (region != null) {
+				mContourRaw = Graphics.getContour(region, 0.5f, 1.02f, mImageOffset);
+			} else {
+				return;
+			}
 		}
 		ArrayList<Vector2> transformedContour = createCopy(mContourRaw);
 
@@ -1234,7 +1256,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @return true if the actor has an image sprite
 	 */
 	public boolean hasImage() {
-		return mImageName != null;
+		return mDrawName != null;
 	}
 
 	/**
@@ -1242,13 +1264,12 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @return image to draw as the actor; null if no image has been set
 	 */
 	public Sprite getImage(Vector2 pos) {
-		if (mImageName == null) {
+		if (mDrawName == null) {
 			return null;
 		}
 
 		if (mImage == null) {
-			TextureRegion textureRegion = SkinNames.getRegion(mImageName);
-			mImage = new Sprite(textureRegion);
+			mImage = new Sprite(mDrawName.getRegion());
 			mImage.setOrigin(0, 0);
 			mImageOffsetWorld.set(mImageOffset).scl(mImageScaleWorld);
 			mImage.setScale(mImageScaleWorld);
@@ -1278,10 +1299,12 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	@Tag(50) private ActorTypes mActorType = null;
 	/** Corners of polygon, used for custom shapes */
 	@Tag(63) private ArrayList<Vector2> mCorners = new ArrayList<>();
-	@Tag(126) private IImageNames mImageName = null;
+	@Deprecated @Tag(126) private IImageNames mDeprecatedImageName = null;
 	@Tag(127) private Vector2 mImageOffset = new Vector2();
 	@Tag(128) private float mImageScaleWorld = 1;
 	@Tag(144) private float mStartAngle = 0;
+	@Tag(157) private DrawImages mDrawName = null;
+	@Tag(158) private int mClassRevision = 0;
 
 	/** Temporary raw image contour points of the actor */
 	private ArrayList<Vector2> mContourRaw = null;
@@ -1311,7 +1334,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** Class structure revision */
-	private static final int CLASS_REVISION = 1;
+	private static final int CLASS_REVISION = 2;
 
 	// Fixture def values
 	private float mDensity = 0;

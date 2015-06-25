@@ -29,6 +29,7 @@ import com.spiddekauga.voider.editor.tools.ZoomTool;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.game.actors.DrawImages;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.PublishResponse;
@@ -36,8 +37,6 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
-import com.spiddekauga.voider.repo.resource.SkinNames.GeneralImages;
-import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.Gui;
@@ -181,8 +180,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (shapeType == ActorShapeTypes.IMAGE) {
 			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisual(), this));
 
-			if (mActorDef.getVisual().getImageName() == null) {
-				mActorDef.getVisual().setImageName(SHAPE_IMAGE_DEFAULT);
+			if (mActorDef.getVisual().getDrawName() == null) {
+				mActorDef.getVisual().setDrawName(SHAPE_IMAGE_DEFAULT);
 			}
 		}
 
@@ -711,17 +710,17 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	@Override
-	public void setShapeImage(IImageNames image) {
+	public void setDrawImage(DrawImages image) {
 		if (mActorDef != null) {
-			mActorDef.getVisual().setImageName(image);
+			mActorDef.getVisual().setDrawName(image);
 			updateShapeImageActor();
 		}
 	}
 
 	@Override
-	public IImageNames getShapeImage() {
+	public DrawImages getDrawImage() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getImageName();
+			return mActorDef.getVisual().getDrawName();
 		}
 
 		return SHAPE_IMAGE_DEFAULT;
@@ -828,7 +827,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	private boolean mShapeImageUpdate = false;
 	private Float mShapeImageAngleMin;
 	private float mShapeImageDistMin;
-	private static final IImageNames SHAPE_IMAGE_DEFAULT = GeneralImages.SHUTTLE_LARGE;
+	private static final DrawImages SHAPE_IMAGE_DEFAULT = DrawImages.SHUTTLE_LARGE;
 	private Class<? extends Actor> mActorType;
 	private VectorBrush mVectorBrush = null;
 	private ActorDef mActorDef = null;

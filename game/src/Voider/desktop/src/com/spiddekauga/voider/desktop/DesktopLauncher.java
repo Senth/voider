@@ -7,7 +7,14 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.VoiderGame;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 
+/**
+ * Desktop launcher for Voider
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ */
 public class DesktopLauncher {
+	/**
+	 * @param arg
+	 */
 	public static void main(String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 

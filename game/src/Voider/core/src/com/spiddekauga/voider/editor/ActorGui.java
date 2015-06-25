@@ -27,9 +27,9 @@ import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Collision;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor.IC_Visual;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.game.actors.DrawImages;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
-import com.spiddekauga.voider.repo.resource.SkinNames.GeneralImages;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabImageWrapper;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabWrapper;
 import com.spiddekauga.voider.utils.Messages;
@@ -187,7 +187,7 @@ public abstract class ActorGui extends EditorGui {
 			mWidgets.visual.imageDistMin.setValue(mActorEditor.getShapeImageDistMin());
 			mWidgets.visual.imageScale.setValue(mActorEditor.getShapeImageScale());
 			mWidgets.visual.imageDrawOutline.setChecked(mActorEditor.isDrawOnlyOutline());
-			mWidgets.visual.shapeImageSelect.setSelected((GeneralImages) mActorEditor.getShapeImage());
+			mWidgets.visual.shapeImageSelect.setSelected(mActorEditor.getDrawImage());
 
 			if (mActorEditor.isShapeImageUpdatedContinuously()) {
 				mWidgets.visual.imageUpdateOn.setChecked(true);
@@ -477,14 +477,14 @@ public abstract class ActorGui extends EditorGui {
 				mDisabledWhenPublished);
 
 		// Select image
-		SelectBoxListener<SkinNames.GeneralImages> selectBoxListener = new SelectBoxListener<SkinNames.GeneralImages>(mInvoker) {
+		SelectBoxListener<DrawImages> selectBoxListener = new SelectBoxListener<DrawImages>(mInvoker) {
 			@Override
 			protected void onSelectionChanged(int itemIndex) {
-				mActorEditor.setShapeImage(mSelectBox.getSelected());
+				mActorEditor.setDrawImage(mSelectBox.getSelected());
 			}
 		};
 		mUiFactory.text.addPanelSection("Image", table, imageHider);
-		mWidgets.visual.shapeImageSelect = mUiFactory.addSelectBox(null, SkinNames.GeneralImages.values(), selectBoxListener, table, imageHider,
+		mWidgets.visual.shapeImageSelect = mUiFactory.addSelectBox(null, DrawImages.values(), selectBoxListener, table, imageHider,
 				mDisabledWhenPublished);
 		mWidgets.visual.shapeImageSelect.setMaxListCount(7);
 
@@ -844,7 +844,7 @@ public abstract class ActorGui extends EditorGui {
 			Slider imageScale = null;
 			Slider imageAngleMin = null;
 			Slider imageDistMin = null;
-			SelectBox<SkinNames.GeneralImages> shapeImageSelect = null;
+			SelectBox<DrawImages> shapeImageSelect = null;
 		}
 
 		/**

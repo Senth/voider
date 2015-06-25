@@ -1132,7 +1132,11 @@ public class SkinNames {
 	 */
 	public static Drawable getDrawable(IImageNames imageName) {
 		Skin skin = ResourceCacheFacade.get(imageName.getSkinName());
-		return skin.getDrawable(imageName.toString());
+		if (skin != null) {
+			return skin.getDrawable(imageName.toString());
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -1142,7 +1146,11 @@ public class SkinNames {
 	 */
 	public static TextureRegion getRegion(IImageNames imageName) {
 		Skin skin = ResourceCacheFacade.get(imageName.getSkinName());
-		return skin.getRegion(imageName.toString());
+		if (skin != null) {
+			return skin.getRegion(imageName.toString());
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -1154,7 +1162,11 @@ public class SkinNames {
 	@SuppressWarnings("unchecked")
 	public static <ResourceType> ResourceType getResource(ISkinNames skinName) {
 		Skin skin = ResourceCacheFacade.get(skinName.getSkinName());
-		return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
+		if (skin != null) {
+			return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
+		} else {
+			return null;
+		}
 	}
 
 	/**

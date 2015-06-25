@@ -419,7 +419,4 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	@Tag(40) private int mRevision = 0;
 	/** When copied, this is the id of the resource we copied */
 	@Tag(87) private UUID mCopyParentId = null;
-
-
-	// Don't forget to add to DefTest!
 }

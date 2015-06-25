@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
-import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
+import com.spiddekauga.voider.game.actors.DrawImages;
 
 /**
  * Interface for actor editors. This interface have some common actions for all actor
@@ -122,12 +122,12 @@ public interface IActorEditor extends IEditor {
 	 * Set shape image
 	 * @param image the image of the shape
 	 */
-	void setShapeImage(IImageNames image);
+	void setDrawImage(DrawImages image);
 
 	/**
 	 * @return current shape image
 	 */
-	IImageNames getShapeImage();
+	DrawImages getDrawImage();
 
 	/**
 	 * Sets whether the shape image should be set continuously or not
