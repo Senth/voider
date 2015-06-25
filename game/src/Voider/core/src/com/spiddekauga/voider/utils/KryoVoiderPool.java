@@ -45,6 +45,7 @@ import com.spiddekauga.voider.game.actors.ActorTypes;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.DrawImages;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AiMovementVars;
@@ -68,7 +69,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.resources.ResourceBinder;
+import com.spiddekauga.voider.resources.ResourceContainer;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.sound.Music;
 
@@ -109,149 +110,81 @@ public class KryoVoiderPool extends Pool<Kryo> {
 	 * done at the end of the enumeration. If a class isn't used any longer, don't remove
 	 * it but set it as null instead.
 	 */
+	@SuppressWarnings("javadoc")
 	private enum RegisterClasses {
-		/** Object[] */
 		OBJECT_ARRAY(Object[].class),
-		/** Map */
 		HASH_MAP(HashMap.class),
-		/** float[] */
 		FLOAT_ARRAY(float[].class),
-		/** FixtureDef */
 		FIXTURE_DEF(FixtureDef.class),
-		/** Filter */
 		FILTER(Filter.class),
-		/** CircleShape */
 		CIRCLE_SHAPE(CircleShape.class, new CircleShapeSerializer()),
-		/** PolygonShape */
 		POLYGON_SHAPE(PolygonShape.class, new PolygonShapeSerializer()),
-		/** EdgeShape */
 		EDGE_SHAPE(EdgeShape.class, new EdgeShapeSerializer()),
-		/** ChainShape */
 		CHAIN_SHAPE(ChainShape.class, new ChainShapeSerializer()),
-		/** UUID */
 		UUID_TYPE(UUID.class, new UUIDSerializer()),
-		/** Vector2 */
 		VECTOR_2(Vector2.class), // Overrides obtain (uses pool)
-		/** Vector2[] */
 		VECTOR_2_ARRAY(Vector2[].class),
-		/** BulletActor */
 		BULLET_ACTOR(BulletActor.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** BulletActorDef */
 		BULLET_ACTOR_DEF(BulletActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** EnemyActor */
 		ENEMY_ACTOR(EnemyActor.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** EnemyActorDef */
 		ENEMY_ACTOR_DEF(EnemyActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** PickupActor */
 		PICKUP_ACTOR(PickupActor.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** PickupActorDef */
 		PICKUP_ACTOR_DEF(PickupActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** PlayerActor */
 		PLAYER_ACTOR(PlayerActor.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** PlayerActorDef */
 		PLAYER_ACTOR_DEF(PlayerActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** StaticTerrainActor */
 		STATIC_TERRAIN_ACTOR(StaticTerrainActor.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** StaticTerrainActorDef */
 		STATIC_TERRAIN_ACTOR_DEF(StaticTerrainActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** VisualVars */
 		VISUAL_VARS(VisualVars.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** BulletDestroyer */
 		BULLET_DESTROYER(BulletDestroyer.class, SerializerType.TAGGED),
-		/** Collectibles */
 		COLLECTIBLES(Collectibles.class),
-		/** GameSave */
 		GAME_SAVE(GameSave.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** GameSaveDef */
 		GAME_SAVE_DEF(GameSaveDef.class, SerializerType.TAGGED),
-		/** Level */
 		LEVEL(Level.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** LevelDef */
 		LEVEL_DEF(LevelDef.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** Path */
 		PATH(Path.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** PlayerStats */
 		PLAYER_STATS(PlayerStats.class, SerializerType.TAGGED),
-		/** Weapon */
 		WEAPON(Weapon.class, SerializerType.TAGGED),
-		/** WeaponDef */
 		WEAPON_DEF(WeaponDef.class, SerializerType.TAGGED),
-		/** TActorActivated */
 		T_ACTOR_ACTIVATED(TActorActivated.class, SerializerType.SERIALIZABLE_TAGGED),
-		/** TriggerAction */
 		TRIGGER_ACTION(TriggerAction.class, SerializerType.TAGGED),
-		/** TriggerInfo */
 		TRIGGER_INFO(TriggerInfo.class, SerializerType.TAGGED),
-		/** TScreenAt */
 		T_SCREEN_AT(TScreenAt.class, SerializerType.TAGGED),
-		/** TimeBullet */
 		TIME_BULLET(TimeBullet.class, SerializerType.TAGGED),
-		/** TimePos */
 		TIME_POS(TimePos.class),
-		/** ArrayList */
 		ARRAY_LIST(ArrayList.class),
-		/** BodyDef */
 		BODY_DEF(BodyDef.class),
-		/** BodyType */
 		BODY_TYPE(BodyType.class),
-		/** HashSet */
 		HASH_SET(HashSet.class),
-		/** Date */
 		DATE(Date.class),
-		/** ActorShapeTypes */
 		ACTOR_SHAPE_TYPES(ActorShapeTypes.class),
-		/** Color */
 		COLOR(Color.class),
-		/** ActorTypes */
 		ACTOR_TYPES(ActorTypes.class),
-		/** EnemyGroup */
 		ENEMY_GROUP(EnemyGroup.class, SerializerType.TAGGED),
-		/** MovementType */
 		MOVEMENT_TYPE(MovementTypes.class),
-		/** MovementVars */
 		MOVEMENT_VARS(MovementVars.class, SerializerType.TAGGED),
-		/** AiMovementVars */
 		AI_MOVEMENT_VARS(AiMovementVars.class, SerializerType.TAGGED),
-		/** AimRotateVars */
 		AIM_ROTATE_VARS(AimRotateVars.class, SerializerType.TAGGED),
-		/** ResourceNames */
 		RESOURCE_NAMES(InternalNames.class),
-		/** ResourceItem */
 		RESOURCE_ITEM(ResourceItem.class, SerializerType.TAGGED),
-		/** Class */
 		CLASS(Class.class),
-		/** EnemyActor.AimTypes */
 		ENEMY_ACTOR_AIM_TYPES(AimTypes.class),
-		/** PathTypes */
 		PATH_TYPES(PathTypes.class),
-		/** ResourceBinder */
-		RESOURCE_BINDER(ResourceBinder.class, SerializerType.TAGGED),
-		/** TriggerAction.Actions */
+		RESOURCE_BINDER(ResourceContainer.class, SerializerType.TAGGED),
 		TRIGGER_ACTION_ACTIONS(TriggerAction.Actions.class),
-		/** TriggerAction.Reasons */
 		TRIGGER_ACTION_REASONS(TriggerAction.Reasons.class),
-		/** AtomicInteger */
 		ATOMIC_INTEGER(AtomicInteger.class, new AtomicIntegerSerializer()),
-		/** GameTime */
 		GAME_TIME(GameTime.class, SerializerType.TAGGED),
-		/** Byte array */
 		BYTE_ARRAY(byte[].class),
-		/** Themes */
 		THEMES(Themes.class),
-		/** BugReportDef */
 		BUG_REPORT_DEF(BugReportDef.class, SerializerType.TAGGED),
-		/** InternalDeps */
 		INTERNAL_DEPS(InternalDeps.class),
-		/** Image names */
 		IMAGE_NAMES(IImageNames.class),
-		/** General images */
 		GENERAL_IMAGES(SkinNames.GeneralImages.class),
-		/** Music themes */
 		MUSIC(Music.class),
-		/** ScorePart */
 		SCORE_PART(ScorePart.class, SerializerType.TAGGED),
-		/** Stack */
 		STACK(Stack.class),
+		DRAW_IMAGES(DrawImages.class),
+
 
 		;
 

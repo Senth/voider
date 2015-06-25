@@ -3,16 +3,12 @@ package com.spiddekauga.voider.editor.brushes;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
-import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
-import com.spiddekauga.voider.Config.Graphics.RenderOrders;
-import com.spiddekauga.voider.resources.IResourceEditorRender;
-import com.spiddekauga.voider.resources.Resource;
 
 /**
  * A simple resource that draws a rectangle
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class RectangleBrush extends Resource implements IResourceEditorRender {
+public class RectangleBrush extends Brush {
 	/**
 	 * Creates the rectangle with a start point. The end point will be set to the start
 	 * point.
@@ -30,40 +26,19 @@ public class RectangleBrush extends Resource implements IResourceEditorRender {
 	 * @param endPoint where the rectangle ends
 	 */
 	public RectangleBrush(Color color, Vector2 startPoint, Vector2 endPoint) {
-		mColor.set(color);
+		super(color);
 		mStartPoint.set(startPoint);
 		mEndPoint.set(endPoint);
 	}
 
 	@Override
-	public RenderOrders getRenderOrder() {
-		return RenderOrders.BRUSH;
+	protected boolean preRender() {
+		return !mStartPoint.equals(mEndPoint);
 	}
 
 	@Override
-	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		RenderOrders.offsetZValueEditor(shapeRenderer, this);
-
-		shapeRenderer.setColor(mColor);
-
-		// Draw rectangle
-		if (!mStartPoint.equals(mEndPoint)) {
-			shapeRenderer.push(ShapeType.Line);
-
-			shapeRenderer.rect(mStartPoint, mEndPoint);
-
-			shapeRenderer.pop();
-		}
-		// Draw point as start and end is the same
-		else {
-			shapeRenderer.push(ShapeType.Point);
-
-			shapeRenderer.point(mStartPoint.x, mStartPoint.y, 0);
-
-			shapeRenderer.pop();
-		}
-
-		RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
+	protected void render(ShapeRendererEx shapeRenderer) {
+		shapeRenderer.rect(mStartPoint, mEndPoint);
 	}
 
 	/**
@@ -82,8 +57,6 @@ public class RectangleBrush extends Resource implements IResourceEditorRender {
 		mEndPoint.set(endPosition);
 	}
 
-	/** Color of the brush */
-	private Color mColor = new Color();
 	/** Start point of the rectangle */
 	private Vector2 mStartPoint = new Vector2();
 	/** End point of the rectangle */

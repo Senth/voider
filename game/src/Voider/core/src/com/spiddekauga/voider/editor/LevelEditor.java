@@ -19,7 +19,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Level;
-import com.spiddekauga.voider.editor.brushes.VectorBrush;
+import com.spiddekauga.voider.editor.brushes.Brush;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.ActorAddTool;
@@ -154,6 +154,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		mLevel.update(deltaTime);
+		mObjects.update(deltaTime);
 
 		((PanTool) Tools.PAN.getTool()).update(deltaTime);
 	}
@@ -181,6 +182,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			enableBlendingWithDefaults();
 			mLevel.render(mShapeRenderer, getBoundingBoxWorld());
 			mLevel.renderEditor(mShapeRenderer);
+			mObjects.renderShapes(mShapeRenderer);
 			mShapeRenderer.flush();
 			renderAboveBelowBorders();
 			mShapeRenderer.pop();
@@ -525,29 +527,33 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void onResourceAdded(IResource resource, boolean isNew) {
-		getGui().resetValues();
-		mLevel.addResource(resource);
+		// Brush
+		if (resource instanceof Brush) {
+			mObjects.add(resource);
+		} else {
+			getGui().resetValues();
+			mLevel.addResource(resource);
 
-		// Set default color
-		if (isNew) {
-			if (resource instanceof StaticTerrainActor) {
-				((StaticTerrainActor) resource).getDef().getVisual().setColor(mDefaultTerrainColor);
+			// Set default color
+			if (isNew) {
+				if (resource instanceof StaticTerrainActor) {
+					((StaticTerrainActor) resource).getDef().getVisual().setColor(mDefaultTerrainColor);
+				}
 			}
-		}
 
-		// Set unsaved if it isn't a brush
-		if (!(resource instanceof VectorBrush)) {
 			setUnsaved();
 		}
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
-		getGui().resetValues();
-		mLevel.removeResource(resource.getId());
+		// Brush
+		if (resource instanceof Brush) {
+			mObjects.remove(resource);
+		} else {
+			getGui().resetValues();
+			mLevel.removeResource(resource);
 
-		// Set unsaved if it isn't a brush
-		if (!(resource instanceof VectorBrush)) {
 			setUnsaved();
 		}
 	}
@@ -1874,4 +1880,5 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private Tools mTool = Tools.SELECTION;
 	private ZoomTool mZoomTool = null;
 	private Color mDefaultTerrainColor = new Color();
+	private EditorObjects mObjects = new EditorObjects();
 }

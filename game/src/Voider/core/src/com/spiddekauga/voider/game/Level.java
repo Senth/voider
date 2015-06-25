@@ -49,7 +49,7 @@ import com.spiddekauga.voider.resources.IResourceRenderSprite;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.resources.ResourceBinder;
+import com.spiddekauga.voider.resources.ResourceContainer;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 
@@ -685,7 +685,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 	private LevelBackground mBackground = null;
 	/** Contains all the resources used in this level */
-	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
+	@Tag(13) private ResourceContainer mResourceBinder = new ResourceContainer();
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All shape resources that shall be rendered */

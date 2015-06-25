@@ -14,6 +14,7 @@ import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
+import com.spiddekauga.voider.editor.brushes.VectorBrush.VectorBrushModes;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
 import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
@@ -53,9 +54,9 @@ public class DrawEraseTool extends ActorTool {
 			testPickPoint(mCallback);
 			// Hit a selected actor
 			if (mHitActor != null) {
-				mDrawEraseBrush = new VectorBrush(true);
+				mDrawEraseBrush = new VectorBrush(VectorBrushModes.ADD);
 			} else {
-				mDrawEraseBrush = new VectorBrush(false);
+				mDrawEraseBrush = new VectorBrush(VectorBrushModes.ERASE);
 			}
 			mEditor.onResourceAdded(mDrawEraseBrush, true);
 			mDrawEraseBrush.addCorner(mTouchCurrent);

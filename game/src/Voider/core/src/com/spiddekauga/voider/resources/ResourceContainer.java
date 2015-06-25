@@ -16,7 +16,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
  * have been loaded.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class ResourceBinder {
+public class ResourceContainer {
 
 	/**
 	 * Adds a resource to add and keep track of (and load its resources)
@@ -87,7 +87,7 @@ public class ResourceBinder {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		ResourceBinder other = (ResourceBinder) obj;
+		ResourceContainer other = (ResourceContainer) obj;
 		if (mResources == null) {
 			if (other.mResources != null) {
 				return false;

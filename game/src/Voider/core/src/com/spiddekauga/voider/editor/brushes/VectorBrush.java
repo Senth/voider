@@ -1,36 +1,25 @@
 package com.spiddekauga.voider.editor.brushes;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.ShapeRendererEx;
-import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.resources.IResourceEditorRender;
-import com.spiddekauga.voider.resources.Resource;
 
 /**
  * A simple resource that draws a line
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class VectorBrush extends Resource implements IResourceCorner, IResourceEditorRender, Disposable {
+public class VectorBrush extends Brush implements IResourceCorner, Disposable {
 	/**
 	 * Creates a vector brush with the specified brush mode
-	 * @param addMode set to true if the brush shall be in add mode, false if it shall be
-	 *        in erase mode. Add mode = green line, otherwise the line is dark purple.
+	 * @param brushMode what type of vector brush this is
 	 */
-	public VectorBrush(boolean addMode) {
-		mUniqueId = UUID.randomUUID();
-		mAddMode = addMode;
-	}
-
-	@Override
-	public RenderOrders getRenderOrder() {
-		return RenderOrders.BRUSH;
+	public VectorBrush(VectorBrushModes brushMode) {
+		super(brushMode.getColor());
 	}
 
 	@Override
@@ -99,38 +88,18 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	}
 
 	@Override
-	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		if (mCorners.size() >= 2) {
-			RenderOrders.offsetZValueEditor(shapeRenderer, this);
+	protected boolean preRender() {
+		return mCorners.size() >= 2;
+	}
 
-			shapeRenderer.push(ShapeType.Line);
-
-			if (mAddMode) {
-				shapeRenderer.setColor(Config.Editor.BRUSH_ADD_COLOR);
-			} else {
-				shapeRenderer.setColor(Config.Editor.BRUSH_ERASE_COLOR);
-			}
-
-			shapeRenderer.polyline(mCorners, false);
-
-			shapeRenderer.pop();
-
-			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
-		}
+	@Override
+	protected void render(ShapeRendererEx shapeRenderer) {
+		shapeRenderer.polyline(mCorners, false);
 	}
 
 	@Override
 	public void dispose() {
 		clearCorners();
-	}
-
-	/**
-	 * Sets the brush mode, will affect the brush color
-	 * @param addMode set to true if the brush is in add mode, false if the brush is in
-	 *        erase mode.
-	 */
-	public void setBrushMode(boolean addMode) {
-		mAddMode = addMode;
 	}
 
 	@Override
@@ -143,8 +112,33 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 		// Does nothing
 	}
 
-	/** All corners */
+	/**
+	 * Different modes
+	 */
+	public enum VectorBrushModes {
+		/** Add brush color */
+		ADD(Config.Editor.BRUSH_ADD_COLOR),
+		/** Remove brush color */
+		ERASE(Config.Editor.BRUSH_ERASE_COLOR),
+
+		;
+
+		/**
+		 * @param color brush color
+		 */
+		private VectorBrushModes(Color color) {
+			mColor = color;
+		}
+
+		/**
+		 * @return brush color
+		 */
+		private Color getColor() {
+			return mColor;
+		}
+
+		private Color mColor;
+	}
+
 	private ArrayList<Vector2> mCorners = new ArrayList<>();
-	/** If the brush shall add or erase */
-	private boolean mAddMode = true;
 }
