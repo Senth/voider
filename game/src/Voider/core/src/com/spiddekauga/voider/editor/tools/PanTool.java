@@ -72,15 +72,8 @@ public class PanTool extends TouchTool {
 	@Override
 	protected boolean up(int button) {
 		if (mScroller.isScrollingByHand()) {
-			if (isActive() || KeyHelper.isScrolling(button)) {
-				mScroller.touchUp((int) mScreenCurrent.x, (int) mScreenCurrent.y);
-
-				if (!mScroller.isScrolling()) {
-					// mCreatedScrollCommand = false;
-				}
-
-				return true;
-			}
+			mScroller.touchUp((int) mScreenCurrent.x, (int) mScreenCurrent.y);
+			return true;
 		}
 
 		return false;
