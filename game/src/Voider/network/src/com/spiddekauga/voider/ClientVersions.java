@@ -261,14 +261,18 @@ public enum ClientVersions {
 			"Android",
 			"	Fixed a ton of bugs. Now is playable on Android",
 			"	Improved performance on Android, and a bit on PC :P",
+			"	Panning in editors now work as intended",
 			"	Fixed network issue between Android and Server",
-					"Connecting to server doesn't work at all in older versions",
+			"		Connecting to server doesn't work at all in older versions",
 			"Bug Fixes",
 			"	Highscore values are now correct after playing a level",
 			"	Auto-fetching more levels now works correctly when finding new levels",
 			"	Can now resume a level correctly",
 			"	Panning when zoomed out now works correctly",
 			"	Level Background is now rendered correctly in the editor when zoomed in"
+			),
+	V0_5_12(false,
+			"STUB"
 			),
 	;
 	// @formatter:on
