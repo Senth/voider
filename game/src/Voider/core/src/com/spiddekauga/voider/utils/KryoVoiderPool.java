@@ -110,7 +110,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 	 * done at the end of the enumeration. If a class isn't used any longer, don't remove
 	 * it but set it as null instead.
 	 */
-	@SuppressWarnings("javadoc")
 	private enum RegisterClasses {
 		OBJECT_ARRAY(Object[].class),
 		HASH_MAP(HashMap.class),

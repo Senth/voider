@@ -52,7 +52,7 @@ repositories {
 
 dependencies {
 	compile 'com.spiddekauga:spiddekauga-utils:0.1.0-SNAPSHOT'
-    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.19'
+    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.22'
     compile 'javax.servlet:servlet-api:2.5'
 	deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 }
