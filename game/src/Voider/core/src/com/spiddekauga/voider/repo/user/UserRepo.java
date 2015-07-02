@@ -82,7 +82,7 @@ public class UserRepo extends Repo {
 	 * @param responseListeners listens to the web response
 	 */
 	public void passwordReset(String email, String password, String token, IResponseListener... responseListeners) {
-		mWebRepo.passwordResetSendToken(email, responseListeners);
+		mWebRepo.passwordReset(email, password, token, responseListeners);
 	}
 
 	/**

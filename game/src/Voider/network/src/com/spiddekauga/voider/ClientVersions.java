@@ -272,7 +272,8 @@ public enum ClientVersions {
 			"	Level Background is now rendered correctly in the editor when zoomed in"
 			),
 	V0_5_12(false,
-			"STUB"
+			"Bug Fixes",
+			"	Reset password now works again"
 			),
 	;
 	// @formatter:on
