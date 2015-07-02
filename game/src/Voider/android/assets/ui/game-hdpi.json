@@ -1,0 +1,31 @@
+{
+/**
+ * ------------------------------- NOTE! --------------------------------------
+ * In ONLY edit the -template.json file. Everything else will be replaced.
+ * Variables (length and sizes) to be scaled place them inside ${0} for them
+ * to scale correctly. The value in ${0} is the default for mdpi (no scaling)
+ * For example the value of ${16} will be scaled to ${32} in xhdpi
+ */
+
+/* Variables */
+java.lang.Float: {
+	/** Background layer speed */ 
+	
+	// .The speed is fractions of the level speed.
+	// E.g. value 0.5 will progress half the speed of the level.
+	//
+	// NOTE! Top layer speed should not be multiple of the bottom layer.
+	// E.g. Top: 0.45 Bottom 0.15 (multiple of 5). Top 0.46 is OK
+	// DEPRECATED
+	top_layer_speed: {value: 0.6},
+	bottom_layer_speed: {value: 0.29},
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
+	health_bar: {
+		background: health_bar_background,
+		knobBefore: health_bar_health
+	},
+},
+
+}

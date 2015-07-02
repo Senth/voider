@@ -7,6 +7,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Display;
 import com.spiddekauga.voider.config.IC_Setting.IC_Sound;
 import com.spiddekauga.voider.repo.PrefsGateway;
+import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 
 /**
  * Game settings gateway
@@ -38,6 +39,25 @@ class SettingClientPrefsGateway extends PrefsGateway {
 	boolean isFullscreen() {
 		IC_Display icDisplay = ConfigIni.getInstance().setting.display;
 		return mPreferences.getBoolean(DISPLAY__FULLSCREEN, icDisplay.isFullscreen());
+	}
+
+
+	/**
+	 * Set icon/UI size
+	 * @param iconSize set the icon size
+	 */
+	void setIconSize(IconSizes iconSize) {
+		mPreferences.putString(DISPLAY__ICON_SIZE, iconSize.toString());
+		mPreferences.flush();
+	}
+
+	/**
+	 * @return current iconSize
+	 */
+	IconSizes getIconSize() {
+		IC_Display icDisplay = ConfigIni.getInstance().setting.display;
+		String iconSizeString = mPreferences.getString(DISPLAY__ICON_SIZE, icDisplay.getIconSize());
+		return IconSizes.fromName(iconSizeString);
 	}
 
 	/**
@@ -103,6 +123,7 @@ class SettingClientPrefsGateway extends PrefsGateway {
 
 		return resolution;
 	}
+
 
 	// -----------------------
 	// Sound settings
@@ -203,6 +224,7 @@ class SettingClientPrefsGateway extends PrefsGateway {
 	private static final String DISPLAY__RESOLUTION_WINDOWED = "display_resolutionWindowed";
 	private static final String DISPLAY__RESOLUTION_FULLSCREEN = "display_resolutionFullscreen";
 	private static final String DISPLAY__FULLSCREEN = "display_fullscreen";
+	private static final String DISPLAY__ICON_SIZE = "display_iconSize";
 
 	private static final String SOUND__MASTER_VOLUME = "sound_masterVolume";
 	private static final String SOUND__EFFECTS_VOLUME = "sound_effectsVolume";

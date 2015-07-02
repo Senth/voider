@@ -3,8 +3,8 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.game.Themes;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -25,7 +25,7 @@ public class ThemeSelectScene extends Scene {
 
 	@Override
 	protected void loadResources() {
-		ResourceCacheFacade.load(InternalNames.UI_EDITOR);
+		ResourceCacheFacade.load(InternalDeps.UI_EDITOR);
 		ResourceCacheFacade.load(mTheme.getDependency());
 
 		super.loadResources();
@@ -33,7 +33,7 @@ public class ThemeSelectScene extends Scene {
 
 	@Override
 	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
+		ResourceCacheFacade.unload(InternalDeps.UI_EDITOR);
 		ResourceCacheFacade.unload(mTheme.getDependency());
 
 		super.unloadResources();

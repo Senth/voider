@@ -6,12 +6,12 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.repo.stat.UserLevelStat;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
@@ -54,14 +54,14 @@ public class ScoreScene extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.load(this, mLevelDef.getId(), false);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
 	}
 
 	@Override

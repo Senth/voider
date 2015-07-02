@@ -17,12 +17,12 @@ import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Graphics;
@@ -51,13 +51,13 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(this, mLocalType, false);
 	}
 
 	@Override
 	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
 
 		super.unloadResources();
 	}

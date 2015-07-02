@@ -223,15 +223,7 @@ bullet_editor_big_disabled
   index: -1
 button_default_checked
   rotate: false
-  xy: 544, 190
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button_default_down
-  rotate: false
-  xy: 544, 190
+  xy: 1762, 566
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -239,15 +231,15 @@ button_default_down
   index: -1
 button_tag_down
   rotate: false
-  xy: 544, 190
+  xy: 1762, 566
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_checked
+button_default_down
   rotate: false
-  xy: 544, 190
+  xy: 1762, 566
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -255,7 +247,15 @@ button_transparent_checked
   index: -1
 button_transparent_down
   rotate: false
-  xy: 544, 190
+  xy: 1762, 566
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_checked
+  rotate: false
+  xy: 1762, 566
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -263,7 +263,7 @@ button_transparent_down
   index: -1
 button_default_checked_over
   rotate: false
-  xy: 494, 106
+  xy: 544, 190
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -271,15 +271,7 @@ button_default_checked_over
   index: -1
 button_transparent_over
   rotate: false
-  xy: 494, 106
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button_default_over
-  rotate: false
-  xy: 494, 106
+  xy: 544, 190
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -287,7 +279,15 @@ button_default_over
   index: -1
 button_transparent_checked_over
   rotate: false
-  xy: 494, 106
+  xy: 544, 190
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_default_over
+  rotate: false
+  xy: 544, 190
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -295,7 +295,7 @@ button_transparent_checked_over
   index: -1
 button_tag_over
   rotate: false
-  xy: 494, 106
+  xy: 544, 190
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -303,7 +303,7 @@ button_tag_over
   index: -1
 button_default_disabled
   rotate: false
-  xy: 38, 14
+  xy: 494, 106
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -311,7 +311,7 @@ button_default_disabled
   index: -1
 button_transparent_disabled
   rotate: false
-  xy: 38, 14
+  xy: 494, 106
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -319,7 +319,7 @@ button_transparent_disabled
   index: -1
 button_default_up
   rotate: false
-  xy: 926, 228
+  xy: 38, 14
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -327,7 +327,7 @@ button_default_up
   index: -1
 button_transparent_up
   rotate: false
-  xy: 926, 228
+  xy: 38, 14
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -335,7 +335,7 @@ button_transparent_up
   index: -1
 button_tag_up
   rotate: false
-  xy: 926, 228
+  xy: 38, 14
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -343,7 +343,7 @@ button_tag_up
   index: -1
 button_flat_checked
   rotate: false
-  xy: 510, 138
+  xy: 926, 228
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -351,7 +351,7 @@ button_flat_checked
   index: -1
 button_flat_down
   rotate: false
-  xy: 510, 138
+  xy: 926, 228
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -359,7 +359,7 @@ button_flat_down
   index: -1
 button_flat_checked_over
   rotate: false
-  xy: 580, 208
+  xy: 510, 138
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -367,7 +367,7 @@ button_flat_checked_over
   index: -1
 button_flat_over
   rotate: false
-  xy: 580, 208
+  xy: 510, 138
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -375,7 +375,7 @@ button_flat_over
   index: -1
 button_flat_disabled
   rotate: false
-  xy: 476, 70
+  xy: 580, 208
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -383,7 +383,7 @@ button_flat_disabled
   index: -1
 button_flat_up
   rotate: false
-  xy: 1786, 605
+  xy: 476, 70
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -438,7 +438,14 @@ changelog_big
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_reddit
+panel_info
+  rotate: false
+  xy: 36, 23
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_logout
   rotate: false
   xy: 36, 23
   size: 32, 32
@@ -446,6 +453,48 @@ panel_reddit
   offset: 0, 0
   index: -1
 info_score_top
+  rotate: false
+  xy: 36, 23
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+info_level_difficulty
+  rotate: false
+  xy: 36, 23
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_terms
+  rotate: false
+  xy: 36, 23
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+info_level_length
+  rotate: false
+  xy: 36, 23
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_reddit
+  rotate: false
+  xy: 36, 23
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+info_level_frustration
+  rotate: false
+  xy: 36, 23
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+info_speed
   rotate: false
   xy: 36, 23
   size: 32, 32
@@ -466,56 +515,7 @@ terms_big
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_settings
-  rotate: false
-  xy: 36, 23
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-info_level_length
-  rotate: false
-  xy: 36, 23
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-info_level_difficulty
-  rotate: false
-  xy: 36, 23
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-info_level_frustration
-  rotate: false
-  xy: 36, 23
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_info
-  rotate: false
-  xy: 36, 23
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-info_speed
-  rotate: false
-  xy: 36, 23
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 panel_changelog
-  rotate: false
-  xy: 36, 23
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_logout
   rotate: false
   xy: 36, 23
   size: 32, 32
@@ -529,7 +529,7 @@ info_score_player
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_terms
+panel_settings
   rotate: false
   xy: 36, 23
   size: 32, 32
@@ -543,49 +543,14 @@ changelog_big_down
   orig: 32, 32
   offset: 0, 0
   index: -1
+terms_big_down
+  rotate: false
+  xy: 890, 475
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 panel_reddit_down
-  rotate: false
-  xy: 890, 475
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-stub_down
-  rotate: false
-  xy: 890, 475
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_logout_down
-  rotate: false
-  xy: 890, 475
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_terms_down
-  rotate: false
-  xy: 890, 475
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_info_down
-  rotate: false
-  xy: 890, 475
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-stub_checked
-  rotate: false
-  xy: 890, 475
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_settings_down
   rotate: false
   xy: 890, 475
   size: 32, 32
@@ -599,7 +564,42 @@ panel_changelog_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-terms_big_down
+panel_info_down
+  rotate: false
+  xy: 890, 475
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_logout_down
+  rotate: false
+  xy: 890, 475
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stub_down
+  rotate: false
+  xy: 890, 475
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_terms_down
+  rotate: false
+  xy: 890, 475
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_settings_down
+  rotate: false
+  xy: 890, 475
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stub_checked
   rotate: false
   xy: 890, 475
   size: 32, 32
@@ -607,13 +607,6 @@ terms_big_down
   offset: 0, 0
   index: -1
 changelog_big_over
-  rotate: false
-  xy: 924, 509
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-terms_big_over
   rotate: false
   xy: 924, 509
   size: 32, 32
@@ -634,14 +627,14 @@ panel_reddit_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_info_over
+panel_terms_over
   rotate: false
   xy: 924, 509
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_settings_over
+panel_info_over
   rotate: false
   xy: 924, 509
   size: 32, 32
@@ -655,21 +648,28 @@ panel_logout_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_changelog_over
-  rotate: false
-  xy: 924, 509
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_terms_over
-  rotate: false
-  xy: 924, 509
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 stub_checked_over
+  rotate: false
+  xy: 924, 509
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+terms_big_over
+  rotate: false
+  xy: 924, 509
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_settings_over
+  rotate: false
+  xy: 924, 509
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_changelog_over
   rotate: false
   xy: 924, 509
   size: 32, 32
@@ -1411,7 +1411,7 @@ overview_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-overview_down
+settings_debug_checked
   rotate: false
   xy: 2004, 825
   size: 32, 32
@@ -1425,7 +1425,7 @@ settings_debug_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_debug_checked
+overview_down
   rotate: false
   xy: 2004, 825
   size: 32, 32
@@ -1446,14 +1446,14 @@ settings_debug_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_debug_checked_over
+overview_over
   rotate: false
   xy: 172, 23
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-overview_over
+settings_debug_checked_over
   rotate: false
   xy: 172, 23
   size: 32, 32
@@ -1889,14 +1889,14 @@ scroll_horizontal_knob
   orig: 16, 16
   offset: 0, 0
   index: -1
-slider_knob
+scroll_vertical_knob
   rotate: false
   xy: 476, 79
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll_vertical_knob
+slider_knob
   rotate: false
   xy: 476, 79
   size: 16, 16
@@ -2046,7 +2046,7 @@ selectbox_background_open
   index: -1
 selectbox_background_over
   rotate: false
-  xy: 1762, 558
+  xy: 1771, 600
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -2213,14 +2213,14 @@ settings_statistics_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_down
+settings_network_down
   rotate: false
   xy: 1592, 545
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_network_down
+settings_statistics_down
   rotate: false
   xy: 1592, 545
   size: 32, 32
@@ -2234,7 +2234,7 @@ settings_network_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_checked_over
+settings_network_over
   rotate: false
   xy: 1626, 579
   size: 32, 32
@@ -2248,7 +2248,7 @@ settings_statistics_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_network_over
+settings_statistics_checked_over
   rotate: false
   xy: 1626, 579
   size: 32, 32
@@ -2509,7 +2509,7 @@ tags_disabled
   index: -1
 textfield
   rotate: false
-  xy: 1775, 602
+  xy: 528, 172
   size: 9, 9
   split: 4, 4, 4, 4
   orig: 9, 9
@@ -2524,18 +2524,18 @@ wait_animation
   index: -1
 window_background
   rotate: false
-  xy: 528, 170
-  size: 11, 11
-  split: 5, 5, 5, 5
-  orig: 11, 11
+  xy: 1048, 859
+  size: 3, 3
+  split: 1, 1, 1, 1
+  orig: 3, 3
   offset: 0, 0
   index: -1
 window_background_title
   rotate: false
-  xy: 1762, 571
-  size: 11, 40
-  split: 5, 5, 34, 5
-  orig: 11, 40
+  xy: 1762, 575
+  size: 7, 36
+  split: 3, 3, 32, 3
+  orig: 7, 36
   offset: 0, 0
   index: -1
 window_settings

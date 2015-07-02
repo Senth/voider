@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.scene;
 
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.InternalDeps;
 
 /**
  * Displays a progress bar for loading local resources
@@ -19,7 +19,7 @@ public class LoadingProgressScene extends LoadingScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.finishLoading();
 	}
 
@@ -27,7 +27,7 @@ public class LoadingProgressScene extends LoadingScene {
 	protected void unloadResources() {
 		super.unloadResources();
 
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
 	}
 
 	@Override

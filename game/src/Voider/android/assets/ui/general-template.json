@@ -1,0 +1,846 @@
+{
+/**
+ * ------------------------------- NOTE! --------------------------------------
+ * In ONLY edit the -template.json file. Everything else will be replaced.
+ * Variables (length and sizes) to be scaled place them inside ${0} for them
+ * to scale correctly. The value in ${0} is the default for mdpi (no scaling)
+ * For example the value of ${16} will be scaled to ${32} in xhdpi
+ */
+
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	default_font: { file: default${16}.fnt },
+	default12: { file: default${12}.fnt },
+	default16: { file: default${16}.fnt },
+	default36: { file: default${36}.fnt },
+},
+
+/*
+ * Colors are in RGBA where the values are in the range of 0.0 to 1.0 i.e. R value of 1 is 255
+ * and value 0.5 is 127). Use http://www.corecoding.com/utilities/rgb-or-hex-to-float.php
+ * to convert RGB or HEX values to float.
+ */
+com.badlogic.gdx.graphics.Color: {
+	/** Palette */
+	
+	red: { r: 1, b: 0, g: 0, a: 1 },
+	green: { r: 0, b: 0, g: 1, a: 1 },
+	black: { r: 0, b: 0, g: 0, a: 1 },
+	white: { r: 1, b: 1, g: 1, a: 1 },
+	grey: { r: 0.3, b: 0.3, g: 0.3, a: 1 },
+	grey_light: { r: 0.8, b: 0.8, g: 0.8, a: 1 },
+	grey_dark: { r: 0.1, g: 0.1, b: 0.1, a: 1 },
+	turquoise: { r: 0, g: 1, b: 1, a: 1 },
+	
+	
+	/** Specific colors */
+	
+	// Warning color
+	warning: {r:0.961, g:0.643, b:0.302, a:1},
+	// Highlight color
+	highlight: turquoise,
+	// Success color
+	success: green,
+	// Error
+	error: red,
+	default: white,
+	// Color used as background for various widgets
+	widget_background_color: grey,
+	// Background color for some scenes
+	scene_background_color: grey_dark,
+	// Inner widget background color. I.e. if there is a table inside a widget.
+	// E.g. enemy list in level editor
+	widget_inner_background_color: grey_dark,
+	// Notification message background color
+	notification_background_color: {r: 0, g: 0, b: 0, a: 0.5},
+	// Path color
+	path_color: green,
+},
+
+java.lang.Float: {
+	/** Explore / Load */
+	
+	// Tag bar width
+	tag_bar_width: {value: ${160}},
+	// Maximum size of enemies/bullets on load screen (i.e. the image button) 
+	load_actor_size_max: {value: ${80}},
+	
+	
+	/** Padding - General UI */
+	
+	// Padding between some buttons
+	padding_buttons: {value: ${4}},
+	// Used to separate group of widgets, e.g. tool groups
+	padding_separator: {value: ${32}},
+	// Padding after a label before other text, slider, or text field.
+	// E.g. between : and [ in Name: [___]
+	padding_label_after: {value: ${8}},
+	// Outer padding
+	padding_outer: {value: ${4}},
+	// Inner padding
+	padding_inner: {value: ${12}},
+	// Padding between radio or checkbox buttons
+	padding_checkbox: {value: ${12}},
+	// Padding between checkbox icon and text
+	padding_checkbox_text: {value: ${4}},
+	// Transparent button padding (so text doesn't touch the borders)
+	// This is padding on all sides
+	padding_transparent_text_button: {value: ${2}},
+	// Top padding on a new paragraph
+	padding_paragraph: padding_inner,
+	
+	
+	/** Padding - Explore/Load */
+	
+	// Padding between rows
+	padding_explore: {value: ${16}},
+	
+	
+	/** General UI sizes */
+	
+	// Width of the right panel in explore and editors
+	right_panel_width: {value: ${240}},
+	// Text field for slider
+	text_field_number_width: {value: ${48}},
+	// Slider text width/max size
+	slider_label_width: {value: ${70}},
+	// Text field default width
+	text_field_width: right_panel_width,
+	// Text area height
+	text_area_height: {value: ${80}},
+	// Standard icon and row height
+	row_height: {value: ${32}},
+	// Row height for label sections
+	row_height_section: {value: ${32}},
+	// Height of upper and lower bars.
+	bar_upper_lower_height: {value: ${40}},	
+	// Text button height
+	text_button_height: {value: ${40}},
+	// Default text button width
+	text_button_width: {value: ${120}},
+	
+	
+	/** Settings */
+	
+	// Width of settings window
+	settings_width: {value: ${420}},
+	// Height of settings window
+	settings_height: {value: ${315}},
+	
+	
+	/** Notifications */
+	
+	// Notification messages
+	notification_width: right_panel_width,
+	// How long notification messages are shown, in seconds
+	notification_time: 6,
+	// Fade in duration, in seconds
+	notification_fade_in: 0.3,
+	// Fade out duration, in seconds
+	notification_fade_out: 1,
+	
+	
+	/** Score screen */
+	score_screen_width: {value: ${480}},
+	// Row height of "My Score" and "My Highscore" text
+	score_label_height: {value: ${40}},
+	
+	
+	/** Highscore screen */
+	
+	highscore_screen_width: {value: ${420}},
+	highscore_placement_width: {value: ${64}},
+	
+	
+	/** Other */
+
+	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
+	wait_window_fade_in: {value: 0.2},
+	wait_window_fade_out: {value: 0.6},
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: default_font,
+		fontColor: default,
+	},
+	
+	highlight: {
+		font: default_font,
+		fontColor: highlight,
+	},
+	
+	warning: {
+		font: default_font,
+		fontColor: warning,
+	},
+	
+	error: {
+		font: default_font,
+		fontColor: error,
+	},
+	
+	success: {
+		font: default_font,
+		fontColor: success,
+	},
+	
+	panel_section: {
+		font: default12,
+		fontColor: grey_light,
+	},
+	
+	header: {
+		font: default36,
+		fontColor: white,
+	},
+	
+	// Extra information, sort of like a comment
+	info_extra: {
+		font: default12,
+		fontColor: grey_light,
+	}
+	
+	// Default text for text fields - NOT IMPLEMTED YET
+	textfield_default: {
+		font: default_font,
+		fontColor: grey_dark,
+	},
+	
+	
+	/** Comments */
+	
+	// Name of comment
+	comment_name: {
+		font: default_font,
+		fontColor: highlight,
+	},
+	
+	// Date for the comment
+	comment_date: info_extra,
+	
+	comment: default,
+	
+	
+	/** Editor */
+	
+	editor_name: {
+		font: default_font,
+		fontColor: grey_light,
+	},
+	
+	tooltip: {
+		font: default_font,
+		fontColor: grey_light,
+	},
+	
+	// Label for the publish names 
+	publish_name: {
+		font: default_font,
+		fontColor: grey,
+	},
+	
+	path: {
+		font: default_font,
+		fontColor: path_color,
+	},
+	
+	
+	/** Highscore - My Score */
+	
+	my_score: {
+		font: default36,
+		fontColor: highlight,
+	},
+	
+	top_score: {
+		font: default36,
+		fontColor: white,
+	},
+	
+	
+	/** Errors */
+	
+	// In front of error (usually above/below text fields)
+	// E.g. When trying to register and passwords don't match
+	error_section_info: {
+		font: default_font,
+		fontColor: grey_light,
+	},
+	// The error message in the section
+	error_section: {
+		font: default12,
+		fontColor: error,
+	},
+	
+	
+	/** Credits */
+	
+	// Section for credits (e.g. Programming, UI Design, etc.)
+	credit_section: {
+		font: default36,
+		fontColor: grey_light,
+	},
+	// Names (e.g. Matteus Magnusson)
+	credit_name: {
+		font: default_font,
+		fontColor: white,
+	},
+},
+
+com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
+	wait: {
+		image: wait_animation,
+		frameColumns: 6,
+		frameRows: 4,
+		secondsPerFrame: 0.05,
+	},
+},
+
+com.spiddekauga.utils.scene.ui.RatingWidget$RatingWidgetStyle:  {
+	default: {
+		checked: star_checked,
+		empty: star,
+	},
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	press: {
+		down: button_default_down,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+	},
+	
+	toggle: {
+		down: button_default_down,
+		checked: button_default_checked,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		checkedOver: button_default_checked_over,
+	},
+	
+	selected_pressable: {
+		up: button_default_checked,
+		over: button_default_checked_over,
+		down: button_default_down,
+	},
+	
+	selected:  {
+		up: button_default_checked,
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {
+		down: button_default_down,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+	},
+	
+	toggle: {
+		down: button_default_down,
+		checked: button_default_checked,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		checkedOver: button_default_checked_over,
+	},
+	
+	checkbox: {
+		up: checkbox_off,
+		down: checkbox_on,
+		checked: checkbox_on,
+	},
+	
+	/** Menu - Main */
+	
+	play: {
+		imageUp: play,
+		imageOver: play_over,
+		imageDown: play_down,
+	},
+	
+	create: {
+		imageUp: create,
+		imageOver: create_over,
+		imageDown: create_down,
+	},
+		
+	logout: {
+		imageUp: logout,
+		imageOver: logout_over,
+		imageDown: logout_down,
+	},
+	
+	info_big: {
+		imageUp: info_big,
+		imageOver: info_big_over,
+		imageDown: info_big_down,
+	},
+	
+	back_big: {
+		imageUp: back_big,
+		imageOver: back_big_over,
+		imageDown: back_big_down,
+	}
+	
+	terms_big: {
+		imageUp: terms_big,
+		imageOver: terms_big_over,
+		imageDown: terms_big_down,
+	},
+	
+	changelog_big: {
+		imageUp: changelog_big,
+		imageOver: changelog_big_over,
+		imageDown: changelog_big_down,
+	},
+	
+	
+	/** Menu - Top Panel */
+	
+	panel_bug: {
+		imageUp: panel_bug,
+		imageOver: panel_bug_over,
+		imageDown: panel_bug_down,
+	},
+	
+	panel_player: {
+		imageUp: panel_player,
+		imageOver: panel_player_over,
+		imageDown: panel_player_down,
+	},
+	
+	panel_shop: {
+		imageUp: panel_shop,
+		imageOver: panel_shop_over,
+		imageDown: panel_shop_down,
+		imageDisabled: panel_shop_disabled,
+	},
+	
+	panel_vote: {
+		imageUp: panel_vote,
+		imageOver: panel_vote_over,
+		imageDown: panel_vote_down,
+		imageDisabled: panel_vote_disabled,
+	},
+	
+	panel_achievements: {
+		imageUp: panel_achievements,
+		imageOver: panel_achievements_over,
+		imageDown: panel_achievements_down,
+	},
+	
+	panel_reddit: {
+		imageUp: panel_reddit,
+		imageOver: panel_reddit_over,
+		imageDown: panel_reddit_down,
+	},
+	
+	panel_settings: {
+		imageUp: panel_settings,
+		imageOver: panel_settings_over,
+		imageDown: panel_settings_down,
+	},
+	
+	panel_logout: {
+		imageUp: panel_logout,
+		imageOver: panel_logout_over,
+		imageDown: panel_logout_down,
+	},
+	
+	panel_info: {
+		imageUp: panel_info,
+		imageOver: panel_info_over,
+		imageDown: panel_info_down,
+	},
+	
+	panel_changelog: {
+		imageUp: panel_changelog,
+		imageOver: panel_changelog_over,
+		imageDown: panel_changelog_down,
+	},
+	
+	panel_terms: {
+		imageUp: panel_terms,
+		imageOver: panel_terms_over,
+		imageDown: panel_terms_down,
+	},
+	
+	
+	/** Menu - Create */
+	
+	bullet_editor_big: {
+		imageDown: bullet_editor_big_down,
+		imageOver: bullet_editor_big_over,
+		imageUp: bullet_editor_big
+	},
+	
+	campaign_editor_big: {
+		imageDown: campaign_editor_big_down,
+		imageOver: campaign_editor_big_over,
+		imageUp: campaign_editor_big
+	},
+	
+	level_editor_big: {
+		imageDown: level_editor_big_down,
+		imageOver: level_editor_big_over,
+		imageUp: level_editor_big
+	},
+	
+	enemy_editor_big: {
+		imageDown: enemy_editor_big_down,
+		imageOver: enemy_editor_big_over,
+		imageUp: enemy_editor_big
+	},
+	
+	ship_editor_big: {
+		imageDown: ship_editor_big_down,
+		imageOver: ship_editor_big_over,
+		imageUp: ship_editor_big
+	},
+	
+	
+	/** Menu - Settings */
+	
+	settings_interface: {
+		imageUp: settings_interface,
+		imageOver: settings_interface_over,
+		imageDown: settings_interface_down,
+		imageChecked: settings_interface_checked,
+		imageCheckedOver: settings_interface_checked_over,
+	},
+	
+	settings_resolution: {
+		imageUp: settings_resolution,
+		imageOver: settings_resolution_over,
+		imageDown: settings_resolution_down,
+		imageChecked: settings_resolution_checked,
+		imageCheckedOver: settings_resolution_checked_over,
+	},
+	
+	settings_sound: {
+		imageUp: settings_sound,
+		imageOver: settings_sound_over,
+		imageDown: settings_sound_down,
+		imageChecked: settings_sound_checked,
+		imageCheckedOver: settings_sound_checked_over,
+	},
+	
+	settings_network: {
+		imageUp: settings_network,
+		imageOver: settings_network_over,
+		imageDown: settings_network_down,
+		imageChecked: settings_network_checked,
+		imageCheckedOver: settings_network_checked_over,
+	},
+	
+	settings_debug: {
+		imageUp: settings_debug,
+		imageOver: settings_debug_over,
+		imageDown: settings_debug_down,
+		imageChecked: settings_debug_checked,
+		imageCheckedOver: settings_debug_checked_over,
+	}
+	
+	
+	/** Menu - User Settings */
+	
+	settings_account: {
+		imageUp: settings_account,
+		imageOver: settings_account_over,
+		imageDown: settings_account_down,
+		imageChecked: settings_account_checked,
+		imageCheckedOver: settings_account_checked_over,
+	},
+	
+	settings_statistics: {
+		imageUp: settings_statistics,
+		imageOver: settings_statistics_over,
+		imageDown: settings_statistics_down,
+		imageChecked: settings_statistics_checked,
+		imageCheckedOver: settings_statistics_checked_over,
+	},
+	
+	
+	/** Explore */
+		
+	explore_local: {
+		imageUp: explore_local,
+		imageOver: explore_local_over,
+		imageDown: explore_local_down,
+		imageChecked: explore_local_checked,
+		imageCheckedOver: explore_local_checked_over,
+	},
+	
+	explore_online: {
+		imageUp: explore_online,
+		imageOver: explore_online_over,
+		imageDown: explore_online_down,
+		imageChecked: explore_online_checked,
+		imageCheckedOver: explore_online_checked_over,
+		imageDisabled: explore_online_disabled
+	},
+	
+	explore_online_search: {
+		imageUp: explore_online_search,
+		imageOver: explore_online_search_over,
+		imageDown: explore_online_search_down,
+		imageChecked: explore_online_search_checked,
+		imageCheckedOver: explore_online_search_checked_over,
+		imageDisabled: explore_online_search_disabled
+	},
+	
+	
+	/** Explore - Tabs */
+	
+	comments: {
+		imageUp: comments,
+		imageOver: comments_over,
+		imageDown: comments_down,
+		imageChecked: comments_checked,
+		imageCheckedOver: comments_checked_over,
+	},
+	
+	images: {
+		imageUp: images,
+		imageOver: images_over,
+		imageDown: images_down,
+		imageChecked: images_checked,
+		imageCheckedOver: images_checked_over,
+	},
+	
+	overview: {
+		imageUp: overview,
+		imageOver: overview_over,
+		imageDown: overview_down,
+		imageChecked: overview_checked,
+		imageCheckedOver: overview_checked_over,
+	},
+	
+	tags: {
+		imageUp: tags,
+		imageOver: tags_over,
+		imageDown: tags_down,
+		imageChecked: tags_checked,
+		imageCheckedOver: tags_checked_over,
+	},
+	
+	search_filter: {
+		imageUp: search_filter,
+		imageOver: search_filter_over,
+		imageDown: search_filter_down,
+		imageChecked: search_filter_checked,
+	},
+	
+	
+	/** Score */
+	
+	replay: {
+		imageUp: replay,
+		imageOver: replay_over,
+		imageDown: replay_down,
+	},
+	
+	continue: {
+		imageUp: continue,
+		imageOver: continue_over,
+		imageDown: continue_down,
+	}
+	
+	bookmark: {
+		imageUp: bookmark,
+		imageOver: bookmark_over,
+		imageDown: bookmark_down,
+		imageChecked: bookmark_checked,
+		imageCheckedOver: bookmark_checked_over,
+	},
+},
+
+/** TextButtonStyle */
+
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	// Deprecated
+	default: {
+		down: button_default_down,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		font: default_font,
+	},
+	// Deprecated
+	toggle: {
+		down: button_default_down,
+		checked: button_default_checked,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		checkedOver: button_default_checked_over,
+		font: default_font,
+	},
+	
+	/** Transparent */
+	
+	transparent: {
+		down: button_transparent_down,
+		up: button_transparent_up,
+		disabled: button_transparent_disabled,
+		over: button_transparent_over,
+		font: default_font,
+		fontColor: grey_light,
+		downFontColor: highlight,
+		overFontColor: white,
+		disabledFontColor: red,
+	},
+	transparent_toggle: {
+		down: button_transparent_down,
+		checked: button_transparent_checked,
+		up: button_transparent_up,
+		disabled: button_transparent_disabled,
+		over: button_transparent_over,
+		checkedOver: button_transparent_checked_over,
+		font: default_font,
+		fontColor: grey_light,
+		downFontColor: highlight,
+		overFontColor: white,
+		checkedFontColor: highlight,
+		disabledFontColor: red,
+	},
+	
+	/** Flat Button */
+	
+	flat_press: {
+		up: button_flat_up,
+		down: button_flat_down,
+		over: button_flat_over,
+		disabled: button_flat_disabled,
+		font: default_font,
+	},
+	flat_toggle: {
+		up: button_flat_up,
+		over: button_flat_over,
+		down: button_flat_down,
+		disabled: button_flat_disabled,
+		checked: button_flat_checked,
+		checkedOver: button_flat_checked_over,
+		font: default_font,
+	},
+	
+	/** Tag button */
+	
+	tag: {
+		down: button_tag_down,
+		up: button_tag_up,
+		over: button_tag_over,
+		font: default36,
+	},
+	
+	/** Link */
+	link: {
+		font: default_font,
+		fontColor: grey_light,
+		downFontColor: highlight,
+		overFontColor: white,
+		disabledFontColor: red,
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+	default: {
+		checkboxOn: checkbox_on,
+		checkboxOff: checkbox_off,
+		font: default_font
+	},
+	radio: {
+		checkboxOn: radio_button_on,
+		checkboxOff: radio_button_off,
+		font: default_font
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
+	default: {
+		background: slider_background,
+		knob: slider_knob,
+	},
+	loading_bar: {
+		background: loading_bar,
+		knobBefore: loading_bar_progress
+	},
+	// Color picker
+	color_picker: {
+		knob: color_picker_knob,
+	},
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
+	default: {
+		selection: selection,
+		background: textfield,
+		font: default_font,
+		fontColor: white,
+		disabledFontColor: red,
+		cursor: cursor
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+	default: {
+		titleFont: default_font,
+		background: window_background
+	},
+	title: {
+		titleFont: default_font,
+		background: window_background_title
+	},
+	modal: {
+		titleFont: default_font,
+		stageBackground: modal_fade,
+		background: window_background
+	},
+	modal_title: {
+		titleFont: default_font,
+		stageBackground: modal_fade,
+		background: window_background_title
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+	default: {
+		hScroll: scroll_horizontal,
+		hScrollKnob: scroll_horizontal_knob,
+		vScroll: scroll_vertical,
+		vScrollKnob: scroll_vertical_knob,
+	},
+	background: {
+		background: window_background,
+		hScroll: scroll_horizontal,
+		hScrollKnob: scroll_horizontal_knob,
+		vScroll: scroll_vertical,
+		vScrollKnob: scroll_vertical_knob,
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
+	default: {
+		font: default_font,
+		fontColorSelected: red,
+		fontColorUnselected: white,
+		selection: selection
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
+	default: {
+		font: default_font,
+		background: selectbox_background,
+		scrollStyle: background,
+		listStyle: default,
+		backgroundOver: selectbox_background_over,
+		backgroundOpen: selectbox_background_open
+	}
+}
+
+}

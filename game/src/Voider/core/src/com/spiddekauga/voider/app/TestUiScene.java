@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 
@@ -24,15 +25,15 @@ public class TestUiScene extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.load(InternalNames.UI_GAME);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_GAME);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalNames.UI_GAME);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_GAME);
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class TestUiScene extends Scene {
 	 * Reload UI elements
 	 */
 	private void reloadUi() {
-		ResourceCacheFacade.reload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.reload(InternalDeps.UI_GENERAL);
 
 		getGui().dispose();
 		getGui().initGui();

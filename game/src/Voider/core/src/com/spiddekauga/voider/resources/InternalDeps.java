@@ -15,8 +15,8 @@ public enum InternalDeps {
 	THEME_SPACE(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_SPACE_720), new ResolutionResource(
 			ResolutionRange.RES_1080, InternalNames.LEVEL_BACKGROUND_SPACE_1080)),
 	/** Core theme */
-	THEME_CORE(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_CORE_720), new ResolutionResource(ResolutionRange.RES_1080,
-			InternalNames.LEVEL_BACKGROUND_CORE_1080)),
+	THEME_CORE(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_CORE_720), new ResolutionResource(
+			ResolutionRange.RES_1080, InternalNames.LEVEL_BACKGROUND_CORE_1080)),
 	/** Surface theme */
 	THEME_SURFACE(new ResolutionResource(ResolutionRange.RES_720, InternalNames.LEVEL_BACKGROUND_SURFACE_720), new ResolutionResource(
 			ResolutionRange.RES_1080, InternalNames.LEVEL_BACKGROUND_SURFACE_1080)),
@@ -45,6 +45,18 @@ public enum InternalDeps {
 	/** Easy load/unload for all UI sounds */
 	UI_SFX(InternalNames.SOUND_UI_BUTTON_CLICK, InternalNames.SOUND_UI_BUTTON_HOVER),
 
+	/** General UI. Loads the correct density */
+	UI_GENERAL(new DpiResource(DensityBuckets.MEDIUM, InternalNames.UI_GENERAL_MDPI), new DpiResource(DensityBuckets.HIGH,
+			InternalNames.UI_GENERAL_HDPI), new DpiResource(DensityBuckets.XHIGH, InternalNames.UI_GENERAL_XHDPI)),
+	/** Editor UI. Loads the correct density */
+	UI_EDITOR(new DpiResource(DensityBuckets.MEDIUM, InternalNames.UI_EDITOR_MDPI),
+			new DpiResource(DensityBuckets.HIGH, InternalNames.UI_EDITOR_HDPI), new DpiResource(DensityBuckets.XHIGH, InternalNames.UI_EDITOR_XHDPI)),
+	/** Game UI. Loads the correct density */
+	UI_GAME(new DpiResource(DensityBuckets.MEDIUM, InternalNames.UI_GAME_MDPI), new DpiResource(DensityBuckets.HIGH, InternalNames.UI_GAME_HDPI),
+			new DpiResource(DensityBuckets.XHIGH, InternalNames.UI_GAME_XHDPI)),
+	/** Credit UI */
+	UI_CREDITS(InternalNames.UI_CREDITS),
+
 	;
 
 	/**
@@ -57,11 +69,12 @@ public enum InternalDeps {
 	}
 
 	/**
-	 * Constructor which takes several resolution specific resources
-	 * @param resolutionResources all resource with resolutions
+	 * Constructor which takes several resources that should only be used dependening on
+	 * some settings...
+	 * @param resources
 	 */
-	private InternalDeps(ResolutionResource... resolutionResources) {
-		mResolutionResources = resolutionResources;
+	private InternalDeps(IInternalResource... resources) {
+		mResources = resources;
 	}
 
 	/**
@@ -73,9 +86,9 @@ public enum InternalDeps {
 		} else {
 			ArrayList<InternalNames> dependencies = new ArrayList<>();
 
-			for (ResolutionResource resolutionResource : mResolutionResources) {
-				if (resolutionResource.useResource()) {
-					Collections.addAll(resolutionResource.getDependencise(), dependencies);
+			for (IInternalResource resource : mResources) {
+				if (resource.useResource()) {
+					Collections.addAll(resource.getDependencies(), dependencies);
 				}
 			}
 
@@ -87,7 +100,7 @@ public enum InternalDeps {
 	/** All dependencies (if not resolution specific) */
 	private InternalNames[] mDependencies = null;
 	/** All resolution specific dependencies */
-	private ResolutionResource[] mResolutionResources = null;
+	private IInternalResource[] mResources = null;
 
 
 	static {
@@ -112,7 +125,7 @@ public enum InternalDeps {
 		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_SURFACE_120));
 		resources.add(new ResolutionResource(ResolutionRange.RES_ALL, InternalNames.LEVEL_BACKGROUND_TUNNELS_120));
 
-		THEME_ALL.mResolutionResources = new ResolutionResource[resources.size()];
-		resources.toArray(THEME_ALL.mResolutionResources);
+		THEME_ALL.mResources = new ResolutionResource[resources.size()];
+		resources.toArray(THEME_ALL.mResources);
 	}
 }

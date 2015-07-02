@@ -24,6 +24,7 @@ public class IC_Setting extends IniClass {
 		protected int resolutionWidth;
 		protected int resolutionHeight;
 		protected String[] customWindowResolutions;
+		protected String iconSize;
 
 		private IC_Display(Ini ini, Section classSection) {
 			super(ini, classSection);
@@ -43,6 +44,10 @@ public class IC_Setting extends IniClass {
 
 		public String[] getCustomWindowResolutions() {
 			return customWindowResolutions;
+		}
+
+		public String getIconSize() {
+			return iconSize;
 		}
 	}
 

@@ -641,14 +641,14 @@ public class GameScene extends WorldScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.load(InternalNames.UI_GAME);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_GAME);
 		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
 		ResourceCacheFacade.load(InternalDeps.GAME_MUSIC);
 		ResourceCacheFacade.load(InternalDeps.GAME_SFX);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
 		if (mRunningFromEditor) {
-			ResourceCacheFacade.load(InternalNames.UI_EDITOR);
+			ResourceCacheFacade.load(InternalDeps.UI_EDITOR);
 		}
 
 		if (mLevelToRun != null) {
@@ -676,14 +676,14 @@ public class GameScene extends WorldScene {
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalNames.UI_GAME);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_GAME);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unload(InternalDeps.GAME_MUSIC);
 		ResourceCacheFacade.unload(InternalDeps.GAME_SFX);
 
 		if (mRunningFromEditor) {
-			ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
+			ResourceCacheFacade.unload(InternalDeps.UI_EDITOR);
 		}
 	}
 

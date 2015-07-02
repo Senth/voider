@@ -33,10 +33,10 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
@@ -533,11 +533,11 @@ public abstract class Gui implements Disposable {
 			mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		}
 
-		if (!mUiFactory.isInitialized() && ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
+		if (!mUiFactory.isInitialized() && ResourceCacheFacade.isLoaded(InternalDeps.UI_GENERAL)) {
 			mUiFactory.init();
 		}
 
-		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
+		if (ResourceCacheFacade.isLoaded(InternalDeps.UI_GENERAL)) {
 			// Notification messages
 			if (!mIsResizing) {
 				mNotification = NotificationShower.getInstance();
@@ -561,7 +561,7 @@ public abstract class Gui implements Disposable {
 	private void initWaitWindow() {
 		mWidgets.waitWindow.window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
 		mWidgets.waitWindow.window.setModal(true);
-		mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
+		mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalDeps.UI_GENERAL));
 		mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
 		mWidgets.waitWindow.label = new Label("", LabelStyles.DEFAULT.getStyle());
 		mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight(mUiFactory.getStyles().vars.paddingSeparator);

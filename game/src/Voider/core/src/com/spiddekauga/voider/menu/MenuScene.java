@@ -23,14 +23,14 @@ public abstract class MenuScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.MUSIC_TITLE);
 		ResourceCacheFacade.load(InternalDeps.UI_SFX);
 	}
 
 	@Override
 	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.MUSIC_TITLE);
 		ResourceCacheFacade.unload(InternalDeps.UI_SFX);
 

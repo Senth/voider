@@ -24,9 +24,15 @@ import com.spiddekauga.voider.Config.File;
 @SuppressWarnings("javadoc")
 public enum InternalNames {
 	// UI
-	UI_EDITOR("ui/editor.json", Skin.class),
-	UI_GENERAL("ui/general.json", Skin.class),
-	UI_GAME("ui/game.json", Skin.class),
+	UI_EDITOR_MDPI("ui/editor-mdpi.json", Skin.class),
+	UI_EDITOR_HDPI("ui/editor-hdpi.json", Skin.class),
+	UI_EDITOR_XHDPI("ui/editor-xhdpi.json", Skin.class),
+	UI_GENERAL_MDPI("ui/general-mdpi.json", Skin.class),
+	UI_GENERAL_HDPI("ui/general-hdpi.json", Skin.class),
+	UI_GENERAL_XHDPI("ui/general-xhdpi.json", Skin.class),
+	UI_GAME_MDPI("ui/game.json-mdpi", Skin.class),
+	UI_GAME_HDPI("ui/game.json-hdpi", Skin.class),
+	UI_GAME_XHDPI("ui/game.json-xhdpi", Skin.class),
 	UI_CREDITS("ui/credits.json", Skin.class),
 
 	// Themes / Backgrounds
@@ -51,13 +57,9 @@ public enum InternalNames {
 	// Images
 	/** Splash Screen */
 	IMAGE_SPLASH_SCREEN("background_splash.jpg", Texture.class),
-	/** Game icon 256x256 */
 	ICON_256("icon-256.png", Texture.class),
-	/** Game icon 128x128 */
 	ICON_128("icon-128.png", Texture.class),
-	/** Game icon 64x64 */
 	ICON_64("icon-64.png", Texture.class),
-	/** game icon 32x32 */
 	ICON_32("icon-32.png", Texture.class),
 
 
@@ -67,9 +69,7 @@ public enum InternalNames {
 
 
 	// Ini files
-	/** Credits to display */
 	INI_CREDITS("credits.ini", Ini.class),
-	/** Config file */
 	INI_CONFIG("config.ini", Ini.class),
 
 
@@ -78,13 +78,9 @@ public enum InternalNames {
 
 
 	// Music
-	/** Space music */
 	MUSIC_SPACE("space.mp3", Music.class),
-	/** Surface music */
 	MUSIC_SURFACE("surface.mp3", Music.class),
-	/** Tunnels music */
 	MUSIC_TUNNEL("tunnels.mp3", Music.class),
-	/** Core music */
 	MUSIC_CORE("core.mp3", Music.class),
 	/** Game over music */
 	MUSIC_GAME_OVER_INTRO("game_over_intro.mp3", Music.class),
@@ -96,19 +92,12 @@ public enum InternalNames {
 	MUSIC_TITLE("title_theme.mp3", Music.class),
 
 	// Sound
-	/** Ship has low health */
 	SOUND_SHIP_LOW_HEALTH("ship_low_health.mp3", Sound.class),
-	/** Bullet hits a player */
 	SOUND_BULLET_HIT_PLAYER("bullet_hit_player.mp3", Sound.class),
-	/** Ship collision with terrain or enemy */
 	SOUND_SHIP_COLLIDE("ship_collide.mp3", Sound.class),
-	/** Enemy ship explodes on player */
 	SOUND_ENEMY_EXLODES("enemy_explodes.mp3", Sound.class),
-	/** Player ship lost */
 	SOUND_SHIP_LOST("ship_lost.mp3", Sound.class),
-	/** UI hover over button */
 	SOUND_UI_BUTTON_HOVER("ui_button_hover.mp3", Sound.class),
-	/** UI button click */
 	SOUND_UI_BUTTON_CLICK("ui_button_click.mp3", Sound.class),
 
 	;

@@ -48,6 +48,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.LoadingProgressScene;
 import com.spiddekauga.voider.scene.LoadingScene;
@@ -143,16 +144,16 @@ public abstract class Editor extends WorldScene implements IEditor, IResourceCha
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalNames.UI_EDITOR);
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_EDITOR);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_EDITOR);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
 	}
 

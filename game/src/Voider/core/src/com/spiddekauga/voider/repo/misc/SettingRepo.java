@@ -2,6 +2,8 @@ package com.spiddekauga.voider.repo.misc;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.ClientVersions;
@@ -15,6 +17,7 @@ import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingDisplayLocalRepo
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingGeneralLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingNetworkLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingSoundLocalRepo;
+import com.spiddekauga.voider.resources.DensityBuckets;
 
 /**
  * Setting repository
@@ -455,6 +458,21 @@ public class SettingRepo extends Repo {
 			mLocalRepo.toggleFullscreen();
 		}
 
+		/**
+		 * Set icon/UI size
+		 * @param iconSize set the icon size
+		 */
+		public void setIconSize(IconSizes iconSize) {
+			mLocalRepo.setIconSize(iconSize);
+		}
+
+		/**
+		 * @return current iconSize
+		 */
+		public IconSizes getIconSize() {
+			return mLocalRepo.getIconSize();
+		}
+
 		private SettingDisplayLocalRepo mLocalRepo = SettingLocalRepo.getInstance().display;
 	}
 
@@ -493,6 +511,60 @@ public class SettingRepo extends Repo {
 		}
 
 		private SettingNetworkLocalRepo mLocalRepo = SettingLocalRepo.getInstance().network;
+	}
+
+	/**
+	 * Icon/UI sizes
+	 */
+	public enum IconSizes {
+		/** Small 32x32 icons */
+		SMALL(DensityBuckets.MEDIUM),
+		/** Medium 48x48 icons */
+		MEDIUM(DensityBuckets.HIGH),
+		/** Large 64x64 icons */
+		LARGE(DensityBuckets.XHIGH),
+
+		;
+
+		private IconSizes(DensityBuckets densityBucket) {
+			mDensityBucket = densityBucket;
+			mName = name().substring(0, 1) + name().substring(1).toLowerCase();
+			mName = mName.replace("_", " ");
+		}
+
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/**
+		 * Convert to density bucket
+		 * @return density bucket representation
+		 */
+		public DensityBuckets toDensityBucket() {
+			return mDensityBucket;
+		}
+
+		/**
+		 * Get the enum from a name
+		 * @param name name returned from {@link #toString()}.
+		 * @return enum with the specified name, null if not found
+		 */
+		public static IconSizes fromName(String name) {
+			return mNameToIconSize.get(name);
+		}
+
+		private String mName;
+		/** Appropriate density bucket to load */
+		private DensityBuckets mDensityBucket;
+
+		private static Map<String, IconSizes> mNameToIconSize = new HashMap<>();
+
+		static {
+			for (IconSizes iconSize : IconSizes.values()) {
+				mNameToIconSize.put(iconSize.mName, iconSize);
+			}
+		}
 	}
 
 	private SettingNetworkRepo mNetwork = new SettingNetworkRepo();

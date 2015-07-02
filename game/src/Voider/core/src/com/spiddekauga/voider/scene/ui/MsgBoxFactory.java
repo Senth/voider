@@ -32,10 +32,10 @@ import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -486,7 +486,7 @@ public class MsgBoxFactory {
 
 		if (msgBox == null) {
 			msgBox = new MsgBoxExecuter(windowStyle);
-			Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+			Skin skin = ResourceCacheFacade.get(InternalDeps.UI_GENERAL);
 			msgBox.setSkin(skin);
 			msgBox.setButtonPad(mStyles.vars.paddingButton);
 		} else {

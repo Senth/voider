@@ -28,6 +28,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 
@@ -40,8 +41,8 @@ public class TestUiGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mGeneralSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		mGameSkin = ResourceCacheFacade.get(InternalNames.UI_GAME);
+		mGeneralSkin = ResourceCacheFacade.get(InternalDeps.UI_GENERAL);
+		mGameSkin = ResourceCacheFacade.get(InternalDeps.UI_GAME);
 		mMainTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		mTopRight.setPreferences(mMainTable);
 		mTopRight.setAlign(Horizontal.RIGHT, Vertical.TOP);

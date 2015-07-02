@@ -9,7 +9,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
  * current resolution is
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class ResolutionResource {
+public class ResolutionResource implements IInternalResource {
 	/**
 	 * @param range the resolution range
 	 * @param internalNames resources bound to this
@@ -19,9 +19,7 @@ public class ResolutionResource {
 		mInternalNames = internalNames;
 	}
 
-	/**
-	 * @return true if this resource should be used
-	 */
+	@Override
 	public boolean useResource() {
 		return useResource(Gdx.graphics.getHeight());
 	}
@@ -44,10 +42,8 @@ public class ResolutionResource {
 		return mRange.getOptimalDifference(height);
 	}
 
-	/**
-	 * @return all resource names
-	 */
-	public InternalNames[] getDependencise() {
+	@Override
+	public InternalNames[] getDependencies() {
 		return mInternalNames;
 	}
 

@@ -8,6 +8,7 @@ import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -320,6 +321,25 @@ class SettingLocalRepo {
 		void toggleFullscreen() {
 			mClientPrefsGateway.setFullscreen(!mClientPrefsGateway.isFullscreen());
 			updateScreenSize();
+		}
+
+		/**
+		 * Set icon/UI size
+		 * @param iconSize set the icon size
+		 */
+		void setIconSize(IconSizes iconSize) {
+			// TODO Unload the old
+
+			mClientPrefsGateway.setIconSize(iconSize);
+
+			// TODO load the new icon size
+		}
+
+		/**
+		 * @return current iconSize
+		 */
+		IconSizes getIconSize() {
+			return mClientPrefsGateway.getIconSize();
 		}
 
 		/**

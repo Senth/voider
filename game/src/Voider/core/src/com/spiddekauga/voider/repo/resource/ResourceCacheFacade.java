@@ -160,6 +160,21 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Reloads a resource. Useful when changing updating resources and we don't want to
+	 * restart the program to test them.
+	 * @param resource the resource to reload
+	 * @note <b>Use with care!</b> This will simply reload the resource, meaning all other
+	 *       previous instances that uses the old resource won't work.
+	 */
+	public static void reload(InternalDeps resource) {
+		InternalNames[] names = resource.getDependencies();
+
+		for (int i = 0; i < names.length; i++) {
+			reload(names[i]);
+		}
+	}
+
+	/**
 	 * Reloads the latest resource. Useful when a new revision has been added of the
 	 * resource during sync.
 	 * @param resourceId id of the resource to reload
@@ -213,7 +228,6 @@ public class ResourceCacheFacade {
 	public static boolean isLoaded(UUID resourceId, Scene scene) {
 		return mResourceLoader.isResourceLoaded(resourceId, scene);
 	}
-
 
 	/**
 	 * Checks whether a resource has been loaded or not. Uses the latest revision
@@ -329,6 +343,22 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Get the first resource of the specified type
+	 * @param <ResourceType> the type to be returned
+	 * @param resource the resource to return
+	 * @return the actual resource, null if not loaded
+	 */
+	public static <ResourceType> ResourceType get(InternalDeps resource) {
+		InternalNames[] names = resource.getDependencies();
+
+		if (names.length >= 1) {
+			return get(names[0]);
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Checks whether a resource has been loaded or not
 	 * @param resource the resource to check if it has been loaded
 	 * @return true if the resource has been loaded
@@ -336,6 +366,23 @@ public class ResourceCacheFacade {
 	public static boolean isLoaded(InternalNames resource) {
 		String fullPath = resource.getFilePath();
 		return mAssetManager.isLoaded(fullPath, resource.getType());
+	}
+
+	/**
+	 * Checks all resource has been loaded or not
+	 * @param resource the resource to check if it has been loaded
+	 * @return true if the resource has been loaded
+	 */
+	public static boolean isLoaded(InternalDeps resource) {
+		InternalNames[] names = resource.getDependencies();
+
+		for (int i = 0; i < names.length; i++) {
+			if (!isLoaded(names[i])) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

@@ -16,10 +16,10 @@ import com.spiddekauga.voider.network.resource.EnemyDefEntity;
 import com.spiddekauga.voider.network.resource.EnemyFetchMethod;
 import com.spiddekauga.voider.network.resource.EnemyFetchResponse;
 import com.spiddekauga.voider.network.resource.EnemySpeedSearchRanges;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.repo.user.User;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
@@ -50,12 +50,12 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.UI_EDITOR);
+		ResourceCacheFacade.load(InternalDeps.UI_EDITOR);
 	}
 
 	@Override
 	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
+		ResourceCacheFacade.unload(InternalDeps.UI_EDITOR);
 
 		super.unloadResources();
 	}

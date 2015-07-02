@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Menu.IC_Time;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.InternalDeps;
 
 /**
  * Loading scene that displays a text while loading. The text is automatically calculates
@@ -54,7 +54,7 @@ public class LoadingTextScene extends LoadingScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.finishLoading();
 	}
 
@@ -62,7 +62,7 @@ public class LoadingTextScene extends LoadingScene {
 	protected void unloadResources() {
 		super.unloadResources();
 
-		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
 	}
 
 	@Override

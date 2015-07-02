@@ -115,6 +115,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 			} else if (keycode == Input.Keys.F10) {
 			} else if (keycode == Input.Keys.F11) {
 			} else if (keycode == Input.Keys.F12) {
+				Gdx.app.log("DPI", "Density: " + Gdx.graphics.getDensity());
 			}
 		}
 

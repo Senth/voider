@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.ColorArray;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
+import com.spiddekauga.voider.resources.InternalDeps;
 
 
 /**
@@ -231,8 +232,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_EDITOR;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_EDITOR;
 		}
 
 		/**
@@ -294,8 +295,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_EDITOR;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_EDITOR;
 		}
 
 		/** skin name of the icon */
@@ -376,8 +377,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_EDITOR;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_EDITOR;
 		}
 
 		/**
@@ -418,8 +419,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_GAME;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_GAME;
 		}
 
 		/**
@@ -463,8 +464,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_GAME;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_GAME;
 		}
 
 		/**
@@ -512,8 +513,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_GAME;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_GAME;
 		}
 
 		/**
@@ -648,8 +649,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_GENERAL;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_GENERAL;
 		}
 
 		/**
@@ -722,8 +723,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_GENERAL;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_GENERAL;
 		}
 
 		/**
@@ -926,8 +927,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_GENERAL;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_GENERAL;
 		}
 
 		/**
@@ -970,8 +971,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_CREDITS;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_CREDITS;
 		}
 
 		/**
@@ -1021,8 +1022,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_GENERAL;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_GENERAL;
 		}
 
 		/**
@@ -1080,8 +1081,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public InternalNames getSkinName() {
-			return InternalNames.UI_CREDITS;
+		public InternalDeps getSkinName() {
+			return InternalDeps.UI_CREDITS;
 		}
 
 		/**
@@ -1111,7 +1112,7 @@ public class SkinNames {
 		/**
 		 * @return skin name
 		 */
-		InternalNames getSkinName();
+		InternalDeps getSkinName();
 	}
 
 	/**
@@ -1121,7 +1122,7 @@ public class SkinNames {
 		/**
 		 * @return skin name
 		 */
-		InternalNames getSkinName();
+		InternalDeps getSkinName();
 	}
 
 

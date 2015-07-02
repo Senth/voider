@@ -77,8 +77,8 @@ public enum Themes {
 	public LevelBackground updateBackground(LevelBackground background, int height) {
 		ResolutionResource resolution = getClosestLoadedResolutionResource(height);
 
-		if (resolution.getDependencise()[0] != background.getDependency()) {
-			return new LevelBackground(resolution.getDependencise()[0]);
+		if (resolution.getDependencies()[0] != background.getDependency()) {
+			return new LevelBackground(resolution.getDependencies()[0]);
 		} else {
 			return background;
 		}
@@ -91,7 +91,7 @@ public enum Themes {
 	 */
 	public LevelBackground createBackground(int height) {
 		ResolutionResource resolution = getClosestLoadedResolutionResource(height);
-		return new LevelBackground(resolution.getDependencise()[0]);
+		return new LevelBackground(resolution.getDependencies()[0]);
 	}
 
 	/**
