@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.user.AccountChangeResponse.AccountChangeSt
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LogoutMethod;
-import com.spiddekauga.voider.network.user.LogoutResponse;
 import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -25,7 +24,7 @@ public class UserRepo extends Repo {
 	 * Private constructor to enforce singleton pattern
 	 */
 	private UserRepo() {
-		// TODO auto-generated method
+		// Does nothing
 	}
 
 	/**
@@ -59,9 +58,13 @@ public class UserRepo extends Repo {
 
 	/**
 	 * Tries to logout the current user
+	 * @param keepUser when true it will keep the last logged in user.
 	 * @param responseListeners listens to the web response
 	 */
-	void logout(IResponseListener... responseListeners) {
+	void logout(boolean keepUser, IResponseListener... responseListeners) {
+		if (!keepUser) {
+			mLocalRepo.removeLastUser();
+		}
 		mWebRepo.logout(addToFront(responseListeners, this));
 	}
 
@@ -129,7 +132,7 @@ public class UserRepo extends Repo {
 		}
 		// Logout
 		else if (method instanceof LogoutMethod) {
-			handleLogout((LogoutMethod) method, (LogoutResponse) response);
+			// Does nothing
 		}
 		// Account Change
 		else if (method instanceof AccountChangeMethod) {
@@ -149,11 +152,6 @@ public class UserRepo extends Repo {
 		if (response.isSuccessful() && response.privateKey != null) {
 			mLocalRepo.setLastUser(response.username, response.privateKey, response.userKey);
 		}
-	}
-
-	private void handleLogout(LogoutMethod method, LogoutResponse response) {
-		// Always clear last user
-		mLocalRepo.removeLastUser();
 	}
 
 	private void handleAccountChange(AccountChangeMethod method, AccountChangeResponse response) {

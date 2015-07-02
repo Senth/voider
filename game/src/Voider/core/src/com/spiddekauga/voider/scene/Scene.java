@@ -22,6 +22,7 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
@@ -97,8 +98,23 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 				mGui.initGui();
 			}
 			// INI - reload
-			if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F2) {
+			else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F2) {
 				ConfigIni.getInstance().reload();
+			} else if (keycode == Input.Keys.F5) {
+				if (KeyHelper.isCtrlPressed()) {
+
+				} else if (KeyHelper.isShiftPressed()) {
+					SceneSwitcher.switchTo(new PrototypeScene());
+				} else {
+					throw new RuntimeException("Test Bug Report");
+				}
+			} else if (keycode == Input.Keys.F6) {
+			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
+			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
+			} else if (keycode == Input.Keys.F7) {
+			} else if (keycode == Input.Keys.F10) {
+			} else if (keycode == Input.Keys.F11) {
+			} else if (keycode == Input.Keys.F12) {
 			}
 		}
 
@@ -153,15 +169,10 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 	}
 
-	/**
-	 * Report an exception
-	 * @param exception the exception that was thrown
-	 */
 	@Override
-	public synchronized void handleException(Exception exception) {
+	public synchronized void handleException(Exception exception, boolean endScene) {
 		if (mGui.isInitialized()) {
-			UiFactory.getInstance().msgBox.bugReport(exception);
-			mAnalyticsRepo.endSession();
+			UiFactory.getInstance().msgBox.bugReport(exception, endScene);
 		}
 	}
 

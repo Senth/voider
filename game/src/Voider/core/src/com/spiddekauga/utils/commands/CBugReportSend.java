@@ -34,19 +34,13 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * Creates a command that will send a bug report.
 	 * @param gui the GUI to show progress and success on
 	 * @param exception the exception that was thrown
+	 * @param endScene TODO
 	 */
-	public CBugReportSend(Gui gui, Exception exception) {
+	public CBugReportSend(Gui gui, Exception exception, boolean endScene) {
 		mGui = gui;
 		mException = exception;
+		mEndScene = endScene;
 		createBugReportEntity();
-	}
-
-	/**
-	 * Creates a command that will send a bug report.
-	 * @param gui GUI to show progress and success on
-	 */
-	public CBugReportSend(Gui gui) {
-		this(gui, null);
 	}
 
 	/**
@@ -131,27 +125,12 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * @param response server's method response
 	 */
 	private void handleBugReportResponse(BugReportResponse response) {
+		mGui.hideWaitWindow();
 		if (response.status.isSuccessful()) {
-			// Message box
-			MsgBoxExecuter msgBox = UiFactory.getInstance().msgBox.add("Success");
-			msgBox.content(Messages.Info.BUG_REPORT_SENT);
-
-			// Exception, quit the game
-			if (mBugReport.type == BugReportTypes.BUG_EXCEPTION) {
-				Command quitGame = new CGameQuit();
-				msgBox.button("Quit game", quitGame);
-				msgBox.key(Input.Keys.ESCAPE, quitGame);
-				msgBox.key(Input.Keys.ENTER, quitGame);
-				msgBox.key(Input.Keys.BACK, quitGame);
-			}
-			// Continue with the game
-			else {
-				msgBox.addCancelButtonAndKeys("OK");
-			}
-
-			mGui.hideWaitWindow();
+			showSentMessage("Success", Messages.Info.BUG_REPORT_SENT);
 		} else {
 			saveBugReportLocally();
+			showSentMessage("Failed to Send Bug Report!", Messages.Info.BUG_REPORT_SAVED_LOCALLY);
 		}
 	}
 
@@ -185,21 +164,27 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 */
 	private void saveBugReportLocally() {
 		mResourceRepo.save(new BugReportDef(mBugReport));
+	}
 
+	/**
+	 * Show message box for sent report
+	 * @param title
+	 * @param message
+	 */
+	private void showSentMessage(String title, String message) {
 		// Message box
-		MsgBoxExecuter msgBox = UiFactory.getInstance().msgBox.add("Failed To Send Bug Report");
-		msgBox.content(Messages.Info.BUG_REPORT_SAVED_LOCALLY);
-		if (mBugReport.type == BugReportTypes.BUG_EXCEPTION) {
-			Command quitGame = new CGameQuit();
-			msgBox.button("Quit game", quitGame);
-			msgBox.key(Input.Keys.ESCAPE, quitGame);
-			msgBox.key(Input.Keys.ENTER, quitGame);
-			msgBox.key(Input.Keys.BACK, quitGame);
-		} else {
-			msgBox.addCancelButtonAndKeys("OK");
-		}
+		MsgBoxExecuter msgBox = UiFactory.getInstance().msgBox.add(title);
+		msgBox.content(message);
 
-		mGui.hideWaitWindow();
+		if (mEndScene) {
+			Command command = new CSceneEnd();
+			msgBox.button("OK", command);
+			msgBox.key(Input.Keys.ESCAPE, command);
+			msgBox.key(Input.Keys.ENTER, command);
+			msgBox.key(Input.Keys.BACK, command);
+		} else {
+			msgBox.addCancelButtonAndKeys("Continue");
+		}
 	}
 
 	/**
@@ -270,14 +255,10 @@ public class CBugReportSend extends Command implements IResponseListener {
 		mBugReport.type = bugReportType;
 	}
 
-	/** If the bug report should be sent anonymously */
+	private boolean mEndScene;
 	private boolean mSendAnonymously = false;
-	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
-	/** The exception to send */
 	private Exception mException;
-	/** The network entity to send */
 	private BugReportEntity mBugReport = null;
-	/** GUI to show success / progress on */
 	private Gui mGui;
 }

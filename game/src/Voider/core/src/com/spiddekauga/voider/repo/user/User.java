@@ -76,7 +76,7 @@ public class User {
 		// Update user path
 		if (this == mGlobalUser) {
 			if (isOnline()) {
-				UserRepo.getInstance().logout();
+				UserRepo.getInstance().logout(false);
 			}
 
 			mEmail = null;

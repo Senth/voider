@@ -14,8 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.CBugReportSend;
-import com.spiddekauga.utils.commands.CGameQuit;
 import com.spiddekauga.utils.commands.CRun;
+import com.spiddekauga.utils.commands.CSceneEnd;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -26,6 +26,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Menu.IC_Time;
+import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
@@ -36,6 +37,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
@@ -169,14 +171,15 @@ public class MsgBoxFactory {
 	 * Show a custom bug report window
 	 */
 	public void bugReport() {
-		bugReport(null);
+		bugReport(null, false);
 	}
 
 	/**
 	 * Show a bug report window
 	 * @param exception the exception that was thrown, null if no exception was thrown
+	 * @param endScene true if we should end the scene
 	 */
-	public void bugReport(final Exception exception) {
+	public void bugReport(final Exception exception, boolean endScene) {
 		MsgBoxExecuter msgBox = exception != null ? add("Bug Report") : add("Bug Report / Feature Request");
 
 		AlignTable content = new AlignTable();
@@ -189,7 +192,7 @@ public class MsgBoxFactory {
 		left.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 
-		final CBugReportSend bugReportSend = new CBugReportSend(SceneSwitcher.getGui(), exception);
+		final CBugReportSend bugReportSend = new CBugReportSend(SceneSwitcher.getGui(), exception, endScene);
 
 		// Info text
 		if (exception == null) {
@@ -319,8 +322,15 @@ public class MsgBoxFactory {
 		msgBox.content(content);
 
 		if (exception != null) {
-			msgBox.button("Quit Game", new CGameQuit());
-			msgBox.button("Send and Quit Game", bugReportSend);
+
+			// Set next scene as MainMenu if we're there
+			Scene currentScene = SceneSwitcher.getActiveScene(false);
+			if (currentScene instanceof MainMenu) {
+				currentScene.setNextScene(new MainMenu());
+			}
+
+			msgBox.button("Continue", new CSceneEnd());
+			msgBox.button("Send and Continue", bugReportSend);
 		} else {
 			msgBox.button("Cancel");
 			msgBox.button("Send", bugReportSend, validateDescriptionLength, validateSubjectLength);

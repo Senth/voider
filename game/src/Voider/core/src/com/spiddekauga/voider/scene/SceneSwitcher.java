@@ -14,7 +14,9 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.BulletDestroyer;
+import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceCorruptException;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
@@ -255,6 +257,15 @@ public class SceneSwitcher {
 		}
 
 		return activeScene;
+	}
+
+	/**
+	 * Checks if the active scene is of the specified type
+	 * @param clazz class of the active scene
+	 * @return true if the active scene is of the specified type
+	 */
+	public static boolean isActiveScene(Class<?> clazz) {
+		return !mScenes.isEmpty() && mScenes.peek().getClass().equals(clazz);
 	}
 
 	/**
@@ -534,15 +545,27 @@ public class SceneSwitcher {
 	 * @param exception the exception to handle
 	 */
 	private static void handleException(RuntimeException exception) {
-		boolean handleException = Config.Debug.EXCEPTION_HANDLER && !mScenes.isEmpty();
+		boolean handleException = !mScenes.isEmpty();
 		if (handleException) {
 			Scene currentScene = mScenes.peek();
 
-			if (currentScene.isInitialized()) {
-				currentScene.handleException(exception);
-			} else {
+			// End non-initialized scenes
+			while (!currentScene.isInitialized() && mScenes.size() > 1) {
+				popCurrentScene();
+				currentScene = mScenes.peek();
+			}
+
+			// Special cases to just quit
+			if (!currentScene.isInitialized() || currentScene instanceof LoginScene) {
 				throw exception;
 			}
+			// Show exception in console
+			else if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
+				exception.printStackTrace();
+			}
+
+			currentScene.handleException(exception, true);
+
 		} else {
 			throw exception;
 		}
@@ -684,7 +707,7 @@ public class SceneSwitcher {
 	 */
 	public static void handleException(Exception exception) {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().handleException(exception);
+			mScenes.peek().handleException(exception, false);
 		}
 	}
 

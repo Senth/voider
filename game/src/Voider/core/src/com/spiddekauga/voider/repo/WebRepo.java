@@ -404,7 +404,7 @@ public abstract class WebRepo {
 
 				mWebRepo.handleResponse(mMethodEntity, response, mResponseListeners);
 			} catch (RuntimeException e) {
-				if (Config.Debug.EXCEPTION_HANDLER && !(mMethodEntity instanceof BugReportMethod)) {
+				if (!(mMethodEntity instanceof BugReportMethod)) {
 					SceneSwitcher.handleException(e);
 				} else {
 					throw e;

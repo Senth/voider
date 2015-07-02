@@ -272,6 +272,8 @@ public enum ClientVersions {
 			"	Level Background is now rendered correctly in the editor when zoomed in"
 			),
 	V0_5_12(false,
+			"Improvements",
+			"	Can continue playing the game after an error (doesn't force quit the game)",
 			"Bug Fixes",
 			"	Reset password now works again"
 			),
