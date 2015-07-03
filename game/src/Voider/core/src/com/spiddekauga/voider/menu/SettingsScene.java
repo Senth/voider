@@ -4,6 +4,7 @@ import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.repo.PrefsGateway;
 import com.spiddekauga.voider.repo.SqliteGateway;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.user.User;
 
@@ -154,6 +155,21 @@ public class SettingsScene extends MenuScene {
 	 */
 	Resolution getResolutionWindowed() {
 		return mSettingRepo.display().getResolutionWindowed();
+	}
+
+	/**
+	 * Sets the UI/icon size of the game
+	 * @param iconSize
+	 */
+	void setIconSize(IconSizes iconSize) {
+		mSettingRepo.display().setIconSize(iconSize);
+	}
+
+	/**
+	 * @return current icon size
+	 */
+	IconSizes getIconSize() {
+		return mSettingRepo.display().getIconSize();
 	}
 
 	/**

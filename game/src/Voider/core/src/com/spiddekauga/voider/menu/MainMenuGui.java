@@ -146,6 +146,7 @@ class MainMenuGui extends MenuGui {
 
 		// Bug Report
 		button = mUiFactory.button.addImage(SkinNames.General.PANEL_BUG, table, null, null);
+		mUiFactory.button.addSound(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -155,6 +156,7 @@ class MainMenuGui extends MenuGui {
 
 		// Reddit
 		button = mUiFactory.button.addImage(SkinNames.General.PANEL_REDDIT, table, null, null);
+		mUiFactory.button.addSound(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
@@ -176,13 +178,13 @@ class MainMenuGui extends MenuGui {
 
 		// Options
 		button = mUiFactory.button.addImage(SkinNames.General.PANEL_SETTINGS, table, null, null);
+		mUiFactory.button.addSound(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
 				mScene.gotoScene(Scenes.SETTINGS);
 			}
 		};
-		mUiFactory.button.addSound(button);
 	}
 
 	/**

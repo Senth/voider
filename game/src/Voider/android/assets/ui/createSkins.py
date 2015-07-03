@@ -53,6 +53,9 @@ def fixValues(filename, multiplier):
         else:
             break
 
+    skinFile = open(filename, 'w')
+    skinFile.write(skinString)
+
 
 SKINS_TO_CREATE = ['general', 'editor', 'game']
 DENSITY_BUCKETS = [DensityBucket('-mdpi', 1), DensityBucket('-hdpi', 1.5), DensityBucket('-xhdpi', 2)]

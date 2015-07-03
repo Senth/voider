@@ -760,23 +760,14 @@ public class SkinNames {
 		/** Check box that uses the radio button style */
 		CHECK_BOX_RADIO(CheckBoxStyle.class, "radio"),
 		CREATE,
-		/** Image button default */
 		IMAGE_BUTTON_DEFAULT("default"),
-		/** Stub image button */
 		IMAGE_BUTTON_STUB("stub"),
-		/** Stub togglable image button */
 		IMAGE_BUTTON_STUB_TOGGLE("stub_toggle"),
-		/** Image button toggle */
 		IMAGE_BUTTON_TOGGLE("toggle"),
-		/** Default label */
 		LABEL_DEFAULT(LabelStyle.class, "default"),
-		/** Error messages style */
 		LABEL_ERROR(LabelStyle.class, "error"),
-		/** Label for highlights */
 		LABEL_HIGHLIGHT(LabelStyle.class, "highlight"),
-		/** Label for warnings */
 		LABEL_WARNING(LabelStyle.class, "warning"),
-		/** Success messages */
 		LABEL_SUCCESS(LabelStyle.class, "success"),
 		/** Panel section label style */
 		LABEL_PANEL_SECTION(LabelStyle.class, "panel_section"),
@@ -884,6 +875,9 @@ public class SkinNames {
 		CHANGELOG_BIG,
 		INFO_BIG,
 		CONTINUE,
+		ICON_SIZE_SMALL,
+		ICON_SIZE_MEDIUM,
+		ICON_SIZE_LARGE,
 
 
 		;

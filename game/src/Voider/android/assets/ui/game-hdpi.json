@@ -2,9 +2,9 @@
 /**
  * ------------------------------- NOTE! --------------------------------------
  * In ONLY edit the -template.json file. Everything else will be replaced.
- * Variables (length and sizes) to be scaled place them inside ${0} for them
- * to scale correctly. The value in ${0} is the default for mdpi (no scaling)
- * For example the value of ${16} will be scaled to ${32} in xhdpi
+ * Variables (length and sizes) to be scaled place them inside 0 for them
+ * to scale correctly. The value in 0 is the default for mdpi (no scaling)
+ * For example the value of 24 will be scaled to 48 in xhdpi
  */
 
 /* Variables */

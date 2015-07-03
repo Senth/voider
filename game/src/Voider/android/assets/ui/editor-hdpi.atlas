@@ -25,13 +25,6 @@ add_move_corner_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_add_move_corner_down
-  rotate: false
-  xy: 198, 461
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 terrain_add_move_corner_checked
   rotate: false
   xy: 198, 461
@@ -40,6 +33,13 @@ terrain_add_move_corner_checked
   offset: 0, 0
   index: -1
 add_move_corner_down
+  rotate: false
+  xy: 198, 461
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+terrain_add_move_corner_down
   rotate: false
   xy: 198, 461
   size: 48, 48
@@ -794,14 +794,14 @@ draw_erase_down
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_draw_erase_checked
+terrain_draw_erase_down
   rotate: false
   xy: 302, 211
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_draw_erase_down
+terrain_draw_erase_checked
   rotate: false
   xy: 302, 211
   size: 48, 48
@@ -815,14 +815,14 @@ draw_erase_checked_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_draw_erase_over
+draw_erase_over
   rotate: false
   xy: 352, 261
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-draw_erase_over
+terrain_draw_erase_over
   rotate: false
   xy: 352, 261
   size: 48, 48
@@ -1963,14 +1963,14 @@ path_tab_down
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_tab_checked
+path_add_down
   rotate: false
   xy: 752, 111
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_add_down
+path_tab_checked
   rotate: false
   xy: 752, 111
   size: 48, 48
@@ -2383,13 +2383,6 @@ remove_corner_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_remove_corner_down
-  rotate: false
-  xy: 1348, 461
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 remove_corner_down
   rotate: false
   xy: 1348, 461
@@ -2398,6 +2391,13 @@ remove_corner_down
   offset: 0, 0
   index: -1
 terrain_remove_corner_checked
+  rotate: false
+  xy: 1348, 461
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+terrain_remove_corner_down
   rotate: false
   xy: 1348, 461
   size: 48, 48
@@ -2418,14 +2418,14 @@ terrain_remove_corner_checked_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-remove_corner_over
+terrain_remove_corner_over
   rotate: false
   xy: 852, 11
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_remove_corner_over
+remove_corner_over
   rotate: false
   xy: 852, 11
   size: 48, 48
@@ -2502,7 +2502,7 @@ run_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
-run_down
+run_from_start_checked
   rotate: false
   xy: 1250, 361
   size: 48, 48
@@ -2516,7 +2516,7 @@ run_from_start_down
   orig: 48, 48
   offset: 0, 0
   index: -1
-run_from_start_checked
+run_down
   rotate: false
   xy: 1250, 361
   size: 48, 48
@@ -2530,14 +2530,14 @@ run_checked_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-run_over
+run_from_start_over
   rotate: false
   xy: 1300, 411
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-run_from_start_over
+run_over
   rotate: false
   xy: 1300, 411
   size: 48, 48

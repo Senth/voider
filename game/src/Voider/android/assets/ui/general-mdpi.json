@@ -2,16 +2,17 @@
 /**
  * ------------------------------- NOTE! --------------------------------------
  * In ONLY edit the -template.json file. Everything else will be replaced.
- * Variables (length and sizes) to be scaled place them inside ${0} for them
- * to scale correctly. The value in ${0} is the default for mdpi (no scaling)
- * For example the value of ${16} will be scaled to ${32} in xhdpi
+ * Variables (length and sizes) to be scaled place them inside 0 for them
+ * to scale correctly. The value in 0 is the default for mdpi (no scaling)
+ * For example the value of 16 will be scaled to 32 in xhdpi
  */
 
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	default_font: { file: default${16}.fnt },
-	default12: { file: default${12}.fnt },
-	default16: { file: default${16}.fnt },
-	default36: { file: default${36}.fnt },
+	default_font: { file: default16.fnt },
+	default12: { file: default12.fnt },
+	default16: { file: default16.fnt },
+	default24: { file: default24.fnt },
+	default36: { file: default36.fnt },
 },
 
 /*
@@ -60,31 +61,31 @@ java.lang.Float: {
 	/** Explore / Load */
 	
 	// Tag bar width
-	tag_bar_width: {value: ${160}},
+	tag_bar_width: {value: 160},
 	// Maximum size of enemies/bullets on load screen (i.e. the image button) 
-	load_actor_size_max: {value: ${80}},
+	load_actor_size_max: {value: 80},
 	
 	
 	/** Padding - General UI */
 	
 	// Padding between some buttons
-	padding_buttons: {value: ${4}},
+	padding_buttons: {value: 4},
 	// Used to separate group of widgets, e.g. tool groups
-	padding_separator: {value: ${32}},
+	padding_separator: {value: 32},
 	// Padding after a label before other text, slider, or text field.
 	// E.g. between : and [ in Name: [___]
-	padding_label_after: {value: ${8}},
+	padding_label_after: {value: 8},
 	// Outer padding
-	padding_outer: {value: ${4}},
+	padding_outer: {value: 4},
 	// Inner padding
-	padding_inner: {value: ${12}},
+	padding_inner: {value: 12},
 	// Padding between radio or checkbox buttons
-	padding_checkbox: {value: ${12}},
+	padding_checkbox: {value: 12},
 	// Padding between checkbox icon and text
-	padding_checkbox_text: {value: ${4}},
+	padding_checkbox_text: {value: 4},
 	// Transparent button padding (so text doesn't touch the borders)
 	// This is padding on all sides
-	padding_transparent_text_button: {value: ${2}},
+	padding_transparent_text_button: {value: 2},
 	// Top padding on a new paragraph
 	padding_paragraph: padding_inner,
 	
@@ -92,39 +93,39 @@ java.lang.Float: {
 	/** Padding - Explore/Load */
 	
 	// Padding between rows
-	padding_explore: {value: ${16}},
+	padding_explore: {value: 16},
 	
 	
 	/** General UI sizes */
 	
 	// Width of the right panel in explore and editors
-	right_panel_width: {value: ${240}},
+	right_panel_width: {value: 240},
 	// Text field for slider
-	text_field_number_width: {value: ${48}},
+	text_field_number_width: {value: 48},
 	// Slider text width/max size
-	slider_label_width: {value: ${70}},
+	slider_label_width: {value: 70},
 	// Text field default width
 	text_field_width: right_panel_width,
 	// Text area height
-	text_area_height: {value: ${80}},
+	text_area_height: {value: 80},
 	// Standard icon and row height
-	row_height: {value: ${32}},
+	row_height: {value: 32},
 	// Row height for label sections
-	row_height_section: {value: ${32}},
+	row_height_section: {value: 32},
 	// Height of upper and lower bars.
-	bar_upper_lower_height: {value: ${40}},	
+	bar_upper_lower_height: {value: 40},	
 	// Text button height
-	text_button_height: {value: ${40}},
+	text_button_height: {value: 40},
 	// Default text button width
-	text_button_width: {value: ${120}},
+	text_button_width: {value: 120},
 	
 	
 	/** Settings */
 	
 	// Width of settings window
-	settings_width: {value: ${420}},
+	settings_width: {value: 420},
 	// Height of settings window
-	settings_height: {value: ${315}},
+	settings_height: {value: 315},
 	
 	
 	/** Notifications */
@@ -140,15 +141,15 @@ java.lang.Float: {
 	
 	
 	/** Score screen */
-	score_screen_width: {value: ${480}},
+	score_screen_width: {value: 480},
 	// Row height of "My Score" and "My Highscore" text
-	score_label_height: {value: ${40}},
+	score_label_height: {value: 40},
 	
 	
 	/** Highscore screen */
 	
-	highscore_screen_width: {value: ${420}},
-	highscore_placement_width: {value: ${64}},
+	highscore_screen_width: {value: 420},
+	highscore_placement_width: {value: 64},
 	
 	
 	/** Other */
@@ -543,6 +544,30 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: settings_debug_down,
 		imageChecked: settings_debug_checked,
 		imageCheckedOver: settings_debug_checked_over,
+	}
+	
+	icon_size_small: {
+		imageUp: icon_size_small,
+		imageOver: icon_size_small_over,
+		imageDown: icon_size_small_down,
+		imageChecked: icon_size_small_checked,
+		imageCheckedOver: icon_size_small_checked_over,
+	}
+	
+	icon_size_medium: {
+		imageUp: icon_size_medium,
+		imageOver: icon_size_medium_over,
+		imageDown: icon_size_medium_down,
+		imageChecked: icon_size_medium_checked,
+		imageCheckedOver: icon_size_medium_checked_over,
+	}
+	
+	icon_size_large: {
+		imageUp: icon_size_large,
+		imageOver: icon_size_large_over,
+		imageDown: icon_size_large_down,
+		imageChecked: icon_size_large_checked,
+		imageCheckedOver: icon_size_large_checked_over,
 	}
 	
 	

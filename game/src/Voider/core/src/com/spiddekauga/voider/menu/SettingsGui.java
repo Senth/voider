@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Disposable;
@@ -12,6 +13,7 @@ import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.ButtonEnumListener;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
@@ -21,6 +23,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
+import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
@@ -204,6 +207,24 @@ public class SettingsGui extends MenuGui {
 				table);
 		mWidgets.display.showFullscreenResolution.addButton(mWidgets.display.fullscreen);
 		mWidgets.display.showWindowedResolution.addButton(mWidgets.display.fullscreen);
+
+
+		// Icon sizes
+		mUiFactory.text.addSection("UI & Icon Size", table, null);
+		table.row();
+		mUiFactory.button.addEnumButton(IconSizes.SMALL, SkinNames.General.ICON_SIZE_SMALL, null, table, mWidgets.display.iconSizes);
+		mUiFactory.button.addEnumButton(IconSizes.MEDIUM, SkinNames.General.ICON_SIZE_MEDIUM, null, table, mWidgets.display.iconSizes);
+		mUiFactory.button.addEnumButton(IconSizes.LARGE, SkinNames.General.ICON_SIZE_LARGE, null, table, mWidgets.display.iconSizes);
+		new ButtonGroup<ImageButton>(mWidgets.display.iconSizes);
+		new ButtonEnumListener<IconSizes>(mWidgets.display.iconSizes, IconSizes.values()) {
+			@Override
+			protected void onPressed(Button button) {
+				IconSizes iconSize = getCheckedFirst();
+				if (iconSize != null) {
+					mScene.setIconSize(iconSize);
+				}
+			}
+		};
 	}
 
 	/**
@@ -284,6 +305,7 @@ public class SettingsGui extends MenuGui {
 			mWidgets.display.fullscreen.setChecked(mScene.isFullscreen());
 			mWidgets.display.resolutionFullscreen.setSelected(mScene.getResolutionFullscreen());
 			mWidgets.display.resolutionWindowed.setSelected(mScene.getResolutionWindowed());
+			mWidgets.display.iconSizes[mScene.getIconSize().ordinal()].setChecked(true);
 		}
 	}
 
@@ -343,6 +365,7 @@ public class SettingsGui extends MenuGui {
 			SelectBox<Resolution> resolutionFullscreen = null;
 			SelectBox<Resolution> resolutionWindowed = null;
 			Button fullscreen = null;
+			ImageButton[] iconSizes = new ImageButton[IconSizes.values().length];
 
 			private Display() {
 				init();

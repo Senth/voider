@@ -2,14 +2,14 @@
 /**
  * ------------------------------- NOTE! --------------------------------------
  * In ONLY edit the -template.json file. Everything else will be replaced.
- * Variables (length and sizes) to be scaled place them inside ${0} for them
- * to scale correctly. The value in ${0} is the default for mdpi (no scaling)
- * For example the value of ${16} will be scaled to ${32} in xhdpi
+ * Variables (length and sizes) to be scaled place them inside 0 for them
+ * to scale correctly. The value in 0 is the default for mdpi (no scaling)
+ * For example the value of 32 will be scaled to 64 in xhdpi
  */
 
 java.lang.Float: {
 	// Padding between upper bar and tools in various editors
-	padding_between_bar_and_tools: {value: ${40}},
+	padding_between_bar_and_tools: {value: 80},
 	// Outline width for enemies that are displayed as 'will activate' when test
 	// running the level. See Color.enemy_activate_test_run_outline_color
 	// DEPRECATED

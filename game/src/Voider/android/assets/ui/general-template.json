@@ -11,6 +11,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	default_font: { file: default${16}.fnt },
 	default12: { file: default${12}.fnt },
 	default16: { file: default${16}.fnt },
+	default24: { file: default${24}.fnt },
 	default36: { file: default${36}.fnt },
 },
 
@@ -543,6 +544,30 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: settings_debug_down,
 		imageChecked: settings_debug_checked,
 		imageCheckedOver: settings_debug_checked_over,
+	}
+	
+	icon_size_small: {
+		imageUp: icon_size_small,
+		imageOver: icon_size_small_over,
+		imageDown: icon_size_small_down,
+		imageChecked: icon_size_small_checked,
+		imageCheckedOver: icon_size_small_checked_over,
+	}
+	
+	icon_size_medium: {
+		imageUp: icon_size_medium,
+		imageOver: icon_size_medium_over,
+		imageDown: icon_size_medium_down,
+		imageChecked: icon_size_medium_checked,
+		imageCheckedOver: icon_size_medium_checked_over,
+	}
+	
+	icon_size_large: {
+		imageUp: icon_size_large,
+		imageOver: icon_size_large_over,
+		imageDown: icon_size_large_down,
+		imageChecked: icon_size_large_checked,
+		imageCheckedOver: icon_size_large_checked_over,
 	}
 	
 	

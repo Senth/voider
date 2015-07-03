@@ -528,8 +528,7 @@ public class SettingRepo extends Repo {
 
 		private IconSizes(DensityBuckets densityBucket) {
 			mDensityBucket = densityBucket;
-			mName = name().substring(0, 1) + name().substring(1).toLowerCase();
-			mName = mName.replace("_", " ");
+			mName = name().toLowerCase().replace("_", " ");
 		}
 
 		@Override
