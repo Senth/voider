@@ -1,7 +1,6 @@
 #!/bin/bash
 
 CAN_SYNC=('ui' 'ui-raw' 'gfx' 'txt' 'export' 'music' 'sfx' 'backgrounds' 'backgrounds-raw')
-UI_RAW=('general' 'game' 'editor' 'credits')
 DROPBOX_DIR="$HOME/Dropbox"
 DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider/Voider - editable resources/internal_resources"
 DROPBOX_UI_RAW_DIR="$DROPBOX_ASSET_DIR/ui-editable"
@@ -62,10 +61,11 @@ fi
 
 
 syncUiRaw() {
-	for ui_dir in "${UI_RAW[@]}"
+	for dir in "$DROPBOX_UI_RAW_DIR/"*
 	do
-		rm -rf "$GIT_UI_RAW_DIR/$ui_dir"
-		cp -rv "$DROPBOX_UI_RAW_DIR/$ui_dir" "$GIT_UI_RAW_DIR"
+		ui_name=$(basename "$dir")
+		rm -rf "$GIT_UI_RAW_DIR/$ui_name"
+		cp -rv "$dir" "$GIT_UI_RAW_DIR"
 	done
 }
 
