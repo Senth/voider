@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -25,7 +26,7 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
  * Shows error messages on the screen
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class NotificationShower {
+public class NotificationShower implements Disposable {
 	/**
 	 * Private constructor to enforce singleton pattern
 	 */
@@ -54,6 +55,11 @@ public class NotificationShower {
 
 			mInitialized = true;
 		}
+	}
+
+	@Override
+	public void dispose() {
+		mInitialized = false;
 	}
 
 	/**

@@ -30,9 +30,9 @@ public enum InternalNames {
 	UI_GENERAL_MDPI("ui/general-mdpi.json", Skin.class),
 	UI_GENERAL_HDPI("ui/general-hdpi.json", Skin.class),
 	UI_GENERAL_XHDPI("ui/general-xhdpi.json", Skin.class),
-	UI_GAME_MDPI("ui/game.json-mdpi", Skin.class),
-	UI_GAME_HDPI("ui/game.json-hdpi", Skin.class),
-	UI_GAME_XHDPI("ui/game.json-xhdpi", Skin.class),
+	UI_GAME_MDPI("ui/game-mdpi.json", Skin.class),
+	UI_GAME_HDPI("ui/game-hdpi.json", Skin.class),
+	UI_GAME_XHDPI("ui/game-xhdpi.json", Skin.class),
 	UI_CREDITS("ui/credits.json", Skin.class),
 
 	// Themes / Backgrounds
@@ -136,9 +136,7 @@ public enum InternalNames {
 
 	/** Optional parameters */
 	private AssetLoaderParameters<?> mParameters = null;
-	/** Filename of the resource */
 	private final String mFilename;
-	/** The resource class type */
 	private final Class<?> mType;
 
 

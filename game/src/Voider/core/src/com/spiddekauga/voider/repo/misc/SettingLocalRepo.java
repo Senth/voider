@@ -11,6 +11,8 @@ import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.InternalDeps;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -328,11 +330,16 @@ class SettingLocalRepo {
 		 * @param iconSize set the icon size
 		 */
 		void setIconSize(IconSizes iconSize) {
-			// TODO Unload the old
+			if (iconSize != getIconSize()) {
+				int[] cLoads = ResourceCacheFacade.unloadAll(InternalDeps.UI_ALL);
 
-			mClientPrefsGateway.setIconSize(iconSize);
+				mClientPrefsGateway.setIconSize(iconSize);
 
-			// TODO load the new icon size
+				ResourceCacheFacade.load(InternalDeps.UI_ALL, cLoads);
+				ResourceCacheFacade.finishLoading();
+
+				SceneSwitcher.reloadUi();
+			}
 		}
 
 		/**

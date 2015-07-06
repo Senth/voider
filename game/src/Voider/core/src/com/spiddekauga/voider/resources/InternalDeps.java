@@ -102,6 +102,8 @@ public enum InternalDeps {
 	/** All resolution specific dependencies */
 	private IInternalResource[] mResources = null;
 
+	/** All UI elements */
+	public final static InternalDeps[] UI_ALL = { UI_GENERAL, UI_GAME, UI_EDITOR, UI_CREDITS };
 
 	static {
 		// Add all level backgrounds

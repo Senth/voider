@@ -274,6 +274,10 @@ public enum ClientVersions {
 	V0_5_12(false,
 			"Improvements",
 			"	Can continue playing the game after an error (doesn't force quit the game)",
+			"	UI Size",
+			"		Mobile devices display larger UI",
+			"		Desktop can change the UI size in settings",
+			"		Only row-res images are currently available",
 			"Bug Fixes",
 			"	Reset password now works again"
 			),

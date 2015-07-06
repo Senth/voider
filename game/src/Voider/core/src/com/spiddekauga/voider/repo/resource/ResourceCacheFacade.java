@@ -297,6 +297,65 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Unload all of the specified resource dependency. This will only work correctly if
+	 * the resources loaded by internalDep was loaded through this method. If any of them
+	 * were loaded with {@link #load(InternalNames)} the program will eventually crash.
+	 * @param internalDeps the internal dependencies to unload
+	 * @return number of times the internalDep was loaded
+	 */
+	public static int[] unloadAll(InternalDeps... internalDeps) {
+		int[] count = new int[internalDeps.length];
+		for (int i = 0; i < internalDeps.length; i++) {
+			count[i] = unloadAll(internalDeps[i]);
+		}
+
+		return count;
+	}
+
+	/**
+	 * Unload all of the specified resource dependency. This will only work correctly if
+	 * the resources loaded by internalDep was loaded through this method. If any of them
+	 * were loaded with {@link #load(InternalNames)} the program will eventually crash.
+	 * @param internalDeps the internal dependencies to unload
+	 * @return number of times the internalDep was loaded
+	 */
+	public static int unloadAll(InternalDeps internalDeps) {
+		int count = 0;
+		for (InternalNames resourceName : internalDeps.getDependencies()) {
+			count = unloadAll(resourceName);
+		}
+
+		return count;
+	}
+
+	/**
+	 * Unload all of the specified resource
+	 * @param resourceName name of the resource
+	 * @return number of instance of resourceName
+	 */
+	public static int unloadAll(InternalNames resourceName) {
+		int count = 0;
+
+		if (isLoaded(resourceName)) {
+			count = mAssetManager.getReferenceCount(resourceName.getFilePath());
+
+			for (int i = 0; i < count; ++i) {
+				// Is this resource currently used?
+				IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resourceName.getType());
+				if (unloadReadyMethod != null) {
+					mUnloadList.add(resourceName);
+				}
+				// Unload directly
+				else {
+					mAssetManager.unload(resourceName.getFilePath());
+				}
+			}
+		}
+
+		return count;
+	}
+
+	/**
 	 * Loads all internal dependencies
 	 * @param internalDeps
 	 */
@@ -323,6 +382,39 @@ public class ResourceCacheFacade {
 		else {
 			String fullPath = resource.getFilePath();
 			mAssetManager.load(fullPath, resource.getType(), resource.getParameters());
+		}
+	}
+
+	/**
+	 * Load all internal dependencies cLoad number of times.
+	 * @param internalDeps the dependencies to load
+	 * @param cLoad how many times we will load the resource
+	 */
+	public static void load(InternalDeps[] internalDeps, int[] cLoad) {
+		for (int i = 0; i < internalDeps.length; i++) {
+			load(internalDeps[i], cLoad[i]);
+		}
+	}
+
+	/**
+	 * Load all internal dependencies cLoad number of times.
+	 * @param internalDep the dependencies to load
+	 * @param cLoad how many times we will load the resource
+	 */
+	public static void load(InternalDeps internalDep, int cLoad) {
+		for (InternalNames resourceName : internalDep.getDependencies()) {
+			load(resourceName, cLoad);
+		}
+	}
+
+	/**
+	 * Load the resource X number of times.
+	 * @param resourceName the resource to load
+	 * @param cLoad how many times we will load the resource
+	 */
+	public static void load(InternalNames resourceName, int cLoad) {
+		for (int i = 0; i < cLoad; ++i) {
+			load(resourceName);
 		}
 	}
 

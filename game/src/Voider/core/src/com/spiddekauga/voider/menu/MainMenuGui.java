@@ -53,6 +53,7 @@ class MainMenuGui extends MenuGui {
 
 	@Override
 	public void dispose() {
+		mWidgets.dispose();
 		super.dispose();
 	}
 
@@ -330,7 +331,10 @@ class MainMenuGui extends MenuGui {
 
 		@Override
 		public void dispose() {
-
+			bottomLeft.dispose();
+			bottomRight.dispose();
+			topRight.dispose();
+			topLeft.dispose();
 		}
 	}
 }

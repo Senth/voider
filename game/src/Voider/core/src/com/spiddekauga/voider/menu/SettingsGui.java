@@ -46,7 +46,6 @@ public class SettingsGui extends MenuGui {
 	@Override
 	public void dispose() {
 		super.dispose();
-
 		mWidgets.dispose();
 	}
 
@@ -73,6 +72,8 @@ public class SettingsGui extends MenuGui {
 		}
 
 		addBackButton();
+
+		resetValues();
 	}
 
 	private void initHeader() {

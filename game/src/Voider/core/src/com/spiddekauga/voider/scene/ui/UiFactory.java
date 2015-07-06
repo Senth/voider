@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.Maths.MagnitudeWrapper;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -55,7 +56,7 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
  * class gets its default settings from general.json
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class UiFactory {
+public class UiFactory implements Disposable {
 	/** Create labels and text */
 	public LabelFactory text = new LabelFactory();
 	/** Create buttons */
@@ -887,14 +888,19 @@ public class UiFactory {
 	 * Initializes the UiFactory
 	 */
 	public void init() {
-		if (mInitialized) {
-			return;
-		}
+		if (!mInitialized) {
+			mStyles = new UiStyles();
+			text.init(mStyles);
+			button.init(mStyles);
+			msgBox.init(mStyles);
 
-		mStyles = new UiStyles();
-		text.init(mStyles);
-		button.init(mStyles);
-		msgBox.init(mStyles);
+			mInitialized = true;
+		}
+	}
+
+	@Override
+	public void dispose() {
+		mInitialized = false;
 	}
 
 	/**

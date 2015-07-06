@@ -21,6 +21,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceCorruptException;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.scene.Scene.Outcomes;
+import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
  * Switches between scenes in an game/app.
@@ -392,6 +393,18 @@ public class SceneSwitcher {
 			return null;
 		} else {
 			return mScenes.peek().getGui().getStage();
+		}
+	}
+
+	/**
+	 * Reinitialize all scenes' UI. Useful to call when UI has changed.
+	 */
+	public static void reloadUi() {
+		UiFactory.getInstance().dispose();
+		NotificationShower.getInstance().dispose();
+		for (Scene scene : mScenes) {
+			scene.getGui().dispose();
+			scene.getGui().initGui();
 		}
 	}
 
