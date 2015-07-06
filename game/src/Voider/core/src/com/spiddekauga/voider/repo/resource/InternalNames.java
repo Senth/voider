@@ -11,6 +11,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.utils.Path;
@@ -76,6 +77,8 @@ public enum InternalNames {
 	// Text files
 	TXT_TERMS("terms.txt", String.class),
 
+	// Font files
+	FONT_ARIAL("arial.ttf", FreeType.class),
 
 	// Music
 	MUSIC_SPACE("space.mp3", Music.class),
@@ -120,6 +123,13 @@ public enum InternalNames {
 	}
 
 	/**
+	 * @return true if loaded
+	 */
+	public boolean isLoaded() {
+		return ResourceCacheFacade.isLoaded(this);
+	}
+
+	/**
 	 * @return stored type of the resource
 	 */
 	Class<?> getType() {
@@ -131,6 +141,11 @@ public enum InternalNames {
 	 */
 	@SuppressWarnings("rawtypes")
 	AssetLoaderParameters getParameters() {
+		if (mParameters instanceof IParameterGenerate) {
+			if (!isLoaded()) {
+				((IParameterGenerate) mParameters).generate();
+			}
+		}
 		return mParameters;
 	}
 
@@ -159,6 +174,7 @@ public enum InternalNames {
 	private static String SOUND_PATH = "sfx/";
 	private static String MUSIC_PATH = "music/";
 	private static String TEXT_PATH = "txt/";
+	private static String FONT_PATH = "fonts/";
 
 
 	static {
@@ -177,6 +193,7 @@ public enum InternalNames {
 				SOUND_PATH = dir + SOUND_PATH;
 				TEXT_PATH = dir + TEXT_PATH;
 				MUSIC_PATH = dir + MUSIC_PATH;
+				FONT_PATH = dir + FONT_PATH;
 			}
 
 
@@ -189,21 +206,26 @@ public enum InternalNames {
 			mResourcePaths.put(Ini.class, TEXT_PATH);
 			mResourcePaths.put(String.class, TEXT_PATH);
 			mResourcePaths.put(Music.class, MUSIC_PATH);
+			mResourcePaths.put(FreeType.class, FONT_PATH);
 		}
 
 
 		// -- Parameters --
-		// Level theme
-		// for (int i = LEVEL_BACKGROUND_CORE_1080.ordinal(); i <=
-		// LEVEL_BACKGROUND_SPACE_120.ordinal(); ++i) {
-		// TextureParameter textureParameter = new TextureParameter();
-		// textureParameter.genMipMaps = false;
-		// textureParameter.wrapU = TextureWrap.Repeat;
-		// textureParameter.wrapV = TextureWrap.Repeat;
-		// textureParameter.minFilter = TextureFilter.Nearest;
-		// textureParameter.minFilter = TextureFilter.Nearest;
-		// InternalNames internalName = InternalNames.values()[i];
-		// internalName.mParameters = textureParameter;
-		// }
+		// Fonts
+		// MDPI
+		SkinFontParameter fontParameter = new SkinFontParameter();
+		fontParameter.addFont(FONT_ARIAL, "default", 12, 16, 24, 36);
+		UI_GENERAL_MDPI.mParameters = fontParameter;
+
+		// HDPI
+		fontParameter = new SkinFontParameter();
+		fontParameter.addFont(FONT_ARIAL, "default", 18, 24, 36, 54);
+		UI_GENERAL_HDPI.mParameters = fontParameter;
+
+		// HDPI
+		fontParameter = new SkinFontParameter();
+		fontParameter.addFont(FONT_ARIAL, "default", 24, 32, 48, 72);
+		UI_GENERAL_XHDPI.mParameters = fontParameter;
+
 	}
 }

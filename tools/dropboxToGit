@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CAN_SYNC=('ui' 'ui-raw' 'gfx' 'txt' 'export' 'music' 'sfx' 'backgrounds' 'backgrounds-raw')
+CAN_SYNC=('ui' 'ui-raw' 'fonts' 'gfx' 'txt' 'export' 'music' 'sfx' 'backgrounds' 'backgrounds-raw')
 DROPBOX_DIR="$HOME/Dropbox"
 DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider/Voider - editable resources/internal_resources"
 DROPBOX_UI_RAW_DIR="$DROPBOX_ASSET_DIR/ui-editable"

@@ -163,12 +163,20 @@ public class MsgBox extends Dialog {
 		setModal(true);
 		setKeepWithinStage(true);
 		setTitle("");
-		setTitleAlignment(Align.center);
+		getTitleTable().align(Align.center);
 		getContentTable().clearChildren();
 		mButtonTable.dispose();
 		mValues.clear();
 		clearActions();
 		clearListeners();
+	}
+
+	/**
+	 * Set title of the message box
+	 * @param title
+	 */
+	public void setTitle(String title) {
+		getTitleLabel().setText("");
 	}
 
 	/**

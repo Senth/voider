@@ -8,11 +8,10 @@
  */
 
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	default_font: { file: default${16}.fnt },
-	default12: { file: default${12}.fnt },
-	default16: { file: default${16}.fnt },
-	default24: { file: default${24}.fnt },
-	default36: { file: default${36}.fnt },
+	small: default${12},
+	medium: default${16},
+	large: default${24},
+	huge: default${36},
 },
 
 /*
@@ -161,49 +160,49 @@ java.lang.Float: {
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
-		font: default_font,
+		font: medium,
 		fontColor: default,
 	},
 	
 	highlight: {
-		font: default_font,
+		font: medium,
 		fontColor: highlight,
 	},
 	
 	warning: {
-		font: default_font,
+		font: medium,
 		fontColor: warning,
 	},
 	
 	error: {
-		font: default_font,
+		font: medium,
 		fontColor: error,
 	},
 	
 	success: {
-		font: default_font,
+		font: medium,
 		fontColor: success,
 	},
 	
 	panel_section: {
-		font: default12,
+		font: small,
 		fontColor: grey_light,
 	},
 	
 	header: {
-		font: default36,
+		font: huge,
 		fontColor: white,
 	},
 	
 	// Extra information, sort of like a comment
 	info_extra: {
-		font: default12,
+		font: small,
 		fontColor: grey_light,
 	}
 	
 	// Default text for text fields - NOT IMPLEMTED YET
 	textfield_default: {
-		font: default_font,
+		font: medium,
 		fontColor: grey_dark,
 	},
 	
@@ -212,7 +211,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	
 	// Name of comment
 	comment_name: {
-		font: default_font,
+		font: medium,
 		fontColor: highlight,
 	},
 	
@@ -225,23 +224,23 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	/** Editor */
 	
 	editor_name: {
-		font: default_font,
+		font: medium,
 		fontColor: grey_light,
 	},
 	
 	tooltip: {
-		font: default_font,
+		font: medium,
 		fontColor: grey_light,
 	},
 	
 	// Label for the publish names 
 	publish_name: {
-		font: default_font,
+		font: medium,
 		fontColor: grey,
 	},
 	
 	path: {
-		font: default_font,
+		font: medium,
 		fontColor: path_color,
 	},
 	
@@ -249,12 +248,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	/** Highscore - My Score */
 	
 	my_score: {
-		font: default36,
+		font: huge,
 		fontColor: highlight,
 	},
 	
 	top_score: {
-		font: default36,
+		font: huge,
 		fontColor: white,
 	},
 	
@@ -264,12 +263,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	// In front of error (usually above/below text fields)
 	// E.g. When trying to register and passwords don't match
 	error_section_info: {
-		font: default_font,
+		font: medium,
 		fontColor: grey_light,
 	},
 	// The error message in the section
 	error_section: {
-		font: default12,
+		font: small,
 		fontColor: error,
 	},
 	
@@ -278,12 +277,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	
 	// Section for credits (e.g. Programming, UI Design, etc.)
 	credit_section: {
-		font: default36,
+		font: huge,
 		fontColor: grey_light,
 	},
 	// Names (e.g. Matteus Magnusson)
 	credit_name: {
-		font: default_font,
+		font: medium,
 		fontColor: white,
 	},
 },
@@ -693,7 +692,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		up: button_default_up,
 		disabled: button_default_disabled,
 		over: button_default_over,
-		font: default_font,
+		font: medium,
 	},
 	// Deprecated
 	toggle: {
@@ -703,7 +702,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
-		font: default_font,
+		font: medium,
 	},
 	
 	/** Transparent */
@@ -713,7 +712,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		up: button_transparent_up,
 		disabled: button_transparent_disabled,
 		over: button_transparent_over,
-		font: default_font,
+		font: medium,
 		fontColor: grey_light,
 		downFontColor: highlight,
 		overFontColor: white,
@@ -726,7 +725,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		disabled: button_transparent_disabled,
 		over: button_transparent_over,
 		checkedOver: button_transparent_checked_over,
-		font: default_font,
+		font: medium,
 		fontColor: grey_light,
 		downFontColor: highlight,
 		overFontColor: white,
@@ -741,7 +740,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		down: button_flat_down,
 		over: button_flat_over,
 		disabled: button_flat_disabled,
-		font: default_font,
+		font: medium,
 	},
 	flat_toggle: {
 		up: button_flat_up,
@@ -750,7 +749,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		disabled: button_flat_disabled,
 		checked: button_flat_checked,
 		checkedOver: button_flat_checked_over,
-		font: default_font,
+		font: medium,
 	},
 	
 	/** Tag button */
@@ -759,12 +758,12 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		down: button_tag_down,
 		up: button_tag_up,
 		over: button_tag_over,
-		font: default36,
+		font: huge,
 	},
 	
 	/** Link */
 	link: {
-		font: default_font,
+		font: medium,
 		fontColor: grey_light,
 		downFontColor: highlight,
 		overFontColor: white,
@@ -776,12 +775,12 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	default: {
 		checkboxOn: checkbox_on,
 		checkboxOff: checkbox_off,
-		font: default_font
+		font: medium
 	},
 	radio: {
 		checkboxOn: radio_button_on,
 		checkboxOff: radio_button_off,
-		font: default_font
+		font: medium
 	}
 },
 
@@ -804,7 +803,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: {
 		selection: selection,
 		background: textfield,
-		font: default_font,
+		font: medium,
 		fontColor: white,
 		disabledFontColor: red,
 		cursor: cursor
@@ -813,20 +812,20 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	default: {
-		titleFont: default_font,
+		titleFont: medium,
 		background: window_background
 	},
 	title: {
-		titleFont: default_font,
+		titleFont: medium,
 		background: window_background_title
 	},
 	modal: {
-		titleFont: default_font,
+		titleFont: medium,
 		stageBackground: modal_fade,
 		background: window_background
 	},
 	modal_title: {
-		titleFont: default_font,
+		titleFont: medium,
 		stageBackground: modal_fade,
 		background: window_background_title
 	}
@@ -850,7 +849,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 	default: {
-		font: default_font,
+		font: medium,
 		fontColorSelected: red,
 		fontColorUnselected: white,
 		selection: selection
@@ -859,7 +858,7 @@ com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	default: {
-		font: default_font,
+		font: medium,
 		background: selectbox_background,
 		scrollStyle: background,
 		listStyle: default,
