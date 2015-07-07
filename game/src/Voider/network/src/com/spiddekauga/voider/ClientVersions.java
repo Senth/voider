@@ -277,9 +277,12 @@ public enum ClientVersions {
 			"	UI Size",
 			"		Mobile devices display larger UI",
 			"		Desktop can change the UI size in settings",
-			"		Only row-res images are currently available",
+			"		Only low-res images are currently available",
 			"Bug Fixes",
 			"	Reset password now works again"
+			),
+	V0_5_13(false,
+			"STUB"
 			),
 	;
 	// @formatter:on
