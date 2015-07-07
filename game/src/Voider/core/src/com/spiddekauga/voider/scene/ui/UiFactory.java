@@ -831,7 +831,7 @@ public class UiFactory implements Disposable {
 		// Header
 		float headerPad = mStyles.vars.paddingParagraph;
 		Label headerLabel = text.addHeader(header, table);
-		table.getCell().setPadBottom(headerPad);
+		table.getCell().setPadBottom(headerPad).setPadLeft(mStyles.vars.rowHeight);
 		headerLabel.validate();
 		float headerHeight = headerLabel.getHeight() + headerPad;
 

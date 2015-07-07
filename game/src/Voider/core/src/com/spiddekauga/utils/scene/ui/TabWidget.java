@@ -589,6 +589,7 @@ public class TabWidget extends AlignTable {
 		mTabTable.remove();
 		mContentOuterTable.remove();
 		mActionTable.remove();
+		super.dispose(false);
 
 		// Add Tab at right position
 		switch (position) {
