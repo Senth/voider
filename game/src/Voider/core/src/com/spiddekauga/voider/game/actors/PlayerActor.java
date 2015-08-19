@@ -1,5 +1,10 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
+import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -136,5 +141,55 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 		}
 	}
 
+	/**
+	 * Start moving the ship
+	 * @param cursorPos cursor position in the world
+	 */
+	public void startMoving(Vector2 cursorPos) {
+		mMoving = true;
+
+		if (mMouseJointDef == null) {
+			Body mouseBody = mWorld.createBody(new BodyDef());
+			mMouseJointDef = getDef(PlayerActorDef.class).createMouseJointDef(mouseBody, getBody());
+		}
+
+		mMoveOffset.set(cursorPos).sub(getPosition());
+		mMouseJointDef.target.set(getPosition());
+		mMouseJoint = (MouseJoint) mWorld.createJoint(mMouseJointDef);
+		getBody().setAwake(true);
+	}
+
+	/**
+	 * Move the ship
+	 * @param cursorPos cursor position in the world
+	 */
+	public void move(Vector2 cursorPos) {
+		if (mMoving) {
+			mMoveTo.set(cursorPos).sub(mMoveOffset);
+			mMouseJoint.setTarget(mMoveTo);
+		}
+	}
+
+	/**
+	 * Stop moving the ship
+	 */
+	public void stopMoving() {
+		mMoving = false;
+		mWorld.destroyJoint(mMouseJoint);
+		mMouseJoint = null;
+	}
+
+	/**
+	 * @return true if we're currently moving the player
+	 */
+	public boolean isMoving() {
+		return mMoving;
+	}
+
 	@Tag(156) private float mInvulnerableTimeLeft = 0;
+	private boolean mMoving = false;
+	private Vector2 mMoveOffset = new Vector2();
+	private Vector2 mMoveTo = new Vector2();
+	private MouseJointDef mMouseJointDef = null;
+	private MouseJoint mMouseJoint = null;
 }

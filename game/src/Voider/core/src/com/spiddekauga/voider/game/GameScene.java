@@ -14,18 +14,11 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
-import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.config.ConfigIni;
-import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -344,7 +337,6 @@ public class GameScene extends WorldScene {
 			mMusicPlayer.play(mLevel.getLevelDef().getMusic(), MusicInterpolations.CROSSFADE);
 
 			createPlayerShip();
-			createMouseJoint();
 			getGui().resetValues();
 		}
 
@@ -408,8 +400,6 @@ public class GameScene extends WorldScene {
 		updateCameraPosition();
 		synchronizeBorder();
 
-		updateMousePosition();
-
 		updateBodyShepherdPositions();
 		mBodyShepherd.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
 
@@ -433,19 +423,13 @@ public class GameScene extends WorldScene {
 			mPlayerActor.kill();
 		}
 
-		// Always force player velocity if we're not picking the player
-		if (!mMovingPlayer) {
-			setPlayerVelocityToLevel();
+		// Update cursor world position and move the ship
+		if (mPlayerActor.isMoving()) {
+			moveShipTo((int) mCursorScreen.x, (int) mCursorScreen.y);
 		}
-	}
-
-	/**
-	 * Update mouse position
-	 */
-	private void updateMousePosition() {
-		if (mMouseBody != null && mMovingPlayer) {
-			screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
-			mMouseJoint.setTarget(mCursorWorld);
+		// Always force player velocity if we're not picking the player
+		else {
+			setPlayerVelocityToLevel();
 		}
 	}
 
@@ -715,22 +699,10 @@ public class GameScene extends WorldScene {
 	// --------------------------------
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
-		// Test if touching player
+		// Set pointer if we're currently not moving the player
 		if (mPlayerPointer == INVALID_POINTER) {
-			mCursorScreen.set(x, y);
-			screenToWorldCoord(mCamera, x, y, mCursorWorld, true);
-
-			mWorld.QueryAABB(mCallback, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f, mCursorWorld.y + 0.0001f);
-
-			if (mMovingPlayer) {
-				mPlayerPointer = pointer;
-
-				mMouseJointDef.target.set(mPlayerActor.getBody().getPosition());
-				mMouseJoint = (MouseJoint) mWorld.createJoint(mMouseJointDef);
-				mPlayerActor.getBody().setAwake(true);
-
-				return true;
-			}
+			startMovingShip(x, y, pointer);
+			return true;
 		}
 
 		return false;
@@ -738,8 +710,8 @@ public class GameScene extends WorldScene {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
-		if (mPlayerPointer == pointer && mMovingPlayer) {
-			mCursorScreen.set(x, y);
+		if (mPlayerPointer == pointer) {
+			moveShipTo(x, y);
 			return true;
 		}
 
@@ -748,18 +720,47 @@ public class GameScene extends WorldScene {
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		if (mPlayerPointer == pointer && mMovingPlayer) {
-			mCursorScreen.set(x, y);
-			mPlayerPointer = INVALID_POINTER;
-			mMovingPlayer = false;
-
-			mWorld.destroyJoint(mMouseJoint);
-			mMouseJoint = null;
-
+		if (mPlayerPointer == pointer) {
+			moveShipTo(x, y);
+			stopMovingShip();
 			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Set the ship offset to the mouse
+	 * @param x
+	 * @param y
+	 * @param pointer which pointer the ship is moving relative to
+	 */
+	private void startMovingShip(int x, int y, int pointer) {
+		mPlayerPointer = pointer;
+
+		mCursorScreen.set(x, y);
+		screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
+		mPlayerActor.startMoving(mCursorWorld);
+	}
+
+	/**
+	 * Move the player ship to the specific location. Note that this will be relative to
+	 * the mouse offset
+	 * @param x
+	 * @param y
+	 */
+	private void moveShipTo(int x, int y) {
+		mCursorScreen.set(x, y);
+		screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
+		mPlayerActor.move(mCursorWorld);
+	}
+
+	/**
+	 * Stop moving the ship
+	 */
+	private void stopMovingShip() {
+		mPlayerPointer = INVALID_POINTER;
+		mPlayerActor.stopMoving();
 	}
 
 	@Override
@@ -807,20 +808,6 @@ public class GameScene extends WorldScene {
 		} else {
 			return 0;
 		}
-	}
-
-	/**
-	 * Creates the mouse joint
-	 */
-	private void createMouseJoint() {
-		IC_Ship.IC_Settings icSettings = ConfigIni.getInstance().editor.ship.settings;
-		BodyDef bodyDef = new BodyDef();
-		mMouseBody = mWorld.createBody(bodyDef);
-		mMouseJointDef.frequencyHz = icSettings.getFrequencyDefault();
-		mMouseJointDef.bodyA = mMouseBody;
-		mMouseJointDef.bodyB = mPlayerActor.getBody();
-		mMouseJointDef.collideConnected = true;
-		mMouseJointDef.maxForce = mPlayerActor.getDef(PlayerActorDef.class).getMouseJointForceMax();
 	}
 
 	/**
@@ -916,7 +903,6 @@ public class GameScene extends WorldScene {
 	private GameSave mGameSave = null;
 	private PlayerActor mPlayerActor;
 	private int mPlayerPointer = INVALID_POINTER;
-	private boolean mMovingPlayer = false;
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
 	private BodyShepherd mBodyShepherd = new BodyShepherd();
 	private Vector2 mBodyShepherdMinPos = new Vector2();
@@ -928,25 +914,8 @@ public class GameScene extends WorldScene {
 	/** Used for next scene if online and the level is published */
 	private HighscoreScene mHighscoreScene = null;
 
-	// MOUSE JOINT
+	// Mouse Joint / Moving Ship
 	private Vector2 mCursorScreen = new Vector2();
-	private MouseJointDef mMouseJointDef = new MouseJointDef();
-	private MouseJoint mMouseJoint = null;
-	private Body mMouseBody = null;
-
-	/** Callback for "ray testing" */
-	private QueryCallback mCallback = new QueryCallback() {
-		@Override
-		public boolean reportFixture(Fixture fixture) {
-			if (fixture.testPoint(mCursorWorld.x, mCursorWorld.y)) {
-				if (fixture.getBody().getUserData() instanceof PlayerActor) {
-					mMovingPlayer = true;
-					return false;
-				}
-			}
-			return true;
-		}
-	};
 
 	// Temporary variables
 	private Vector2 mCursorWorld = new Vector2();

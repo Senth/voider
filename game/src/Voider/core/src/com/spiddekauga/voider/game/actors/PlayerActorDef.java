@@ -1,8 +1,12 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
+import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
@@ -44,6 +48,26 @@ public class PlayerActorDef extends ActorDef {
 		PlayerActorDef def = (PlayerActorDef) resource;
 		mMouseJointForceMax = def.mMouseJointForceMax;
 	}
+
+	/**
+	 * Create a mouse joint definition
+	 * @param mouseBody body of the mouse
+	 * @param playerBody body of the player
+	 * @return new mouse joint definition
+	 */
+	MouseJointDef createMouseJointDef(Body mouseBody, Body playerBody) {
+		IC_Ship.IC_Settings icSettings = ConfigIni.getInstance().editor.ship.settings;
+		MouseJointDef mouseJointDef = new MouseJointDef();
+
+		mouseJointDef.frequencyHz = icSettings.getFrequencyDefault();
+		mouseJointDef.bodyA = mouseBody;
+		mouseJointDef.bodyB = playerBody;
+		mouseJointDef.collideConnected = true;
+		mouseJointDef.maxForce = getMouseJointForceMax();
+
+		return mouseJointDef;
+	}
+
 
 	/** Maximum force a mouse joint can have on this player actor */
 	@Tag(125) private float mMouseJointForceMax = 10000;

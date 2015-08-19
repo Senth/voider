@@ -282,7 +282,10 @@ public enum ClientVersions {
 			"	Reset password now works again"
 			),
 	V0_5_13(false,
-			"STUB"
+			"Improvements",
+			"	Steering",
+			"		You can now click anywhere on the screen",
+			"		This way you will be able to see the ship :)"
 			),
 	;
 	// @formatter:on
