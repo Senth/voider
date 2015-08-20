@@ -6,6 +6,12 @@
 	</queue>
 	<queue>
 		<name>analytics-queue</name>
-		<rate>30/s</rate>
+		<rate>5/s</rate>
+		<max-concurrent-requests>2</max-concurrent-requests>
+	</queue>
+	<queue>
+		<name>backup</name>
+		<rate>5/s</rate>
+		<max-concurrent-requests>2</max-concurrent-requests>
 	</queue>
 </queue-entries>

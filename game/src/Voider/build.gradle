@@ -17,6 +17,7 @@ buildscript {
 
 // jvmArgs += [ '-XX:MaxPermSize=2G' ]
 
+ext.cronFile = "server/src/main/webapp/WEB-INF/cron.xml"
 ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
 ext.appengineExplodedWebFile = "server/build/exploded-app/WEB-INF/appengine-web.xml"
 ext.defaultBuild = "DEV_LOCAL"
@@ -264,22 +265,26 @@ project(':core').compileJava.mustRunAfter setBuildNightlyRelease
 // Appengine tasks
 task setAppengineDev << {
 	updateAppengineVersion()
-	updateApplicationId("voider-dev")
+	updateApplicationId('voider-dev')
+	updateBackupCronUrl('voider-dev')
 }
 
 task setAppengineNightly << {
 	updateAppengineVersion()
-	updateApplicationId("voider-nightly")
+	updateApplicationId('voider-nightly')
+	updateBackupCronUrl('voider-nightly')
 }
 
 task setAppengineBeta() << {
 	updateAppengineVersion()
-	updateApplicationId("voider-beta")
+	updateApplicationId('voider-beta')
+	updateBackupCronUrl('voider-beta')
 }
 
 task setAppengineRelease() << {
 	updateAppengineVersion()
-	updateApplicationId("voider-thegame")
+	updateApplicationId('voider-thegame')
+	updateBackupCronUrl('voider-thegame')
 }
 
 task deployAppengineDev(dependsOn: ['setAppengineDev', 'server:appengineUpdate']) << {
@@ -378,4 +383,48 @@ def updateApplicationId(applicationId) {
 	File explodedFile = file(project.appengineExplodedWebFile)
 	updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
 	explodedFile.write(updatedContent, 'UTF-8')
+}
+
+def updateBackupCronUrl(applicationId) {
+	// Create URL
+	def url = "<url>/_ah/datastore_admin/backup.create?"
+	url += "name=datastore"
+	url += "&amp;queue=backup"
+	url += "&amp;filesystem=gs"
+	url += "&amp;gs_bucket_name=" + applicationId
+	
+	def kinds = [
+		"analytics_event",
+		"analytics_scene",
+		"analytics_session",
+		"beta_group",
+		"beta_key",
+		"beta_signup",
+		"dependency",
+		"highscore",
+		"level_stat",
+		"level_tag",
+		"motd",
+		"published",
+		"sync_published",
+		"user_level_stat",
+		"user_resources",
+		"user_resources_deleted",
+		"users"
+	]
+
+	// Add these kinds
+	kinds.each {
+		url += "&amp;kind=${it}"
+	}
+
+	url += "</url><!--backup-replace-->"
+	
+
+	// Replace URL
+	def searchFor = "<url>.*</url><!--backup-replace-->"
+
+	File cronFile = file(project.cronFile)
+	def updatedContent = cronFile.getText('UTF-8').replaceAll(searchFor, url)
+	cronFile.write(updatedContent, 'UTF-8')
 }
