@@ -12,6 +12,7 @@ import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.utils.ISearchStore;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.FetchStatuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
@@ -21,10 +22,11 @@ import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 /**
  * Common class for getting resources
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ * @param <Method>
  * @param <ReturnType>
  */
 @SuppressWarnings("serial")
-public abstract class ResourceFetch<ReturnType> extends VoiderApiServlet {
+public abstract class ResourceFetch<Method extends IMethodEntity, ReturnType> extends VoiderApiServlet<Method> {
 	/**
 	 * Set a def entity from a datastore entity. If ReturnType isn't an extension of
 	 * DefEntity overload this method

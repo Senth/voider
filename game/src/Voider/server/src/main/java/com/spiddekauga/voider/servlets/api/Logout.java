@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.user.LogoutMethod;
 import com.spiddekauga.voider.network.user.LogoutResponse;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
@@ -15,14 +15,14 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Logout extends VoiderApiServlet {
+public class Logout extends VoiderApiServlet<LogoutMethod> {
 	@Override
 	protected void onInit() {
 		// Does nothing
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(LogoutMethod method) throws ServletException, IOException {
 		LogoutResponse logoutMethodResponse = new LogoutResponse();
 		logoutMethodResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 

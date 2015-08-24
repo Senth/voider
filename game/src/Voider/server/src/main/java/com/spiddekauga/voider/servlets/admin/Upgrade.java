@@ -22,14 +22,14 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings({ "serial" })
-public class Upgrade extends VoiderApiServlet {
+public class Upgrade extends VoiderApiServlet<IMethodEntity> {
 	@Override
 	protected void onInit() {
 		// Does nothing
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(IMethodEntity method) throws ServletException, IOException {
 		updateUsers();
 		addDeathStatColumn();
 

@@ -19,7 +19,6 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.stat.HighscoreGetMethod;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
@@ -32,7 +31,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class HighscoreGet extends VoiderApiServlet {
+public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {
 	@Override
 	protected void onInit() {
 		mResponse = new HighscoreGetResponse();
@@ -40,39 +39,37 @@ public class HighscoreGet extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(HighscoreGetMethod method) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof HighscoreGetMethod) {
-			if (((HighscoreGetMethod) methodEntity).levelId != null) {
-				mParameters = (HighscoreGetMethod) methodEntity;
+		if (method.levelId != null) {
+			mParameters = method;
 
-				boolean foundKey = fetchLevelKey();
+			boolean foundKey = fetchLevelKey();
 
-				if (foundKey) {
-					switch (mParameters.fetch) {
-					case FIRST_PLACE:
-						fetchFirstPlace();
-						fetchUserPos();
-						break;
+			if (foundKey) {
+				switch (mParameters.fetch) {
+				case FIRST_PLACE:
+					fetchFirstPlace();
+					fetchUserPos();
+					break;
 
-					case TOP_SCORES:
-						fetchTopScores();
-						break;
+				case TOP_SCORES:
+					fetchTopScores();
+					break;
 
-					case USER_SCORE:
-						fetchFirstPlace();
-						fetchUserScore();
-						fetchUserPos();
-						fetchScoreBeforeAndAfterUser();
-					}
-					mResponse.status = Statuses.SUCCESS;
-				} else {
-					mResponse.status = Statuses.FAILED_LEVEL_NOT_FOUND;
+				case USER_SCORE:
+					fetchFirstPlace();
+					fetchUserScore();
+					fetchUserPos();
+					fetchScoreBeforeAndAfterUser();
 				}
+				mResponse.status = Statuses.SUCCESS;
+			} else {
+				mResponse.status = Statuses.FAILED_LEVEL_NOT_FOUND;
 			}
 		}
 

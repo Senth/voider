@@ -12,12 +12,11 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.DownloadSyncMethod;
 import com.spiddekauga.voider.network.resource.DownloadSyncResponse;
+import com.spiddekauga.voider.network.resource.DownloadSyncResponse.Statuses;
 import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.resource.UploadTypes;
-import com.spiddekauga.voider.network.resource.DownloadSyncResponse.Statuses;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
@@ -27,21 +26,21 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class DownloadSync extends VoiderApiServlet {
+public class DownloadSync extends VoiderApiServlet<DownloadSyncMethod> {
 	@Override
 	protected void onInit() {
 		// Does nothing
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(DownloadSyncMethod method) throws ServletException, IOException {
 		DownloadSyncResponse response = new DownloadSyncResponse();
 		response.status = Statuses.FAILED_INTERNAL;
 
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof DownloadSyncMethod) {
+			if (method instanceof DownloadSyncMethod) {
 				response.syncTime = new Date();
-				response.resources = getResourcesToSync(((DownloadSyncMethod) methodEntity).lastSync);
+				response.resources = getResourcesToSync(method.lastSync);
 				response.status = Statuses.SUCCESS;
 			}
 		} else {

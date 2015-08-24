@@ -8,7 +8,6 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
@@ -17,18 +16,16 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BlobDownload extends VoiderApiServlet {
+public class BlobDownload extends VoiderApiServlet<BlobDownloadMethod> {
 	@Override
 	protected void onInit() {
 		// Does nothing
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		if (methodEntity instanceof BlobDownloadMethod) {
-			BlobKey blobKey = new BlobKey(((BlobDownloadMethod) methodEntity).blobKey);
-			mBlobstoreService.serve(blobKey, getResponse());
-		}
+	protected IEntity onRequest(BlobDownloadMethod method) throws ServletException, IOException {
+		BlobKey blobKey = new BlobKey(method.blobKey);
+		mBlobstoreService.serve(blobKey, getResponse());
 
 		return null;
 	}

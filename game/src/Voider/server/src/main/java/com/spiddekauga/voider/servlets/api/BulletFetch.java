@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.BulletDefEntity;
 import com.spiddekauga.voider.network.resource.BulletFetchMethod;
 import com.spiddekauga.voider.network.resource.BulletFetchResponse;
@@ -22,19 +21,17 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BulletFetch extends ActorFetch<BulletDefEntity> {
+public class BulletFetch extends ActorFetch<BulletFetchMethod, BulletDefEntity> {
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(BulletFetchMethod method) throws ServletException, IOException {
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof BulletFetchMethod) {
-				mParameters = (BulletFetchMethod) methodEntity;
+			mParameters = method;
 
-				if (hasSearchOptions()) {
-					mResponse.status = searchAndSetFoundDefs(SearchTables.BULLET, mParameters.nextCursor, mResponse.bullets);
-				} else {
-					getAndSetNewestBullets();
-				}
+			if (hasSearchOptions()) {
+				mResponse.status = searchAndSetFoundDefs(SearchTables.BULLET, mParameters.nextCursor, mResponse.bullets);
+			} else {
+				getAndSetNewestBullets();
 			}
 		} else {
 			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;

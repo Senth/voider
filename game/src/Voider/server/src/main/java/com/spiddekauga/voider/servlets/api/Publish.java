@@ -26,7 +26,6 @@ import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
@@ -63,7 +62,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Publish extends VoiderApiServlet {
+public class Publish extends VoiderApiServlet<PublishMethod> {
 	@Override
 	protected void onInit() {
 		mSearchDocumentsToAdd.clear();
@@ -74,60 +73,58 @@ public class Publish extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(PublishMethod method) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof PublishMethod) {
-			mMethod = (PublishMethod) methodEntity;
-			mBlobKeys = getUploadedBlobs();
+		mMethod = method;
+		mBlobKeys = getUploadedBlobs();
 
-			// For safety reasons, check for duplicates and remove them
-			removeDuplicates();
+		// For safety reasons, check for duplicates and remove them
+		removeDuplicates();
 
-			// Check if any of the resources have been
-			boolean alreadyPublished = hasBeenPublishedAlready();
-			boolean success = !alreadyPublished;
+		// Check if any of the resources have been
+		boolean alreadyPublished = hasBeenPublishedAlready();
+		boolean success = !alreadyPublished;
 
-			// Add entities to datastore and search
-			if (success) {
-				success = addEntitiesToDatastore();
+		// Add entities to datastore and search
+		if (success) {
+			success = addEntitiesToDatastore();
+		}
+
+		// Add dependencies
+		boolean addedDependencies = false;
+		if (success) {
+			success = addDependencies();
+			addedDependencies = true;
+		}
+
+		// Add search documents
+		boolean addedSearch = false;
+		if (success) {
+			success = addSearchDocuments();
+			addedSearch = true;
+		}
+
+
+		// SUCCESS -> Send sync messages and removed user resources
+		if (success) {
+			mResponse.status = Statuses.SUCCESS;
+			removeUserResourcesThatWasPublished();
+			sendSyncMessages();
+		}
+		// FAILED - Remove all resources from published, dependencies, and search
+		else {
+			undoPublishedAndStats();
+
+			if (addedDependencies) {
+				undoDependencies();
 			}
 
-			// Add dependencies
-			boolean addedDependencies = false;
-			if (success) {
-				success = addDependencies();
-				addedDependencies = true;
-			}
-
-			// Add search documents
-			boolean addedSearch = false;
-			if (success) {
-				success = addSearchDocuments();
-				addedSearch = true;
-			}
-
-
-			// SUCCESS -> Send sync messages and removed user resources
-			if (success) {
-				mResponse.status = Statuses.SUCCESS;
-				removeUserResourcesThatWasPublished();
-				sendSyncMessages();
-			}
-			// FAILED - Remove all resources from published, dependencies, and search
-			else {
-				undoPublishedAndStats();
-
-				if (addedDependencies) {
-					undoDependencies();
-				}
-
-				if (addedSearch) {
-					undoSearchDocuments();
-				}
+			if (addedSearch) {
+				undoSearchDocuments();
 			}
 		}
 

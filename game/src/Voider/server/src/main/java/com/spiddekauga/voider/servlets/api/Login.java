@@ -15,7 +15,6 @@ import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.misc.NetworkConfig;
@@ -34,7 +33,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Login extends VoiderApiServlet {
+public class Login extends VoiderApiServlet<LoginMethod> {
 
 	@Override
 	protected void onInit() {
@@ -43,15 +42,13 @@ public class Login extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(LoginMethod method) throws ServletException, IOException {
 		// Skip if already logged in
 		if (!mUser.isLoggedIn()) {
-			if (methodEntity instanceof LoginMethod) {
-				LoginMethod loginMethod = (LoginMethod) methodEntity;
-				checkClientVersion(loginMethod);
-				login(loginMethod);
-				getMessageOfTheDay();
-			}
+			LoginMethod loginMethod = method;
+			checkClientVersion(loginMethod);
+			login(loginMethod);
+			getMessageOfTheDay();
 		}
 
 		return mResponse;

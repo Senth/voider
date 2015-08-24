@@ -26,18 +26,19 @@ import com.spiddekauga.voider.network.misc.ChatMessage;
 /**
  * Wrapper for the Voider servlet
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ * @param <Method> Method from the client
  */
 @SuppressWarnings("serial")
-public abstract class VoiderApiServlet extends HttpServlet {
+public abstract class VoiderApiServlet<Method extends IMethodEntity> extends HttpServlet {
 	/**
 	 * Called by the server to handle a post or get call.
-	 * @param methodEntity the entity that was sent to the method
+	 * @param method the entity that was sent to the method
 	 * @return response entity
 	 * @throws IOException if an input or output error is detected when the servlet
 	 *         handles the GET/POST request
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
-	protected abstract IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException;
+	protected abstract IEntity onRequest(Method method) throws ServletException, IOException;
 
 	/**
 	 * Initializes the servlet
@@ -98,6 +99,7 @@ public abstract class VoiderApiServlet extends HttpServlet {
 	 *         handles the GET/POST request
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
+	@SuppressWarnings("unchecked")
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		mRequest = request;
 		mResponse = response;
@@ -107,20 +109,24 @@ public abstract class VoiderApiServlet extends HttpServlet {
 		initSession(request);
 
 		// Get method parameters
-		byte[] byteEntity = NetworkGateway.getEntity(mRequest);
-		IMethodEntity methodEntity = null;
-		if (byteEntity != null) {
-			methodEntity = (IMethodEntity) NetworkEntitySerializer.deserializeEntity(byteEntity);
-		}
+		try {
+			byte[] byteEntity = NetworkGateway.getEntity(mRequest);
+			Method methodEntity = null;
+			if (byteEntity != null) {
+				methodEntity = (Method) NetworkEntitySerializer.deserializeEntity(byteEntity);
+			}
 
-		// Handle request
-		onInit();
-		IEntity responseEntity = onRequest(methodEntity);
+			// Handle request
+			onInit();
+			IEntity responseEntity = onRequest(methodEntity);
 
-		// Send response
-		if (responseEntity != null) {
-			byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
-			NetworkGateway.sendResponse(mResponse, responseBytes);
+			// Send response
+			if (responseEntity != null) {
+				byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
+				NetworkGateway.sendResponse(mResponse, responseBytes);
+			}
+		} catch (ClassCastException e) {
+			// Wrong type of method. Doesn't work
 		}
 
 		// Save

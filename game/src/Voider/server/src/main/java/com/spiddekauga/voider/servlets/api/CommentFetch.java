@@ -17,7 +17,6 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.CommentFetchMethod;
 import com.spiddekauga.voider.network.resource.CommentFetchResponse;
 import com.spiddekauga.voider.network.resource.FetchStatuses;
@@ -34,7 +33,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class CommentFetch extends VoiderApiServlet {
+public class CommentFetch extends VoiderApiServlet<CommentFetchMethod> {
 
 	@Override
 	protected void onInit() {
@@ -43,33 +42,31 @@ public class CommentFetch extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(CommentFetchMethod method) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
 			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof CommentFetchMethod) {
-			UUID resourceId = ((CommentFetchMethod) methodEntity).resourceId;
-			String cursor = ((CommentFetchMethod) methodEntity).nextCursor;
+		UUID resourceId = method.resourceId;
+		String cursor = method.nextCursor;
 
-			// Get level key
-			Key resourceKey = getResourceKey(resourceId);
+		// Get level key
+		Key resourceKey = getResourceKey(resourceId);
 
-			QueryResultList<Entity> comments = getComments(resourceKey, cursor);
-			addCommentsToResponse(comments);
+		QueryResultList<Entity> comments = getComments(resourceKey, cursor);
+		addCommentsToResponse(comments);
 
-			// Get player's comment for first query
-			if (cursor == null) {
-				mResponse.userComment = getUserComment(resourceKey);
-			}
+		// Get player's comment for first query
+		if (cursor == null) {
+			mResponse.userComment = getUserComment(resourceKey);
+		}
 
-			// Fetched all
-			if (mResponse.comments.size() < ServerConfig.FetchSizes.COMMENTS || mResponse.cursor == null) {
-				mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
-			} else {
-				mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
-			}
+		// Fetched all
+		if (mResponse.comments.size() < ServerConfig.FetchSizes.COMMENTS || mResponse.cursor == null) {
+			mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
+		} else {
+			mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
 		}
 
 		return mResponse;

@@ -24,7 +24,6 @@ import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
@@ -45,11 +44,8 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class UserResourceSync extends VoiderApiServlet {
+public class UserResourceSync extends VoiderApiServlet<UserResourceSyncMethod> {
 
-	/**
-	 * Initializes the sync
-	 */
 	@Override
 	protected void onInit() {
 		mResponse = new UserResourceSyncResponse();
@@ -58,38 +54,36 @@ public class UserResourceSync extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(UserResourceSyncMethod method) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
 			mResponse.uploadStatus = UploadStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof UserResourceSyncMethod) {
-			UserResourceSyncMethod userMethod = (UserResourceSyncMethod) methodEntity;
+		UserResourceSyncMethod userMethod = method;
 
-			syncDeletedToClient(userMethod);
-			syncDeletedToServer(userMethod);
+		syncDeletedToClient(userMethod);
+		syncDeletedToServer(userMethod);
 
-			// Conflicts
-			checkForConflicts(userMethod);
+		// Conflicts
+		checkForConflicts(userMethod);
 
-			if (userMethod.keepLocalConflicts()) {
-				fixConflictsKeepClient(userMethod);
-			} else if (userMethod.keepServerConflicts()) {
-				fixConflictsKeepServer(userMethod);
-			}
+		if (userMethod.keepLocalConflicts()) {
+			fixConflictsKeepClient(userMethod);
+		} else if (userMethod.keepServerConflicts()) {
+			fixConflictsKeepServer(userMethod);
+		}
 
-			syncNewToClient(userMethod);
-			syncNewToServer(userMethod);
-			mResponse.syncTime = mSyncDate;
+		syncNewToClient(userMethod);
+		syncNewToServer(userMethod);
+		mResponse.syncTime = mSyncDate;
 
-			// Send sync message
-			if (mResponse.isSuccessful()) {
-				if (!userMethod.resources.isEmpty() || !userMethod.resourceToRemove.isEmpty()
-						|| (userMethod.conflictKeepLocal != null && userMethod.conflictKeepLocal)) {
-					ChatMessage<Object> chatMessage = new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId());
-					sendMessage(chatMessage);
-				}
+		// Send sync message
+		if (mResponse.isSuccessful()) {
+			if (!userMethod.resources.isEmpty() || !userMethod.resourceToRemove.isEmpty()
+					|| (userMethod.conflictKeepLocal != null && userMethod.conflictKeepLocal)) {
+				ChatMessage<Object> chatMessage = new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId());
+				sendMessage(chatMessage);
 			}
 		}
 
@@ -423,8 +417,6 @@ public class UserResourceSync extends VoiderApiServlet {
 		}
 	}
 
-	/** Sync date */
 	private Date mSyncDate = null;
-	/** Response */
 	private UserResourceSyncResponse mResponse = null;
 }

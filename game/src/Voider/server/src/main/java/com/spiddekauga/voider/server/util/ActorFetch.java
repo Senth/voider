@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.FetchStatuses;
 import com.spiddekauga.voider.network.resource.UploadTypes;
@@ -25,10 +26,11 @@ import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 /**
  * Common class for fetching actors
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ * @param <Method>
  * @param <DefType> actor definitino
  */
 @SuppressWarnings("serial")
-public abstract class ActorFetch<DefType extends DefEntity> extends ResourceFetch<DefType> {
+public abstract class ActorFetch<Method extends IMethodEntity, DefType extends DefEntity> extends ResourceFetch<Method, DefType> {
 
 	@Override
 	protected void onInit() {

@@ -23,7 +23,6 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.appengine.SearchUtils.Builder.CombineOperators;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.FetchStatuses;
 import com.spiddekauga.voider.network.resource.LevelDefEntity;
@@ -49,7 +48,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
+public class LevelFetch extends ResourceFetch<LevelFetchMethod, LevelInfoEntity> {
 	@Override
 	protected void onInit() {
 		mResponse = new LevelFetchResponse();
@@ -57,19 +56,10 @@ public class LevelFetch extends ResourceFetch<LevelInfoEntity> {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(LevelFetchMethod method) throws ServletException, IOException {
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof LevelFetchMethod) {
-				mParameters = (LevelFetchMethod) methodEntity;
-
-				getAndSetLevelResponse();
-			} else {
-				if (methodEntity == null) {
-					mLogger.severe("Method entity is null");
-				} else {
-					mLogger.severe("Not a LevelFetchMethod " + methodEntity.getClass().getSimpleName());
-				}
-			}
+			mParameters = method;
+			getAndSetLevelResponse();
 		} else {
 			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
 		}

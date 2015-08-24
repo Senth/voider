@@ -14,7 +14,6 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.network.user.RegisterUserResponse.Statuses;
@@ -30,7 +29,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class RegisterUser extends VoiderApiServlet {
+public class RegisterUser extends VoiderApiServlet<RegisterUserMethod> {
 
 	@Override
 	protected void onInit() {
@@ -39,43 +38,41 @@ public class RegisterUser extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		if (methodEntity instanceof RegisterUserMethod) {
-			mParameters = (RegisterUserMethod) methodEntity;
+	protected IEntity onRequest(RegisterUserMethod method) throws ServletException, IOException {
+		mParameters = method;
 
-			FilterWrapper usernameProperty = new FilterWrapper(CUsers.USERNAME_LOWCASE, mParameters.username.toLowerCase(Locale.ENGLISH));
-			FilterWrapper emailProperty = new FilterWrapper(CUsers.EMAIL, mParameters.email.toLowerCase(Locale.ENGLISH));
-			boolean validFields = true;
+		FilterWrapper usernameProperty = new FilterWrapper(CUsers.USERNAME_LOWCASE, mParameters.username.toLowerCase(Locale.ENGLISH));
+		FilterWrapper emailProperty = new FilterWrapper(CUsers.EMAIL, mParameters.email.toLowerCase(Locale.ENGLISH));
+		boolean validFields = true;
 
-			// Check username length
-			if (!isUsernameLengthValid(mParameters.username)) {
-				mResponse.status = Statuses.FAIL_USERNAME_TOO_SHORT;
-				validFields = false;
-			}
-			// Check password length
-			else if (!isPasswordLengthValid(mParameters.password)) {
-				mResponse.status = Statuses.FAIL_PASSWORD_TOO_SHORT;
-				validFields = false;
-			}
-			// Check if username is free
-			else if (DatastoreUtils.exists(DatastoreTables.USERS, usernameProperty)) {
-				mResponse.status = Statuses.FAIL_USERNAME_EXISTS;
-				validFields = false;
-			}
-			// Check email
-			else if (DatastoreUtils.exists(DatastoreTables.USERS, emailProperty)) {
-				mResponse.status = Statuses.FAIL_EMAIL_EXISTS;
-				validFields = false;
-			}
-			// Check beta key
-			else if (!isRegisterKeyValid(mParameters.key)) {
-				validFields = false;
-			}
+		// Check username length
+		if (!isUsernameLengthValid(mParameters.username)) {
+			mResponse.status = Statuses.FAIL_USERNAME_TOO_SHORT;
+			validFields = false;
+		}
+		// Check password length
+		else if (!isPasswordLengthValid(mParameters.password)) {
+			mResponse.status = Statuses.FAIL_PASSWORD_TOO_SHORT;
+			validFields = false;
+		}
+		// Check if username is free
+		else if (DatastoreUtils.exists(DatastoreTables.USERS, usernameProperty)) {
+			mResponse.status = Statuses.FAIL_USERNAME_EXISTS;
+			validFields = false;
+		}
+		// Check email
+		else if (DatastoreUtils.exists(DatastoreTables.USERS, emailProperty)) {
+			mResponse.status = Statuses.FAIL_EMAIL_EXISTS;
+			validFields = false;
+		}
+		// Check beta key
+		else if (!isRegisterKeyValid(mParameters.key)) {
+			validFields = false;
+		}
 
-			// All valid
-			if (validFields) {
-				createNewUser();
-			}
+		// All valid
+		if (validFields) {
+			createNewUser();
 		}
 
 		return mResponse;

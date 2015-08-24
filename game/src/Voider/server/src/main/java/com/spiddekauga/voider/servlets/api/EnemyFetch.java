@@ -11,7 +11,6 @@ import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.resource.BulletSpeedSearchRanges;
 import com.spiddekauga.voider.network.resource.CollisionDamageSearchRanges;
@@ -31,7 +30,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SEnemy;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
+public class EnemyFetch extends ActorFetch<EnemyFetchMethod, EnemyDefEntity> {
 	@Override
 	protected void onInit() {
 		super.onInit();
@@ -40,16 +39,14 @@ public class EnemyFetch extends ActorFetch<EnemyDefEntity> {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(EnemyFetchMethod method) throws ServletException, IOException {
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof EnemyFetchMethod) {
-				mParameters = (EnemyFetchMethod) methodEntity;
+			mParameters = method;
 
-				if (hasSearchOptions()) {
-					mResponse.status = searchAndSetFoundDefs(SearchTables.ENEMY, mParameters.nextCursor, mResponse.enemies);
-				} else {
-					getAndSetNewestEnemies();
-				}
+			if (hasSearchOptions()) {
+				mResponse.status = searchAndSetFoundDefs(SearchTables.ENEMY, mParameters.nextCursor, mResponse.enemies);
+			} else {
+				getAndSetNewestEnemies();
 			}
 		} else {
 			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;

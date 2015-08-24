@@ -23,7 +23,6 @@ import com.spiddekauga.voider.network.analytics.AnalyticsSceneEntity;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
 import com.spiddekauga.voider.network.misc.BugReportMethod;
 import com.spiddekauga.voider.network.misc.BugReportResponse;
@@ -35,7 +34,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BugReport extends VoiderApiServlet {
+public class BugReport extends VoiderApiServlet<BugReportMethod> {
 	@Override
 	protected void onInit() {
 		mResponse = new BugReportResponse();
@@ -43,24 +42,21 @@ public class BugReport extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(BugReportMethod method) throws ServletException, IOException {
 
 		if (!mUser.isLoggedIn()) {
 			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof BugReportMethod) {
-			BugReportMethod parameters = (BugReportMethod) methodEntity;
-			mResponse.status = GeneralResponseStatuses.SUCCESS;
+		mResponse.status = GeneralResponseStatuses.SUCCESS;
 
-			for (BugReportEntity bugReportEntity : parameters.bugs) {
-				boolean success = sendBugReport(bugReportEntity);
+		for (BugReportEntity bugReportEntity : method.bugs) {
+			boolean success = sendBugReport(bugReportEntity);
 
-				if (!success) {
-					mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
-					mResponse.failedBugReports.add(bugReportEntity.id);
-				}
+			if (!success) {
+				mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
+				mResponse.failedBugReports.add(bugReportEntity.id);
 			}
 		}
 

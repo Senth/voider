@@ -15,7 +15,6 @@ import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
@@ -35,7 +34,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class ResourceDownload extends VoiderApiServlet {
+public class ResourceDownload extends VoiderApiServlet<ResourceDownloadMethod> {
 	@Override
 	protected void onInit() {
 		mResponse.status = Statuses.FAILED_SERVER_INTERAL;
@@ -45,27 +44,25 @@ public class ResourceDownload extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(ResourceDownloadMethod method) throws ServletException, IOException {
 		if (mUser.isLoggedIn()) {
 			boolean success = false;
-			if (methodEntity instanceof ResourceDownloadMethod) {
-				mParameters = (ResourceDownloadMethod) methodEntity;
+			mParameters = method;
 
-				// New download
-				if (!mParameters.redownload) {
-					success = setInformationAndDependenciesToResponse(mParameters.resourceId);
+			// New download
+			if (!mParameters.redownload) {
+				success = setInformationAndDependenciesToResponse(mParameters.resourceId);
 
-					// Set download date and send sync message
-					if (success && !mAddedResources.isEmpty()) {
-						setUserDownloadDate();
-						mResponse.status = Statuses.SUCCESS;
-						sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
-					}
+				// Set download date and send sync message
+				if (success && !mAddedResources.isEmpty()) {
+					setUserDownloadDate();
+					mResponse.status = Statuses.SUCCESS;
+					sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
 				}
-				// Redownload
-				else {
-					redownloadResource();
-				}
+			}
+			// Redownload
+			else {
+				redownloadResource();
 			}
 		} else {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;

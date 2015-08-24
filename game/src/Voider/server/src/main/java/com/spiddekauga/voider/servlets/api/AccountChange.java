@@ -10,7 +10,6 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.AccountChangeMethod;
 import com.spiddekauga.voider.network.user.AccountChangeResponse;
 import com.spiddekauga.voider.network.user.AccountChangeResponse.AccountChangeStatuses;
@@ -22,7 +21,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class AccountChange extends VoiderApiServlet {
+public class AccountChange extends VoiderApiServlet<AccountChangeMethod> {
 	@Override
 	protected void onInit() {
 		mResponse = new AccountChangeResponse();
@@ -31,12 +30,10 @@ public class AccountChange extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(AccountChangeMethod method) throws ServletException, IOException {
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof AccountChangeMethod) {
-				mParameters = (AccountChangeMethod) methodEntity;
-				changeAccountSettings();
-			}
+			mParameters = method;
+			changeAccountSettings();
 		} else {
 			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
 		}

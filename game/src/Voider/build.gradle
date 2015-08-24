@@ -203,6 +203,15 @@ project(":server-analytics") {
 	}
 }
 
+project(":backup") {
+	apply plugin: 'java'
+
+	dependencies {
+		compile project(':network')
+		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
+	}
+}
+
 tasks.eclipse.doLast {
     //delete ".project"
 }

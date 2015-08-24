@@ -26,7 +26,6 @@ import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.stat.StatSyncEntity;
@@ -50,7 +49,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class StatSync extends VoiderApiServlet {
+public class StatSync extends VoiderApiServlet<StatSyncMethod> {
 	@Override
 	protected void onInit() {
 		mResponse = new StatSyncResponse();
@@ -59,22 +58,17 @@ public class StatSync extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(StatSyncMethod method) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
 			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof StatSyncMethod) {
-			mParameters = ((StatSyncMethod) methodEntity).syncEntity;
-			syncToClient();
-			checkAndResolveConflicts();
-			syncToServer();
-
-			mResponse.status = GeneralResponseStatuses.SUCCESS;
-		} else {
-			mLogger.severe("Entity isn't a StatSyncMethod");
-		}
+		mParameters = method.syncEntity;
+		syncToClient();
+		checkAndResolveConflicts();
+		syncToServer();
+		mResponse.status = GeneralResponseStatuses.SUCCESS;
 
 		return mResponse;
 	}

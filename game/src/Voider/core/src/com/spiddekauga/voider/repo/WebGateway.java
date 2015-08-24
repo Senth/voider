@@ -131,8 +131,6 @@ public class WebGateway {
 			connection.disconnect();
 
 			byte[] responseEntity = byteArrayOutputStream.toByteArray();
-			// Gdx.app.log("Network", "Recieved entity of length: " +
-			// responseEntity.length);
 			return responseEntity;
 		} catch (IOException e) {
 			Gdx.app.log("Network", "Could not connect to server");

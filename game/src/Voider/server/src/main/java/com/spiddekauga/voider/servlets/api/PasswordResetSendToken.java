@@ -22,7 +22,6 @@ import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.PasswordResetSendTokenMethod;
 import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse;
 import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse.Statuses;
@@ -37,7 +36,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class PasswordResetSendToken extends VoiderApiServlet {
+public class PasswordResetSendToken extends VoiderApiServlet<PasswordResetSendTokenMethod> {
 
 	@Override
 	protected void onInit() {
@@ -46,19 +45,17 @@ public class PasswordResetSendToken extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		if (methodEntity instanceof PasswordResetSendTokenMethod) {
-			Key userKey = getUserKey(((PasswordResetSendTokenMethod) methodEntity).email);
-			if (userKey != null) {
-				String token = generateToken(userKey);
-				if (saveToken(userKey, token)) {
-					if (sendToken(userKey, token)) {
-						mResponse.status = Statuses.SUCCESS;
-					}
+	protected IEntity onRequest(PasswordResetSendTokenMethod method) throws ServletException, IOException {
+		Key userKey = getUserKey(method.email);
+		if (userKey != null) {
+			String token = generateToken(userKey);
+			if (saveToken(userKey, token)) {
+				if (sendToken(userKey, token)) {
+					mResponse.status = Statuses.SUCCESS;
 				}
-			} else {
-				mResponse.status = Statuses.FAILED_EMAIL;
 			}
+		} else {
+			mResponse.status = Statuses.FAILED_EMAIL;
 		}
 
 		return mResponse;

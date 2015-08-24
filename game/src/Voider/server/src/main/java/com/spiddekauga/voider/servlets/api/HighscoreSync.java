@@ -16,7 +16,6 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
@@ -29,7 +28,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class HighscoreSync extends VoiderApiServlet {
+public class HighscoreSync extends VoiderApiServlet<HighscoreSyncMethod> {
 
 	/**
 	 * Initializes the sync
@@ -42,21 +41,19 @@ public class HighscoreSync extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(HighscoreSyncMethod method) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
 			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}
 
-		if (methodEntity instanceof HighscoreSyncMethod) {
-			setHighscoresToSyncToClient((HighscoreSyncMethod) methodEntity);
-			checkAndResolveConflicts((HighscoreSyncMethod) methodEntity);
-			syncNewToClient();
-			syncNewToServer((HighscoreSyncMethod) methodEntity);
-			mResponse.status = GeneralResponseStatuses.SUCCESS;
+		setHighscoresToSyncToClient(method);
+		checkAndResolveConflicts(method);
+		syncNewToClient();
+		syncNewToServer(method);
+		mResponse.status = GeneralResponseStatuses.SUCCESS;
 
-			sendSyncMessage((HighscoreSyncMethod) methodEntity);
-		}
+		sendSyncMessage(method);
 
 		return mResponse;
 	}

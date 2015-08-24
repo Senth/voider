@@ -12,7 +12,6 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.PasswordResetMethod;
 import com.spiddekauga.voider.network.user.PasswordResetResponse;
 import com.spiddekauga.voider.network.user.PasswordResetResponse.Statuses;
@@ -26,7 +25,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class PasswordReset extends VoiderApiServlet {
+public class PasswordReset extends VoiderApiServlet<PasswordResetMethod> {
 	@Override
 	protected void onInit() {
 		mResponse = new PasswordResetResponse();
@@ -34,16 +33,12 @@ public class PasswordReset extends VoiderApiServlet {
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		if (methodEntity instanceof PasswordResetMethod) {
-			PasswordResetMethod method = (PasswordResetMethod) methodEntity;
-
-			Entity user = getUser(method.email);
-			Key tokenKey = isTokenValid(user.getKey(), method.token);
-			if (tokenKey != null) {
-				if (changePassword(user, method.password)) {
-					removeToken(tokenKey);
-				}
+	protected IEntity onRequest(PasswordResetMethod method) throws ServletException, IOException {
+		Entity user = getUser(method.email);
+		Key tokenKey = isTokenValid(user.getKey(), method.token);
+		if (tokenKey != null) {
+			if (changePassword(user, method.password)) {
+				removeToken(tokenKey);
 			}
 		}
 

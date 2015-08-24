@@ -20,8 +20,10 @@ public abstract interface IMethodEntity extends IEntity {
 		BLOB_DOWNLOAD,
 		/** Send a bug report */
 		BUG_REPORT,
-		/** Get upload url for a blob */
+		/** Get upload URL for a blob */
 		GET_UPLOAD_URL,
+		/** Get new blobs for backup */
+		BACKUP_NEW_BLOBS,
 
 		// Resources
 		/** Synchronize downloaded resources */

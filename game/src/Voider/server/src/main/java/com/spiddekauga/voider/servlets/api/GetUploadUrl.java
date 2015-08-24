@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.GetUploadUrlMethod;
 import com.spiddekauga.voider.network.misc.GetUploadUrlResponse;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
@@ -18,25 +17,23 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class GetUploadUrl extends VoiderApiServlet {
+public class GetUploadUrl extends VoiderApiServlet<GetUploadUrlMethod> {
 	@Override
 	protected void onInit() {
 		// Does nothing
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+	protected IEntity onRequest(GetUploadUrlMethod method) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
 			return null;
 		}
 
 		GetUploadUrlResponse methodResponse = new GetUploadUrlResponse();
 
-		if (methodEntity instanceof GetUploadUrlMethod) {
-			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-			methodResponse.uploadUrl = blobstoreService.createUploadUrl("/" + ((GetUploadUrlMethod) methodEntity).redirectMethod);
-			mLogger.finest("Upload url: " + methodResponse.uploadUrl);
-		}
+		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+		methodResponse.uploadUrl = blobstoreService.createUploadUrl("/" + method.redirectMethod);
+		mLogger.finest("Upload url: " + methodResponse.uploadUrl);
 
 		return methodResponse;
 	}

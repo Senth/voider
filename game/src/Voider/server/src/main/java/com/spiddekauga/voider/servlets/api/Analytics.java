@@ -17,7 +17,6 @@ import com.spiddekauga.voider.network.analytics.AnalyticsSceneEntity;
 import com.spiddekauga.voider.network.analytics.AnalyticsSessionEntity;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsEvent;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsScene;
@@ -29,25 +28,20 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Analytics extends VoiderApiServlet {
+public class Analytics extends VoiderApiServlet<AnalyticsMethod> {
 	@Override
 	protected void onInit() {
 		mResponse = new AnalyticsResponse();
 	}
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-
+	protected IEntity onRequest(AnalyticsMethod method) throws ServletException, IOException {
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof AnalyticsMethod) {
-				mParameters = (AnalyticsMethod) methodEntity;
-				saveSessions();
+			mParameters = method;
+			saveSessions();
 
-				if (mResponse.status == null) {
-					mResponse.status = GeneralResponseStatuses.SUCCESS;
-				}
-			} else {
-				mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
+			if (mResponse.status == null) {
+				mResponse.status = GeneralResponseStatuses.SUCCESS;
 			}
 		} else {
 			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
