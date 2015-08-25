@@ -10,6 +10,10 @@ import java.net.HttpURLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.FileTime;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.spiddekauga.http.HttpPostBuilder;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -44,19 +48,24 @@ abstract class Action {
 			File file = new File(backupDir);
 			try {
 				file.mkdirs();
-
-				if (!mBackupDir.endsWith("/")) {
-					mBackupDir += "/";
-				}
-
 			} catch (SecurityException e) {
 				return false;
 			}
 		}
 
 		mBackupDir = backupDir;
+		if (!mBackupDir.endsWith("/")) {
+			mBackupDir += "/";
+		}
 
 		return true;
+	}
+
+	/**
+	 * @return backup directory
+	 */
+	protected String getBackupDir() {
+		return mBackupDir;
 	}
 
 	/**
@@ -65,6 +74,11 @@ abstract class Action {
 	 */
 	protected void setUrl(String Url) {
 		mUrl = Url;
+
+		// Always end with slash
+		if (!mUrl.endsWith("/")) {
+			mUrl += "/";
+		}
 	}
 
 	/**
@@ -80,9 +94,8 @@ abstract class Action {
 				return true;
 			}
 		} catch (SecurityException e) {
-			return false;
 		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -130,9 +143,10 @@ abstract class Action {
 	 * Send a download request to the server
 	 * @param method name of method to call on the server
 	 * @param filePath path to write the downloaded file to
+	 * @param date creation date of the file
 	 * @return true if file was written successfully, false if an error occurred
 	 */
-	protected boolean downloadRequest(IMethodEntity method, String filePath) {
+	protected boolean downloadRequest(IMethodEntity method, String filePath, Date date) {
 		byte[] entity = NetworkEntitySerializer.serializeEntity(method);
 
 		if (entity != null) {
@@ -145,7 +159,7 @@ abstract class Action {
 
 				// Write the response to a file
 				BufferedInputStream response = new BufferedInputStream(connection.getInputStream());
-				File file = new File(filePath);
+				File file = new File(mBackupDir + filePath);
 				FileOutputStream fileOutputStream = new FileOutputStream(file);
 				BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 
@@ -158,6 +172,11 @@ abstract class Action {
 				bufferedOutputStream.close();
 				response.close();
 				connection.disconnect();
+
+				// Update file times
+				BasicFileAttributeView attributes = Files.getFileAttributeView(Paths.get(mBackupDir + filePath), BasicFileAttributeView.class);
+				FileTime fileTime = FileTime.from(date.getTime(), TimeUnit.MILLISECONDS);
+				attributes.setTimes(fileTime, fileTime, fileTime);
 
 				return true;
 			} catch (IOException e) {

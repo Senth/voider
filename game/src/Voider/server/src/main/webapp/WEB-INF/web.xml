@@ -190,6 +190,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Analytics</servlet-name>
 		<url-pattern>/api/analytics</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>BackupNewBlobs</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.BackupNewBlobs</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BackupNewBlobs</servlet-name>
+		<url-pattern>/api/backup-new-blobs</url-pattern>
+	</servlet-mapping>
 
 
 	<!--———————————————

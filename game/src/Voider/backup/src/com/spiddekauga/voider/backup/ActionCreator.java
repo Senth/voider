@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.backup;
 
+import java.util.logging.Logger;
+
 
 /**
  * Parses the argument for backup and creates the appropriate action
@@ -64,6 +66,8 @@ class ActionCreator {
 		else {
 			fail("Unknown error");
 		}
+
+		mParseIndex++;
 	}
 
 	/**
@@ -104,7 +108,7 @@ class ActionCreator {
 	 * @param errorMessage the error message
 	 */
 	private void fail(String errorMessage) {
-		System.err.print(errorMessage);
+		mLogger.severe(errorMessage);
 		mFailedParsing = true;
 		mAction = null;
 	}
@@ -116,6 +120,7 @@ class ActionCreator {
 		return !mFailedParsing && mParseIndex < mArgs.length;
 	}
 
+	private static final Logger mLogger = Logger.getLogger(ActionCreator.class.getSimpleName());
 	private boolean mFailedParsing = false;
 	private String[] mArgs;
 	private Action mAction = null;
