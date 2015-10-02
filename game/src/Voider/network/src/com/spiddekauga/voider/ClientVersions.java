@@ -285,7 +285,8 @@ public enum ClientVersions {
 			"Improvements",
 			"	Steering",
 			"		You can now click anywhere on the screen",
-			"		This way you will be able to see the ship :)"
+			"		This way you will be able to see the ship :)",
+			"	Credits, changed layout"
 			),
 	;
 	// @formatter:on
