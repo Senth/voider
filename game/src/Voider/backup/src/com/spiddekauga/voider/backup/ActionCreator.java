@@ -1,5 +1,9 @@
 package com.spiddekauga.voider.backup;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 
@@ -78,19 +82,34 @@ class ActionCreator {
 
 		// URL
 		if (mParseIndex == 1) {
-			// starts with http or https
-			if (argument.startsWith("http://") || argument.startsWith("https://")) {
-				mAction.setUrl(argument);
-			} else {
-				fail("invalid URL");
-			}
+			setUrl(argument);
 		}
 		// Backup directory
 		else if (mParseIndex == 2) {
-			boolean success = mAction.setBackupDir(argument);
-			if (!success) {
-				fail("Invalid backup directory");
-			}
+			setBackupDir(argument);
+		}
+	}
+
+	/**
+	 * Tries to set the URL for the current action
+	 * @param url
+	 */
+	private void setUrl(String url) {
+		if (url.startsWith("http://") || url.startsWith("https://")) {
+			mAction.setUrl(url);
+		} else {
+			fail("invalid URL");
+		}
+	}
+
+	/**
+	 * Tries to set the backup directory for the current action
+	 * @param backupDir
+	 */
+	private void setBackupDir(String backupDir) {
+		boolean success = mAction.setBackupDir(backupDir);
+		if (!success) {
+			fail("Invalid backup directory");
 		}
 	}
 
@@ -100,7 +119,36 @@ class ActionCreator {
 	private void parseNextRestoreArgument() {
 		String argument = mArgs[mParseIndex];
 
-		// TODO
+		// DATE
+		if (mParseIndex == 1) {
+			setDate(argument);
+		}
+		// URL
+		else if (mParseIndex == 2) {
+			setUrl(argument);
+		}
+		// Backup directory
+		else if (mParseIndex == 3) {
+			setBackupDir(argument);
+		}
+	}
+
+	/**
+	 * Tries to set the date of the current restore action from a date string
+	 * @param dateString
+	 */
+	private void setDate(String dateString) {
+		if (mAction instanceof RestoreAction) {
+			RestoreAction restoreAction = (RestoreAction) mAction;
+
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+			try {
+				Date date = formatter.parse(dateString);
+				restoreAction.setDate(date);
+			} catch (ParseException e) {
+				fail("invalid date format: " + e.getMessage());
+			}
+		}
 	}
 
 	/**

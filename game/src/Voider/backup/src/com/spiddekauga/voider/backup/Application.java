@@ -29,7 +29,7 @@ public class Application {
 				+ "voider-backup backup URL BACKUP_DIR\n\n"
 				+ "Restore:\n"
 				+ "voider-backup restore DATE URL BACKUP_DIR\n"
-				+ "DATE should be in ISO format, including hours and minutes. E.g. 2015-08-24 22:23";
+				+ "DATE should be in ISO format. E.g. 2015-08-24T22:23:00";
 		//@formatter:on
 
 		System.out.println(help);
