@@ -42,13 +42,10 @@ class CreditScene extends MenuScene {
 				creditSection.sectionName = childName;
 				creditSections.add(creditSection);
 
-				// Add all names
-				int cNames = child.getAll("names").size();
-				for (int i = 0; i < cNames; ++i) {
-					String creditString = child.fetch("names", i);
-					CreditName creditName = convertToCreditName(creditString);
-					creditSection.names.add(creditName);
-				}
+				parseTextLines(creditSection, child);
+				parseImageLine(creditSection, child);
+				parseUrlLine(creditSection, child);
+				parseTwitterLine(creditSection, child);
 			}
 		}
 
@@ -56,27 +53,75 @@ class CreditScene extends MenuScene {
 	}
 
 	/**
+	 * Add all text lines to the section
+	 * @param creditSection current credit section
+	 * @param iniSection
+	 */
+	private void parseTextLines(CreditSection creditSection, Section iniSection) {
+		int cNames = iniSection.getAll(TEXT_LINE).size();
+		for (int i = 0; i < cNames; ++i) {
+			String creditString = iniSection.fetch(TEXT_LINE, i);
+			CreditLine creditName = convertToCreditLine(creditString);
+			creditSection.texts.add(creditName);
+		}
+	}
+
+	/**
+	 * Parse twitter line
+	 * @param creditSection current credit section
+	 * @param iniSection
+	 */
+	private void parseTwitterLine(CreditSection creditSection, Section iniSection) {
+		String twitterString = iniSection.fetch(TWITTER_LINE);
+		if (twitterString != null) {
+			creditSection.twitter = new CreditLine();
+			creditSection.twitter.text = twitterString;
+			creditSection.twitter.url = TWITTER_URL_PREFIX + twitterString;
+		}
+	}
+
+	/**
+	 * Parse the URL line
+	 * @param creditSection current credit section
+	 * @param iniSection
+	 */
+	private void parseUrlLine(CreditSection creditSection, Section iniSection) {
+		String urlLine = iniSection.fetch(URL_LINE);
+		if (urlLine != null) {
+			creditSection.url = convertToCreditLine(urlLine);
+		}
+	}
+
+	/**
+	 * Parse the image line
+	 * @param creditSection current credit section
+	 * @param iniSection
+	 */
+	private void parseImageLine(CreditSection creditSection, Section iniSection) {
+		creditSection.imageName = iniSection.fetch(IMAGE_LINE);
+	}
+
+	/**
 	 * Converts a credit string into a CreditName class
 	 * @param creditString string to convert
 	 * @return valid credit name with possible link information
 	 */
-	private CreditName convertToCreditName(String creditString) {
-		CreditName creditName = new CreditName();
+	private CreditLine convertToCreditLine(String creditString) {
+		CreditLine creditName = new CreditLine();
 
-		String[] parts = creditString.split(", ");
-
-		// Name
-		if (parts.length >= 2) {
-			creditName.firstName = parts[0].trim();
-			creditName.lastName = parts[1].trim();
-		}
-		// LinkText
-		if (parts.length >= 3) {
-			creditName.linkText = parts[2].trim();
-		}
-		// URL
-		if (parts.length >= 4) {
-			creditName.url = parts[3].trim();
+		// Does it contain an URL
+		int httpIndex = creditString.indexOf("http");
+		if (httpIndex != -1) {
+			// If we only have an URL set is as text too
+			if (httpIndex == 0) {
+				creditName.text = creditString.trim();
+				creditName.url = creditString.trim();
+			} else {
+				creditName.text = creditString.substring(0, httpIndex).trim();
+				creditName.url = creditString.substring(httpIndex).trim();
+			}
+		} else {
+			creditName.text = creditString;
 		}
 
 		return creditName;
@@ -109,45 +154,75 @@ class CreditScene extends MenuScene {
 	class CreditSection {
 		/** Name of the section */
 		String sectionName = null;
-		/** All names in the section */
-		ArrayList<CreditName> names = new ArrayList<>();
-	}
+		/** Optional twitter account */
+		CreditLine twitter = null;
+		/** Optional URL */
+		CreditLine url = null;
+		/** Optional image name to be displayed above section name */
+		String imageName = null;
+		/** All text lines */
+		ArrayList<CreditLine> texts = new ArrayList<>();
 
-	/** Wrapper for a credit name */
-	class CreditName {
-		/** First name */
-		String firstName = null;
-		/** Surname */
-		String lastName = null;
 		/**
-		 * Optional link text, if starts with @ and doesn't have any URL it is treated as
-		 * a twitter link
+		 * @return true if the section has an image
 		 */
-		String linkText = null;
-		/** Optional link URL */
-		String url = null;
+		boolean hasImage() {
+			return imageName != null && !imageName.isEmpty();
+		}
 
 		/**
-		 * @return true if it has a twitter link
+		 * @return true if the section has an URL
+		 */
+		boolean hasUrl() {
+			return url != null && url.hasLink();
+		}
+
+		/**
+		 * @return true if the section has a twitter account
 		 */
 		boolean hasTwitter() {
-			return linkText != null && !linkText.isEmpty() && linkText.charAt(0) == '@' && url == null;
-		}
-
-		/**
-		 * @return true if a link exists. This method can return false where
-		 *         {@link #hasTwitter()} returns true
-		 */
-		boolean hasLink() {
-			return linkText != null && !linkText.isEmpty() && url != null && !url.isEmpty();
-		}
-
-		/**
-		 * @return correct twitter link
-		 */
-		String getTwitterLink() {
-			return "http://twitter.com/" + linkText;
+			return twitter != null && twitter.hasLink();
 		}
 	}
 
+	/** Wrapper for a line in each section */
+	class CreditLine {
+		private String text = null;
+		/**
+		 * URL is set for twitter and url keywords. Independent lines can also have an
+		 * URL. See credits.ini.
+		 */
+		private String url = null;
+
+		/**
+		 * @return text of the credit line
+		 */
+		String getText() {
+			if (text != null) {
+				return text;
+			} else {
+				return url;
+			}
+		}
+
+		/**
+		 * @return URL of the credit line
+		 */
+		String getUrl() {
+			return url;
+		}
+
+		/**
+		 * @return true if a link exists.
+		 */
+		boolean hasLink() {
+			return url != null && !url.isEmpty();
+		}
+	}
+
+	private static final String TEXT_LINE = "text";
+	private static final String TWITTER_LINE = "twitter";
+	private static final String URL_LINE = "url";
+	private static final String IMAGE_LINE = "image";
+	private static final String TWITTER_URL_PREFIX = "http://twitter.com/";
 }

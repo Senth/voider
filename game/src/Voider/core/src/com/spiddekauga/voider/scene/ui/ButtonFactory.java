@@ -2,6 +2,7 @@ package com.spiddekauga.voider.scene.ui;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -212,6 +213,27 @@ public class ButtonFactory extends BaseFactory {
 		TextButton textButton = new TextButton(text, style.getStyle());
 		new AnalyticsButtonListener(textButton, text);
 		return textButton;
+	}
+
+	/**
+	 * Adds a text button with an URL
+	 * @param text the text to display
+	 * @param url what we want to open
+	 * @param style which button style to use
+	 * @param table the table to add the text button to
+	 * @param hider optional GUI hider
+	 * @param createdActors optional adds the button to this list (if not null)
+	 * @return created text button cell
+	 */
+	public Cell addTextUrl(String text, final String url, TextButtonStyles style, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed(Button button) {
+				Gdx.net.openURI(url);
+			}
+		};
+
+		return addText(text, style, table, buttonListener, hider, createdActors);
 	}
 
 	/**

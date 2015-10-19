@@ -8,16 +8,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.ClientVersions;
-import com.spiddekauga.voider.menu.CreditScene.CreditName;
+import com.spiddekauga.voider.menu.CreditScene.CreditLine;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.CreditImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
+import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * UI for the credit scene
@@ -85,7 +85,7 @@ class CreditGui extends MenuGui {
 		mPaddingSection = SkinNames.getResource(SkinNames.CreditsVars.PADDING_SECTION);
 		mPaddingLogo = SkinNames.getResource(SkinNames.CreditsVars.PADDING_LOGO);
 		mSectionStyle = SkinNames.getResource(SkinNames.CreditsUi.LABEL_SECTION);
-		mNameStyle = SkinNames.getResource(SkinNames.CreditsUi.LABEL_NAME);
+		mTextStyle = SkinNames.getResource(SkinNames.CreditsUi.LABEL_NAME);
 		mScrollPaneSpeed = SkinNames.getResource(SkinNames.CreditsVars.SCROLL_SPEED);
 		mScrollRestartTime = SkinNames.getResource(SkinNames.CreditsVars.RESTART_TIME);
 	}
@@ -103,7 +103,8 @@ class CreditGui extends MenuGui {
 		ScrollPane scrollPane = new ScrollPane(mCreditTable);
 		mScrollPane = scrollPane;
 		mScrollPane.setSmoothScrolling(false);
-		scrollPane.setTouchable(Touchable.disabled);
+		scrollPane.setTouchable(Touchable.childrenOnly);
+		// scrollPane.setScrollingDisabled(true, true);
 		scrollPane.setVelocityY(mScrollPaneSpeed);
 
 		mMainTable.row();
@@ -126,25 +127,50 @@ class CreditGui extends MenuGui {
 	private void initCredits() {
 		ArrayList<CreditSection> creditSections = mScene.getCredits();
 
-		float padNames = mUiFactory.getStyles().vars.paddingInner / 2;
-
-		// Sections
+		// Sections / Names
 		for (CreditSection creditSection : creditSections) {
+			// Image
+			if (creditSection.hasImage()) {
+				// TODO Credit image
+			}
+
+			// Section / Name
 			mCreditTable.row();
 			Label label = new Label(creditSection.sectionName, mSectionStyle);
 			mCreditTable.add(label).setPadTop(mPaddingSection).setPadBottom(mPaddingSection / 2);
 
-			// Names
-			for (CreditName creditName : creditSection.names) {
-				mCreditTable.row().setPadBottom(mUiFactory.getStyles().vars.paddingOuter).setAlign(Horizontal.CENTER);
 
-				label = new Label(creditName.firstName, mNameStyle);
-				label.setAlignment(Align.right);
-				mCreditTable.add(label).setPadRight(padNames);
-
-				label = new Label(creditName.lastName, mNameStyle);
-				mCreditTable.add(label).setPadLeft(padNames);
+			// Text / Roles
+			for (CreditLine creditLine : creditSection.texts) {
+				addCreditLine(creditLine);
 			}
+
+			// URL
+			if (creditSection.hasUrl()) {
+				addCreditLine(creditSection.url);
+			}
+
+			// Twitter
+			if (creditSection.hasTwitter()) {
+				addCreditLine(creditSection.twitter);
+			}
+		}
+	}
+
+	/**
+	 * Add a new line to the credit section
+	 * @param creditLine show credits
+	 */
+	private void addCreditLine(CreditLine creditLine) {
+		mCreditTable.row().setPadBottom(mUiFactory.getStyles().vars.paddingOuter).setAlign(Horizontal.CENTER);
+
+		// URL
+		if (creditLine.hasLink()) {
+			mUiFactory.button.addTextUrl(creditLine.getText(), creditLine.getUrl(), TextButtonStyles.LINK, mCreditTable, null, null);
+		}
+		// Regular Text
+		else {
+			mCreditTable.add(new Label(creditLine.getText(), mTextStyle));
 		}
 	}
 
@@ -192,7 +218,7 @@ class CreditGui extends MenuGui {
 	}
 
 	private float mScrollY = 0;
-	private LabelStyle mNameStyle = null;
+	private LabelStyle mTextStyle = null;
 	private LabelStyle mSectionStyle = null;
 	private float mPaddingHeader = 0;
 	private float mPaddingSection = 0;
