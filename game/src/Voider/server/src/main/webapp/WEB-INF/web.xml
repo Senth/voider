@@ -173,6 +173,33 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	
 	
+	<!-- Backup -->
+	<servlet>
+		<servlet-name>BackupNewBlobs</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.backup.BackupNewBlobs</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BackupNewBlobs</servlet-name>
+		<url-pattern>/api/backup-new-blobs</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DeleteAllBlobs</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.backup.DeleteAllBlobs</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteAllBlobs</servlet-name>
+		<url-pattern>/api/delete-all-blobs</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>RestoreBlobs</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.backup.RestoreBlobs</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RestoreBlobs</servlet-name>
+		<url-pattern>/api/restore-blobs</url-pattern>
+	</servlet-mapping>
+	
+	
 	<!-- Misc -->
 	<servlet>
 		<servlet-name>BugReport</servlet-name>
@@ -189,14 +216,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet-mapping>
 		<servlet-name>Analytics</servlet-name>
 		<url-pattern>/api/analytics</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>BackupNewBlobs</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.api.BackupNewBlobs</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>BackupNewBlobs</servlet-name>
-		<url-pattern>/api/backup-new-blobs</url-pattern>
 	</servlet-mapping>
 
 
