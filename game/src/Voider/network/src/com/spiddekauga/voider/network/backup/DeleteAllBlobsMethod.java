@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  */
 public class DeleteAllBlobsMethod implements IMethodEntity {
 	/** Secret key for deleting all blobs, not very secure, but secure enough */
-	public String key = null;
+	public long key = 15665486L;
 
 	@Override
 	public MethodNames getMethodName() {
