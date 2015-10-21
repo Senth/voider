@@ -13,12 +13,16 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.badlogic.gdx.utils.Base64Coder;
 import com.spiddekauga.http.HttpPostBuilder;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.misc.GetUploadUrlMethod;
+import com.spiddekauga.voider.network.misc.GetUploadUrlResponse;
 
 /**
  * Interface for various actions
@@ -101,19 +105,76 @@ abstract class Action {
 	/**
 	 * Call the method
 	 * @param method the method to call
-	 * @return response server response
+	 * @return server response
 	 */
 	protected IEntity callServerMethod(IMethodEntity method) {
+		return callServerMethod(method, null);
+	}
+
+	/**
+	 * Upload files to the server
+	 * @param method the server method to redirect to after uploading
+	 * @param files all files to upload
+	 * @return server response
+	 */
+	protected IEntity uploadToServer(IMethodEntity method, List<FieldNameFileWrapper> files) {
+		// Get upload url
+		GetUploadUrlMethod uploadMethod = new GetUploadUrlMethod();
+		uploadMethod.redirectMethod = method.getMethodName().toString();
+		IEntity uploadUrlResponse = callServerMethod(uploadMethod);
+
+		// Upload files
+		if (uploadUrlResponse instanceof GetUploadUrlResponse) {
+			String uploadUrl = ((GetUploadUrlResponse) uploadUrlResponse).uploadUrl;
+			if (uploadUrl != null) {
+				return callServerMethod(method, uploadUrl, files);
+			}
+		}
+
+		System.err.println("Failed getting an upload url");
+		System.exit(1);
+		return null;
+	}
+
+	/**
+	 * Call the method
+	 * @param method the method to call
+	 * @param files optional files to upload
+	 * @return server response
+	 */
+	private IEntity callServerMethod(IMethodEntity method, List<FieldNameFileWrapper> files) {
+		return callServerMethod(method, method.getMethodName().toString(), files);
+	}
+
+	/**
+	 * Call the method
+	 * @param method the method to call
+	 * @param uri method to call on the server
+	 * @param files optional files to upload
+	 * @return server response
+	 */
+	private IEntity callServerMethod(IMethodEntity method, String uri, List<FieldNameFileWrapper> files) {
 		byte[] entitySend = NetworkEntitySerializer.serializeEntity(method);
 		if (entitySend != null) {
 			try {
-				HttpPostBuilder postBuilder = new HttpPostBuilder(mUrl + method.getMethodName());
+				HttpPostBuilder postBuilder = new HttpPostBuilder(mUrl + uri);
 				postBuilder.doFileUpload();
 
-				// TODO add files
 
+				// Add files
+				if (files != null && !files.isEmpty()) {
+					for (FieldNameFileWrapper fieldNameFile : files) {
+						postBuilder.addFile(fieldNameFile.mFieldName, fieldNameFile.mFile);
+					}
+
+					// Add method entity as base64
+					postBuilder.addParameter(ENTITY_NAME, Base64Coder.encode(entitySend));
+				}
 				// Add method entity
-				postBuilder.addParameter(ENTITY_NAME, entitySend);
+				else {
+					postBuilder.addParameter(ENTITY_NAME, entitySend);
+				}
+
 
 				HttpURLConnection connection = postBuilder.build();
 
@@ -187,6 +248,26 @@ abstract class Action {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Wrapper class for a file and field name
+	 */
+	public static class FieldNameFileWrapper {
+		/**
+		 * @param fieldName name of the field
+		 * @param file the file to upload
+		 */
+		public FieldNameFileWrapper(String fieldName, File file) {
+			mFieldName = fieldName;
+			mFile = file;
+		}
+
+		/** Field name in the form */
+		private String mFieldName;
+		/** The file to upload */
+		private File mFile;
+
 	}
 
 	/** Backup directory */
