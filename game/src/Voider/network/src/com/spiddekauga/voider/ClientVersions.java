@@ -286,7 +286,9 @@ public enum ClientVersions {
 			"	Steering",
 			"		You can now click anywhere on the screen",
 			"		This way you will be able to see the ship :)",
-			"	Credits, changed layout"
+			"	Credits, changed layout",
+			"Server",
+			"	Backup every day"
 			),
 	;
 	// @formatter:on
