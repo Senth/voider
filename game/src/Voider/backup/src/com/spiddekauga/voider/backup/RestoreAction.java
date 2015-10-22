@@ -10,6 +10,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import com.spiddekauga.voider.network.backup.DeleteAllBlobsMethod;
 import com.spiddekauga.voider.network.backup.DeleteAllBlobsResponse;
@@ -27,6 +28,7 @@ public class RestoreAction extends Action {
 	public void execute() {
 		if (deleteBlobsOnServer()) {
 			restoreBlobsToServer();
+
 		}
 	}
 
@@ -49,8 +51,9 @@ public class RestoreAction extends Action {
 	 * Restore all files in the backup directory to the specified date
 	 */
 	private void restoreBlobsToServer() {
-		restoreBlobsFromDir(new File(getBackupDir()), new ArrayList<FieldNameFileWrapper>());
-
+		ArrayList<FieldNameFileWrapper> uploadFiles = new ArrayList<>();
+		restoreBlobsFromDir(new File(getBackupDir()), uploadFiles);
+		checkAndUploadFiles(uploadFiles, true);
 	}
 
 	/**
@@ -83,11 +86,27 @@ public class RestoreAction extends Action {
 
 				// Add directory UUID
 				if (dirIsUuid) {
-					filename = dirName + "_" + file.getName();
+					// Filename should be an Integer
+					try {
+						Integer.parseInt(file.getName());
+						filename = dirName + "_" + file.getName();
+					}
+					// Not an integer, skip this file
+					catch (NumberFormatException e) {
+						continue;
+					}
 				}
 				// Filename is UUID
 				else {
-					filename = file.getName();
+					// Filename should be a UUID
+					try {
+						UUID.fromString(file.getName());
+						filename = file.getName();
+					}
+					// Not an UUID, skip
+					catch (IllegalArgumentException e) {
+						continue;
+					}
 				}
 
 				uploadFiles.add(new FieldNameFileWrapper(filename, file));
@@ -95,8 +114,6 @@ public class RestoreAction extends Action {
 				checkAndUploadFiles(uploadFiles, false);
 			}
 		}
-
-		checkAndUploadFiles(uploadFiles, true);
 	}
 
 	/**
@@ -108,12 +125,14 @@ public class RestoreAction extends Action {
 	private void checkAndUploadFiles(ArrayList<FieldNameFileWrapper> files, boolean forceUpload) {
 		if (forceUpload || files.size() >= MAX_BLOBS_PER_UPLOAD) {
 			RestoreBlobsMethod method = new RestoreBlobsMethod();
+			mLogger.info("Uploading " + files.size() + " blobs...");
 			IEntity response = uploadToServer(method, files);
 
 			if (response instanceof RestoreBlobsResponse) {
 				RestoreBlobsResponse restoreBlobsResponse = (RestoreBlobsResponse) response;
 
 				if (!restoreBlobsResponse.isSuccessful()) {
+					System.err.println(restoreBlobsResponse.errorMessage);
 					System.err.println("Failed to restore blobs. Exiting...");
 					System.exit(1);
 				}
@@ -155,6 +174,7 @@ public class RestoreAction extends Action {
 		return super.isAllArgumentsSet() && mDate != null;
 	}
 
+	private static final Logger mLogger = Logger.getLogger(RestoreAction.class.getSimpleName());
 	private static final int MAX_BLOBS_PER_UPLOAD = 100;
 	private Date mDate = null;
 }

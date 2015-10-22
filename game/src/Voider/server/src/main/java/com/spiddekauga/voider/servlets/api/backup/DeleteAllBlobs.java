@@ -12,6 +12,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.voider.network.backup.DeleteAllBlobsMethod;
 import com.spiddekauga.voider.network.backup.DeleteAllBlobsResponse;
+import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
@@ -24,6 +25,7 @@ public class DeleteAllBlobs extends VoiderApiServlet<DeleteAllBlobsMethod> {
 	@Override
 	protected void onInit() {
 		mResponse = new DeleteAllBlobsResponse();
+		mResponse.status = GeneralResponseStatuses.SUCCESS;
 	}
 
 	@Override

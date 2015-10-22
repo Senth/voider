@@ -25,10 +25,6 @@ public class GetUploadUrl extends VoiderApiServlet<GetUploadUrlMethod> {
 
 	@Override
 	protected IEntity onRequest(GetUploadUrlMethod method) throws ServletException, IOException {
-		if (!mUser.isLoggedIn()) {
-			return null;
-		}
-
 		GetUploadUrlResponse methodResponse = new GetUploadUrlResponse();
 
 		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();

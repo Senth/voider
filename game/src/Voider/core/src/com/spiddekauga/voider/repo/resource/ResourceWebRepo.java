@@ -349,11 +349,17 @@ public class ResourceWebRepo extends WebRepo {
 	private IEntity handleResourceDownloadResponse(IEntity response) {
 		// Download all resources
 		if (response instanceof ResourceDownloadResponse) {
+			ResourceDownloadResponse resourceDownloadResponse = (ResourceDownloadResponse) response;
 
-			boolean success = downloadResources(((ResourceDownloadResponse) response).resources, null);
+			for (ResourceBlobEntity resourceBlobEntity : resourceDownloadResponse.resources) {
+				Gdx.app.debug(ResourceWebRepo.class.getSimpleName(), "Resource: " + resourceBlobEntity.resourceId + ", BlobKey: "
+						+ resourceBlobEntity.blobKey);
+			}
+
+			boolean success = downloadResources(resourceDownloadResponse.resources, null);
 
 			if (!success) {
-				((ResourceDownloadResponse) response).status = ResourceDownloadResponse.Statuses.FAILED_DOWNLOAD;
+				resourceDownloadResponse.status = ResourceDownloadResponse.Statuses.FAILED_DOWNLOAD;
 			}
 
 			return response;

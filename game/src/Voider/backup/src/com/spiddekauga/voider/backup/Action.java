@@ -73,6 +73,13 @@ abstract class Action {
 	}
 
 	/**
+	 * @return revision backup directory
+	 */
+	protected String getBackupRevDir() {
+		return mBackupDir + "userResources/";
+	}
+
+	/**
 	 * Set the URL of the action
 	 * @param Url
 	 */
@@ -143,21 +150,21 @@ abstract class Action {
 	 * @return server response
 	 */
 	private IEntity callServerMethod(IMethodEntity method, List<FieldNameFileWrapper> files) {
-		return callServerMethod(method, method.getMethodName().toString(), files);
+		return callServerMethod(method, mUrl + method.getMethodName().toString(), files);
 	}
 
 	/**
 	 * Call the method
 	 * @param method the method to call
-	 * @param uri method to call on the server
+	 * @param url full URL to call on the server
 	 * @param files optional files to upload
 	 * @return server response
 	 */
-	private IEntity callServerMethod(IMethodEntity method, String uri, List<FieldNameFileWrapper> files) {
+	private IEntity callServerMethod(IMethodEntity method, String url, List<FieldNameFileWrapper> files) {
 		byte[] entitySend = NetworkEntitySerializer.serializeEntity(method);
 		if (entitySend != null) {
 			try {
-				HttpPostBuilder postBuilder = new HttpPostBuilder(mUrl + uri);
+				HttpPostBuilder postBuilder = new HttpPostBuilder(url);
 				postBuilder.doFileUpload();
 
 

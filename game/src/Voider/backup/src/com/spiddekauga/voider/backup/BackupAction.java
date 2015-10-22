@@ -25,7 +25,6 @@ import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BackupAction extends Action {
-
 	@Override
 	public void execute() {
 		BackupNewBlobsResponse response = getNewBlobs();
@@ -74,10 +73,10 @@ public class BackupAction extends Action {
 		for (ResourceRevisionBlobEntity userBlob : newBlobs.userBlobs) {
 			downloadMethod.blobKey = userBlob.blobKey;
 
-			userBlob.downloaded = createResourceDirectory(userBlob.resourceId);
+			userBlob.downloaded = createRevisionDirectory(userBlob.resourceId);
 			if (userBlob.downloaded) {
 				mLogger.info("Downloading user blob " + userBlob.resourceId + ":" + userBlob.revision);
-				String filepath = userBlob.resourceId.toString() + "/" + userBlob.revision;
+				String filepath = "userResources/" + userBlob.resourceId + "/" + userBlob.resourceId + "_" + userBlob.revision;
 				userBlob.downloaded = downloadRequest(downloadMethod, filepath, userBlob.created);
 			}
 		}
@@ -88,8 +87,8 @@ public class BackupAction extends Action {
 	 * @param resourceId id of the resource to create a directory for
 	 * @return true if the resource directory has been created or already exists
 	 */
-	private boolean createResourceDirectory(UUID resourceId) {
-		Path path = Paths.get(getBackupDir() + resourceId.toString());
+	private boolean createRevisionDirectory(UUID resourceId) {
+		Path path = Paths.get(getBackupRevDir() + resourceId.toString());
 		boolean createDir = false;
 		if (Files.exists(path)) {
 			// Is a directory
@@ -108,7 +107,7 @@ public class BackupAction extends Action {
 
 		if (createDir) {
 			try {
-				Files.createDirectory(path);
+				Files.createDirectories(path);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;

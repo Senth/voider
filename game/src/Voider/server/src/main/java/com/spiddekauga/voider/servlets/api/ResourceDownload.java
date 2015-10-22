@@ -121,6 +121,7 @@ public class ResourceDownload extends VoiderApiServlet<ResourceDownloadMethod> {
 				foundBlob.blobKey = blobKey.getKeyString();
 				foundBlob.resourceId = mParameters.resourceId;
 				foundBlob.uploadType = uploadType;
+				mLogger.info("BlobKey: " + foundBlob.blobKey);
 			}
 		}
 		// User resource

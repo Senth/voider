@@ -265,11 +265,11 @@ public abstract class WebRepo {
 	 */
 	protected class DownloadBlobWrapper {
 		/**
-		 * @param methodEntity
+		 * @param method
 		 * @param filepath
 		 */
-		protected DownloadBlobWrapper(BlobDownloadMethod methodEntity, String filepath) {
-			mMethodEntity = methodEntity;
+		protected DownloadBlobWrapper(BlobDownloadMethod method, String filepath) {
+			mMethod = method;
 			mFilepath = filepath;
 		}
 
@@ -303,7 +303,7 @@ public abstract class WebRepo {
 		}
 
 		private String mFilepath;
-		private BlobDownloadMethod mMethodEntity;
+		private BlobDownloadMethod mMethod;
 		private Boolean mDownloaded = null;
 	}
 
@@ -336,7 +336,7 @@ public abstract class WebRepo {
 				try {
 					DownloadBlobWrapper toDownload = mToDownload.take();
 
-					boolean success = serializeAndDownload(toDownload.mMethodEntity, toDownload.mFilepath);
+					boolean success = serializeAndDownload(toDownload.mMethod, toDownload.mFilepath);
 					toDownload.setDownloaded(success);
 
 				} catch (IndexOutOfBoundsException | InterruptedException e) {

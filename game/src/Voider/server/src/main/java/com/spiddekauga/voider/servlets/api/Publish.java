@@ -167,6 +167,13 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 			List<Key> keys = DatastoreUtils.getKeys(DatastoreTables.USER_RESOURCES, mUser.getKey(), idProperty);
 			entitiesToRemove.addAll(keys);
 
+			// Add level resources
+			if (def instanceof LevelDefEntity) {
+				LevelDefEntity levelDefEntity = (LevelDefEntity) def;
+				FilterWrapper filterByLevelId = new FilterWrapper(CUserResources.RESOURCE_ID, levelDefEntity.levelId);
+				keys.addAll(DatastoreUtils.getKeys(DatastoreTables.USER_RESOURCES, mUser.getKey(), filterByLevelId));
+			}
+
 			// Blobs to delete
 			for (Key key : keys) {
 				Entity entity = DatastoreUtils.getEntity(key);
@@ -659,7 +666,7 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 
 
 		// No-test properties
-		DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.LEVEL_ID, LevelDefEntity.levelId);
+		DatastoreUtils.setProperty(datastoreEntity, CPublished.LEVEL_ID, LevelDefEntity.levelId);
 
 		return appendDefEntity(datastoreEntity, LevelDefEntity);
 	}

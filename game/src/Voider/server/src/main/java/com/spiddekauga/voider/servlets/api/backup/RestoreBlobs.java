@@ -40,7 +40,7 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 			bindBlobKeys(container);
 			mResponse.status = GeneralResponseStatuses.SUCCESS;
 		} catch (IllegalArgumentException e) {
-			mResponse.errorMessage = "Failed to convert fieldname to UUID";
+			mResponse.errorMessage = "Failed to convert fieldname to UUID: " + e.getMessage();
 			mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 		} catch (ResourceNotFoundException e) {
 			mResponse.errorMessage = e.getErrorMessage();
@@ -117,7 +117,8 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 		}
 		// Entity not found, abort
 		else {
-			throw new ResourceNotFoundException("Couldn't find resource (" + resourceId + ") in published!");
+			throw new ResourceNotFoundException("Couldn't find resource (" + resourceId + ") in published! (least: "
+					+ resourceId.getLeastSignificantBits() + ", most: " + resourceId.getMostSignificantBits());
 		}
 	};
 
