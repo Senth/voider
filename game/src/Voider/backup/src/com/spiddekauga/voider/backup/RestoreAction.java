@@ -38,6 +38,7 @@ public class RestoreAction extends Action {
 	 */
 	private boolean deleteBlobsOnServer() {
 		DeleteAllBlobsMethod method = new DeleteAllBlobsMethod();
+		mLogger.info("Deleting server blobs");
 		IEntity entity = callServerMethod(method);
 
 		if (entity instanceof DeleteAllBlobsResponse) {
@@ -62,18 +63,6 @@ public class RestoreAction extends Action {
 	 * @param uploadFiles all files to be uploaded
 	 */
 	private void restoreBlobsFromDir(File dir, ArrayList<FieldNameFileWrapper> uploadFiles) {
-		String dirName = dir.getName();
-		boolean dirIsUuid = false;
-
-		// Check if this is a user resource directory, thus the directory is the UUID and
-		// filenames are the revision
-		try {
-			UUID.fromString(dirName);
-			dirIsUuid = true;
-		} catch (IllegalArgumentException e) {
-			// Does nothing
-		}
-
 		// For all files in the backup directory
 		for (File file : dir.listFiles()) {
 			// Recursive
@@ -82,36 +71,16 @@ public class RestoreAction extends Action {
 			}
 			// A file and it should be restored
 			else if (isBeforeRestoreDate(file)) {
-				String filename;
+				// Only upload resources
+				try {
+					String uuidString = file.getName().split("_")[0];
+					UUID.fromString(uuidString);
 
-				// Add directory UUID
-				if (dirIsUuid) {
-					// Filename should be an Integer
-					try {
-						Integer.parseInt(file.getName());
-						filename = dirName + "_" + file.getName();
-					}
-					// Not an integer, skip this file
-					catch (NumberFormatException e) {
-						continue;
-					}
+					uploadFiles.add(new FieldNameFileWrapper(file.getName(), file));
+					checkAndUploadFiles(uploadFiles, false);
+				} catch (IllegalArgumentException e) {
+					mLogger.info("Skipping file: " + file.getName());
 				}
-				// Filename is UUID
-				else {
-					// Filename should be a UUID
-					try {
-						UUID.fromString(file.getName());
-						filename = file.getName();
-					}
-					// Not an UUID, skip
-					catch (IllegalArgumentException e) {
-						continue;
-					}
-				}
-
-				uploadFiles.add(new FieldNameFileWrapper(filename, file));
-
-				checkAndUploadFiles(uploadFiles, false);
 			}
 		}
 	}
