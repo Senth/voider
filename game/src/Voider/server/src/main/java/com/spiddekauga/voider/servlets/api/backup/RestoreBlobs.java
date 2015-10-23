@@ -98,7 +98,8 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED, filterByResourceId);
 
 		if (entity != null) {
-			entity.setProperty(CPublished.BLOB_KEY, blobKey);
+			mLogger.info("Resource found");
+			entity.setUnindexedProperty(CPublished.BLOB_KEY, blobKey);
 		}
 
 		// Search level id
@@ -107,13 +108,22 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 			entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED, filterByLevelId);
 
 			if (entity != null) {
-				entity.setProperty(CPublished.LEVEL_BLOB_KEY, blobKey);
+				entity.setUnindexedProperty(CPublished.LEVEL_BLOB_KEY, blobKey);
 			}
 		}
 
-		// Add to list to update later
+		// Add to datastore
 		if (entity != null) {
-			mEntitiesToUpdate.add(entity);
+			mLogger.info(entity.toString());
+			// Add directly to the datastore so both IDs are updated correctly
+			if (entity.hasProperty(CPublished.LEVEL_BLOB_KEY)) {
+				mLogger.info("Put directly");
+				DatastoreUtils.put(entity);
+			}
+			// Update later
+			else {
+				mEntitiesToUpdate.add(entity);
+			}
 		}
 		// Entity not found, abort
 		else {

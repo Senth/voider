@@ -28,7 +28,7 @@ public class RestoreAction extends Action {
 	public void execute() {
 		if (deleteBlobsOnServer()) {
 			restoreBlobsToServer();
-
+			mLogger.fine("Blobs restored.");
 		}
 	}
 

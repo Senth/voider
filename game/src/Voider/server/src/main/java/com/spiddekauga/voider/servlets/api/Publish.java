@@ -544,7 +544,7 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 		// Blob key
 		BlobKey blobKey = mBlobKeys.get(defEntity.resourceId);
 		if (blobKey != null) {
-			DatastoreUtils.setProperty(datastoreEntity, CPublished.BLOB_KEY, blobKey);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.BLOB_KEY, blobKey);
 		} else {
 			mLogger.severe("Could not find blob key for " + defEntity.resourceId);
 			return false;

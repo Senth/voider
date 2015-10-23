@@ -35,6 +35,7 @@ public class Upgrade extends VoiderApiServlet<IMethodEntity> {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity method) throws ServletException, IOException {
+		makeBlobsUnindexed();
 		indexLevelId();
 		removeDeletedBlobs();
 
@@ -42,6 +43,20 @@ public class Upgrade extends VoiderApiServlet<IMethodEntity> {
 		getResponse().getWriter().append("DONE !");
 
 		return null;
+	}
+
+	private void makeBlobsUnindexed() {
+		ArrayList<Entity> updateEntities = new ArrayList<>();
+
+		Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.PUBLISHED);
+		for (Entity entity : entities) {
+			BlobKey blobKey = (BlobKey) entity.getProperty(CPublished.BLOB_KEY);
+			entity.removeProperty(CPublished.BLOB_KEY);
+			entity.setUnindexedProperty(CPublished.BLOB_KEY, blobKey);
+			updateEntities.add(entity);
+		}
+
+		DatastoreUtils.put(updateEntities);
 	}
 
 	private void indexLevelId() {
