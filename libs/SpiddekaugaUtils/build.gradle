@@ -51,14 +51,15 @@ install {
 
 uploadArchives {
 	repositories {
+		// Set mavenRepositoryUrl & mavenUserName inside gradle.properties
 		mavenDeployer {
 			configuration = configurations.deployerJars
-			pom.artifactId = 'spiddekauga-utils'
-			repository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org/releases") {
-				authentication(userName: "senth")
+ 			pom.artifactId = project.name
+			repository(url: mavenRepositoryUrl + '/releases') {
+				authentication(userName: mavenUserName)
 			}
-			snapshotRepository(url: "scp://senth.org/mnt/lvm/www/maven.senth.org/snapshots") {
-				authentication(userName: "senth")
+			snapshotRepository(url: mavenRepositoryUrl + '/snapshots') {
+				authentication(userName: mavenUserName)
 			}
 		}
 	}
