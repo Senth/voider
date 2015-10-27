@@ -290,6 +290,9 @@ public enum ClientVersions {
 			"Server",
 			"	Backup every day"
 			),
+	V0_5_14(false,
+			"Improvements"
+			),
 	;
 	// @formatter:on
 

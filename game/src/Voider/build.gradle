@@ -25,7 +25,7 @@ ext.defaultBuild = "DEV_LOCAL"
 allprojects {
     apply plugin: "eclipse"
     
-    version = '0-5-13'
+    version = '0-5-14'
     ext {
         appName = 'Voider'
         gdxVersion = '1.6.4-SNAPSHOT'
