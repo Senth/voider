@@ -75,6 +75,7 @@ public class RestoreAction extends Action {
 				try {
 					String uuidString = file.getName().split("_")[0];
 					UUID.fromString(uuidString);
+					mLogger.info("Added file: " + file.getName());
 
 					uploadFiles.add(new FieldNameFileWrapper(file.getName(), file));
 					checkAndUploadFiles(uploadFiles, false);

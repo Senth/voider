@@ -70,6 +70,7 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 		mResponse = new PublishResponse();
 		mResponse.status = Statuses.FAILED_SERVER_ERROR;
 		mDatastoreKeys.clear();
+		mPublishDate = new Date();
 	}
 
 	@Override
@@ -559,7 +560,7 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 
 
 		// No-test properties
-		DatastoreUtils.setProperty(datastoreEntity, CPublished.DATE, defEntity.date);
+		DatastoreUtils.setProperty(datastoreEntity, CPublished.DATE, mPublishDate);
 		DatastoreUtils.setProperty(datastoreEntity, CPublished.COPY_PARENT_ID, defEntity.copyParentId);
 		DatastoreUtils.setProperty(datastoreEntity, CPublished.RESOURCE_ID, defEntity.resourceId);
 		DatastoreUtils.setUnindexedProperty(datastoreEntity, CPublished.NAME, defEntity.name);
@@ -576,7 +577,7 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 	 */
 	private void appendDefEntity(Builder builder, DefEntity defEntity) {
 		SearchUtils.addField(builder, SDef.NAME, defEntity.name.toLowerCase(), TokenSizes.RESOURCE);
-		SearchUtils.addField(builder, SDef.DATE, defEntity.date);
+		SearchUtils.addField(builder, SDef.DATE, mPublishDate);
 
 		// Add name of creators
 		String creatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.revisedByKey));
@@ -747,6 +748,8 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 		}
 	}
 
+	/** Used when inserting the published resources to the datastore */
+	private Date mPublishDate = null;
 	/** Created search documents */
 	private HashMap<UploadTypes, ArrayList<Document>> mSearchDocumentsToAdd = new HashMap<>();
 	private Map<UUID, BlobKey> mBlobKeys = null;

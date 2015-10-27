@@ -62,7 +62,7 @@ public class BackupNewBlobs extends VoiderApiServlet<BackupNewBlobsMethod> {
 			}
 
 			// Level blob
-			if (entity.hasProperty(CPublished.LEVEL_ID)) {
+			if (entity.hasProperty(CPublished.LEVEL_BLOB_KEY)) {
 				blobEntity = new ResourceBlobEntity();
 				blobEntity.resourceId = DatastoreUtils.getPropertyUuid(entity, CPublished.LEVEL_ID);
 				blobEntity.created = (Date) entity.getProperty(CPublished.DATE);

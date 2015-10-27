@@ -14,6 +14,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.DatastoreUtils.PropertyNotFoundException;
@@ -158,9 +159,10 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 			}
 		}
 
-		// Not all revisions were updated, abort
+		// All revisions have been published, remove uploaded blobs
 		if (!blobKeys.isEmpty()) {
-			throw new ResourceNotFoundException("Couldn't update " + blobKeys.size() + " revisions for " + resourceId);
+			mLogger.fine("Skipping " + blobKeys.size() + " revisions for " + resourceId);
+			BlobUtils.delete(blobKeys.values());
 		}
 	}
 
