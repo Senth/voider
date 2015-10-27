@@ -1,5 +1,6 @@
 package com.spiddekauga.appengine;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +97,7 @@ public class BlobUtils {
 	 * Delete all specified blobs
 	 * @param blobKeys keys to the blobs to delete
 	 */
-	public static void delete(List<BlobKey> blobKeys) {
+	public static void delete(Collection<BlobKey> blobKeys) {
 		// Convert to array
 		BlobKey[] array = new BlobKey[blobKeys.size()];
 		blobKeys.toArray(array);
