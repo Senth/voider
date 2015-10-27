@@ -88,7 +88,7 @@ public class BlobUtils {
 	 * Delete the specified blobs
 	 * @param blobKeys keys to the blobs to delete
 	 */
-	public static void deleteBlob(BlobKey... blobKeys) {
+	public static void delete(BlobKey... blobKeys) {
 		mBlobstore.delete(blobKeys);
 	}
 
