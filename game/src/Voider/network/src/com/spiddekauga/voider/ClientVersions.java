@@ -291,7 +291,9 @@ public enum ClientVersions {
 			"	Backup every day"
 			),
 	V0_6_0(true,
-			"Improvements"
+			"Login Method",
+			"	Changed how login works, this breaks the old login and doesn't display that",
+			"	a new version is available"
 			),
 	;
 	// @formatter:on

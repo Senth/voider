@@ -20,8 +20,8 @@ import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.misc.NetworkConfig;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
-import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatus.ClientVersionStatuses;
 import com.spiddekauga.voider.network.user.LoginResponse.Statuses;
+import com.spiddekauga.voider.network.user.LoginResponse.VersionInformation;
 import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
@@ -65,22 +65,22 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 		// Check client needs to be updated
 		if (updateAvailable) {
 			if (ClientVersions.isUpdateNeeded(method.clientVersion)) {
-				mResponse.clientVersionStatus().status = ClientVersionStatuses.UPDATE_REQUIRED;
+				mResponse.versionInfo.status = VersionInformation.Statuses.UPDATE_REQUIRED;
 			} else {
-				mResponse.clientVersionStatus().status = ClientVersionStatuses.NEW_VERSION_AVAILABLE;
+				mResponse.versionInfo.status = VersionInformation.Statuses.NEW_VERSION_AVAILABLE;
 			}
-			mResponse.clientVersionStatus().changeLogMessage = ClientVersions.getChangeLogs(method.clientVersion);
+			mResponse.versionInfo.changeLogMessage = ClientVersions.getChangeLogs(method.clientVersion);
 
 			// Add download URL
 			Builds build = Builds.getCurrent();
 			if (build != null) {
 				String downloadUrl = build.getDownloadDesktopUrl();
 				if (downloadUrl != null) {
-					mResponse.clientVersionStatus().changeLogMessage += NetworkConfig.SPLIT_TOKEN + downloadUrl;
+					mResponse.versionInfo.changeLogMessage += NetworkConfig.SPLIT_TOKEN + downloadUrl;
 				}
 			}
 		} else {
-			mResponse.clientVersionStatus().status = ClientVersionStatuses.UP_TO_DATE;
+			mResponse.versionInfo.status = VersionInformation.Statuses.UP_TO_DATE;
 		}
 	}
 
@@ -114,7 +114,7 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 				updateLastLoggedIn(datastoreEntity);
 
 				// Only login online if we have a valid version
-				switch (mResponse.clientVersionStatus().status) {
+				switch (mResponse.versionInfo.status) {
 				case NEW_VERSION_AVAILABLE:
 				case UP_TO_DATE:
 					mUser.login(datastoreEntity.getKey(), mResponse.username, method.clientId);
@@ -155,7 +155,7 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 			motd.content = (String) entity.getProperty(CMotd.CONTENT);
 			motd.type = DatastoreUtils.getPropertyIdStore(entity, CMotd.TYPE, MotdTypes.class);
 
-			mResponse.motd().messages.add(motd);
+			mResponse.motds.add(motd);
 		}
 	}
 

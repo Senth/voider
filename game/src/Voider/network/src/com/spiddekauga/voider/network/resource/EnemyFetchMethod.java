@@ -29,9 +29,6 @@ public class EnemyFetchMethod extends FetchMethod {
 	/** Collision damage categories */
 	public ArrayList<CollisionDamageSearchRanges> collisionDamageRanges = new ArrayList<>();
 
-	private static final long serialVersionUID = 1L;
-
-
 	/**
 	 * Creates a copy of this method
 	 * @return a copy of this method

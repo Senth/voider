@@ -4,7 +4,7 @@
 	<cron>
 		<description>Daily backup</description>
 		<!-- Change URL settings in build.gradle -->
-		<url>/_ah/datastore_admin/backup.create?name=datastore&amp;queue=backup&amp;filesystem=gs&amp;gs_bucket_name=voider-beta&amp;kind=analytics_event&amp;kind=analytics_scene&amp;kind=analytics_session&amp;kind=beta_group&amp;kind=beta_key&amp;kind=beta_signup&amp;kind=dependency&amp;kind=highscore&amp;kind=level_stat&amp;kind=level_tag&amp;kind=motd&amp;kind=published&amp;kind=sync_published&amp;kind=user_level_stat&amp;kind=user_resources&amp;kind=user_resources_deleted&amp;kind=users</url><!--backup-replace-->
+		<url>/_ah/datastore_admin/backup.create?name=datastore&amp;queue=backup&amp;filesystem=gs&amp;gs_bucket_name=voider-dev&amp;kind=analytics_event&amp;kind=analytics_scene&amp;kind=analytics_session&amp;kind=beta_group&amp;kind=beta_key&amp;kind=beta_signup&amp;kind=dependency&amp;kind=highscore&amp;kind=level_stat&amp;kind=level_tag&amp;kind=motd&amp;kind=published&amp;kind=sync_published&amp;kind=user_level_stat&amp;kind=user_resources&amp;kind=user_resources_deleted&amp;kind=users</url><!--backup-replace-->
 		<schedule>every day 03:00</schedule>
 		<timezone>Europe/Stockholm</timezone>
 		<target>ah-builtin-python-bundle</target>

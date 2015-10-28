@@ -14,6 +14,4 @@ public class DeleteAllBlobsMethod implements IMethodEntity {
 	public MethodNames getMethodName() {
 		return MethodNames.DELETE_ALL_BLOBS;
 	}
-
-	private static final long serialVersionUID = 10L;
 }

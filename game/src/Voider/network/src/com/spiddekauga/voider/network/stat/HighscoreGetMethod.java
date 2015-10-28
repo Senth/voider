@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HighscoreGetMethod implements IMethodEntity {
-	private static final long serialVersionUID = 1L;
 	/** Id of the level to get highscores for */
 	public UUID levelId = null;
 	/** Fetch options */

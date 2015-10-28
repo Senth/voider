@@ -12,7 +12,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HighscoreSyncResponse implements IEntity, ISuccessStatuses {
-	private static final long serialVersionUID = 1L;
 	/** Upload status */
 	public GeneralResponseStatuses status = null;
 	/** Highscores to update/set */

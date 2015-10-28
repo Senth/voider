@@ -7,7 +7,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AccountChangeMethod implements IMethodEntity {
-	private static final long serialVersionUID = 1L;
 	/** Old password of the user, set as null to skip changing password */
 	public String oldPassword = null;
 	/** New password of the user */

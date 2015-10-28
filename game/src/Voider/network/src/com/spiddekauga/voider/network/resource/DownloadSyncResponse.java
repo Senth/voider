@@ -18,8 +18,6 @@ public class DownloadSyncResponse implements IEntity, ISuccessStatuses {
 	/** Status of the sync */
 	public Statuses status = null;
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();

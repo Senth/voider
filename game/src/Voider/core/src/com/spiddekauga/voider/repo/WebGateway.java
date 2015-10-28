@@ -133,7 +133,7 @@ public class WebGateway {
 			byte[] responseEntity = byteArrayOutputStream.toByteArray();
 			return responseEntity;
 		} catch (IOException e) {
-			Gdx.app.log("Network", "Could not connect to server");
+			Gdx.app.log("WebGateway", "Could not connect to server (" + uploadUrl + ")");
 		}
 
 		return null;

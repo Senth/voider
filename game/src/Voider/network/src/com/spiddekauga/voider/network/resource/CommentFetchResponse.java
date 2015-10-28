@@ -16,6 +16,4 @@ public class CommentFetchResponse extends FetchResponse {
 	 * made a comment on the level.
 	 */
 	public CommentEntity userComment = null;
-
-	private static final long serialVersionUID = 1L;
 }

@@ -12,8 +12,6 @@ public class BugReportMethod implements IMethodEntity {
 	/** All bugs to report */
 	public ArrayList<BugReportEntity> bugs = new ArrayList<>();
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public MethodNames getMethodName() {
 		return MethodNames.BUG_REPORT;

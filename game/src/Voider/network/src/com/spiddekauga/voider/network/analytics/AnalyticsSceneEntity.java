@@ -27,6 +27,4 @@ public class AnalyticsSceneEntity implements IEntity {
 	public boolean dropout = false;
 	/** All events in this scene */
 	public ArrayList<AnalyticsEventEntity> events = new ArrayList<>();
-
-	private static final long serialVersionUID = 1L;
 }

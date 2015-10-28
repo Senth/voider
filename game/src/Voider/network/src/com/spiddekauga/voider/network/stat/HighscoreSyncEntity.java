@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HighscoreSyncEntity implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** Level id */
 	public UUID levelId;
 	/** Score */

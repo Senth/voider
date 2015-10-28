@@ -12,8 +12,6 @@ public class AnalyticsResponse implements IEntity, ISuccessStatuses {
 	/** Status */
 	public GeneralResponseStatuses status = null;
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();

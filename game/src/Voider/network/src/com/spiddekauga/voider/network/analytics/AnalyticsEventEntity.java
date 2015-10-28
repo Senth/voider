@@ -20,6 +20,4 @@ public class AnalyticsEventEntity implements IEntity {
 	public String data;
 	/** Event type */
 	public AnalyticsEventTypes type;
-
-	private static final long serialVersionUID = 1L;
 }

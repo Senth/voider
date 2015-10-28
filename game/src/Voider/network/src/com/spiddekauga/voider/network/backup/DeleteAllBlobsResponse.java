@@ -16,6 +16,4 @@ public class DeleteAllBlobsResponse implements IEntity, ISuccessStatuses {
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();
 	}
-
-	private static final long serialVersionUID = 1L;
 }

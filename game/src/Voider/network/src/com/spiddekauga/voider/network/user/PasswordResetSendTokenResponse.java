@@ -7,7 +7,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PasswordResetSendTokenResponse implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** Response status from the server */
 	public Statuses status = Statuses.FAILED_SERVER_CONNECTION;
 

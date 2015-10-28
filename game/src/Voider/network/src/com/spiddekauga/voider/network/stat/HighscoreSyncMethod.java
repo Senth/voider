@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HighscoreSyncMethod implements IMethodEntity {
-	private static final long serialVersionUID = 1L;
 	/** Highscores to syncronize */
 	public ArrayList<HighscoreSyncEntity> highscores = new ArrayList<>();
 	/** Last sync time */

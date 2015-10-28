@@ -7,7 +7,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HighscoreEntity implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** Player name */
 	public String playerName = null;
 	/** Score */

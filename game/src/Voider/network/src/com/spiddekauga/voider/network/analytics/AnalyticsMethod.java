@@ -18,8 +18,6 @@ public class AnalyticsMethod implements IMethodEntity {
 	/** User analytics id, unique to this device and user */
 	public UUID userAnalyticsId;
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public MethodNames getMethodName() {
 		return MethodNames.ANALYTICS;

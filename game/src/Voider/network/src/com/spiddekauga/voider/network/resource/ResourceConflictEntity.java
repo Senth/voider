@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceConflictEntity implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** Resource id */
 	public UUID resourceId = null;
 	/** From what revision the conflict began */

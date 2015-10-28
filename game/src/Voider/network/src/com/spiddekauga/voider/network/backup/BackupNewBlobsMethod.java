@@ -16,6 +16,4 @@ public class BackupNewBlobsMethod implements IMethodEntity {
 	public MethodNames getMethodName() {
 		return MethodNames.BACKUP_NEW_BLOBS;
 	}
-
-	private static final long serialVersionUID = 1L;
 }

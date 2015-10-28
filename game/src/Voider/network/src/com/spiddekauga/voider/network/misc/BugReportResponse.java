@@ -17,8 +17,6 @@ public class BugReportResponse implements IEntity, ISuccessStatuses {
 	/** Response status */
 	public GeneralResponseStatuses status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();

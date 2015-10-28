@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class RevisionEntity implements IEntity, Comparable<RevisionEntity> {
-	private static final long serialVersionUID = 1L;
 	/** The revision */
 	public int revision;
 	/** Date the revision was created */

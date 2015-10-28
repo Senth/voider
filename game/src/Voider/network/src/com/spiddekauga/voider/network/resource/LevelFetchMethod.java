@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.stat.Tags;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelFetchMethod extends FetchMethod {
-	private static final long serialVersionUID = 1L;
 	/** Sorting */
 	public SortOrders sort = SortOrders.NEWEST;
 	/** All tags that should be included, if empty all tags are used */

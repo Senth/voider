@@ -9,6 +9,4 @@ import com.spiddekauga.voider.network.entities.IEntity;
 public class GetUploadUrlResponse implements IEntity {
 	/** The upload url */
 	public String uploadUrl = null;
-
-	private static final long serialVersionUID = 1L;
 }

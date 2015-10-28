@@ -9,6 +9,4 @@ import java.util.ArrayList;
 public class BulletFetchResponse extends FetchResponse {
 	/** All bullets */
 	public ArrayList<BulletDefEntity> bullets = new ArrayList<>();
-
-	private static final long serialVersionUID = 1L;
 }

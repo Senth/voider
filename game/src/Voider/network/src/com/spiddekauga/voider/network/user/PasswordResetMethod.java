@@ -7,7 +7,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PasswordResetMethod implements IMethodEntity {
-	private static final long serialVersionUID = 1L;
 	/** Email of the user */
 	public String email;
 	/** New password for the user */

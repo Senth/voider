@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LogoutResponse implements IEntity, ISuccessStatuses {
-	private static final long serialVersionUID = 1L;
 	/** Logout status */
 	public GeneralResponseStatuses status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 

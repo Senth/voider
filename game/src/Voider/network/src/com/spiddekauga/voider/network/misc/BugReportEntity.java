@@ -32,8 +32,6 @@ public class BugReportEntity implements IEntity {
 	/** Bug report type */
 	public BugReportTypes type;
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Bug report types
 	 */

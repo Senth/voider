@@ -10,8 +10,6 @@ public class BlobDownloadMethod implements IMethodEntity {
 	/** Blob to download */
 	public String blobKey;
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Default constructor
 	 */

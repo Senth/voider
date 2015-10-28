@@ -11,7 +11,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class StatSyncEntity implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** Level/Campaign stats to sync */
 	public ArrayList<LevelStat> levelStats = new ArrayList<>();
 	/** Last sync date */
@@ -21,7 +20,6 @@ public class StatSyncEntity implements IEntity {
 	 * Level/Campaign stats
 	 */
 	public static class LevelStat implements IEntity {
-		private static final long serialVersionUID = 1L;
 		/** Level/Campaign id */
 		public UUID id = null;
 		/** If the level/campaign is bookmarked */

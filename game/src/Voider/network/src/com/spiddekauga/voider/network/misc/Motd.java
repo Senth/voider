@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.misc;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.IIdStore;
 import com.spiddekauga.voider.network.entities.IEntity;
 
@@ -12,15 +13,13 @@ import com.spiddekauga.voider.network.entities.IEntity;
  */
 public class Motd implements IEntity {
 	/** When the message was created */
-	public Date created;
+	@Tag(18) public Date created;
 	/** Message title */
-	public String title;
+	@Tag(19) public String title;
 	/** Content of the message */
-	public String content;
+	@Tag(20) public String content;
 	/** Message type/severity */
-	public MotdTypes type;
-
-	private static final long serialVersionUID = 1L;
+	@Tag(21) public MotdTypes type;
 
 	/**
 	 * Various message types. These sorted by severity

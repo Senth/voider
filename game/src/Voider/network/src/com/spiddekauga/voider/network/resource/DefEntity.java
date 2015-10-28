@@ -41,6 +41,4 @@ public class DefEntity implements IEntity {
 	// Other temporary variables (never used between networks)
 	/** Revision to load */
 	public int revision = -1;
-
-	private static final long serialVersionUID = 1L;
 }

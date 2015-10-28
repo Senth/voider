@@ -13,8 +13,6 @@ public abstract class FetchMethod implements IMethodEntity {
 	/** Cursor to continue the search/get from */
 	public String nextCursor = null;
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Get the hash code for a specific array list. If the list is the maximum size an
 	 * empty list hash will instead be used

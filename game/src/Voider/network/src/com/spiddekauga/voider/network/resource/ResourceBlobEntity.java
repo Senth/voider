@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceBlobEntity implements IEntity {
-	private static final long serialVersionUID = 2L;
 	/** Resource id */
 	public UUID resourceId;
 	/** Blob key */

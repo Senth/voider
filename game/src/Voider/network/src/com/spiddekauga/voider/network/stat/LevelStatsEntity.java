@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.resource.LevelDifficultySearchRanges;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelStatsEntity implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** Total plays */
 	public int cPlayed = 0;
 	/** Total bookmarks */

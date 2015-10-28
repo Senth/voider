@@ -12,7 +12,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AccountChangeResponse implements IEntity, ISuccessStatuses {
-	private static final long serialVersionUID = 1L;
 	/** Response status */
 	public GeneralResponseStatuses status = GeneralResponseStatuses.FAILED_SERVER_CONNECTION;
 	/** What succeeded and failed to be changed */

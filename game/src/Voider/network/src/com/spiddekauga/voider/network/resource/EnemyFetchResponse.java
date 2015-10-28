@@ -9,6 +9,4 @@ import java.util.ArrayList;
 public class EnemyFetchResponse extends FetchResponse {
 	/** All enemies */
 	public ArrayList<EnemyDefEntity> enemies = new ArrayList<>();
-
-	private static final long serialVersionUID = 1L;
 }

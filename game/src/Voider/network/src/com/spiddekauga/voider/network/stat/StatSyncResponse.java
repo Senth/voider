@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class StatSyncResponse implements IEntity, ISuccessStatuses {
-	private static final long serialVersionUID = 1L;
 	/** Stats to sync to client */
 	public StatSyncEntity syncEntity = new StatSyncEntity();
 	/** Response status */

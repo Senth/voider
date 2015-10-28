@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.network.misc;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -9,15 +10,14 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * @param <DataType> type of data to store
  */
-public class ChatMessage<DataType> implements IEntity {
+public class ChatMessage<DataType> implements IEntity, Serializable {
+	private static final long serialVersionUID = 1L;
 	/** Type of message */
 	public MessageTypes type = null;
 	/** This client will skip processing the message */
 	public UUID skipClient = null;
 	/** Optional data */
 	public DataType data = null;
-
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates an empty and invalid chat message

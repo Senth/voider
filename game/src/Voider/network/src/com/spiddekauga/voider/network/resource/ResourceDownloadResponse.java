@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceDownloadResponse implements IEntity, ISuccessStatuses {
-	private static final long serialVersionUID = 1L;
 	/** Status of the response */
 	public Statuses status = Statuses.FAILED_DOWNLOAD;
 	/** All files to download */

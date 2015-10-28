@@ -20,6 +20,4 @@ public class LevelDefEntity extends DefEntity {
 	public float levelSpeed = 0;
 	/** Level id, not definition */
 	public UUID levelId = null;
-
-	private static final long serialVersionUID = 1L;
 }

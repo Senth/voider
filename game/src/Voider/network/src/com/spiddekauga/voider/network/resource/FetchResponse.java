@@ -13,8 +13,6 @@ public class FetchResponse implements IEntity, ISuccessStatuses {
 	/** Status of the response */
 	public FetchStatuses status = FetchStatuses.FAILED_SERVER_ERROR;
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();

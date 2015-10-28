@@ -21,6 +21,4 @@ public class AnalyticsSessionEntity implements IEntity {
 	public String screenSize;
 	/** All scenes in this session */
 	public ArrayList<AnalyticsSceneEntity> scenes = new ArrayList<>();
-
-	private static final long serialVersionUID = 1L;
 }

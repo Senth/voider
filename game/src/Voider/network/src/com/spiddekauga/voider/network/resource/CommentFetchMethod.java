@@ -10,8 +10,6 @@ public class CommentFetchMethod extends FetchMethod {
 	/** Resource id */
 	public UUID resourceId;
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public MethodNames getMethodName() {
 		return MethodNames.COMMENT_FETCH;

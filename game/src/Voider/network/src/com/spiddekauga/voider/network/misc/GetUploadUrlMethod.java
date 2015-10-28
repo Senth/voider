@@ -14,6 +14,4 @@ public class GetUploadUrlMethod implements IMethodEntity {
 
 	/** Redirect method after upload is done */
 	public String redirectMethod = null;
-
-	private static final long serialVersionUID = 1L;
 }

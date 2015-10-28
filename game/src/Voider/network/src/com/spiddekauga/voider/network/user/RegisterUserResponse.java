@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class RegisterUserResponse implements IEntity, ISuccessStatuses {
-	private static final long serialVersionUID = 1L;
 	/** If the register was a success */
 	public Statuses status = Statuses.FAIL_SERVER_CONNECTION;
 	/** Private key, for logging in automatically without password */

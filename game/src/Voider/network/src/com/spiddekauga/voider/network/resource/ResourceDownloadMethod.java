@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceDownloadMethod implements IMethodEntity {
-	private static final long serialVersionUID = 1L;
 	/** Id of the resource to download */
 	public UUID resourceId;
 	/** Optional revision, only used if redownload is set to true */

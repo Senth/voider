@@ -10,7 +10,6 @@ import com.spiddekauga.voider.network.resource.LevelDefEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelInfoEntity implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** Level definition entity for the level */
 	public LevelDefEntity defEntity = new LevelDefEntity();
 	/** Level stats */

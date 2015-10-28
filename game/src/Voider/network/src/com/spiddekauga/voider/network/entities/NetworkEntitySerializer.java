@@ -1,13 +1,13 @@
 package com.spiddekauga.voider.network.entities;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.logging.Logger;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.spiddekauga.utils.Strings;
 
 /**
@@ -21,25 +21,26 @@ public class NetworkEntitySerializer {
 	 * @return entity, or null if it could not deserialize
 	 */
 	public static IEntity deserializeEntity(byte[] bytes) {
+		Kryo kryo = mKryoPool.obtain();
+
 		if (bytes == null || bytes.length == 0) {
 			return null;
 		}
 
 		try {
-			ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
-			ObjectInputStream objectInputStream = new ObjectInputStream(byteInputStream);
-
-			Object readObject = objectInputStream.readObject();
-			objectInputStream.close();
+			Input input = new Input(bytes);
+			Object readObject = kryo.readClassAndObject(input);
 			if (readObject instanceof IEntity) {
 				return (IEntity) readObject;
 			} else {
 				mLogger.warning("Read object was not an entity");
 			}
 
-		} catch (IOException | ClassNotFoundException e) {
+		} catch (IllegalArgumentException | KryoException e) {
 			mLogger.severe("Failed to deserialize entity\n" + Strings.exceptionToString(e));
 		}
+
+		mKryoPool.free(kryo);
 
 		return null;
 	}
@@ -50,22 +51,25 @@ public class NetworkEntitySerializer {
 	 * @return entity as byte array
 	 */
 	public static byte[] serializeEntity(IEntity entity) {
+		Kryo kryo = mKryoPool.obtain();
+
 		try {
 			ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteOutputStream);
-
-			objectOutputStream.writeObject(entity);
-			objectOutputStream.flush();
+			Output output = new Output(byteOutputStream);
+			kryo.writeClassAndObject(output, entity);
+			output.close();
 			byte[] entityBytes = byteOutputStream.toByteArray();
-			objectOutputStream.close();
-
 			return entityBytes;
-		} catch (IOException e) {
+
+		} catch (IllegalArgumentException | KryoException e) {
 			mLogger.severe("Failed to serialize entity\n" + Strings.exceptionToString(e));
 		}
+
+		mKryoPool.free(kryo);
 
 		return null;
 	}
 
+	private static final KryoNetPool mKryoPool = new KryoNetPool();
 	private static final Logger mLogger = Logger.getLogger(NetworkEntitySerializer.class.getSimpleName());
 }

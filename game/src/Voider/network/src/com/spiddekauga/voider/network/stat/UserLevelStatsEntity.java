@@ -9,7 +9,6 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UserLevelStatsEntity implements IEntity {
-	private static final long serialVersionUID = 1L;
 	/** If the player has bookmarked the level */
 	public boolean bookmarked = false;
 	/** Last played */
