@@ -20,6 +20,7 @@ public class ServerConfig {
 		public static final String USERS = "users";
 		public static final String PASSWORD_RESET = "password_reset";
 		public static final String MOTD = "motd";
+		public static final String RESTORE_DATE = "restore_date";
 		public static final String PUBLISHED = "published";
 		/** Published dependencies */
 		public static final String DEPENDENCY = "dependency";
@@ -66,6 +67,12 @@ public class ServerConfig {
 			public static final String TYPE = "type";
 			public static final String CREATED = "created";
 			public static final String EXPIRES = "expires";
+		}
+
+		// Restore Date
+		public static class CRestoreDate {
+			public static final String FROM_DATE = "from_date";
+			public static final String TO_DATE = "to_date";
 		}
 
 		// Published

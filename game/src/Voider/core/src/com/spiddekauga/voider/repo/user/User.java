@@ -11,7 +11,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.AccountChangeResponse;
 import com.spiddekauga.voider.network.user.AccountChangeResponse.AccountChangeStatuses;
 import com.spiddekauga.voider.network.user.LoginResponse;
-import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatuses;
+import com.spiddekauga.voider.network.user.LoginResponse.ClientVersionStatus.ClientVersionStatuses;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
@@ -353,7 +353,7 @@ public class User {
 			if (response.isSuccessful()) {
 				// Was already logged in -> Only connected
 				if (User.this == mGlobalUser && mLoggedIn) {
-					if (response.clientVersionStatus != ClientVersionStatuses.UPDATE_REQUIRED) {
+					if (response.clientVersionStatus().status != ClientVersionStatuses.UPDATE_REQUIRED) {
 						connectGlobalUser();
 					} else {
 						mNotification.showHighlight("Update required to go online");
@@ -366,7 +366,7 @@ public class User {
 					mServerKey = response.userKey;
 
 					// No update is required
-					if (response.clientVersionStatus != ClientVersionStatuses.UPDATE_REQUIRED) {
+					if (response.clientVersionStatus().status != ClientVersionStatuses.UPDATE_REQUIRED) {
 						loginGlobalUser(mUsername, mPrivateKey, mServerKey, true);
 					}
 					// Update required login offline
@@ -376,8 +376,8 @@ public class User {
 				}
 
 				// MOTD
-				if (!response.motds.isEmpty()) {
-					mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motds));
+				if (!response.motd().messages.isEmpty()) {
+					mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motd().messages));
 				}
 			}
 			// Send error message
@@ -410,13 +410,15 @@ public class User {
 				}
 			}
 
-			switch (response.clientVersionStatus) {
+			switch (response.clientVersionStatus().status) {
 			case NEW_VERSION_AVAILABLE:
-				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.latestClientVersion, response.changeLogMessage));
+				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.clientVersionStatus().latestClientVersion, response
+						.clientVersionStatus().changeLogMessage));
 				break;
 
 			case UPDATE_REQUIRED:
-				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_REQUIRED, response.latestClientVersion, response.changeLogMessage));
+				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_REQUIRED, response.clientVersionStatus().latestClientVersion, response
+						.clientVersionStatus().changeLogMessage));
 				break;
 
 			case UNKNOWN:

@@ -290,7 +290,7 @@ public enum ClientVersions {
 			"Server",
 			"	Backup every day"
 			),
-	V0_5_14(false,
+	V0_6_0(true,
 			"Improvements"
 			),
 	;
