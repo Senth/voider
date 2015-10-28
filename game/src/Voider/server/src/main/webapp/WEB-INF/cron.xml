@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-	<!-- Backup -->
+	<!-- BACKUP -->
 	<cron>
 		<description>Daily backup</description>
 		<!-- Change URL settings in build.gradle -->
@@ -8,6 +8,14 @@
 		<schedule>every day 03:00</schedule>
 		<timezone>Europe/Stockholm</timezone>
 		<target>ah-builtin-python-bundle</target>
+	</cron>
+	
+	<!-- Cleanup backup -->
+	<cron>
+		<description>Cleanup backup</description>
+		<url>/cron/backup-cleanup</url>
+		<schedule>every sunday 04:00</schedule>
+		<timezone>Europe/Stockholm</timezone>
 	</cron>
 	
 	
@@ -21,7 +29,7 @@
 		<timezone>Europe/Stockholm</timezone>
 	</cron>
 	
-	<!-- Cleanup -->
+	<!-- Cleanup analytics -->
 	<cron>
 		<description>Cleanup of pipelines</description>
 		<url>/cleanup</url>
