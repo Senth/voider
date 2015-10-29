@@ -284,25 +284,33 @@ public class ServerConfig {
 	 */
 	public enum Builds {
 		/** Development server */
-		DEV("voider-dev", "http://voider-dev.appspot.com/", "Voider-beta"),
+		DEV("voider-dev", "https://voider-dev.appspot.com/", null, "Voider-beta"),
 		/** Nightly server */
-		NIGHTLY("voider-nightly", "http://voider-nightly.appspot.com/", null),
+		NIGHTLY("voider-nightly", "https://voider-nightly.appspot.com/", null, null),
 		/** Beta server */
-		BETA("voider-beta", "http://voider-beta.appspot.com/", "Voider-beta"),
+		BETA("voider-beta", "https://voider-beta.appspot.com/", null, "Voider-beta"),
 		/** Release server */
-		RELEASE("voider-thegame", "http://voider-game.com/", null),
+		RELEASE("voider-thegame", "http://voider-game.com/", "https://voider-thegame.appspot.com/", null),
 
 		;
 
 		/**
 		 * @param appId application id of the build
 		 * @param url URL for this app
+		 * @param appspotUrl appspot internal URL used for this app, set to null if same
+		 *        as url
 		 * @param downloadName for downloading stuff, null to not use
 		 */
-		private Builds(String appId, String url, String downloadName) {
+		private Builds(String appId, String url, String appspotUrl, String downloadName) {
 			mAppId = appId;
 			mUrl = url;
 			mDownloadName = downloadName;
+
+			if (appspotUrl == null) {
+				mAppspotUrl = url;
+			} else {
+				mAppspotUrl = appspotUrl;
+			}
 		}
 
 		/**
@@ -331,6 +339,13 @@ public class ServerConfig {
 		}
 
 		/**
+		 * @return Appspot internal URL for this app
+		 */
+		public String getAppspotUrl() {
+			return mAppspotUrl;
+		}
+
+		/**
 		 * @return get the current build, null if none was found
 		 */
 		public static Builds getCurrent() {
@@ -344,6 +359,7 @@ public class ServerConfig {
 
 		private String mAppId;
 		private String mUrl;
+		private String mAppspotUrl;
 		private String mDownloadName;
 
 		private static final String DOWNLOAD_URL_PREFIX = "http://storage.googleapis.com/voider-shared/app/";
