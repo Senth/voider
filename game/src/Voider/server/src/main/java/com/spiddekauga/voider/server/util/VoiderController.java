@@ -204,6 +204,13 @@ public abstract class VoiderController extends HttpServlet {
 	}
 
 	/**
+	 * @return printer writer for writing the response
+	 */
+	protected PrintWriter getResponsePrintWriter() {
+		return mOut;
+	}
+
+	/**
 	 * For sending success and error messages
 	 */
 	public class ResponseMessage {
