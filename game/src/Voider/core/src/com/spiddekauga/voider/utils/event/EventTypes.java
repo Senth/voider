@@ -66,6 +66,11 @@ public enum EventTypes {
 	UPDATE_REQUIRED,
 
 
+	// --- SERVER RESTORED TO PREVIOUS VERSION ---
+	/** The server restored/rewound to an earlier version of its database */
+	SERVER_RESTORE,
+
+
 	// --- MOTD ---
 	/** New message of the day */
 	MOTD_NEW,

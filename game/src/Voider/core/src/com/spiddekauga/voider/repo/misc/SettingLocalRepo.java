@@ -1,7 +1,9 @@
 package com.spiddekauga.voider.repo.misc;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
@@ -113,18 +115,22 @@ class SettingLocalRepo {
 		/**
 		 * Filter out MOTDs that have been displayed already
 		 * @param motds all MOTDs to parse
+		 * @return list of all filtered MOTDs
 		 */
-		void filterMotds(Iterable<Motd> motds) {
+		List<Motd> filterMotds(Iterable<Motd> motds) {
+			List<Motd> filteredMotds = new ArrayList<>();
 			Iterator<Motd> it = motds.iterator();
 			Date previousDate = mUserPrefsGateway.getLatestMotdDate();
 
 			while (it.hasNext()) {
 				Motd motd = it.next();
 
-				if (motd.created.before(previousDate)) {
-					it.remove();
+				if (motd.created.after(previousDate)) {
+					filteredMotds.add(motd);
 				}
 			}
+
+			return filteredMotds;
 		}
 
 		/**

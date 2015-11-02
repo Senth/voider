@@ -24,7 +24,6 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
-import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -132,11 +131,6 @@ public class MainMenu extends MenuScene implements IEventListener {
 
 		// Show if logged in online
 		if (outcome == Outcomes.LOGGED_IN) {
-			// Synchronize
-			if (mUser.isOnline()) {
-				Synchronizer.getInstance().synchronizeAll();
-			}
-
 			SettingInfoRepo infoRepo = SettingRepo.getInstance().info();
 
 
@@ -277,6 +271,5 @@ public class MainMenu extends MenuScene implements IEventListener {
 		return (MainMenuGui) super.getGui();
 	}
 
-	private static final User mUser = User.getGlobalUser();
 	private LinkedList<Gui> mGuiStack = new LinkedList<Gui>();
 }

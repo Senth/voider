@@ -24,7 +24,7 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 	@Tag(8) public UUID privateKey;
 	/** User key */
 	@Tag(9) public String userKey;
-	/** Restore date */
+	/** Restore date, null if the user doesn't have to restore */
 	@Tag(10) public RestoreDate restoreDate;
 	/** Messages of the day */
 	@Tag(11) public ArrayList<Motd> motds = new ArrayList<>();

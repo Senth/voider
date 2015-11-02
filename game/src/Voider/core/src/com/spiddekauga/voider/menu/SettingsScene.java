@@ -191,7 +191,7 @@ public class SettingsScene extends MenuScene {
 	 * Clears the database, files and settings for the current logged in account and then
 	 * logs out the user
 	 */
-	void clearData() {
+	public static void clearData() {
 		ResourceLocalRepo.removeAll();
 		SqliteGateway.clearDatabase();
 		PrefsGateway.clearUserPreferences();

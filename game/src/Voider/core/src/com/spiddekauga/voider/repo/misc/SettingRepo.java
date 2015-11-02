@@ -3,6 +3,7 @@ package com.spiddekauga.voider.repo.misc;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.spiddekauga.utils.Resolution;
@@ -129,9 +130,10 @@ public class SettingRepo extends Repo {
 		/**
 		 * Filter out MOTDs that have been displayed already
 		 * @param motds all MOTDs to parse
+		 * @return all MOTDs after they have been filtered
 		 */
-		public void filterMotds(Iterable<Motd> motds) {
-			mLocalRepo.filterMotds(motds);
+		public List<Motd> filterMotds(Iterable<Motd> motds) {
+			return mLocalRepo.filterMotds(motds);
 		}
 
 		/**

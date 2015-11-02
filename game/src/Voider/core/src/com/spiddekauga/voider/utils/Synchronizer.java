@@ -11,6 +11,7 @@ import com.spiddekauga.net.IDownloadProgressListener;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
@@ -41,6 +42,7 @@ import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Listens to server synchronize events when to synchronize. Also checks synchronize
@@ -53,6 +55,15 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 */
 	private Synchronizer() {
 		MessageGateway.getInstance().addListener(this);
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+
+		eventDispatcher.connect(EventTypes.USER_CONNECTED, new IEventListener() {
+			@Override
+			public void handleEvent(GameEvent event) {
+				synchronizeAll();
+			}
+		});
+
 		mThread.start();
 	}
 
@@ -163,6 +174,10 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		case USER_RESOURCE_FIX_CONFLICTS:
 			Config.Debug.debugException("Cannot fix user resource conflict through synchronize() method");
 			break;
+
+		case WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR:
+			Config.Debug.debugException("Cannoct call WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR through synchronize() method");
+			break;
 		}
 
 		return true;
@@ -229,6 +244,21 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 
 		case ANALYTICS:
 			mAnalyticsRepo.sync(responseListeners);
+			break;
+
+		case WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR:
+			if (syncClass instanceof WaitForLoginScreenToDisappear) {
+				WaitForLoginScreenToDisappear waitForLoginScreenToDisappear = (WaitForLoginScreenToDisappear) syncClass;
+
+				while (!waitForLoginScreenToDisappear.isDone()) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			break;
 		}
 	}
 
@@ -268,6 +298,8 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	 *        null
 	 */
 	public void synchronizeAll(IResponseListener responseListener) {
+
+
 		mSyncQueue.add(new SyncDownload(SyncTypes.COMMUNITY_RESOURCES, responseListener, true));
 		mSyncQueue.add(new SyncDownload(SyncTypes.USER_RESOURCES, responseListener, true));
 		mSyncQueue.add(new SyncClass(SyncTypes.HIGHSCORES, responseListener));
@@ -444,6 +476,8 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		USER_RESOURCE_FIX_CONFLICTS,
 		/** Analytics */
 		ANALYTICS,
+		/** Wait until Login Screen has ended and another screen is active */
+		WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR,
 	}
 
 	/**
@@ -489,6 +523,24 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 		}
 
 		private boolean showProgress;
+	}
+
+	/**
+	 * Wait to synchronize until we're not at the login screen
+	 */
+	private class WaitForLoginScreenToDisappear extends SyncClass {
+		protected WaitForLoginScreenToDisappear() {
+			super(SyncTypes.WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR);
+		}
+
+		/**
+		 * Check if login screen has disappeared and we can continue with the sync
+		 * progress
+		 * @return true if the login screen has disappeared and another screen is active
+		 */
+		protected boolean isDone() {
+			return !SceneSwitcher.isActiveScene(LoginScene.class);
+		}
 	}
 
 	/**

@@ -20,6 +20,7 @@ import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 import com.spiddekauga.voider.utils.event.MotdEvent;
+import com.spiddekauga.voider.utils.event.ServerRestoreEvent;
 import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
@@ -351,63 +352,82 @@ public class User {
 
 		private void handleLoginResponse(LoginResponse response) {
 			if (response.isSuccessful()) {
-				// Was already logged in -> Only connected
-				if (User.this == mGlobalUser && mLoggedIn) {
-					if (response.versionInfo.status != Statuses.UPDATE_REQUIRED) {
-						connectGlobalUser();
-					} else {
-						mNotification.showHighlight("Update required to go online");
-					}
-				}
-				// Logged in
-				else if (User.this != mGlobalUser) {
-					mUsername = response.username;
-					mPrivateKey = response.privateKey;
-					mServerKey = response.userKey;
-
-					// No update is required
-					if (response.versionInfo.status != Statuses.UPDATE_REQUIRED) {
-						loginGlobalUser(mUsername, mPrivateKey, mServerKey, true);
-					}
-					// Update required login offline
-					else {
-						loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
-					}
-				}
-
-				// MOTD
-				if (!response.motds.isEmpty()) {
-					mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motds));
-				}
+				handleLoginSuccess(response);
 			}
 			// Send error message
 			else {
-				switch (response.status) {
-				case FAILED_SERVER_CONNECTION:
-				case FAILED_SERVER_ERROR:
-					// Login offline
-					if (User.this != mGlobalUser && mPrivateKey != null) {
-						loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
-					} else {
-						mNotification.showError("Could not connect to server");
-						mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
-					}
-					break;
+				handleLoginFail(response);
+			}
 
-				case FAILED_USERNAME_PASSWORD_MISMATCH:
-					// Auto-login
-					if (mPrivateKey != null) {
-						mNotification.showError("Could not auto-login " + mUsername + ". Password has been changed");
-					} else {
-						mNotification.showError("No username with that password exists");
-					}
-					mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
-					break;
+			handleLoginExtra(response);
+		}
 
-				case SUCCESS:
-					// Does nothing
-					break;
+		private void handleLoginSuccess(LoginResponse response) {
+			// Was already logged in -> Only connected
+			if (User.this == mGlobalUser && mLoggedIn) {
+				// Update required
+				if (response.versionInfo.status == Statuses.UPDATE_REQUIRED) {
+					mNotification.showHighlight("Update required to go online");
 				}
+				// Server restored since last login
+				else if (response.restoreDate != null) {
+					// Does nothing
+				}
+				// Connect
+				else {
+					connectGlobalUser();
+				}
+			}
+			// Logged in
+			else if (User.this != mGlobalUser) {
+				mUsername = response.username;
+				mPrivateKey = response.privateKey;
+				mServerKey = response.userKey;
+
+				// Update required or server has rewound
+				if (response.versionInfo.status == Statuses.UPDATE_REQUIRED || response.restoreDate != null) {
+					loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
+				}
+				// Login online
+				else {
+					loginGlobalUser(mUsername, mPrivateKey, mServerKey, true);
+				}
+			}
+		}
+
+		private void handleLoginFail(LoginResponse response) {
+			switch (response.status) {
+			case FAILED_SERVER_CONNECTION:
+			case FAILED_SERVER_ERROR:
+				// Login offline
+				if (User.this != mGlobalUser && mPrivateKey != null) {
+					loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
+				} else {
+					mNotification.showError("Could not connect to server");
+					mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
+				}
+				break;
+
+			case FAILED_USERNAME_PASSWORD_MISMATCH:
+				// Auto-login
+				if (mPrivateKey != null) {
+					mNotification.showError("Could not auto-login " + mUsername + ". Password has been changed");
+				} else {
+					mNotification.showError("No username with that password exists");
+				}
+				mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
+				break;
+
+			case SUCCESS:
+				// Does nothing
+				break;
+			}
+		}
+
+		private void handleLoginExtra(LoginResponse response) {
+			// MOTD
+			if (!response.motds.isEmpty()) {
+				mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motds));
 			}
 
 			switch (response.versionInfo.status) {
@@ -424,6 +444,10 @@ public class User {
 			case UNKNOWN:
 			case UP_TO_DATE:
 				break;
+			}
+
+			if (response.restoreDate != null) {
+				mEventDispatcher.fire(new ServerRestoreEvent(response.restoreDate.from, response.restoreDate.to));
 			}
 		}
 
