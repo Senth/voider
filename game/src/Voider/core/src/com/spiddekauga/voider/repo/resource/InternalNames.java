@@ -57,7 +57,7 @@ public enum InternalNames {
 
 	// Images
 	/** Splash Screen */
-	IMAGE_SPLASH_SCREEN("background_splash.jpg", Texture.class),
+	IMAGE_SPLASH_SCREEN("background_splash.png", Texture.class),
 	ICON_256("icon-256.png", Texture.class),
 	ICON_128("icon-128.png", Texture.class),
 	ICON_64("icon-64.png", Texture.class),

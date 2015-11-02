@@ -293,7 +293,9 @@ public enum ClientVersions {
 	V0_6_0(true,
 			"Login Method",
 			"	Changed how login works, this breaks the old login and doesn't display that",
-			"	a new version is available"
+			"	a new version is available",
+			"Improvements",
+			"	HD splash screen"
 			),
 	;
 	// @formatter:on

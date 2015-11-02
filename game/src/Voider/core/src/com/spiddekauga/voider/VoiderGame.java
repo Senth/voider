@@ -70,9 +70,9 @@ public class VoiderGame implements ApplicationListener {
 		ShaderProgram.pedantic = false;
 
 		if (Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
-			testLogin();
+			showLogin();
 		} else {
-			testSplashScreen();
+			showSplashScreen();
 		}
 
 		mMusicPlayer = MusicPlayer.getInstance();
@@ -106,14 +106,14 @@ public class VoiderGame implements ApplicationListener {
 	/**
 	 * Test login
 	 */
-	private void testLogin() {
+	private void showLogin() {
 		SceneSwitcher.switchTo(new LoginScene());
 	}
 
 	/**
 	 * Test splash screen
 	 */
-	private void testSplashScreen() {
+	private void showSplashScreen() {
 		SceneSwitcher.switchTo(new LoginScene(), new SplashScreen());
 	}
 
