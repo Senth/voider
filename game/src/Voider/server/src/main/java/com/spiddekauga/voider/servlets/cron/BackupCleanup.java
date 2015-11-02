@@ -2,7 +2,6 @@ package com.spiddekauga.voider.servlets.cron;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,13 +10,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.appengine.api.appidentity.AppIdentityService;
+import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.urlfetch.FetchOptions;
-import com.google.appengine.api.urlfetch.HTTPMethod;
-import com.google.appengine.api.urlfetch.HTTPRequest;
-import com.google.appengine.api.urlfetch.HTTPResponse;
-import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.http.HttpPostBuilder;
@@ -161,53 +158,51 @@ public class BackupCleanup extends VoiderController {
 	 */
 	private static String sendDeleteRequest(List<String> backupIds) {
 		try {
-			FetchOptions fetchOptions = FetchOptions.Builder.doNotFollowRedirects();
-			HTTPRequest httpRequest = new HTTPRequest(new URL(BASE_URL), HTTPMethod.POST, fetchOptions);
-
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("action=Delete");
-			for (String backupId : backupIds) {
-				stringBuilder.append("&backup_id=").append(backupId);
-			}
-			httpRequest.setPayload(stringBuilder.toString().getBytes("UTF-8"));
-			HTTPResponse httpResponse = URLFetchServiceFactory.getURLFetchService().fetch(httpRequest);
-
-			String responseText = new String(httpResponse.getContent(), "UTF-8");
-			mLogger.info("Response:\n" + responseText);
-			return responseText;
-
-
-			// ArrayList<String> scopes = new ArrayList<>();
-			// scopes.add(BASE_URL);
-			// AppIdentityService appIdentity =
-			// AppIdentityServiceFactory.getAppIdentityService();
+			// FetchOptions fetchOptions = FetchOptions.Builder.doNotFollowRedirects();
+			// HTTPRequest httpRequest = new HTTPRequest(new URL(BASE_URL),
+			// HTTPMethod.POST, fetchOptions);
 			//
-			// AppIdentityService.GetAccessTokenResult accessToken =
-			// appIdentity.getAccessToken(scopes);
-			//
-			// HttpPostBuilder builder = new HttpPostBuilder(BASE_URL);
-			//
-			// HttpURLConnection connection = builder.getHttpURLConnection();
-			// connection.setInstanceFollowRedirects(false);
-			// connection.setRequestProperty("X-Appengine-Inbound-Appid",
-			// SystemProperty.applicationId.get());
-			// connection.setRequestProperty("Authorization", "Bearer  " + accessToken);
-			// mLogger.info("Appid: " +
-			// connection.getRequestProperty("X-Appengine-Inbound-Appid"));
-			//
-			// builder.addParameter("action", "Delete");
+			// StringBuilder stringBuilder = new StringBuilder();
+			// stringBuilder.append("action=Delete");
 			// for (String backupId : backupIds) {
-			// builder.addParameter("backup_id", backupId);
+			// stringBuilder.append("&backup_id=").append(backupId);
 			// }
+			// httpRequest.setPayload(stringBuilder.toString().getBytes("UTF-8"));
+			// HTTPResponse httpResponse =
+			// URLFetchServiceFactory.getURLFetchService().fetch(httpRequest);
 			//
-			// connection = builder.build();
-			//
-			// String response = HttpResponseParser.getStringResponse(connection);
-			// connection.disconnect();
-			//
-			// mLogger.info("Response:\n" + response);
-			//
-			// return response;
+			// String responseText = new String(httpResponse.getContent(), "UTF-8");
+			// mLogger.info("Response:\n" + responseText);
+			// return responseText;
+
+
+			ArrayList<String> scopes = new ArrayList<>();
+			scopes.add(BASE_URL);
+			AppIdentityService appIdentity = AppIdentityServiceFactory.getAppIdentityService();
+
+			AppIdentityService.GetAccessTokenResult accessToken = appIdentity.getAccessToken(scopes);
+
+			HttpPostBuilder builder = new HttpPostBuilder(BASE_URL);
+
+			HttpURLConnection connection = builder.getHttpURLConnection();
+			connection.setInstanceFollowRedirects(false);
+			connection.setRequestProperty("X-Appengine-Inbound-Appid", SystemProperty.applicationId.get());
+			connection.setRequestProperty("Authorization", "Bearer  " + accessToken);
+			mLogger.info("Appid: " + connection.getRequestProperty("X-Appengine-Inbound-Appid"));
+
+			builder.addParameter("action", "Delete");
+			for (String backupId : backupIds) {
+				builder.addParameter("backup_id", backupId);
+			}
+
+			connection = builder.build();
+
+			String response = HttpResponseParser.getStringResponse(connection);
+			connection.disconnect();
+
+			mLogger.info("Response:\n" + response);
+
+			return response;
 		} catch (IOException e) {
 			mLogger.severe(Strings.exceptionToString(e));
 			return null;

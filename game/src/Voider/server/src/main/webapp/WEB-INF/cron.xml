@@ -10,14 +10,6 @@
 		<target>ah-builtin-python-bundle</target>
 	</cron>
 	
-	<!-- Cleanup backup -->
-	<cron>
-		<description>Cleanup backup</description>
-		<url>/cron/backup-cleanup</url>
-		<schedule>every sunday 04:00</schedule>
-		<timezone>Europe/Stockholm</timezone>
-	</cron>
-	
 	
 	<!-- ANALYTICS -->
 	<!-- Analytics to BigQuery -->
