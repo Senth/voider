@@ -204,14 +204,8 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 				}
 			}
 
-			// Datastore -> Set as exported
-			Map<Key, Entity> entities = DatastoreUtils.getEntities(keys);
-			for (Entity entity : entities.values()) {
-				if (entity != null) {
-					entity.setProperty("exported", true);
-				}
-			}
-			DatastoreUtils.put(entities.values());
+			// Datastore -> Delete
+			DatastoreUtils.delete(keys);
 
 			return immediate(null);
 		}
