@@ -1,8 +1,11 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.Date;
+
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 
 /**
  * Class containing all messages for voider, including help function for retrieving
@@ -89,7 +92,31 @@ public class Messages {
 		/** Bug report was successfully sent */
 		public static final String BUG_REPORT_SENT = "Thank you for sending a bug report! :D";
 		/** Bug report failed, saved locally instead */
-		public static final String BUG_REPORT_SAVED_LOCALLY = "Could not connect to the server, " + "temporarily saved the bug report locally.";
+		public static final String BUG_REPORT_SAVED_LOCALLY = "Could not connect to the server, temporarily saved the bug report locally.";
+		/** Message shown when the server has been restored and all local data needs to be cleared */
+		private static final String SERVER_RESTORED = "An error occured on the server and the server had to revert some changes.\n\n"
+				+ "For you this unfortunately means that all changes after $DATE_FROM will be lost, you will be logged out, "
+				+ "and you will have to sync everything again from the server\n\n "
+				+ "If you don't want this to happen in the future, please go to the community site "
+				+ "and vote to implement 'Improved Server Reverted functionality'. I can then improve the "
+				+ "funcionality so that most of your changes can be saved. This will however take substantial amount "
+				+ "of time (equivalent of implementing a boss editor).\n\n"
+				+ "From: $DATE_FROM\n"
+				+ "To: $DATE_TO";
+
+
+		/**
+		 * Get the server restored message
+		 * @param from when the server reverted
+		 * @param to which date the server reverted to
+		 * @return server restored message
+		 */
+		public static String getServerRestored(Date from, Date to) {
+			String fromString = SettingRepo.getInstance().date().getDateTime(from);
+			String toString = SettingRepo.getInstance().date().getDateTime(to);
+
+			return SERVER_RESTORED.replace("$DATE_FROM", fromString).replace("$DATE_TO", toString);
+		}
 	}
 
 	/**
@@ -505,5 +532,5 @@ public class Messages {
 	}
 
 	/** Actor type to be replaced in text */
-	private final static String ACTOR_TYPE = "ACTOR_TYPE";
+	private final static String ACTOR_TYPE = "$ACTOR_TYPE";
 }

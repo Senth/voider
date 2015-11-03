@@ -48,6 +48,7 @@ import com.spiddekauga.voider.utils.commands.CMotdViewed;
 import com.spiddekauga.voider.utils.commands.CSyncFixConflict;
 import com.spiddekauga.voider.utils.commands.CUserConnect;
 import com.spiddekauga.voider.utils.commands.CUserSetAskGoOnline;
+import com.spiddekauga.voider.utils.event.ServerRestoreEvent;
 import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
@@ -407,6 +408,26 @@ public class MsgBoxFactory {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Create a 'server restored' message box to show that the server has rewound its DB
+	 * and that all local changes need to be discarded.
+	 * @param serverRestoreEvent the event that was sent
+	 */
+	void serverRestored(final ServerRestoreEvent serverRestoreEvent) {
+		String title = "Server database has been reverted";
+		String message = Messages.Info.getServerRestored(serverRestoreEvent.from, serverRestoreEvent.to);
+
+		Label info = mUiFactory.text.create(message, true, LabelStyles.HIGHLIGHT);
+		info.setWidth(WIDTH_MAX);
+		info.setAlignment(Align.center);
+
+		MsgBoxExecuter msgBox = add(title);
+		msgBox.content(info);
+
+
+		// TODO
 	}
 
 	/**

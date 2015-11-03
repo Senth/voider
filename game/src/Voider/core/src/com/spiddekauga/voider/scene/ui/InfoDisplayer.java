@@ -109,7 +109,7 @@ public class InfoDisplayer implements IEventListener {
 	 */
 	private void handleServerRestoreEvent(GameEvent event) {
 		if (event instanceof ServerRestoreEvent) {
-			// TODO
+			mUiFactory.msgBox.serverRestored((ServerRestoreEvent) event);
 		}
 	}
 
