@@ -94,16 +94,15 @@ public class Messages {
 		/** Bug report failed, saved locally instead */
 		public static final String BUG_REPORT_SAVED_LOCALLY = "Could not connect to the server, temporarily saved the bug report locally.";
 		/** Message shown when the server has been restored and all local data needs to be cleared */
-		private static final String SERVER_RESTORED = "An error occured on the server and the server had to revert some changes.\n\n"
-				+ "For you this unfortunately means that all changes after $DATE_FROM will be lost, you will be logged out, "
-				+ "and you will have to sync everything again from the server\n\n "
-				+ "If you don't want this to happen in the future, please go to the community site "
+		private static final String SERVER_RESTORED = "An error occured in the server database. Unfortunately this means that all changes "
+				+ "after $DATE_TO will be lost. Press 'Revert & Logout' to continue :(.\n"
+				+ "\n"
+				+ "Note! If you continue playing offline NOTHING will be saved!!!";
+		/** Functionality request for server restore */
+		public static final String SERVER_RESTORED_CHANGE = "If you don't want this to happen in the future, please go to the community site "
 				+ "and vote to implement 'Improved Server Reverted functionality'. I can then improve the "
-				+ "funcionality so that most of your changes can be saved. This will however take substantial amount "
-				+ "of time (equivalent of implementing a boss editor).\n\n"
-				+ "From: $DATE_FROM\n"
-				+ "To: $DATE_TO";
-
+				+ "functionality so that most of your changes can be saved. This will however take substantial amount "
+				+ "of time (equivalent of implementing a boss editor).\n\n";
 
 		/**
 		 * Get the server restored message

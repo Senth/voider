@@ -430,6 +430,7 @@ public class User {
 				mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motds));
 			}
 
+			// Version 
 			switch (response.versionInfo.status) {
 			case NEW_VERSION_AVAILABLE:
 				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.versionInfo.latestVersion,
@@ -446,6 +447,7 @@ public class User {
 				break;
 			}
 
+			// Server reverted its DB
 			if (response.restoreDate != null) {
 				mEventDispatcher.fire(new ServerRestoreEvent(response.restoreDate.from, response.restoreDate.to));
 			}

@@ -1,12 +1,8 @@
 package com.spiddekauga.voider.menu;
 
 import com.spiddekauga.utils.Resolution;
-import com.spiddekauga.voider.repo.PrefsGateway;
-import com.spiddekauga.voider.repo.SqliteGateway;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
-import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
-import com.spiddekauga.voider.repo.user.User;
 
 /**
  * Scene for game settings
@@ -191,11 +187,8 @@ public class SettingsScene extends MenuScene {
 	 * Clears the database, files and settings for the current logged in account and then
 	 * logs out the user
 	 */
-	public static void clearData() {
-		ResourceLocalRepo.removeAll();
-		SqliteGateway.clearDatabase();
-		PrefsGateway.clearUserPreferences();
-		User.getGlobalUser().logout();
+	public void clearData() {
+		mSettingRepo.debug().clearData();
 	}
 
 

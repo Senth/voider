@@ -13,11 +13,15 @@ import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.repo.PrefsGateway;
 import com.spiddekauga.voider.repo.Repo;
+import com.spiddekauga.voider.repo.SqliteGateway;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingDisplayLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingGeneralLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingNetworkLocalRepo;
 import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingSoundLocalRepo;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.DensityBuckets;
 
 /**
@@ -82,6 +86,13 @@ public class SettingRepo extends Repo {
 	 */
 	public SettingNetworkRepo network() {
 		return mNetwork;
+	}
+	
+	/**
+	 * @return debug settings
+	 */
+	public SettingDebugRepo debug() {
+		return mDebug;
 	}
 
 	/**
@@ -514,6 +525,22 @@ public class SettingRepo extends Repo {
 
 		private SettingNetworkLocalRepo mLocalRepo = SettingLocalRepo.getInstance().network;
 	}
+	
+	/**
+	 * Debug settings
+	 */
+	public class SettingDebugRepo {
+		/**
+		 * Clears the database, files and settings for the current logged in account and then
+		 * logs out the user
+		 */
+		public void clearData() {
+			ResourceLocalRepo.removeAll();
+			SqliteGateway.clearDatabase();
+			PrefsGateway.clearUserPreferences();
+			User.getGlobalUser().logout();
+		}
+	}
 
 	/**
 	 * Icon/UI sizes
@@ -573,5 +600,6 @@ public class SettingRepo extends Repo {
 	private SettingDisplayRepo mDisplay = new SettingDisplayRepo();
 	private SettingDateRepo mDate = new SettingDateRepo();
 	private SettingSoundRepo mSound = new SettingSoundRepo();
+	private SettingDebugRepo mDebug = new SettingDebugRepo();
 	private static SettingRepo mInstance = null;
 }

@@ -417,17 +417,33 @@ public class MsgBoxFactory {
 	 */
 	void serverRestored(final ServerRestoreEvent serverRestoreEvent) {
 		String title = "Server database has been reverted";
+		MsgBoxExecuter msgBox = add(title);
+		
 		String message = Messages.Info.getServerRestored(serverRestoreEvent.from, serverRestoreEvent.to);
-
 		Label info = mUiFactory.text.create(message, true, LabelStyles.HIGHLIGHT);
 		info.setWidth(WIDTH_MAX);
-		info.setAlignment(Align.center);
-
-		MsgBoxExecuter msgBox = add(title);
 		msgBox.content(info);
+		
+		Label changes = mUiFactory.text.create(Messages.Info.SERVER_RESTORED_CHANGE, true);
+		changes.setWidth(WIDTH_MAX);
+		msgBox.contentRow(mStyles.vars.paddingInner, 0);
+		msgBox.content(changes);
+		
+		msgBox.button("Quit", new CRun() {
+			@Override
+			public boolean execute() {
+				Gdx.app.exit();
+				return true;
+			}
+		});
 
-
-		// TODO
+		msgBox.button("Revert & Logout :(", new CRun() {
+			@Override
+			public boolean execute() {
+				SettingRepo.getInstance().debug().clearData();
+				return true;
+			}
+		});
 	}
 
 	/**
