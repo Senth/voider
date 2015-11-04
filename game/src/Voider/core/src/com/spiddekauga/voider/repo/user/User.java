@@ -118,15 +118,14 @@ public class User {
 
 	/**
 	 * Sets all necessary variables when logging in
-	 * @param username the username
-	 * @param privateKey used for auto login
-	 * @param serverKey user key on the server, can be null
+	 * @param user the user to login
 	 * @param online true if the user is online
 	 */
-	private static void loginGlobalUser(String username, UUID privateKey, String serverKey, boolean online) {
-		mGlobalUser.mUsername = username;
-		mGlobalUser.mPrivateKey = privateKey;
-		mGlobalUser.mServerKey = serverKey;
+	private static void loginGlobalUser(User user, boolean online) {
+		mGlobalUser.mUsername = user.getUsername();
+		mGlobalUser.mPrivateKey = user.getPrivateKey();
+		mGlobalUser.mServerKey = user.getServerKey();
+		mGlobalUser.mEmail = user.getEmail();
 		mGlobalUser.mOnline = online;
 		mGlobalUser.mLoggedIn = true;
 
@@ -137,9 +136,9 @@ public class User {
 
 		if (online) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
-			mNotification.showSuccess(username + " is now online!");
+			mNotification.showSuccess(user.getUsername() + " is now online!");
 		} else {
-			mNotification.showHighlight(username + " is now offline!");
+			mNotification.showHighlight(user.getUsername() + " is offline!");
 		}
 	}
 
@@ -383,14 +382,15 @@ public class User {
 				mUsername = response.username;
 				mPrivateKey = response.privateKey;
 				mServerKey = response.userKey;
+				mEmail = response.email;
 
-				// Update required or server has rewound
-				if (response.versionInfo.status == Statuses.UPDATE_REQUIRED || response.restoreDate != null) {
-					loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
-				}
 				// Login online
+				if (response.isServerLoginAvailable()) {
+					loginGlobalUser(User.this, true);
+				}
+				// Login offline
 				else {
-					loginGlobalUser(mUsername, mPrivateKey, mServerKey, true);
+					loginGlobalUser(User.this, false);
 				}
 			}
 		}
@@ -401,7 +401,7 @@ public class User {
 			case FAILED_SERVER_ERROR:
 				// Login offline
 				if (User.this != mGlobalUser && mPrivateKey != null) {
-					loginGlobalUser(mUsername, mPrivateKey, mServerKey, false);
+					loginGlobalUser(User.this, false);
 				} else {
 					mNotification.showError("Could not connect to server");
 					mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
@@ -430,7 +430,7 @@ public class User {
 				mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motds));
 			}
 
-			// Version 
+			// Version
 			switch (response.versionInfo.status) {
 			case NEW_VERSION_AVAILABLE:
 				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.versionInfo.latestVersion,
@@ -446,6 +446,7 @@ public class User {
 			case UP_TO_DATE:
 				break;
 			}
+
 
 			// Server reverted its DB
 			if (response.restoreDate != null) {

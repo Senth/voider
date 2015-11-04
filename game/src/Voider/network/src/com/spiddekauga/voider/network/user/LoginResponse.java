@@ -18,6 +18,8 @@ import com.spiddekauga.voider.network.misc.Motd;
 public class LoginResponse implements IEntity, ISuccessStatuses {
 	/** Username, the user could log in with email, thus reply with the real username */
 	@Tag(6) public String username;
+	/** Email of the logged in user */
+	@Tag(23) public String email;
 	/** If the login was successful */
 	@Tag(7) public Statuses status = Statuses.FAILED_SERVER_CONNECTION;
 	/** The private key which can be used to login without a password */
@@ -34,6 +36,13 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 	@Override
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();
+	}
+
+	/**
+	 * @return true if we should login on the server
+	 */
+	public boolean isServerLoginAvailable() {
+		return restoreDate == null && versionInfo.status != VersionInformation.Statuses.UPDATE_REQUIRED;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.network.user;
 
+import java.util.Date;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
@@ -27,4 +28,6 @@ public class LoginMethod implements IMethodEntity {
 	@Tag(4) public UUID privateKey;
 	/** Client version */
 	@Tag(5) public int clientVersion = ClientVersions.getLatest().ordinal();
+	/** Previous login date on this client */
+	@Tag(22) public Date lastLogin;
 }

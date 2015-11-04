@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo.user;
 
+import java.util.Date;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -47,14 +48,16 @@ class UserWebRepo extends WebRepo {
 	 * Tries to login the user either with password or private key if it exists
 	 * @param user the user to try to login.
 	 * @param clientId unique client id
+	 * @param lastLogin date when the user last logged in from this client, can be null
 	 * @param responseListeners listens to the web response
 	 */
-	void login(User user, UUID clientId, IResponseListener... responseListeners) {
+	void login(User user, UUID clientId, Date lastLogin, IResponseListener... responseListeners) {
 		LoginMethod loginMethod = new LoginMethod();
 		loginMethod.clientId = clientId;
 		loginMethod.username = user.getUsername();
 		loginMethod.password = user.getPassword();
 		loginMethod.privateKey = user.getPrivateKey();
+		loginMethod.lastLogin = lastLogin;
 
 		sendInNewThread(loginMethod, responseListeners);
 	}

@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo.user;
 
+import java.util.Date;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -13,7 +14,9 @@ import com.spiddekauga.voider.network.user.LogoutMethod;
 import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
+import com.spiddekauga.voider.repo.PrefsGateway;
 import com.spiddekauga.voider.repo.Repo;
+import com.spiddekauga.voider.repo.SqliteGateway;
 
 /**
  * User web repository
@@ -43,7 +46,8 @@ public class UserRepo extends Repo {
 	 * @param responseListeners listens to the web response
 	 */
 	void login(User user, IResponseListener... responseListeners) {
-		mWebRepo.login(user, mLocalRepo.getClientId(), addToFront(responseListeners, this));
+		Date lastLogin = mLocalRepo.getLastLogin(user.getUsername());
+		mWebRepo.login(user, mLocalRepo.getClientId(), lastLogin, addToFront(responseListeners, this));
 	}
 
 	/**
@@ -143,14 +147,22 @@ public class UserRepo extends Repo {
 	private void handleRegister(RegisterUserMethod method, RegisterUserResponse response) {
 		// Set last user
 		if (response.isSuccessful()) {
-			mLocalRepo.setLastUser(method.username, response.privateKey, response.userKey);
+			mLocalRepo.setLastUser(method.username, method.email, response.privateKey, response.userKey);
+			mLocalRepo.updateLastLogin(method.username, method.email);
 		}
 	}
 
 	private void handleLogin(LoginMethod method, LoginResponse response) {
-		// Logged in through text (not auto-login) -> Set last user
-		if (response.isSuccessful() && response.privateKey != null) {
-			mLocalRepo.setLastUser(response.username, response.privateKey, response.userKey);
+		if (response.isSuccessful()) {
+			// Logged in through text (not auto-login) -> Set last user
+			if (response.privateKey != null) {
+				mLocalRepo.setLastUser(response.username, response.email, response.privateKey, response.userKey);
+			}
+
+			// Update login date
+			if (response.isServerLoginAvailable()) {
+				mLocalRepo.updateLastLogin(response.username, response.email);
+			}
 		}
 	}
 
@@ -161,6 +173,16 @@ public class UserRepo extends Repo {
 				mLocalRepo.setPrivateKey(response.privateKey);
 			}
 		}
+	}
+
+	/**
+	 * Clear user data
+	 */
+	public void clearUserData() {
+		SqliteGateway.clearDatabase();
+		PrefsGateway.clearUserPreferences();
+		User user = User.getGlobalUser();
+		mLocalRepo.clearLastLogin(user.getUsername(), user.getEmail());
 	}
 
 	private static UserRepo mInstance = null;

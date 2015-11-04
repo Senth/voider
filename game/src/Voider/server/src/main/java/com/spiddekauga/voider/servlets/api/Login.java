@@ -25,6 +25,7 @@ import com.spiddekauga.voider.network.user.LoginResponse.VersionInformation;
 import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CRestoreDate;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
@@ -47,6 +48,7 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 		if (!mUser.isLoggedIn()) {
 			LoginMethod loginMethod = method;
 			checkClientVersion(loginMethod);
+			checkRestoreDate(loginMethod);
 			login(loginMethod);
 			getMessageOfTheDay();
 		}
@@ -85,6 +87,23 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 	}
 
 	/**
+	 * Check if the client needs to revert and restore the local data
+	 * @param method
+	 */
+	private void checkRestoreDate(LoginMethod method) {
+		// Was last login between any restore date?
+		FilterWrapper beforeFromDate = new FilterWrapper(CRestoreDate.FROM_DATE, FilterOperator.LESS_THAN_OR_EQUAL, method.lastLogin);
+		FilterWrapper afterToDate = new FilterWrapper(CRestoreDate.TO_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, method.lastLogin);
+		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.RESTORE_DATE, beforeFromDate, afterToDate);
+
+		// Restore client
+		if (entity != null) {
+			mResponse.restoreDate.from = (Date) entity.getProperty(CRestoreDate.FROM_DATE);
+			mResponse.restoreDate.to = (Date) entity.getProperty(CRestoreDate.TO_DATE);
+		}
+	}
+
+	/**
 	 * Try to login
 	 * @param method
 	 */
@@ -111,19 +130,12 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 				mResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
 				mResponse.privateKey = DatastoreUtils.getPropertyUuid(datastoreEntity, CUsers.PRIVATE_KEY);
 				mResponse.username = (String) datastoreEntity.getProperty(CUsers.USERNAME);
+				mResponse.email = (String) datastoreEntity.getProperty(CUsers.EMAIL);
 				updateLastLoggedIn(datastoreEntity);
 
 				// Only login online if we have a valid version
-				switch (mResponse.versionInfo.status) {
-				case NEW_VERSION_AVAILABLE:
-				case UP_TO_DATE:
+				if (mResponse.isServerLoginAvailable()) {
 					mUser.login(datastoreEntity.getKey(), mResponse.username, method.clientId);
-					break;
-
-				case UNKNOWN:
-				case UPDATE_REQUIRED:
-					// Do nothing
-					break;
 				}
 			}
 		}
