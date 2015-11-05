@@ -226,8 +226,8 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 	 * Send sync messages
 	 */
 	private void sendSyncMessages() {
-		sendMessage(new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES));
-		sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD));
+		sendMessage(ChatMessageReceivers.SELF, new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES));
+		sendMessage(ChatMessageReceivers.SELF, new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD));
 	}
 
 	/**

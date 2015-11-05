@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.server.util;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.mail.internet.InternetAddress;
 
@@ -16,7 +18,6 @@ public class ServerConfig {
 	@SuppressWarnings("javadoc")
 	public static class DatastoreTables {
 		/** Blob information for all blobs */
-		public static final String BLOB_INFO = "__BlobInfo__";
 		public static final String USERS = "users";
 		public static final String PASSWORD_RESET = "password_reset";
 		public static final String MOTD = "motd";
@@ -41,6 +42,10 @@ public class ServerConfig {
 		public static final String BETA_KEY = "beta_key";
 		public static final String BETA_SIGNUP = "beta_signup";
 		public static final String BETA_GROUP = "beta_group";
+		public static final String MAINTENANCE = "maintenance";
+
+		// Backup
+		public static final String BACKUP_INFO = "_AE_Backup_Information_Entities";
 
 		// -- Columns --
 		// Users
@@ -220,6 +225,25 @@ public class ServerConfig {
 			public static final String HASH = "hash";
 		}
 
+		// Maintenance
+		public static class CMaintenance {
+			public static final String MODE = "mode";
+			public static final String REASON = "reason";
+			public static final String MOTD_KEY = "motd_key";
+		}
+
+		// Backup Information
+		public static class CBackupInfo {
+			public static final String ACTIVE_JOBS = "active_jobs";
+			public static final String COMPLETE_TIME = "complete_time";
+			public static final String COMPLETED_JOBS = "completed_jobs";
+			public static final String FILESYSTEM = "filesystem";
+			public static final String GS_HANDLE = "gs_handle";
+			public static final String KINDS = "kinds";
+			public static final String NAME = "name";
+			public static final String START_TIME = "start_time";
+		}
+
 		/**
 		 * Private constructor to enforce singleton usage
 		 */
@@ -364,6 +388,35 @@ public class ServerConfig {
 
 		private static final String DOWNLOAD_URL_PREFIX = "http://storage.googleapis.com/voider-shared/app/";
 		private static final String DESKTOP_SUFFIX = ".jar";
+	}
+
+	/**
+	 * All maintenance modes
+	 */
+	public enum MaintenanceModes {
+		/** Up and running */
+		UP,
+		/** Server is down for maintenance */
+		DOWN,
+
+		;
+
+		/**
+		 * Convert a string back to a maintenance mode
+		 * @param mode
+		 * @return the enumeration of mode, null if not found
+		 */
+		public static MaintenanceModes fromString(String mode) {
+			return mStringToEnum.get(mode);
+		}
+
+		private static Map<String, MaintenanceModes> mStringToEnum = new HashMap<>();
+
+		static {
+			for (MaintenanceModes mode : MaintenanceModes.values()) {
+				mStringToEnum.put(mode.toString(), mode);
+			}
+		}
 	}
 
 	/** Public Search tokenize sizes */

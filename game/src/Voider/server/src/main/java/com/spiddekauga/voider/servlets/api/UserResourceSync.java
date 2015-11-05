@@ -83,7 +83,7 @@ public class UserResourceSync extends VoiderApiServlet<UserResourceSyncMethod> {
 			if (!userMethod.resources.isEmpty() || !userMethod.resourceToRemove.isEmpty()
 					|| (userMethod.conflictKeepLocal != null && userMethod.conflictKeepLocal)) {
 				ChatMessage<Object> chatMessage = new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId());
-				sendMessage(chatMessage);
+				sendMessage(ChatMessageReceivers.SELF, chatMessage);
 			}
 		}
 

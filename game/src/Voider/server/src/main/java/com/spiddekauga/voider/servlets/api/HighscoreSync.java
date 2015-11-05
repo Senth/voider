@@ -161,7 +161,7 @@ public class HighscoreSync extends VoiderApiServlet<HighscoreSyncMethod> {
 				ChatMessage<Object> chatMessage = new ChatMessage<>();
 				chatMessage.skipClient = mUser.getClientId();
 				chatMessage.type = MessageTypes.SYNC_HIGHSCORE;
-				sendMessage(chatMessage);
+				sendMessage(ChatMessageReceivers.SELF, chatMessage);
 			}
 		}
 	}

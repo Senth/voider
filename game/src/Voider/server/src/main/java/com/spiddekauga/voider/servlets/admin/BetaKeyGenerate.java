@@ -32,7 +32,7 @@ public class BetaKeyGenerate extends VoiderController {
 	protected void onRequest() {
 		if (isParameterSet("group") && isParameterSet("count")) {
 			generateGroupKeys();
-		} else if (isParameterSet("delelte")) {
+		} else if (isParameterSet("delete")) {
 			deleteGroup();
 		} else if (isParameterSet("email_list")) {
 			sendBetaKeysToEmail();

@@ -158,6 +158,7 @@ public class Motd extends VoiderController {
 			return;
 		}
 
+
 		DatastoreUtils.put(entity);
 	}
 

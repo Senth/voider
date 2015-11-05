@@ -309,6 +309,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/admin/motd</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>Backup</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Backup</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Backup</servlet-name>
+		<url-pattern>/admin/backup</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>Fixit</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.admin.Fixit</servlet-class>
 	</servlet>

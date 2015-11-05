@@ -57,7 +57,7 @@ public class ResourceDownload extends VoiderApiServlet<ResourceDownloadMethod> {
 				if (success && !mAddedResources.isEmpty()) {
 					setUserDownloadDate();
 					mResponse.status = Statuses.SUCCESS;
-					sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
+					sendMessage(ChatMessageReceivers.SELF, new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
 				}
 			}
 			// Redownload
