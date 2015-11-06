@@ -77,6 +77,7 @@ public abstract class PrefsGateway implements IEventListener {
 			if (preferenceName.isUserPreferences()) {
 				Preferences preferences = Gdx.app.getPreferences(preferenceName.toString());
 				preferences.clear();
+				preferences.flush();
 			}
 		}
 	}
@@ -109,17 +110,16 @@ public abstract class PrefsGateway implements IEventListener {
 		 */
 		private PreferenceNames(String name, boolean user) {
 			mUser = user;
-
-			if (mUser) {
-				mName = Config.File.getUserPreferencesPrefix() + name;
-			} else {
-				mName = Config.File.PREFERENCE_PREFIX + "_" + name;
-			}
+			mName = name;
 		}
 
 		@Override
 		public String toString() {
-			return mName;
+			if (mUser) {
+				return Config.File.getUserPreferencesPrefix() + mName;
+			} else {
+				return Config.File.PREFERENCE_PREFIX + "." + mName;
+			}
 		}
 
 		/**

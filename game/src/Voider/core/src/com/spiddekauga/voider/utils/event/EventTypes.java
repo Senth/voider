@@ -33,6 +33,8 @@ public enum EventTypes {
 
 
 	// --- SYNC ---
+	/** Sync user downloaded user resources */
+	SYNC_USER_RESOURCES,
 	/** Successfully downloaded user resources */
 	SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS,
 	/** Failed to download user resources */
@@ -45,14 +47,20 @@ public enum EventTypes {
 	SYNC_USER_RESOURCES_UPLOAD_PARTIAL,
 	/** Conflict when uploading user resources */
 	SYNC_USER_RESOURCES_UPLOAD_CONFLICT,
+	/** Sync downloaded resources */
+	SYNC_COMMUNITY_DOWNLOAD,
 	/** Downloaded new community resources */
 	SYNC_COMMUNITY_DOWNLOAD_SUCCESS,
 	/** Failed to download community resources */
 	SYNC_COMMUNITY_DOWNLOAD_FAILED,
+	/** Sync player highscores */
+	SYNC_HIGHSCORE,
 	/** Synced player highscore succeeded */
 	SYNC_HIGHSCORE_SUCCESS,
 	/** Synced player highscore failed */
 	SYNC_HIGHSCORE_FAILED,
+	/** Sync player statistics */
+	SYNC_STATS,
 	/** Statistics synced successfully */
 	SYNC_STATS_SUCCESS,
 	/** Statistics sync failed */
@@ -69,6 +77,8 @@ public enum EventTypes {
 	// --- SERVER RESTORED TO PREVIOUS VERSION ---
 	/** The server restored/rewound to an earlier version of its database */
 	SERVER_RESTORE,
+	/** Server maintenance */
+	SERVER_MAINTENANCE,
 
 
 	// --- MOTD ---

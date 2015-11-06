@@ -8,6 +8,8 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.xml.bind.DatatypeConverter;
 
+import com.google.common.base.CaseFormat;
+
 /**
  * Controller for the all web stuff
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
@@ -143,6 +145,18 @@ public abstract class VoiderController extends VoiderServlet {
 	 */
 	protected PrintWriter getResponsePrintWriter() {
 		return mOut;
+	}
+
+	/**
+	 * Forward/Redirect to the HTML page
+	 */
+	protected void forwardToHtml() {
+		try {
+			String jspName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, getClass().getSimpleName()) + ".jsp";
+			getRequest().getRequestDispatcher(jspName).forward(getRequest(), getResponse());
+		} catch (ServletException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

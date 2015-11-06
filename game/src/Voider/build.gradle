@@ -40,6 +40,7 @@ allprojects {
         appengineUtilsVersion = '0.2.0'
 		httpUrlUtilsVersion = '0.3.0'
 		jaccVersion = '0.2.2-SNAPSHOT'
+		guavaVersion = '19.0-rc2'
     }
 
     repositories {
@@ -190,6 +191,7 @@ project(":server") {
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
 		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
 		compile "commons-fileupload:commons-fileupload:1.3.1"
+		compile "com.google.guava:guava:$guavaVersion"
 	}
 }
 
@@ -406,9 +408,6 @@ def updateBackupCronUrl(applicationId) {
 	url += "&amp;gs_bucket_name=" + applicationId
 	
 	def kinds = [
-		"analytics_event",
-		"analytics_scene",
-		"analytics_session",
 		"beta_group",
 		"beta_key",
 		"beta_signup",

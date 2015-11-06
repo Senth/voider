@@ -44,13 +44,26 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 
 	@Override
 	protected IEntity onRequest(LoginMethod method) throws ServletException, IOException {
-		// Skip if already logged in
-		if (!mUser.isLoggedIn()) {
-			LoginMethod loginMethod = method;
-			checkClientVersion(loginMethod);
-			checkRestoreDate(loginMethod);
-			login(loginMethod);
+		switch (getMaintenanceMode()) {
+		case UP:
+			// Skip if already logged in
+			if (!mUser.isLoggedIn()) {
+				checkClientVersion(method);
+				checkRestoreDate(method);
+				login(method);
+
+				// MOTD
+				if (mResponse.isSuccessful()) {
+					getMessageOfTheDay();
+				}
+			}
+			break;
+
+		case DOWN:
+			mResponse.status = Statuses.FAILED_SERVER_MAINTENANCE;
+			checkClientVersion(method);
 			getMessageOfTheDay();
+			break;
 		}
 
 		return mResponse;
@@ -92,14 +105,18 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 	 */
 	private void checkRestoreDate(LoginMethod method) {
 		// Was last login between any restore date?
-		FilterWrapper beforeFromDate = new FilterWrapper(CRestoreDate.FROM_DATE, FilterOperator.LESS_THAN_OR_EQUAL, method.lastLogin);
-		FilterWrapper afterToDate = new FilterWrapper(CRestoreDate.TO_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, method.lastLogin);
-		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.RESTORE_DATE, beforeFromDate, afterToDate);
+		FilterWrapper beforeFromDate = new FilterWrapper(CRestoreDate.FROM_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, method.lastLogin);
+		Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.RESTORE_DATE, beforeFromDate);
 
-		// Restore client
-		if (entity != null) {
-			mResponse.restoreDate.from = (Date) entity.getProperty(CRestoreDate.FROM_DATE);
-			mResponse.restoreDate.to = (Date) entity.getProperty(CRestoreDate.TO_DATE);
+		// Check if there is one that's between
+		for (Entity entity : entities) {
+
+			Date toDate = (Date) entity.getProperty(CRestoreDate.TO_DATE);
+
+			if (toDate.before(method.lastLogin)) {
+				mResponse.restoreDate.from = (Date) entity.getProperty(CRestoreDate.FROM_DATE);
+				mResponse.restoreDate.to = toDate;
+			}
 		}
 	}
 
@@ -149,12 +166,6 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 	 * Get new messages (MOTD) if we successfully logged in
 	 */
 	private void getMessageOfTheDay() {
-		// Could not login, skip message of the day
-		if (!mResponse.isSuccessful()) {
-			return;
-		}
-
-
 		// Get all active MOTD
 		FilterWrapper notExpired = new FilterWrapper(CMotd.EXPIRES, FilterOperator.GREATER_THAN_OR_EQUAL, new Date());
 		Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.MOTD, notExpired);
@@ -208,6 +219,11 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 	private void updateLastLoggedIn(Entity userEntity) {
 		userEntity.setProperty(CUsers.LOGGED_IN, new Date());
 		DatastoreUtils.put(userEntity);
+	}
+
+	@Override
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return true;
 	}
 
 	private LoginResponse mResponse = null;

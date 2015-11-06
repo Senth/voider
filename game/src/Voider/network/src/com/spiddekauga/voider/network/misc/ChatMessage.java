@@ -77,6 +77,10 @@ public class ChatMessage<DataType> implements IEntity, Serializable {
 		/** Synchronize highscores */
 		SYNC_HIGHSCORE,
 		/** Synchronize statistics */
-		SYNC_STAT,
+		SYNC_STATS,
+		/** Server maintenance */
+		SERVER_MAINTENANCE,
+		/** New MOTD message */
+		MOTD,
 	}
 }

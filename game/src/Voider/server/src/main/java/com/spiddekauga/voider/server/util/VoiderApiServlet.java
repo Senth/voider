@@ -11,6 +11,7 @@ import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
+import com.spiddekauga.voider.server.util.ServerConfig.MaintenanceModes;
 
 
 /**
@@ -39,26 +40,37 @@ public abstract class VoiderApiServlet<Method extends IMethodEntity> extends Voi
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void handleRequest() throws ServletException, IOException {
-		// Get method parameters
-		try {
-			byte[] byteEntity = NetworkGateway.getEntity(getRequest());
-			Method methodEntity = null;
-			if (byteEntity != null) {
-				methodEntity = (Method) NetworkEntitySerializer.deserializeEntity(byteEntity);
-			}
+		if (getMaintenanceMode() == MaintenanceModes.UP || isHandlingRequestDuringMaintenance()) {
+			// Get method parameters
+			try {
+				byte[] byteEntity = NetworkGateway.getEntity(getRequest());
+				Method methodEntity = null;
+				if (byteEntity != null) {
+					methodEntity = (Method) NetworkEntitySerializer.deserializeEntity(byteEntity);
+				}
 
-			// Handle request
-			onInit();
-			IEntity responseEntity = onRequest(methodEntity);
+				// Handle request
+				onInit();
+				IEntity responseEntity = onRequest(methodEntity);
 
-			// Send response
-			if (responseEntity != null) {
-				byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
-				NetworkGateway.sendResponse(getResponse(), responseBytes);
+				// Send response
+				if (responseEntity != null) {
+					byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
+					NetworkGateway.sendResponse(getResponse(), responseBytes);
+				}
+			} catch (ClassCastException e) {
+				// Wrong type of method. Doesn't work
 			}
-		} catch (ClassCastException e) {
-			// Wrong type of method. Doesn't work
 		}
+	}
+
+	/**
+	 * Override this method if the subclass will handle request even during maintenance
+	 * mode
+	 * @return true if the subclass will handle requests during maintenance mode
+	 */
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return false;
 	}
 
 	/**

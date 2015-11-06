@@ -45,7 +45,7 @@ public class ServerConfig {
 		public static final String MAINTENANCE = "maintenance";
 
 		// Backup
-		public static final String BACKUP_INFO = "_AE_Backup_Information_Entities";
+		public static final String BACKUP_INFO = "_AE_Backup_Information";
 
 		// -- Columns --
 		// Users

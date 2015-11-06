@@ -501,7 +501,7 @@ public class Config {
 		 */
 		public static void setUserPaths(String username) {
 			mUserStorage = STORAGE + username + "/";
-			mUserPreferencesPrefix = PREFERENCE_PREFIX + "_" + username + "_";
+			mUserPreferencesPrefix = PREFERENCE_PREFIX + "." + username + ".";
 
 			// Create folder if it doesn't exist
 			FileHandle folder = Gdx.files.external(mUserStorage);

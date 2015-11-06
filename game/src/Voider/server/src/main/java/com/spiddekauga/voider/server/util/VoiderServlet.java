@@ -19,8 +19,13 @@ import javax.servlet.http.HttpSession;
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.gson.Gson;
+import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMaintenance;
+import com.spiddekauga.voider.server.util.ServerConfig.MaintenanceModes;
 
 /**
  * Base class for all Voider servlets.
@@ -51,7 +56,7 @@ public abstract class VoiderServlet extends HttpServlet {
 
 		initSession(request);
 
-		handleRequest(request, response);
+		handleRequest();
 
 		saveSession();
 	}
@@ -177,6 +182,24 @@ public abstract class VoiderServlet extends HttpServlet {
 	 */
 	protected HttpServletResponse getResponse() {
 		return mResponse;
+	}
+
+	/**
+	 * @return current maintenance mode
+	 */
+	protected MaintenanceModes getMaintenanceMode() {
+		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.MAINTENANCE);
+
+		MaintenanceModes mode = MaintenanceModes.UP;
+
+		if (entity != null) {
+			String modeString = (String) entity.getProperty(CMaintenance.MODE);
+			if (modeString != null) {
+				mode = MaintenanceModes.fromString(modeString);
+			}
+		}
+
+		return mode;
 	}
 
 	/**

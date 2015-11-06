@@ -1,14 +1,12 @@
 package com.spiddekauga.voider.servlets.admin;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -28,7 +26,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class Backup extends VoiderController {
+public class Maintenance extends VoiderController {
 
 	@Override
 	protected void onRequest() {
@@ -41,20 +39,10 @@ public class Backup extends VoiderController {
 			changeMaintenanceMode();
 		}
 
+		displayMaintenanceMode();
 		displayBackupPoints();
 		displayRestoredDates();
 		forwardToHtml();
-	}
-
-	/**
-	 * Forward to HTML page
-	 */
-	private void forwardToHtml() {
-		try {
-			getRequest().getRequestDispatcher("backup.jsp").forward(getRequest(), getResponse());
-		} catch (ServletException | IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -95,10 +83,13 @@ public class Backup extends VoiderController {
 		entity.setProperty(CMaintenance.MODE, MaintenanceModes.DOWN.toString());
 		entity.setProperty(CMaintenance.REASON, getParameter(P_MAINTENANCE_REASON));
 		entity.setProperty(CMaintenance.MOTD_KEY, motdKey);
+
+		DatastoreUtils.put(entity);
 	}
 
 	/**
 	 * Create maintenance MOTD
+	 * @return key of the created MOTD
 	 */
 	private Key createMotdEntity() {
 		Date currentDate = new Date();
@@ -124,7 +115,29 @@ public class Backup extends VoiderController {
 	 * Turn off maintenance mode
 	 */
 	private void disableMaintenance() {
+		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.MAINTENANCE);
 
+		if (entity != null) {
+			entity.setProperty(CMaintenance.MODE, MaintenanceModes.UP.toString());
+			entity.removeProperty(CMaintenance.REASON);
+
+			Key motdKey = (Key) entity.getProperty(CMaintenance.MOTD_KEY);
+			entity.removeProperty(CMaintenance.MOTD_KEY);
+			DatastoreUtils.put(entity);
+
+
+			// Expire MOTD
+			if (motdKey != null) {
+				Entity motdEntity = DatastoreUtils.getEntity(motdKey);
+
+				if (motdEntity != null) {
+					motdEntity.setProperty(CMotd.EXPIRES, new Date());
+					DatastoreUtils.put(motdEntity);
+				}
+			}
+		} else {
+			mLogger.severe("There should always be a maintenance entity when disabling!");
+		}
 	}
 
 	/**
@@ -140,7 +153,24 @@ public class Backup extends VoiderController {
 		Entity entity = new Entity(DatastoreTables.RESTORE_DATE);
 		entity.setProperty(CRestoreDate.FROM_DATE, new Date());
 		entity.setProperty(CRestoreDate.TO_DATE, backupDate);
+	}
 
+	/**
+	 * Get and display the current maintenance mode
+	 */
+	private void displayMaintenanceMode() {
+		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.MAINTENANCE);
+
+		MaintenanceModes mode = MaintenanceModes.UP;
+
+		if (entity != null) {
+			String modeString = (String) entity.getProperty(CMaintenance.MODE);
+			if (modeString != null) {
+				mode = MaintenanceModes.fromString(modeString);
+			}
+		}
+
+		getRequest().setAttribute("maintenance_mode", mode.toString());
 	}
 
 	/**
@@ -158,6 +188,15 @@ public class Backup extends VoiderController {
 			RestoredDate restoredDate = new RestoredDate(from, to);
 			restoredDates.add(restoredDate);
 		}
+
+		// Sort
+		Collections.sort(restoredDates, new Comparator<RestoredDate>() {
+			@Override
+			public int compare(RestoredDate o1, RestoredDate o2) {
+				return o1.from.compareTo(o2.from);
+			}
+		});
+		Collections.reverse(restoredDates);
 
 		getRequest().setAttribute("restored_dates", restoredDates);
 	}
@@ -178,8 +217,16 @@ public class Backup extends VoiderController {
 			backupPoints.add(backupPoint);
 		}
 
-		HttpServletRequest request = getRequest();
-		request.setAttribute("backup_points", backupPoints);
+		// Sort
+		Collections.sort(backupPoints, new Comparator<BackupPoint>() {
+			@Override
+			public int compare(BackupPoint o1, BackupPoint o2) {
+				return o1.date.compareTo(o2.date);
+			}
+		});
+		Collections.reverse(backupPoints);
+
+		getRequest().setAttribute("backup_points", backupPoints);
 	}
 
 	/**

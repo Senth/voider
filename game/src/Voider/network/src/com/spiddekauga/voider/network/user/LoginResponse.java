@@ -94,6 +94,8 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 		FAILED_SERVER_CONNECTION,
 		/** Internal server error */
 		FAILED_SERVER_ERROR,
+		/** Failed Server Maintenance */
+		FAILED_SERVER_MAINTENANCE,
 
 		;
 		@Override

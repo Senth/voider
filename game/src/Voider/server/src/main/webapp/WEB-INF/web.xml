@@ -293,11 +293,11 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	<!-- Beta Key Generator -->
 	<servlet>
-		<servlet-name>BetaKeyGenerate</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.admin.BetaKeyGenerate</servlet-class>
+		<servlet-name>GenerateBetaKeys</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.GenerateBetaKeys</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>BetaKeyGenerate</servlet-name>
+		<servlet-name>GenerateBetaKeys</servlet-name>
 		<url-pattern>/admin/generate-beta-keys</url-pattern>
 	</servlet-mapping>
 	<servlet>
@@ -309,12 +309,12 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/admin/motd</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>Backup</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.admin.Backup</servlet-class>
+		<servlet-name>Maintenance</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Maintenance</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Backup</servlet-name>
-		<url-pattern>/admin/backup</url-pattern>
+		<servlet-name>Maintenance</servlet-name>
+		<url-pattern>/admin/maintenance</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Fixit</servlet-name>

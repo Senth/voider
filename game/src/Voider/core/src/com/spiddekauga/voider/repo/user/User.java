@@ -19,6 +19,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 import com.spiddekauga.voider.utils.event.MotdEvent;
 import com.spiddekauga.voider.utils.event.ServerRestoreEvent;
 import com.spiddekauga.voider.utils.event.UpdateEvent;
@@ -96,7 +97,19 @@ public class User {
 			SceneSwitcher.clearScenes();
 			SceneSwitcher.switchTo(new LoginScene());
 
-			EventDispatcher.getInstance().fire(new GameEvent(EventTypes.USER_LOGOUT));
+			mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGOUT));
+			mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
+		}
+	}
+
+	/**
+	 * Disconnects the user
+	 */
+	public void disconnect() {
+		if (this == mGlobalUser) {
+			mOnline = false;
+			mNotification.showHighlight("You have been disconnected from the server");
+			mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
 		}
 	}
 
@@ -136,6 +149,7 @@ public class User {
 
 		if (online) {
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
+			mEventDispatcher.connect(EventTypes.SERVER_MAINTENANCE, mGlobalUser.mDisconnectListener);
 			mNotification.showSuccess(user.getUsername() + " is now online!");
 		} else {
 			mNotification.showHighlight(user.getUsername() + " is offline!");
@@ -150,6 +164,7 @@ public class User {
 			mGlobalUser.mOnline = true;
 
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
+			mEventDispatcher.connect(EventTypes.SERVER_MAINTENANCE, mGlobalUser.mDisconnectListener);
 			mNotification.showSuccess(mGlobalUser.mUsername + " is now online!");
 		}
 	}
@@ -418,6 +433,10 @@ public class User {
 				mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
 				break;
 
+			case FAILED_SERVER_MAINTENANCE:
+				mNotification.showHighlight("Could not login due to server maintenance");
+				break;
+
 			case SUCCESS:
 				// Does nothing
 				break;
@@ -493,6 +512,16 @@ public class User {
 				mNotification.showError("User has been logged out on server");
 				break;
 
+			}
+		}
+	};
+
+	private IEventListener mDisconnectListener = new IEventListener() {
+		@Override
+		public void handleEvent(GameEvent event) {
+			if (User.this == mGlobalUser) {
+				disconnect();
+				mEventDispatcher.disconnect(EventTypes.SERVER_MAINTENANCE, this);
 			}
 		}
 	};

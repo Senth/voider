@@ -7,19 +7,22 @@ import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 import com.spiddekauga.voider.utils.event.IEventListener;
+import com.spiddekauga.voider.utils.event.MotdEvent;
 
 import edu.gvsu.cis.masl.channelAPI.ChannelAPI;
 import edu.gvsu.cis.masl.channelAPI.ChannelAPI.ChannelException;
 import edu.gvsu.cis.masl.channelAPI.ChannelService;
 
 /**
- * Gateway for all channel messages to and from the server
+ * Gateway for all channel messages to and from the server. Converts all messages to game
+ * events.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MessageGateway implements ChannelService {
@@ -90,21 +93,6 @@ public class MessageGateway implements ChannelService {
 		return mChannel != null;
 	}
 
-	/**
-	 * Add a listener that will listen to messages
-	 * @param listener
-	 */
-	public void addListener(IMessageListener listener) {
-		mListeners.add(listener);
-	}
-
-	/**
-	 * Removes a listener
-	 * @param listener the listener to remove
-	 */
-	public void removeListener(IMessageListener listener) {
-		mListeners.remove(listener);
-	}
 
 	@Override
 	public void onOpen() {
@@ -118,11 +106,68 @@ public class MessageGateway implements ChannelService {
 		ChatMessage<?> chatMessage = mGson.fromJson(message, ChatMessage.class);
 		if (chatMessage != null) {
 			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(mUserRepo.getClientId())) {
-				for (IMessageListener listener : mListeners) {
-					listener.onMessage(chatMessage);
+				GameEvent gameEvent = convertToGameEvent(chatMessage);
+
+				if (gameEvent != null) {
+					mEventDispatcher.fire(gameEvent);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Converts the ChatMessage to a GameEvent
+	 * @param chatMessage the ChatMessage to convert
+	 * @return GameEvent equivalent of the specified ChatMessage
+	 */
+	private GameEvent convertToGameEvent(ChatMessage<?> chatMessage) {
+		GameEvent gameEvent = null;
+
+		switch (chatMessage.type) {
+		case MOTD:
+			gameEvent = convertToMotdEvent(chatMessage);
+			break;
+
+		case SERVER_MAINTENANCE:
+			gameEvent = new GameEvent(EventTypes.SERVER_MAINTENANCE);
+			break;
+
+		case SYNC_COMMUNITY_DOWNLOAD:
+			gameEvent = new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD);
+			break;
+
+		case SYNC_HIGHSCORE:
+			gameEvent = new GameEvent(EventTypes.SYNC_HIGHSCORE);
+			break;
+
+		case SYNC_STATS:
+			gameEvent = new GameEvent(EventTypes.SYNC_STATS);
+			break;
+
+		case SYNC_USER_RESOURCES:
+			gameEvent = new GameEvent(EventTypes.SYNC_USER_RESOURCES);
+			break;
+		}
+
+		return gameEvent;
+	}
+
+	/**
+	 * Convert MOTD
+	 * @param chatMessage
+	 * @return MOTD game event
+	 */
+	private MotdEvent convertToMotdEvent(ChatMessage<?> chatMessage) {
+		MotdEvent motdEvent = null;
+
+		ArrayList<Motd> motds = new ArrayList<>();
+
+		if (chatMessage.data instanceof Motd) {
+			motds.add((Motd) chatMessage.data);
+			motdEvent = new MotdEvent(EventTypes.MOTD_NEW, motds);
+		}
+
+		return motdEvent;
 	}
 
 	@Override
@@ -146,7 +191,7 @@ public class MessageGateway implements ChannelService {
 			EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 
 			eventDispatcher.connect(EventTypes.USER_CONNECTED, this);
-			eventDispatcher.connect(EventTypes.USER_LOGOUT, this);
+			eventDispatcher.connect(EventTypes.USER_DISCONNECTED, this);
 		}
 
 		@Override
@@ -156,7 +201,7 @@ public class MessageGateway implements ChannelService {
 				connect();
 				break;
 
-			case USER_LOGOUT: {
+			case USER_DISCONNECTED: {
 				// Disconnect in main thread
 				Gdx.app.postRunnable(new Runnable() {
 					@Override
@@ -175,10 +220,10 @@ public class MessageGateway implements ChannelService {
 	}
 
 	/** Message listeners */
-	private ArrayList<IMessageListener> mListeners = new ArrayList<>();
 	private ChannelAPI mChannel = null;
 	private Gson mGson = new Gson();
 	private UserRepo mUserRepo = UserRepo.getInstance();
+	private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 
 	private static MessageGateway mInstance = null;
 }

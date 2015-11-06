@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.servlets.admin;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.Entity;
@@ -27,7 +25,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BetaKeyGenerate extends VoiderController {
+public class GenerateBetaKeys extends VoiderController {
 	@Override
 	protected void onRequest() {
 		if (isParameterSet("group") && isParameterSet("count")) {
@@ -38,6 +36,7 @@ public class BetaKeyGenerate extends VoiderController {
 			sendBetaKeysToEmail();
 		}
 		displayExistingGroups();
+		forwardToHtml();
 	}
 
 	/**
@@ -116,11 +115,6 @@ public class BetaKeyGenerate extends VoiderController {
 		}
 
 		request.setAttribute("groups", groups);
-		try {
-			request.getRequestDispatcher("generate-beta-keys.jsp").forward(request, getResponse());
-		} catch (ServletException | IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**

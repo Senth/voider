@@ -36,8 +36,7 @@ public class Fixit extends VoiderController {
 			}
 		}
 
-
-		redirect("fixit.jsp");
+		forwardToHtml();
 	}
 
 	/**

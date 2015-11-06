@@ -17,7 +17,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
 import com.spiddekauga.voider.network.misc.BugReportMethod;
 import com.spiddekauga.voider.network.misc.BugReportResponse;
-import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.resource.DownloadSyncResponse;
 import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.resource.UserResourceSyncMethod;
@@ -37,8 +36,6 @@ import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
-import com.spiddekauga.voider.server.IMessageListener;
-import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -49,20 +46,18 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  * everything when user logs in
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Synchronizer implements IMessageListener, IResponseListener {
+public class Synchronizer implements IResponseListener, IEventListener {
 	/**
 	 * Initializes the synchronizer. Private constructor to enforce singleton usage
 	 */
 	private Synchronizer() {
-		MessageGateway.getInstance().addListener(this);
 		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 
-		eventDispatcher.connect(EventTypes.USER_CONNECTED, new IEventListener() {
-			@Override
-			public void handleEvent(GameEvent event) {
-				synchronizeAll();
-			}
-		});
+		eventDispatcher.connect(EventTypes.SYNC_COMMUNITY_DOWNLOAD, this);
+		eventDispatcher.connect(EventTypes.SYNC_USER_RESOURCES, this);
+		eventDispatcher.connect(EventTypes.SYNC_HIGHSCORE, this);
+		eventDispatcher.connect(EventTypes.SYNC_STATS, this);
+		eventDispatcher.connect(EventTypes.USER_CONNECTED, this);
 
 		mThread.start();
 	}
@@ -75,8 +70,8 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 	}
 
 	@Override
-	public void onMessage(ChatMessage<?> message) {
-		switch (message.type) {
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
 		case SYNC_COMMUNITY_DOWNLOAD:
 			synchronize(SyncTypes.COMMUNITY_RESOURCES);
 			break;
@@ -89,8 +84,16 @@ public class Synchronizer implements IMessageListener, IResponseListener {
 			synchronize(SyncTypes.HIGHSCORES);
 			break;
 
-		case SYNC_STAT:
+		case SYNC_STATS:
 			synchronize(SyncTypes.STATS);
+			break;
+
+		case USER_CONNECTED:
+			synchronizeAll();
+			break;
+
+		default:
+			// Does nothing
 			break;
 		}
 	}

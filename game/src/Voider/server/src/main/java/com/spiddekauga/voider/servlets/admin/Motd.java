@@ -1,12 +1,10 @@
 package com.spiddekauga.voider.servlets.admin;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.Entity;
@@ -51,6 +49,7 @@ public class Motd extends VoiderController {
 
 		setDefaultCreateValues();
 		displayExistingMotds();
+		forwardToHtml();
 	}
 
 	/**
@@ -179,11 +178,6 @@ public class Motd extends VoiderController {
 		}
 
 		request.setAttribute("messages", messages);
-		try {
-			request.getRequestDispatcher("motd.jsp").forward(request, getResponse());
-		} catch (ServletException | IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**

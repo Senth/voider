@@ -34,4 +34,9 @@ public class Logout extends VoiderApiServlet<LogoutMethod> {
 		}
 		return logoutMethodResponse;
 	}
+
+	@Override
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return true;
+	}
 }
