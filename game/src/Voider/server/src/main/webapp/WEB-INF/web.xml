@@ -244,16 +244,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ChatDisconnected</servlet-name>
-		<url-pattern>/_ah/channel/disconnected</url-pattern>
+		<url-pattern>/_ah/channel/disconnected/</url-pattern>
 	</servlet-mapping>
-	<!-- <servlet>
-		<servlet-name>ChatReceive</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.backend.ChatReceive</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ChatReceive</servlet-name>
-		<url-pattern>/chat-receive</url-pattern>
-	</servlet-mapping> -->
 	
 	
 	<!--———————————————

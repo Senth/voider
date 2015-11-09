@@ -3,6 +3,7 @@ package com.spiddekauga.voider.servlets.admin;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -17,16 +18,18 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CHighscore;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResourcesDeleted;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Does an upgrade for the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings({ "serial" })
+@SuppressWarnings({ "serial", "unused" })
 public class Upgrade extends VoiderApiServlet<IMethodEntity> {
 	@Override
 	protected void onInit() {
@@ -35,15 +38,68 @@ public class Upgrade extends VoiderApiServlet<IMethodEntity> {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity method) throws ServletException, IOException {
-		makeBlobsUnindexed();
-		indexLevelId();
-		removeDeletedBlobs();
+		convertUuidIntToString();
 
 		getResponse().setContentType("text/html");
 		getResponse().getWriter().append("DONE !");
 
 		return null;
 	}
+
+	private void convertUuidIntToString() {
+		List<Entity> addEntities = new ArrayList<>();
+		// Highscore (level_id)
+		convertProperties(addEntities, DatastoreTables.HIGHSCORE, CHighscore.LEVEL_ID);
+		// Published (copy_parent_id, level_id, resource_id)
+		convertProperties(addEntities, DatastoreTables.PUBLISHED, CPublished.COPY_PARENT_ID, CPublished.LEVEL_ID, CPublished.RESOURCE_ID);
+		// User Resources (resource_id)
+		convertProperties(addEntities, DatastoreTables.USER_RESOURCES, CUserResources.RESOURCE_ID);
+		// User Resources Deleted (resource_id)
+		convertProperties(addEntities, DatastoreTables.USER_RESOURCES_DELETED, CUserResourcesDeleted.RESOURCE_ID);
+		// Users (private_key)
+		convertProperties(addEntities, DatastoreTables.USERS, CUsers.PRIVATE_KEY);
+
+		DatastoreUtils.put(addEntities);
+	}
+
+	private void convertProperties(List<Entity> addEntities, String tableName, String... propertyNames) {
+		Iterable<Entity> foundEntities = DatastoreUtils.getEntities(tableName);
+		for (Entity entity : foundEntities) {
+			boolean success = false;
+			for (String propertyName : propertyNames) {
+				if (convertProperty(entity, propertyName)) {
+					success = true;
+				}
+			}
+
+			if (success) {
+				addEntities.add(entity);
+			}
+		}
+	}
+
+	private boolean convertProperty(Entity entity, String propertyName) {
+		if (entity.hasProperty(propertyName + "-least")) {
+			Long least = (Long) entity.getProperty(propertyName + "-least");
+			Long most = (Long) entity.getProperty(propertyName + "-most");
+			UUID uuid = new UUID(most, least);
+
+			// Unindexed
+			if (entity.isUnindexedProperty(propertyName + "-least")) {
+				entity.setUnindexedProperty(propertyName, uuid.toString());
+			}
+			// Indexed
+			else {
+				entity.setProperty(propertyName, uuid.toString());
+			}
+			entity.removeProperty(propertyName + "-least");
+			entity.removeProperty(propertyName + "-most");
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 
 	private void makeBlobsUnindexed() {
 		ArrayList<Entity> updateEntities = new ArrayList<>();

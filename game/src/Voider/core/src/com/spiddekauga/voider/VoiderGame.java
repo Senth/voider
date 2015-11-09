@@ -121,6 +121,7 @@ public class VoiderGame implements ApplicationListener {
 	public void dispose() {
 		AnalyticsRepo.getInstance().endSession();
 		syncAnalytics();
+		MessageGateway.getInstance().disconnect();
 
 		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();

@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.server.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ import com.google.gson.Gson;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CConnectedUser;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMaintenance;
 import com.spiddekauga.voider.server.util.ServerConfig.MaintenanceModes;
 
@@ -113,22 +115,38 @@ public abstract class VoiderServlet extends HttpServlet {
 		Gson gson = new Gson();
 		String json = gson.toJson(chatMessage);
 
+		Iterable<Entity> sendTo = new ArrayList<>();
+
 		switch (receiver) {
 		case SELF:
 			if (mUser.isLoggedIn()) {
-				// FIXME don't use username
-				ChannelMessage channelMessage = new ChannelMessage(mUser.getUsername(), json);
-				mChannelService.sendMessage(channelMessage);
+				sendTo = DatastoreUtils.getEntities(DatastoreTables.CONNECTED_USER, mUser.getKey());
 			} else {
 				mLogger.warning("User isn't logged in when trying to send a message to SELF");
 			}
 			break;
 
 		case ALL:
-			// TODO
+			sendTo = DatastoreUtils.getEntities(DatastoreTables.CONNECTED_USER);
 			break;
 		}
 
+		for (Entity entity : sendTo) {
+			String channelId = (String) entity.getProperty(CConnectedUser.CHANNEL_ID);
+			sendMessage(channelId, json);
+		}
+	}
+
+	/**
+	 * Send a message to a specific client
+	 * @param channelId
+	 * @param message the message to send in json format
+	 */
+	private void sendMessage(String channelId, String message) {
+		if (channelId != null) {
+			ChannelMessage channelMessage = new ChannelMessage(channelId, message);
+			mChannelService.sendMessage(channelMessage);
+		}
 	}
 
 	/**

@@ -37,9 +37,9 @@ allprojects {
         aiVersion = '1.5.0'
         appengineVersion = '1.9.27'
         spiddekaugaUtilsVersion = '0.1.0-SNAPSHOT'
-        appengineUtilsVersion = '0.2.0'
+        appengineUtilsVersion = '0.2.1-SNAPSHOT'
 		httpUrlUtilsVersion = '0.3.0'
-		jaccVersion = '0.2.2-SNAPSHOT'
+		jaccVersion = '0.2.3'
 		guavaVersion = '19.0-rc2'
     }
 

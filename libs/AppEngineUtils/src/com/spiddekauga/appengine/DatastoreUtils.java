@@ -305,10 +305,7 @@ public class DatastoreUtils {
 	 * @return equal filter for the UUID value
 	 */
 	public static Filter createUuidFilter(String propertyName, UUID value) {
-		Filter least = new FilterPredicate(propertyName + UUID_LEAST_POSTFIX, FilterOperator.EQUAL, value.getLeastSignificantBits());
-		Filter most = new FilterPredicate(propertyName + UUID_MOST_POSTFIX, FilterOperator.EQUAL, value.getMostSignificantBits());
-
-		return createCompositeFilter(CompositeFilterOperator.AND, least, most);
+		return new FilterPredicate(propertyName, FilterOperator.EQUAL, value.toString());
 	}
 
 	/**
@@ -317,8 +314,7 @@ public class DatastoreUtils {
 	 * @param propertyName property name in the entity (column)
 	 */
 	public static void createUuidProjection(Query query, String propertyName) {
-		query.addProjection(new PropertyProjection(propertyName + UUID_LEAST_POSTFIX, Long.class));
-		query.addProjection(new PropertyProjection(propertyName + UUID_MOST_POSTFIX, Long.class));
+		query.addProjection(new PropertyProjection(propertyName, String.class));
 	}
 
 	/**
@@ -486,8 +482,7 @@ public class DatastoreUtils {
 	 */
 	public static void setUnindexedProperty(Entity entity, String propertyName, UUID uuid) {
 		if (uuid != null) {
-			entity.setUnindexedProperty(propertyName + UUID_LEAST_POSTFIX, uuid.getLeastSignificantBits());
-			entity.setUnindexedProperty(propertyName + UUID_MOST_POSTFIX, uuid.getMostSignificantBits());
+			entity.setUnindexedProperty(propertyName, uuid.toString());
 		}
 	}
 
@@ -499,8 +494,7 @@ public class DatastoreUtils {
 	 */
 	public static void setProperty(Entity entity, String propertyName, UUID uuid) {
 		if (uuid != null) {
-			entity.setProperty(propertyName + UUID_LEAST_POSTFIX, uuid.getLeastSignificantBits());
-			entity.setProperty(propertyName + UUID_MOST_POSTFIX, uuid.getMostSignificantBits());
+			entity.setProperty(propertyName, uuid.toString());
 		}
 	}
 
@@ -529,10 +523,8 @@ public class DatastoreUtils {
 	 * @return Stored UUID, null if it doesn't exist
 	 */
 	public static UUID getPropertyUuid(Entity entity, String propertyName) {
-		if (entity.hasProperty(propertyName + UUID_LEAST_POSTFIX) && entity.hasProperty(propertyName + UUID_MOST_POSTFIX)) {
-			long leastBits = (long) entity.getProperty(propertyName + UUID_LEAST_POSTFIX);
-			long mostBits = (long) entity.getProperty(propertyName + UUID_MOST_POSTFIX);
-			return new UUID(mostBits, leastBits);
+		if (entity.hasProperty(propertyName)) {
+			return UUID.fromString((String) entity.getProperty(propertyName));
 		}
 
 		return null;
@@ -704,10 +696,6 @@ public class DatastoreUtils {
 		public FilterOperator operator;
 	}
 
-	/** UUID least postfix */
-	private static final String UUID_LEAST_POSTFIX = "-least";
-	/** UUID most postfix */
-	private static final String UUID_MOST_POSTFIX = "-most";
 	/** Datastore service */
 	private static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();
 	/** Logger */

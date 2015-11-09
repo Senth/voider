@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.servlets.backend;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,6 +21,28 @@ public class ChatDisconnected extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		mLogger.info(req.getParameterMap().toString());
+		// TODO what's this?
+
+		removeChannelFromDatastore();
 		resp.setStatus(HttpServletResponse.SC_OK);
 	}
+
+	/**
+	 * Remove channel key when the user is disconnect
+	 */
+	private void removeChannelFromDatastore() {
+
+		// TODO
+		// FilterWrapper channelFilter = new FilterWrapper(CConnectedUser.CHANNEL_ID,
+		// channelId);
+		// Key key = DatastoreUtils.getSingleKey(DatastoreTables.CONNECTED_USER,
+		// channelFilter);
+		//
+		// if (key != null) {
+		// DatastoreUtils.delete(key);
+		// }
+	}
+
+	private final Logger mLogger = Logger.getLogger(getClass().getSimpleName());
 }

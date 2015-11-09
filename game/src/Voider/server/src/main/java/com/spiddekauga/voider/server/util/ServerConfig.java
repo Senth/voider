@@ -34,6 +34,8 @@ public class ServerConfig {
 		public static final String USER_RESOURCES = "user_resources";
 		public static final String USER_RESOURCES_DELETED = "user_resources_deleted";
 		public static final String HIGHSCORE = "highscore";
+		public static final String MAINTENANCE = "maintenance";
+		public static final String CONNECTED_USER = "connected_user";
 		// Analytics
 		public static final String ANALYTICS_SESSION = "analytics_session";
 		public static final String ANALYTICS_SCENE = "analytics_scene";
@@ -42,7 +44,7 @@ public class ServerConfig {
 		public static final String BETA_KEY = "beta_key";
 		public static final String BETA_SIGNUP = "beta_signup";
 		public static final String BETA_GROUP = "beta_group";
-		public static final String MAINTENANCE = "maintenance";
+
 
 		// Backup
 		public static final String BACKUP_INFO = "_AE_Backup_Information";
@@ -177,6 +179,19 @@ public class ServerConfig {
 			public static final String EXPORTED = "exported";
 		}
 
+		// Maintenance
+		public static class CMaintenance {
+			public static final String MODE = "mode";
+			public static final String REASON = "reason";
+			public static final String MOTD_KEY = "motd_key";
+		}
+
+		// Connected User
+		public static class CConnectedUser {
+			public static final String CONNECTED_TIME = "connected_time";
+			public static final String CHANNEL_ID = "channel_id";
+		}
+
 		// Analytics session
 		public static class CAnalyticsSession extends CAnalytics {
 			public static final String START_TIME = "start_time";
@@ -223,13 +238,6 @@ public class ServerConfig {
 		public static class CBetaGroup {
 			public static final String NAME = "name";
 			public static final String HASH = "hash";
-		}
-
-		// Maintenance
-		public static class CMaintenance {
-			public static final String MODE = "mode";
-			public static final String REASON = "reason";
-			public static final String MOTD_KEY = "motd_key";
 		}
 
 		// Backup Information

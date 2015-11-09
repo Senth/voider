@@ -2,6 +2,7 @@ package com.spiddekauga.voider.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
@@ -38,11 +39,6 @@ public class MessageGateway implements ChannelService {
 		}
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		disconnect();
-	};
-
 	/**
 	 * @return instance of this class.
 	 * @note this instance could still be invalid to use. Check {@link #isConnected()} to
@@ -60,9 +56,8 @@ public class MessageGateway implements ChannelService {
 	 */
 	private void connect() {
 		if (User.getGlobalUser().isOnline()) {
-			String username = User.getGlobalUser().getUsername();
 			try {
-				mChannel = new ChannelAPI(Config.Network.SERVER_HOST, username, this);
+				mChannel = new ChannelAPI(Config.Network.SERVER_HOST, UUID.randomUUID().toString(), this);
 				mChannel.open();
 			} catch (IOException | ChannelException e) {
 				e.printStackTrace();
@@ -74,7 +69,7 @@ public class MessageGateway implements ChannelService {
 	/**
 	 * Disconnect from the server
 	 */
-	private void disconnect() {
+	public void disconnect() {
 		if (mChannel != null) {
 			try {
 				mChannel.close();
@@ -202,13 +197,14 @@ public class MessageGateway implements ChannelService {
 				break;
 
 			case USER_DISCONNECTED: {
-				// Disconnect in main thread
-				Gdx.app.postRunnable(new Runnable() {
-					@Override
-					public void run() {
-						disconnect();
-					}
-				});
+				disconnect();
+				// // Disconnect in main thread
+				// Gdx.app.postRunnable(new Runnable() {
+				// @Override
+				// public void run() {
+				// disconnect();
+				// }
+				// });
 
 				break;
 			}

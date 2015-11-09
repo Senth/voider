@@ -7,7 +7,6 @@ import com.google.appengine.api.datastore.Key;
 
 /**
  * Logged in user
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class User extends SessionVariable implements Serializable {
@@ -33,6 +32,7 @@ public class User extends SessionVariable implements Serializable {
 		mIsLoggedIn = false;
 		mClientId = null;
 		mUsername = null;
+		mChannelId = null;
 		setChanged();
 	}
 
@@ -64,6 +64,22 @@ public class User extends SessionVariable implements Serializable {
 		return mClientId;
 	}
 
+	/**
+	 * Set the channel id for the user
+	 * @param channelId id of the channel
+	 */
+	public void setChannelId(UUID channelId) {
+		mChannelId = channelId;
+		setChanged();
+	}
+
+	/**
+	 * @return channel id of the user
+	 */
+	public UUID getChannelId() {
+		return mChannelId;
+	}
+
 	/** Username */
 	private String mUsername = null;
 	/** User identity key */
@@ -72,6 +88,8 @@ public class User extends SessionVariable implements Serializable {
 	private boolean mIsLoggedIn = false;
 	/** Client id */
 	private UUID mClientId = null;
+	/** Channel id */
+	private UUID mChannelId = null;
 
 	/** Serializable id */
 	private static final long serialVersionUID = -7213740820922710320L;

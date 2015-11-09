@@ -1,8 +1,5 @@
 package com.spiddekauga.voider.servlets.backend;
 
-import com.google.appengine.api.channel.ChannelMessage;
-import com.google.appengine.api.channel.ChannelService;
-import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.spiddekauga.voider.server.util.VoiderController;
 
 /**
@@ -17,9 +14,5 @@ public class ChatReceive extends VoiderController {
 		String message = getParameter("message");
 
 		mLogger.info("Content-Type: " + getRequest().getContentType() + ", Channel Key: " + channelKey + ", Message: " + message);
-
-		// Forward message to all channels with this key
-		ChannelService channelService = ChannelServiceFactory.getChannelService();
-		channelService.sendMessage(new ChannelMessage(channelKey, message));
 	}
 }
