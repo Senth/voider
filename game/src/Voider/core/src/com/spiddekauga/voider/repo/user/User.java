@@ -108,7 +108,7 @@ public class User {
 	public void disconnect() {
 		if (this == mGlobalUser) {
 			mOnline = false;
-			mNotification.showHighlight("You have been disconnected from the server");
+			mAskToGoOnline = true;
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
 		}
 	}
@@ -213,16 +213,6 @@ public class User {
 		if (mGlobalUser != this) {
 			mUserRepo.register(this, mResponseListener, responseListener);
 		}
-	}
-
-	/**
-	 * Make the user offline
-	 */
-	public void makeOffline() {
-		mOnline = false;
-		mAskToGoOnline = true;
-
-		mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
 	}
 
 	/**
@@ -520,8 +510,9 @@ public class User {
 		@Override
 		public void handleEvent(GameEvent event) {
 			if (User.this == mGlobalUser) {
-				disconnect();
 				mEventDispatcher.disconnect(EventTypes.SERVER_MAINTENANCE, this);
+				mNotification.showHighlight("You have been disconnected from the server");
+				disconnect();
 			}
 		}
 	};

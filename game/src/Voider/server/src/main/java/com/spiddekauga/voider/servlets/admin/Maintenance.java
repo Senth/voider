@@ -12,6 +12,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBackupInfo;
@@ -85,6 +88,8 @@ public class Maintenance extends VoiderController {
 		entity.setProperty(CMaintenance.MOTD_KEY, motdKey);
 
 		DatastoreUtils.put(entity);
+
+
 	}
 
 	/**
@@ -92,23 +97,38 @@ public class Maintenance extends VoiderController {
 	 * @return key of the created MOTD
 	 */
 	private Key createMotdEntity() {
-		Date currentDate = new Date();
+		Motd motd = new Motd();
+
+		motd.created = new Date();
+		motd.title = "Server Maintenance";
+		motd.content = "Server is currently undergoing a maintenance. You will not be able to connect to the server during this time.\n\n";
+		motd.content += getParameter(P_MAINTENANCE_REASON);
+
+
+		// Expire date
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MONTH, 1);
 		Date expireDate = calendar.getTime();
 		MotdTypes type = MotdTypes.SEVERE;
 
-		String content = "Server is currently undergoing a maintenance. You will not be able to connect to the server during this time.\n\n";
-		content += getParameter(P_MAINTENANCE_REASON);
 
 		Entity entity = new Entity(DatastoreTables.MOTD);
-		entity.setProperty(CMotd.TITLE, "Server Maintenance");
-		entity.setProperty(CMotd.CREATED, currentDate);
+		entity.setProperty(CMotd.TITLE, motd.title);
+		entity.setProperty(CMotd.CREATED, motd.created);
 		entity.setProperty(CMotd.EXPIRES, expireDate);
 		entity.setProperty(CMotd.TYPE, type.toId());
-		entity.setProperty(CMotd.CONTENT, content);
+		entity.setProperty(CMotd.CONTENT, motd.content);
 
-		return DatastoreUtils.put(entity);
+		Key key = DatastoreUtils.put(entity);
+
+
+		// Send message
+		ChatMessage<Motd> message = new ChatMessage<>(MessageTypes.SERVER_MAINTENANCE);
+		message.data = motd;
+		sendMessage(ChatMessageReceivers.ALL, message);
+
+
+		return key;
 	}
 
 	/**

@@ -180,6 +180,9 @@ public class VoiderGame implements ApplicationListener {
 		if (Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
 			AnalyticsRepo.getInstance().endSession();
 			syncAnalytics();
+			if (User.getGlobalUser().isOnline()) {
+				User.getGlobalUser().disconnect();
+			}
 		}
 	}
 
@@ -187,6 +190,9 @@ public class VoiderGame implements ApplicationListener {
 	public void resume() {
 		if (Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
 			AnalyticsRepo.getInstance().newSession();
+			if (User.getGlobalUser().isLoggedIn()) {
+				User.getGlobalUser().login();
+			}
 		}
 	}
 

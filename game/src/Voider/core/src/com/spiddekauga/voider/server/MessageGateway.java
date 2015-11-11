@@ -101,68 +101,64 @@ public class MessageGateway implements ChannelService {
 		ChatMessage<?> chatMessage = mGson.fromJson(message, ChatMessage.class);
 		if (chatMessage != null) {
 			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(mUserRepo.getClientId())) {
-				GameEvent gameEvent = convertToGameEvent(chatMessage);
-
-				if (gameEvent != null) {
-					mEventDispatcher.fire(gameEvent);
-				}
+				fireGameEvent(chatMessage);
 			}
 		}
 	}
 
 	/**
-	 * Converts the ChatMessage to a GameEvent
-	 * @param chatMessage the ChatMessage to convert
-	 * @return GameEvent equivalent of the specified ChatMessage
+	 * Fires the appropriate messages
+	 * @param chatMessage server message
 	 */
-	private GameEvent convertToGameEvent(ChatMessage<?> chatMessage) {
-		GameEvent gameEvent = null;
-
+	@SuppressWarnings("unchecked")
+	private void fireGameEvent(ChatMessage<?> chatMessage) {
 		switch (chatMessage.type) {
 		case MOTD:
-			gameEvent = convertToMotdEvent(chatMessage);
+			extractMotd(chatMessage);
+			fireMotdEvent((ChatMessage<Motd>) chatMessage);
 			break;
 
 		case SERVER_MAINTENANCE:
-			gameEvent = new GameEvent(EventTypes.SERVER_MAINTENANCE);
+			extractMotd(chatMessage);
+			fireMotdEvent((ChatMessage<Motd>) chatMessage);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SERVER_MAINTENANCE));
 			break;
 
 		case SYNC_COMMUNITY_DOWNLOAD:
-			gameEvent = new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_COMMUNITY_DOWNLOAD));
 			break;
 
 		case SYNC_HIGHSCORE:
-			gameEvent = new GameEvent(EventTypes.SYNC_HIGHSCORE);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_HIGHSCORE));
 			break;
 
 		case SYNC_STATS:
-			gameEvent = new GameEvent(EventTypes.SYNC_STATS);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_STATS));
 			break;
 
 		case SYNC_USER_RESOURCES:
-			gameEvent = new GameEvent(EventTypes.SYNC_USER_RESOURCES);
+			mEventDispatcher.fire(new GameEvent(EventTypes.SYNC_USER_RESOURCES));
 			break;
 		}
-
-		return gameEvent;
 	}
 
 	/**
-	 * Convert MOTD
-	 * @param chatMessage
-	 * @return MOTD game event
+	 * Fires a MOTD event
+	 * @param chatMessage server message
 	 */
-	private MotdEvent convertToMotdEvent(ChatMessage<?> chatMessage) {
-		MotdEvent motdEvent = null;
-
+	private void fireMotdEvent(ChatMessage<Motd> chatMessage) {
 		ArrayList<Motd> motds = new ArrayList<>();
+		motds.add(chatMessage.data);
+		MotdEvent motdEvent = new MotdEvent(EventTypes.MOTD_NEW, motds);
+		mEventDispatcher.fire(motdEvent);
+	}
 
-		if (chatMessage.data instanceof Motd) {
-			motds.add((Motd) chatMessage.data);
-			motdEvent = new MotdEvent(EventTypes.MOTD_NEW, motds);
-		}
+	/**
+	 * Extract MOTD from the chat message
+	 * @param chatMessage extract the MOTD from this message
+	 */
+	private void extractMotd(ChatMessage<?> chatMessage) {
 
-		return motdEvent;
 	}
 
 	@Override

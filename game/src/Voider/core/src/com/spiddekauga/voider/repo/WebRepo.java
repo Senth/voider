@@ -27,6 +27,7 @@ import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -404,7 +405,7 @@ public abstract class WebRepo {
 
 				mWebRepo.handleResponse(mMethodEntity, response, mResponseListeners);
 			} catch (RuntimeException e) {
-				if (!(mMethodEntity instanceof BugReportMethod)) {
+				if (!(mMethodEntity instanceof BugReportMethod) && User.getGlobalUser().isLoggedIn()) {
 					SceneSwitcher.handleException(e);
 				} else {
 					throw e;

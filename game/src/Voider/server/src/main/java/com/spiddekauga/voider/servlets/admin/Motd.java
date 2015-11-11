@@ -14,6 +14,8 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
@@ -141,13 +143,16 @@ public class Motd extends VoiderController {
 	private void createMotd() {
 		Entity entity = new Entity(DatastoreTables.MOTD);
 
-		entity.setUnindexedProperty(CMotd.TITLE, getParameter("title"));
-		entity.setUnindexedProperty(CMotd.CONTENT, getParameter("message"));
-		entity.setUnindexedProperty(CMotd.CREATED, new Date());
+		com.spiddekauga.voider.network.misc.Motd motd = new com.spiddekauga.voider.network.misc.Motd();
+		motd.title = getParameter("title");
+		motd.content = getParameter("message");
+		motd.created = new Date();
+		motd.type = MotdTypes.valueOf(getParameter("level"));
 
-		// Level
-		MotdTypes motdType = MotdTypes.valueOf(getParameter("level"));
-		entity.setUnindexedProperty(CMotd.TYPE, motdType.toId());
+		entity.setUnindexedProperty(CMotd.TITLE, motd.title);
+		entity.setUnindexedProperty(CMotd.CONTENT, motd.content);
+		entity.setUnindexedProperty(CMotd.CREATED, motd.created);
+		entity.setUnindexedProperty(CMotd.TYPE, motd.type.toId());
 
 		// Expires
 		try {
@@ -157,8 +162,13 @@ public class Motd extends VoiderController {
 			return;
 		}
 
-
 		DatastoreUtils.put(entity);
+
+
+		// Send message
+		ChatMessage<com.spiddekauga.voider.network.misc.Motd> message = new ChatMessage<>(MessageTypes.MOTD);
+		message.data = motd;
+		sendMessage(ChatMessageReceivers.ALL, message);
 	}
 
 	/**

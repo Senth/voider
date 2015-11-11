@@ -12,6 +12,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
+import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.repo.user.UserRepo;
 
 /**
@@ -94,7 +95,11 @@ public class AnalyticsRepo extends Repo {
 	 * @return current (if available) or previous analytics session
 	 */
 	public AnalyticsSessionEntity getSession() {
-		return mLocalRepo.getSession();
+		if (User.getGlobalUser().isLoggedIn()) {
+			return mLocalRepo.getSession();
+		} else {
+			return null;
+		}
 	}
 
 	/**
