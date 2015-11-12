@@ -55,6 +55,11 @@ public abstract class Gui implements Disposable {
 	@Override
 	public void dispose() {
 		if (mStage != null) {
+			// Remove notification shower
+			if (mNotification != null && mNotification.getStage() == mStage) {
+				mNotification.setStage(null);
+			}
+
 			ArrayList<Actor> actorsToRemove = new ArrayList<>();
 			for (Actor actor : mStage.getRoot().getChildren()) {
 				if (actor instanceof AlignTable) {

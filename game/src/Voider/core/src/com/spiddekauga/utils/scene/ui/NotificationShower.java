@@ -31,7 +31,7 @@ public class NotificationShower implements Disposable {
 	 * Private constructor to enforce singleton pattern
 	 */
 	private NotificationShower() {
-		// Does nothing
+		mOuterTable.setName("notification-table");
 	}
 
 	/**
@@ -87,13 +87,25 @@ public class NotificationShower implements Disposable {
 	/**
 	 * Sets the stage of the message shower. Will move all existing message to the new
 	 * stage
-	 * @param stage new stage
+	 * @param stage new stage, null to remove from the current stage
 	 */
 	public void setStage(Stage stage) {
 		if (mStage != stage) {
 			mStage = stage;
-			mStage.addActor(mOuterTable);
+			if (mStage != null) {
+				mStage.addActor(mOuterTable);
+				pushToFront();
+			} else {
+				mOuterTable.remove();
+			}
 		}
+	}
+
+	/**
+	 * @return stage of the notification shower
+	 */
+	public Stage getStage() {
+		return mStage;
 	}
 
 	/**

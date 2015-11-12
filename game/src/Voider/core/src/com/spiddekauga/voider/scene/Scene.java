@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -31,8 +30,6 @@ import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.MusicPlayer;
-import com.spiddekauga.voider.utils.event.EventDispatcher;
-import com.spiddekauga.voider.utils.event.ServerRestoreEvent;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes: Game, Menus,
@@ -112,8 +109,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 					throw new RuntimeException("Test Bug Report");
 				}
 			} else if (keycode == Input.Keys.F6) {
-				EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-				eventDispatcher.fire(new ServerRestoreEvent(new Date(), new Date(12556588)));
+				mNotification.showHighlight("This is a highlight!");
 			} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
 			} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 			} else if (keycode == Input.Keys.F7) {
@@ -170,6 +166,11 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 
 		if (mGui.isVisible()) {
 			mGui.update();
+
+			if (mNotification != null) {
+				mNotification.pushToFront();
+			}
+
 			mGui.render();
 		}
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);

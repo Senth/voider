@@ -424,7 +424,15 @@ public class User {
 				break;
 
 			case FAILED_SERVER_MAINTENANCE:
-				mNotification.showHighlight("Could not login due to server maintenance");
+				// Login offline
+				if (User.this != mGlobalUser && mPrivateKey != null) {
+					mNotification.showHighlight("Logged in offline due to server maintenance");
+					loginGlobalUser(User.this, false);
+				} else {
+					mNotification.showHighlight("Could not login due to server maintenance");
+					mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN_FAILED));
+				}
+
 				break;
 
 			case SUCCESS:
