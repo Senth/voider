@@ -28,7 +28,9 @@ public class RestoreAction extends Action {
 	public void execute() {
 		if (deleteBlobsOnServer()) {
 			restoreBlobsToServer();
-			mLogger.fine("Blobs restored.");
+			mLogger.info("Blobs restored.");
+		} else {
+			mLogger.warning("Failed to delete server blobs");
 		}
 	}
 
@@ -75,7 +77,7 @@ public class RestoreAction extends Action {
 				try {
 					String uuidString = file.getName().split("_")[0];
 					UUID.fromString(uuidString);
-					mLogger.info("Added file: " + file.getName());
+					mLogger.fine("Added file: " + file.getName());
 
 					uploadFiles.add(new FieldNameFileWrapper(file.getName(), file));
 					checkAndUploadFiles(uploadFiles, false);

@@ -20,6 +20,7 @@ import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.misc.NetworkConfig;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
+import com.spiddekauga.voider.network.user.LoginResponse.RestoreDate;
 import com.spiddekauga.voider.network.user.LoginResponse.Statuses;
 import com.spiddekauga.voider.network.user.LoginResponse.VersionInformation;
 import com.spiddekauga.voider.server.util.ServerConfig.Builds;
@@ -104,18 +105,22 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 	 * @param method
 	 */
 	private void checkRestoreDate(LoginMethod method) {
-		// Was last login between any restore date?
-		FilterWrapper beforeFromDate = new FilterWrapper(CRestoreDate.FROM_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, method.lastLogin);
-		Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.RESTORE_DATE, beforeFromDate);
+		if (method.lastLogin != null) {
 
-		// Check if there is one that's between
-		for (Entity entity : entities) {
+			// Was last login between any restore date?
+			FilterWrapper beforeFromDate = new FilterWrapper(CRestoreDate.FROM_DATE, FilterOperator.GREATER_THAN_OR_EQUAL, method.lastLogin);
+			Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.RESTORE_DATE, beforeFromDate);
 
-			Date toDate = (Date) entity.getProperty(CRestoreDate.TO_DATE);
+			// Check if there is one that's between
+			for (Entity entity : entities) {
 
-			if (toDate.before(method.lastLogin)) {
-				mResponse.restoreDate.from = (Date) entity.getProperty(CRestoreDate.FROM_DATE);
-				mResponse.restoreDate.to = toDate;
+				Date toDate = (Date) entity.getProperty(CRestoreDate.TO_DATE);
+
+				if (toDate.before(method.lastLogin)) {
+					mResponse.restoreDate = new RestoreDate();
+					mResponse.restoreDate.from = (Date) entity.getProperty(CRestoreDate.FROM_DATE);
+					mResponse.restoreDate.to = toDate;
+				}
 			}
 		}
 	}

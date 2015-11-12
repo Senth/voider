@@ -30,6 +30,12 @@ public class BlobDownload extends VoiderApiServlet<BlobDownloadMethod> {
 		return null;
 	}
 
+	@Override
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return true;
+	}
+
+
 	/** Blob store service */
 	private BlobstoreService mBlobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 }

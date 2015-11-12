@@ -173,6 +173,8 @@ public class Maintenance extends VoiderController {
 		Entity entity = new Entity(DatastoreTables.RESTORE_DATE);
 		entity.setProperty(CRestoreDate.FROM_DATE, new Date());
 		entity.setProperty(CRestoreDate.TO_DATE, backupDate);
+
+		DatastoreUtils.put(entity);
 	}
 
 	/**

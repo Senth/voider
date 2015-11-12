@@ -24,6 +24,8 @@ import com.spiddekauga.voider.network.backup.BackupNewBlobsMethod;
 import com.spiddekauga.voider.network.backup.BackupNewBlobsResponse;
 import com.spiddekauga.voider.network.backup.DeleteAllBlobsMethod;
 import com.spiddekauga.voider.network.backup.DeleteAllBlobsResponse;
+import com.spiddekauga.voider.network.backup.RestoreBlobsMethod;
+import com.spiddekauga.voider.network.backup.RestoreBlobsResponse;
 import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
 import com.spiddekauga.voider.network.misc.BugReportMethod;
@@ -242,7 +244,8 @@ public class KryoNetPool {
 		SERVER_MESSAGE_MESSAGE_TYPES(ServerMessage.MessageTypes.class),
 		GET_UPLOAD_URL_METHOD(GetUploadUrlMethod.class),
 		GET_UPLOAD_URL_RESPONSE(GetUploadUrlResponse.class),
-
+		RESTORE_BLOBS_METHOD(RestoreBlobsMethod.class),
+		RESTORE_BLOBS_RESPONSE(RestoreBlobsResponse.class),
 
 		// !!! ALWAYS APPEND, NEVER ADD IN THE MIDDLE !!!
 

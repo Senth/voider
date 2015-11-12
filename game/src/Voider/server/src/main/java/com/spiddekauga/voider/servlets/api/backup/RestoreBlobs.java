@@ -171,6 +171,11 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 		mResponse = new RestoreBlobsResponse();
 	}
 
+	@Override
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return true;
+	}
+
 	/**
 	 * Thrown if the resource wasn't found
 	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>

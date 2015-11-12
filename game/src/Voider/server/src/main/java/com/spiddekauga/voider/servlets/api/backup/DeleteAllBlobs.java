@@ -42,6 +42,11 @@ public class DeleteAllBlobs extends VoiderApiServlet<DeleteAllBlobsMethod> {
 		return mResponse;
 	}
 
+	@Override
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return true;
+	}
+
 	private DeleteAllBlobsResponse mResponse = null;
 	private BlobInfoFactory mBlobInfoFactory = new BlobInfoFactory();
 }

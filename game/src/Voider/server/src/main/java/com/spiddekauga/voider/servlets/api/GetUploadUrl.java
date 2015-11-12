@@ -34,6 +34,11 @@ public class GetUploadUrl extends VoiderApiServlet<GetUploadUrlMethod> {
 		return methodResponse;
 	}
 
+	@Override
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return true;
+	}
+
 	/** Logger */
 	private Logger mLogger = Logger.getLogger(GetUploadUrl.class.getName());
 }

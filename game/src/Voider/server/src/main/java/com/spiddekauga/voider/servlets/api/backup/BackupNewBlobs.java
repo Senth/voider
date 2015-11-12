@@ -96,5 +96,10 @@ public class BackupNewBlobs extends VoiderApiServlet<BackupNewBlobsMethod> {
 		}
 	}
 
+	@Override
+	protected boolean isHandlingRequestDuringMaintenance() {
+		return true;
+	}
+
 	private BackupNewBlobsResponse mResponse = null;
 }
