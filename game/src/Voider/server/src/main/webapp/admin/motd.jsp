@@ -32,7 +32,7 @@
 				</p>
 				<p>
 					<span style="float: left; width: 100px;">Message:</span>
-					<textarea name="message" value="${default.message}" style="width: 400px;" rows="10"></textarea>
+					<textarea name="message" style="width: 400px;" rows="10">${default.message}</textarea>
 					<span style="padding-left: 25px; color: #ff2222;">${default.messageError}</span>
 				</p>
 				<p>

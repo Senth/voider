@@ -89,13 +89,11 @@ public class ServerMessageReciever implements ChannelService {
 
 	@Override
 	public void onOpen() {
-		Gdx.app.debug("MessageGateway", "Channel opened");
+		Gdx.app.debug(ServerMessageReciever.class.getSimpleName(), "Channel opened");
 	}
 
 	@Override
 	public void onMessage(String message) {
-		Gdx.app.debug("MessageGateway", "Message: " + message);
-
 		ServerMessage<?> serverMessage = NetworkEntitySerializer.deserializeServerMessage(message);
 
 		if (serverMessage != null) {
@@ -150,12 +148,12 @@ public class ServerMessageReciever implements ChannelService {
 
 	@Override
 	public void onClose() {
-		Gdx.app.debug("MessageGateway", "Channel closed");
+		Gdx.app.debug(ServerMessageReciever.class.getSimpleName(), "Channel closed");
 	}
 
 	@Override
 	public void onError(Integer errorCode, String description) {
-		Gdx.app.error("MessageGateway", "Error code: " + errorCode + ", desc: " + description);
+		Gdx.app.error(ServerMessageReciever.class.getSimpleName(), "Error code: " + errorCode + ", desc: " + description);
 	}
 
 	/**

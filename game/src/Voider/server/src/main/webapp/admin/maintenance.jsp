@@ -12,7 +12,7 @@
 				<c:when test="${maintenance_mode == 'UP'}">
 					<h3 class="text-Left" style="color: #2a2;">Server is UP!</h3>
 					<p>Reason:</p>
-					<textarea name="reason" style="min-width: 500px; min-height: 300px;"></textarea><br />
+					<textarea name="maintenance_reason" style="min-width: 500px;" rows="10"></textarea><br />
 					<input type="hidden" name="maintenance_mode" value="DOWN"/>
 					<input type="submit" style="background-color: #a22; border-color: #700; color: #fff;" value="Deactivate Server" />
 				</c:when>
