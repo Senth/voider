@@ -229,6 +229,14 @@ button_default_checked
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_transparent_down
+  rotate: false
+  xy: 52, 2
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_transparent_checked
   rotate: false
   xy: 52, 2
@@ -238,14 +246,6 @@ button_transparent_checked
   offset: 0, 0
   index: -1
 button_tag_down
-  rotate: false
-  xy: 52, 2
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button_transparent_down
   rotate: false
   xy: 52, 2
   size: 7, 7
@@ -269,7 +269,7 @@ button_default_checked_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_tag_over
+button_transparent_checked_over
   rotate: false
   xy: 61, 2
   size: 7, 7
@@ -285,7 +285,7 @@ button_transparent_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_checked_over
+button_default_over
   rotate: false
   xy: 61, 2
   size: 7, 7
@@ -293,7 +293,7 @@ button_transparent_checked_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_default_over
+button_tag_over
   rotate: false
   xy: 61, 2
   size: 7, 7
@@ -325,7 +325,7 @@ button_default_up
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_tag_up
+button_transparent_up
   rotate: false
   xy: 467, 107
   size: 7, 7
@@ -333,7 +333,7 @@ button_tag_up
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_up
+button_tag_up
   rotate: false
   xy: 467, 107
   size: 7, 7
@@ -438,14 +438,21 @@ changelog_big
   orig: 32, 32
   offset: 0, 0
   index: -1
-info_speed
+panel_terms
   rotate: false
   xy: 1968, 826
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_reddit
+panel_info
+  rotate: false
+  xy: 1968, 826
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+info_level_difficulty
   rotate: false
   xy: 1968, 826
   size: 32, 32
@@ -459,35 +466,7 @@ info_score_player
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_terms
-  rotate: false
-  xy: 1968, 826
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_changelog
-  rotate: false
-  xy: 1968, 826
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_settings
-  rotate: false
-  xy: 1968, 826
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 stub
-  rotate: false
-  xy: 1968, 826
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_logout
   rotate: false
   xy: 1968, 826
   size: 32, 32
@@ -501,7 +480,35 @@ terms_big
   orig: 32, 32
   offset: 0, 0
   index: -1
-info_level_difficulty
+info_level_length
+  rotate: false
+  xy: 1968, 826
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+info_speed
+  rotate: false
+  xy: 1968, 826
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_changelog
+  rotate: false
+  xy: 1968, 826
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_logout
+  rotate: false
+  xy: 1968, 826
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_reddit
   rotate: false
   xy: 1968, 826
   size: 32, 32
@@ -522,14 +529,7 @@ info_score_top
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_info
-  rotate: false
-  xy: 1968, 826
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-info_level_length
+panel_settings
   rotate: false
   xy: 1968, 826
   size: 32, 32
@@ -543,35 +543,7 @@ changelog_big_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_settings_down
-  rotate: false
-  xy: 86, 24
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_reddit_down
-  rotate: false
-  xy: 86, 24
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_info_down
-  rotate: false
-  xy: 86, 24
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_logout_down
-  rotate: false
-  xy: 86, 24
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-stub_down
+panel_changelog_down
   rotate: false
   xy: 86, 24
   size: 32, 32
@@ -585,14 +557,21 @@ stub_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_changelog_down
+panel_logout_down
   rotate: false
   xy: 86, 24
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_terms_down
+panel_info_down
+  rotate: false
+  xy: 86, 24
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stub_down
   rotate: false
   xy: 86, 24
   size: 32, 32
@@ -606,6 +585,27 @@ terms_big_down
   orig: 32, 32
   offset: 0, 0
   index: -1
+panel_reddit_down
+  rotate: false
+  xy: 86, 24
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_settings_down
+  rotate: false
+  xy: 86, 24
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_terms_down
+  rotate: false
+  xy: 86, 24
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 changelog_big_over
   rotate: false
   xy: 890, 360
@@ -613,14 +613,7 @@ changelog_big_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-terms_big_over
-  rotate: false
-  xy: 890, 360
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-panel_changelog_over
+panel_reddit_over
   rotate: false
   xy: 890, 360
   size: 32, 32
@@ -634,7 +627,21 @@ stub_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_reddit_over
+stub_checked_over
+  rotate: false
+  xy: 890, 360
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_info_over
+  rotate: false
+  xy: 890, 360
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+panel_changelog_over
   rotate: false
   xy: 890, 360
   size: 32, 32
@@ -655,21 +662,14 @@ panel_settings_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-panel_info_over
-  rotate: false
-  xy: 890, 360
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-stub_checked_over
-  rotate: false
-  xy: 890, 360
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 panel_logout_over
+  rotate: false
+  xy: 890, 360
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+terms_big_over
   rotate: false
   xy: 890, 360
   size: 32, 32
@@ -1166,7 +1166,7 @@ icon_size_small_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-icon_size_small_down
+star_down
   rotate: false
   xy: 1522, 580
   size: 32, 32
@@ -1180,7 +1180,7 @@ star_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-star_down
+icon_size_small_down
   rotate: false
   xy: 1522, 580
   size: 32, 32
@@ -1188,13 +1188,6 @@ star_down
   offset: 0, 0
   index: -1
 icon_size_small_checked_over
-  rotate: false
-  xy: 1556, 580
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-star_over
   rotate: false
   xy: 1556, 580
   size: 32, 32
@@ -1209,6 +1202,13 @@ icon_size_small_over
   offset: 0, 0
   index: -1
 star_checked_over
+  rotate: false
+  xy: 1556, 580
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+star_over
   rotate: false
   xy: 1556, 580
   size: 32, 32
@@ -1579,7 +1579,7 @@ overview_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_debug_checked
+overview_down
   rotate: false
   xy: 1488, 546
   size: 32, 32
@@ -1593,7 +1593,7 @@ settings_debug_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-overview_down
+settings_debug_checked
   rotate: false
   xy: 1488, 546
   size: 32, 32
@@ -1607,14 +1607,14 @@ overview_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_debug_checked_over
+settings_debug_over
   rotate: false
   xy: 1522, 546
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_debug_over
+settings_debug_checked_over
   rotate: false
   xy: 1522, 546
   size: 32, 32
@@ -2057,14 +2057,14 @@ scroll_horizontal_knob
   orig: 16, 16
   offset: 0, 0
   index: -1
-slider_knob
+scroll_vertical_knob
   rotate: false
   xy: 924, 358
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll_vertical_knob
+slider_knob
   rotate: false
   xy: 924, 358
   size: 16, 16
@@ -2402,13 +2402,6 @@ settings_network_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_network_over
-  rotate: false
-  xy: 696, 116
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 settings_statistics_over
   rotate: false
   xy: 696, 116
@@ -2417,6 +2410,13 @@ settings_statistics_over
   offset: 0, 0
   index: -1
 settings_statistics_checked_over
+  rotate: false
+  xy: 696, 116
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+settings_network_over
   rotate: false
   xy: 696, 116
   size: 32, 32
