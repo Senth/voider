@@ -12,10 +12,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.voider.network.misc.ChatMessage;
-import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
+import com.spiddekauga.voider.network.misc.ServerMessage;
+import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBackupInfo;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMaintenance;
@@ -103,29 +103,29 @@ public class Maintenance extends VoiderController {
 		motd.title = "Server Maintenance";
 		motd.content = "Server is currently undergoing a maintenance. You will not be able to connect to the server during this time.\n\n";
 		motd.content += getParameter(P_MAINTENANCE_REASON);
+		motd.type = MotdTypes.SEVERE;
 
 
 		// Expire date
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MONTH, 1);
 		Date expireDate = calendar.getTime();
-		MotdTypes type = MotdTypes.SEVERE;
 
 
 		Entity entity = new Entity(DatastoreTables.MOTD);
 		entity.setProperty(CMotd.TITLE, motd.title);
 		entity.setProperty(CMotd.CREATED, motd.created);
 		entity.setProperty(CMotd.EXPIRES, expireDate);
-		entity.setProperty(CMotd.TYPE, type.toId());
+		entity.setProperty(CMotd.TYPE, motd.type.toId());
 		entity.setProperty(CMotd.CONTENT, motd.content);
 
 		Key key = DatastoreUtils.put(entity);
 
 
 		// Send message
-		ChatMessage<Motd> message = new ChatMessage<>(MessageTypes.SERVER_MAINTENANCE);
+		ServerMessage<Motd> message = new ServerMessage<>(MessageTypes.SERVER_MAINTENANCE);
 		message.data = motd;
-		sendMessage(ChatMessageReceivers.ALL, message);
+		sendMessage(ServerMessageReceivers.ALL, message);
 
 
 		return key;

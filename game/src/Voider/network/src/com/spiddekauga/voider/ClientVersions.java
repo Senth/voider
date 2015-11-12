@@ -294,8 +294,15 @@ public enum ClientVersions {
 			"Login Method",
 			"	Changed how login works, this breaks the old login and doesn't display that",
 			"	a new version is available",
-			"Improvements",
-			"	HD splash screen"
+			"Maintenance",
+			"	When maintenance is activate all client will be disconnected from the server",
+			"	Can only auto-login when the server is offline",
+			"Server Messages",
+			"	Can now send messages to all connected clients about important information",
+			"UI",
+			"	HD splash screen",
+			"	high-res UI for all sizes",
+			"	Added missing icons"
 			),
 	;
 	// @formatter:on

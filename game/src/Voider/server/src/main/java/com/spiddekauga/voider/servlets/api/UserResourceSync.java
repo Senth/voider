@@ -24,8 +24,8 @@ import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.misc.ChatMessage;
-import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.misc.ServerMessage;
+import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
 import com.spiddekauga.voider.network.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
 import com.spiddekauga.voider.network.resource.ResourceRevisionEntity;
@@ -82,8 +82,8 @@ public class UserResourceSync extends VoiderApiServlet<UserResourceSyncMethod> {
 		if (mResponse.isSuccessful()) {
 			if (!userMethod.resources.isEmpty() || !userMethod.resourceToRemove.isEmpty()
 					|| (userMethod.conflictKeepLocal != null && userMethod.conflictKeepLocal)) {
-				ChatMessage<Object> chatMessage = new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId());
-				sendMessage(ChatMessageReceivers.SELF, chatMessage);
+				ServerMessage<?> chatMessage = new ServerMessage<>(MessageTypes.SYNC_USER_RESOURCES);
+				sendMessage(ServerMessageReceivers.SELF_OTHERS, chatMessage);
 			}
 		}
 

@@ -2,6 +2,7 @@ package com.spiddekauga.voider.server.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -17,13 +18,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.appengine.api.channel.ChannelMessage;
-import com.google.appengine.api.channel.ChannelService;
-import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.gson.Gson;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
+import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.misc.ServerMessage;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CConnectedUser;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMaintenance;
@@ -109,18 +109,35 @@ public abstract class VoiderServlet extends HttpServlet {
 	/**
 	 * Send a message
 	 * @param receiver who we should send the message to
-	 * @param chatMessage sends the specified chat message
+	 * @param serverMessage sends the specified chat message
 	 */
-	protected void sendMessage(ChatMessageReceivers receiver, ChatMessage<?> chatMessage) {
-		Gson gson = new Gson();
-		String json = gson.toJson(chatMessage);
+	protected void sendMessage(ServerMessageReceivers receiver, ServerMessage<?> serverMessage) {
+		List<String> sendToIds = getClientIds(receiver);
+		String serializedMessage = NetworkEntitySerializer.serializeServerMessage(serverMessage);
 
+		NetworkGateway.sendMessage(sendToIds, serializedMessage);
+	}
+
+	/**
+	 * Get all receivers of the server message
+	 * @param receiver who we should send the message to
+	 * @return list with all clients we should send the message to
+	 */
+	private List<String> getClientIds(ServerMessageReceivers receiver) {
 		Iterable<Entity> sendTo = new ArrayList<>();
-
 		switch (receiver) {
-		case SELF:
+		case SELF_ALL:
 			if (mUser.isLoggedIn()) {
 				sendTo = DatastoreUtils.getEntities(DatastoreTables.CONNECTED_USER, mUser.getKey());
+			} else {
+				mLogger.warning("User isn't logged in when trying to send a message to SELF");
+			}
+			break;
+
+		case SELF_OTHERS:
+			if (mUser.isLoggedIn()) {
+				FilterWrapper notThisClient = new FilterWrapper(CConnectedUser.CHANNEL_ID, FilterOperator.NOT_EQUAL, mUser.getChannelId());
+				sendTo = DatastoreUtils.getEntities(DatastoreTables.CONNECTED_USER, mUser.getKey(), notThisClient);
 			} else {
 				mLogger.warning("User isn't logged in when trying to send a message to SELF");
 			}
@@ -131,22 +148,13 @@ public abstract class VoiderServlet extends HttpServlet {
 			break;
 		}
 
+		List<String> sendToIds = new ArrayList<>();
 		for (Entity entity : sendTo) {
 			String channelId = (String) entity.getProperty(CConnectedUser.CHANNEL_ID);
-			sendMessage(channelId, json);
+			sendToIds.add(channelId);
 		}
-	}
 
-	/**
-	 * Send a message to a specific client
-	 * @param channelId
-	 * @param message the message to send in json format
-	 */
-	private void sendMessage(String channelId, String message) {
-		if (channelId != null) {
-			ChannelMessage channelMessage = new ChannelMessage(channelId, message);
-			mChannelService.sendMessage(channelMessage);
-		}
+		return sendToIds;
 	}
 
 	/**
@@ -231,9 +239,11 @@ public abstract class VoiderServlet extends HttpServlet {
 	/**
 	 * Who we can send messages to
 	 */
-	public enum ChatMessageReceivers {
+	public enum ServerMessageReceivers {
 		/** Self, all clients (if logged in) */
-		SELF,
+		SELF_ALL,
+		/** Send to all other clients the user is connected to */
+		SELF_OTHERS,
 		/** Broadcast to everyone */
 		ALL,
 	}
@@ -246,7 +256,4 @@ public abstract class VoiderServlet extends HttpServlet {
 	private HttpSession mSession = null;
 	private HttpServletRequest mRequest = null;
 	private HttpServletResponse mResponse = null;
-
-	/** Channel service for sending messages */
-	private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
 }

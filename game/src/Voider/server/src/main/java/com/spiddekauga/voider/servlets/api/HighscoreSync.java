@@ -16,8 +16,8 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.misc.ChatMessage;
-import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.misc.ServerMessage;
+import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
 import com.spiddekauga.voider.network.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.stat.HighscoreSyncMethod;
 import com.spiddekauga.voider.network.stat.HighscoreSyncResponse;
@@ -158,10 +158,9 @@ public class HighscoreSync extends VoiderApiServlet<HighscoreSyncMethod> {
 		if (mResponse.isSuccessful()) {
 			// Only send sync message if something was updated in the server
 			if (!methodEntity.highscores.isEmpty()) {
-				ChatMessage<Object> chatMessage = new ChatMessage<>();
-				chatMessage.skipClient = mUser.getClientId();
+				ServerMessage<Object> chatMessage = new ServerMessage<>();
 				chatMessage.type = MessageTypes.SYNC_HIGHSCORE;
-				sendMessage(ChatMessageReceivers.SELF, chatMessage);
+				sendMessage(ServerMessageReceivers.SELF_OTHERS, chatMessage);
 			}
 		}
 	}

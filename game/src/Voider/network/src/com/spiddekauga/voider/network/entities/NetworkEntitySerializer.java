@@ -4,11 +4,14 @@ package com.spiddekauga.voider.network.entities;
 import java.io.ByteArrayOutputStream;
 import java.util.logging.Logger;
 
+import javax.xml.bind.DatatypeConverter;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.spiddekauga.utils.Strings;
+import com.spiddekauga.voider.network.misc.ServerMessage;
 
 /**
  * Serializes the entity into a byte string or vice versa
@@ -68,6 +71,26 @@ public class NetworkEntitySerializer {
 		mKryoPool.free(kryo);
 
 		return null;
+	}
+
+	/**
+	 * Serialize server message
+	 * @param message the server message
+	 * @return the server message as a base64 message
+	 */
+	public static String serializeServerMessage(ServerMessage<?> message) {
+		byte[] byteMessage = serializeEntity(message);
+		return DatatypeConverter.printBase64Binary(byteMessage);
+	}
+
+	/**
+	 * Deserialize a server message
+	 * @param message the server message in base64 format
+	 * @return the original server message
+	 */
+	public static ServerMessage<?> deserializeServerMessage(String message) {
+		byte[] byteMessage = DatatypeConverter.parseBase64Binary(message);
+		return (ServerMessage<?>) deserializeEntity(byteMessage);
 	}
 
 	private static final KryoNetPool mKryoPool = new KryoNetPool();

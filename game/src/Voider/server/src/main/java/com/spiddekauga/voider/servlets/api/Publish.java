@@ -26,8 +26,8 @@ import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.misc.ChatMessage;
-import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.misc.ServerMessage;
+import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
 import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.resource.BulletDefEntity;
 import com.spiddekauga.voider.network.resource.BulletSpeedSearchRanges;
@@ -226,8 +226,8 @@ public class Publish extends VoiderApiServlet<PublishMethod> {
 	 * Send sync messages
 	 */
 	private void sendSyncMessages() {
-		sendMessage(ChatMessageReceivers.SELF, new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES));
-		sendMessage(ChatMessageReceivers.SELF, new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD));
+		sendMessage(ServerMessageReceivers.SELF_OTHERS, new ServerMessage<>(MessageTypes.SYNC_USER_RESOURCES));
+		sendMessage(ServerMessageReceivers.SELF_OTHERS, new ServerMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD));
 	}
 
 	/**

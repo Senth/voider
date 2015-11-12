@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.network.misc;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 
@@ -10,19 +9,17 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * @param <DataType> type of data to store
  */
-public class ChatMessage<DataType> implements IEntity, Serializable {
+public class ServerMessage<DataType> implements IEntity, Serializable {
 	private static final long serialVersionUID = 1L;
 	/** Type of message */
 	public MessageTypes type = null;
-	/** This client will skip processing the message */
-	public UUID skipClient = null;
 	/** Optional data */
 	public DataType data = null;
 
 	/**
 	 * Creates an empty and invalid chat message
 	 */
-	public ChatMessage() {
+	public ServerMessage() {
 		// Does nothing
 	}
 
@@ -30,7 +27,7 @@ public class ChatMessage<DataType> implements IEntity, Serializable {
 	 * Creates a message with just a message type
 	 * @param type the type of the message
 	 */
-	public ChatMessage(MessageTypes type) {
+	public ServerMessage(MessageTypes type) {
 		this.type = type;
 	}
 
@@ -39,31 +36,9 @@ public class ChatMessage<DataType> implements IEntity, Serializable {
 	 * @param type
 	 * @param data
 	 */
-	public ChatMessage(MessageTypes type, DataType data) {
+	public ServerMessage(MessageTypes type, DataType data) {
 		this.type = type;
 		this.data = data;
-	}
-
-	/**
-	 * Creates a message with a type and the client to skip
-	 * @param type
-	 * @param skipClient the client that should skip process this message
-	 */
-	public ChatMessage(MessageTypes type, UUID skipClient) {
-		this.type = type;
-		this.skipClient = skipClient;
-	}
-
-	/**
-	 * Creates a message with a type and data
-	 * @param type
-	 * @param data
-	 * @param skipClient the client that should skip process this message
-	 */
-	public ChatMessage(MessageTypes type, DataType data, UUID skipClient) {
-		this.type = type;
-		this.data = data;
-		this.skipClient = skipClient;
 	}
 
 	/**

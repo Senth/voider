@@ -14,8 +14,8 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.voider.network.misc.ChatMessage;
-import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.misc.ServerMessage;
+import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
@@ -166,9 +166,9 @@ public class Motd extends VoiderController {
 
 
 		// Send message
-		ChatMessage<com.spiddekauga.voider.network.misc.Motd> message = new ChatMessage<>(MessageTypes.MOTD);
+		ServerMessage<com.spiddekauga.voider.network.misc.Motd> message = new ServerMessage<>(MessageTypes.MOTD);
 		message.data = motd;
-		sendMessage(ChatMessageReceivers.ALL, message);
+		sendMessage(ServerMessageReceivers.ALL, message);
 	}
 
 	/**

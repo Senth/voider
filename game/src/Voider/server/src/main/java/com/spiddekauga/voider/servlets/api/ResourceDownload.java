@@ -15,8 +15,8 @@ import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.misc.ChatMessage;
-import com.spiddekauga.voider.network.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.misc.ServerMessage;
+import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
 import com.spiddekauga.voider.network.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.resource.ResourceDownloadResponse;
@@ -57,7 +57,7 @@ public class ResourceDownload extends VoiderApiServlet<ResourceDownloadMethod> {
 				if (success && !mAddedResources.isEmpty()) {
 					setUserDownloadDate();
 					mResponse.status = Statuses.SUCCESS;
-					sendMessage(ChatMessageReceivers.SELF, new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
+					sendMessage(ServerMessageReceivers.SELF_OTHERS, new ServerMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
 				}
 			}
 			// Redownload

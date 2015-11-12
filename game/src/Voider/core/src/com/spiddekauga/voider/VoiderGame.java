@@ -32,7 +32,7 @@ import com.spiddekauga.voider.repo.resource.ResourceChecker;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.InfoDisplayer;
-import com.spiddekauga.voider.server.MessageGateway;
+import com.spiddekauga.voider.server.ServerMessageReciever;
 import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Synchronizer;
 
@@ -57,7 +57,7 @@ public class VoiderGame implements ApplicationListener {
 
 		// Init various classes
 		ConfigIni.getInstance();
-		MessageGateway.getInstance();
+		ServerMessageReciever.getInstance();
 		Synchronizer.getInstance();
 		ResourceChecker.init();
 		InfoDisplayer.getInstance();
@@ -121,7 +121,7 @@ public class VoiderGame implements ApplicationListener {
 	public void dispose() {
 		AnalyticsRepo.getInstance().endSession();
 		syncAnalytics();
-		MessageGateway.getInstance().disconnect();
+		ServerMessageReciever.getInstance().disconnect();
 
 		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();

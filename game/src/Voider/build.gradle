@@ -161,7 +161,7 @@ project(":core") {
 		compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT"
 		compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
-		compile "com.google.code.gson:gson:2.2.4"
+// 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.esotericsoftware:kryo:$kryoVersion"
 		compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
@@ -186,7 +186,7 @@ project(":server") {
 	dependencies {
 		providedCompile 'javax.servlet:servlet-api:2.5'
 		compile project(":network")
-		compile "com.google.code.gson:gson:2.2.4"
+// 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.spiddekauga.appengine:appengine-utils:$appengineUtilsVersion"
 		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
 		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"

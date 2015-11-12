@@ -28,11 +28,11 @@ import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
 import com.spiddekauga.voider.network.misc.BugReportMethod;
 import com.spiddekauga.voider.network.misc.BugReportResponse;
-import com.spiddekauga.voider.network.misc.ChatMessage;
 import com.spiddekauga.voider.network.misc.GetUploadUrlMethod;
 import com.spiddekauga.voider.network.misc.GetUploadUrlResponse;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
+import com.spiddekauga.voider.network.misc.ServerMessage;
 import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.resource.BulletDefEntity;
 import com.spiddekauga.voider.network.resource.BulletFetchMethod;
@@ -238,10 +238,11 @@ public class KryoNetPool {
 		BUG_REPORT_ENTITY_BUG_REPORT_TYPES(BugReportEntity.BugReportTypes.class),
 		BUG_REPORT_METHOD(BugReportMethod.class),
 		BUG_REPORT_RESPONSE(BugReportResponse.class),
-		CHAT_MESSAGE(ChatMessage.class),
-		CHAT_MESSAGE_MESSAGE_TYPES(ChatMessage.MessageTypes.class),
+		SERVER_MESSAGE(ServerMessage.class),
+		SERVER_MESSAGE_MESSAGE_TYPES(ServerMessage.MessageTypes.class),
 		GET_UPLOAD_URL_METHOD(GetUploadUrlMethod.class),
 		GET_UPLOAD_URL_RESPONSE(GetUploadUrlResponse.class),
+
 
 		// !!! ALWAYS APPEND, NEVER ADD IN THE MIDDLE !!!
 

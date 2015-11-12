@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.google.gson.Gson;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.network.misc.ChatMessage;
+import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
 import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.network.misc.ServerMessage;
 import com.spiddekauga.voider.repo.user.User;
-import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -22,15 +21,14 @@ import edu.gvsu.cis.masl.channelAPI.ChannelAPI.ChannelException;
 import edu.gvsu.cis.masl.channelAPI.ChannelService;
 
 /**
- * Gateway for all channel messages to and from the server. Converts all messages to game
- * events.
+ * Connects and receives server messages
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MessageGateway implements ChannelService {
+public class ServerMessageReciever implements ChannelService {
 	/**
 	 * Creates an empty (invalid) message gateway.
 	 */
-	private MessageGateway() {
+	private ServerMessageReciever() {
 		User user = User.getGlobalUser();
 		new GameEventListener();
 
@@ -44,9 +42,9 @@ public class MessageGateway implements ChannelService {
 	 * @note this instance could still be invalid to use. Check {@link #isConnected()} to
 	 *       see if the instance is valid to use.
 	 */
-	public static MessageGateway getInstance() {
+	public static ServerMessageReciever getInstance() {
 		if (mInstance == null) {
-			mInstance = new MessageGateway();
+			mInstance = new ServerMessageReciever();
 		}
 		return mInstance;
 	}
@@ -98,29 +96,26 @@ public class MessageGateway implements ChannelService {
 	public void onMessage(String message) {
 		Gdx.app.debug("MessageGateway", "Message: " + message);
 
-		ChatMessage<?> chatMessage = mGson.fromJson(message, ChatMessage.class);
-		if (chatMessage != null) {
-			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(mUserRepo.getClientId())) {
-				fireGameEvent(chatMessage);
-			}
+		ServerMessage<?> serverMessage = NetworkEntitySerializer.deserializeServerMessage(message);
+
+		if (serverMessage != null) {
+			fireGameEvent(serverMessage);
 		}
 	}
 
 	/**
 	 * Fires the appropriate messages
-	 * @param chatMessage server message
+	 * @param serverMessage server message
 	 */
 	@SuppressWarnings("unchecked")
-	private void fireGameEvent(ChatMessage<?> chatMessage) {
-		switch (chatMessage.type) {
+	private void fireGameEvent(ServerMessage<?> serverMessage) {
+		switch (serverMessage.type) {
 		case MOTD:
-			extractMotd(chatMessage);
-			fireMotdEvent((ChatMessage<Motd>) chatMessage);
+			fireMotdEvent((ServerMessage<Motd>) serverMessage);
 			break;
 
 		case SERVER_MAINTENANCE:
-			extractMotd(chatMessage);
-			fireMotdEvent((ChatMessage<Motd>) chatMessage);
+			fireMotdEvent((ServerMessage<Motd>) serverMessage);
 			mEventDispatcher.fire(new GameEvent(EventTypes.SERVER_MAINTENANCE));
 			break;
 
@@ -144,21 +139,13 @@ public class MessageGateway implements ChannelService {
 
 	/**
 	 * Fires a MOTD event
-	 * @param chatMessage server message
+	 * @param serverMessage server message
 	 */
-	private void fireMotdEvent(ChatMessage<Motd> chatMessage) {
+	private void fireMotdEvent(ServerMessage<Motd> serverMessage) {
 		ArrayList<Motd> motds = new ArrayList<>();
-		motds.add(chatMessage.data);
+		motds.add(serverMessage.data);
 		MotdEvent motdEvent = new MotdEvent(EventTypes.MOTD_NEW, motds);
 		mEventDispatcher.fire(motdEvent);
-	}
-
-	/**
-	 * Extract MOTD from the chat message
-	 * @param chatMessage extract the MOTD from this message
-	 */
-	private void extractMotd(ChatMessage<?> chatMessage) {
-
 	}
 
 	@Override
@@ -193,14 +180,13 @@ public class MessageGateway implements ChannelService {
 				break;
 
 			case USER_DISCONNECTED: {
-				disconnect();
-				// // Disconnect in main thread
-				// Gdx.app.postRunnable(new Runnable() {
-				// @Override
-				// public void run() {
-				// disconnect();
-				// }
-				// });
+				// Disconnect in main thread
+				Gdx.app.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						disconnect();
+					}
+				});
 
 				break;
 			}
@@ -213,9 +199,7 @@ public class MessageGateway implements ChannelService {
 
 	/** Message listeners */
 	private ChannelAPI mChannel = null;
-	private Gson mGson = new Gson();
-	private UserRepo mUserRepo = UserRepo.getInstance();
 	private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 
-	private static MessageGateway mInstance = null;
+	private static ServerMessageReciever mInstance = null;
 }

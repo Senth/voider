@@ -16,6 +16,9 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 
+import com.google.appengine.api.channel.ChannelMessage;
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.spiddekauga.utils.Strings;
 
 /**
@@ -97,6 +100,21 @@ public class NetworkGateway {
 		}
 	}
 
+	/**
+	 * Send message to the specified clients
+	 * @param clientIds all clients to send the message to
+	 * @param message the server message to send
+	 */
+	public static void sendMessage(Iterable<String> clientIds, String message) {
+		for (String clientId : clientIds) {
+			ChannelMessage channelMessage = new ChannelMessage(clientId, message);
+			mChannelService.sendMessage(channelMessage);
+		}
+	}
+
+
+	/** Channel service for sending messages */
+	private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
 	/** Logger */
 	private static final Logger mLogger = Logger.getLogger(NetworkGateway.class.getName());
 	/** Entity post name */
