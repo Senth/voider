@@ -176,7 +176,9 @@ public class MsgBox extends Dialog {
 	 * @param title
 	 */
 	public void setTitle(String title) {
-		getTitleLabel().setText("");
+		Label label = getTitleLabel();
+		label.setText(title);
+		label.setAlignment(Align.center);
 	}
 
 	/**

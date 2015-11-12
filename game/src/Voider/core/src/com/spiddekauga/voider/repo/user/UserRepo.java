@@ -69,7 +69,9 @@ public class UserRepo extends Repo {
 		if (!keepUser) {
 			mLocalRepo.removeLastUser();
 		}
-		mWebRepo.logout(addToFront(responseListeners, this));
+		if (User.getGlobalUser().isOnline()) {
+			mWebRepo.logout(addToFront(responseListeners, this));
+		}
 	}
 
 	/**

@@ -3,6 +3,7 @@ package com.spiddekauga.voider.utils.commands;
 import com.spiddekauga.utils.commands.CRun;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.repo.user.User;
 
 /**
  * Set the MOTD as viewed
@@ -18,7 +19,9 @@ public class CMotdViewed extends CRun {
 
 	@Override
 	public boolean execute() {
-		SettingRepo.getInstance().info().setLatestMotdDate(mMotd);
+		if (User.getGlobalUser().isLoggedIn()) {
+			SettingRepo.getInstance().info().setLatestMotdDate(mMotd);
+		}
 		return true;
 	}
 

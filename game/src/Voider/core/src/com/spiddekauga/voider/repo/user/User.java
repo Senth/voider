@@ -77,9 +77,7 @@ public class User {
 	public void logout() {
 		// Update user path
 		if (this == mGlobalUser) {
-			if (isOnline()) {
-				UserRepo.getInstance().logout(false);
-			}
+			UserRepo.getInstance().logout(false);
 
 			mEmail = null;
 			mOnline = false;
@@ -95,10 +93,11 @@ public class User {
 			analyticsRepo.endSession();
 			analyticsRepo.newSession();
 			SceneSwitcher.clearScenes();
-			SceneSwitcher.switchTo(new LoginScene());
 
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGOUT));
 			mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
+
+			SceneSwitcher.switchTo(new LoginScene());
 		}
 	}
 
