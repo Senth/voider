@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Stack;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
@@ -111,10 +112,10 @@ public class KryoNetPool {
 	 * Obtain a kryo object
 	 * @return kryo object
 	 */
-	public synchronized Kryo obtain() {
+	public Kryo obtain() {
 		Kryo kryo = null;
 		if (!mPool.isEmpty()) {
-			kryo = mPool.pop();
+			kryo = mPool.remove();
 		} else {
 			kryo = new Kryo();
 			kryo.setRegistrationRequired(true);
@@ -128,8 +129,8 @@ public class KryoNetPool {
 	 * Free a kryo object
 	 * @param kryo the kryo object to free
 	 */
-	public synchronized void free(Kryo kryo) {
-		mPool.push(kryo);
+	public void free(Kryo kryo) {
+		mPool.offer(kryo);
 	}
 
 	/**
@@ -351,5 +352,5 @@ public class KryoNetPool {
 		private SerializerType mSerializerType = null;
 	}
 
-	private Stack<Kryo> mPool = new Stack<>();
+	private BlockingQueue<Kryo> mPool = new LinkedBlockingQueue<>();
 }

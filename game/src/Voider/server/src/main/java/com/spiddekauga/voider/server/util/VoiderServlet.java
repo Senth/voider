@@ -207,7 +207,16 @@ public abstract class VoiderServlet extends HttpServlet {
 	 * @return current response
 	 */
 	protected HttpServletResponse getResponse() {
+		mLogger.info("Is response committed? " + isCommitted());
 		return mResponse;
+	}
+
+	/**
+	 * REMOVE
+	 * @return true if the response is committed
+	 */
+	protected boolean isCommitted() {
+		return mResponse.isCommitted();
 	}
 
 	/**

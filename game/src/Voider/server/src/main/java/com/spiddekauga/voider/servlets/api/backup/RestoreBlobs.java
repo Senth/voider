@@ -64,6 +64,8 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 			container.add(entry.getKey(), entry.getValue().get(0));
 		}
 
+		mLogger.info("Uploaded " + container.getPublishedCount() + " published and " + container.getUserResourceCount() + " user resources.");
+
 		return container;
 	}
 
@@ -234,6 +236,26 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 				UUID resourceId = UUID.fromString(resourceRevisionString);
 				mPublishedBlobKeys.put(resourceId, blobKey);
 			}
+		}
+
+		/**
+		 * @return number of published resources that were uploaded
+		 */
+		int getPublishedCount() {
+			return mPublishedBlobKeys.size();
+		}
+
+		/**
+		 * @return number of user resources that were uploaded
+		 */
+		int getUserResourceCount() {
+			int count = 0;
+
+			for (Map<Integer, BlobKey> revisions : mUserBlobKeys.values()) {
+				count += revisions.size();
+			}
+
+			return count;
 		}
 
 		private Map<UUID, BlobKey> mPublishedBlobKeys = new HashMap<>();

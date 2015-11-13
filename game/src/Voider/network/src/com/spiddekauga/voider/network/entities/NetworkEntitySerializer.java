@@ -23,7 +23,7 @@ public class NetworkEntitySerializer {
 	 * @param bytes all bytes that represents an entity
 	 * @return entity, or null if it could not deserialize
 	 */
-	public static IEntity deserializeEntity(byte[] bytes) {
+	public synchronized static IEntity deserializeEntity(byte[] bytes) {
 		Kryo kryo = mKryoPool.obtain();
 
 		if (bytes == null || bytes.length == 0) {
@@ -53,7 +53,7 @@ public class NetworkEntitySerializer {
 	 * @param entity the entity to serialize into a byte array
 	 * @return entity as byte array
 	 */
-	public static byte[] serializeEntity(IEntity entity) {
+	public synchronized static byte[] serializeEntity(IEntity entity) {
 		Kryo kryo = mKryoPool.obtain();
 
 		try {
@@ -78,7 +78,7 @@ public class NetworkEntitySerializer {
 	 * @param message the server message
 	 * @return the server message as a base64 message
 	 */
-	public static String serializeServerMessage(ServerMessage<?> message) {
+	public synchronized static String serializeServerMessage(ServerMessage<?> message) {
 		byte[] byteMessage = serializeEntity(message);
 		return DatatypeConverter.printBase64Binary(byteMessage);
 	}
@@ -88,7 +88,7 @@ public class NetworkEntitySerializer {
 	 * @param message the server message in base64 format
 	 * @return the original server message
 	 */
-	public static ServerMessage<?> deserializeServerMessage(String message) {
+	public synchronized static ServerMessage<?> deserializeServerMessage(String message) {
 		byte[] byteMessage = DatatypeConverter.parseBase64Binary(message);
 		return (ServerMessage<?>) deserializeEntity(byteMessage);
 	}

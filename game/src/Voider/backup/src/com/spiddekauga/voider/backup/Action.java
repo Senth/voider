@@ -165,22 +165,17 @@ abstract class Action {
 		if (entitySend != null) {
 			try {
 				HttpPostBuilder postBuilder = new HttpPostBuilder(url);
-				postBuilder.doFileUpload();
-
 
 				// Add files
 				if (files != null && !files.isEmpty()) {
+					postBuilder.doFileUpload();
 					for (FieldNameFileWrapper fieldNameFile : files) {
 						postBuilder.addFile(fieldNameFile.mFieldName, fieldNameFile.mFile);
 					}
+				}
 
-					// Add method entity as base64
-					postBuilder.addParameter(ENTITY_NAME, Base64Coder.encode(entitySend));
-				}
-				// Add method entity
-				else {
-					postBuilder.addParameter(ENTITY_NAME, entitySend);
-				}
+				// Add method entity as base64
+				postBuilder.addParameter(ENTITY_NAME, Base64Coder.encode(entitySend));
 
 
 				HttpURLConnection connection = postBuilder.build();

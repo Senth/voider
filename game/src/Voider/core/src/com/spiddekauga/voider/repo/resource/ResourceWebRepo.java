@@ -327,7 +327,10 @@ public class ResourceWebRepo extends WebRepo {
 				}
 			}
 
-			toDownload.add(new DownloadResourceWrapper(resourceFileName, resourceInfo));
+			// REMOVE for loop, but keep inside
+			for (int i = 0; i < 5; ++i) {
+				toDownload.add(new DownloadResourceWrapper(resourceFileName, resourceInfo));
+			}
 		}
 
 		downloadInThreads(toDownload, progressListener);

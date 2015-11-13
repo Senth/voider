@@ -25,6 +25,8 @@ public class BlobDownload extends VoiderApiServlet<BlobDownloadMethod> {
 	@Override
 	protected IEntity onRequest(BlobDownloadMethod method) throws ServletException, IOException {
 		BlobKey blobKey = new BlobKey(method.blobKey);
+		mLogger.info("Blobkey: " + method.blobKey);
+		mLogger.info("Before serve() " + isCommitted());
 		mBlobstoreService.serve(blobKey, getResponse());
 
 		return null;

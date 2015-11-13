@@ -6,8 +6,13 @@ import java.util.UUID;
 
 import javax.servlet.ServletException;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.minlog.Log;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.spiddekauga.appengine.BlobUtils;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
@@ -43,8 +48,10 @@ public abstract class VoiderApiServlet<Method extends IMethodEntity> extends Voi
 		if (getMaintenanceMode() == MaintenanceModes.UP || isHandlingRequestDuringMaintenance()) {
 			// Get method parameters
 			try {
+				mLogger.info("Before getEntity() " + isCommitted());
 				byte[] byteEntity = NetworkGateway.getEntity(getRequest());
 				Method methodEntity = null;
+				mLogger.info("Before deserialize entity() " + isCommitted());
 				if (byteEntity != null) {
 					methodEntity = (Method) NetworkEntitySerializer.deserializeEntity(byteEntity);
 				}
@@ -89,5 +96,42 @@ public abstract class VoiderApiServlet<Method extends IMethodEntity> extends Voi
 		return BlobUtils.getBlobKeysFromUploadRevision(getRequest());
 	}
 
+	/**
+	 * Deserializes an entity from bytes to an entity
+	 * @param bytes all bytes that represents an entity
+	 * @return entity, or null if it could not deserialize
+	 */
+	private IEntity deserializeEntity(byte[] bytes) {
 
+		Log.NONE();
+		Kryo kryo = new Kryo();
+		mLogger.info("Kryo() " + isCommitted());
+		kryo.setRegistrationRequired(true);
+		mLogger.info("kryo.setRegistrationRequired() " + isCommitted());
+		// RegisterClasses.registerAll(kryo);
+		// kryo.register(UUID.class, new UUIDSerializer());
+		mLogger.info("registerAll() " + isCommitted());
+
+
+		if (bytes == null || bytes.length == 0) {
+			return null;
+		}
+
+		try {
+			Input input = new Input(bytes);
+			mLogger.info("input " + isCommitted());
+			Object readObject = kryo.readClassAndObject(input);
+			mLogger.info("readClassAndObject() " + isCommitted());
+			if (readObject instanceof IEntity) {
+				return (IEntity) readObject;
+			} else {
+				mLogger.warning("Read object was not an entity");
+			}
+
+		} catch (IllegalArgumentException | KryoException e) {
+			mLogger.severe("Failed to deserialize entity\n" + Strings.exceptionToString(e));
+		}
+
+		return null;
+	}
 }

@@ -45,13 +45,19 @@ class ActionCreator {
 
 		// Should be backup or restore
 		if (mParseIndex == 0) {
+			argument = argument.toLowerCase();
+
 			// Backup
-			if (argument.toLowerCase().equals("backup")) {
+			if (argument.equals("backup")) {
 				mAction = new BackupAction();
 			}
 			// Restore
-			else if (argument.toLowerCase().equals("restore")) {
+			else if (argument.equals("restore")) {
 				mAction = new RestoreAction();
+			}
+			// Test action
+			else if (argument.equals("test")) {
+				mAction = new TestAction();
 			}
 			// Failed
 			else {
@@ -65,6 +71,10 @@ class ActionCreator {
 		// Restore
 		else if (mAction instanceof RestoreAction) {
 			parseNextRestoreArgument();
+		}
+		// Test
+		else if (mAction instanceof TestAction) {
+			parseNextBackupArgument();
 		}
 		// Fail
 		else {

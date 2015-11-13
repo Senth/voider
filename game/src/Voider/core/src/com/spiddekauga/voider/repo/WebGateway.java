@@ -100,21 +100,19 @@ public class WebGateway {
 
 		try {
 			HttpPostBuilder postBuilder = new HttpPostBuilder(uploadUrl);
-			postBuilder.doFileUpload();
 
 			// Add files
 			if (files != null && !files.isEmpty()) {
+				postBuilder.doFileUpload();
 				for (FieldNameFileWrapper fieldNameFile : files) {
 					postBuilder.addFile(fieldNameFile.mFieldName, fieldNameFile.mFile);
 				}
+			}
 
-				// Add method entity as base64
-				postBuilder.addParameter(ENTITY_NAME, Base64Coder.encode(entity));
-			}
-			// Add method entity
-			else {
-				postBuilder.addParameter(ENTITY_NAME, entity);
-			}
+			// Add method entity as base64
+			char[] base64 = Base64Coder.encode(entity);
+			postBuilder.addParameter(ENTITY_NAME, base64);
+
 
 			HttpURLConnection connection = postBuilder.build();
 
@@ -150,8 +148,8 @@ public class WebGateway {
 
 		try {
 			HttpPostBuilder postBuilder = new HttpPostBuilder(Config.Network.SERVER_HOST + methodName);
-			postBuilder.doFileUpload();
-			postBuilder.addParameter(ENTITY_NAME, entity);
+			char[] base64 = Base64Coder.encode(entity);
+			postBuilder.addParameter(ENTITY_NAME, base64);
 
 			HttpURLConnection connection = postBuilder.build();
 

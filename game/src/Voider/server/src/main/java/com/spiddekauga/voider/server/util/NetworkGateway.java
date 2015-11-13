@@ -34,15 +34,17 @@ public class NetworkGateway {
 	public static byte[] getEntity(HttpServletRequest request) {
 		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 
+		// Try getting from the multipart first
 		if (isMultipart) {
-			mLogger.finest("Multipart request");
+			mLogger.finer("Multipart request");
+
 			ServletFileUpload upload = new ServletFileUpload();
 			try {
 				FileItemIterator itemIt = upload.getItemIterator(request);
 
 				while (itemIt.hasNext()) {
 					FileItemStream item = itemIt.next();
-					mLogger.finest("Found field: " + item.getFieldName());
+					mLogger.info("Found field: " + item.getFieldName());
 
 					if (item.getFieldName().equals(ENTITY_NAME)) {
 						// Binary
@@ -62,21 +64,19 @@ public class NetworkGateway {
 						}
 					}
 				}
-
-				// If we're here we haven't found the entity, try base64 instead
-				String base64Entity = request.getParameter(ENTITY_NAME);
-				if (base64Entity != null) {
-					mLogger.finer("Found Base64 entity");
-					return DatatypeConverter.parseBase64Binary(base64Entity);
-				} else {
-					mLogger.warning("Didn't find any entity");
-				}
 			} catch (FileUploadException | IOException e) {
 				String exceptionString = Strings.exceptionToString(e);
 				mLogger.severe(exceptionString);
 			}
+		}
+
+		// Check if there's a regular parameter :)
+		String base64Entity = request.getParameter(ENTITY_NAME);
+		if (base64Entity != null) {
+			mLogger.info("Found Base64 entity: " + base64Entity);
+			return DatatypeConverter.parseBase64Binary(base64Entity);
 		} else {
-			mLogger.warning("No multipart found");
+			mLogger.warning("Didn't find any entity");
 		}
 
 		return null;

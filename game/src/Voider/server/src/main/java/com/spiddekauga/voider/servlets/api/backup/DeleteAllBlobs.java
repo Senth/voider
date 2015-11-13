@@ -37,6 +37,7 @@ public class DeleteAllBlobs extends VoiderApiServlet<DeleteAllBlobsMethod> {
 			BlobInfo blobInfo = blobInfoIt.next();
 			blobKeys.add(blobInfo.getBlobKey());
 		}
+		mLogger.info("Deleting " + blobKeys.size() + " blobs");
 		BlobUtils.delete(blobKeys);
 
 		return mResponse;

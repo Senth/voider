@@ -152,8 +152,15 @@ public class NotificationShower implements Disposable {
 					messageTable.add(image).setPadRight(mUiFactory.getStyles().vars.paddingInner);
 
 					// Label
-					Label label = style.createMessage(message);
-					label.pack();
+					Label label = null;
+					while (label == null) {
+						try {
+							label = style.createMessage(message);
+							label.pack();
+						} catch (ArrayIndexOutOfBoundsException e) {
+							label = null;
+						}
+					}
 					messageTable.add(label).setFillWidth(true);
 
 					// If pressed remove directly
