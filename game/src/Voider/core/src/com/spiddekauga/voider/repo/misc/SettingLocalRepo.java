@@ -337,11 +337,13 @@ class SettingLocalRepo {
 		 */
 		void setIconSize(IconSizes iconSize) {
 			if (iconSize != getIconSize()) {
-				int[] cLoads = ResourceCacheFacade.unloadAll(InternalDeps.UI_ALL);
+				InternalNames[] oldSizes = InternalDeps.getDependencies(InternalDeps.UI_ALL);
 
 				mClientPrefsGateway.setIconSize(iconSize);
 
-				ResourceCacheFacade.load(InternalDeps.UI_ALL, cLoads);
+				InternalNames[] newSizes = InternalDeps.getDependencies(InternalDeps.UI_ALL);
+
+				ResourceCacheFacade.replace(oldSizes, newSizes);
 				ResourceCacheFacade.finishLoading();
 
 				SceneSwitcher.reloadUi();

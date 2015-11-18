@@ -23,16 +23,9 @@ public class PrototypeScene extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.load(BACKGROUND_TO_USE);
+		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(this, BACKGROUND_TO_USE);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.unload(BACKGROUND_TO_USE);
 	}
 
 	@Override

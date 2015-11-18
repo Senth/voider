@@ -11,7 +11,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.repo.resource.ResourceLoader.UuidRevision;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceDependency;
 import com.spiddekauga.voider.resources.ResourceException;
@@ -25,16 +24,19 @@ import com.spiddekauga.voider.scene.Scene;
 class ResourceDependencyLoader implements Disposable {
 	/**
 	 * Default constructor
+	 * @param assetManager
+	 * @param externalLoader
 	 */
-	ResourceDependencyLoader() {
-		mAssetManager = mResourceLoader.getAssetManager();
+	ResourceDependencyLoader(AssetManager assetManager, ResourceExternalLoader externalLoader) {
+		mAssetManager = assetManager;
+		mExternalLoader = externalLoader;
 	}
 
 	/**
 	 * @return the resource loader
 	 */
-	ResourceLoader getResourceLoader() {
-		return mResourceLoader;
+	ResourceExternalLoader getExternalLoader() {
+		return mExternalLoader;
 	}
 
 	/**
@@ -49,7 +51,7 @@ class ResourceDependencyLoader implements Disposable {
 	 */
 	synchronized <ResourceType> void load(Scene scene, UUID resourceId, int revision) {
 		// Load the resource
-		mResourceLoader.load(scene, resourceId, revision);
+		mExternalLoader.load(scene, resourceId, revision);
 
 		// Add definition to wait queue
 		mLoadingDefs.add(new ResourceItem(scene, resourceId, revision));
@@ -77,7 +79,7 @@ class ResourceDependencyLoader implements Disposable {
 	 */
 	synchronized boolean update() {
 		try {
-			mResourceLoader.update();
+			mExternalLoader.update();
 		} catch (ResourceException e) {
 			// Remove the queue item
 			removeFromLoadingQueue(e.getId());
@@ -86,15 +88,15 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		// Check if some resources failed to be loaded
-		BlockingQueue<UuidRevision> failedResources = mResourceLoader.getFailed();
-		for (UuidRevision uuidRevision : failedResources) {
+		BlockingQueue<UserResourceIdentifier> failedResources = mExternalLoader.getFailed();
+		for (UserResourceIdentifier uuidRevision : failedResources) {
 			removeFromLoadingQueue(uuidRevision.resourceId);
 		}
 
 		// Skip update if we aren't waiting for any definitions to be done loading
 		// I.e. not loading anything
 		if (mLoadingDefs.size() == 0) {
-			return mLoadingDefs.size() == 0 && !mResourceLoader.isLoading();
+			return mLoadingDefs.size() == 0 && !mExternalLoader.isLoading();
 		}
 
 		// If any of the resources we're waiting for been loaded ->
@@ -102,8 +104,8 @@ class ResourceDependencyLoader implements Disposable {
 		for (int i = 0; i < mLoadingDefs.size(); ++i) {
 			ResourceItem queueItem = mLoadingDefs.get(i);
 
-			if (mResourceLoader.isResourceLoaded(queueItem.id, queueItem.revision)) {
-				IResource resource = mResourceLoader.getLoadedResource(queueItem.id, queueItem.revision);
+			if (mExternalLoader.isResourceLoaded(queueItem.id, queueItem.revision)) {
+				IResource resource = mExternalLoader.getLoadedResource(queueItem.id, queueItem.revision);
 
 				if (resource instanceof IResourceDependency) {
 					IResourceDependency def = (IResourceDependency) resource;
@@ -137,7 +139,7 @@ class ResourceDependencyLoader implements Disposable {
 			}
 		}
 
-		return mLoadingDefs.size() == 0 && !mResourceLoader.isLoading();
+		return mLoadingDefs.size() == 0 && !mExternalLoader.isLoading();
 	}
 
 	/**
@@ -197,5 +199,5 @@ class ResourceDependencyLoader implements Disposable {
 	/** The class actually loading the resources */
 	private AssetManager mAssetManager;
 	/** Resource loader, this actually loads all the external dependencies */
-	private static ResourceLoader mResourceLoader = new ResourceLoader();
+	private static ResourceExternalLoader mExternalLoader;
 }

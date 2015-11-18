@@ -24,14 +24,8 @@ public class SplashScreen extends LoadingScene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalNames.IMAGE_SPLASH_SCREEN);
+		ResourceCacheFacade.load(this, InternalNames.IMAGE_SPLASH_SCREEN);
 		ResourceCacheFacade.finishLoading();
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-		ResourceCacheFacade.unload(InternalNames.IMAGE_SPLASH_SCREEN);
 	}
 
 	@Override

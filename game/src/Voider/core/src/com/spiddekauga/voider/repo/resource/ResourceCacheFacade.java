@@ -11,7 +11,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.spiddekauga.voider.Config.Debug;
-import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
@@ -47,13 +46,13 @@ public class ResourceCacheFacade {
 		// Load dependencies
 		if (loadDependencies) {
 			for (UUID resourceId : resources) {
-				mDependencyLoader.load(scene, resourceId, -1);
+				mDependencyLoader.load(scene, resourceId, UserResourceIdentifier.LATEST_REVISION);
 			}
 		}
 		// Only load them, no dependencies
 		else {
 			for (UUID resourceId : resources) {
-				mResourceLoader.load(scene, resourceId, -1);
+				mExternalLoader.load(scene, resourceId, UserResourceIdentifier.LATEST_REVISION);
 			}
 		}
 	}
@@ -63,14 +62,15 @@ public class ResourceCacheFacade {
 	 * @param scene the scene the resources were loaded into
 	 */
 	public static void unload(Scene scene) {
-		mResourceLoader.unload(scene);
+		mExternalLoader.unload(scene);
+		mInternalLoader.unload(scene);
 	}
 
 	/**
 	 * @return true if the resource cache facade is currently loading
 	 */
 	public static boolean isLoading() {
-		return mAssetManager.getQueuedAssets() > 0 || mDependencyLoader.isLoading() || mResourceLoader.isLoading();
+		return mAssetManager.getQueuedAssets() > 0 || mDependencyLoader.isLoading() || mExternalLoader.isLoading() || mInternalLoader.isLoading();
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class ResourceCacheFacade {
 	 * @param defId the definition of the resource we're loading
 	 */
 	public static void load(Scene scene, UUID resourceId, UUID defId) {
-		load(scene, resourceId, defId, -1);
+		load(scene, resourceId, defId, UserResourceIdentifier.LATEST_REVISION);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class ResourceCacheFacade {
 		if (loadDependencies) {
 			mDependencyLoader.load(scene, resourceId, revision);
 		} else {
-			mResourceLoader.load(scene, resourceId, revision);
+			mExternalLoader.load(scene, resourceId, revision);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class ResourceCacheFacade {
 	 * @param oldRevision old revision that the resource was loaded into
 	 */
 	public static void setLatestResource(Resource resource, int oldRevision) {
-		mResourceLoader.setLatestResource(resource, oldRevision);
+		mExternalLoader.setLatestResource(resource, oldRevision);
 	}
 
 	/**
@@ -146,17 +146,9 @@ public class ResourceCacheFacade {
 	 *       previous instances that uses the old resource won't work.
 	 */
 	public static void reload(InternalNames resource) {
-		String filepath = resource.getFilePath();
+		mInternalLoader.reload(resource);
 
-		// Reload the actual asset
-		if (filepath != null && mAssetManager.isLoaded(filepath)) {
-			int cRefs = mAssetManager.getReferenceCount(filepath);
-			mAssetManager.setReferenceCount(filepath, 1);
-			mAssetManager.unload(filepath);
-			mAssetManager.load(filepath, resource.getType());
-			mAssetManager.finishLoading();
-			mAssetManager.setReferenceCount(filepath, cRefs);
-		}
+
 	}
 
 	/**
@@ -180,7 +172,7 @@ public class ResourceCacheFacade {
 	 * @param resourceId id of the resource to reload
 	 */
 	public static void reload(UUID resourceId) {
-		mResourceLoader.reload(resourceId);
+		mExternalLoader.reload(resourceId);
 	}
 
 	/**
@@ -191,8 +183,8 @@ public class ResourceCacheFacade {
 	 * @param <ResourceType> type of resource that will be returned
 	 * @return the actual resource, null if not found
 	 */
-	public static <ResourceType extends IResource> ResourceType get(UUID resourceId, int revision) {
-		return mResourceLoader.getLoadedResource(resourceId, revision);
+	public static <ResourceType extends Resource> ResourceType get(UUID resourceId, int revision) {
+		return mExternalLoader.getLoadedResource(resourceId, revision);
 	}
 
 	/**
@@ -202,8 +194,8 @@ public class ResourceCacheFacade {
 	 * @param <ResourceType> type of resource that will be returned
 	 * @return the actual resource, null if not found
 	 */
-	public static <ResourceType extends IResource> ResourceType get(UUID resourceId) {
-		return mResourceLoader.getLoadedResource(resourceId);
+	public static <ResourceType extends Resource> ResourceType get(UUID resourceId) {
+		return mExternalLoader.getLoadedResource(resourceId);
 	}
 
 	/**
@@ -214,8 +206,8 @@ public class ResourceCacheFacade {
 	 * @return array with all the resources of that type. Don't forget to free the
 	 *         arraylist using Pools.arrayList.free(resources).
 	 */
-	public static <ResourceType extends IResource> ArrayList<ResourceType> getAll(ExternalTypes type) {
-		return mResourceLoader.getAllLoadedResourcesOf(type);
+	public static <ResourceType extends Resource> ArrayList<ResourceType> getAll(ExternalTypes type) {
+		return mExternalLoader.getAllLoadedResourcesOf(type);
 	}
 
 	/**
@@ -226,7 +218,7 @@ public class ResourceCacheFacade {
 	 * @return true if the object has been loaded
 	 */
 	public static boolean isLoaded(UUID resourceId, Scene scene) {
-		return mResourceLoader.isResourceLoaded(resourceId, scene);
+		return mExternalLoader.isResourceLoaded(scene, resourceId);
 	}
 
 	/**
@@ -235,7 +227,7 @@ public class ResourceCacheFacade {
 	 * @return true if the object has been loaded
 	 */
 	public static boolean isLoaded(UUID resourceId) {
-		return mResourceLoader.isResourceLoaded(resourceId);
+		return mExternalLoader.isResourceLoaded(resourceId);
 	}
 
 	/**
@@ -245,7 +237,7 @@ public class ResourceCacheFacade {
 	 * @return true if the object has been loaded
 	 */
 	public static boolean isLoaded(UUID resourceId, int revision) {
-		return mResourceLoader.isResourceLoaded(resourceId, revision);
+		return mExternalLoader.isResourceLoaded(resourceId, revision);
 	}
 
 	/**
@@ -253,7 +245,7 @@ public class ResourceCacheFacade {
 	 * @param resourceId unique id of the object to unload
 	 */
 	public static void unload(UUID resourceId) {
-		mResourceLoader.unload(resourceId);
+		mExternalLoader.unload(resourceId);
 	}
 
 	/**
@@ -262,72 +254,12 @@ public class ResourceCacheFacade {
 	 * @param revision the specific revision to unload
 	 */
 	public static void unload(UUID resourceId, int revision) {
-		mResourceLoader.unload(resourceId, revision);
+		mExternalLoader.unload(resourceId, revision);
 	}
 
 	// -----------------------------
 	// Resource names
 	// -----------------------------
-	/**
-	 * Unload all internal dependencies
-	 * @param internalDeps
-	 */
-	public static void unload(InternalDeps... internalDeps) {
-		for (InternalDeps internalDep : internalDeps) {
-			for (InternalNames internalName : internalDep.getDependencies()) {
-				unload(internalName);
-			}
-		}
-	}
-
-	/**
-	 * Unloads a regular resource
-	 * @param resourceName the name of the resource
-	 */
-	public static void unload(InternalNames resourceName) {
-		// Is this resource currently used?
-		IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resourceName.getType());
-		if (unloadReadyMethod != null) {
-			mUnloadList.add(resourceName);
-		}
-		// Unload directly
-		else {
-			mAssetManager.unload(resourceName.getFilePath());
-		}
-	}
-
-	/**
-	 * Unload all of the specified resource dependency. This will only work correctly if
-	 * the resources loaded by internalDep was loaded through this method. If any of them
-	 * were loaded with {@link #load(InternalNames)} the program will eventually crash.
-	 * @param internalDeps the internal dependencies to unload
-	 * @return number of times the internalDep was loaded
-	 */
-	public static int[] unloadAll(InternalDeps... internalDeps) {
-		int[] count = new int[internalDeps.length];
-		for (int i = 0; i < internalDeps.length; i++) {
-			count[i] = unloadAll(internalDeps[i]);
-		}
-
-		return count;
-	}
-
-	/**
-	 * Unload all of the specified resource dependency. This will only work correctly if
-	 * the resources loaded by internalDep was loaded through this method. If any of them
-	 * were loaded with {@link #load(InternalNames)} the program will eventually crash.
-	 * @param internalDeps the internal dependencies to unload
-	 * @return number of times the internalDep was loaded
-	 */
-	public static int unloadAll(InternalDeps internalDeps) {
-		int count = 0;
-		for (InternalNames resourceName : internalDeps.getDependencies()) {
-			count = unloadAll(resourceName);
-		}
-
-		return count;
-	}
-
 	/**
 	 * Unload all of the specified resource
 	 * @param resourceName name of the resource
@@ -357,12 +289,13 @@ public class ResourceCacheFacade {
 
 	/**
 	 * Loads all internal dependencies
+	 * @param scene the scene to load these resources into
 	 * @param internalDeps
 	 */
-	public static void load(InternalDeps... internalDeps) {
+	public static void load(Scene scene, InternalDeps... internalDeps) {
 		for (InternalDeps internalDep : internalDeps) {
 			for (InternalNames internalName : internalDep.getDependencies()) {
-				load(internalName);
+				load(scene, internalName);
 			}
 		}
 	}
@@ -370,52 +303,36 @@ public class ResourceCacheFacade {
 	/**
 	 * Loads a resources of static type. Usually those in internal assets, such as
 	 * textures, music, etc.
+	 * @param scene the scene to load these resources into
 	 * @param resource the name of the resource to load Texture, Music, etc.
 	 */
-	@SuppressWarnings("unchecked")
-	public static void load(InternalNames resource) {
-		// Remove from unload list if we're loading it again before it was unloaded
-		if (mUnloadList.contains(resource)) {
-			mUnloadList.remove(resource);
+	public static void load(Scene scene, InternalNames resource) {
+		mInternalLoader.load(scene, resource);
+	}
+
+	/**
+	 * Replace one internal resource with another one.
+	 * @param oldResources the old resources to replace
+	 * @param newResources new resources to be replaced by
+	 * @throws IllegalArgumentException if oldResources.length != newResources.length
+	 */
+	public static void replace(InternalNames[] oldResources, InternalNames[] newResources) {
+		if (oldResources.length != newResources.length) {
+			throw new IllegalArgumentException("oldResources.length != newResources.length");
 		}
-		// Load it
-		else {
-			String fullPath = resource.getFilePath();
-			mAssetManager.load(fullPath, resource.getType(), resource.getParameters());
+
+		for (int i = 0; i < oldResources.length; i++) {
+			replace(oldResources[i], newResources[i]);
 		}
 	}
 
 	/**
-	 * Load all internal dependencies cLoad number of times.
-	 * @param internalDeps the dependencies to load
-	 * @param cLoad how many times we will load the resource
+	 * Replace one internal resource with another one.
+	 * @param oldResource the resource to replace
+	 * @param newResource this resource replaces the old resource
 	 */
-	public static void load(InternalDeps[] internalDeps, int[] cLoad) {
-		for (int i = 0; i < internalDeps.length; i++) {
-			load(internalDeps[i], cLoad[i]);
-		}
-	}
-
-	/**
-	 * Load all internal dependencies cLoad number of times.
-	 * @param internalDep the dependencies to load
-	 * @param cLoad how many times we will load the resource
-	 */
-	public static void load(InternalDeps internalDep, int cLoad) {
-		for (InternalNames resourceName : internalDep.getDependencies()) {
-			load(resourceName, cLoad);
-		}
-	}
-
-	/**
-	 * Load the resource X number of times.
-	 * @param resourceName the resource to load
-	 * @param cLoad how many times we will load the resource
-	 */
-	public static void load(InternalNames resourceName, int cLoad) {
-		for (int i = 0; i < cLoad; ++i) {
-			load(resourceName);
-		}
+	public static void replace(InternalNames oldResource, InternalNames newResource) {
+		mInternalLoader.replace(oldResource, newResource);
 	}
 
 	/**
@@ -424,14 +341,8 @@ public class ResourceCacheFacade {
 	 * @param resource the resource to return
 	 * @return the actual resource, null if not loaded
 	 */
-	@SuppressWarnings("unchecked")
 	public static <ResourceType> ResourceType get(InternalNames resource) {
-		if (isLoaded(resource)) {
-			String fullPath = resource.getFilePath();
-			return (ResourceType) mAssetManager.get(fullPath, resource.getType());
-		} else {
-			return null;
-		}
+		return mInternalLoader.getLoadedResource(resource);
 	}
 
 	/**
@@ -456,8 +367,7 @@ public class ResourceCacheFacade {
 	 * @return true if the resource has been loaded
 	 */
 	public static boolean isLoaded(InternalNames resource) {
-		String fullPath = resource.getFilePath();
-		return mAssetManager.isLoaded(fullPath, resource.getType());
+		return mInternalLoader.isLoaded(resource);
 	}
 
 	/**
@@ -484,13 +394,16 @@ public class ResourceCacheFacade {
 	public static boolean update() {
 		boolean fullyLoaded = true;
 		try {
+			if (!mInternalLoader.update()) {
+				fullyLoaded = false;
+			}
 			if (!mDependencyLoader.update()) {
 				fullyLoaded = false;
 			}
 			if (fullyLoaded && !mLoadQueue.isEmpty()) {
 				fullyLoaded = false;
 				ResourceItem toLoad = mLoadQueue.removeFirst();
-				mResourceLoader.load(toLoad.scene, toLoad.id, toLoad.revision);
+				mExternalLoader.load(toLoad.scene, toLoad.id, toLoad.revision);
 			}
 		} catch (ResourceException e) {
 
@@ -567,19 +480,20 @@ public class ResourceCacheFacade {
 	 * placed in the unload list
 	 */
 	private static Map<Class<?>, IResourceUnloadReady> mUnloadReadyMethods = new HashMap<>();
-	/** Handles loading all dependencies. */
-	private static ResourceDependencyLoader mDependencyLoader = new ResourceDependencyLoader();
-	/** Resource Loader */
-	private static ResourceLoader mResourceLoader = mDependencyLoader.getResourceLoader();
 	/**
-	 * Resource loader. This directly takes care of internal resources� it can load
+	 * Resource loader. This directly takes care of internal resources it can load
 	 * directly, no need to go through ResourceDependencyLoader. All Defs needs to be
 	 * loaded via the ResourceDependencyLoader. A level is a special case and is also
 	 * loaded directly via this manager, but still needs to load its LevelDef through
 	 * ResourceDependencyLoader first. All resources can be directly accessed through this
 	 * manager once loaded.
 	 */
-	private static AssetManager mAssetManager = mResourceLoader.getAssetManager();
+	private static AssetManager mAssetManager = new AssetManager();
+	/** Resource Loader */
+	private static ResourceExternalLoader mExternalLoader = new ResourceExternalLoader(mAssetManager);
+	private static ResourceInternalLoader mInternalLoader = new ResourceInternalLoader(mAssetManager);
+	/** Handles loading all dependencies of external resources. */
+	private static ResourceDependencyLoader mDependencyLoader = new ResourceDependencyLoader(mAssetManager, mExternalLoader);
 
 	/**
 	 * This queue is for loading resources (or rather instances of defs). However all defs

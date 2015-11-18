@@ -131,16 +131,8 @@ class CreditScene extends MenuScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.UI_CREDITS);
-		ResourceCacheFacade.load(InternalNames.INI_CREDITS);
-	}
-
-	@Override
-	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalNames.UI_CREDITS);
-		ResourceCacheFacade.unload(InternalNames.INI_CREDITS);
-
-		super.unloadResources();
+		ResourceCacheFacade.load(this, InternalNames.UI_CREDITS);
+		ResourceCacheFacade.load(this, InternalNames.INI_CREDITS);
 	}
 
 	@Override

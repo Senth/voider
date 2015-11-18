@@ -40,22 +40,12 @@ public class LoginScene extends Scene implements IResponseListener {
 
 	@Override
 	protected void loadResources() {
-		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.load(InternalNames.MUSIC_TITLE);
-		ResourceCacheFacade.load(InternalDeps.UI_SFX);
-		ResourceCacheFacade.load(InternalNames.TXT_TERMS);
+		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(this, InternalNames.MUSIC_TITLE);
+		ResourceCacheFacade.load(this, InternalDeps.UI_SFX);
+		ResourceCacheFacade.load(this, InternalNames.TXT_TERMS);
 
 		super.loadResources();
-	}
-
-	@Override
-	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalNames.MUSIC_TITLE);
-		ResourceCacheFacade.unload(InternalDeps.UI_SFX);
-		ResourceCacheFacade.unload(InternalNames.TXT_TERMS);
-
-		super.unloadResources();
 	}
 
 	@Override

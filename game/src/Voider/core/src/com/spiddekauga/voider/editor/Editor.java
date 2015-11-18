@@ -144,17 +144,9 @@ public abstract class Editor extends WorldScene implements IEditor, IResourceCha
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalDeps.UI_EDITOR);
-		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-		ResourceCacheFacade.unload(InternalDeps.UI_EDITOR);
-		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
+		ResourceCacheFacade.load(this, InternalDeps.UI_EDITOR);
+		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(this, InternalNames.SHADER_DEFAULT);
 	}
 
 	@Override

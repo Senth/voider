@@ -47,16 +47,9 @@ public class MainMenu extends MenuScene implements IEventListener {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalNames.TXT_TERMS);
+		ResourceCacheFacade.load(this, InternalNames.TXT_TERMS);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
-	}
-
-	@Override
-	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalNames.TXT_TERMS);
-
-		super.unloadResources();
 	}
 
 	@Override

@@ -49,15 +49,7 @@ public class ExploreEnemyScene extends ExploreActorScene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-
-		ResourceCacheFacade.load(InternalDeps.UI_EDITOR);
-	}
-
-	@Override
-	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalDeps.UI_EDITOR);
-
-		super.unloadResources();
+		ResourceCacheFacade.load(this, InternalDeps.UI_EDITOR);
 	}
 
 	@Override

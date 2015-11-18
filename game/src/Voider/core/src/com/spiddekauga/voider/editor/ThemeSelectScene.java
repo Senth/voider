@@ -25,18 +25,10 @@ public class ThemeSelectScene extends Scene {
 
 	@Override
 	protected void loadResources() {
-		ResourceCacheFacade.load(InternalDeps.UI_EDITOR);
-		ResourceCacheFacade.load(mTheme.getDependency());
+		ResourceCacheFacade.load(this, InternalDeps.UI_EDITOR);
+		ResourceCacheFacade.load(this, mTheme.getDependency());
 
 		super.loadResources();
-	}
-
-	@Override
-	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalDeps.UI_EDITOR);
-		ResourceCacheFacade.unload(mTheme.getDependency());
-
-		super.unloadResources();
 	}
 
 	@Override

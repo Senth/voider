@@ -69,7 +69,7 @@ public enum InternalDeps {
 	}
 
 	/**
-	 * Constructor which takes several resources that should only be used dependening on
+	 * Constructor which takes several resources that should only be used depending on
 	 * some settings...
 	 * @param resources
 	 */
@@ -95,6 +95,22 @@ public enum InternalDeps {
 			InternalNames[] depArr = new InternalNames[dependencies.size()];
 			return dependencies.toArray(depArr);
 		}
+	}
+
+	/**
+	 * @param dependencies all dependencies
+	 * @return all dependencies for multiple internal dependencies
+	 */
+	public static InternalNames[] getDependencies(InternalDeps[] dependencies) {
+		ArrayList<InternalNames> allDependencies = new ArrayList<>();
+
+
+		for (InternalDeps internalDeps : dependencies) {
+			Collections.addAll(internalDeps.getDependencies(), allDependencies);
+		}
+
+		InternalNames[] depArr = new InternalNames[allDependencies.size()];
+		return allDependencies.toArray(depArr);
 	}
 
 	/** All dependencies (if not resolution specific) */

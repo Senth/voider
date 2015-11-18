@@ -318,16 +318,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PICKUP_DEF, true);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 
-		ResourceCacheFacade.load(InternalDeps.MUSIC_LEVEL_THEMES);
-		ResourceCacheFacade.load(InternalDeps.THEME_ALL);
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-
-		ResourceCacheFacade.unload(InternalDeps.MUSIC_LEVEL_THEMES);
-		ResourceCacheFacade.unload(InternalDeps.THEME_ALL);
+		ResourceCacheFacade.load(this, InternalDeps.MUSIC_LEVEL_THEMES);
+		ResourceCacheFacade.load(this, InternalDeps.THEME_ALL);
 	}
 
 	@Override

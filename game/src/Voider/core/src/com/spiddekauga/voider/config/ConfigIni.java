@@ -38,7 +38,7 @@ public class ConfigIni {
 		if (ResourceCacheFacade.isLoaded(mFileName)) {
 			ResourceCacheFacade.reload(mFileName);
 		} else {
-			ResourceCacheFacade.load(mFileName);
+			ResourceCacheFacade.load(null, mFileName);
 			ResourceCacheFacade.finishLoading();
 		}
 

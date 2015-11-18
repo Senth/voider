@@ -54,15 +54,8 @@ public class LoadingTextScene extends LoadingScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.finishLoading();
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-
-		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
 	}
 
 	@Override

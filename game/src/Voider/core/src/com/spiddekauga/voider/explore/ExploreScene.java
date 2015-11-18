@@ -51,15 +51,8 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(this, mLocalType, false);
-	}
-
-	@Override
-	protected void unloadResources() {
-		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
-
-		super.unloadResources();
 	}
 
 	@Override

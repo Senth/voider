@@ -24,15 +24,8 @@ public class TestUiScene extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.load(InternalDeps.UI_GAME);
-	}
-
-	@Override
-	protected void unloadResources() {
-		super.unloadResources();
-		ResourceCacheFacade.unload(InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalDeps.UI_GAME);
+		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
+		ResourceCacheFacade.load(this, InternalDeps.UI_GAME);
 	}
 
 	@Override
