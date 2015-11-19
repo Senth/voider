@@ -3,6 +3,7 @@ package com.spiddekauga.voider.repo.resource;
 import org.ini4j.Ini;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.MusicLoader;
@@ -54,24 +55,10 @@ class ResourceInternalLoader extends ResourceLoader<InternalNames, Object> {
 		return identifier.getType();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	protected synchronized void reload(InternalNames identifier) {
-		// Reload the actual asset
-		if (isLoaded(identifier)) {
-			String filepath = getFilepath(identifier);
-			int cRefs = mAssetManager.getReferenceCount(filepath);
-			mAssetManager.setReferenceCount(filepath, 1);
-			mAssetManager.unload(filepath);
-			mAssetManager.load(filepath, identifier.getType());
-			mAssetManager.finishLoading();
-			mAssetManager.setReferenceCount(filepath, cRefs);
-
-			// Update existing loaded resource
-			LoadedResource loadedResource = mLoadedResources.get(identifier);
-			if (loadedResource != null) {
-				loadedResource.resource = mAssetManager.get(filepath);
-			}
-		}
+	protected AssetLoaderParameters getParameters(InternalNames identifier) {
+		return identifier.getParameters();
 	}
 
 	/**
@@ -85,15 +72,12 @@ class ResourceInternalLoader extends ResourceLoader<InternalNames, Object> {
 		if (loadedResource != null) {
 			// Unload old
 			String oldFilepath = getFilepath(oldIdentifier);
-			int cRefs = mAssetManager.getReferenceCount(oldFilepath);
-			mAssetManager.setReferenceCount(oldFilepath, 1);
 			mAssetManager.unload(oldFilepath);
 
 			// Load new
 			String newFilepath = getFilepath(newIdentifier);
 			mAssetManager.load(newFilepath, newIdentifier.getType());
 			mAssetManager.finishLoading();
-			mAssetManager.setReferenceCount(newFilepath, cRefs);
 
 			// Replace
 			loadedResource.resource = mAssetManager.get(newFilepath);

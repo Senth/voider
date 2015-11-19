@@ -205,13 +205,6 @@ public class Config {
 		public static class Messages {
 			/** If loading/unloading debug messages should be turned on/off */
 			public static final boolean LOAD_UNLOAD = true;
-			/**
-			 * If loading/unloading including number of times a resource has been loaded
-			 * into a scene
-			 */
-			public static final boolean LOAD_UNLOAD_EVERY_TIME = true;
-			/** If loading/unloading dependencies should be displayed */
-			public static final boolean LOAD_UNLOAD_DEPENDENCIES = true;
 		}
 
 		/** Build level */

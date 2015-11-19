@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.VoiderGame;
@@ -39,6 +42,7 @@ abstract class ResourceLoader<Identifier, Resource> {
 	 * @param scene the scene the resource is loaded into
 	 * @param identifier the resource identifier
 	 */
+	@SuppressWarnings("unchecked")
 	protected synchronized void load(Scene scene, Identifier identifier) {
 
 		// Get the loaded resource
@@ -51,15 +55,28 @@ abstract class ResourceLoader<Identifier, Resource> {
 		if (loadedResource != null) {
 			if (!loadedResource.scenes.contains(scene)) {
 				loadedResource.scenes.add(scene);
+				Gdx.app.debug(ResourceLoader.class.getSimpleName(), "load(" + getClassName(scene) + ", " + loadedResource.identifier
+						+ "): add scene. Scene count: " + loadedResource.scenes.size());
 			}
 		}
 		// Else no resource loaded create new
 		else {
-			loadedResource = new LoadedResource();
-			loadedResource.scenes.add(scene);
-			loadedResource.filepath = getFilepath(identifier);
-			mAssetManager.load(loadedResource.filepath, getClass());
+			loadedResource = new LoadedResource(identifier, scene);
+			mAssetManager.load(loadedResource.filepath, getType(identifier), getParameters(identifier));
 			mLoadingQueue.put(identifier, loadedResource);
+			Gdx.app.debug(ResourceLoader.class.getSimpleName(), "load(" + getClassName(scene) + ", " + loadedResource.identifier + "): new resource");
+		}
+	}
+
+	/**
+	 * @param instance
+	 * @return get the correct class name for an instance
+	 */
+	protected String getClassName(Object instance) {
+		if (instance == null) {
+			return "null";
+		} else {
+			return instance.getClass().getSimpleName();
 		}
 	}
 
@@ -76,6 +93,16 @@ abstract class ResourceLoader<Identifier, Resource> {
 	 * @return class type of the resource
 	 */
 	protected abstract Class<?> getType(Identifier identifier);
+
+	/**
+	 * @param identifier resource identifier
+	 * @return additional parameters when loading the resources. Should return null if no
+	 *         parameters are necessary
+	 */
+	@SuppressWarnings("rawtypes")
+	protected AssetLoaderParameters getParameters(Identifier identifier) {
+		return null;
+	}
 
 	/**
 	 * Check if the resource is being loaded into the specified scene
@@ -127,10 +154,17 @@ abstract class ResourceLoader<Identifier, Resource> {
 	}
 
 	/**
-	 * @return true if loading, unloading, or reloading
+	 * @return true if loading or reloading
 	 */
 	protected synchronized boolean isLoading() {
-		return !mLoadingQueue.isEmpty() || !mUnloadQueue.isEmpty() || !mReloadQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
+		return !mLoadingQueue.isEmpty() || !mReloadQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
+	}
+
+	/**
+	 * @return true if unloading
+	 */
+	protected synchronized boolean isUnloading() {
+		return !mUnloadQueue.isEmpty();
 	}
 
 	/**
@@ -148,10 +182,16 @@ abstract class ResourceLoader<Identifier, Resource> {
 			if (loadedResource.scenes.contains(scene)) {
 				loadedResource.scenes.remove(scene);
 
+				// Unload the resource fully
 				if (loadedResource.scenes.isEmpty()) {
 					mAssetManager.unload(loadedResource.filepath);
 					iterator.remove();
 					onUnload(entry.getKey());
+					Gdx.app.debug(ResourceLoader.class.getSimpleName(), "unload(" + getClassName(scene) + "): Fully removed "
+							+ loadedResource.identifier);
+				} else {
+					Gdx.app.debug(ResourceLoader.class.getSimpleName(), "unload(" + getClassName(scene) + "): Removed " + loadedResource.identifier
+							+ " from this scene. Scene count: " + loadedResource.scenes.size());
 				}
 			}
 		}
@@ -162,24 +202,18 @@ abstract class ResourceLoader<Identifier, Resource> {
 	 * @param identifier the resource identifier
 	 */
 	protected synchronized void unload(Identifier identifier) {
-		LoadedResource loadedResource = mLoadedResources.get(identifier);
-
-		// Unload if the resource is loaded
-		if (loadedResource != null) {
-
-			mUnloadQueue.add(loadedResource.filepath);
+		if (isLoaded(identifier)) {
+			mLoadedResources.remove(identifier);
+			mUnloadQueue.add(identifier);
 
 			// Unload directly if main thread
 			if (VoiderGame.isMainThread()) {
 				do {
 					update();
-				} while (isLoading());
+				} while (isUnloading());
 			} else {
-				waitTillLoadingIsDone();
+				waitTillUnloadingIsDone();
 			}
-
-			mLoadedResources.remove(identifier);
-			onUnload(identifier);
 		}
 	}
 
@@ -196,11 +230,10 @@ abstract class ResourceLoader<Identifier, Resource> {
 	 * @param identifier the resource to be reloaded
 	 */
 	protected synchronized void reload(Identifier identifier) {
-		final Resource oldResource = getLoadedResource(identifier);
+		final Resource oldResource = getResource(identifier);
 
 		if (oldResource != null) {
-			final String latestFilepath = getFilepath(identifier);
-			mReloadQueue.add(new ReloadResource(latestFilepath, oldResource));
+			mReloadQueue.add(new ReloadResource(identifier, oldResource));
 
 			// Reload directly if main thread
 			if (VoiderGame.isMainThread()) {
@@ -227,14 +260,21 @@ abstract class ResourceLoader<Identifier, Resource> {
 		}
 
 		// Unload queue
-		Iterator<String> unloadIt = mUnloadQueue.iterator();
+		Iterator<Identifier> unloadIt = mUnloadQueue.iterator();
 		while (unloadIt.hasNext()) {
-			String filepath = unloadIt.next();
-			if (mAssetManager.isLoaded(filepath)) {
-				mAssetManager.unload(filepath);
-			}
+			Identifier identifier = unloadIt.next();
+			String filepath = getFilepath(identifier);
 
-			unloadIt.remove();
+			// Unload if the resource is ready to be unloaded
+			IResourceUnloadReady unloadReady = mUnloadReadyMethods.get(getType(identifier));
+			if (unloadReady == null || unloadReady.isReadyToUnload(getResource(identifier))) {
+				if (mAssetManager.isLoaded(filepath)) {
+					mAssetManager.unload(filepath);
+				}
+				onUnload(identifier);
+
+				unloadIt.remove();
+			}
 		}
 
 		// Reload queue
@@ -248,6 +288,10 @@ abstract class ResourceLoader<Identifier, Resource> {
 
 					Resource newResource = mAssetManager.get(reloadResource.filepath);
 					onReloaded(reloadResource.oldResource, newResource);
+
+					// Update the resources
+					LoadedResource loadedResource = mLoadedResources.get(reloadResource.identifier);
+					loadedResource.resource = newResource;
 
 					reloadIt.remove();
 				}
@@ -312,12 +356,25 @@ abstract class ResourceLoader<Identifier, Resource> {
 	}
 
 	/**
+	 * Wait until unloading is done
+	 */
+	protected void waitTillUnloadingIsDone() {
+		while (isUnloading()) {
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// Do nothing
+			}
+		}
+	}
+
+	/**
 	 * @param <ResourceType> the resource type
 	 * @param identifier the resource to get
 	 * @return the loaded resource with the specified id, null if not loaded
 	 */
 	@SuppressWarnings("unchecked")
-	protected synchronized <ResourceType extends Resource> ResourceType getLoadedResource(Identifier identifier) {
+	protected synchronized <ResourceType extends Resource> ResourceType getResource(Identifier identifier) {
 		LoadedResource loadedResource = mLoadedResources.get(identifier);
 		if (loadedResource != null) {
 			return (ResourceType) loadedResource.resource;
@@ -332,7 +389,7 @@ abstract class ResourceLoader<Identifier, Resource> {
 	 * @return all loaded resources of the specified type
 	 */
 	@SuppressWarnings("unchecked")
-	synchronized <ResourceType extends Resource> ArrayList<ResourceType> getAllLoadedResourcesOf(Class<?> clazz) {
+	synchronized <ResourceType extends Resource> ArrayList<ResourceType> getResourcesOf(Class<?> clazz) {
 		ArrayList<ResourceType> resources = new ArrayList<>();
 
 		for (Entry<Identifier, LoadedResource> entry : mLoadedResources.entrySet()) {
@@ -348,8 +405,21 @@ abstract class ResourceLoader<Identifier, Resource> {
 	 * Loaded or loading resources
 	 */
 	protected class LoadedResource {
+		/**
+		 * Constructor
+		 * @param identifier resource identifier
+		 * @param scene the first scene this resource will be loaded into
+		 */
+		public LoadedResource(Identifier identifier, Scene scene) {
+			this.identifier = identifier;
+			this.filepath = getFilepath(identifier);
+			this.scenes.add(scene);
+		}
+
 		/** File path of the resource */
-		String filepath = null;
+		String filepath;
+		/** Identifier of the loaded resource */
+		Identifier identifier;
 		/** Which scene this resource should be loaded into */
 		HashSet<Scene> scenes = new HashSet<>();
 		/** The actual resource that was loaded */
@@ -362,16 +432,19 @@ abstract class ResourceLoader<Identifier, Resource> {
 	protected class ReloadResource {
 		/**
 		 * Constructor
-		 * @param filepath the file path of the resource to unload
+		 * @param identifier the identifier of the resource
 		 * @param oldResource the old loaded resource
 		 */
-		ReloadResource(String filepath, Resource oldResource) {
-			this.filepath = filepath;
+		ReloadResource(Identifier identifier, Resource oldResource) {
+			this.identifier = identifier;
+			this.filepath = getFilepath(identifier);
 			this.oldResource = oldResource;
 		}
 
 		/** File path of the resource */
 		String filepath;
+		/** Identifier of the resource */
+		Identifier identifier;
 		/** Old loaded resource */
 		Resource oldResource;
 		/** True if the resource has been unloaded */
@@ -385,7 +458,26 @@ abstract class ResourceLoader<Identifier, Resource> {
 	/** All resources that are currently loading */
 	protected HashMap<Identifier, LoadedResource> mLoadingQueue = new HashMap<>();
 	/** Unload queue */
-	private ArrayList<String> mUnloadQueue = new ArrayList<>();
+	private ArrayList<Identifier> mUnloadQueue = new ArrayList<>();
 	/** Unload queue */
 	private ArrayList<ReloadResource> mReloadQueue = new ArrayList<>();
+
+	/**
+	 * List of all methods for checking if a resource is still being used and should be
+	 * placed in the unload list
+	 */
+	private static Map<Class<?>, IResourceUnloadReady> mUnloadReadyMethods = new HashMap<>();
+
+	// Create all unload ready methods
+	static {
+		mUnloadReadyMethods.put(Music.class, new IResourceUnloadReady() {
+			@Override
+			public boolean isReadyToUnload(Object resource) {
+				if (resource instanceof Music) {
+					return !((Music) resource).isPlaying();
+				}
+				return true;
+			};
+		});
+	}
 }

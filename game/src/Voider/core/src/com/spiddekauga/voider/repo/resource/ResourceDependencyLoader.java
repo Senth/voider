@@ -10,7 +10,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceDependency;
 import com.spiddekauga.voider.resources.ResourceException;
@@ -88,7 +87,7 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		// Check if some resources failed to be loaded
-		BlockingQueue<UserResourceIdentifier> failedResources = mExternalLoader.getFailed();
+		BlockingQueue<UserResourceIdentifier> failedResources = mExternalLoader.getFailedDownloaded();
 		for (UserResourceIdentifier uuidRevision : failedResources) {
 			removeFromLoadingQueue(uuidRevision.resourceId);
 		}
@@ -104,13 +103,11 @@ class ResourceDependencyLoader implements Disposable {
 		for (int i = 0; i < mLoadingDefs.size(); ++i) {
 			ResourceItem queueItem = mLoadingDefs.get(i);
 
-			if (mExternalLoader.isResourceLoaded(queueItem.id, queueItem.revision)) {
-				IResource resource = mExternalLoader.getLoadedResource(queueItem.id, queueItem.revision);
+			if (mExternalLoader.isLoaded(queueItem.id, queueItem.revision)) {
+				IResource resource = mExternalLoader.getResource(queueItem.id, queueItem.revision);
 
 				if (resource instanceof IResourceDependency) {
 					IResourceDependency def = (IResourceDependency) resource;
-
-					debugLoadUnload(queueItem.scene, def, true);
 
 					// Load dependencies
 					// External
@@ -140,51 +137,6 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		return mLoadingDefs.size() == 0 && !mExternalLoader.isLoading();
-	}
-
-	/**
-	 * Debug output for when loading/unloading dependencies
-	 * @param scene the scene the dependency is loaded/unloaded to
-	 * @param resource the resource to load/unload dependencies from
-	 * @param load true if loading
-	 */
-	private static void debugLoadUnload(Scene scene, IResourceDependency resource, boolean load) {
-		if (Config.Debug.Messages.LOAD_UNLOAD && Config.Debug.Messages.LOAD_UNLOAD_DEPENDENCIES) {
-			// if (resource.getExternalDependenciesCount() > 0) {
-			//
-			// String resourceName = "";
-			// if (resource instanceof Def) {
-			// resourceName = ((Def) resource).getName();
-			// }
-			//
-			// String resourceType = resource.getClass().getSimpleName();
-			//
-			// String loadUnloadString = "";
-			// if (load) {
-			// loadUnloadString = "+++";
-			// } else {
-			// loadUnloadString = "---";
-			// }
-			//
-			// String message = Strings.padLeft(loadUnloadString, 6) + "  " +
-			// Strings.padRight(scene.getClass().getSimpleName(), 15) +
-			// Strings.padRight(resourceType, 18) +
-			// Strings.padRight(resourceName, Config.Editor.NAME_LENGTH_MAX + 2) +
-			// "---------->>>";
-			//
-			//
-			// for (Map.Entry<UUID, AtomicInteger> entry :
-			// resource.getExternalDependencies().entrySet()) {
-			// ResourceInfo resourceInfo =
-			// ResourceDatabaseOld.getResourceInfo(entry.getKey());
-			//
-			// message += "\n" + Strings.padLeft("", 49) +
-			// Strings.padRight(resourceInfo.type.getSimpleName(), 16) + entry.getKey();
-			// }
-			//
-			// Gdx.app.debug("ResourceDependencyLoader", message);
-			// }
-		}
 	}
 
 	/**

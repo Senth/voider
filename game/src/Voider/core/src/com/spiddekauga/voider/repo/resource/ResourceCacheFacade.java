@@ -1,15 +1,11 @@
 package com.spiddekauga.voider.repo.resource;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.Resource;
@@ -184,7 +180,7 @@ public class ResourceCacheFacade {
 	 * @return the actual resource, null if not found
 	 */
 	public static <ResourceType extends Resource> ResourceType get(UUID resourceId, int revision) {
-		return mExternalLoader.getLoadedResource(resourceId, revision);
+		return mExternalLoader.getResource(resourceId, revision);
 	}
 
 	/**
@@ -195,7 +191,7 @@ public class ResourceCacheFacade {
 	 * @return the actual resource, null if not found
 	 */
 	public static <ResourceType extends Resource> ResourceType get(UUID resourceId) {
-		return mExternalLoader.getLoadedResource(resourceId);
+		return mExternalLoader.getResource(resourceId);
 	}
 
 	/**
@@ -207,7 +203,7 @@ public class ResourceCacheFacade {
 	 *         arraylist using Pools.arrayList.free(resources).
 	 */
 	public static <ResourceType extends Resource> ArrayList<ResourceType> getAll(ExternalTypes type) {
-		return mExternalLoader.getAllLoadedResourcesOf(type);
+		return mExternalLoader.getResourcesOf(type);
 	}
 
 	/**
@@ -218,7 +214,7 @@ public class ResourceCacheFacade {
 	 * @return true if the object has been loaded
 	 */
 	public static boolean isLoaded(UUID resourceId, Scene scene) {
-		return mExternalLoader.isResourceLoaded(scene, resourceId);
+		return mExternalLoader.isLoaded(scene, resourceId);
 	}
 
 	/**
@@ -237,7 +233,7 @@ public class ResourceCacheFacade {
 	 * @return true if the object has been loaded
 	 */
 	public static boolean isLoaded(UUID resourceId, int revision) {
-		return mExternalLoader.isResourceLoaded(resourceId, revision);
+		return mExternalLoader.isLoaded(resourceId, revision);
 	}
 
 	/**
@@ -260,33 +256,6 @@ public class ResourceCacheFacade {
 	// -----------------------------
 	// Resource names
 	// -----------------------------
-	/**
-	 * Unload all of the specified resource
-	 * @param resourceName name of the resource
-	 * @return number of instance of resourceName
-	 */
-	public static int unloadAll(InternalNames resourceName) {
-		int count = 0;
-
-		if (isLoaded(resourceName)) {
-			count = mAssetManager.getReferenceCount(resourceName.getFilePath());
-
-			for (int i = 0; i < count; ++i) {
-				// Is this resource currently used?
-				IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(resourceName.getType());
-				if (unloadReadyMethod != null) {
-					mUnloadList.add(resourceName);
-				}
-				// Unload directly
-				else {
-					mAssetManager.unload(resourceName.getFilePath());
-				}
-			}
-		}
-
-		return count;
-	}
-
 	/**
 	 * Loads all internal dependencies
 	 * @param scene the scene to load these resources into
@@ -342,7 +311,7 @@ public class ResourceCacheFacade {
 	 * @return the actual resource, null if not loaded
 	 */
 	public static <ResourceType> ResourceType get(InternalNames resource) {
-		return mInternalLoader.getLoadedResource(resource);
+		return mInternalLoader.getResource(resource);
 	}
 
 	/**
@@ -409,19 +378,6 @@ public class ResourceCacheFacade {
 
 		}
 
-		// Try to unload stuff
-		Iterator<InternalNames> unloadIt = mUnloadList.iterator();
-		while (unloadIt.hasNext()) {
-			InternalNames name = unloadIt.next();
-			String filepath = name.getFilePath();
-			Object resource = mAssetManager.get(filepath);
-			IResourceUnloadReady unloadReadyMethod = mUnloadReadyMethods.get(name.getType());
-			if (unloadReadyMethod.isReadyToUnload(resource)) {
-				mAssetManager.unload(filepath);
-				unloadIt.remove();
-			}
-		}
-
 		return fullyLoaded;
 	}
 
@@ -473,13 +429,6 @@ public class ResourceCacheFacade {
 	private ResourceCacheFacade() {
 	}
 
-	/** Resources that should be unloaded when they aren't used */
-	private static ArrayList<InternalNames> mUnloadList = new ArrayList<>();
-	/**
-	 * List of all methods for checking if a resource is still being used and should be
-	 * placed in the unload list
-	 */
-	private static Map<Class<?>, IResourceUnloadReady> mUnloadReadyMethods = new HashMap<>();
 	/**
 	 * Resource loader. This directly takes care of internal resources it can load
 	 * directly, no need to go through ResourceDependencyLoader. All Defs needs to be
@@ -503,16 +452,5 @@ public class ResourceCacheFacade {
 	 */
 	private static LinkedList<ResourceItem> mLoadQueue = new LinkedList<ResourceItem>();
 
-	// Create all unload ready methods
-	static {
-		mUnloadReadyMethods.put(Music.class, new IResourceUnloadReady() {
-			@Override
-			public boolean isReadyToUnload(Object resource) {
-				if (resource instanceof Music) {
-					return !((Music) resource).isPlaying();
-				}
-				return true;
-			};
-		});
-	}
+
 }

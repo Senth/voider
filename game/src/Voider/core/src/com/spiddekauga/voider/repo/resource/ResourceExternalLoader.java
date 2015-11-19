@@ -127,7 +127,7 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param revision if this revision has been loaded
 	 * @return true if the resource is being loaded into the specified scene
 	 */
-	synchronized boolean isResourceLoading(Scene scene, UUID resourceId, int revision) {
+	synchronized boolean isLoading(Scene scene, UUID resourceId, int revision) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
 		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, correctRevision);
 
@@ -144,7 +144,7 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param revision if this revision has been loaded
 	 * @return true if the resource has been loaded into the specified scene
 	 */
-	synchronized boolean isResourceLoaded(Scene scene, UUID resourceId, int revision) {
+	synchronized boolean isLoaded(Scene scene, UUID resourceId, int revision) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
 		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, correctRevision);
 
@@ -160,8 +160,8 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param resourceId if this resource has been loaded
 	 * @return true if the resource has been loaded into the specified scene
 	 */
-	synchronized boolean isResourceLoaded(Scene scene, UUID resourceId) {
-		return isResourceLoaded(scene, resourceId, UserResourceIdentifier.LATEST_REVISION);
+	synchronized boolean isLoaded(Scene scene, UUID resourceId) {
+		return isLoaded(scene, resourceId, UserResourceIdentifier.LATEST_REVISION);
 	}
 
 	/**
@@ -169,8 +169,8 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param revision if the specified revision is loaded
 	 * @return true if the resource has been loaded
 	 */
-	synchronized boolean isResourceLoaded(UUID resourceId, int revision) {
-		return isResourceLoaded(null, resourceId, revision);
+	synchronized boolean isLoaded(UUID resourceId, int revision) {
+		return isLoaded(null, resourceId, revision);
 	}
 
 	/**
@@ -178,7 +178,7 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @return true if the resource has been loaded
 	 */
 	synchronized boolean isResourceLoaded(UUID resourceId) {
-		return isResourceLoaded(resourceId, UserResourceIdentifier.LATEST_REVISION);
+		return isLoaded(resourceId, UserResourceIdentifier.LATEST_REVISION);
 	}
 
 	/**
@@ -188,8 +188,8 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param resourceId id of the resource to return
 	 * @return the loaded resource with the specified id, null if not loaded
 	 */
-	synchronized <ResourceType extends Resource> ResourceType getLoadedResource(UUID resourceId) {
-		return getLoadedResource(resourceId, UserResourceIdentifier.LATEST_REVISION);
+	synchronized <ResourceType extends Resource> ResourceType getResource(UUID resourceId) {
+		return getResource(resourceId, UserResourceIdentifier.LATEST_REVISION);
 	}
 
 	/**
@@ -198,11 +198,11 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param revision the resource revision to return
 	 * @return the loaded resource with the specified id, null if not loaded
 	 */
-	synchronized <ResourceType extends Resource> ResourceType getLoadedResource(UUID resourceId, int revision) {
+	synchronized <ResourceType extends Resource> ResourceType getResource(UUID resourceId, int revision) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
 		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, correctRevision);
 
-		ResourceType resource = getLoadedResource(identifier);
+		ResourceType resource = getResource(identifier);
 
 		mIdentifierPool.free(identifier);
 
@@ -214,8 +214,8 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param type the type of resources to return
 	 * @return all loaded resources of the specified type
 	 */
-	synchronized <ResourceType extends Resource> ArrayList<ResourceType> getAllLoadedResourcesOf(ExternalTypes type) {
-		return getAllLoadedResourcesOf(type.getClassType());
+	synchronized <ResourceType extends Resource> ArrayList<ResourceType> getResourcesOf(ExternalTypes type) {
+		return getResourcesOf(type.getClassType());
 	}
 
 	@Override
@@ -250,7 +250,7 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param oldRevision old revision that the resource was loaded into
 	 */
 	synchronized void setLatestResource(Resource resource, int oldRevision) {
-		Resource latestResource = getLoadedResource(resource.getId());
+		Resource latestResource = getResource(resource.getId());
 
 		if (latestResource != null) {
 			// Unload old revision
@@ -339,7 +339,7 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	/**
 	 * @return all resources that failed to be downloaded
 	 */
-	BlockingQueue<UserResourceIdentifier> getFailed() {
+	BlockingQueue<UserResourceIdentifier> getFailedDownloaded() {
 		return mFailed;
 	}
 

@@ -139,8 +139,7 @@ public enum InternalNames {
 	/**
 	 * @return loading parameters
 	 */
-	@SuppressWarnings("rawtypes")
-	AssetLoaderParameters getParameters() {
+	AssetLoaderParameters<?> getParameters() {
 		if (mParameters instanceof IParameterGenerate) {
 			if (!isLoaded()) {
 				((IParameterGenerate) mParameters).generate();

@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 
 /**
- * Generate font bitmaps for skins. TODO
+ * Generate font bitmaps for skins.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SkinFontParameter extends SkinParameter implements IParameterGenerate {

@@ -61,6 +61,19 @@ class UserResourceIdentifier implements Poolable {
 		revision = LATEST_REVISION;
 	}
 
+	@Override
+	public String toString() {
+		if (resourceId != null) {
+			if (revision >= 0) {
+				return resourceId.toString() + "(" + revision + ")";
+			} else {
+				return resourceId.toString();
+			}
+		} else {
+			return "null";
+		}
+	}
+
 	/** UUID of the resource */
 	UUID resourceId = null;
 	/** revision of the resource */

@@ -30,6 +30,7 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDisplayRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceChecker;
 import com.spiddekauga.voider.repo.user.User;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.InfoDisplayer;
 import com.spiddekauga.voider.server.ServerMessageReciever;
@@ -124,6 +125,7 @@ public class VoiderGame implements ApplicationListener {
 		ServerMessageReciever.getInstance().disconnect();
 
 		SceneSwitcher.dispose();
+		ResourceCacheFacade.unload((Scene) null);
 		ResourceCacheFacade.dispose();
 		Config.dispose();
 		ResourceChecker.dispose();

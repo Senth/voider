@@ -88,7 +88,6 @@ public class User {
 			mUsername = "(None)";
 
 			Config.File.setUserPaths(mUsername);
-			SceneSwitcher.dispose();
 			AnalyticsRepo analyticsRepo = AnalyticsRepo.getInstance();
 			analyticsRepo.endSession();
 			analyticsRepo.newSession();
