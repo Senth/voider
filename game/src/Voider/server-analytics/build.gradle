@@ -15,10 +15,6 @@ targetCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 version = 'analytics'
 
-dependencies {
-	appengineSdk "com.google.appengine:appengine-api-1.0-sdk:$appengineVersion"
-}
-
 appengine {
     httpPort = 8888
 

@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Logger;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.net.IDownloadProgressListener;
@@ -151,20 +150,8 @@ public abstract class WebRepo {
 	 * @param filePath path to write the file
 	 * @return true if file was written successfully, false if an error occurred.
 	 */
-	protected static boolean serializeAndDownload(IMethodEntity method, String filePath) {
-		if (method instanceof BlobDownloadMethod) {
-			mLogger.info("Download blob: " + ((BlobDownloadMethod) method).blobKey);
-		}
-		byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
-
-		IEntity entity = NetworkEntitySerializer.deserializeEntity(methodBytes);
-		if (entity instanceof BlobDownloadMethod) {
-			mLogger.info("Can deserialize");
-		} else {
-			mLogger.info("Cannot deserialize");
-		}
-
-		return WebGateway.downloadRequest(method.getMethodName().toString(), methodBytes, filePath);
+	protected static boolean serializeAndDownload(BlobDownloadMethod method, String filePath) {
+		return WebGateway.downloadRequest(method.getMethodName().toString(), method.blobKey, filePath);
 	}
 
 	/**
@@ -436,6 +423,4 @@ public abstract class WebRepo {
 		/** Progress listener */
 		IProgressListener mProgressListener;
 	}
-
-	private static final Logger mLogger = Logger.getLogger(WebRepo.class.getSimpleName());
 }

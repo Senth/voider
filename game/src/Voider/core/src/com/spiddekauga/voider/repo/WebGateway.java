@@ -138,36 +138,57 @@ public class WebGateway {
 	}
 
 	/**
-	 * Send a download request to the server
+	 * Send a download request to the server. Will retry to download the blob if there was
+	 * an 500 error.
 	 * @param methodName name of method to call on the server
-	 * @param entity data to send, i.e. the method parameters
+	 * @param blobKey the blob to download
 	 * @param filePath path to write the downloaded file to
 	 * @return true if file was written successfully, false if an error occurred
 	 */
-	public static boolean downloadRequest(String methodName, byte[] entity, String filePath) {
+	public static boolean downloadRequest(String methodName, String blobKey, String filePath) {
+		int cTries = 1;
+		boolean success = false;
 
-		try {
-			HttpPostBuilder postBuilder = new HttpPostBuilder(Config.Network.SERVER_HOST + methodName);
-			char[] base64 = Base64Coder.encode(entity);
-			postBuilder.addParameter(ENTITY_NAME, base64);
+		while (cTries <= Config.Network.RETRIES_MAX && !success) {
 
-			HttpURLConnection connection = postBuilder.build();
+			try {
+				HttpPostBuilder postBuilder = new HttpPostBuilder(Config.Network.SERVER_HOST + methodName);
+				postBuilder.addParameter(BLOB_KEY, blobKey);
 
-			// Write the response to a file
-			BufferedInputStream response = new BufferedInputStream(connection.getInputStream());
-			FileHandle file = Gdx.files.external(filePath);
-			file.write(response, false);
+				HttpURLConnection connection = postBuilder.build();
 
-			response.close();
-			connection.disconnect();
+				// Retry
+				if (connection.getResponseCode() != HttpURLConnection.HTTP_INTERNAL_ERROR) {
+					Gdx.app.debug(WebGateway.class.getSimpleName(),
+							"Response code: " + connection.getResponseCode() + ": " + connection.getResponseMessage());
+					// Write the response to a file
+					BufferedInputStream response = new BufferedInputStream(connection.getInputStream());
+					FileHandle file = Gdx.files.external(filePath);
+					file.write(response, false);
 
-			return true;
-		} catch (IOException e) {
-			Gdx.app.log("Network", "Error downloading file " + filePath);
-			e.printStackTrace();
+					response.close();
+					connection.disconnect();
+
+					success = true;
+				}
+				// Retry
+				else {
+					cTries++;
+
+					if (cTries <= Config.Network.RETRIES_MAX) {
+						Gdx.app.log(WebGateway.class.getSimpleName(), "Try " + cTries + " to download " + filePath);
+					} else {
+						Gdx.app.error(WebGateway.class.getSimpleName(), "Out of tries for downloading " + filePath);
+					}
+				}
+			} catch (IOException e) {
+				Gdx.app.error(WebGateway.class.getSimpleName(), "Error downloading file " + filePath);
+				e.printStackTrace();
+				cTries = Integer.MAX_VALUE;
+			}
 		}
 
-		return false;
+		return success;
 	}
 
 	/**
@@ -191,4 +212,5 @@ public class WebGateway {
 	}
 
 	private static final String ENTITY_NAME = "entity";
+	private static final String BLOB_KEY = "blob_key";
 }

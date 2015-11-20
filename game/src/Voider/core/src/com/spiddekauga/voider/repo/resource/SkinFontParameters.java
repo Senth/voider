@@ -26,11 +26,11 @@ class SkinFontParameter extends SkinParameter implements IParameterGenerate {
 	/**
 	 * Add a font with various sizes
 	 * @param font name/file of the font
-	 * @param skinName name of the font in the skin file. Will be skinName16 for size 16.
+	 * @param fontName name of the font in the skin file. Will be skinName16 for size 16.
 	 * @param sizes all sizes the font should have
 	 */
-	void addFont(InternalNames font, String skinName, int... sizes) {
-		mFonts.add(new FontWrapper(font, skinName, sizes));
+	void addFont(InternalNames font, String fontName, int... sizes) {
+		mFonts.add(new FontWrapper(font, fontName, sizes));
 	}
 
 	/**

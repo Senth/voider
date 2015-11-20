@@ -32,14 +32,14 @@ add_move_corner_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_add_move_corner_checked_over
+terrain_add_move_corner_over
   rotate: false
   xy: 2, 737
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_add_move_corner_over
+terrain_add_move_corner_checked_over
   rotate: false
   xy: 2, 737
   size: 64, 64
@@ -340,14 +340,14 @@ bullet_select_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-weapon_checked
+bullet_select_down
   rotate: false
   xy: 462, 869
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-bullet_select_down
+weapon_checked
   rotate: false
   xy: 462, 869
   size: 64, 64
@@ -368,6 +368,13 @@ bullet_select_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
+bullet_select_over
+  rotate: false
+  xy: 592, 935
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 weapon_checked_over
   rotate: false
   xy: 592, 935
@@ -376,13 +383,6 @@ weapon_checked_over
   offset: 0, 0
   index: -1
 weapon_over
-  rotate: false
-  xy: 592, 935
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-bullet_select_over
   rotate: false
   xy: 592, 935
   size: 64, 64
@@ -808,6 +808,13 @@ draw_erase_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
+terrain_draw_erase_down
+  rotate: false
+  xy: 332, 539
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 draw_erase_down
   rotate: false
   xy: 332, 539
@@ -816,13 +823,6 @@ draw_erase_down
   offset: 0, 0
   index: -1
 terrain_draw_erase_checked
-  rotate: false
-  xy: 332, 539
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-terrain_draw_erase_down
   rotate: false
   xy: 332, 539
   size: 64, 64
@@ -843,14 +843,14 @@ terrain_draw_erase_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_draw_erase_checked_over
+draw_erase_over
   rotate: false
   xy: 398, 605
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-draw_erase_over
+terrain_draw_erase_checked_over
   rotate: false
   xy: 398, 605
   size: 64, 64
@@ -1977,6 +1977,13 @@ path_add_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
+path_add_down
+  rotate: false
+  xy: 332, 11
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 path_tab_checked
   rotate: false
   xy: 332, 11
@@ -1991,14 +1998,14 @@ path_tab_down
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_add_down
+path_add_checked_over
   rotate: false
-  xy: 332, 11
+  xy: 398, 77
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_add_checked_over
+path_add_over
   rotate: false
   xy: 398, 77
   size: 64, 64
@@ -2013,13 +2020,6 @@ path_tab_over
   offset: 0, 0
   index: -1
 path_tab_checked_over
-  rotate: false
-  xy: 398, 77
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-path_add_over
   rotate: false
   xy: 398, 77
   size: 64, 64
@@ -2488,7 +2488,7 @@ run_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-run_down
+run_from_start_checked
   rotate: false
   xy: 530, 11
   size: 64, 64
@@ -2502,7 +2502,7 @@ run_from_start_down
   orig: 64, 64
   offset: 0, 0
   index: -1
-run_from_start_checked
+run_down
   rotate: false
   xy: 530, 11
   size: 64, 64
@@ -2510,6 +2510,13 @@ run_from_start_checked
   offset: 0, 0
   index: -1
 run_checked_over
+  rotate: false
+  xy: 596, 77
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+run_from_start_checked_over
   rotate: false
   xy: 596, 77
   size: 64, 64
@@ -2524,13 +2531,6 @@ run_from_start_over
   offset: 0, 0
   index: -1
 run_over
-  rotate: false
-  xy: 596, 77
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-run_from_start_checked_over
   rotate: false
   xy: 596, 77
   size: 64, 64

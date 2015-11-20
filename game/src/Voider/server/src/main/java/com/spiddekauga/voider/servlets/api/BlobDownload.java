@@ -7,37 +7,24 @@ import javax.servlet.ServletException;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
-import com.spiddekauga.voider.server.util.VoiderApiServlet;
+import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Downloads a blob from the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BlobDownload extends VoiderApiServlet<BlobDownloadMethod> {
+public class BlobDownload extends VoiderServlet {
 	@Override
-	protected void onInit() {
-		// Does nothing
+	protected void handleRequest() throws ServletException, IOException {
+		String blobKeyString = getRequest().getParameter(P_BLOB_KEY);
+
+		if (blobKeyString != null && !blobKeyString.isEmpty()) {
+			BlobKey blobKey = new BlobKey(blobKeyString);
+			mBlobstoreService.serve(blobKey, getResponse());
+		}
 	}
 
-	@Override
-	protected IEntity onRequest(BlobDownloadMethod method) throws ServletException, IOException {
-		BlobKey blobKey = new BlobKey(method.blobKey);
-		mLogger.info("Blobkey: " + method.blobKey);
-		mLogger.info("Before serve() " + isCommitted());
-		mBlobstoreService.serve(blobKey, getResponse());
-
-		return null;
-	}
-
-	@Override
-	protected boolean isHandlingRequestDuringMaintenance() {
-		return true;
-	}
-
-
-	/** Blob store service */
+	private static final String P_BLOB_KEY = "blob_key";
 	private BlobstoreService mBlobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 }

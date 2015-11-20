@@ -77,8 +77,12 @@ public enum InternalNames {
 	// Text files
 	TXT_TERMS("terms.txt", String.class),
 
+
 	// Font files
 	FONT_ARIAL("arial.ttf", FreeType.class),
+	FONT_CHARGEN("chargen_(6809).ttf", FreeType.class),
+	FONT_JOYSTIX_MONOSPACE("joystix_monospace.ttf", FreeType.class),
+
 
 	// Music
 	MUSIC_SPACE("space.mp3", Music.class),
@@ -93,6 +97,7 @@ public enum InternalNames {
 	MUSIC_LEVEL_COMPLETED("level_completed.mp3", Music.class),
 	/** Main theme */
 	MUSIC_TITLE("title_theme.mp3", Music.class),
+
 
 	// Sound
 	SOUND_SHIP_LOW_HEALTH("ship_low_health.mp3", Sound.class),
@@ -213,17 +218,23 @@ public enum InternalNames {
 		// Fonts
 		// MDPI
 		SkinFontParameter fontParameter = new SkinFontParameter();
-		fontParameter.addFont(FONT_ARIAL, "default", 12, 16, 24, 36);
+		fontParameter.addFont(FONT_ARIAL, "arial", 12, 16, 24, 36);
+		fontParameter.addFont(FONT_CHARGEN, "chargen", 12, 16, 24, 36);
+		fontParameter.addFont(FONT_JOYSTIX_MONOSPACE, "joystix_monospace", 12, 16, 24, 36);
 		UI_GENERAL_MDPI.mParameters = fontParameter;
 
 		// HDPI
 		fontParameter = new SkinFontParameter();
 		fontParameter.addFont(FONT_ARIAL, "default", 18, 24, 36, 54);
+		fontParameter.addFont(FONT_CHARGEN, "chargen", 18, 24, 36, 54);
+		fontParameter.addFont(FONT_JOYSTIX_MONOSPACE, "joystix_monospace", 18, 24, 36, 54);
 		UI_GENERAL_HDPI.mParameters = fontParameter;
 
 		// HDPI
 		fontParameter = new SkinFontParameter();
 		fontParameter.addFont(FONT_ARIAL, "default", 24, 32, 48, 72);
+		fontParameter.addFont(FONT_CHARGEN, "chargen", 24, 32, 48, 72);
+		fontParameter.addFont(FONT_JOYSTIX_MONOSPACE, "joystix_monospace", 24, 32, 48, 72);
 		UI_GENERAL_XHDPI.mParameters = fontParameter;
 
 	}

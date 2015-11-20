@@ -66,6 +66,7 @@ class ResourceInternalLoader extends ResourceLoader<InternalNames, Object> {
 	 * @param oldIdentifier the old resource to replace
 	 * @param newIdentifier replaces the old resource
 	 */
+	@SuppressWarnings("unchecked")
 	void replace(InternalNames oldIdentifier, InternalNames newIdentifier) {
 		LoadedResource loadedResource = mLoadedResources.remove(oldIdentifier);
 
@@ -76,7 +77,7 @@ class ResourceInternalLoader extends ResourceLoader<InternalNames, Object> {
 
 			// Load new
 			String newFilepath = getFilepath(newIdentifier);
-			mAssetManager.load(newFilepath, newIdentifier.getType());
+			mAssetManager.load(newFilepath, newIdentifier.getType(), getParameters(newIdentifier));
 			mAssetManager.finishLoading();
 
 			// Replace

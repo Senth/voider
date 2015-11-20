@@ -8,10 +8,10 @@
  */
 
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	small: default18,
-	medium: default24,
-	large: default36,
-	huge: default54,
+	small: chargen18,
+	medium: chargen24,
+	large: chargen36,
+	huge: chargen54,
 },
 
 /*

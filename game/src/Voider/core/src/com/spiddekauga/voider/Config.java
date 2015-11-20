@@ -850,7 +850,9 @@ public class Config {
 		 */
 		public static final Builds OVERRIDE_HOST = null;
 		/** Maximum number of connections */
-		public static final int CONNECTIONS_MAX = Debug.isBuildOrBelow(Builds.DEV_LOCAL) ? 1 : 10;
+		public static final int CONNECTIONS_MAX = Debug.isBuildOrBelow(Builds.DEV_LOCAL) ? 1 : 5;
+		/** How many retries to download a blob */
+		public static final int RETRIES_MAX = 5;
 
 		static {
 			Builds build = Debug.BUILD;
