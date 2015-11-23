@@ -187,8 +187,8 @@ abstract class ResourceLoader<Identifier, Resource> {
 					mAssetManager.unload(loadedResource.filepath);
 					iterator.remove();
 					onUnload(entry.getKey());
-					Gdx.app.debug(ResourceLoader.class.getSimpleName(), "unload(" + getClassName(scene) + "): Fully removed "
-							+ loadedResource.identifier);
+					Gdx.app.debug(ResourceLoader.class.getSimpleName(),
+							"unload(" + getClassName(scene) + "): Fully removed " + loadedResource.identifier);
 				} else {
 					Gdx.app.debug(ResourceLoader.class.getSimpleName(), "unload(" + getClassName(scene) + "): Removed " + loadedResource.identifier
 							+ " from this scene. Scene count: " + loadedResource.scenes.size());

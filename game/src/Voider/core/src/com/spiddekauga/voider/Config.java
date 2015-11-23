@@ -50,7 +50,9 @@ public class Config {
 		 * Enemies
 		 */
 		public static class Enemy {
-			/** How close the enemy should be to a path point before it goes to the next */
+			/**
+			 * How close the enemy should be to a path point before it goes to the next
+			 */
 			public final static float PATH_NODE_CLOSE_SQ = 0.5f * 0.5f;
 			/** Minimum angle if we shall turn */
 			public final static float TURN_ANGLE_MIN = 0.5f;
@@ -212,7 +214,7 @@ public class Config {
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 		/** Logging verbosity */
-		public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.BETA) ? Application.LOG_ERROR : Application.LOG_DEBUG;
+		public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.RELEASE) ? Application.LOG_ERROR : Application.LOG_DEBUG;
 		/**
 		 * If debugging tests shall be activate. This causes extra runtime, but checks so
 		 * that none of the checks are broken.
@@ -797,7 +799,9 @@ public class Config {
 		public final static String TEXT_FIELD_DISABLED_NAME = "DISABLED";
 		/** Seconds before any GUI commands aren't combinable */
 		public final static float COMMAND_COMBINABLE_WITHIN = 2;
-		/** Time to wait for message boxes to be shown after a wait window or progress bar */
+		/**
+		 * Time to wait for message boxes to be shown after a wait window or progress bar
+		 */
 		public final static float MSG_BOX_SHOW_WAIT_TIME = 0f;
 	}
 

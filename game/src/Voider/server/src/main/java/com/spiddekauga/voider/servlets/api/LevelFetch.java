@@ -207,13 +207,13 @@ public class LevelFetch extends ResourceFetch<LevelFetchMethod, LevelInfoEntity>
 	 * @param levelStatsEntity entity to set
 	 */
 	private static void datastoreToLevelStatsEntity(Entity datastoreEntity, LevelStatsEntity levelStatsEntity) {
-		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty(CLevelStat.CLEAR_COUNT)).intValue();
-		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty(CLevelStat.BOOKMARS)).intValue();
-		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty(CLevelStat.PLAY_COUNT)).intValue();
-		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty(CLevelStat.RATINGS)).intValue();
-		levelStatsEntity.cDeaths = ((Long) datastoreEntity.getProperty(CLevelStat.DEATH_COUNT)).intValue();
-		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty(CLevelStat.RATING_AVG)).floatValue();
-		levelStatsEntity.ratingSum = ((Long) datastoreEntity.getProperty(CLevelStat.RATING_SUM)).intValue();
+		levelStatsEntity.cCleared = DatastoreUtils.getPropertyInt(datastoreEntity, CLevelStat.CLEAR_COUNT, 0);
+		levelStatsEntity.cBookmarks = DatastoreUtils.getPropertyInt(datastoreEntity, CLevelStat.BOOKMARS, 0);
+		levelStatsEntity.cPlayed = DatastoreUtils.getPropertyInt(datastoreEntity, CLevelStat.PLAY_COUNT, 0);
+		levelStatsEntity.cRatings = DatastoreUtils.getPropertyInt(datastoreEntity, CLevelStat.RATINGS, 0);
+		levelStatsEntity.cDeaths = DatastoreUtils.getPropertyInt(datastoreEntity, CLevelStat.DEATH_COUNT, 0);
+		levelStatsEntity.ratingAverage = DatastoreUtils.getPropertyFloat(datastoreEntity, CLevelStat.RATING_AVG, 0.0f);
+		levelStatsEntity.ratingSum = DatastoreUtils.getPropertyInt(datastoreEntity, CLevelStat.RATING_SUM, 0);
 	}
 
 	/**

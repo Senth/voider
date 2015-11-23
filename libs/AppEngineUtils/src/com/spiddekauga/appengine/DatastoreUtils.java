@@ -553,18 +553,47 @@ public class DatastoreUtils {
 	 * @param entity the entity to get the integer from
 	 * @param propertyName name of the property
 	 * @param defaultValue returns this value if the property wasn't found
-	 * @return stored integer, 0 if it doesn't exist
+	 * @return stored integer, default value if it doesn't exist
 	 */
 	public static int getPropertyInt(Entity entity, String propertyName, int defaultValue) {
-		int value = defaultValue;
+		try {
+			return getPropertyInt(entity, propertyName);
+		} catch (PropertyNotFoundException e) {
+			return defaultValue;
+		}
+	}
 
+	/**
+	 * Get a float property
+	 * @param entity the entity to get the integer from
+	 * @param propertyName name of the property
+	 * @return stored float
+	 * @throws PropertyNotFoundException if the property wasn't found
+	 * @see #getPropertyFloat(Entity, String, float)
+	 */
+	public static float getPropertyFloat(Entity entity, String propertyName) throws PropertyNotFoundException {
 		Long longValue = (Long) entity.getProperty(propertyName);
 
 		if (longValue != null) {
-			value = longValue.intValue();
+			return longValue.intValue();
+		} else {
+			throw new PropertyNotFoundException();
 		}
+	}
 
-		return value;
+	/**
+	 * Get an integer property
+	 * @param entity the entity to get the integer from
+	 * @param propertyName name of the property
+	 * @param defaultValue returns this value if the property wasn't found
+	 * @return stored integer, default value if it doesn't exist
+	 */
+	public static float getPropertyFloat(Entity entity, String propertyName, float defaultValue) {
+		try {
+			return getPropertyFloat(entity, propertyName);
+		} catch (PropertyNotFoundException e) {
+			return defaultValue;
+		}
 	}
 
 	/**

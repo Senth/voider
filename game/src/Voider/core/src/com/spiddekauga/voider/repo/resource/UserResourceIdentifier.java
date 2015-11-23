@@ -10,6 +10,23 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  */
 class UserResourceIdentifier implements Poolable {
 	/**
+	 * Default constructor
+	 */
+	UserResourceIdentifier() {
+		// Does nothing
+	}
+
+	/**
+	 * Sets the resource and revision
+	 * @param resourceId the resource id
+	 * @param revision the revision to use
+	 */
+	UserResourceIdentifier(UUID resourceId, int revision) {
+		this.resourceId = resourceId;
+		this.revision = revision;
+	}
+
+	/**
 	 * Sets the resource and revision
 	 * @param resourceId the resource id
 	 * @param revision the revision to use

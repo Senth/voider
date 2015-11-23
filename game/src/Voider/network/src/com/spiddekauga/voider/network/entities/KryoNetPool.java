@@ -58,6 +58,7 @@ import com.spiddekauga.voider.network.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.resource.LevelDifficultySearchRanges;
 import com.spiddekauga.voider.network.resource.LevelFetchMethod;
 import com.spiddekauga.voider.network.resource.LevelFetchResponse;
+import com.spiddekauga.voider.network.resource.LevelLengthSearchRanges;
 import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.resource.PublishMethod;
 import com.spiddekauga.voider.network.resource.PublishResponse;
@@ -247,6 +248,8 @@ public class KryoNetPool {
 		GET_UPLOAD_URL_RESPONSE(GetUploadUrlResponse.class),
 		RESTORE_BLOBS_METHOD(RestoreBlobsMethod.class),
 		RESTORE_BLOBS_RESPONSE(RestoreBlobsResponse.class),
+		LEVEL_LENGTH_SEARCH_RANGES(LevelLengthSearchRanges.class),
+		LEVEL_FETCH_METHOD_SORT_ORDERS(LevelFetchMethod.SortOrders.class),
 
 		// !!! ALWAYS APPEND, NEVER ADD IN THE MIDDLE !!!
 

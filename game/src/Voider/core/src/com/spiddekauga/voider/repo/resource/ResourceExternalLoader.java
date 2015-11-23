@@ -31,7 +31,6 @@ import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.Pool;
 
 /**
  * Handles loading user resources
@@ -87,18 +86,15 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 *        allowed.
 	 */
 	synchronized void load(Scene scene, UUID resourceId, int revision) {
-		UserResourceIdentifier identifier = mIdentifierPool.obtain();
+		UserResourceIdentifier identifier = new UserResourceIdentifier();
 		identifier.resourceId = resourceId;
 		identifier.revision = getCorrectRevision(resourceId, revision);
 
 		try {
 			load(scene, identifier);
 		} catch (ResourceNotFoundException e) {
-			mIdentifierPool.free(identifier);
 			throw e;
 		}
-
-		mIdentifierPool.free(identifier);
 	}
 
 	@Override
@@ -129,12 +125,9 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 */
 	synchronized boolean isLoading(Scene scene, UUID resourceId, int revision) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
-		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, correctRevision);
+		UserResourceIdentifier identifier = new UserResourceIdentifier(resourceId, correctRevision);
 
-		boolean isLoading = isLoading(scene, identifier);
-
-		mIdentifierPool.free(identifier);
-		return isLoading;
+		return isLoading(scene, identifier);
 	}
 
 	/**
@@ -146,12 +139,9 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 */
 	synchronized boolean isLoaded(Scene scene, UUID resourceId, int revision) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
-		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, correctRevision);
+		UserResourceIdentifier identifier = new UserResourceIdentifier(resourceId, correctRevision);
 
-		boolean isLoaded = isLoaded(scene, identifier);
-
-		mIdentifierPool.free(identifier);
-		return isLoaded;
+		return isLoaded(scene, identifier);
 	}
 
 	/**
@@ -200,13 +190,9 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 */
 	synchronized <ResourceType extends Resource> ResourceType getResource(UUID resourceId, int revision) {
 		int correctRevision = getCorrectRevision(resourceId, revision);
-		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, correctRevision);
+		UserResourceIdentifier identifier = new UserResourceIdentifier(resourceId, correctRevision);
 
-		ResourceType resource = getResource(identifier);
-
-		mIdentifierPool.free(identifier);
-
-		return resource;
+		return getResource(identifier);
 	}
 
 	/**
@@ -216,11 +202,6 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 */
 	synchronized <ResourceType extends Resource> ArrayList<ResourceType> getResourcesOf(ExternalTypes type) {
 		return getResourcesOf(type.getClassType());
-	}
-
-	@Override
-	protected void onUnload(UserResourceIdentifier identifier) {
-		mIdentifierPool.free(identifier);
 	}
 
 	/**
@@ -237,11 +218,8 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param revision the revision of the resource to unload
 	 */
 	synchronized void unload(UUID resourceId, int revision) {
-		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, revision);
-
+		UserResourceIdentifier identifier = new UserResourceIdentifier(resourceId, revision);
 		unload(identifier);
-
-		mIdentifierPool.free(identifier);
 	}
 
 	/**
@@ -258,9 +236,8 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 			mAssetManager.unload(oldRevisionFilepath);
 
 			// Remove old revision from loaded
-			UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resource.getId(), oldRevision);
+			UserResourceIdentifier identifier = new UserResourceIdentifier(resource.getId(), oldRevision);
 			mLoadedResources.remove(identifier);
-			mIdentifierPool.free(identifier);
 
 			// Reload latest revision
 			String latestFilepath = ResourceLocalRepo.getFilepath(resource);
@@ -283,9 +260,8 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	 * @param resourceId id of the resource to reload
 	 */
 	synchronized void reload(UUID resourceId) {
-		UserResourceIdentifier identifier = mIdentifierPool.obtain().set(resourceId, UserResourceIdentifier.LATEST_REVISION);
+		UserResourceIdentifier identifier = new UserResourceIdentifier(resourceId, UserResourceIdentifier.LATEST_REVISION);
 		reload(identifier);
-		mIdentifierPool.free(identifier);
 	}
 
 	@Override
@@ -352,7 +328,7 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 		}
 
 		private void handle(ResourceDownloadMethod method, ResourceDownloadResponse response) {
-			UserResourceIdentifier identifier = mIdentifierPool.obtain().set(method.resourceId, method.revision);
+			UserResourceIdentifier identifier = new UserResourceIdentifier(method.resourceId, method.revision);
 			if (response.isSuccessful()) {
 
 				// Find resource
@@ -389,8 +365,6 @@ class ResourceExternalLoader extends ResourceLoader<UserResourceIdentifier, Reso
 	};
 
 
-	/** Pool for UuidRevision */
-	private Pool<UserResourceIdentifier> mIdentifierPool = new Pool<>(UserResourceIdentifier.class, 16);
 	/** All resources that are being redownloaded */
 	private BlockingQueue<UserResourceIdentifier> mRedownloading = new LinkedBlockingQueue<>();
 	/** Resources that failed to load and redownload */

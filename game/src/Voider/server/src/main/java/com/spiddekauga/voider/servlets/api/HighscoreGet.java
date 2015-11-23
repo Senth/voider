@@ -23,6 +23,8 @@ import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.stat.HighscoreGetMethod;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse.Statuses;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CHighscore;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 
@@ -80,8 +82,8 @@ public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {
 	 * Fetch user score
 	 */
 	private void fetchUserScore() {
-		Query query = new Query("highscore", mLevelKey);
-		query.setFilter(new FilterPredicate("username", FilterOperator.EQUAL, mUser.getUsername()));
+		Query query = new Query(DatastoreTables.HIGHSCORE, mLevelKey);
+		query.setFilter(new FilterPredicate(CHighscore.USERNAME, FilterOperator.EQUAL, mUser.getUsername()));
 
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 		Entity entity = preparedQuery.asSingleEntity();
@@ -153,10 +155,10 @@ public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {
 		FilterOperator filterOperator = higher ? FilterOperator.GREATER_THAN : FilterOperator.LESS_THAN;
 		SortDirection sortDirection = higher ? SortDirection.ASCENDING : SortDirection.DESCENDING;
 
-		Query query = new Query("highscore", mLevelKey);
+		Query query = new Query(DatastoreTables.HIGHSCORE, mLevelKey);
 		addScoreProjection(query);
-		query.addSort("score", sortDirection);
-		query.setFilter(new FilterPredicate("score", filterOperator, mResponse.userScore.score));
+		query.addSort(CHighscore.SCORE, sortDirection);
+		query.setFilter(new FilterPredicate(CHighscore.SCORE, filterOperator, mResponse.userScore.score));
 
 		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults().prefetchSize(SCORES_BEFORE_AFTER_USER).chunkSize(SCORES_BEFORE_AFTER_USER);
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
@@ -171,8 +173,8 @@ public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {
 			fetchUserScore();
 		}
 
-		FilterWrapper scoreFilter = new FilterWrapper("score", FilterOperator.GREATER_THAN, mResponse.userScore.score);
-		int cBeforeUser = DatastoreUtils.count("highscore", mLevelKey, scoreFilter);
+		FilterWrapper scoreFilter = new FilterWrapper(CHighscore.SCORE, FilterOperator.GREATER_THAN, mResponse.userScore.score);
+		int cBeforeUser = DatastoreUtils.count(DatastoreTables.HIGHSCORE, mLevelKey, scoreFilter);
 
 		mResponse.userPlace = cBeforeUser + 1;
 	}
@@ -220,9 +222,9 @@ public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {
 	 * @return iterator for the top scores
 	 */
 	private Iterator<Entity> fetchTopScores(int limit) {
-		Query query = new Query("highscore", mLevelKey);
+		Query query = new Query(DatastoreTables.HIGHSCORE, mLevelKey);
 		addScoreProjection(query);
-		query.addSort("score", SortDirection.DESCENDING);
+		query.addSort(CHighscore.SCORE, SortDirection.DESCENDING);
 
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults().limit(limit);
@@ -235,8 +237,8 @@ public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {
 	 * @param query the query to add the score projection to
 	 */
 	private static void addScoreProjection(Query query) {
-		query.addProjection(new PropertyProjection("username", String.class));
-		query.addProjection(new PropertyProjection("score", Long.class));
+		query.addProjection(new PropertyProjection(CHighscore.USERNAME, String.class));
+		query.addProjection(new PropertyProjection(CHighscore.SCORE, Long.class));
 	}
 
 	/**
@@ -246,8 +248,8 @@ public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {
 	 */
 	private static HighscoreEntity datastoreToNetworkEntity(Entity datastoreEntity) {
 		HighscoreEntity highscoreEntity = new HighscoreEntity();
-		highscoreEntity.playerName = (String) datastoreEntity.getProperty("username");
-		highscoreEntity.score = ((Long) datastoreEntity.getProperty("score")).intValue();
+		highscoreEntity.playerName = (String) datastoreEntity.getProperty(CHighscore.USERNAME);
+		highscoreEntity.score = DatastoreUtils.getPropertyInt(datastoreEntity, CHighscore.SCORE, 0);
 		return highscoreEntity;
 	}
 

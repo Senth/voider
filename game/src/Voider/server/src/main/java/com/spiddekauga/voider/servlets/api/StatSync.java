@@ -23,6 +23,7 @@ import com.google.appengine.api.search.Document.Builder;
 import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
+import com.spiddekauga.appengine.DatastoreUtils.PropertyNotFoundException;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.GeneralResponseStatuses;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -408,10 +409,10 @@ public class StatSync extends VoiderApiServlet<StatSyncMethod> {
 
 		ArrayList<Tags> datastoreTags = new ArrayList<>();
 		for (Entity entity : preparedQuery.asIterable(fetchOptions)) {
-			Long tagId = (Long) entity.getProperty(CLevelTag.TAG);
-			if (tagId != null) {
-				datastoreTags.add(Tags.fromId(tagId.intValue()));
-			} else {
+			try {
+				int tagId = DatastoreUtils.getPropertyInt(entity, CLevelTag.TAG);
+				datastoreTags.add(Tags.fromId(tagId));
+			} catch (PropertyNotFoundException e) {
 				mLogger.severe("Can't find TAG field for level tags");
 			}
 		}
@@ -495,11 +496,11 @@ public class StatSync extends VoiderApiServlet<StatSyncMethod> {
 		}
 
 		levelStats.bookmark = (boolean) serverEntity.getProperty(CUserLevelStat.BOOKMARK);
-		levelStats.cCleared = ((Long) serverEntity.getProperty(CUserLevelStat.CLEAR_COUNT)).intValue();
-		levelStats.cPlayed = ((Long) serverEntity.getProperty(CUserLevelStat.PLAY_COUNT)).intValue();
-		levelStats.cDeaths = ((Long) serverEntity.getProperty(CUserLevelStat.DEATH_COUNT)).intValue();
+		levelStats.cCleared = DatastoreUtils.getPropertyInt(serverEntity, CUserLevelStat.CLEAR_COUNT, 0);
+		levelStats.cPlayed = DatastoreUtils.getPropertyInt(serverEntity, CUserLevelStat.PLAY_COUNT, 0);
+		levelStats.cDeaths = DatastoreUtils.getPropertyInt(serverEntity, CUserLevelStat.DEATH_COUNT, 0);
 		levelStats.lastPlayed = (Date) serverEntity.getProperty(CUserLevelStat.LAST_PLAYED);
-		levelStats.rating = ((Long) serverEntity.getProperty(CUserLevelStat.RATING)).intValue();
+		levelStats.rating = DatastoreUtils.getPropertyInt(serverEntity, CUserLevelStat.RATING, 0);
 		levelStats.updated = (Date) serverEntity.getProperty(CUserLevelStat.UPDATED);
 
 		levelStats.tags = Tags.toTagList((ArrayList<Long>) serverEntity.getProperty(CUserLevelStat.TAGS));
