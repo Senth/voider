@@ -208,7 +208,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_SERVER;
+		public static final Builds BUILD = Builds.BETA;
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 		/** Logging verbosity */

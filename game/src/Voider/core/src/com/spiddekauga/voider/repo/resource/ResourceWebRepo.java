@@ -352,8 +352,8 @@ public class ResourceWebRepo extends WebRepo {
 			ResourceDownloadResponse resourceDownloadResponse = (ResourceDownloadResponse) response;
 
 			for (ResourceBlobEntity resourceBlobEntity : resourceDownloadResponse.resources) {
-				Gdx.app.debug(ResourceWebRepo.class.getSimpleName(), "Resource: " + resourceBlobEntity.resourceId + ", BlobKey: "
-						+ resourceBlobEntity.blobKey);
+				Gdx.app.debug(ResourceWebRepo.class.getSimpleName(),
+						"Resource: " + resourceBlobEntity.resourceId + ", BlobKey: " + resourceBlobEntity.blobKey);
 			}
 
 			boolean success = downloadResources(resourceDownloadResponse.resources, null);

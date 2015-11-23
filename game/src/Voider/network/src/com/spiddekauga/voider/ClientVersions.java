@@ -303,7 +303,9 @@ public enum ClientVersions {
 			"	HD splash screen",
 			"	high-res UI for all sizes",
 			"	Added missing icons",
-			"	Logging out does no longer cause the UI to disappear"
+			"	Logging out does no longer cause the UI to disappear",
+			"Fixes",
+			"	"
 			),
 	;
 	// @formatter:on
