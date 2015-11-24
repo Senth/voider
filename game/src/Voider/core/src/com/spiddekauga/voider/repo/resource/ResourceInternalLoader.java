@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
+import com.spiddekauga.voider.version.VersionContainer;
 
 /**
  * Loads internal resource (images, skins, fonts, etc).
@@ -43,6 +44,7 @@ class ResourceInternalLoader extends ResourceLoader<InternalNames, Object> {
 		mAssetManager.setLoader(Sound.class, new SoundLoader(internalFileHandleResolver));
 		mAssetManager.setLoader(TextureAtlas.class, new TextureAtlasLoader(internalFileHandleResolver));
 		mAssetManager.setLoader(String.class, new TextLoader(internalFileHandleResolver));
+		mAssetManager.setLoader(VersionContainer.class, new VersionLoader(internalFileHandleResolver));
 	}
 
 	@Override

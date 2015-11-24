@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.utils.Path;
 import com.spiddekauga.voider.Config.File;
+import com.spiddekauga.voider.version.VersionContainer;
 
 /**
  * All static resources. Name and a corresponding filename This includes: \li Textures \li
@@ -76,6 +77,7 @@ public enum InternalNames {
 
 	// Text files
 	TXT_TERMS("terms.txt", String.class),
+	TXT_CHANGELOG("changelog.txt", VersionContainer.class),
 
 
 	// Font files
@@ -209,6 +211,7 @@ public enum InternalNames {
 			mResourcePaths.put(Sound.class, SOUND_PATH);
 			mResourcePaths.put(Ini.class, TEXT_PATH);
 			mResourcePaths.put(String.class, TEXT_PATH);
+			mResourcePaths.put(VersionContainer.class, TEXT_PATH);
 			mResourcePaths.put(Music.class, MUSIC_PATH);
 			mResourcePaths.put(FreeType.class, FONT_PATH);
 		}

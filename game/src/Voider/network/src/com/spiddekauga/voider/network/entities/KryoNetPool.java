@@ -100,6 +100,7 @@ import com.spiddekauga.voider.network.user.PasswordResetSendTokenMethod;
 import com.spiddekauga.voider.network.user.PasswordResetSendTokenResponse;
 import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
+import com.spiddekauga.voider.version.Version;
 
 /**
  * Pool for network Kryo instance. When creating a new instance Kryo registers all
@@ -250,6 +251,8 @@ public class KryoNetPool {
 		RESTORE_BLOBS_RESPONSE(RestoreBlobsResponse.class),
 		LEVEL_LENGTH_SEARCH_RANGES(LevelLengthSearchRanges.class),
 		LEVEL_FETCH_METHOD_SORT_ORDERS(LevelFetchMethod.SortOrders.class),
+		VERSION(Version.class),
+		INT_ARRAY(int[].class),
 
 		// !!! ALWAYS APPEND, NEVER ADD IN THE MIDDLE !!!
 

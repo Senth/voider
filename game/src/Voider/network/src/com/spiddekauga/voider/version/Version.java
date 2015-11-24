@@ -121,7 +121,7 @@ public class Version implements IEntity {
 	 * @return array with the appropriate version parts, null if invalid version string
 	 */
 	static int[] toVersionParts(String versionString) {
-		String[] versions = versionString.split(".");
+		String[] versions = versionString.split("\\.");
 		if (versions.length == VERSION_PARTS) {
 			int[] versionParts = new int[VERSION_PARTS];
 			try {
