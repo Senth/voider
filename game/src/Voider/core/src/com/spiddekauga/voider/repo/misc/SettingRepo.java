@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.spiddekauga.utils.Resolution;
-import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -22,6 +21,8 @@ import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.resources.DensityBuckets;
+import com.spiddekauga.voider.version.Version;
+import com.spiddekauga.voider.version.VersionContainer;
 
 /**
  * Setting repository
@@ -102,7 +103,7 @@ public class SettingRepo extends Repo {
 		 * Updates the client version to the latest client version
 		 */
 		public void updateClientVersion() {
-			mLocalRepo.updateClientVersion();
+			mLocalRepo.updateLastUsedVersion();
 		}
 
 		/**
@@ -110,15 +111,28 @@ public class SettingRepo extends Repo {
 		 *         user
 		 */
 		public boolean isClientVersionNewSinceLastLogin() {
-			return mLocalRepo.getLatestClientVersion() != ClientVersions.getLatest();
+			return mLocalRepo.getLastUsedVersion() != mLocalRepo.getCurrentVersion();
 		}
 
 		/**
-		 * @return changes since the last client version
+		 * @return version container which has information about all versions
 		 */
-		public String getNewChangesSinceLastLogin() {
-			ClientVersions lastLoginVersion = mLocalRepo.getLatestClientVersion();
-			return ClientVersions.getChangeLogs(lastLoginVersion);
+		public VersionContainer getVersions() {
+			return mLocalRepo.getVersions();
+		}
+
+		/**
+		 * @return all versions since we last logged in
+		 */
+		public List<Version> getVersionsSinceLastUsed() {
+			return mLocalRepo.getVersionsSinceLastUsed();
+		}
+
+		/**
+		 * @return current (latest) client version
+		 */
+		public Version getCurrentVersion() {
+			return mLocalRepo.getCurrentVersion();
 		}
 
 		/**
@@ -187,7 +201,6 @@ public class SettingRepo extends Repo {
 			}
 
 			mGeneralLocalRepo.setDateTime(format);
-			// TODO sync to server
 		}
 
 		/**
@@ -287,9 +300,9 @@ public class SettingRepo extends Repo {
 			}
 
 			if (mDateFormatter == null) {
-				mDateFormatter = new SimpleDateFormat(mGeneralLocalRepo.getDateTime());
-			} else if (!mDateFormatter.toPattern().equals(mGeneralLocalRepo.getDateTime())) {
-				mDateFormatter.applyPattern(mGeneralLocalRepo.getDateTime());
+				mDateFormatter = new SimpleDateFormat(getDateFormat());
+			} else if (!mDateFormatter.toPattern().equals(getDateFormat())) {
+				mDateFormatter.applyPattern(getDateFormat());
 			}
 
 			return mDateFormatter.format(date);

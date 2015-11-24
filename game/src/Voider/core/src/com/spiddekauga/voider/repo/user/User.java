@@ -445,21 +445,37 @@ public class User {
 				mEventDispatcher.fire(new MotdEvent(EventTypes.MOTD_CURRENT, response.motds));
 			}
 
-			// Version
-			switch (response.versionInfo.status) {
-			case NEW_VERSION_AVAILABLE:
-				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_AVAILABLE, response.versionInfo.latestVersion,
-						response.versionInfo.changeLogMessage));
-				break;
 
-			case UPDATE_REQUIRED:
-				mEventDispatcher.fire(new UpdateEvent(EventTypes.UPDATE_REQUIRED, response.versionInfo.latestVersion,
-						response.versionInfo.changeLogMessage));
-				break;
+			// New version
+			if (!response.versionInfo.newVersions.isEmpty()) {
+				EventTypes updateType = null;
+				switch (response.versionInfo.status) {
+				case UPDATE_REQUIRED:
+					updateType = EventTypes.UPDATE_REQUIRED;
+					break;
 
-			case UNKNOWN:
-			case UP_TO_DATE:
-				break;
+				case NEW_VERSION_AVAILABLE:
+					updateType = EventTypes.UPDATE_AVAILABLE;
+					break;
+
+				default:
+					break;
+				}
+
+				String downloadLocation = null;
+				switch (Gdx.app.getType()) {
+				case Android:
+					// TODO download location for android
+					break;
+				case Desktop:
+					downloadLocation = response.versionInfo.downloadLocationDesktop;
+					break;
+
+				default:
+					break;
+				}
+
+				mEventDispatcher.fire(new UpdateEvent(updateType, response.versionInfo.newVersions, downloadLocation));
 			}
 
 

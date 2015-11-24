@@ -2,7 +2,6 @@ package com.spiddekauga.voider.repo.misc;
 
 import java.util.Date;
 
-import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Network;
 import com.spiddekauga.voider.repo.PrefsGateway;
@@ -47,24 +46,18 @@ class SettingUserPrefsGateway extends PrefsGateway {
 
 	/**
 	 * Updates the client version to the latest client version
+	 * @param version last used version string
 	 */
-	void updateClientVersion() {
-		mPreferences.putInteger(CLIENT__LAST_VERSION, ClientVersions.getLatest().getId());
+	void updateLastUsedVersion(String version) {
+		mPreferences.putString(CLIENT__LAST_USED_VERSION, version);
 		mPreferences.flush();
 	}
 
 	/**
-	 * @return the last client version this client used
+	 * @return the last client version this client used, null if not found
 	 */
-	ClientVersions getLatestClientVersion() {
-		int latestVersion = ClientVersions.getLatest().getId();
-		int versionId = mPreferences.getInteger(CLIENT__LAST_VERSION, latestVersion);
-
-		if (versionId > latestVersion || versionId < 0) {
-			versionId = latestVersion;
-		}
-
-		return ClientVersions.fromId(versionId);
+	String getLastUsedVersion() {
+		return mPreferences.getString(CLIENT__LAST_USED_VERSION, null);
 	}
 
 	/**
@@ -121,7 +114,7 @@ class SettingUserPrefsGateway extends PrefsGateway {
 	}
 
 	private static final String MOTD__LATEST_DATE = "motd_latestDate";
-	private static final String CLIENT__LAST_VERSION = "client_lastVersion";
+	private static final String CLIENT__LAST_USED_VERSION = "client_lastUsedVersion";
 	private static final String DATE__DATE_TIME_FORMAT = "date_dateTimeFormat";
 	private static final String TERMS__LENGTH = "terms_length";
 

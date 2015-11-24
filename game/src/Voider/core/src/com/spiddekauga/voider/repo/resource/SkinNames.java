@@ -166,7 +166,9 @@ public class SkinNames {
 		REDO,
 		/** Removes a corner from an actor shape */
 		REMOVE_CORNER,
-		/** Resets the center of the shape (only visible when actor shape is set to draw) */
+		/**
+		 * Resets the center of the shape (only visible when actor shape is set to draw)
+		 */
 		RESET_CENTER,
 		/** Test run the current level */
 		RUN,
@@ -785,6 +787,8 @@ public class SkinNames {
 		LABEL_TOP_SCORE(LabelStyle.class, "top_score"),
 		/** Header label */
 		LABEL_HEADER(LabelStyle.class, "header"),
+		/** Header label 2 */
+		LABEL_HEADER2(LabelStyle.class, "header2"),
 		/** Default text for text fields */
 		LABEL_TEXT_FIELD_DEFAULT(LabelStyle.class, "textfield_default"),
 		/** Player name of the comment */

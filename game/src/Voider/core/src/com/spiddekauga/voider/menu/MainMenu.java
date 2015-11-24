@@ -129,7 +129,7 @@ public class MainMenu extends MenuScene implements IEventListener {
 
 			// Check if the client was updated since last login
 			if (infoRepo.isClientVersionNewSinceLastLogin()) {
-				getGui().showChangesSinceLastLogin(infoRepo.getNewChangesSinceLastLogin());
+				getGui().showChangesSinceLastLogin(infoRepo.getVersionsSinceLastUsed());
 				infoRepo.updateClientVersion();
 			}
 

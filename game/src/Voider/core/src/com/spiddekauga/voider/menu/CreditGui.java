@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -11,9 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.voider.ClientVersions;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.menu.CreditScene.CreditLine;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.CreditImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
@@ -39,6 +41,7 @@ class CreditGui extends MenuGui {
 		initFooter();
 
 		addBackButton();
+		addChangelogButton();
 	};
 
 	@Override
@@ -52,6 +55,25 @@ class CreditGui extends MenuGui {
 	public void dispose() {
 		super.dispose();
 
+	}
+
+	/**
+	 * Add changelog button
+	 */
+	private void addChangelogButton() {
+		Button button = mUiFactory.button.createImage(SkinNames.General.CHANGELOG_BIG);
+		mUiFactory.button.addSound(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mUiFactory.msgBox.changeLog("ChangeLog", null, SettingRepo.getInstance().info().getVersions().getAll());
+			}
+		};
+
+		AlignTable table = new AlignTable();
+		table.setAlign(Horizontal.LEFT, Vertical.BOTTOM);
+		table.add(button);
+		addActor(table);
 	}
 
 	/**
@@ -116,7 +138,7 @@ class CreditGui extends MenuGui {
 	 */
 	private void initHeader() {
 		// Make able to scroll past whole
-		mUiFactory.text.addHeader("Voider " + ClientVersions.getLatest().toString(), mCreditTable);
+		mUiFactory.text.addHeader("Voider " + SettingRepo.getInstance().info().getCurrentVersion().getVersion(), mCreditTable);
 		mCreditTable.getRow().setPadTop(Gdx.graphics.getHeight());
 		addHeader("Credits");
 	}

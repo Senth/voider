@@ -194,6 +194,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: white,
 	},
 	
+	header2: {
+		font: large,
+		fontColor: white,
+	}
+	
 	// Extra information, sort of like a comment
 	info_extra: {
 		font: small,

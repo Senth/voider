@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.menu;
 
+import java.util.List;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
@@ -21,6 +23,7 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 import com.spiddekauga.voider.utils.commands.CUserLogout;
+import com.spiddekauga.voider.version.Version;
 
 
 /**
@@ -269,10 +272,10 @@ class MainMenuGui extends MenuGui {
 
 	/**
 	 * Shows client changes since last login
-	 * @param changeLog new changes
+	 * @param versions all new versions since last login
 	 */
-	void showChangesSinceLastLogin(String changeLog) {
-		mUiFactory.msgBox.changeLog("ChangeLog", "New changes since you last logged in on this device", changeLog);
+	void showChangesSinceLastLogin(List<Version> versions) {
+		mUiFactory.msgBox.changeLog("ChangeLog", "New changes since you last logged in on this device", versions);
 	}
 
 	/**

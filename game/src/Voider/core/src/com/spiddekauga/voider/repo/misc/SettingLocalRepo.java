@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
-import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
@@ -18,6 +17,8 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.version.Version;
+import com.spiddekauga.voider.version.VersionContainer;
 
 /**
  * Local repository for settings (both client settings and user settings)
@@ -49,7 +50,9 @@ class SettingLocalRepo {
 		 * Hidden constructor
 		 */
 		private SettingGeneralLocalRepo() {
-			// Does nothing
+			ResourceCacheFacade.load(null, InternalNames.TXT_CHANGELOG);
+			ResourceCacheFacade.finishLoading();
+			mVersionContainer = ResourceCacheFacade.get(InternalNames.TXT_CHANGELOG);
 		}
 
 		/**
@@ -70,15 +73,47 @@ class SettingLocalRepo {
 		/**
 		 * Updates the client version to the latest client version
 		 */
-		void updateClientVersion() {
-			mUserPrefsGateway.updateClientVersion();
+		void updateLastUsedVersion() {
+			mUserPrefsGateway.updateLastUsedVersion(mVersionContainer.getLatest().getVersion());
 		}
 
 		/**
 		 * @return the last client version this client used
 		 */
-		ClientVersions getLatestClientVersion() {
-			return mUserPrefsGateway.getLatestClientVersion();
+		Version getLastUsedVersion() {
+			String versionString = mUserPrefsGateway.getLastUsedVersion();
+			Version version = null;
+
+			if (versionString != null) {
+				version = mVersionContainer.getVersion(versionString);
+			}
+
+			if (version == null) {
+				version = mVersionContainer.getLatest();
+			}
+
+			return version;
+		}
+
+		/**
+		 * @return version container which has information about all versions
+		 */
+		VersionContainer getVersions() {
+			return mVersionContainer;
+		}
+
+		/**
+		 * @return all versions since we last logged in
+		 */
+		List<Version> getVersionsSinceLastUsed() {
+			return mVersionContainer.getVersionsAfter(getLastUsedVersion());
+		}
+
+		/**
+		 * @return current client version
+		 */
+		Version getCurrentVersion() {
+			return mVersionContainer.getLatest();
 		}
 
 		/**
@@ -169,6 +204,8 @@ class SettingLocalRepo {
 				Config.Debug.debugException("Terms not loaded when calling acceptTerms()");
 			}
 		}
+
+		private VersionContainer mVersionContainer = null;
 	}
 
 	/**

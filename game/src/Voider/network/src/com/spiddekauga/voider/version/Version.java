@@ -15,7 +15,7 @@ public class Version implements IEntity {
 	 * Creates a new version object
 	 * @param versionString
 	 */
-	public Version(String versionString) {
+	Version(String versionString) {
 		mVersion = versionString;
 		mVersionParts = toVersionParts(versionString);
 	}
@@ -101,7 +101,7 @@ public class Version implements IEntity {
 	 * @param line a line containing the change log
 	 */
 	public void addChangeLine(String line) {
-		if (mChanges != null) {
+		if (mChanges == null) {
 			mChanges = line;
 		} else {
 			mChanges += "\n" + line;

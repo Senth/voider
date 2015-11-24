@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.utils.event;
 
-import com.spiddekauga.voider.network.misc.NetworkConfig;
+import java.util.List;
+
+import com.spiddekauga.voider.version.Version;
 
 /**
  * Contains update information
@@ -8,38 +10,23 @@ import com.spiddekauga.voider.network.misc.NetworkConfig;
  */
 public class UpdateEvent extends GameEvent {
 	/** Latest client version */
-	public final String newestVersion;
-	/** The change log message */
-	public final String changeLog;
+	public final Version newestVersion;
+	/** All versions */
+	public final List<Version> newVersions;
 	/** Download URL for the client */
 	public final String downloadUrl;
 
 	/**
 	 * What kind of update event this is
 	 * @param type
-	 * @param latestClientVersion
-	 * @param changeLog
+	 * @param newVersions all new versions
+	 * @param downloadUrl where we can download the url
 	 */
-	public UpdateEvent(final EventTypes type, final String latestClientVersion, final String changeLog) {
+	public UpdateEvent(EventTypes type, List<Version> newVersions, String downloadUrl) {
 		super(type);
 
-		this.newestVersion = latestClientVersion;
-
-		// Split change log
-		String[] splits = changeLog.split(NetworkConfig.SPLIT_TOKEN);
-
-		// ChangeLog
-		if (splits.length >= 1) {
-			this.changeLog = splits[0];
-		} else {
-			this.changeLog = null;
-		}
-
-		// Download URL
-		if (splits.length == 2) {
-			downloadUrl = splits[1];
-		} else {
-			downloadUrl = null;
-		}
+		this.newestVersion = newVersions.get(0);
+		this.newVersions = newVersions;
+		this.downloadUrl = downloadUrl;
 	}
 }

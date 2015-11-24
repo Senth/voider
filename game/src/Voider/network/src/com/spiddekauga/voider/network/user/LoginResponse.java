@@ -2,13 +2,14 @@ package com.spiddekauga.voider.network.user;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 import com.spiddekauga.voider.network.misc.Motd;
+import com.spiddekauga.voider.version.Version;
 
 
 /**
@@ -61,10 +62,10 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 	public static class VersionInformation implements IEntity {
 		/** Client version status */
 		@Tag(15) public Statuses status = Statuses.UNKNOWN;
-		/** Latest client version */
-		@Tag(16) public String latestVersion = ClientVersions.getLatest().toString();
-		/** Change-log for new versions that are available */
-		@Tag(17) public String changeLogMessage = null;
+		/** All new versions, empty if no new versions were available */
+		@Tag(25) public List<Version> newVersions = new ArrayList<>();
+		/** Download location for desktop clients */
+		@Tag(26) public String downloadLocationDesktop = null;
 
 		/**
 		 * Client status
@@ -79,6 +80,9 @@ public class LoginResponse implements IEntity, ISuccessStatuses {
 			/** Unknown status */
 			UNKNOWN,
 		}
+
+		@Deprecated @Tag(16) private String _unused1;
+		@Deprecated @Tag(17) private String _unused2;
 	}
 
 

@@ -3,7 +3,6 @@ package com.spiddekauga.voider.utils;
 import java.util.Date;
 
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
-import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.misc.SettingRepo;
 
@@ -202,7 +201,7 @@ public class Messages {
 		 */
 		public static String getRequiredUpdate(String newVersion) {
 			String message = UPDATE_REQUIRED;
-			message = message.replaceAll(OLD_VERSION_STRING, ClientVersions.getLatest().toString());
+			message = message.replaceAll(OLD_VERSION_STRING, SettingRepo.getInstance().info().getCurrentVersion().getVersion());
 			message = message.replaceAll(NEW_VERSION_STRING, newVersion);
 			return message;
 		}
@@ -214,7 +213,7 @@ public class Messages {
 		 */
 		public static String getOptionalUpdate(String newVersion) {
 			String message = UPDATE_OPTIONAL;
-			message = message.replaceAll(OLD_VERSION_STRING, ClientVersions.getLatest().toString());
+			message = message.replaceAll(OLD_VERSION_STRING, SettingRepo.getInstance().info().getCurrentVersion().getVersion());
 			message = message.replaceAll(NEW_VERSION_STRING, newVersion);
 			return message;
 		}

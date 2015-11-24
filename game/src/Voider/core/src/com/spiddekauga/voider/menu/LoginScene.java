@@ -44,7 +44,6 @@ public class LoginScene extends Scene implements IResponseListener {
 		ResourceCacheFacade.load(this, InternalNames.MUSIC_TITLE);
 		ResourceCacheFacade.load(this, InternalDeps.UI_SFX);
 		ResourceCacheFacade.load(this, InternalNames.TXT_TERMS);
-		ResourceCacheFacade.load(this, InternalNames.TXT_CHANGELOG);
 
 		super.loadResources();
 	}

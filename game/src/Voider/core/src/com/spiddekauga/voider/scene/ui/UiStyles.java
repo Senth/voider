@@ -109,6 +109,8 @@ public class UiStyles {
 		PUBLISH_NAME,
 		/** Larger text */
 		HEADER,
+		/** Not as big as header */
+		HEADER2,
 		/** Default text style for text fields */
 		TEXT_FIELD_DEFAULT,
 		/** Text style for paths */
@@ -292,6 +294,7 @@ public class UiStyles {
 		LabelStyles.HIGHLIGHT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
 		LabelStyles.TOOLTIP.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP));
 		LabelStyles.HEADER.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER));
+		LabelStyles.HEADER2.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER2));
 		LabelStyles.TEXT_FIELD_DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TEXT_FIELD_DEFAULT));
 		LabelStyles.SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 		LabelStyles.PUBLISH_NAME.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PUBLISH_NAME));

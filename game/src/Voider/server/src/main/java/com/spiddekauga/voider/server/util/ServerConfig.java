@@ -310,6 +310,8 @@ public class ServerConfig {
 	public static final InternetAddress EMAIL_NO_REPLY;
 	/** Beta information location */
 	public static final String BETA_INFO_URL = Builds.RELEASE.getUrl() + "beta.jsp";
+	/** Version (changelog) file */
+	public static final String VERSION_FILE = "assets/txt/changelog.txt";
 
 	/**
 	 * All different servers builds

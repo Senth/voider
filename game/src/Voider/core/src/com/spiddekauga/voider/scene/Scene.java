@@ -106,7 +106,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 				} else if (KeyHelper.isShiftPressed()) {
 					SceneSwitcher.switchTo(new PrototypeScene());
 				} else {
-					throw new RuntimeException("Test Bug Report");
+					UiFactory.getInstance().msgBox.changeLog("ChangeLog", "Top Message", SettingRepo.getInstance().info().getVersions().getAll());
 				}
 			} else if (keycode == Input.Keys.F6) {
 				mNotification.showHighlight("This is a highlight!");

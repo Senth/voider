@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.servlets.api;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
@@ -13,22 +15,23 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
-import com.spiddekauga.voider.ClientVersions;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
-import com.spiddekauga.voider.network.misc.NetworkConfig;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
 import com.spiddekauga.voider.network.user.LoginResponse.RestoreDate;
 import com.spiddekauga.voider.network.user.LoginResponse.Statuses;
 import com.spiddekauga.voider.network.user.LoginResponse.VersionInformation;
+import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.Builds;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CRestoreDate;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
+import com.spiddekauga.voider.version.VersionContainer;
+import com.spiddekauga.voider.version.VersionParser;
 
 /**
  * Tries to login to the server
@@ -76,24 +79,21 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 	 * @param method
 	 */
 	private void checkClientVersion(LoginMethod method) {
-		boolean updateAvailable = !ClientVersions.isLatestVersion(method.clientVersion);
-
-		// Check client needs to be updated
-		if (updateAvailable) {
-			if (ClientVersions.isUpdateNeeded(method.clientVersion)) {
+		// New versions available
+		if (!mVersionContainer.isLatest(method.currentVersion)) {
+			// Check client needs to be updated
+			if (mVersionContainer.isUpdateRequired(method.currentVersion)) {
 				mResponse.versionInfo.status = VersionInformation.Statuses.UPDATE_REQUIRED;
 			} else {
 				mResponse.versionInfo.status = VersionInformation.Statuses.NEW_VERSION_AVAILABLE;
 			}
-			mResponse.versionInfo.changeLogMessage = ClientVersions.getChangeLogs(method.clientVersion);
+
+			mResponse.versionInfo.newVersions = mVersionContainer.getVersionsAfter(method.currentVersion);
 
 			// Add download URL
 			Builds build = Builds.getCurrent();
 			if (build != null) {
-				String downloadUrl = build.getDownloadDesktopUrl();
-				if (downloadUrl != null) {
-					mResponse.versionInfo.changeLogMessage += NetworkConfig.SPLIT_TOKEN + downloadUrl;
-				}
+				mResponse.versionInfo.downloadLocationDesktop = build.getDownloadDesktopUrl();
 			}
 		} else {
 			mResponse.versionInfo.status = VersionInformation.Statuses.UP_TO_DATE;
@@ -231,5 +231,24 @@ public class Login extends VoiderApiServlet<LoginMethod> {
 		return true;
 	}
 
+	/**
+	 * Loads the current version container
+	 */
+	private static void loadVersionContainer() {
+		File file = new File(ServerConfig.VERSION_FILE);
+		try {
+			FileInputStream fileInputStream = new FileInputStream(file);
+			VersionParser versionParser = new VersionParser(fileInputStream);
+			mVersionContainer = versionParser.parse();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private LoginResponse mResponse = null;
+	private static VersionContainer mVersionContainer = null;
+
+	static {
+		loadVersionContainer();
+	}
 }

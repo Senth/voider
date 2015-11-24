@@ -50,6 +50,7 @@ public class VersionParser {
 			// Dose nothing
 		}
 		close();
+		addParsingVersion();
 
 		return mContainer;
 	}
@@ -66,18 +67,22 @@ public class VersionParser {
 		}
 		// Variables
 		else if (line.contains("=")) {
-			line = line.trim();
+			String lowerCasedLine = line.trim().toLowerCase();
 			// Date
-			if (line.toLowerCase().startsWith("date")) {
+			if (lowerCasedLine.startsWith("date")) {
 				parseDate(line);
 			}
 			// Update Required
-			else if (line.toLowerCase().startsWith("required")) {
+			else if (lowerCasedLine.startsWith("required")) {
 				parseRequired(line);
 			}
 			// Server hotfix
-			else if (line.toLowerCase().startsWith("hotfix")) {
+			else if (lowerCasedLine.startsWith("hotfix")) {
 				parseHotfix(line);
+			}
+			// Changelog
+			else {
+				mParsingVersion.addChangeLine(line);
 			}
 		}
 		// ChangeLog

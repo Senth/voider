@@ -29,6 +29,49 @@ public class VersionContainer {
 	}
 
 	/**
+	 * Check if the specified version is the latest
+	 * @param version
+	 * @return true if the specified version is the latest
+	 */
+	public boolean isLatest(Version version) {
+		return version.equals(getLatest());
+	}
+
+	/**
+	 * Get the specified version from a string
+	 * @param versionString
+	 * @return the full version represented by versionString, null if not found
+	 */
+	public Version getVersion(String versionString) {
+		Version findVersion = new Version(versionString);
+
+		for (Version version : mVersions) {
+			if (version.equals(findVersion)) {
+				return version;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Check if an update is needed from the specified version
+	 * @param fromVersion
+	 * @return true if at least one of the later versions needs an update to go online
+	 */
+	public boolean isUpdateRequired(Version fromVersion) {
+		for (Version version : mVersions) {
+			if (version.equals(fromVersion)) {
+				return false;
+			} else if (version.isUpdateRequired()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get all versions after the specified version
 	 * @param afterVersion
 	 * @return all versions after the specified version
@@ -45,6 +88,14 @@ public class VersionContainer {
 		}
 
 		return versions;
+	}
+
+	/**
+	 * Get all versions
+	 * @return all versions
+	 */
+	public List<Version> getAll() {
+		return mVersions;
 	}
 
 	private List<Version> mVersions = new ArrayList<>();

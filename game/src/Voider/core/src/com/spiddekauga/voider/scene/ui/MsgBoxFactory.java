@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.scene.ui;
 
+import java.util.List;
 import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
@@ -50,6 +51,7 @@ import com.spiddekauga.voider.utils.commands.CUserConnect;
 import com.spiddekauga.voider.utils.commands.CUserSetAskGoOnline;
 import com.spiddekauga.voider.utils.event.ServerRestoreEvent;
 import com.spiddekauga.voider.utils.event.UpdateEvent;
+import com.spiddekauga.voider.version.Version;
 
 /**
  * Message box factory
@@ -366,12 +368,12 @@ public class MsgBoxFactory {
 		switch (updateInfo.type) {
 		case UPDATE_AVAILABLE:
 			title = "Update Available";
-			message = Messages.Version.getOptionalUpdate(updateInfo.newestVersion);
+			message = Messages.Version.getOptionalUpdate(updateInfo.newestVersion.getVersion());
 			break;
 
 		case UPDATE_REQUIRED:
 			title = "Update Required";
-			message = Messages.Version.getRequiredUpdate(updateInfo.newestVersion);
+			message = Messages.Version.getRequiredUpdate(updateInfo.newestVersion.getVersion());
 			break;
 
 		default:
@@ -391,7 +393,7 @@ public class MsgBoxFactory {
 		new ButtonListener((Button) msgBox.getButtonCell().getActor()) {
 			@Override
 			protected void onPressed(Button button) {
-				changeLog("ChangeLog", "New changes since your version", updateInfo.changeLog);
+				changeLog("ChangeLog", "New changes", updateInfo.newVersions);
 			}
 		};
 
@@ -418,17 +420,17 @@ public class MsgBoxFactory {
 	void serverRestored(final ServerRestoreEvent serverRestoreEvent) {
 		String title = "Server database has been reverted";
 		MsgBoxExecuter msgBox = add(title);
-		
+
 		String message = Messages.Info.getServerRestored(serverRestoreEvent.from, serverRestoreEvent.to);
 		Label info = mUiFactory.text.create(message, true, LabelStyles.HIGHLIGHT);
 		info.setWidth(WIDTH_MAX);
 		msgBox.content(info);
-		
+
 		Label changes = mUiFactory.text.create(Messages.Info.SERVER_RESTORED_CHANGE, true);
 		changes.setWidth(WIDTH_MAX);
 		msgBox.contentRow(mStyles.vars.paddingInner, 0);
 		msgBox.content(changes);
-		
+
 		msgBox.button("Quit", new CRun() {
 			@Override
 			public boolean execute() {
@@ -450,30 +452,38 @@ public class MsgBoxFactory {
 	 * Create a change log message box
 	 * @param title title of the message box
 	 * @param topMessage additional message to display above the change log
-	 * @param changeLog the change log
+	 * @param versions all the versions to show
 	 */
-	public void changeLog(String title, String topMessage, String changeLog) {
+	public void changeLog(String title, String topMessage, List<Version> versions) {
 		MsgBoxExecuter changeLogMsgBox = add(title);
 
-		Label label = mUiFactory.text.create(topMessage, true);
-		label.setWidth(WIDTH_MAX);
-		label.setAlignment(Align.center);
-
-		changeLogMsgBox.content(label).padBottom(mStyles.vars.paddingSeparator);
-		changeLogMsgBox.contentRow();
-
-
-		label = mUiFactory.text.create(changeLog, false);
-
-		// Too high, use scroll pane
-		label.layout();
-		if (label.getHeight() > HEIGHT_MAX) {
-			ScrollPane scrollPane = new ScrollPane(label, mStyles.scrollPane.noBackground);
-			scrollPane.setFadeScrollBars(false);
-			changeLogMsgBox.content(scrollPane).size(WIDTH_MAX, HEIGHT_MAX);
-		} else {
-			changeLogMsgBox.content(label);
+		Label label;
+		if (topMessage != null) {
+			label = mUiFactory.text.create(topMessage, true, LabelStyles.HEADER2);
+			label.setWidth(WIDTH_MAX);
+			label.setAlignment(Align.center);
+			changeLogMsgBox.content(label).padBottom(mStyles.vars.paddingSeparator);
+			changeLogMsgBox.contentRow();
 		}
+
+		AlignTable innerTable = new AlignTable();
+		for (Version version : versions) {
+			// Version (DATE)
+			String dateString = SettingRepo.getInstance().date().getDate(version.getDate());
+			label = mUiFactory.text.create(version.getVersion() + "    (" + dateString + ")", false, LabelStyles.HEADER2);
+			innerTable.row();
+			innerTable.add(label);
+
+			// Changelog
+			String changeLog = version.getChangeLog();
+			changeLog = changeLog.replace("\t", "   ");
+			label = mUiFactory.text.create(changeLog, false);
+			innerTable.row();
+			innerTable.add(label).setPadBottom(mStyles.vars.paddingSeparator);
+		}
+
+		ScrollPane scrollPane = new ScrollPane(innerTable, mStyles.scrollPane.noBackground);
+		changeLogMsgBox.content(scrollPane).size(WIDTH_MAX, HEIGHT_MAX);
 
 		changeLogMsgBox.addCancelButtonAndKeys("OK");
 	}

@@ -1,5 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 
 buildscript {
@@ -279,25 +280,25 @@ project(':core').compileJava.mustRunAfter setBuildNightlyRelease
 
 // Appengine tasks
 task setAppengineDev << {
-	updateAppengineVersion()
+	prepareAppengine()
 	updateApplicationId('voider-dev')
 	updateBackupCronUrl('voider-dev')
 }
 
 task setAppengineNightly << {
-	updateAppengineVersion()
+	prepareAppengine()
 	updateApplicationId('voider-nightly')
 	updateBackupCronUrl('voider-nightly')
 }
 
 task setAppengineBeta() << {
-	updateAppengineVersion()
+	prepareAppengine()
 	updateApplicationId('voider-beta')
 	updateBackupCronUrl('voider-beta')
 }
 
 task setAppengineRelease() << {
-	updateAppengineVersion()
+	prepareAppengine()
 	updateApplicationId('voider-thegame')
 	updateBackupCronUrl('voider-thegame')
 }
@@ -372,6 +373,26 @@ def replaceBuildName(nextBuild) {
 	File configFile = file(filename)
 	def updatedContent = configFile.getText('UTF-8').replaceAll(fromString, toString)
 	configFile.write(updatedContent, 'UTF-8')
+}
+
+def prepareAppengine() {
+	updateAppengineVersion()
+	copyAppengineFiles()
+}
+
+def copyAppengineFiles() {
+	// These should be relative to the asset folders
+	def COPY_THESE = ['txt/changelog.txt']
+	def ANDROID_ASSET_DIR = projectDir.absolutePath + "/android/assets/"
+	def SERVER_ASSET_DIR = projectDir.absolutePath + "/server/src/main/webapp/assets/"
+
+	COPY_THESE.each {
+		def copyFrom = Paths.get(ANDROID_ASSET_DIR + it)
+		def copyTo = Paths.get(SERVER_ASSET_DIR + it)
+		def copyToDir = copyTo.getParent()
+		Files.createDirectories(copyToDir)
+		Files.copy(copyFrom, copyTo, StandardCopyOption.REPLACE_EXISTING);
+	}
 }
 
 def updateAppengineVersion() {
