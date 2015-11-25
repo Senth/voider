@@ -19,6 +19,7 @@ import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 
 
 /**
@@ -58,6 +59,7 @@ class UserWebRepo extends WebRepo {
 		loginMethod.password = user.getPassword();
 		loginMethod.privateKey = user.getPrivateKey();
 		loginMethod.lastLogin = lastLogin;
+		loginMethod.currentVersion = SettingRepo.getInstance().info().getCurrentVersion();
 
 		sendInNewThread(loginMethod, responseListeners);
 	}
