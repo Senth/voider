@@ -79,7 +79,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 
 		// Create body
 		String body = "";
-		body += getFormatedHeadline("System Information", bugReportEntity.systemInformation);
+		body += getFormatedHeadline("System Information", bugReportEntity.systemInformation.replace("\n", "<br />"));
 		body += getFormatedHeadline("Description", bugReportEntity.description);
 		body += getFormatedHeadline("Exception", bugReportEntity.additionalInformation);
 		body += getFormattedAnalyticsHtml(bugReportEntity.analyticsSession);
@@ -132,7 +132,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 			}
 		}
 
-		return subject + " " + bugReportEntity.subject + " — " + username;
+		return subject + " " + bugReportEntity.subject + " - " + username;
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 	 */
 	private static String getFormatedHeadline(String headline, String message) {
 		if (message != null && !message.equals("")) {
-			return "<b>" + headline + "</b><br />" + message.replace("\n", "<br />") + "<br /><br />";
+			return "<b>" + headline + "</b><br />" + message + "<br /><br />";
 		} else {
 			return "";
 		}

@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.BugReportEntity;
@@ -14,6 +15,7 @@ import com.spiddekauga.voider.network.misc.BugReportResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
@@ -108,6 +110,10 @@ public class CBugReportSend extends Command implements IResponseListener {
 		// Screen size
 		systemInformation += "\n";
 		systemInformation += "Screen size: " + Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
+		systemInformation += "\n";
+		systemInformation += "Version: " + SettingRepo.getInstance().info().getCurrentVersion().getVersion();
+		systemInformation += "\n";
+		systemInformation += "Build: " + Config.Debug.BUILD.toString();
 
 		return systemInformation;
 	}
