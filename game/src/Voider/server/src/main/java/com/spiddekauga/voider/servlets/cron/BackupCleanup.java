@@ -1,27 +1,19 @@
 package com.spiddekauga.voider.servlets.cron;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.google.appengine.api.appidentity.AppIdentityService;
-import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
+import javax.servlet.ServletException;
+
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.utils.SystemProperty;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.http.HttpPostBuilder;
-import com.spiddekauga.http.HttpResponseParser;
-import com.spiddekauga.utils.Strings;
-import com.spiddekauga.voider.server.util.ServerConfig;
-import com.spiddekauga.voider.server.util.VoiderController;
+import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * This method deletes backups older than 1 month and newer than 6 months, but keeps all
@@ -29,17 +21,13 @@ import com.spiddekauga.voider.server.util.VoiderController;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BackupCleanup extends VoiderController {
+public class BackupCleanup extends VoiderServlet {
 
 	@Override
-	protected void onRequest() {
+	protected void handleRequest() throws ServletException, IOException {
 		List<Entity> entitiesToDelete = getEntitiesToDelete();
 		List<String> backupIds = extractBackupId(entitiesToDelete);
-		String response = deleteBackups(backupIds);
-
-		if (response != null) {
-			getResponsePrintWriter().append(response);
-		}
+		deleteBackups(backupIds);
 	}
 
 	/**
@@ -63,7 +51,7 @@ public class BackupCleanup extends VoiderController {
 
 	/**
 	 * Convert the backups to a list and filter out those that start on the 1st in the
-	 * month
+	 * month, except if they
 	 * @param backups all backup entities
 	 * @return all backups to delete
 	 */
@@ -139,140 +127,13 @@ public class BackupCleanup extends VoiderController {
 	/**
 	 * Delete the specified backup id
 	 * @param backupIds the backup to delete
-	 * @return response from deleting, null if failed
 	 */
-	private static String deleteBackups(List<String> backupIds) {
-		String deleteResponse = sendDeleteRequest(backupIds);
-		String token = extractDeleteToken(deleteResponse);
-		if (token != null) {
-			return sendConfirmRequest(backupIds, token);
-		} else {
-			return deleteResponse;
-		}
+	private static void deleteBackups(List<String> backupIds) {
 	}
 
-	/**
-	 * Makes a HTTP request to the server to delete the specified backup
-	 * @param backupIds all backups to delete
-	 * @return string response from the server
-	 */
-	private static String sendDeleteRequest(List<String> backupIds) {
-		try {
-			// FetchOptions fetchOptions = FetchOptions.Builder.doNotFollowRedirects();
-			// HTTPRequest httpRequest = new HTTPRequest(new URL(BASE_URL),
-			// HTTPMethod.POST, fetchOptions);
-			//
-			// StringBuilder stringBuilder = new StringBuilder();
-			// stringBuilder.append("action=Delete");
-			// for (String backupId : backupIds) {
-			// stringBuilder.append("&backup_id=").append(backupId);
-			// }
-			// httpRequest.setPayload(stringBuilder.toString().getBytes("UTF-8"));
-			// HTTPResponse httpResponse =
-			// URLFetchServiceFactory.getURLFetchService().fetch(httpRequest);
-			//
-			// String responseText = new String(httpResponse.getContent(), "UTF-8");
-			// mLogger.info("Response:\n" + responseText);
-			// return responseText;
-
-
-			ArrayList<String> scopes = new ArrayList<>();
-			scopes.add(BASE_URL);
-			AppIdentityService appIdentity = AppIdentityServiceFactory.getAppIdentityService();
-
-			AppIdentityService.GetAccessTokenResult accessToken = appIdentity.getAccessToken(scopes);
-
-			HttpPostBuilder builder = new HttpPostBuilder(BASE_URL);
-
-			HttpURLConnection connection = builder.getHttpURLConnection();
-			connection.setInstanceFollowRedirects(false);
-			connection.setRequestProperty("X-Appengine-Inbound-Appid", SystemProperty.applicationId.get());
-			connection.setRequestProperty("Authorization", "Bearer  " + accessToken);
-			mLogger.info("Appid: " + connection.getRequestProperty("X-Appengine-Inbound-Appid"));
-
-			builder.addParameter("action", "Delete");
-			for (String backupId : backupIds) {
-				builder.addParameter("backup_id", backupId);
-			}
-
-			connection = builder.build();
-
-			String response = HttpResponseParser.getStringResponse(connection);
-			connection.disconnect();
-
-			mLogger.info("Response:\n" + response);
-
-			return response;
-		} catch (IOException e) {
-			mLogger.severe(Strings.exceptionToString(e));
-			return null;
-		}
-	}
-
-	/**
-	 * Extract the delete token from the HTTP response
-	 * @param response the response from the delete request
-	 * @return delete token
-	 */
-	private static String extractDeleteToken(String response) {
-		Matcher matcher = Pattern.compile("xsrf_token\"\\ value=\"(.*?)\">").matcher(response);
-		if (matcher.find()) {
-			try {
-				String token = matcher.group(1);
-				mLogger.info("Found token: " + token);
-				return token;
-			} catch (IndexOutOfBoundsException e) {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Send delete confirmation request
-	 * @param backupIds all backups to delete
-	 * @param token the confirmation token for deleting the request
-	 * @return response from the delete, null if failed
-	 */
-	private static String sendConfirmRequest(List<String> backupIds, String token) {
-		try {
-			HttpPostBuilder builder = new HttpPostBuilder(BASE_URL + "/backup_delete.do");
-
-			for (String backupId : backupIds) {
-				builder.addParameter("backup_id", backupId);
-			}
-			builder.addParameter("namespace");
-			builder.addParameter("xsrf_token", token);
-
-			HttpURLConnection connection = builder.build();
-			connection.setInstanceFollowRedirects(false);
-			String responseText = HttpResponseParser.getStringResponse(connection);
-			connection.disconnect();
-			return responseText;
-
-		} catch (IOException e) {
-			mLogger.severe(Strings.exceptionToString(e));
-			return null;
-		}
-	}
 
 	private static final Logger mLogger = Logger.getLogger(BackupCleanup.class.getSimpleName());
 	private static final String TABLE = "_AE_Backup_Information Entities";
 	private static final String C_START_TIME = "start_time";
 	private static final String C_GS_HANDLE = "gs_handle";
-	private static final String SUB_DOMAIN = "ah-builtin-python-bundle-dot-";
-	private static final String URI = "_ah/datastore_admin";
-	private static final String BASE_URL;
-
-	static {
-		// Set base url
-		String appspotUrl = ServerConfig.Builds.getCurrent().getAppspotUrl();
-
-		// Remove HTTPS
-		int removeFrom = appspotUrl.indexOf("//") + 2;
-		appspotUrl = appspotUrl.substring(removeFrom);
-
-		BASE_URL = "https://" + SUB_DOMAIN + appspotUrl + URI;
-	}
 }

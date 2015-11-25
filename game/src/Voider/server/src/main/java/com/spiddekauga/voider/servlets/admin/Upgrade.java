@@ -14,8 +14,6 @@ import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CHighscore;
@@ -23,27 +21,25 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublishe
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResourcesDeleted;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.VoiderApiServlet;
+import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Does an upgrade for the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings({ "serial", "unused" })
-public class Upgrade extends VoiderApiServlet<IMethodEntity> {
-	@Override
-	protected void onInit() {
-		// Does nothing
-	}
+public class Upgrade extends VoiderServlet {
 
 	@Override
-	protected IEntity onRequest(IMethodEntity method) throws ServletException, IOException {
-		convertUuidIntToString();
+	protected void handleRequest() throws ServletException, IOException {
+		deleteBackupInfo();
 
 		getResponse().setContentType("text/html");
 		getResponse().getWriter().append("DONE !");
+	}
 
-		return null;
+	private void deleteBackupInfo() {
+		DatastoreUtils.delete(DatastoreUtils.getKeys("_AE_Backup_Information_Kind_Type_Info"));
 	}
 
 	private void convertUuidIntToString() {

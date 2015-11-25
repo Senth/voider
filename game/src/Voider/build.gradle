@@ -424,10 +424,10 @@ def updateApplicationId(applicationId) {
 def updateBackupCronUrl(applicationId) {
 	// Create URL
 	def url = "<url>/_ah/datastore_admin/backup.create?"
-	url += "name=datastore"
+	url += "name=cron-"
 	url += "&amp;queue=backup"
 	url += "&amp;filesystem=gs"
-	url += "&amp;gs_bucket_name=" + applicationId
+	url += "&amp;gs_bucket_name=" + applicationId + "/backup_datastore"
 	
 	def kinds = [
 		"beta_group",

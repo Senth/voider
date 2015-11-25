@@ -96,7 +96,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 			replyToAddresses[0] = new InternetAddress(sentFromEmail, sentFromName);
 			message.setReplyTo(replyToAddresses);
 			message.addRecipient(Message.RecipientType.TO, ServerConfig.EMAIL_ADMIN);
-			message.setSubject(getSubject(bugReportEntity));
+			message.setSubject(getSubject(bugReportEntity, sentFromName));
 			message.setContent(body, "text/html");
 			Transport.send(message);
 		} catch (MessagingException | UnsupportedEncodingException e) {
@@ -110,9 +110,10 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 	/**
 	 * Get bug report subject
 	 * @param bugReportEntity
+	 * @param username the user that sent the bug report
 	 * @return subject for the bug report
 	 */
-	private static String getSubject(BugReportEntity bugReportEntity) {
+	private static String getSubject(BugReportEntity bugReportEntity, String username) {
 		String subject = "";
 		if (bugReportEntity.type != null) {
 			switch (bugReportEntity.type) {
@@ -131,7 +132,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 			}
 		}
 
-		return subject + " " + bugReportEntity.subject;
+		return subject + " " + bugReportEntity.subject + " — " + username;
 	}
 
 	/**
@@ -142,7 +143,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 	 */
 	private static String getFormatedHeadline(String headline, String message) {
 		if (message != null && !message.equals("")) {
-			return "<b>" + headline + "</b><br />" + message + "<br /><br />";
+			return "<b>" + headline + "</b><br />" + message.replace("\n", "<br />") + "<br /><br />";
 		} else {
 			return "";
 		}
