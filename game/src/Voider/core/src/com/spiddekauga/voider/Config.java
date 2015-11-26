@@ -206,7 +206,7 @@ public class Config {
 		 */
 		public static class Messages {
 			/** If loading/unloading debug messages should be turned on/off */
-			public static final boolean LOAD_UNLOAD = true;
+			public static final boolean LOAD_UNLOAD = false;
 		}
 
 		/** Build level */
@@ -221,7 +221,7 @@ public class Config {
 		 */
 		public static boolean DEBUG_TESTS = isBuildOrBelow(Builds.NIGHTLY_DEV);
 		/** Skip loading text */
-		public static final boolean SKIP_LOADING_TIME = isBuildOrBelow(Builds.NIGHTLY_RELEASE) ? false : false;
+		public static final boolean SKIP_LOADING_TIME = isBuildOrBelow(Builds.NIGHTLY_RELEASE) ? true : false;
 		/** Beta key length */
 		public static final int REGISTER_KEY_LENGTH = 22;
 

@@ -44,7 +44,7 @@ public class NetworkGateway {
 
 				while (itemIt.hasNext()) {
 					FileItemStream item = itemIt.next();
-					mLogger.info("Found field: " + item.getFieldName());
+					mLogger.finer("Found field: " + item.getFieldName());
 
 					if (item.getFieldName().equals(ENTITY_NAME)) {
 						// Binary
@@ -73,7 +73,7 @@ public class NetworkGateway {
 		// Check if there's a regular parameter :)
 		String base64Entity = request.getParameter(ENTITY_NAME);
 		if (base64Entity != null) {
-			mLogger.info("Found Base64 entity: " + base64Entity);
+			mLogger.finer("Found Base64 entity: " + base64Entity);
 			return DatatypeConverter.parseBase64Binary(base64Entity);
 		} else {
 			mLogger.warning("Didn't find any entity");

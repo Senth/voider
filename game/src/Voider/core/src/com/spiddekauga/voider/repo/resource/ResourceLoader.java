@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
@@ -31,7 +32,12 @@ abstract class ResourceLoader<Identifier, Resource> {
 	 */
 	protected ResourceLoader(AssetManager assetManager) {
 		mAssetManager = assetManager;
-		mAssetManager.getLogger().setLevel(Config.Debug.LOG_VERBOSITY);
+
+		if (Config.Debug.Messages.LOAD_UNLOAD) {
+			mAssetManager.getLogger().setLevel(Config.Debug.LOG_VERBOSITY);
+		} else {
+			mAssetManager.getLogger().setLevel(Application.LOG_NONE);
+		}
 	}
 
 	/**
@@ -55,8 +61,8 @@ abstract class ResourceLoader<Identifier, Resource> {
 		if (loadedResource != null) {
 			if (!loadedResource.scenes.contains(scene)) {
 				loadedResource.scenes.add(scene);
-				Gdx.app.debug(ResourceLoader.class.getSimpleName(), "load(" + getClassName(scene) + ", " + loadedResource.identifier
-						+ "): add scene. Scene count: " + loadedResource.scenes.size());
+
+				log("load(" + getClassName(scene) + ", " + loadedResource.identifier + "): add scene. Scene count: " + loadedResource.scenes.size());
 			}
 		}
 		// Else no resource loaded create new
@@ -64,7 +70,8 @@ abstract class ResourceLoader<Identifier, Resource> {
 			loadedResource = new LoadedResource(identifier, scene);
 			mAssetManager.load(loadedResource.filepath, getType(identifier), getParameters(identifier));
 			mLoadingQueue.put(identifier, loadedResource);
-			Gdx.app.debug(ResourceLoader.class.getSimpleName(), "load(" + getClassName(scene) + ", " + loadedResource.identifier + "): new resource");
+
+			log("load(" + getClassName(scene) + ", " + loadedResource.identifier + "): new resource");
 		}
 	}
 
@@ -187,11 +194,11 @@ abstract class ResourceLoader<Identifier, Resource> {
 					mAssetManager.unload(loadedResource.filepath);
 					iterator.remove();
 					onUnload(entry.getKey());
-					Gdx.app.debug(ResourceLoader.class.getSimpleName(),
-							"unload(" + getClassName(scene) + "): Fully removed " + loadedResource.identifier);
+
+					log("unload(" + getClassName(scene) + "): Fully removed " + loadedResource.identifier);
 				} else {
-					Gdx.app.debug(ResourceLoader.class.getSimpleName(), "unload(" + getClassName(scene) + "): Removed " + loadedResource.identifier
-							+ " from this scene. Scene count: " + loadedResource.scenes.size());
+					log("unload(" + getClassName(scene) + "): Removed " + loadedResource.identifier + " from this scene. Scene count: "
+							+ loadedResource.scenes.size());
 				}
 			}
 		}
@@ -399,6 +406,25 @@ abstract class ResourceLoader<Identifier, Resource> {
 		}
 
 		return resources;
+	}
+
+	/**
+	 * Log a message if it should
+	 * @param message the message to display
+	 */
+	private void log(String message) {
+		log(ResourceLoader.class, message);;
+	}
+
+	/**
+	 * Log a message if it should
+	 * @param clazz the log message is from
+	 * @param message the message to display
+	 */
+	protected void log(Class<?> clazz, String message) {
+		if (Config.Debug.Messages.LOAD_UNLOAD) {
+			Gdx.app.debug(clazz.getSimpleName(), message);
+		}
 	}
 
 	/**

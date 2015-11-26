@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceDependency;
 import com.spiddekauga.voider.resources.ResourceException;
@@ -24,10 +25,12 @@ class ResourceDependencyLoader implements Disposable {
 	/**
 	 * Default constructor
 	 * @param assetManager
+	 * @param internalLoader
 	 * @param externalLoader
 	 */
-	ResourceDependencyLoader(AssetManager assetManager, ResourceExternalLoader externalLoader) {
+	ResourceDependencyLoader(AssetManager assetManager, ResourceInternalLoader internalLoader, ResourceExternalLoader externalLoader) {
 		mAssetManager = assetManager;
+		mInternalLoader = internalLoader;
 		mExternalLoader = externalLoader;
 	}
 
@@ -124,10 +127,10 @@ class ResourceDependencyLoader implements Disposable {
 
 					// Internal
 					for (InternalNames dependency : def.getInternalDependencies()) {
-						mAssetManager.load(dependency.getFilePath(), dependency.getType());
+						mInternalLoader.load(queueItem.scene, dependency);
 					}
 				} else {
-					Gdx.app.debug("ResourceDependency", "Loaded resource " + resource.getClass().getSimpleName() + " does not have any dependencies.");
+					log("Loaded resource " + resource.getClass().getSimpleName() + " does not have any dependencies.");
 				}
 
 				// Remove element
@@ -137,6 +140,16 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		return mLoadingDefs.size() == 0 && !mExternalLoader.isLoading();
+	}
+
+	/**
+	 * Internal logging
+	 * @param message
+	 */
+	private void log(String message) {
+		if (Config.Debug.Messages.LOAD_UNLOAD) {
+			Gdx.app.debug(ResourceDependencyLoader.class.getSimpleName(), message);
+		}
 	}
 
 	/**
@@ -151,5 +164,8 @@ class ResourceDependencyLoader implements Disposable {
 	/** The class actually loading the resources */
 	private AssetManager mAssetManager;
 	/** Resource loader, this actually loads all the external dependencies */
-	private static ResourceExternalLoader mExternalLoader;
+	private ResourceExternalLoader mExternalLoader;
+	/** Loads all internal resources */
+	private ResourceInternalLoader mInternalLoader;
+
 }

@@ -442,7 +442,7 @@ public class ResourceCacheFacade {
 	private static ResourceExternalLoader mExternalLoader = new ResourceExternalLoader(mAssetManager);
 	private static ResourceInternalLoader mInternalLoader = new ResourceInternalLoader(mAssetManager);
 	/** Handles loading all dependencies of external resources. */
-	private static ResourceDependencyLoader mDependencyLoader = new ResourceDependencyLoader(mAssetManager, mExternalLoader);
+	private static ResourceDependencyLoader mDependencyLoader = new ResourceDependencyLoader(mAssetManager, mInternalLoader, mExternalLoader);
 
 	/**
 	 * This queue is for loading resources (or rather instances of defs). However all defs

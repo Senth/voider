@@ -40,6 +40,7 @@ import com.spiddekauga.voider.network.resource.BulletDamageSearchRanges;
 import com.spiddekauga.voider.network.resource.BulletDefEntity;
 import com.spiddekauga.voider.network.resource.BulletFetchMethod;
 import com.spiddekauga.voider.network.resource.BulletFetchResponse;
+import com.spiddekauga.voider.network.resource.BulletSpeedSearchRanges;
 import com.spiddekauga.voider.network.resource.CampaignDefEntity;
 import com.spiddekauga.voider.network.resource.CollisionDamageSearchRanges;
 import com.spiddekauga.voider.network.resource.CommentFetchMethod;
@@ -253,6 +254,7 @@ public class KryoNetPool {
 		LEVEL_FETCH_METHOD_SORT_ORDERS(LevelFetchMethod.SortOrders.class),
 		VERSION(Version.class),
 		INT_ARRAY(int[].class),
+		BULLET_SPEED_SEARCH_RANGES(BulletSpeedSearchRanges.class),
 
 		// !!! ALWAYS APPEND, NEVER ADD IN THE MIDDLE !!!
 

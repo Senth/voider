@@ -20,7 +20,7 @@ public class LevelBackground {
 	 */
 	public LevelBackground(InternalNames internalName) {
 		if (!ResourceCacheFacade.isLoaded(internalName)) {
-			throw new IllegalArgumentException("Resource not loaded!");
+			throw new IllegalArgumentException("Resource not loaded! " + internalName);
 		}
 
 		mName = internalName;
