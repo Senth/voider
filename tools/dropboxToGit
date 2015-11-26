@@ -56,9 +56,11 @@ if [ ${#syncing[@]} -eq 0 ]; then
 	syncing=( "${CAN_SYNC[@]}" )
 fi
 
-# echo "Syncing array:"
-# printf -- '%s\n' "${syncing[@]}"
-
+# Run updated UI script
+oldDir="$PWD"
+cd "$DROPBOX_ASSET_DIR/ui"
+/usr/bin/python createSkins.py
+cd "$oldDir"
 
 syncUiRaw() {
 	for dir in "$DROPBOX_UI_RAW_DIR/"*

@@ -229,7 +229,7 @@ button_default_checked
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_checked
+button_transparent_down
   rotate: false
   xy: 52, 2
   size: 7, 7
@@ -245,6 +245,14 @@ button_default_down
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_transparent_checked
+  rotate: false
+  xy: 52, 2
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_tag_down
   rotate: false
   xy: 52, 2
@@ -253,15 +261,15 @@ button_tag_down
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_down
+button_default_checked_over
   rotate: false
-  xy: 52, 2
+  xy: 61, 2
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_default_checked_over
+button_tag_over
   rotate: false
   xy: 61, 2
   size: 7, 7
@@ -286,14 +294,6 @@ button_transparent_checked_over
   offset: 0, 0
   index: -1
 button_transparent_over
-  rotate: false
-  xy: 61, 2
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button_tag_over
   rotate: false
   xy: 61, 2
   size: 7, 7
@@ -942,6 +942,13 @@ icon_size_small_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
+star_down
+  rotate: false
+  xy: 1640, 580
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 icon_size_small_down
   rotate: false
   xy: 1640, 580
@@ -956,21 +963,7 @@ star_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-star_down
-  rotate: false
-  xy: 1640, 580
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
 icon_size_small_checked_over
-  rotate: false
-  xy: 1674, 580
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-star_over
   rotate: false
   xy: 1674, 580
   size: 32, 32
@@ -985,6 +978,13 @@ star_checked_over
   offset: 0, 0
   index: -1
 icon_size_small_over
+  rotate: false
+  xy: 1674, 580
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+star_over
   rotate: false
   xy: 1674, 580
   size: 32, 32
@@ -1959,14 +1959,14 @@ scroll_horizontal_knob
   orig: 16, 16
   offset: 0, 0
   index: -1
-slider_knob
+scroll_vertical_knob
   rotate: false
   xy: 1388, 528
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll_vertical_knob
+slider_knob
   rotate: false
   xy: 1388, 528
   size: 16, 16
@@ -2318,7 +2318,7 @@ settings_network_checked
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_down
+settings_statistics_checked
   rotate: false
   xy: 1504, 546
   size: 32, 32
@@ -2332,7 +2332,7 @@ settings_network_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_checked
+settings_statistics_down
   rotate: false
   xy: 1504, 546
   size: 32, 32
@@ -2346,7 +2346,7 @@ settings_network_checked_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_statistics_checked_over
+settings_network_over
   rotate: false
   xy: 1538, 546
   size: 32, 32
@@ -2360,7 +2360,7 @@ settings_statistics_over
   orig: 32, 32
   offset: 0, 0
   index: -1
-settings_network_over
+settings_statistics_checked_over
   rotate: false
   xy: 1538, 546
   size: 32, 32

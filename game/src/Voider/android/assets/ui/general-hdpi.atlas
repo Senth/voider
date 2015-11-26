@@ -237,6 +237,14 @@ button_default_down
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_transparent_checked
+  rotate: false
+  xy: 1332, 1209
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_transparent_down
   rotate: false
   xy: 1332, 1209
@@ -253,23 +261,7 @@ button_tag_down
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_checked
-  rotate: false
-  xy: 1332, 1209
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
 button_default_checked_over
-  rotate: false
-  xy: 1341, 1209
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button_transparent_checked_over
   rotate: false
   xy: 1341, 1209
   size: 7, 7
@@ -294,6 +286,14 @@ button_default_over
   offset: 0, 0
   index: -1
 button_tag_over
+  rotate: false
+  xy: 1341, 1209
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_checked_over
   rotate: false
   xy: 1341, 1209
   size: 7, 7
@@ -907,13 +907,6 @@ star_down
   orig: 48, 48
   offset: 0, 0
   index: -1
-icon_size_medium_down
-  rotate: false
-  xy: 1002, 494
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 star_checked
   rotate: false
   xy: 1002, 494
@@ -921,14 +914,14 @@ star_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
-icon_size_medium_checked_over
+icon_size_medium_down
   rotate: false
-  xy: 1052, 544
+  xy: 1002, 494
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-star_over
+icon_size_medium_checked_over
   rotate: false
   xy: 1052, 544
   size: 48, 48
@@ -943,6 +936,13 @@ star_checked_over
   offset: 0, 0
   index: -1
 icon_size_medium_over
+  rotate: false
+  xy: 1052, 544
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+star_over
   rotate: false
   xy: 1052, 544
   size: 48, 48
@@ -2318,6 +2318,13 @@ settings_network_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
+settings_statistics_checked
+  rotate: false
+  xy: 402, 16
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
 settings_network_down
   rotate: false
   xy: 402, 16
@@ -2332,13 +2339,6 @@ settings_statistics_down
   orig: 48, 48
   offset: 0, 0
   index: -1
-settings_statistics_checked
-  rotate: false
-  xy: 402, 16
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 settings_network_checked_over
   rotate: false
   xy: 1984, 1732
@@ -2346,14 +2346,14 @@ settings_network_checked_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-settings_network_over
+settings_statistics_checked_over
   rotate: false
   xy: 1984, 1732
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-settings_statistics_checked_over
+settings_network_over
   rotate: false
   xy: 1984, 1732
   size: 48, 48

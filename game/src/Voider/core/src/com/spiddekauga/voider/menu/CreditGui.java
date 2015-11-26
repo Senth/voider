@@ -19,6 +19,7 @@ import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.CreditImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
+import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
@@ -106,7 +107,7 @@ class CreditGui extends MenuGui {
 		mPaddingHeader = SkinNames.getResource(SkinNames.CreditsVars.PADDING_HEADER);
 		mPaddingSection = SkinNames.getResource(SkinNames.CreditsVars.PADDING_SECTION);
 		mPaddingLogo = SkinNames.getResource(SkinNames.CreditsVars.PADDING_LOGO);
-		mSectionStyle = SkinNames.getResource(SkinNames.CreditsUi.LABEL_SECTION);
+		mSectionStyle = LabelStyles.HEADER.getStyle();
 		mTextStyle = SkinNames.getResource(SkinNames.CreditsUi.LABEL_NAME);
 		mScrollPaneSpeed = SkinNames.getResource(SkinNames.CreditsVars.SCROLL_SPEED);
 		mScrollRestartTime = SkinNames.getResource(SkinNames.CreditsVars.RESTART_TIME);

@@ -229,22 +229,6 @@ button_default_checked
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_tag_down
-  rotate: false
-  xy: 756, 47
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button_default_down
-  rotate: false
-  xy: 756, 47
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
 button_transparent_checked
   rotate: false
   xy: 756, 47
@@ -261,6 +245,22 @@ button_transparent_down
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_tag_down
+  rotate: false
+  xy: 756, 47
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_default_down
+  rotate: false
+  xy: 756, 47
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_default_checked_over
   rotate: false
   xy: 1992, 1701
@@ -269,7 +269,7 @@ button_default_checked_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_default_over
+button_transparent_over
   rotate: false
   xy: 1992, 1701
   size: 7, 7
@@ -285,7 +285,7 @@ button_tag_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_over
+button_default_over
   rotate: false
   xy: 1992, 1701
   size: 7, 7
@@ -325,7 +325,7 @@ button_default_up
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_up
+button_tag_up
   rotate: false
   xy: 1608, 463
   size: 7, 7
@@ -333,7 +333,7 @@ button_transparent_up
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_tag_up
+button_transparent_up
   rotate: false
   xy: 1608, 463
   size: 7, 7
@@ -816,14 +816,14 @@ star_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-icon_size_large_down
+star_down
   rotate: false
   xy: 1932, 1008
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-star_down
+icon_size_large_down
   rotate: false
   xy: 1932, 1008
   size: 64, 64
@@ -837,7 +837,7 @@ icon_size_large_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-star_checked_over
+icon_size_large_over
   rotate: false
   xy: 1932, 942
   size: 64, 64
@@ -851,7 +851,7 @@ star_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-icon_size_large_over
+star_checked_over
   rotate: false
   xy: 1932, 942
   size: 64, 64
@@ -1413,14 +1413,14 @@ scroll_horizontal_knob
   orig: 32, 32
   offset: 0, 0
   index: -1
-scroll_vertical_knob
+slider_knob
   rotate: false
   xy: 1992, 1710
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-slider_knob
+scroll_vertical_knob
   rotate: false
   xy: 1992, 1710
   size: 32, 32
@@ -2363,13 +2363,6 @@ settings_network_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-settings_statistics_checked
-  rotate: false
-  xy: 1400, 320
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 settings_network_down
   rotate: false
   xy: 1400, 320
@@ -2384,7 +2377,21 @@ settings_statistics_down
   orig: 64, 64
   offset: 0, 0
   index: -1
+settings_statistics_checked
+  rotate: false
+  xy: 1400, 320
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 settings_network_checked_over
+  rotate: false
+  xy: 1400, 254
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+settings_network_over
   rotate: false
   xy: 1400, 254
   size: 64, 64
@@ -2399,13 +2406,6 @@ settings_statistics_checked_over
   offset: 0, 0
   index: -1
 settings_statistics_over
-  rotate: false
-  xy: 1400, 254
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-settings_network_over
   rotate: false
   xy: 1400, 254
   size: 64, 64

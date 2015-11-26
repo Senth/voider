@@ -97,11 +97,17 @@ public class UiStyles {
 	 */
 	public enum LabelStyles {
 		DEFAULT,
+		/** Text beside the icon */
+		ICON,
 		PANEL_SECTION,
 		ERROR,
 		HIGHLIGHT,
 		WARNING,
 		SUCCESS,
+		NOTIFICATION_INFO,
+		NOTIFICATION_WARNING,
+		NOTIFICATION_ERROR,
+		NOTIFICATION_SUCCESS,
 		TOOLTIP,
 		/** Extra information */
 		INFO_EXTRA,
@@ -292,14 +298,19 @@ public class UiStyles {
 		LabelStyles.ERROR.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
 		LabelStyles.WARNING.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_WARNING));
 		LabelStyles.HIGHLIGHT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
+		LabelStyles.SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 		LabelStyles.TOOLTIP.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP));
 		LabelStyles.HEADER.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER));
 		LabelStyles.HEADER2.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HEADER2));
 		LabelStyles.TEXT_FIELD_DEFAULT.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_TEXT_FIELD_DEFAULT));
-		LabelStyles.SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 		LabelStyles.PUBLISH_NAME.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PUBLISH_NAME));
 		LabelStyles.PATH.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_PATH));
 		LabelStyles.INFO_EXTRA.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_INFO_EXTRA));
+		LabelStyles.NOTIFICATION_ERROR.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_NOTIFICATION_ERROR));
+		LabelStyles.NOTIFICATION_WARNING.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_NOTIFICATION_WARNING));
+		LabelStyles.NOTIFICATION_INFO.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_NOTIFICATION_INFO));
+		LabelStyles.NOTIFICATION_SUCCESS.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_NOTIFICATION_SUCCESS));
+		LabelStyles.ICON.setStyle((LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ICON));
 
 
 		// Button styles

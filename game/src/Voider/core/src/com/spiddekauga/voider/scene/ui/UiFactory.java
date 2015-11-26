@@ -426,8 +426,8 @@ public class UiFactory implements Disposable {
 	 *        {@link LabelFactory#getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
-	public TextArea addTextArea(String sectionText, boolean errorLabel, String defaultText, float width, TextFieldListener listener,
-			AlignTable table, ArrayList<Actor> createdActors) {
+	public TextArea addTextArea(String sectionText, boolean errorLabel, String defaultText, float width, TextFieldListener listener, AlignTable table,
+			ArrayList<Actor> createdActors) {
 		TextArea textArea = new TextArea("", mStyles.textField.standard);
 		addTextField(textArea, sectionText, errorLabel, defaultText, width, listener, table, createdActors);
 		table.getCell().setSize(width, mStyles.vars.textAreaHeight);
@@ -731,7 +731,7 @@ public class UiFactory implements Disposable {
 		if (textStyle != null) {
 			label = new Label(text, textStyle.getStyle());
 		} else {
-			label = new Label(text, LabelStyles.DEFAULT.getStyle());
+			label = new Label(text, LabelStyles.ICON.getStyle());
 		}
 		label.pack();
 

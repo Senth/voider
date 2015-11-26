@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.menu;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -58,14 +57,12 @@ public class ScoreSceneGui extends Gui {
 
 
 		// My Score
-		LabelStyle myScoreStyle = SkinNames.getResource(SkinNames.General.LABEL_MY_SCORE);
-		addToScoreTable("My Score", myScoreStyle, mScoreScene.getPlayerScore());
+		addToScoreTable("My Score", mScoreScene.getPlayerScore());
 
 
 		if (mScoreScene.isPublished()) {
 			// My top score
-			LabelStyle myHighscore = SkinNames.getResource(SkinNames.General.LABEL_TOP_SCORE);
-			addToScoreTable("My Highscore", myHighscore, mScoreScene.getPlayerHighscore());
+			addToScoreTable("My Highscore", mScoreScene.getPlayerHighscore());
 
 
 			// Rate
@@ -137,43 +134,20 @@ public class ScoreSceneGui extends Gui {
 
 	/**
 	 * Add a text (left aligned) and then another actor (right aligned) to the score table
-	 * @param text label text
-	 * @param labelStyle (optional) style for the text, if null it will use the default
-	 *        label style
-	 * @param actor the actor to add as right aligned
+	 * @param name the name that scored
+	 * @param score the score as text
 	 */
-	private void addToScoreTable(String text, LabelStyle labelStyle, Actor actor) {
-		LabelStyle usesLabelStyle = labelStyle;
-
-		if (usesLabelStyle == null) {
-			usesLabelStyle = LabelStyles.DEFAULT.getStyle();
-		}
+	private void addToScoreTable(String name, String score) {
 
 		float rowHeight = SkinNames.getResource(SkinNames.GeneralVars.SCORE_LABEL_HEIGHT);
+		LabelStyle labelStyle = LabelStyles.HEADER.getStyle();
+		Label nameLabel = new Label(name, labelStyle);
+		Label scoreLabel = new Label(score, labelStyle);
 
-		Label label = new Label(text, usesLabelStyle);
 		mMainTable.row().setFillWidth(true).setHeight(rowHeight);
-		mMainTable.add(label);
+		mMainTable.add(nameLabel);
 		mMainTable.add().setFillWidth(true);
-		mMainTable.add(actor);
-	}
-
-	/**
-	 * Add a text (left aligned) and then another actor (right aligned) to the score table
-	 * @param leftText label text
-	 * @param labelStyle (optional) style for both the left and right text, if null it
-	 *        will use the default label style
-	 * @param rightText text for the right side
-	 */
-	private void addToScoreTable(String leftText, LabelStyle labelStyle, String rightText) {
-		LabelStyle usesLabelStyle = labelStyle;
-
-		if (usesLabelStyle == null) {
-			usesLabelStyle = LabelStyles.DEFAULT.getStyle();
-		}
-
-		Label label = new Label(rightText, usesLabelStyle);
-		addToScoreTable(leftText, usesLabelStyle, label);
+		mMainTable.add(scoreLabel);
 	}
 
 	/** Used for getting information about the scene */

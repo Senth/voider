@@ -81,9 +81,11 @@ public enum InternalNames {
 
 
 	// Font files
-	FONT_ARIAL("arial.ttf", FreeType.class),
-	FONT_CHARGEN("chargen_(6809).ttf", FreeType.class),
-	FONT_JOYSTIX_MONOSPACE("joystix_monospace.ttf", FreeType.class),
+	FONT_NESOBRITE_NO_LT("nesobrite_no_lt.ttf", FreeType.class),
+	FONT_NESOBRITE_NO_BK("nesobrite_no_bk.ttf", FreeType.class),
+	FONT_NESOBRITE_NO_RG("nesobrite_no_rg.ttf", FreeType.class),
+	FONT_NESOBRITE_NO_BD("nesobrite_no_bd.ttf", FreeType.class),
+	FONT_NESOBRITE_NO_BL("nesobrite_no_bl.ttf", FreeType.class),
 
 
 	// Music
@@ -221,23 +223,23 @@ public enum InternalNames {
 		// Fonts
 		// MDPI
 		SkinFontParameter fontParameter = new SkinFontParameter();
-		fontParameter.addFont(FONT_ARIAL, "arial", 12, 16, 24, 36);
-		fontParameter.addFont(FONT_CHARGEN, "chargen", 12, 16, 24, 36);
-		fontParameter.addFont(FONT_JOYSTIX_MONOSPACE, "joystix_monospace", 12, 16, 24, 36);
+		fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 24, 36);
+		fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 12, 16, 24, 36);
+		fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 12, 16, 24, 36);
 		UI_GENERAL_MDPI.mParameters = fontParameter;
 
 		// HDPI
 		fontParameter = new SkinFontParameter();
-		fontParameter.addFont(FONT_ARIAL, "default", 18, 24, 36, 54);
-		fontParameter.addFont(FONT_CHARGEN, "chargen", 18, 24, 36, 54);
-		fontParameter.addFont(FONT_JOYSTIX_MONOSPACE, "joystix_monospace", 18, 24, 36, 54);
+		fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 36, 54);
+		fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 18, 24, 36, 54);
+		fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 18, 24, 36, 54);
 		UI_GENERAL_HDPI.mParameters = fontParameter;
 
 		// HDPI
 		fontParameter = new SkinFontParameter();
-		fontParameter.addFont(FONT_ARIAL, "default", 24, 32, 48, 72);
-		fontParameter.addFont(FONT_CHARGEN, "chargen", 24, 32, 48, 72);
-		fontParameter.addFont(FONT_JOYSTIX_MONOSPACE, "joystix_monospace", 24, 32, 48, 72);
+		fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 48, 72);
+		fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 24, 32, 48, 72);
+		fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 24, 32, 48, 72);
 		UI_GENERAL_XHDPI.mParameters = fontParameter;
 
 	}

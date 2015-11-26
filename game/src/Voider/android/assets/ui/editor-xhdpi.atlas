@@ -340,6 +340,13 @@ bullet_select_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
+bullet_select_down
+  rotate: false
+  xy: 462, 869
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 weapon_down
   rotate: false
   xy: 462, 869
@@ -354,21 +361,7 @@ weapon_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-bullet_select_down
-  rotate: false
-  xy: 462, 869
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 bullet_select_checked_over
-  rotate: false
-  xy: 592, 935
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-weapon_checked_over
   rotate: false
   xy: 592, 935
   size: 64, 64
@@ -383,6 +376,13 @@ bullet_select_over
   offset: 0, 0
   index: -1
 weapon_over
+  rotate: false
+  xy: 592, 935
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+weapon_checked_over
   rotate: false
   xy: 592, 935
   size: 64, 64
@@ -836,7 +836,7 @@ draw_erase_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-draw_erase_over
+terrain_draw_erase_checked_over
   rotate: false
   xy: 398, 605
   size: 64, 64
@@ -850,7 +850,7 @@ terrain_draw_erase_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_draw_erase_checked_over
+draw_erase_over
   rotate: false
   xy: 398, 605
   size: 64, 64
@@ -2005,13 +2005,6 @@ path_add_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_add_over
-  rotate: false
-  xy: 398, 77
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 path_tab_checked_over
   rotate: false
   xy: 398, 77
@@ -2020,6 +2013,13 @@ path_tab_checked_over
   offset: 0, 0
   index: -1
 path_tab_over
+  rotate: false
+  xy: 398, 77
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+path_add_over
   rotate: false
   xy: 398, 77
   size: 64, 64
@@ -2747,14 +2747,14 @@ shape_from_image_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-ship_editor_checked_over
+ship_editor_over
   rotate: false
   xy: 1256, 671
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-ship_editor_over
+ship_editor_checked_over
   rotate: false
   xy: 1256, 671
   size: 64, 64

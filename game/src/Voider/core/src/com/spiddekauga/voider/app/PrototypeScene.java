@@ -2,8 +2,6 @@ package com.spiddekauga.voider.app;
 
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.repo.resource.ExternalTypes;
-import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.Scene;
@@ -24,8 +22,6 @@ public class PrototypeScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.load(this, BACKGROUND_TO_USE);
-		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
 	}
 
 	@Override
@@ -41,16 +37,10 @@ public class PrototypeScene extends Scene {
 		} else if (keycode == Input.Keys.F5) {
 			getGui().dispose();
 			getGui().initGui();
+			return false;
 		}
 
-		return false;
+		return super.onKeyDown(keycode);
 	}
 
-	@Override
-	public void update(float deltaTime) {
-		super.update(deltaTime);
-	}
-
-	/** Background to use for the prototype scene */
-	static final InternalNames BACKGROUND_TO_USE = InternalNames.LEVEL_BACKGROUND_TUNNELS_720;
 }

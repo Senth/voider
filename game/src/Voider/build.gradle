@@ -21,7 +21,7 @@ buildscript {
 ext.cronFile = "server/src/main/webapp/WEB-INF/cron.xml"
 ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
 ext.appengineExplodedWebFile = "server/build/exploded-app/WEB-INF/appengine-web.xml"
-ext.defaultBuild = "DEV_LOCAL"
+ext.defaultBuild = "DEV_SERVER"
 
 allprojects {
     apply plugin: "eclipse"

@@ -7,7 +7,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
@@ -24,12 +23,10 @@ import com.spiddekauga.voider.scene.Scene;
 class ResourceDependencyLoader implements Disposable {
 	/**
 	 * Default constructor
-	 * @param assetManager
 	 * @param internalLoader
 	 * @param externalLoader
 	 */
-	ResourceDependencyLoader(AssetManager assetManager, ResourceInternalLoader internalLoader, ResourceExternalLoader externalLoader) {
-		mAssetManager = assetManager;
+	ResourceDependencyLoader(ResourceInternalLoader internalLoader, ResourceExternalLoader externalLoader) {
 		mInternalLoader = internalLoader;
 		mExternalLoader = externalLoader;
 	}
@@ -161,8 +158,6 @@ class ResourceDependencyLoader implements Disposable {
 
 	/** The load queue which we're loading the resources */
 	private ArrayList<ResourceItem> mLoadingDefs = new ArrayList<ResourceItem>();
-	/** The class actually loading the resources */
-	private AssetManager mAssetManager;
 	/** Resource loader, this actually loads all the external dependencies */
 	private ResourceExternalLoader mExternalLoader;
 	/** Loads all internal resources */

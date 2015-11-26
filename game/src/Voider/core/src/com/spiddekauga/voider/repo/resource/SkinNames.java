@@ -745,21 +745,13 @@ public class SkinNames {
 	 * General UI elements
 	 */
 	public enum General implements ISkinNames {
-		/** Wait animation texture */
 		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
-		/** Regular press button */
 		BUTTON_PRESS(ButtonStyle.class, "press"),
-		/** Toggle button */
 		BUTTON_TOGGLE(ButtonStyle.class, "toggle"),
-		/** Only displayed as selected */
 		BUTTON_SELECTED(ButtonStyle.class, "selected"),
-		/** Displayed as selected, but has over and down states */
 		BUTTON_SELECTED_PRESSABLE(ButtonStyle.class, "selected_pressable"),
-		/** A regular button that looks like a checkbox */
 		BUTTON_CHECK_BOX("checkbox"),
-		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
-		/** Check box that uses the radio button style */
 		CHECK_BOX_RADIO(CheckBoxStyle.class, "radio"),
 		CREATE,
 		IMAGE_BUTTON_DEFAULT("default"),
@@ -767,47 +759,32 @@ public class SkinNames {
 		IMAGE_BUTTON_STUB_TOGGLE("stub_toggle"),
 		IMAGE_BUTTON_TOGGLE("toggle"),
 		LABEL_DEFAULT(LabelStyle.class, "default"),
+		LABEL_ICON(LabelStyle.class, "icon"),
+		LABEL_NOTIFICATION_ERROR(LabelStyle.class, "notification_error"),
+		LABEL_NOTIFICATION_WARNING(LabelStyle.class, "notification_warning"),
+		LABEL_NOTIFICATION_SUCCESS(LabelStyle.class, "notification_success"),
+		LABEL_NOTIFICATION_INFO(LabelStyle.class, "notification_info"),
 		LABEL_ERROR(LabelStyle.class, "error"),
 		LABEL_HIGHLIGHT(LabelStyle.class, "highlight"),
 		LABEL_WARNING(LabelStyle.class, "warning"),
 		LABEL_SUCCESS(LabelStyle.class, "success"),
-		/** Panel section label style */
 		LABEL_PANEL_SECTION(LabelStyle.class, "panel_section"),
-		/** Editor name label style */
 		LABEL_EDITOR_NAME(LabelStyle.class, "editor_name"),
-		/** In front of error (usually above/below text fields). */
 		LABEL_ERROR_SECTION_INFO(LabelStyle.class, "error_section_info"),
-		/** Section error message (usually above/below text fields). */
 		LABEL_ERROR_SECTION(LabelStyle.class, "error_section"),
-		/** Tooltip label */
 		LABEL_TOOLTIP(LabelStyle.class, "tooltip"),
-		/** Label for my score */
-		LABEL_MY_SCORE(LabelStyle.class, "my_score"),
-		/** Label for top score */
-		LABEL_TOP_SCORE(LabelStyle.class, "top_score"),
-		/** Header label */
 		LABEL_HEADER(LabelStyle.class, "header"),
-		/** Header label 2 */
 		LABEL_HEADER2(LabelStyle.class, "header2"),
-		/** Default text for text fields */
 		LABEL_TEXT_FIELD_DEFAULT(LabelStyle.class, "textfield_default"),
-		/** Player name of the comment */
 		LABEL_COMMENT_NAME(LabelStyle.class, "comment_name"),
-		/** Date of the comment */
 		LABEL_COMMENT_DATE(LabelStyle.class, "comment_date"),
-		/** A Comment */
 		LABEL_COMMENT(LabelStyle.class, "comment"),
-		/** Grey light label */
 		LABEL_PUBLISH_NAME(LabelStyle.class, "publish_name"),
-		/** Labels for path */
 		LABEL_PATH(LabelStyle.class, "path"),
-		/** Extra info */
 		LABEL_INFO_EXTRA(LabelStyle.class, "info_extra"),
-		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		LOGOUT,
 		PLAY,
-		/** Rating widget default */
 		RATING_DEFAULT(RatingWidgetStyle.class, "default"),
 		SCROLL_PANE_DEFAULT(ScrollPaneStyle.class, "default"),
 		SCROLL_PANE_WINDOW_BACKGROUND(ScrollPaneStyle.class, "background"),
@@ -989,8 +966,6 @@ public class SkinNames {
 	 * Credits UI (actually stored in general_ui)
 	 */
 	public enum CreditsUi implements ISkinNames {
-		/** Credit section (e.g. programming, UI Design) */
-		LABEL_SECTION(LabelStyle.class, "credit_section"),
 		/** Credit name (e.g. Matteus Magnusson) */
 		LABEL_NAME(LabelStyle.class, "credit_name"),
 
