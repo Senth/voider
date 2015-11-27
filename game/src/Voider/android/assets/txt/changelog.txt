@@ -13,9 +13,15 @@ UI
 	High-res UI for all sizes
 	Added missing icons
 	Logging out no longer causes UI to disappear
+	New improved font :D
+Explore Levels
+	Now works again
+	Loading icon is now removed correctly if one cannot connect to the server
+	Top score is now hidden if none is available
 Fixes & Improvements
 	Can download levels, enemies, and bullets correctly again
 	Downloading is now faster
+	
 
 [0.5.13]
 date=2015-10-27
