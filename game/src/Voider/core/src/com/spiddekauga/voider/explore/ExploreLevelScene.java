@@ -400,7 +400,11 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 		getGui().clearTopAndPlayerScore();
 
 		// mCommentFetch.fetch(false);
-		mScoreFetch.fetchFirstPlace();
+		if (level != null && (level.stats.cCleared > 0 || level.stats.cDeaths > 0)) {
+			mScoreFetch.fetchFirstPlace();
+		} else {
+			getGui().hideGlobalScore();
+		}
 	}
 
 
@@ -428,6 +432,8 @@ public class ExploreLevelScene extends ExploreScene implements IResponseListener
 			if (mSelectedLevel != null && mSelectedLevel.defEntity.resourceId.equals(method.levelId)) {
 				if (response.isSuccessful()) {
 					getGui().setTopAndPlayerScores(response.firstPlace, getPlayerScore(), response.userPlace);
+				} else {
+					getGui().hideGlobalScore();
 				}
 			}
 		}

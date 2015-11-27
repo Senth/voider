@@ -111,6 +111,7 @@ abstract class ExploreScene extends Scene implements IResponseListener {
 	 * @param status response status from the server
 	 */
 	protected void handleFailedStatus(FetchStatuses status) {
+		getGui().removeWaitIconFromContent();
 		switch (status) {
 		case FAILED_SERVER_CONNECTION:
 			mNotification.show(NotificationTypes.ERROR, "Failed to connect to the server");

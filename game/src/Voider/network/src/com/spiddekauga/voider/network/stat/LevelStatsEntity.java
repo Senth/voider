@@ -40,7 +40,7 @@ public class LevelStatsEntity implements IEntity {
 	public int getFrustrationLevel() {
 		if (cPlayed > 0) {
 			float frustration = (cCleared + cDeaths) / cPlayed;
-			return (int) (frustration * 100);
+			return 100 - ((int) (frustration * 100 + 0.5f));
 		} else {
 			return 0;
 		}

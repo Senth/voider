@@ -622,7 +622,7 @@ abstract class ExploreGui extends Gui {
 	/**
 	 * Remove wait icon from the content
 	 */
-	private void removeWaitIconFromContent() {
+	protected void removeWaitIconFromContent() {
 		if (mWidgets.content.waitIconRow != null) {
 			mWidgets.content.table.removeRow(mWidgets.content.waitIconRow, true);
 			mWidgets.content.waitIconRow = null;

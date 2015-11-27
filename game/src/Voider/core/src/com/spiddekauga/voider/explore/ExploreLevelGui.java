@@ -109,6 +109,13 @@ class ExploreLevelGui extends ExploreGui {
 	}
 
 	/**
+	 * Hide global score as no one has played it
+	 */
+	void hideGlobalScore() {
+		mWidgets.info.topScoreHider.hide();
+	}
+
+	/**
 	 * Clear top and player score and hide player score
 	 */
 	void clearTopAndPlayerScore() {
@@ -130,6 +137,7 @@ class ExploreLevelGui extends ExploreGui {
 	 * Sets the top score as loading
 	 */
 	void setTopScoreAsLoading() {
+		mWidgets.info.topScoreHider.show();
 		mWidgets.info.topScore.setText("1. Loading...");
 	}
 
@@ -408,10 +416,10 @@ class ExploreLevelGui extends ExploreGui {
 		mWidgets.info.difficulty = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_DIFFICULTY, "", false, table, onlineHider);
 
 		// Speed
-		mWidgets.info.speed = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SPEED, "", false, table, onlineHider);
+		mWidgets.info.speed = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SPEED, "", false, table, null);
 
 		// Length
-		mWidgets.info.length = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_LENGTH, "", false, table, onlineHider);
+		mWidgets.info.length = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_LENGTH, "", false, table, null);
 
 		// Frustration
 		mWidgets.info.frustration = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_LEVEL_FRUSTRATION, "", false, table, onlineHider);
@@ -427,7 +435,7 @@ class ExploreLevelGui extends ExploreGui {
 		mWidgets.info.tags.setWrap(true);
 
 		// Top score
-		mWidgets.info.topScore = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SCORE_TOP, "", false, table, onlineHider);
+		mWidgets.info.topScore = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SCORE_TOP, "", false, table, mWidgets.info.topScoreHider);
 
 		// Player score
 		mWidgets.info.playerScore = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_SCORE_PLAYER, "", false, table,
@@ -687,6 +695,7 @@ class ExploreLevelGui extends ExploreGui {
 	 * All widgets
 	 */
 	private class Widgets implements Disposable {
+		HideListener onlineHider = new HideListener(true);
 		Sort sort = new Sort();
 		Info info = new Info();
 		Comments comment = new Comments();
@@ -694,7 +703,6 @@ class ExploreLevelGui extends ExploreGui {
 		View view = new View();
 		Tag tag = new Tag();
 		Action action = new Action();
-		HideListener onlineHider = new HideListener(true);
 
 		private class Action implements Disposable {
 			HideManual resumeLevelHider = new HideManual();
@@ -736,6 +744,7 @@ class ExploreLevelGui extends ExploreGui {
 		private class Info implements Disposable {
 			AlignTable table = new AlignTable();
 			HideManual playerScoreHider = new HideManual();
+			HideManual topScoreHider = new HideManual();
 			RatingWidget rating = null;
 			Label plays = null;
 			Label bookmarks = null;
@@ -812,6 +821,10 @@ class ExploreLevelGui extends ExploreGui {
 				hider.dispose();
 				tag.dispose();
 			}
+		}
+
+		{
+			onlineHider.addChild(info.topScoreHider);
 		}
 
 		@Override

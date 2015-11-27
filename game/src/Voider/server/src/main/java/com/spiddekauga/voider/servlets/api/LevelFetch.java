@@ -73,14 +73,17 @@ public class LevelFetch extends ResourceFetch<LevelFetchMethod, LevelInfoEntity>
 	private void getAndSetLevelResponse() {
 		// Search filter
 		if (mParameters.search) {
+			mLogger.info("Search filter");
 			mResponse.status = searchAndSetFoundDefs(SearchTables.LEVEL, mParameters.nextCursor, mResponse.levels);
 		}
 		// Tag filter
 		else if (mParameters.tags != null && !mParameters.tags.isEmpty()) {
+			mLogger.info("Search by tags");
 			filterByTags();
 		}
 		// Just sort, i.e. get the levels
 		else {
+			mLogger.info("Sort");
 			mResponse.levels = getLevels(FetchSizes.LEVELS);
 			if (mResponse.status != FetchStatuses.SUCCESS_FETCHED_ALL) {
 				mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
