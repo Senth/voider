@@ -572,10 +572,10 @@ public class DatastoreUtils {
 	 * @see #getPropertyFloat(Entity, String, float)
 	 */
 	public static float getPropertyFloat(Entity entity, String propertyName) throws PropertyNotFoundException {
-		Long longValue = (Long) entity.getProperty(propertyName);
+		Double doubleValue = (Double) entity.getProperty(propertyName);
 
-		if (longValue != null) {
-			return longValue.intValue();
+		if (doubleValue != null) {
+			return doubleValue.floatValue();
 		} else {
 			throw new PropertyNotFoundException();
 		}
