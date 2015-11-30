@@ -411,10 +411,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mEditorActive) {
 			clearSelectedOutline();
 
-			ArrayList<Vector2> corners = copyVectorArray(getDef().getVisual().getPolygonShape());
+			List<Vector2> corners = copyVectorArray(getDef().getVisual().getPolygonShape());
 			if (corners != null && !corners.isEmpty()) {
 				float width = SkinNames.getResource(SkinNames.EditorVars.SELECTED_OUTLINE_WIDTH);
-				ArrayList<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, width);
+				List<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, width);
 				mSelectedOutline = Geometry.createBorderVertices(corners, outerCorners);
 
 				if (mSelectedOutline != null) {
@@ -986,7 +986,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	public BoundingBox getBoundingBox() {
 		// Actor rotates
 		if (mBody != null && !MathUtils.isEqual(getDef().getRotationSpeedRad(), 0)) {
-			ArrayList<Vector2> polygon = getDef().getVisual().getPolygonShape();
+			List<Vector2> polygon = getDef().getVisual().getPolygonShape();
 			mBoundingBox = Geometry.getBoundingBox(polygon, mBody.getAngle() * MathUtils.radiansToDegrees, getDef().getVisual().getCenterOffset());
 		}
 		// No rotation
@@ -1124,7 +1124,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/**
 	 * @return rotated vertices for this actor
 	 */
-	protected ArrayList<Vector2> getRotatedVertices() {
+	protected List<Vector2> getRotatedVertices() {
 		return mRotatedVertices;
 	}
 
@@ -1173,12 +1173,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * @param array the array to make a copy of
 	 * @return copied array, null if parameter array is null.
 	 */
-	protected static ArrayList<Vector2> copyVectorArray(ArrayList<Vector2> array) {
+	protected static List<Vector2> copyVectorArray(List<Vector2> array) {
 		if (array == null) {
 			return null;
 		}
 
-		ArrayList<Vector2> verticesCopy = new ArrayList<>();
+		List<Vector2> verticesCopy = new ArrayList<>();
 
 		for (Vector2 vertex : array) {
 			int foundIndex = verticesCopy.indexOf(vertex);
@@ -1352,7 +1352,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/** Current actors we're colliding with @todo do we need to save colliding actors? */
 	private HashMap<Actor, AtomicInteger> mCollidingActors = new HashMap<>();
 	/** World corners of the actor, only used for custom shape and in an editor */
-	private ArrayList<Body> mCorners = new ArrayList<Body>();
+	private List<Body> mCorners = new ArrayList<Body>();
 	/** Center body, this represents the center of the actor */
 	private Body mCenterBody = null;
 	/** True if the actor has a center body */
@@ -1372,7 +1372,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/** Old rotation */
 	private float mRotationPrevious = 0;
 	/** Rotated vertices of the actor */
-	private ArrayList<Vector2> mRotatedVertices = null;
+	private List<Vector2> mRotatedVertices = null;
 	/** If the actor shall be destroyed */
 	private boolean mDestroyBody = false;
 	/** Only draws the shape's outline */
@@ -1380,7 +1380,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/** If the actor is being moved */
 	private boolean mIsBeingMoved = false;
 	/** Selected outline */
-	private ArrayList<Vector2> mSelectedOutline = null;
+	private List<Vector2> mSelectedOutline = null;
 	/** Bounding box relative to the actor's position */
 	private BoundingBox mBoundingBox = new BoundingBox();
 

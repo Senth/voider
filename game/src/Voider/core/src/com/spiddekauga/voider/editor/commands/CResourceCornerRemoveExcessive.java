@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor.commands;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.resources.IResourceCorner;
@@ -52,5 +52,5 @@ public class CResourceCornerRemoveExcessive extends Command {
 	private float mCornerDistMinSq;
 	private float mCornerAngleMin;
 	private IResourceCorner mResource;
-	private ArrayList<PointIndex> mRemovedCorners = null;
+	private List<PointIndex> mRemovedCorners = null;
 }

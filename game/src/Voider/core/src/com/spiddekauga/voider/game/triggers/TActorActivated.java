@@ -175,8 +175,8 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 		if (!isHidden()) {
 			destroyVertices();
 
-			ArrayList<Vector2> polygon = new ArrayList<Vector2>();
-			ArrayList<Vector2> actorShape = mActor.getDef().getVisual().getPolygonShape();
+			List<Vector2> polygon = new ArrayList<Vector2>();
+			List<Vector2> actorShape = mActor.getDef().getVisual().getPolygonShape();
 			if (actorShape != null && !actorShape.isEmpty()) {
 				// Copy polygon from actor, so we don't free the actor's vectors when
 				// freeing
@@ -184,7 +184,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 				for (Vector2 vertex : actorShape) {
 					polygon.add(new Vector2(vertex));
 				}
-				ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(polygon, false, Config.Editor.Level.Trigger.ENEMY_WIDTH);
+				List<Vector2> borderCorners = Geometry.createdBorderCorners(polygon, false, Config.Editor.Level.Trigger.ENEMY_WIDTH);
 
 				mVertices = Geometry.createBorderVertices(polygon, borderCorners);
 			}
@@ -201,7 +201,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	}
 
 	/** Vertices for drawing the trigger */
-	private ArrayList<Vector2> mVertices = null;
+	private List<Vector2> mVertices = null;
 	/** Actor to check if it has been activated */
 	@Tag(33) private Actor mActor = null;
 	/** Body for the trigger, used for picking */

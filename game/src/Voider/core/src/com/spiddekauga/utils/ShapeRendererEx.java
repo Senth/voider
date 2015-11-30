@@ -1,6 +1,6 @@
 package com.spiddekauga.utils;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
@@ -19,28 +19,32 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.utils.Pool;
 
 /**
- *
- /** Renders points, lines, rectangles, filled rectangles and boxes.</p> This class
- * works with OpenGL ES 1.x and 2.0. In its base configuration a 2D orthographic
- * projection with the origin in the lower left corner is used. Units are given in screen
- * pixels.</p> To change the projection properties use the
- * {@link #setProjectionMatrix(Matrix4)} method. Usually the {@link Camera#combined}
- * matrix is set via this method. If the screen orientation or resolution changes, the
- * projection matrix might have to be adapted as well.</p> Shapes are rendered in batches
- * to increase performance. The standard use-pattern looks as follows:
+ * /** Renders points, lines, rectangles, filled rectangles and boxes.
+ * </p>
+ * This class works with OpenGL ES 1.x and 2.0. In its base configuration a 2D
+ * orthographic projection with the origin in the lower left corner is used. Units are
+ * given in screen pixels.
+ * </p>
+ * To change the projection properties use the {@link #setProjectionMatrix(Matrix4)}
+ * method. Usually the {@link Camera#combined} matrix is set via this method. If the
+ * screen orientation or resolution changes, the projection matrix might have to be
+ * adapted as well.
+ * </p>
+ * Shapes are rendered in batches to increase performance. The standard use-pattern looks
+ * as follows:
  *
  * <pre>
  * {@code
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
- * 
+ *
  * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
  * shapeRenderer.pop();
- * 
+ *
  * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);
@@ -99,7 +103,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param triangle an array with at least 3 vertices, will only draw the three first
 	 *        vertices.
 	 */
-	public void triangle(ArrayList<Vector2> triangle) {
+	public void triangle(List<Vector2> triangle) {
 		triangle(triangle, 0);
 	}
 
@@ -109,7 +113,7 @@ public class ShapeRendererEx implements Disposable {
 	 *        vertices.
 	 * @param indexOffset the index offset, the triangle will be drawn from this offset
 	 */
-	public void triangle(ArrayList<Vector2> triangle, int indexOffset) {
+	public void triangle(List<Vector2> triangle, int indexOffset) {
 		int index0 = indexOffset;
 		int index1 = indexOffset + 1;
 		int index2 = indexOffset + 2;
@@ -149,7 +153,7 @@ public class ShapeRendererEx implements Disposable {
 	 * Draws all triangles in the array
 	 * @param triangles an array with triangles
 	 */
-	public void triangles(ArrayList<Vector2> triangles) {
+	public void triangles(List<Vector2> triangles) {
 		if (triangles.size() % 3 != 0) {
 			throw new IllegalArgumentException("triangles must have a pair of 3 vertices.");
 		}
@@ -164,7 +168,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param triangles an array with triangles to draw
 	 * @param positionOffset position offset of the triangles
 	 */
-	public void triangles(final ArrayList<Vector2> triangles, final Vector2 positionOffset) {
+	public void triangles(final List<Vector2> triangles, final Vector2 positionOffset) {
 		if (triangles == null || triangles.size() % 3 != 0) {
 			throw new IllegalArgumentException("triangles must have a pair of 3 vertices.");
 		}
@@ -188,7 +192,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param vertices all lines
 	 * @param loop set to true if end and beginning shall be connected
 	 */
-	public void polyline(ArrayList<Vector2> vertices, boolean loop) {
+	public void polyline(List<Vector2> vertices, boolean loop) {
 		Vector2 noOffset = new Vector2();
 		polyline(vertices, loop, noOffset);
 	}
@@ -201,7 +205,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param loop set to true if end and beginning shall be connected
 	 * @param offset offset all lines with this much
 	 */
-	public void polyline(ArrayList<Vector2> vertices, boolean loop, Vector2 offset) {
+	public void polyline(List<Vector2> vertices, boolean loop, Vector2 offset) {
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
 		}
@@ -212,8 +216,8 @@ public class ShapeRendererEx implements Disposable {
 		if (loop) {
 			for (int i = 0; i < vertices.size(); ++i) {
 				int nextIndex = Collections.nextIndex(vertices, i);
-				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(nextIndex).x + offset.x, vertices.get(nextIndex).y
-						+ offset.y);
+				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(nextIndex).x + offset.x,
+						vertices.get(nextIndex).y + offset.y);
 			}
 		} else {
 			for (int i = 0; i < vertices.size() - 1; ++i) {

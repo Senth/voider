@@ -21,6 +21,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
@@ -77,8 +78,8 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		// 1 -> 2
 		if (mClassRevision <= 1) {
 			// Fix image name
-			if (mDeprecatedImageName instanceof GeneralImages) {
-				GeneralImages generalImages = (GeneralImages) mDeprecatedImageName;
+			if (unused1 instanceof GeneralImages) {
+				GeneralImages generalImages = (GeneralImages) unused1;
 				if (generalImages.ordinal() == 15) {
 					mDrawName = DrawImages.SHUTTLE_LARGE;
 				}
@@ -661,182 +662,14 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		clearFixtures();
 		clearVertices();
 
-		FixtureDef savedFixtureProperties = getDefaultFixtureDef();
-
-
 		// Create the new fixture
 		// Polygon
 		if (mCorners.size() >= 3) {
-			ArrayList<Vector2> triangles = null;
-			if (mCorners.size() == 3) {
-				triangles = createCopy(mCorners);
-				Geometry.makePolygonCounterClockwise(triangles);
-			} else {
-				ArrayList<Vector2> tempVertices = null;
-
-				if (mShapeType == ActorShapeTypes.CUSTOM) {
-					tempVertices = createCopy(mCorners);
-					switch (Geometry.intersectionExists(tempVertices)) {
-					case NONE:
-						mShapeComplete = true;
-						break;
-
-					case INTERSECTS:
-					case INTERSECTS_WITH_LOOP:
-						mShapeComplete = false;
-						handlePolygonComplexException(tempVertices, null);
-						break;
-					}
-				}
-				// Fix intersections
-				else if (mShapeType == ActorShapeTypes.IMAGE) {
-					int intersectionId = -1;
-					do {
-						intersectionId = Geometry.getIntersection(mCorners);
-						if (intersectionId != -1) {
-							mCorners.remove(intersectionId);
-						}
-					} while (intersectionId != -1);
-
-					tempVertices = createCopy(mCorners);
-				} else {
-					return;
-				}
-
-
-				try {
-					triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
-					// Always reverse, triangles are always clockwise, whereas box2d needs
-					// counter clockwise...
-					Collections.reverse(triangles);
-				} catch (PolygonComplexException e) {
-					handlePolygonComplexException(tempVertices, e);
-				}
-				tempVertices = null;
-			}
-
-			int cTriangles = triangles.size() / 3;
-			Vector2[] triangleVertices = new Vector2[3];
-			for (int i = 0; i < triangleVertices.length; ++i) {
-				triangleVertices[i] = new Vector2();
-			}
-			Vector2 lengthTest = new Vector2();
-
-			// Add the fixtures
-			for (int triangle = 0; triangle < cTriangles; ++triangle) {
-				boolean cornerTooClose = false;
-				int offset = triangle * 3;
-				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
-					triangleVertices[vertex].set(triangles.get(offset + vertex));
-					triangleVertices[vertex].add(mCenterOffset);
-				}
-
-
-				// Check so that the length between two corners isn't too small
-				// 0 - 1
-				lengthTest.set(triangleVertices[0]).sub(triangleVertices[1]);
-				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
-					cornerTooClose = true;
-				} else {
-					// 0 - 2
-					lengthTest.set(triangleVertices[0]).sub(triangleVertices[2]);
-					if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
-						cornerTooClose = true;
-					} else {
-						// 1 - 2
-						lengthTest.set(triangleVertices[1]).sub(triangleVertices[2]);
-						if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
-							cornerTooClose = true;
-						}
-					}
-				}
-
-				RuntimeException throwException = null;
-				if (cornerTooClose) {
-					throwException = new PolygonCornersTooCloseException(lengthTest.len());
-				}
-				// Check area
-				else {
-					float triangleArea = Geometry.calculateTriangleArea(triangleVertices);
-
-					// Make clockwise
-					if (triangleArea < 0) {
-						Collections.reverse(Arrays.asList(triangleVertices));
-						triangleArea = -triangleArea;
-						Gdx.app.log("ActorDef", "Fixture triangle negative area, reversing order...");
-					}
-
-					if (!Geometry.isTriangleAreaOk(triangleArea)) {
-						throwException = new PolygonAreaTooSmallException(triangleArea, triangleVertices);
-					}
-				}
-
-				if (throwException != null) {
-					Gdx.app.error("ActorDef", throwException.getMessage());
-					if (mShapeType == ActorShapeTypes.CUSTOM) {
-						throw throwException;
-					} else if (mShapeType == ActorShapeTypes.IMAGE) {
-						continue;
-					}
-				}
-
-
-				FixtureDef fixtureDef = new FixtureDef();
-				copyFixtureDef(savedFixtureProperties, fixtureDef);
-				PolygonShape polygonShape = new PolygonShape();
-				polygonShape.set(triangleVertices);
-				fixtureDef.shape = polygonShape;
-				addFixtureDef(fixtureDef);
-			}
-
-
-			mVertices = triangles;
-
-			// Free vertices stuff
-			if (!mShapeComplete) {
-				clearVertices();
-			} else {
-				for (Vector2 vertex : mCorners) {
-					mPolygon.add(new Vector2(vertex));
-				}
-			}
-
-
+			fixCustomShapePolygonFixtures();
 		}
 		// Circle
 		else if (mCorners.size() >= 1) {
-			CircleShape circle = new CircleShape();
-
-			Vector2 offsetPosition = new Vector2();
-			offsetPosition.sub(mCenterOffset).sub(mCorners.get(0));
-
-			float radius = 0;
-
-			// One corner, use standard size
-			if (mCorners.size() == 1) {
-				radius = Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS;
-			}
-			// Else two corners, determine radius of circle
-			else {
-				Vector2 lengthVector = new Vector2(mCorners.get(0)).sub(mCorners.get(1));
-				radius = lengthVector.len();
-			}
-			circle.setRadius(radius);
-
-			savedFixtureProperties.shape = circle;
-			addFixtureDef(savedFixtureProperties);
-
-			// Create vertices for the circle
-			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
-			for (Vector2 vertex : circleVertices) {
-				vertex.add(offsetPosition);
-			}
-			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
-			Collections.reverse(mVertices);
-
-			for (Vector2 vertex : circleVertices) {
-				mPolygon.add(new Vector2(vertex));
-			}
+			fixCustomShapeCircleFixtures();
 		}
 
 		calculateBounds();
@@ -844,10 +677,201 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	}
 
 	/**
+	 *
+	 */
+	private void fixCustomShapePolygonFixtures() {
+		List<Vector2> triangles = getTrianglesFromCorners();
+
+		// Temporary variables
+		int cTriangles = triangles.size() / 3;
+		Vector2[] triangleVertices = new Vector2[3];
+		for (int i = 0; i < triangleVertices.length; ++i) {
+			triangleVertices[i] = new Vector2();
+		}
+
+		// Create Fixtures
+		AreaTooSmallStates fixAreaTooSmall = AreaTooSmallStates.ENLARGEN;
+		for (int triangle = 0; triangle < cTriangles; ++triangle) {
+			int offset = triangle * 3;
+			for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
+				triangleVertices[vertex].set(triangles.get(offset + vertex));
+				triangleVertices[vertex].add(mCenterOffset);
+			}
+
+			RuntimeException throwException = null;
+			// Too close
+			if (!Geometry.isVerticesAtOkDistance(triangleVertices)) {
+				throwException = new PolygonCornersTooCloseException(triangleVertices.toString());
+			}
+			// Check area
+			else {
+				float triangleArea = Geometry.calculateTriangleArea(triangleVertices);
+
+				// Make clockwise
+				if (triangleArea < 0) {
+					Collections.reverse(Arrays.asList(triangleVertices));
+					triangleArea = -triangleArea;
+					Gdx.app.debug(VisualVars.class.getSimpleName(), "Fixture triangle negative area, reversing order...");
+				}
+
+				if (!Geometry.isTriangleAreaOk(triangleArea)) {
+					switch (fixAreaTooSmall) {
+					case ENLARGEN:
+						Geometry.enlargenTriangle(triangleVertices);
+						for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
+							triangleVertices[vertex].sub(mCenterOffset);
+							triangles.get(offset + vertex).set(triangleVertices[vertex]);
+						}
+						fixAreaTooSmall = AreaTooSmallStates.REMOVE;
+						--triangle;
+						continue;
+
+					case FAILED:
+						throwException = new PolygonAreaTooSmallException(triangleArea, triangleVertices);
+						break;
+
+					case REMOVE:
+						fixAreaTooSmall = AreaTooSmallStates.ENLARGEN;
+						Gdx.app.log(VisualVars.class.getSimpleName(),
+								"Area too small, removed corners: {" + Strings.toString(triangleVertices, "; ") + "}");
+						continue;
+					}
+				}
+			}
+
+			// Throw exception
+			if (throwException != null) {
+				Gdx.app.error(VisualVars.class.getSimpleName(), throwException.getMessage());
+				if (mShapeType == ActorShapeTypes.CUSTOM) {
+					throw throwException;
+				} else if (mShapeType == ActorShapeTypes.IMAGE) {
+					continue;
+				}
+			}
+
+
+			// Create fixture
+			FixtureDef fixtureDef = getDefaultFixtureDef();
+			PolygonShape polygonShape = new PolygonShape();
+			polygonShape.set(triangleVertices);
+			fixtureDef.shape = polygonShape;
+			addFixtureDef(fixtureDef);
+			fixAreaTooSmall = AreaTooSmallStates.ENLARGEN;
+		}
+
+
+		mVertices = triangles;
+
+		// Free vertices stuff
+		if (!mShapeComplete) {
+			clearVertices();
+		} else {
+			for (Vector2 vertex : mCorners) {
+				mPolygon.add(new Vector2(vertex));
+			}
+		}
+	}
+
+	/**
+	 * Create triangles from the corners
+	 * @return list with all triangles
+	 */
+	private List<Vector2> getTrianglesFromCorners() {
+		// Get triangles from corners
+		List<Vector2> triangles = null;
+		if (mCorners.size() == 3) {
+			triangles = createCopy(mCorners);
+			Geometry.makePolygonCounterClockwise(triangles);
+		} else {
+			List<Vector2> tempVertices = null;
+
+			if (mShapeType == ActorShapeTypes.CUSTOM) {
+				tempVertices = createCopy(mCorners);
+				switch (Geometry.intersectionExists(tempVertices)) {
+				case NONE:
+					mShapeComplete = true;
+					break;
+
+				case INTERSECTS:
+				case INTERSECTS_WITH_LOOP:
+					mShapeComplete = false;
+					handlePolygonComplexException(tempVertices, null);
+					break;
+				}
+			}
+			// Fix intersections
+			else if (mShapeType == ActorShapeTypes.IMAGE) {
+				int intersectionId = -1;
+				do {
+					intersectionId = Geometry.getIntersection(mCorners);
+					if (intersectionId != -1) {
+						mCorners.remove(intersectionId);
+					}
+				} while (intersectionId != -1);
+
+				tempVertices = createCopy(mCorners);
+			} else {
+				return null;
+			}
+
+
+			try {
+				triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
+				// Always reverse, triangles are always clockwise, whereas box2d needs
+				// counter clockwise...
+				Collections.reverse(triangles);
+			} catch (PolygonComplexException e) {
+				handlePolygonComplexException(tempVertices, e);
+			}
+			tempVertices = null;
+		}
+		return triangles;
+	}
+
+	/**
+	 * Fix custom shapes that are circles
+	 */
+	private void fixCustomShapeCircleFixtures() {
+		CircleShape circle = new CircleShape();
+
+		Vector2 offsetPosition = new Vector2();
+		offsetPosition.sub(mCenterOffset).sub(mCorners.get(0));
+
+		float radius = 0;
+
+		// One corner, use standard size
+		if (mCorners.size() == 1) {
+			radius = Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS;
+		}
+		// Else two corners, determine radius of circle
+		else {
+			Vector2 lengthVector = new Vector2(mCorners.get(0)).sub(mCorners.get(1));
+			radius = lengthVector.len();
+		}
+		circle.setRadius(radius);
+
+		FixtureDef fixtureDef = getDefaultFixtureDef();
+		fixtureDef.shape = circle;
+		addFixtureDef(fixtureDef);
+
+		// Create vertices for the circle
+		ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
+		for (Vector2 vertex : circleVertices) {
+			vertex.add(offsetPosition);
+		}
+		mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
+		Collections.reverse(mVertices);
+
+		for (Vector2 vertex : circleVertices) {
+			mPolygon.add(new Vector2(vertex));
+		}
+	}
+
+	/**
 	 * @return triangle vertices for the current shape. Grouped together in groups of
 	 *         three to form a triangle.
 	 */
-	public ArrayList<Vector2> getTriangleVertices() {
+	public List<Vector2> getTriangleVertices() {
 		return mVertices;
 	}
 
@@ -989,23 +1013,9 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	}
 
 	/**
-	 * Copies the values from another fixture def to the specified
-	 * @param fixtureDefOriginal the original fixture def to copy value FROM
-	 * @param fixtureDefCopy the duplicate to copy value TO
-	 */
-	private void copyFixtureDef(FixtureDef fixtureDefOriginal, FixtureDef fixtureDefCopy) {
-		fixtureDefCopy.density = fixtureDefOriginal.density;
-		// Always skip filter, this will be set in actor...
-		fixtureDefCopy.friction = fixtureDefOriginal.friction;
-		fixtureDefCopy.isSensor = fixtureDefOriginal.isSensor;
-		fixtureDefCopy.restitution = fixtureDefOriginal.restitution;
-		fixtureDefCopy.shape = fixtureDefOriginal.shape;
-	}
-
-	/**
 	 * @return polygon shape of the actor.
 	 */
-	public ArrayList<Vector2> getPolygonShape() {
+	public List<Vector2> getPolygonShape() {
 		return mPolygon;
 	}
 
@@ -1044,8 +1054,8 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @param vertices all vertices to create a copy of
 	 * @return new array list with a copy of the vertices
 	 */
-	private ArrayList<Vector2> createCopy(ArrayList<Vector2> vertices) {
-		ArrayList<Vector2> copy = new ArrayList<>();
+	private List<Vector2> createCopy(List<Vector2> vertices) {
+		List<Vector2> copy = new ArrayList<>();
 
 		for (Vector2 vertex : vertices) {
 			copy.add(new Vector2(vertex));
@@ -1060,7 +1070,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @param exception if null it will throw a new exception, else it will re-throw the
 	 *        exception.
 	 */
-	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
+	private void handlePolygonComplexException(List<Vector2> tempVertices, PolygonComplexException exception) {
 		if (exception == null) {
 			throw new PolygonComplexException();
 		} else {
@@ -1232,7 +1242,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 				return;
 			}
 		}
-		ArrayList<Vector2> transformedContour = createCopy(mContourRaw);
+		List<Vector2> transformedContour = createCopy(mContourRaw);
 
 		// Remove excessive corners
 		Geometry.removeExcessivePoints(distMin * distMin, angleMin, transformedContour);
@@ -1290,6 +1300,18 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		calculateBoundingBox();
 	}
 
+	/**
+	 * Different states when fixing polygons that have too small areas
+	 */
+	private enum AreaTooSmallStates {
+		/** The first time and when it's OK */
+		ENLARGEN,
+		/** Remove the triangles */
+		REMOVE,
+		/** Failed */
+		FAILED,
+	}
+
 	@Tag(52) private Color mColor = new Color();
 	@Tag(49) private ActorShapeTypes mShapeType = null;
 	@Tag(60) private float mShapeCircleRadius;
@@ -1299,7 +1321,6 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	@Tag(50) private ActorTypes mActorType = null;
 	/** Corners of polygon, used for custom shapes */
 	@Tag(63) private ArrayList<Vector2> mCorners = new ArrayList<>();
-	@Deprecated @Tag(126) private IImageNames mDeprecatedImageName = null;
 	@Tag(127) private Vector2 mImageOffset = new Vector2();
 	@Tag(128) private float mImageScaleWorld = 1;
 	@Tag(144) private float mStartAngle = 0;
@@ -1307,7 +1328,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	@Tag(158) private int mClassRevision = 0;
 
 	/** Temporary raw image contour points of the actor */
-	private ArrayList<Vector2> mContourRaw = null;
+	private List<Vector2> mContourRaw = null;
 	/** Image/Texture to draw as the actor */
 	private Sprite mImage = null;
 	/** Image scale in the world */
@@ -1318,16 +1339,16 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * Array list of the polygon figure, this contains the vertices but not in triangles.
 	 * Used for when creating a border of some kind
 	 */
-	private ArrayList<Vector2> mPolygon = new ArrayList<>();
+	private List<Vector2> mPolygon = new ArrayList<>();
 	/**
 	 * Triangle vertices. To easier render the shape. No optimization has been done to
 	 * reduce the number of vertices.
 	 */
-	private ArrayList<Vector2> mVertices = new ArrayList<>();
+	private List<Vector2> mVertices = new ArrayList<>();
 	/** True if shape is drawable/complete */
 	private boolean mShapeComplete = true;
 	/** Defines the mass, shape, etc. */
-	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<>();
+	private List<FixtureDef> mFixtureDefs = new ArrayList<>();
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
 	private BoundingBox mBoundingBox = new BoundingBox();
@@ -1343,4 +1364,6 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 
 	/** Ear clipping triangulator for custom shapes */
 	private static EarClippingTriangulator mEarClippingTriangulator = new EarClippingTriangulator();
+
+	@Deprecated @Tag(126) private IImageNames unused1 = null;
 }

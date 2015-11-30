@@ -88,7 +88,7 @@ class ExploreLevelGui extends ExploreGui {
 			mWidgets.info.frustration.setText(String.valueOf(levelInfo.stats.getFrustrationLevel()) + "%");
 
 			// Set tags
-			String tagList = Strings.toStringList(levelInfo.tags, ", ");
+			String tagList = Strings.toString(levelInfo.tags, ", ");
 			mWidgets.info.tags.setText(tagList);
 		}
 

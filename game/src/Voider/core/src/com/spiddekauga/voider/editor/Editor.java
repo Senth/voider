@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -65,8 +66,8 @@ import com.spiddekauga.voider.utils.event.IEventListener;
  * Common class for all editors
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Editor extends WorldScene implements IEditor, IResourceChangeEditor, IResponseListener, IOutstreamProgressListener,
-		IEventListener {
+public abstract class Editor extends WorldScene
+		implements IEditor, IResourceChangeEditor, IResponseListener, IOutstreamProgressListener, IEventListener {
 
 	/**
 	 * @param gui GUI to be used with the editor
@@ -538,7 +539,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResourceCha
 
 		// Normalize width and height vertices to use SAVE_TEXTURE_SIZE pixels
 		copy.getVisual().setCenterOffset(0, 0);
-		ArrayList<Vector2> triangleVertices = copy.getVisual().getTriangleVertices();
+		List<Vector2> triangleVertices = copy.getVisual().getTriangleVertices();
 		IdentityMap<Vector2, Vector2> scaledVertices = new IdentityMap<>();
 		for (Vector2 vertex : triangleVertices) {
 			if (!scaledVertices.containsKey(vertex)) {
@@ -547,7 +548,7 @@ public abstract class Editor extends WorldScene implements IEditor, IResourceCha
 			}
 		}
 
-		ArrayList<Vector2> polygonVertices = copy.getVisual().getPolygonShape();
+		List<Vector2> polygonVertices = copy.getVisual().getPolygonShape();
 		for (Vector2 vertex : polygonVertices) {
 			vertex.scl(normalizeLength);
 		}

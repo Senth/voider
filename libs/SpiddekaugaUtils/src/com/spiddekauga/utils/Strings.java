@@ -3,7 +3,6 @@ package com.spiddekauga.utils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,24 +124,46 @@ public class Strings {
 	}
 
 	/**
-	 * Create a string list of a list
+	 * Get the list as a string
 	 * @param list the list to create a string list from
 	 * @param delimiter how to delimit the elements
 	 * @return string list separated by the delimiter
 	 */
-	public static String toStringList(List<?> list, String delimiter) {
-		String stringList = "";
+	public static String toString(Iterable<?> list, String delimiter) {
+		StringBuilder stringBuilder = new StringBuilder();
 
 		Iterator<?> iterator = list.iterator();
 		while (iterator.hasNext()) {
-			stringList += iterator.next().toString();
+			stringBuilder.append(iterator.next().toString());
 
 			if (iterator.hasNext()) {
-				stringList += delimiter;
+				stringBuilder.append(delimiter);
 			}
 		}
 
-		return stringList;
+		return stringBuilder.toString();
+	}
+
+	/**
+	 * Get the array as a string
+	 * @param <T> array type
+	 * @param array the array to create the list from
+	 * @param delimiter how to delimit the elements
+	 * @return string list separated by the delimiter
+	 */
+	public static <T> String toString(T[] array, String delimiter) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 0; i < array.length; i++) {
+			T t = array[i];
+			stringBuilder.append(t.toString());
+
+			if ((i + 1) < array.length) {
+				stringBuilder.append(delimiter);
+			}
+		}
+
+		return stringBuilder.toString();
 	}
 
 	/**

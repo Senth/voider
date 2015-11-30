@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.utils.Maths;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
 
 /**
@@ -77,7 +78,7 @@ public class Geometry {
 	 * @param points the points to calculate the center of
 	 * @return center of all points
 	 */
-	public static Vector2 calculateCenter(ArrayList<Vector2> points) {
+	public static Vector2 calculateCenter(List<Vector2> points) {
 		Vector2 center = new Vector2();
 
 		for (Vector2 point : points) {
@@ -90,14 +91,28 @@ public class Geometry {
 	}
 
 	/**
+	 * Calculate the center of all points
+	 * @param points the points to calculate the center of
+	 * @return center of all points
+	 */
+	public static Vector2 calculateCenter(Vector2[] points) {
+		Vector2 center = new Vector2();
+		for (Vector2 point : points) {
+			center.add(point);
+		}
+		center.scl(1f / points.length);
+		return center;
+	}
+
+	/**
 	 * Remove points that are too close or have less than the specified angle between them
 	 * @param distMinSq squared minimum distance
 	 * @param angleMin minimum angle between corners
 	 * @param points the points to check. This array will be changed
 	 * @return all removed points and their specified indexes
 	 */
-	public static ArrayList<PointIndex> removeExcessivePoints(float distMinSq, float angleMin, ArrayList<Vector2> points) {
-		ArrayList<PointIndex> removedPoints = new ArrayList<>();
+	public static List<PointIndex> removeExcessivePoints(float distMinSq, float angleMin, List<Vector2> points) {
+		List<PointIndex> removedPoints = new ArrayList<>();
 		final int MIN_POINTS = 3;
 		if (points == null || points.size() <= MIN_POINTS) {
 			return removedPoints;
@@ -174,7 +189,7 @@ public class Geometry {
 	 * @param points all points
 	 * @param removedPoints all removed points
 	 */
-	private static void removePoint(int index, ArrayList<Vector2> points, ArrayList<PointIndex> removedPoints) {
+	private static void removePoint(int index, List<Vector2> points, List<PointIndex> removedPoints) {
 		Vector2 removedPoint = points.remove(index);
 
 		if (removedPoint != null && removedPoints != null) {
@@ -276,12 +291,12 @@ public class Geometry {
 			// p1-p2 is parallel with p3-p4
 			if (collinearityTestForP3 == 0) {
 				// The lines are collinear. Now check if they overlap.
-				if (line1a.x >= line2a.x && line1a.x <= line2b.x || line1a.x <= line2a.x && line1a.x >= line2b.x || line1b.x >= line2a.x
-						&& line1b.x <= line2b.x || line1b.x <= line2a.x && line1b.x >= line2b.x || line2a.x >= line1a.x && line2a.x <= line1b.x
-						|| line2a.x <= line1a.x && line2a.x >= line1b.x) {
-					if (line1a.y >= line2a.y && line1a.y <= line2b.y || line1a.y <= line2a.y && line1a.y >= line2b.y || line1b.y >= line2a.y
-							&& line1b.y <= line2b.y || line1b.y <= line2a.y && line1b.y >= line2b.y || line2a.y >= line1a.y && line2a.y <= line1b.y
-							|| line2a.y <= line1a.y && line2a.y >= line1b.y) {
+				if (line1a.x >= line2a.x && line1a.x <= line2b.x || line1a.x <= line2a.x && line1a.x >= line2b.x
+						|| line1b.x >= line2a.x && line1b.x <= line2b.x || line1b.x <= line2a.x && line1b.x >= line2b.x
+						|| line2a.x >= line1a.x && line2a.x <= line1b.x || line2a.x <= line1a.x && line2a.x >= line1b.x) {
+					if (line1a.y >= line2a.y && line1a.y <= line2b.y || line1a.y <= line2a.y && line1a.y >= line2b.y
+							|| line1b.y >= line2a.y && line1b.y <= line2b.y || line1b.y <= line2a.y && line1b.y >= line2b.y
+							|| line2a.y >= line1a.y && line2a.y <= line1b.y || line2a.y <= line1a.y && line2a.y >= line1b.y) {
 						return true;
 					}
 				}
@@ -427,7 +442,7 @@ public class Geometry {
 	 * @return indices of the corners to remove to fix the area problem, empty if no
 	 *         solution was found
 	 */
-	public static ArrayList<Integer> fixPolygonArea(final ArrayList<Vector2> corners, final Vector2[] errorCorners) {
+	public static ArrayList<Integer> fixPolygonArea(final List<Vector2> corners, final Vector2[] errorCorners) {
 		if (errorCorners.length != 3) {
 			throw new IllegalArgumentException("errorCorners is not of length 3, but of length " + errorCorners.length);
 		}
@@ -505,7 +520,7 @@ public class Geometry {
 	 * @return area and indices of the fixed polygon. Indices will be -1 if this method
 	 *         failed to find any solutions
 	 */
-	private static FixAreaWrapper calculateLowestPolygonArea(final ArrayList<Vector2> corners, int otherIndex, int lowIndex, int highIndex) {
+	private static FixAreaWrapper calculateLowestPolygonArea(final List<Vector2> corners, int otherIndex, int lowIndex, int highIndex) {
 		Vector2[] testVertices = new Vector2[3];
 		testVertices[0] = corners.get(otherIndex);
 
@@ -582,6 +597,55 @@ public class Geometry {
 	 */
 	public static boolean isTriangleAreaOk(float area) {
 		return area > Config.Graphics.POLYGON_AREA_MIN;
+	}
+
+	/**
+	 * Check if vertices are at an OK distance from each other
+	 * @param vertices the vertices to check
+	 * @return true if all vertices are at an OK distance from each other
+	 */
+	public static boolean isVerticesAtOkDistance(Vector2[] vertices) {
+		Vector2 lengthTest = Pools.vector2.obtain();
+		boolean okDistance = true;
+
+		for (int i = 0; i < vertices.length && okDistance; i++) {
+			Vector2 vertex1 = vertices[i];
+			int nextIndex = com.spiddekauga.utils.Collections.nextIndex(vertices.length, i);
+			Vector2 vertex2 = vertices[nextIndex];
+
+			lengthTest.set(vertex1).sub(vertex2);
+			if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
+				okDistance = false;
+			}
+		}
+
+		Pools.vector2.free(lengthTest);
+		return okDistance;
+	}
+
+	/**
+	 * Enlarge a triangle so that the area should be OK
+	 * @param triangle all vertices in the triangle
+	 */
+	public static void enlargenTriangle(Vector2[] triangle) {
+		Gdx.app.log(Geometry.class.getSimpleName(), "ENLARGEN - Original triangle: {" + Strings.toString(triangle, "; ") + "}");
+
+		Vector2 center = new Vector2();
+		for (Vector2 point : triangle) {
+			center.add(point);
+		}
+		center.scl(1f / triangle.length);
+		Vector2 moveVector = new Vector2();
+
+		// Enlarge all points
+		for (int i = 0; i < triangle.length; i++) {
+			Vector2 vertex = triangle[i];
+			moveVector.set(vertex).sub(center).nor().scl(Config.Graphics.POLYGON_AREA_MIN * 100);
+			vertex.add(moveVector);
+		}
+
+		// Get move vector
+		Gdx.app.log(Geometry.class.getSimpleName(), "ENLARGEN - Enlargen triangle: {" + Strings.toString(triangle, "; ") + "}");
 	}
 
 	/**
@@ -900,9 +964,9 @@ public class Geometry {
 
 		// Calculate the area
 		// A = 1/2*(-p1y*p2x + p0y*(p2x - p1x) + p0x*(p1y - p2y) + p1x*p2y);
-		float area = 0.5f * (-triangle.get(index1).y * triangle.get(index2).x + triangle.get(index0).y
-				* (triangle.get(index2).x - triangle.get(index1).x) + triangle.get(index0).x * (triangle.get(index1).y - triangle.get(index2).y) + triangle
-				.get(index1).x * triangle.get(index2).y);
+		float area = 0.5f * (-triangle.get(index1).y * triangle.get(index2).x
+				+ triangle.get(index0).y * (triangle.get(index2).x - triangle.get(index1).x)
+				+ triangle.get(index0).x * (triangle.get(index1).y - triangle.get(index2).y) + triangle.get(index1).x * triangle.get(index2).y);
 
 		if (area < 0) {
 			area = -area;
@@ -963,7 +1027,7 @@ public class Geometry {
 	 * @param width the border width
 	 * @return border corner vertices
 	 */
-	public static ArrayList<Vector2> createdBorderCorners(ArrayList<Vector2> corners, boolean inward, float width) {
+	public static List<Vector2> createdBorderCorners(List<Vector2> corners, boolean inward, float width) {
 		boolean clockwise = !Geometry.isPolygonCounterClockwise(corners);
 		if (!inward) {
 			clockwise = !clockwise;
@@ -977,7 +1041,7 @@ public class Geometry {
 		Vector2 borderAfter1 = new Vector2();
 		Vector2 borderAfter2 = new Vector2();
 
-		ArrayList<Vector2> borderCorners = new ArrayList<>();
+		List<Vector2> borderCorners = new ArrayList<>();
 		for (int i = 0; i < corners.size(); ++i) {
 			// Get direction of lines that uses this vertex (i.e. that has it
 			// as its end (line before) or start (line after) position.
@@ -1024,13 +1088,13 @@ public class Geometry {
 	 * @return vector with all border vertices, null if corner size and border corner size
 	 *         isn't the same
 	 */
-	public static ArrayList<Vector2> createBorderVertices(ArrayList<Vector2> corners, ArrayList<Vector2> borderCorners) {
+	public static List<Vector2> createBorderVertices(List<Vector2> corners, List<Vector2> borderCorners) {
 		if (corners.size() != borderCorners.size()) {
 			Gdx.app.error("Geometry", "Not same amount of border corners as there are corners!");
 			return null;
 		}
 
-		ArrayList<Vector2> vertices = new ArrayList<>();
+		List<Vector2> vertices = new ArrayList<>();
 
 		// Create the two triangle in front of the index
 		// For example if we're at index 1 we will create the triangles
@@ -1085,7 +1149,7 @@ public class Geometry {
 	 * @param offset move the vertices temporarily here before rotating (this offset is
 	 *        never changed)
 	 */
-	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences, final Vector2 offset) {
+	public static void rotateVertices(List<Vector2> vertices, float degrees, boolean containsReferences, final Vector2 offset) {
 		Vector2 copyOffset = new Vector2(offset);
 		moveVertices(vertices, copyOffset, containsReferences);
 		rotateVertices(vertices, degrees, containsReferences);
@@ -1100,7 +1164,7 @@ public class Geometry {
 	 * @param containsReferences set to true if the vertices contains references thus we
 	 *        don't have to recalculate all vertices
 	 */
-	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences) {
+	public static void rotateVertices(List<Vector2> vertices, float degrees, boolean containsReferences) {
 		if (containsReferences) {
 			HashSet<Vector2> rotatedVertices = new HashSet<>();
 			for (Vector2 vertex : vertices) {
@@ -1124,7 +1188,7 @@ public class Geometry {
 	 * @param containsReferences true if the array contains duplicates of the same vertex
 	 *        reference
 	 */
-	public static void moveVertices(ArrayList<Vector2> vertices, Vector2 offset, boolean containsReferences) {
+	public static void moveVertices(List<Vector2> vertices, Vector2 offset, boolean containsReferences) {
 		if (containsReferences) {
 			HashSet<Vector2> movedVertices = new HashSet<>();
 			for (Vector2 vertex : vertices) {
@@ -1297,7 +1361,8 @@ public class Geometry {
 					// intersectionIndex + 1 (6).
 
 					// First reverse
-					for (int forwardIndex = i + 1, backwardIndex = intersectionIndexEnd; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
+					for (int forwardIndex = i
+							+ 1, backwardIndex = intersectionIndexEnd; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
 						Collections.swap(vertices, forwardIndex, backwardIndex);
 					}
 
@@ -1389,7 +1454,7 @@ public class Geometry {
 	 * @param vertices the vertices of the polygon
 	 * @return one of the Intersections enumerations
 	 */
-	public static Intersections intersectionExists(ArrayList<Vector2> vertices) {
+	public static Intersections intersectionExists(List<Vector2> vertices) {
 		// Test inside intersection
 		for (int i = 0; i < vertices.size() - 1; ++i) {
 			if (getIntersection(vertices, i, i, vertices.size() - 1) != -1) {
@@ -1410,7 +1475,7 @@ public class Geometry {
 	 * @param vertices the vertices of the polygon
 	 * @return id of the intersection, -1 if no intersection was found
 	 */
-	public static int getIntersection(ArrayList<Vector2> vertices) {
+	public static int getIntersection(List<Vector2> vertices) {
 		// Test inside intersection
 		for (int i = 0; i < vertices.size() - 1; ++i) {
 			int intersectionId = getIntersection(vertices, i, i, vertices.size() - 1);
@@ -1569,6 +1634,14 @@ public class Geometry {
 	public static class PolygonCornersTooCloseException extends GdxRuntimeException {
 		/**
 		 * Writes a message to the exception
+		 * @param message
+		 */
+		public PolygonCornersTooCloseException(String message) {
+			super("Corners too close: " + message);
+		}
+
+		/**
+		 * Writes a message to the exception
 		 * @param distance distance between the corners
 		 */
 		public PolygonCornersTooCloseException(float distance) {
@@ -1588,15 +1661,15 @@ public class Geometry {
 		 * @param area the area of the polygon
 		 * @param vertices all the vertices of the polygon
 		 */
-		public PolygonAreaTooSmallException(float area, Vector2... vertices) {
-			super("Area too small: " + area);
-			mVertices = vertices;
-		}
+		public PolygonAreaTooSmallException(float area, Vector2... vertices){
+		super("Area too small: " + area);
+		mVertices = vertices;
+	}
 
-		/**
-		 * @return all vertices of the polygon
-		 */
-		public Vector2[] getVertices() {
+	/**
+	 * @return all vertices of the polygon
+	 */
+	public Vector2[] getVertices() {
 			return mVertices;
 		}
 

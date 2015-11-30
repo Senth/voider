@@ -71,9 +71,8 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 			appendCorner(true);
 
 			IC_Visual icVisual = getVisualConfig();
-			mInvoker.execute(
-					new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisual(), icVisual.getDrawNewCornerDistMinSq(), icVisual
-							.getDrawCornerAngleMin()), true);
+			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisual(), icVisual.getDrawNewCornerDistMinSq(),
+					icVisual.getDrawCornerAngleMin()), true);
 
 			try {
 				// Reset center if the actor was just created
@@ -89,7 +88,7 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 				mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
 				handleBadCornerPosition(null);
 			} catch (PolygonCornersTooCloseException e) {
-				Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
+				Gdx.app.error(DrawAppendTool.class.getSimpleName(), "PolygonCornersTooClose! Should never happen!");
 				handleBadCornerPosition(null);
 			} catch (PolygonAreaTooSmallException e) {
 				mNotification.show(NotificationTypes.ERROR, Messages.Error.POLYGON_AREA_TOO_SMALL);
