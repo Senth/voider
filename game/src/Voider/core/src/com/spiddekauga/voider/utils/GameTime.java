@@ -1,4 +1,4 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.voider.utils;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 
@@ -43,7 +43,7 @@ public class GameTime {
 
 	// Static methods
 	/**
-	 * Updates the global game time, call once per fram
+	 * Updates the global game time, call once per frame
 	 * @param deltaTime elapsed time since last frame
 	 */
 	public synchronized static void updateGlobal(float deltaTime) {

@@ -37,7 +37,8 @@ allprojects {
         ashleyVersion = '1.3.1'
         aiVersion = '1.5.0'
         appengineVersion = '1.9.28'
-        spiddekaugaUtilsVersion = '0.1.0-SNAPSHOT'
+        commonUtilsVersion = '0.1.0-SNAPSHOT'
+		kryoUtilsVersion = '0.1.1'
         appengineUtilsVersion = '0.2.1-SNAPSHOT'
 		httpUrlUtilsVersion = '0.3.0'
 		jaccVersion = '0.2.3'
@@ -88,10 +89,10 @@ project(":android") {
 		compile 'com.googlecode.openbeans:openbeans:1.0'
 		compile 'org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT'
 		compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
-		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.esotericsoftware:kryo:$kryoVersion"
 		compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
-		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
+		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
+		compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
 		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
 		// ANDROID STUFF
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
@@ -162,10 +163,10 @@ project(":core") {
 		compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT"
 		compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
-// 		compile "com.google.code.gson:gson:2.2.4"
 		compile "com.esotericsoftware:kryo:$kryoVersion"
 		compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
-		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
+		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
+		compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
 		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
     }
 }
@@ -174,7 +175,7 @@ project(":network") {
 	apply plugin: "java"
 
 	dependencies {
-		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
+		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
 		compile "com.esotericsoftware:kryo:$kryoVersion"
 	}
 }
@@ -189,7 +190,8 @@ project(":server") {
 		providedCompile 'javax.servlet:servlet-api:2.5'
 		compile project(":network")
 		compile "com.spiddekauga.appengine:appengine-utils:$appengineUtilsVersion"
-		compile "com.spiddekauga:spiddekauga-utils:$spiddekaugaUtilsVersion"
+		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
+		compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
 		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
 		compile "commons-fileupload:commons-fileupload:1.3.1"
 		compile "com.google.guava:guava:$guavaVersion"

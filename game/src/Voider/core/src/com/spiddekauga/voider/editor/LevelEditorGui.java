@@ -256,8 +256,8 @@ class LevelEditorGui extends EditorGui {
 					(ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
 
 			// Analytics
-			new AnalyticsButtonListener(button, "Level_EnemySelect", enemyDef.getName() + " (" + enemyDef.getId() + ":" + enemyDef.getRevision()
-					+ ")");
+			new AnalyticsButtonListener(button, "Level_EnemySelect",
+					enemyDef.getName() + " (" + enemyDef.getId() + ":" + enemyDef.getRevision() + ")");
 
 			// Create tooltip
 			CustomTooltip tooltip = new CustomTooltip(getEnemyTooltip(enemyDef), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, 3);
@@ -1073,7 +1073,7 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
 			}
 		};
-		mUiFactory.text.addPanelSection("Enemy Copies", table, null);
+		mUiFactory.text.addPanelSection("Enemies", table, null);
 		mWidgets.enemy.cEnemies = mUiFactory.addSlider(null, "LevelEnemy_Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX,
 				Level.Enemy.ENEMIES_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished);
 
