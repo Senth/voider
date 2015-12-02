@@ -57,8 +57,8 @@ import com.spiddekauga.voider.utils.BoundingBox;
  * A game level
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-		IResourceRevision, IResourceHasDef {
+public class Level extends Resource
+		implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -415,27 +415,89 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		for (EnemyActor enemy : enemies) {
 			// Create activate trigger
 			if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE) == null) {
-				TriggerInfo defaultTrigger = enemy.createDefaultActivateTrigger(this);
-
-				if (defaultTrigger != null) {
-					addResource(defaultTrigger.trigger);
-					enemy.addTrigger(defaultTrigger);
-				}
+				createDefaultActivateTrigger(enemy);
 			}
 
 			// AI enemies, add an deactivate trigger
 			if (enemy.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
 				if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_DEACTIVATE) == null) {
-					TriggerInfo defaultTrigger = enemy.createDefaultDeactivateTrigger();
-
-					if (defaultTrigger != null) {
-						addResource(defaultTrigger.trigger);
-						enemy.addTrigger(defaultTrigger);
-					}
+					createDefaultDeactivateTrigger(enemy);
 				}
 			}
 		}
 	}
+
+	/**
+	 * Creates a default activate trigger for the specified enemy
+	 * @param enemy create activate trigger for this enemy
+	 */
+	private void createDefaultActivateTrigger(EnemyActor enemy) {
+		boolean createDefaultTrigger = true;
+
+		// Use group leader's trigger
+		EnemyGroup group = enemy.getEnemyGroup();
+		if (group != null) {
+			TriggerInfo leaderTriggerInfo = group.getSpawnTrigger();
+			if (leaderTriggerInfo != null) {
+				createDefaultTrigger = false;
+
+				TriggerInfo triggerInfo = new TriggerInfo();
+				triggerInfo.action = Actions.ACTOR_ACTIVATE;
+				triggerInfo.trigger = leaderTriggerInfo.trigger;
+				int delayIndex = group.getEnemySpawnIndex(enemy) - 1;
+				float spawnDelay = group.getSpawnTriggerDelay();
+				triggerInfo.delay = leaderTriggerInfo.delay + spawnDelay * delayIndex;
+				enemy.addTrigger(triggerInfo);
+			}
+		}
+
+		// Use default triggers
+		if (createDefaultTrigger) {
+			TriggerInfo defaultTrigger = enemy.createDefaultActivateTrigger(this);
+			if (defaultTrigger != null) {
+				addResource(defaultTrigger.trigger);
+				enemy.addTrigger(defaultTrigger);
+			}
+		}
+	}
+
+	/**
+	 * Create a default deactivate trigger for the specified enemy
+	 * @param enemy create deactive trigger for this enemy
+	 */
+	private void createDefaultDeactivateTrigger(EnemyActor enemy) {
+		boolean createDefaultTrigger = true;
+
+
+		// Use group leader's trigger
+		EnemyGroup group = enemy.getEnemyGroup();
+		if (group != null) {
+			TriggerInfo leaderTriggerInfo = group.getDeactivateTrigger();
+			if (leaderTriggerInfo != null) {
+				createDefaultTrigger = false;
+
+				TriggerInfo triggerInfo = new TriggerInfo();
+				triggerInfo.action = Actions.ACTOR_DEACTIVATE;
+				triggerInfo.trigger = leaderTriggerInfo.trigger;
+				int delayIndex = group.getEnemySpawnIndex(enemy) - 1;
+				float spawnDelay = group.getSpawnTriggerDelay();
+				triggerInfo.delay = leaderTriggerInfo.delay + spawnDelay * delayIndex;
+				enemy.addTrigger(triggerInfo);
+			}
+		}
+
+
+		// Use default triggers
+		if (createDefaultTrigger) {
+			TriggerInfo defaultTrigger = enemy.createDefaultDeactivateTrigger();
+
+			if (defaultTrigger != null) {
+				addResource(defaultTrigger.trigger);
+				enemy.addTrigger(defaultTrigger);
+			}
+		}
+	}
+
 
 	/**
 	 * Removes an enemy from the level

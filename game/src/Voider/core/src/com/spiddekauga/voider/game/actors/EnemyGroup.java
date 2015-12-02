@@ -9,6 +9,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.triggers.TActorActivated;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
 
@@ -40,7 +43,18 @@ public class EnemyGroup extends Resource {
 			enemyActor.setEnemyGroup(this);
 			enemyActor.setGroupLeader(true);
 		} else {
-			Gdx.app.error("EnemyGroup", "Group is not empty when setOriginalEnemy() was called");
+			Gdx.app.error(EnemyGroup.class.getSimpleName(), "Group is not empty when setLeaderEnemy() was called");
+		}
+	}
+
+	/**
+	 * @return get the enemy leader, null if none has been set
+	 */
+	public EnemyActor getLeader() {
+		if (!mEnemies.isEmpty()) {
+			return mEnemies.get(0);
+		} else {
+			return null;
 		}
 	}
 
@@ -146,6 +160,34 @@ public class EnemyGroup extends Resource {
 		for (int i = 1; i < mEnemies.size(); ++i) {
 			mEnemies.get(i).setPosition(leaderPosition);
 		}
+	}
+
+	/**
+	 * @return the leaders activate trigger if it's a custom set trigger.
+	 */
+	public TriggerInfo getSpawnTrigger() {
+		EnemyActor leader = getLeader();
+		if (leader != null) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(leader, Actions.ACTOR_ACTIVATE);
+			if (triggerInfo != null && !(triggerInfo.trigger instanceof TActorActivated)) {
+				return triggerInfo;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return the leaders deactivate trigger if it's a custom set trigger
+	 */
+	public TriggerInfo getDeactivateTrigger() {
+		EnemyActor leader = getLeader();
+		if (leader != null) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(leader, Actions.ACTOR_DEACTIVATE);
+			if (triggerInfo != null && !(triggerInfo.trigger instanceof TActorActivated)) {
+				return triggerInfo;
+			}
+		}
+		return null;
 	}
 
 	@Override

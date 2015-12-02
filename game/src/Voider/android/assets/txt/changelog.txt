@@ -3,6 +3,9 @@ required=true
 hotfix=false
 Login Method
 	Changed how login works, this breaks the old login. New client has to be downloaded manually.
+Level Editor
+	Drawing terrain doesn't crash any more
+	Drawing terrain now works better with fewer errors
 Maintenance
 	When maintenance is active all clients will be disconnected from the server
 	Can only auto-login when the server is offline
@@ -20,7 +23,8 @@ Explore Levels
 	Top score is now hidden if none is available
 Fixes & Improvements
 	Can download levels, enemies, and bullets correctly again
-	Downloading is now faster
+	Increased Downloading and syncing speed
+	Enemies that use a custom trigger and have multiple enemies in one now spawns correctly.
 	
 
 [0.5.13]

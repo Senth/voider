@@ -4,9 +4,8 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 
 /**
- * Information for a trigger listener. This contains all the information
- * to bind the listener to a trigger.
- * 
+ * Information for a trigger listener. This contains all the information to bind the
+ * listener to a trigger.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TriggerInfo {
@@ -28,8 +27,8 @@ public class TriggerInfo {
 	}
 
 	/**
-	 * Tests whether this trigger info equals another trigger info in triggedId
-	 * and action (i.e. it doesn't test the delay).
+	 * Tests whether this trigger info equals another trigger info in triggedId and action
+	 * (i.e. it doesn't test the delay).
 	 * @param triggerInfo the other triggerInfo to test against
 	 * @return true if triggerId and action is the same in both trigger infos.
 	 */
@@ -58,13 +57,12 @@ public class TriggerInfo {
 	}
 
 	/**
-	 * Gets the specified enemy's trigger for the specified trigger info.
-	 * I.e. this will check in all the enmeny triggers until it finds the specified
-	 * trigger.
+	 * Gets the specified listener's trigger for the specified trigger info. I.e. this
+	 * will check in all the listener triggers until it finds the specified trigger.
 	 * @param listener the enemy to find the TriggerInfo in.
 	 * @param searchTriggerInfo the trigger info to search for in the specified enemy
-	 * @return TriggerInfo that have the same triggerId and action as the specified trigger.
-	 * Null if the trigger info wasn't found inside the enemy.
+	 * @return TriggerInfo that have the same triggerId and action as the specified
+	 *         trigger. Null if the trigger info wasn't found inside the listener.
 	 */
 	public static TriggerInfo getTriggerInfoByDuplicate(ITriggerListener listener, TriggerInfo searchTriggerInfo) {
 		for (TriggerInfo triggerInfo : listener.getTriggerInfos()) {
@@ -77,13 +75,13 @@ public class TriggerInfo {
 	}
 
 	/**
-	 * Gets the specified enemy's trigger for the specified trigger info.
-	 * I.e. this will check in all the enmeny triggers until it finds the trigger info
-	 * with the specified action.
+	 * Gets the specified listeners's trigger for the specified trigger info. I.e. this
+	 * will check in all the listener triggers until it finds the trigger info with the
+	 * specified action.
 	 * @param listener the enemy to find the TriggerInfo in.
 	 * @param action the action the trigger contains.
-	 * @return TriggerInfo that have the same triggerId and action as the specified trigger.
-	 * null if the trigger info wasn't found inside the listener.
+	 * @return TriggerInfo that have the same triggerId and action as the specified
+	 *         trigger. null if the trigger info wasn't found inside the listener.
 	 */
 	public static TriggerInfo getTriggerInfoByAction(ITriggerListener listener, Actions action) {
 		for (TriggerInfo triggerInfo : listener.getTriggerInfos()) {
