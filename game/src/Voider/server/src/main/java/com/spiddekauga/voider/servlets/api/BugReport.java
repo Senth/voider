@@ -79,7 +79,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 
 		// Create body
 		String body = "";
-		body += getFormatedHeadline("System Information", bugReportEntity.systemInformation.replace("\n", "<br />"));
+		body += getFormatedHeadline("System Information", bugReportEntity.systemInformation.replace("\n", "<br />\n"));
 		body += getFormatedHeadline("Description", bugReportEntity.description);
 		body += getFormatedHeadline("Exception", bugReportEntity.additionalInformation);
 		body += getFormattedAnalyticsHtml(bugReportEntity.analyticsSession);
@@ -327,7 +327,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 		String export = "";
 
 		export += bugReportEntity.description + "<br />\n<br />\n";
-		export += getSystemInformationTrac(bugReportEntity.systemInformation);
+		export += getSystemInformationTrac(bugReportEntity.systemInformation.replace("\n", "<br />\n"));
 		export += getExceptionTrac(bugReportEntity.additionalInformation);
 		export += getFormattedAnalyticsTrac(bugReportEntity.analyticsSession);
 
@@ -344,7 +344,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 			StringBuilder stringBuilder = new StringBuilder();
 			appendTracHeaderBig("System Information", stringBuilder);
 			stringBuilder.append(systemInformation);
-			newline(stringBuilder, 2);
+			newline(stringBuilder);
 			return stringBuilder.toString();
 		}
 		return "";
@@ -536,7 +536,7 @@ public class BugReport extends VoiderApiServlet<BugReportMethod> {
 	 * @param stringBuilder
 	 */
 	private static void newline(StringBuilder stringBuilder) {
-		stringBuilder.append("<br />\n");
+		newline(stringBuilder, 1);
 	}
 
 	/**

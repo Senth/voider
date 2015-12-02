@@ -79,43 +79,40 @@ public class CBugReportSend extends Command implements IResponseListener {
 	 * @return string with system information
 	 */
 	public static String getSystemInformation() {
-		String systemInformation;
+		StringBuilder builder = new StringBuilder();
 
+		builder.append("OS: ");
 		switch (Gdx.app.getType()) {
 		case Android:
-			systemInformation = "Android API v." + Gdx.app.getVersion();
+			builder.append("Android API v.").append(Gdx.app.getVersion());
 			break;
 
 		case Applet:
-			systemInformation = "Applet";
+			builder.append("Applet");
 			break;
 
 		case Desktop:
-			systemInformation = System.getProperty("os.name");
+			builder.append(System.getProperty("os.name"));
 			break;
 
 		case WebGL:
-			systemInformation = "WebGL";
+			builder.append("WebGL");
 			break;
 
 		case iOS:
-			systemInformation = "iOS v." + Gdx.app.getVersion();
+			builder.append("iOS v.").append(Gdx.app.getVersion());
 			break;
 
 		default:
-			systemInformation = "";
 			break;
 		}
 
-		// Screen size
-		systemInformation += "\n";
-		systemInformation += "Screen size: " + Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
-		systemInformation += "\n";
-		systemInformation += "Version: " + SettingRepo.getInstance().info().getCurrentVersion().getVersion();
-		systemInformation += "\n";
-		systemInformation += "Build: " + Config.Debug.BUILD.toString();
+		builder.append("\n");
+		builder.append("Screen size: ").append(Gdx.graphics.getWidth()).append("x").append(Gdx.graphics.getHeight()).append("\n");
+		builder.append("Version: ").append(SettingRepo.getInstance().info().getCurrentVersion().getVersion()).append("\n");
+		builder.append("Build: ").append(Config.Debug.BUILD.toString());
 
-		return systemInformation;
+		return builder.toString();
 	}
 
 	@Override
