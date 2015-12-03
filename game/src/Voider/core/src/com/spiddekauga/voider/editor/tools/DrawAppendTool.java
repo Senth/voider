@@ -71,7 +71,7 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 			appendCorner(true);
 
 			IC_Visual icVisual = getVisualConfig();
-			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisual(), icVisual.getDrawNewCornerDistMinSq(),
+			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getShape(), icVisual.getDrawNewCornerDistMinSq(),
 					icVisual.getDrawCornerAngleMin()), true);
 
 			try {
@@ -153,7 +153,7 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 		if (mSelectedActor != null) {
 			Vector2 localPos = getLocalPosition(mTouchCurrent, mSelectedActor);
 
-			mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisual(), localPos, mEditor), chained);
+			mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getShape(), localPos, mEditor), chained);
 			mDragOrigin.set(mTouchCurrent);
 		}
 	}

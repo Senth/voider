@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.resources;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
@@ -71,7 +70,7 @@ public interface IResourceCorner extends IResource {
 	/**
 	 * @return all the corners of the resource
 	 */
-	ArrayList<Vector2> getCorners();
+	List<Vector2> getCorners();
 
 	/**
 	 * Creates body corners for the resource

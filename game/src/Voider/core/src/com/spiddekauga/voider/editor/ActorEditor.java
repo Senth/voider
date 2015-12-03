@@ -157,7 +157,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mShapeRenderer.translate(0, 0, -1);
 
 			// Drawing actor
-			if (mDrawingActor != null && mActorDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM) {
+			if (mDrawingActor != null && mActorDef.getShape().getShapeType() == ActorShapeTypes.CUSTOM) {
 				mDrawingActor.renderShape(mShapeRenderer);
 				mDrawingActor.renderEditor(mShapeRenderer);
 			}
@@ -173,19 +173,19 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
-		if (mActorDef == null || mActorDef.getVisual().getShapeType() == shapeType) {
+		if (mActorDef == null || mActorDef.getShape().getShapeType() == shapeType) {
 			return;
 		}
 
 		if (shapeType == ActorShapeTypes.IMAGE) {
-			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisual(), this));
+			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getShape(), this));
 
-			if (mActorDef.getVisual().getDrawName() == null) {
-				mActorDef.getVisual().setDrawName(SHAPE_IMAGE_DEFAULT);
+			if (mActorDef.getShape().getDrawName() == null) {
+				mActorDef.getShape().setDrawName(SHAPE_IMAGE_DEFAULT);
 			}
 		}
 
-		mActorDef.getVisual().setShapeType(shapeType);
+		mActorDef.getShape().setShapeType(shapeType);
 
 		setUnsaved();
 	}
@@ -193,7 +193,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public ActorShapeTypes getShapeType() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getShapeType();
+			return mActorDef.getShape().getShapeType();
 		} else {
 			return ActorShapeTypes.CIRCLE;
 		}
@@ -204,14 +204,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mActorDef == null) {
 			return;
 		}
-		mActorDef.getVisual().setShapeRadius(radius);
+		mActorDef.getShape().setShapeRadius(radius);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeRadius() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getShapeRadius();
+			return mActorDef.getShape().getShapeRadius();
 		} else {
 			return 0;
 		}
@@ -222,14 +222,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mActorDef == null) {
 			return;
 		}
-		mActorDef.getVisual().setShapeWidth(width);
+		mActorDef.getShape().setShapeWidth(width);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeWidth() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getShapeWidth();
+			return mActorDef.getShape().getShapeWidth();
 		} else {
 			return 0;
 		}
@@ -240,14 +240,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mActorDef == null) {
 			return;
 		}
-		mActorDef.getVisual().setShapeHeight(height);
+		mActorDef.getShape().setShapeHeight(height);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeHeight() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getShapeHeight();
+			return mActorDef.getShape().getShapeHeight();
 		} else {
 			return 0;
 		}
@@ -263,13 +263,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mDrawingActor != null) {
 			mDrawingActor.destroyBody();
 
-			diffOffset = new Vector2(mActorDef.getVisual().getCenterOffset());
+			diffOffset = new Vector2(mActorDef.getShape().getCenterOffset());
 		}
 
-		mActorDef.getVisual().resetCenterOffset();
+		mActorDef.getShape().resetCenterOffset();
 
 		if (mDrawingActor != null) {
-			diffOffset.sub(mActorDef.getVisual().getCenterOffset());
+			diffOffset.sub(mActorDef.getShape().getCenterOffset());
 			diffOffset.add(mDrawingActor.getPosition());
 			mDrawingActor.setPosition(diffOffset);
 			mDrawingActor.createBody();
@@ -288,13 +288,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		if (mDrawingActor != null) {
 			mDrawingActor.destroyBody();
 
-			diffOffset = new Vector2(mActorDef.getVisual().getCenterOffset());
+			diffOffset = new Vector2(mActorDef.getShape().getCenterOffset());
 		}
 
-		mActorDef.getVisual().setCenterOffset(newCenter);
+		mActorDef.getShape().setCenterOffset(newCenter);
 
 		if (mDrawingActor != null) {
-			diffOffset.sub(mActorDef.getVisual().getCenterOffset());
+			diffOffset.sub(mActorDef.getShape().getCenterOffset());
 			diffOffset.add(mDrawingActor.getPosition());
 			mDrawingActor.setPosition(diffOffset);
 			mDrawingActor.createBody();
@@ -306,7 +306,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public Vector2 getCenterOffset() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getCenterOffset();
+			return mActorDef.getShape().getCenterOffset();
 		} else {
 			return new Vector2();
 		}
@@ -451,7 +451,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 
 		// Create draw actor
-		if (mDrawingActor == null && mActorDef.getVisual().getCornerCount() > 0) {
+		if (mDrawingActor == null && mActorDef.getShape().getCornerCount() > 0) {
 			mDrawingActor = newActor();
 			mDrawingActor.setDef(mActorDef);
 			mDrawingActor.createBody();
@@ -528,7 +528,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof Actor) {
-			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisual(), this), true);
+			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getShape(), this), true);
 			mDrawingActor = null;
 			setUnsaved();
 		} else if (resource instanceof VectorBrush) {
@@ -539,7 +539,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void setColor(Color color) {
 		if (mActorDef != null) {
-			mActorDef.getVisual().setColor(color);
+			mActorDef.getShape().setColor(color);
 			setUnsaved();
 		}
 	}
@@ -547,7 +547,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public Color getColor() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getColor();
+			return mActorDef.getShape().getColor();
 		} else {
 			return new Color();
 		}
@@ -696,7 +696,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void setShapeImageScale(float scale) {
 		if (mActorDef != null) {
-			mActorDef.getVisual().setImageScale(scale);
+			mActorDef.getShape().setImageScale(scale);
 			updateShapeImageActor();
 		}
 	}
@@ -704,7 +704,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public float getShapeImageScale() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getImageScale();
+			return mActorDef.getShape().getImageScale();
 		}
 		return 0;
 	}
@@ -712,7 +712,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void setDrawImage(DrawImages image) {
 		if (mActorDef != null) {
-			mActorDef.getVisual().setDrawName(image);
+			mActorDef.getShape().setDrawName(image);
 			updateShapeImageActor();
 		}
 	}
@@ -720,7 +720,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public DrawImages getDrawImage() {
 		if (mActorDef != null) {
-			return mActorDef.getVisual().getDrawName();
+			return mActorDef.getShape().getDrawName();
 		}
 
 		return SHAPE_IMAGE_DEFAULT;
@@ -732,7 +732,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	private void updateShapeImageActor() {
 		if (mShapeImageUpdate && mActorDef != null) {
 			try {
-				mActorDef.getVisual().updateImageShape(mShapeImageDistMin, mShapeImageAngleMin, getScreenToWorldScale());
+				mActorDef.getShape().updateImageShape(mShapeImageDistMin, mShapeImageAngleMin, getScreenToWorldScale());
 				setUnsaved();
 			} catch (PolygonAreaTooSmallException | PolygonComplexException | PolygonCornersTooCloseException e) {
 				// Do nothing

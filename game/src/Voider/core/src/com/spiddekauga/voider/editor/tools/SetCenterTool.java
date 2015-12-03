@@ -29,9 +29,9 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 
 			for (Actor actor : selectedActors) {
 				mtCenterOffset.set(actor.getPosition()).sub(mTouchCurrent);
-				mtCenterOffset.add(actor.getDef().getVisual().getCenterOffset());
-				mOriginalCenter.set(actor.getDef().getVisual().getCenterOffset());
-				actor.getDef().getVisual().setCenterOffset(mtCenterOffset);
+				mtCenterOffset.add(actor.getDef().getShape().getCenterOffset());
+				mOriginalCenter.set(actor.getDef().getShape().getCenterOffset());
+				actor.getDef().getShape().setCenterOffset(mtCenterOffset);
 
 				mtNewActorPos.set(mOriginalCenter).sub(mtCenterOffset);
 				mtNewActorPos.add(actor.getPosition());
@@ -50,9 +50,9 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 
 			for (Actor actor : selectedActors) {
 				mtCenterOffset.set(actor.getPosition()).sub(mTouchCurrent);
-				mtCenterOffset.add(actor.getDef().getVisual().getCenterOffset());
-				mtOldCenterOffset.set(actor.getDef().getVisual().getCenterOffset());
-				actor.getDef().getVisual().setCenterOffset(mtCenterOffset);
+				mtCenterOffset.add(actor.getDef().getShape().getCenterOffset());
+				mtOldCenterOffset.set(actor.getDef().getShape().getCenterOffset());
+				actor.getDef().getShape().setCenterOffset(mtCenterOffset);
 
 				mtNewActorPos.set(mtOldCenterOffset).sub(mtCenterOffset);
 				mtNewActorPos.add(actor.getPosition());
@@ -72,9 +72,9 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 			boolean chained = false;
 			for (Actor actor : selectedActors) {
 				mtCenterOffset.set(actor.getPosition()).sub(mTouchCurrent);
-				mtCenterOffset.add(actor.getDef().getVisual().getCenterOffset());
-				mtOldCenterOffset.set(actor.getDef().getVisual().getCenterOffset());
-				actor.getDef().getVisual().setCenterOffset(mOriginalCenter);
+				mtCenterOffset.add(actor.getDef().getShape().getCenterOffset());
+				mtOldCenterOffset.set(actor.getDef().getShape().getCenterOffset());
+				actor.getDef().getShape().setCenterOffset(mOriginalCenter);
 
 				// Reset player position
 				mtOldActorPos.set(mtOldCenterOffset).sub(mOriginalCenter);

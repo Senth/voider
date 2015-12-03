@@ -2,9 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -25,11 +23,6 @@ public class ResourceItem {
 			return false;
 		} else if (object.getClass() == this.getClass()) {
 			return ((ResourceItem) object).id.equals(id);
-		} else if (object instanceof UUID) {
-			Config.Debug.deprecatedException();
-			Gdx.app.error("ResourceItem", "Deprecated use of ResourceItem.equals(UUID)");
-			Thread.dumpStack();
-			return id.equals(object);
 		} else {
 			return false;
 		}

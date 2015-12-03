@@ -359,7 +359,7 @@ public class EnemyEditor extends ActorEditor {
 		}
 		// Test hit UI
 		else {
-			float playerRadius = mPlayerActor.getDef().getVisual().getBoundingRadius();
+			float playerRadius = mPlayerActor.getDef().getShape().getBoundingRadius();
 			mWorld.QueryAABB(mCallbackUiHit, mPlayerLastPosition.x - playerRadius, mPlayerLastPosition.y - playerRadius, mPlayerLastPosition.x
 					+ playerRadius, mPlayerLastPosition.y + playerRadius);
 
@@ -478,7 +478,7 @@ public class EnemyEditor extends ActorEditor {
 	@Override
 	public void newDef() {
 		EnemyActorDef def = new EnemyActorDef();
-		def.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_COLOR_DEFAULT));
+		def.getShape().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_COLOR_DEFAULT));
 		setActorDef(def);
 		getGui().resetValues();
 		setMovementType(MovementTypes.PATH);

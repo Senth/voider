@@ -160,7 +160,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	void setDensity(float density) {
 		if (mDef != null) {
-			mDef.getVisual().setDensity(density);
+			mDef.getShape().setDensity(density);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	float getDensity() {
 		if (mDef != null) {
-			return mDef.getVisual().getDensity();
+			return mDef.getShape().getDensity();
 		}
 
 		return 0;
@@ -181,7 +181,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	void setFriction(float friction) {
 		if (mDef != null) {
-			mDef.getVisual().setFriction(friction);
+			mDef.getShape().setFriction(friction);
 		}
 	}
 
@@ -190,7 +190,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	float getFriction() {
 		if (mDef != null) {
-			return mDef.getVisual().getFriction();
+			return mDef.getShape().getFriction();
 		}
 
 		return 0;
@@ -202,7 +202,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	void setElasticity(float elasticity) {
 		if (mDef != null) {
-			mDef.getVisual().setElasticity(elasticity);
+			mDef.getShape().setElasticity(elasticity);
 		}
 	}
 
@@ -211,7 +211,7 @@ public class ShipEditor extends ActorEditor {
 	 */
 	float getElasticity() {
 		if (mDef != null) {
-			return mDef.getVisual().getElasticity();
+			return mDef.getShape().getElasticity();
 		}
 
 		return 0;
@@ -236,7 +236,7 @@ public class ShipEditor extends ActorEditor {
 	@Override
 	public void newDef() {
 		PlayerActorDef newDef = new PlayerActorDef();
-		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.PLAYER_COLOR_DEFAULT));
+		newDef.getShape().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.PLAYER_COLOR_DEFAULT));
 		setActorDef(newDef);
 		getGui().resetValues();
 		setSaved();

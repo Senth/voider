@@ -79,7 +79,7 @@ abstract public class ActorTool extends TouchTool {
 		Vector2 localPos = new Vector2(worldPos);
 
 		if (actor != null) {
-			localPos.sub(actor.getPosition()).sub(actor.getDef().getVisual().getCenterOffset());
+			localPos.sub(actor.getPosition()).sub(actor.getDef().getShape().getCenterOffset());
 		}
 
 		return localPos;
@@ -95,7 +95,7 @@ abstract public class ActorTool extends TouchTool {
 		Vector2 worldPos = new Vector2(localPos);
 
 		if (actor != null) {
-			worldPos.add(actor.getPosition()).add(actor.getDef().getVisual().getCenterOffset());
+			worldPos.add(actor.getPosition()).add(actor.getDef().getShape().getCenterOffset());
 		}
 
 		return worldPos;

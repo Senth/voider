@@ -41,7 +41,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	@Override
 	public void createBody() {
 		if (mBody == null && !isHidden()) {
-			List<FixtureDef> fixtures = mActor.getDef().getVisual().getFixtureDefs();
+			List<FixtureDef> fixtures = mActor.getDef().getShape().getFixtureDefs();
 
 			mBody = Actor.getWorld().createBody(new BodyDef());
 
@@ -79,7 +79,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 		if (mVertices != null && mActor != null) {
 			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
 			Vector2 offsetPosition = new Vector2();
-			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getVisual().getCenterOffset());
+			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getShape().getCenterOffset());
 			shapeRenderer.triangles(mVertices, offsetPosition);
 
 			if (isSelected()) {
@@ -176,7 +176,7 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 			destroyVertices();
 
 			List<Vector2> polygon = new ArrayList<Vector2>();
-			List<Vector2> actorShape = mActor.getDef().getVisual().getPolygonShape();
+			List<Vector2> actorShape = mActor.getDef().getShape().getPolygonShape();
 			if (actorShape != null && !actorShape.isEmpty()) {
 				// Copy polygon from actor, so we don't free the actor's vectors when
 				// freeing

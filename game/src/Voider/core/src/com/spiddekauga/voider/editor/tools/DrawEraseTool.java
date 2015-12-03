@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
@@ -89,7 +90,7 @@ public class DrawEraseTool extends ActorTool {
 
 			// Check for intersections in draw erase brush...
 			if (Geometry.intersectionExists(mDrawEraseBrush.getCorners()) != Intersections.INTERSECTS) {
-				ArrayList<BrushActorIntersection> intersections = getBrushActorIntersections();
+				List<BrushActorIntersection> intersections = getBrushActorIntersections();
 
 				try {
 					updateShapesForAllIntersectionActors(intersections);
@@ -129,11 +130,11 @@ public class DrawEraseTool extends ActorTool {
 	 *         intersections for the same actor. Don't forget to free both the hash map
 	 *         and all inner arrays
 	 */
-	private HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersectionsByActor(ArrayList<BrushActorIntersection> intersections) {
-		HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersections = new HashMap<>();
+	private HashMap<Actor, List<BrushActorIntersection>> splitIntersectionsByActor(List<BrushActorIntersection> intersections) {
+		HashMap<Actor, List<BrushActorIntersection>> splitIntersections = new HashMap<>();
 
 		for (BrushActorIntersection intersection : intersections) {
-			ArrayList<BrushActorIntersection> actorIntersections = splitIntersections.get(intersection.actor);
+			List<BrushActorIntersection> actorIntersections = splitIntersections.get(intersection.actor);
 
 			if (actorIntersections == null) {
 				actorIntersections = new ArrayList<>();
@@ -150,13 +151,13 @@ public class DrawEraseTool extends ActorTool {
 	 * Update shape for actor
 	 * @param intersections should only contain one type of actor
 	 */
-	private void updateShapeForActor(ArrayList<BrushActorIntersection> intersections) {
+	private void updateShapeForActor(List<BrushActorIntersection> intersections) {
 		Actor actor = intersections.get(0).actor;
 
 		mInvoker.execute(new CActorDefFixCustomFixtures(actor.getDef(), false));
 
 		// Change shape of actor to use the brush corners.
-		IResourceCorner actorCorners = actor.getDef().getVisual();
+		IResourceCorner actorCorners = actor.getDef().getShape();
 		while (intersections.size() >= 2) {
 			boolean intersectionSame = false;
 
@@ -277,7 +278,7 @@ public class DrawEraseTool extends ActorTool {
 
 			// Correct other intersections after we added the corners...
 			if (intersections.size() >= 2) {
-				ArrayList<Vector2> drawEraseCorners = mDrawEraseBrush.getCorners();
+				List<Vector2> drawEraseCorners = mDrawEraseBrush.getCorners();
 				for (int intersectionIndex = 0; intersectionIndex < 2; ++intersectionIndex) {
 					BrushActorIntersection currentIntersection = intersections.get(intersectionIndex);
 
@@ -331,7 +332,7 @@ public class DrawEraseTool extends ActorTool {
 				success = false;
 
 				// Fix area, remove corners
-				ArrayList<Integer> indicesToRemove = Geometry.fixPolygonArea(actorCorners.getCorners(), e.getVertices());
+				List<Integer> indicesToRemove = Geometry.fixPolygonArea(actorCorners.getCorners(), e.getVertices());
 
 				if (!indicesToRemove.isEmpty()) {
 					// Sort so we remove highest index first (otherwise the indices aren't
@@ -361,8 +362,7 @@ public class DrawEraseTool extends ActorTool {
 	 * @return true if the shortest length between two actorIndices are between the
 	 *         indices, false if wrapped
 	 */
-	private boolean isShortestBetweenIndices(ArrayList<Vector2> vertices, BrushActorIntersection fromIntersection,
-			BrushActorIntersection toIntersection) {
+	private boolean isShortestBetweenIndices(List<Vector2> vertices, BrushActorIntersection fromIntersection, BrushActorIntersection toIntersection) {
 		// BETWEEN
 		float betweenLength = 0;
 		// vertices between
@@ -409,10 +409,10 @@ public class DrawEraseTool extends ActorTool {
 	 * Change shape for all actors inside the intersections
 	 * @param intersections all intersections between actors and the brush
 	 */
-	private void updateShapesForAllIntersectionActors(ArrayList<BrushActorIntersection> intersections) {
-		HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersections = splitIntersectionsByActor(intersections);
+	private void updateShapesForAllIntersectionActors(List<BrushActorIntersection> intersections) {
+		HashMap<Actor, List<BrushActorIntersection>> splitIntersections = splitIntersectionsByActor(intersections);
 
-		for (Entry<Actor, ArrayList<BrushActorIntersection>> entry : splitIntersections.entrySet()) {
+		for (Entry<Actor, List<BrushActorIntersection>> entry : splitIntersections.entrySet()) {
 			updateShapeForActor(entry.getValue());
 		}
 	}
@@ -423,13 +423,13 @@ public class DrawEraseTool extends ActorTool {
 	 *         brush.
 	 */
 	@SuppressWarnings("unchecked")
-	private ArrayList<BrushActorIntersection> getBrushActorIntersections() {
-		ArrayList<BrushActorIntersection> intersections = new ArrayList<>();
-		ArrayList<Vector2> brushCorners = mDrawEraseBrush.getCorners();
+	private List<BrushActorIntersection> getBrushActorIntersections() {
+		List<BrushActorIntersection> intersections = new ArrayList<>();
+		List<Vector2> brushCorners = mDrawEraseBrush.getCorners();
 
 
 		// Which actors should we iterate through?
-		ArrayList<Actor> selectedActors;
+		List<Actor> selectedActors;
 
 		// Only the actor we hit
 		if (mHitActor != null) {
@@ -438,15 +438,15 @@ public class DrawEraseTool extends ActorTool {
 		}
 		// Hit outside of any selected actor, iterate through all
 		else {
-			selectedActors = (ArrayList<Actor>) mSelection.getSelectedResourcesOfType(mActorType);
+			selectedActors = (List<Actor>) mSelection.getSelectedResourcesOfType(mActorType);
 		}
 
 
 		// Iterate through all actors
-		ArrayList<Vector2> actorCorners = new ArrayList<>();
+		List<Vector2> actorCorners = new ArrayList<>();
 		for (Actor selectedActor : selectedActors) {
 			// Convert to world positions
-			for (Vector2 corner : selectedActor.getDef().getVisual().getCorners()) {
+			for (Vector2 corner : selectedActor.getDef().getShape().getCorners()) {
 				actorCorners.add(getWorldPosition(corner, selectedActor));
 			}
 

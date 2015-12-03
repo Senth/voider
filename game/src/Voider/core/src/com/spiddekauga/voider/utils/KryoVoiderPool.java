@@ -59,7 +59,7 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
-import com.spiddekauga.voider.game.actors.VisualVars;
+import com.spiddekauga.voider.game.actors.Shape;
 import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
@@ -133,7 +133,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		PLAYER_ACTOR_DEF(PlayerActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
 		STATIC_TERRAIN_ACTOR(StaticTerrainActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		STATIC_TERRAIN_ACTOR_DEF(StaticTerrainActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
-		VISUAL_VARS(VisualVars.class, SerializerType.SERIALIZABLE_TAGGED),
+		VISUAL_VARS(Shape.class, SerializerType.SERIALIZABLE_TAGGED),
 		BULLET_DESTROYER(BulletDestroyer.class, SerializerType.TAGGED),
 		COLLECTIBLES(Collectibles.class),
 		GAME_SAVE(GameSave.class, SerializerType.SERIALIZABLE_TAGGED),

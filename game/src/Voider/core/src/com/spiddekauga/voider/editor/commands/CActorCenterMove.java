@@ -44,7 +44,7 @@ public class CActorCenterMove extends CResourceChange {
 
 	@Override
 	public boolean execute() {
-		mActorDef.getVisual().setCenterOffset(mCenterNew);
+		mActorDef.getShape().setCenterOffset(mCenterNew);
 
 		if (mActor != null) {
 			Vector2 newActorPos = new Vector2(mCenterOld).sub(mCenterNew);
@@ -61,7 +61,7 @@ public class CActorCenterMove extends CResourceChange {
 
 	@Override
 	public boolean undo() {
-		mActorDef.getVisual().setCenterOffset(mCenterOld);
+		mActorDef.getShape().setCenterOffset(mCenterOld);
 
 		if (mActor != null) {
 			Vector2 newActorPos = new Vector2(mCenterNew).sub(mCenterOld);

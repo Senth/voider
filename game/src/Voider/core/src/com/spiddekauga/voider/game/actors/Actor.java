@@ -104,7 +104,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 				calculateRotatedVertices();
 
 				// Rotation
-				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && !mDef.getVisual().getCenterOffset().equals(Vector2.Zero)) {
+				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && !mDef.getShape().getCenterOffset().equals(Vector2.Zero)) {
 					float newAngle = mBody.getAngle();
 					newAngle += mDef.getBodyDef().angularVelocity * deltaTime;
 					if (newAngle >= MathUtils.PI2) {
@@ -139,13 +139,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 				reloadBody();
 			}
 			// Do we need to reload the fixtures?
-			if (mFixtureCreateTime <= getDef().getVisual().getFixtureChangeTime()) {
+			if (mFixtureCreateTime <= getDef().getShape().getFixtureChangeTime()) {
 				reloadFixtures();
 				calculateRotatedVertices(true);
 			}
 
 			// Do we need to fix the body corners?
-			if (hasBodyCorners() && mCorners != null && mCorners.size() != mDef.getVisual().getCornerCount()) {
+			if (hasBodyCorners() && mCorners != null && mCorners.size() != mDef.getShape().getCornerCount()) {
 				destroyBodyCorners();
 				createBodyCorners();
 			}
@@ -266,12 +266,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		offsetPosition.set(mPosition);
 
 		// Offset for circle
-		if (mDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisual().getCornerCount() >= 1
-				&& mDef.getVisual().getCornerCount() <= 2) {
-			offsetPosition.add(mDef.getVisual().getCorners().get(0));
+		if (mDef.getShape().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getShape().getCornerCount() >= 1
+				&& mDef.getShape().getCornerCount() <= 2) {
+			offsetPosition.add(mDef.getShape().getCorners().get(0));
 		}
 
-		offsetPosition.add(mDef.getVisual().getCenterOffset());
+		offsetPosition.add(mDef.getShape().getCenterOffset());
 
 		return offsetPosition;
 	}
@@ -279,7 +279,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	@Override
 	public void renderShape(ShapeRendererEx shapeRenderer) {
 		// Skip if the actor is rendered with sprites
-		if (mDef.getVisual().hasImage()) {
+		if (mDef.getShape().hasImage()) {
 			return;
 		}
 
@@ -288,28 +288,28 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		Vector2 offsetPosition = getWorldOffset();
 
 		// Draw regular filled shape
-		if (!mDrawOnlyOutline && mDef.getVisual().isComplete()) {
+		if (!mDrawOnlyOutline && mDef.getShape().isComplete()) {
 			if (mRotatedVertices != null) {
-				shapeRenderer.setColor(mDef.getVisual().getColor());
+				shapeRenderer.setColor(mDef.getShape().getColor());
 				shapeRenderer.triangles(mRotatedVertices, offsetPosition);
 			}
 		}
 		// Draw outline
-		else if (mDef.getVisual().getCornerCount() >= 2) {
+		else if (mDef.getShape().getCornerCount() >= 2) {
 			shapeRenderer.push(ShapeType.Line);
 
-			if (mDef.getVisual().getCornerCount() == 2) {
-				offsetPosition.sub(mDef.getVisual().getCorners().get(0));
-				offsetPosition.sub(mDef.getVisual().getCenterOffset());
+			if (mDef.getShape().getCornerCount() == 2) {
+				offsetPosition.sub(mDef.getShape().getCorners().get(0));
+				offsetPosition.sub(mDef.getShape().getCenterOffset());
 			}
 
 			shapeRenderer.setColor(Config.Actor.OUTLINE_COLOR);
-			shapeRenderer.polyline(mDef.getVisual().getCorners(), false, offsetPosition);
+			shapeRenderer.polyline(mDef.getShape().getCorners(), false, offsetPosition);
 
 			// Close the shape
-			if (mDef.getVisual().getCornerCount() >= 3) {
+			if (mDef.getShape().getCornerCount() >= 3) {
 				shapeRenderer.setColor(Config.Actor.OUTLINE_CLOSE_COLOR);
-				shapeRenderer.line(mDef.getVisual().getCorners().get(mDef.getVisual().getCornerCount() - 1), mDef.getVisual().getCorners().get(0),
+				shapeRenderer.line(mDef.getShape().getCorners().get(mDef.getShape().getCornerCount() - 1), mDef.getShape().getCorners().get(0),
 						offsetPosition);
 			}
 
@@ -332,7 +332,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public void renderSprite(SpriteBatch spriteBatch) {
-		Sprite sprite = mDef.getVisual().getImage(mPosition);
+		Sprite sprite = mDef.getShape().getImage(mPosition);
 
 		if (sprite != null) {
 			sprite.draw(spriteBatch);
@@ -354,7 +354,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		Vector2 offsetPosition = getWorldOffset();
 
 		// Draw selected outline
-		if (!mDrawOnlyOutline && mSelected && getDef().getVisual().isComplete() && mRotatedVertices != null) {
+		if (!mDrawOnlyOutline && mSelected && getDef().getShape().isComplete() && mRotatedVertices != null) {
 			if (mSelectedOutline == null) {
 				reloadSelectedOutline();
 			}
@@ -374,7 +374,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 			shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
 			Vector2 cornerOffset = new Vector2();
-			for (Vector2 corner : mDef.getVisual().getCorners()) {
+			for (Vector2 corner : mDef.getShape().getCorners()) {
 				cornerOffset.set(offsetPosition).add(corner);
 				shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, cornerOffset);
 			}
@@ -389,10 +389,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mHasBodyCenter) {
 			shapeRenderer.push(ShapeType.Line);
 
-			if (mDef.getVisual().getCornerCount() > 0 && mDef.getVisual().getCornerCount() <= 2) {
-				offsetPosition.sub(mDef.getVisual().getCorners().get(0));
+			if (mDef.getShape().getCornerCount() > 0 && mDef.getShape().getCornerCount() <= 2) {
+				offsetPosition.sub(mDef.getShape().getCorners().get(0));
 			}
-			offsetPosition.sub(mDef.getVisual().getCenterOffset());
+			offsetPosition.sub(mDef.getShape().getCenterOffset());
 			shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
 			shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, offsetPosition);
 
@@ -411,7 +411,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mEditorActive) {
 			clearSelectedOutline();
 
-			List<Vector2> corners = copyVectorArray(getDef().getVisual().getPolygonShape());
+			List<Vector2> corners = copyVectorArray(getDef().getShape().getPolygonShape());
 			if (corners != null && !corners.isEmpty()) {
 				float width = SkinNames.getResource(SkinNames.EditorVars.SELECTED_OUTLINE_WIDTH);
 				List<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, width);
@@ -425,7 +425,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 					}
 					rotation *= MathUtils.radDeg;
 
-					Geometry.rotateVertices(mSelectedOutline, rotation, true, getDef().getVisual().getCenterOffset());
+					Geometry.rotateVertices(mSelectedOutline, rotation, true, getDef().getShape().getCenterOffset());
 				}
 			}
 		}
@@ -922,11 +922,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 */
 	@Override
 	public void createBodyCorners() {
-		if (mDef.getVisual().getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
+		if (mDef.getShape().getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			mHasBodyCorners = true;
 			Vector2 worldPos = new Vector2();
-			for (Vector2 localPos : mDef.getVisual().getCorners()) {
-				worldPos.set(localPos).add(mPosition).add(getDef().getVisual().getCenterOffset());
+			for (Vector2 localPos : mDef.getShape().getCorners()) {
+				worldPos.set(localPos).add(mPosition).add(getDef().getShape().getCenterOffset());
 				createBodyCorner(worldPos);
 			}
 		}
@@ -979,19 +979,19 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public float getBoundingRadius() {
-		return mDef.getVisual().getBoundingRadius();
+		return mDef.getShape().getBoundingRadius();
 	}
 
 	@Override
 	public BoundingBox getBoundingBox() {
 		// Actor rotates
 		if (mBody != null && !MathUtils.isEqual(getDef().getRotationSpeedRad(), 0)) {
-			List<Vector2> polygon = getDef().getVisual().getPolygonShape();
-			mBoundingBox = Geometry.getBoundingBox(polygon, mBody.getAngle() * MathUtils.radiansToDegrees, getDef().getVisual().getCenterOffset());
+			List<Vector2> polygon = getDef().getShape().getPolygonShape();
+			mBoundingBox = Geometry.getBoundingBox(polygon, mBody.getAngle() * MathUtils.radiansToDegrees, getDef().getShape().getCenterOffset());
 		}
 		// No rotation
 		else {
-			mBoundingBox.set(mDef.getVisual().getBoundingBox());
+			mBoundingBox.set(mDef.getShape().getBoundingBox());
 		}
 
 		mBoundingBox.offset(mPosition);
@@ -1082,7 +1082,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * @param fixtureDef the fixture to add
 	 */
 	protected void addFixture(FixtureDef fixtureDef) {
-		mDef.getVisual().addFixtureDef(fixtureDef);
+		mDef.getShape().addFixtureDef(fixtureDef);
 		mBody.createFixture(fixtureDef);
 
 		mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
@@ -1095,7 +1095,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		destroyFixtures();
 
 		if (mDef != null) {
-			mDef.getVisual().clearFixtures();
+			mDef.getShape().clearFixtures();
 		}
 	}
 
@@ -1146,9 +1146,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 			float rotation = MathUtils.radiansToDegrees * currentRotation;
 
-			mRotatedVertices = copyVectorArray(mDef.getVisual().getTriangleVertices());
+			mRotatedVertices = copyVectorArray(mDef.getShape().getTriangleVertices());
 			if (mRotatedVertices != null) {
-				Geometry.rotateVertices(mRotatedVertices, rotation, true, getDef().getVisual().getCenterOffset());
+				Geometry.rotateVertices(mRotatedVertices, rotation, true, getDef().getShape().getCenterOffset());
 			}
 		}
 	}
@@ -1196,7 +1196,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * Create the fixtures for the actor
 	 */
 	protected void createFixtures() {
-		for (FixtureDef fixtureDef : mDef.getVisual().getFixtureDefs()) {
+		for (FixtureDef fixtureDef : mDef.getShape().getFixtureDefs()) {
 			if (fixtureDef != null && fixtureDef.shape != null) {
 				setFilterCollisionData(fixtureDef);
 				mBody.createFixture(fixtureDef);
@@ -1250,42 +1250,42 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public void addCorners(java.util.List<Vector2> corners) {
-		getDef().getVisual().addCorners(corners);
+		getDef().getShape().addCorners(corners);
 	}
 
 	@Override
 	public void addCorners(Vector2[] corners) {
-		getDef().getVisual().addCorners(corners);
+		getDef().getShape().addCorners(corners);
 	}
 
 	@Override
 	public void addCorner(Vector2 corner) {
-		getDef().getVisual().addCorner(corner);
+		getDef().getShape().addCorner(corner);
 	}
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
-		getDef().getVisual().addCorner(corner, index);
+		getDef().getShape().addCorner(corner, index);
 	}
 
 	@Override
 	public Vector2 removeCorner(int index) {
-		return getDef().getVisual().removeCorner(index);
+		return getDef().getShape().removeCorner(index);
 	}
 
 	@Override
 	public void moveCorner(int index, Vector2 newPos) {
-		getDef().getVisual().moveCorner(index, newPos);
+		getDef().getShape().moveCorner(index, newPos);
 	}
 
 	@Override
 	public int getCornerCount() {
-		return getDef().getVisual().getCornerCount();
+		return getDef().getShape().getCornerCount();
 	}
 
 	@Override
 	public Vector2 getCornerPosition(int index) {
-		return getDef().getVisual().getCornerPosition(index);
+		return getDef().getShape().getCornerPosition(index);
 	}
 
 	@Override
@@ -1300,13 +1300,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	@Override
-	public ArrayList<Vector2> getCorners() {
-		return getDef().getVisual().getCorners();
+	public List<Vector2> getCorners() {
+		return getDef().getShape().getCorners();
 	}
 
 	@Override
 	public void clearCorners() {
-		getDef().getVisual().clearCorners();
+		getDef().getShape().clearCorners();
 	}
 
 	@Override

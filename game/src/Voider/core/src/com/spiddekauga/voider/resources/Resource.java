@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.kryo.KryoPostRead;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -40,11 +38,6 @@ public abstract class Resource implements IResource, KryoPostRead {
 					return true;
 				}
 			}
-		} else if (object instanceof UUID) {
-			Config.Debug.deprecatedException();
-			Gdx.app.error("Resource", "Deprecated use of Resource.equals(UUID)");
-			Thread.dumpStack();
-			return mUniqueId.equals(object);
 		}
 		return false;
 	}

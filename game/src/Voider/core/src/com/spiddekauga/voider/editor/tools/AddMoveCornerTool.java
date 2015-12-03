@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor.tools;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
@@ -137,11 +137,11 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	 * @param worldPos the world position
 	 */
 	private void calculateIndexOfPosBetweenCorners(Vector2 worldPos) {
-		ArrayList<IResourceCorner> resources = mSelection.getSelectedResourcesOfType(IResourceCorner.class);
+		List<IResourceCorner> resources = mSelection.getSelectedResourcesOfType(IResourceCorner.class);
 		float bestDist = ConfigIni.getInstance().editor.actor.getVisual((Scene) mEditor).getNewCornerDistMaxSq();
 
 		for (IResourceCorner resource : resources) {
-			ArrayList<Vector2> corners = resource.getCorners();
+			List<Vector2> corners = resource.getCorners();
 			Vector2 localPos = getLocalPosition(worldPos, resource);
 
 			for (int i = 0; i < corners.size(); ++i) {

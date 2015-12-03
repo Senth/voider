@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +20,6 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.kryo.KryoPreWrite;
 import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
@@ -41,18 +39,19 @@ import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
+import com.spiddekauga.voider.utils.Geometry.PolygonException;
 import com.spiddekauga.voider.utils.Graphics;
 
 /**
  * Class for all shape variables
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposable, IResourceCorner, KryoPreWrite {
+public class Shape implements KryoSerializable, KryoTaggedCopyable, Disposable, IResourceCorner, KryoPreWrite {
 	/**
 	 * Sets the appropriate default values
 	 * @param actorType the default values depends on which actor type is set
 	 */
-	VisualVars(ActorTypes actorType) {
+	Shape(ActorTypes actorType) {
 		mActorType = actorType;
 
 		setDefaultValues();
@@ -111,7 +110,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	/**
 	 * Default constructor for Kryo
 	 */
-	protected VisualVars() {
+	protected Shape() {
 
 	}
 
@@ -132,17 +131,17 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 			break;
 
 		case STATIC_TERRAIN:
-			mShapeType = ActorShapeTypes.CUSTOM;
-			mShapeCircleRadius = 0;
-			mShapeWidth = 0;
-			mShapeHeight = 0;
+			mType = ActorShapeTypes.CUSTOM;
+			mCircleRadius = 0;
+			mWidth = 0;
+			mHeight = 0;
 			break;
 
 		case PICKUP:
-			mShapeType = ActorShapeTypes.CIRCLE;
-			mShapeCircleRadius = Pickup.RADIUS;
-			mShapeHeight = 0;
-			mShapeWidth = 0;
+			mType = ActorShapeTypes.CIRCLE;
+			mCircleRadius = Pickup.RADIUS;
+			mHeight = 0;
+			mWidth = 0;
 			break;
 
 		case PLAYER:
@@ -158,9 +157,9 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		}
 
 		if (icVisual != null) {
-			mShapeCircleRadius = icVisual.getRadiusDefault();
-			mShapeHeight = icVisual.getSizeDefault();
-			mShapeWidth = icVisual.getSizeDefault();
+			mCircleRadius = icVisual.getRadiusDefault();
+			mHeight = icVisual.getSizeDefault();
+			mWidth = icVisual.getSizeDefault();
 			mDensity = icVisual.getDensityDefault();
 			mFriction = icVisual.getFrictionDefault();
 			mElasticity = icVisual.getElasticityDefault();
@@ -174,10 +173,10 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @param radius new radius value
 	 */
 	public void setShapeRadius(float radius) {
-		mShapeCircleRadius = radius;
+		mCircleRadius = radius;
 
 		// Update fixture if circle
-		if (mShapeType == ActorShapeTypes.CIRCLE) {
+		if (mType == ActorShapeTypes.CIRCLE) {
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
@@ -195,7 +194,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @return shape radius of the circle
 	 */
 	public float getShapeRadius() {
-		return mShapeCircleRadius;
+		return mCircleRadius;
 	}
 
 	/**
@@ -203,17 +202,17 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @param width new width of the rectangle/triangle
 	 */
 	public void setShapeWidth(float width) {
-		mShapeWidth = width;
+		mWidth = width;
 
 		// Update fixture if rectangle/triangle
-		if (mShapeType == ActorShapeTypes.RECTANGLE) {
+		if (mType == ActorShapeTypes.RECTANGLE) {
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
 				fixtureDef.shape.dispose();
 				fixtureDef.shape = createRectangleShape();
 			}
-		} else if (mShapeType == ActorShapeTypes.TRIANGLE) {
+		} else if (mType == ActorShapeTypes.TRIANGLE) {
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
@@ -230,7 +229,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @return shape width of rectangle/triangle
 	 */
 	public float getShapeWidth() {
-		return mShapeWidth;
+		return mWidth;
 	}
 
 	/**
@@ -238,17 +237,17 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @param height new height of the rectangle/triangle
 	 */
 	public void setShapeHeight(float height) {
-		mShapeHeight = height;
+		mHeight = height;
 
 		// Update fixture if rectangle/triangle
-		if (mShapeType == ActorShapeTypes.RECTANGLE) {
+		if (mType == ActorShapeTypes.RECTANGLE) {
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
 				fixtureDef.shape.dispose();
 				fixtureDef.shape = createRectangleShape();
 			}
-		} else if (mShapeType == ActorShapeTypes.TRIANGLE) {
+		} else if (mType == ActorShapeTypes.TRIANGLE) {
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
@@ -265,14 +264,14 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @return shape height of rectangle/triangle
 	 */
 	public float getShapeHeight() {
-		return mShapeHeight;
+		return mHeight;
 	}
 
 	/**
 	 * @return current shape type of the enemy
 	 */
 	public ActorShapeTypes getShapeType() {
-		return mShapeType;
+		return mType;
 	}
 
 	@Override
@@ -344,9 +343,9 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	private void calculateBoundingRadius() {
 		Vector2 farthestAway = null;
 
-		switch (mShapeType) {
+		switch (mType) {
 		case CIRCLE:
-			mBoundingRadius = mShapeCircleRadius;
+			mBoundingRadius = mCircleRadius;
 			if (!mCenterOffset.equals(Vector2.Zero)) {
 				mBoundingRadius += mCenterOffset.len();
 			}
@@ -409,7 +408,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		clearVertices();
 		clearFixtures();
 
-		mShapeType = shapeType;
+		mType = shapeType;
 
 		addFixtureDef(getDefaultFixtureDef());
 
@@ -547,7 +546,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @return all the corners of the actor
 	 */
 	@Override
-	public ArrayList<Vector2> getCorners() {
+	public List<Vector2> getCorners() {
 		return mCorners;
 	}
 
@@ -576,8 +575,8 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		mCenterOffset.set(x, y);
 
 		// Create new fixtures on the right place
-		if (mShapeType != ActorShapeTypes.IMAGE) {
-			setShapeType(mShapeType);
+		if (mType != ActorShapeTypes.IMAGE) {
+			setShapeType(mType);
 		}
 	}
 
@@ -589,7 +588,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	public void resetCenterOffset() {
 		Vector2 center = new Vector2();
 
-		switch (mShapeType) {
+		switch (mType) {
 		case CIRCLE:
 			/** @todo implement reset center for circle */
 			break;
@@ -645,7 +644,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * Creates the fixture definition
 	 */
 	protected void createFixtureDef() {
-		setShapeType(mShapeType);
+		setShapeType(mType);
 	}
 
 	/**
@@ -656,6 +655,8 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	 * @throws PolygonComplexException if the method failed to make the polygon
 	 *         non-complex
 	 * @throws PolygonCornersTooCloseException if some corners are too close
+	 * @throws PolygonAreaTooSmallException if some corners would create a triangle with
+	 *         too small area
 	 */
 	public void fixCustomShapeFixtures() {
 		// Destroy previous fixtures
@@ -677,10 +678,13 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	}
 
 	/**
-	 *
+	 * Fix custom
+	 * @throws PolygonComplexException if the method failed to make the polygon
+	 *         non-complex
+	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
 	private void fixCustomShapePolygonFixtures() {
-		List<Vector2> triangles = getTrianglesFromCorners();
+		List<Vector2> triangles = getTrianglesFromCorners(mCorners);
 
 		// Temporary variables
 		int cTriangles = triangles.size() / 3;
@@ -690,7 +694,6 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		}
 
 		// Create Fixtures
-		AreaTooSmallStates fixAreaTooSmall = AreaTooSmallStates.ENLARGEN;
 		for (int triangle = 0; triangle < cTriangles; ++triangle) {
 			int offset = triangle * 3;
 			for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
@@ -698,57 +701,14 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 				triangleVertices[vertex].add(mCenterOffset);
 			}
 
-			RuntimeException throwException = null;
-			// Too close
-			if (!Geometry.isVerticesAtOkDistance(triangleVertices)) {
-				throwException = new PolygonCornersTooCloseException(triangleVertices.toString());
+			// Validate triangle
+			try {
+				Geometry.validateTriangle(triangleVertices);
+			} catch (PolygonException e) {
+				Gdx.app.debug(Shape.class.getSimpleName(), "Skipping triangle - " + e.getMessage());
+				// Skip this triangle if it's invalid
+				continue;
 			}
-			// Check area
-			else {
-				float triangleArea = Geometry.calculateTriangleArea(triangleVertices);
-
-				// Make clockwise
-				if (triangleArea < 0) {
-					Collections.reverse(Arrays.asList(triangleVertices));
-					triangleArea = -triangleArea;
-					Gdx.app.debug(VisualVars.class.getSimpleName(), "Fixture triangle negative area, reversing order...");
-				}
-
-				if (!Geometry.isTriangleAreaOk(triangleArea)) {
-					switch (fixAreaTooSmall) {
-					case ENLARGEN:
-						Geometry.enlargenTriangle(triangleVertices);
-						for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
-							triangleVertices[vertex].sub(mCenterOffset);
-							triangles.get(offset + vertex).set(triangleVertices[vertex]);
-						}
-						fixAreaTooSmall = AreaTooSmallStates.REMOVE;
-						--triangle;
-						continue;
-
-					case FAILED:
-						throwException = new PolygonAreaTooSmallException(triangleArea, triangleVertices);
-						break;
-
-					case REMOVE:
-						fixAreaTooSmall = AreaTooSmallStates.ENLARGEN;
-						Gdx.app.log(VisualVars.class.getSimpleName(),
-								"Area too small, removed corners: {" + Strings.toString(triangleVertices, "; ") + "}");
-						continue;
-					}
-				}
-			}
-
-			// Throw exception
-			if (throwException != null) {
-				Gdx.app.error(VisualVars.class.getSimpleName(), throwException.getMessage());
-				if (mShapeType == ActorShapeTypes.CUSTOM) {
-					throw throwException;
-				} else if (mShapeType == ActorShapeTypes.IMAGE) {
-					continue;
-				}
-			}
-
 
 			// Create fixture
 			FixtureDef fixtureDef = getDefaultFixtureDef();
@@ -756,7 +716,6 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 			polygonShape.set(triangleVertices);
 			fixtureDef.shape = polygonShape;
 			addFixtureDef(fixtureDef);
-			fixAreaTooSmall = AreaTooSmallStates.ENLARGEN;
 		}
 
 
@@ -773,20 +732,21 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	}
 
 	/**
-	 * Create triangles from the corners
+	 * Create triangles from the polygon corners
+	 * @param corners the corners to create polygon triangles of
 	 * @return list with all triangles
 	 */
-	private List<Vector2> getTrianglesFromCorners() {
+	private List<Vector2> getTrianglesFromCorners(List<Vector2> corners) {
 		// Get triangles from corners
 		List<Vector2> triangles = null;
-		if (mCorners.size() == 3) {
-			triangles = createCopy(mCorners);
+		if (corners.size() == 3) {
+			triangles = createCopy(corners);
 			Geometry.makePolygonCounterClockwise(triangles);
 		} else {
 			List<Vector2> tempVertices = null;
 
-			if (mShapeType == ActorShapeTypes.CUSTOM) {
-				tempVertices = createCopy(mCorners);
+			if (mType == ActorShapeTypes.CUSTOM) {
+				tempVertices = createCopy(corners);
 				switch (Geometry.intersectionExists(tempVertices)) {
 				case NONE:
 					mShapeComplete = true;
@@ -800,16 +760,16 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 				}
 			}
 			// Fix intersections
-			else if (mShapeType == ActorShapeTypes.IMAGE) {
+			else if (mType == ActorShapeTypes.IMAGE) {
 				int intersectionId = -1;
 				do {
-					intersectionId = Geometry.getIntersection(mCorners);
+					intersectionId = Geometry.getIntersection(corners);
 					if (intersectionId != -1) {
-						mCorners.remove(intersectionId);
+						corners.remove(intersectionId);
 					}
 				} while (intersectionId != -1);
 
-				tempVertices = createCopy(mCorners);
+				tempVertices = createCopy(corners);
 			} else {
 				return null;
 			}
@@ -855,7 +815,7 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		addFixtureDef(fixtureDef);
 
 		// Create vertices for the circle
-		ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
+		List<Vector2> circleVertices = Geometry.createCircle(radius);
 		for (Vector2 vertex : circleVertices) {
 			vertex.add(offsetPosition);
 		}
@@ -883,12 +843,12 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		clearVertices();
 
 		CircleShape circleShape = new CircleShape();
-		circleShape.setRadius(mShapeCircleRadius);
+		circleShape.setRadius(mCircleRadius);
 		/** @todo use center for all shapes */
 		// circleShape.setPosition(centerOffset);
 
 		// Create vertices for the circle
-		ArrayList<Vector2> circleVertices = Geometry.createCircle(mShapeCircleRadius);
+		List<Vector2> circleVertices = Geometry.createCircle(mCircleRadius);
 		mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
 
@@ -906,8 +866,8 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 	private PolygonShape createRectangleShape() {
 		PolygonShape rectangleShape = new PolygonShape();
 
-		float halfWidth = mShapeWidth * 0.5f;
-		float halfHeight = mShapeHeight * 0.5f;
+		float halfWidth = mWidth * 0.5f;
+		float halfHeight = mHeight * 0.5f;
 
 		/** @todo use center for all shapes */
 		// rectangleShape.setAsBox(halfWidth, halfHeight, centerOffset, 0);
@@ -959,11 +919,11 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		// | /
 
 		// Lower left corner
-		vertices[0].x = -mShapeWidth * 0.5f;
-		vertices[0].y = -mShapeHeight * 0.5f;
+		vertices[0].x = -mWidth * 0.5f;
+		vertices[0].y = -mHeight * 0.5f;
 
 		// Middle right corner
-		vertices[1].x = mShapeWidth * 0.5f;
+		vertices[1].x = mWidth * 0.5f;
 		vertices[1].y = 0;
 
 		// Upper left corner
@@ -1300,27 +1260,16 @@ public class VisualVars implements KryoSerializable, KryoTaggedCopyable, Disposa
 		calculateBoundingBox();
 	}
 
-	/**
-	 * Different states when fixing polygons that have too small areas
-	 */
-	private enum AreaTooSmallStates {
-		/** The first time and when it's OK */
-		ENLARGEN,
-		/** Remove the triangles */
-		REMOVE,
-		/** Failed */
-		FAILED,
-	}
 
 	@Tag(52) private Color mColor = new Color();
-	@Tag(49) private ActorShapeTypes mShapeType = null;
-	@Tag(60) private float mShapeCircleRadius;
-	@Tag(61) private float mShapeWidth;
-	@Tag(62) private float mShapeHeight;
+	@Tag(49) private ActorShapeTypes mType = null;
+	@Tag(60) private float mCircleRadius;
+	@Tag(61) private float mWidth;
+	@Tag(62) private float mHeight;
 	@Tag(51) private Vector2 mCenterOffset = new Vector2();
 	@Tag(50) private ActorTypes mActorType = null;
 	/** Corners of polygon, used for custom shapes */
-	@Tag(63) private ArrayList<Vector2> mCorners = new ArrayList<>();
+	@Tag(63) private List<Vector2> mCorners = new ArrayList<>();
 	@Tag(127) private Vector2 mImageOffset = new Vector2();
 	@Tag(128) private float mImageScaleWorld = 1;
 	@Tag(144) private float mStartAngle = 0;

@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor.tools;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.commands.Invoker;
@@ -128,7 +128,7 @@ public class EnemyAddTool extends ActorAddTool {
 
 		for (Path path : levelEditor.getPaths()) {
 			if (path.getCornerCount() >= 2) {
-				ArrayList<Vector2> pathCorners = path.getCorners();
+				List<Vector2> pathCorners = path.getCorners();
 				for (int i = 0; i < path.getCornerCount() - 1; ++i) {
 					int nextIndex = i + 1;
 

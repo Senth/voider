@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
@@ -20,7 +21,7 @@ public class CResourceCornerRemoveAll extends CResourceChange {
 	public CResourceCornerRemoveAll(IResourceCorner resourceDef, IResourceChangeEditor resourceEditor) {
 		super(null, resourceEditor);
 		mResourceCorner = resourceDef;
-		ArrayList<Vector2> corners = mResourceCorner.getCorners();
+		List<Vector2> corners = mResourceCorner.getCorners();
 		for (Vector2 corner : corners) {
 			mCorners.add(new Vector2(corner));
 		}

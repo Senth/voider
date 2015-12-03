@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.scene;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -244,7 +244,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/**
 	 * @return picking vertices from editors, null otherwise.
 	 */
-	protected ArrayList<Vector2> getPickingVertices() {
+	protected List<Vector2> getPickingVertices() {
 		return null;
 	}
 

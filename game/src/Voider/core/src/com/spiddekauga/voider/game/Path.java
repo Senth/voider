@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -258,7 +259,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	}
 
 	@Override
-	public ArrayList<Vector2> getCorners() {
+	public List<Vector2> getCorners() {
 		return mCorners;
 	}
 

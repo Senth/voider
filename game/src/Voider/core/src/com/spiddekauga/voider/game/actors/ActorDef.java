@@ -27,7 +27,7 @@ public abstract class ActorDef extends Def implements KryoPreWrite, KryoSerializ
 	 *        variables
 	 */
 	protected ActorDef(ActorTypes actorType) {
-		mVisualVars = new VisualVars(actorType);
+		mVisualVars = new Shape(actorType);
 		mVisualVars.setColor(new Color(1, 1, 1, 1));
 	}
 
@@ -186,9 +186,9 @@ public abstract class ActorDef extends Def implements KryoPreWrite, KryoSerializ
 	}
 
 	/**
-	 * @return visual variables/parameters of the actor
+	 * @return The actor's shape
 	 */
-	public VisualVars getVisual() {
+	public Shape getShape() {
 		return mVisualVars;
 	}
 
@@ -258,5 +258,5 @@ public abstract class ActorDef extends Def implements KryoPreWrite, KryoSerializ
 	/** If this actor shall be destroy on collision */
 	@Tag(47) private boolean mDestroyOnCollide = false;
 	/** Visual variables */
-	@Tag(48) protected VisualVars mVisualVars = null;
+	@Tag(48) protected Shape mVisualVars = null;
 }

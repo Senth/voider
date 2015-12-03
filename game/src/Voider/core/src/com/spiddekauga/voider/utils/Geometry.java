@@ -406,33 +406,56 @@ public class Geometry {
 		return isPolygonCounterClockwise(Arrays.asList(vertices));
 	}
 
-	// @formatter:off
 	/**
-	 * Calculates the triangle area. Uses this algorithm:
-	 * \code
-	 *              (a)           (b)            (c)
-	 *        | Ax(By - Cy) + Bx(Cy - Ay) + Cx(Ay - By) |
-	 * area = | ——————————————————————————————————————— |
-	 *        |                    2                    |
-	 * \endcode
+	 * Calculates the triangle area. Uses this algorithm: \code (a) (b) (c) | Ax(By - Cy)
+	 * + Bx(Cy - Ay) + Cx(Ay - By) | area = | ——————————————————————————————————————— | |
+	 * 2 | \endcode
 	 * @param vertices array with the triangle vertices
-	 * @return positive value if the triangle is counter-clockwise, negative for clockwise triangle.
+	 * @return positive value if the triangle is counter-clockwise, negative for clockwise
+	 *         triangle.
 	 */
 	// @formatter:on
 	public static float calculateTriangleArea(final Vector2[] vertices) {
 		assert (vertices.length == 3);
+
+		float area = 0;
+
+		// ref is the reference point for forming triangles.
+		// It's location doesn't change the result (except for rounding error).
+		Vector2 ref = new Vector2();
+
+		Vector2 e1 = new Vector2();
+		Vector2 e2 = new Vector2();
+
+		for (int i = 0; i < vertices.length; ++i) {
+			// Triangle vertices.
+			Vector2 p1 = ref;
+			Vector2 p2 = vertices[i];
+			Vector2 p3 = i + 1 < vertices.length ? vertices[i + 1] : vertices[0];
+
+			e1.set(p2).sub(p1);
+			e2.set(p3).sub(p1);
+
+			float d = e1.crs(e2);
+
+			area += 0.5f * d;
+		}
+
+		return area;
+
+
 		// float a = vertices[0].x * (vertices[1].y - vertices[2].y);
 		// float b = vertices[1].x * (vertices[2].y - vertices[0].y);
 		// float c = vertices[2].x * (vertices[0].y - vertices[1].y);
 		// return (a + b + c) * 0.5f;
 
-		Vector2 e1 = Pools.vector2.obtain().set(vertices[1]).sub(vertices[0]);
-		Vector2 e2 = Pools.vector2.obtain().set(vertices[2]).sub(vertices[0]);
-
-		float crossProduct = e1.crs(e2);
-		Pools.vector2.freeAll(e1, e2);
-
-		return crossProduct * 0.5f;
+		// Vector2 e1 = Pools.vector2.obtain().set(vertices[1]).sub(vertices[0]);
+		// Vector2 e2 = Pools.vector2.obtain().set(vertices[2]).sub(vertices[0]);
+		//
+		// float crossProduct = e1.crs(e2);
+		// Pools.vector2.freeAll(e1, e2);
+		//
+		// return crossProduct * 0.5f;
 	}
 
 	/**
@@ -442,7 +465,7 @@ public class Geometry {
 	 * @return indices of the corners to remove to fix the area problem, empty if no
 	 *         solution was found
 	 */
-	public static ArrayList<Integer> fixPolygonArea(final List<Vector2> corners, final Vector2[] errorCorners) {
+	public static List<Integer> fixPolygonArea(List<Vector2> corners, final Vector2[] errorCorners) {
 		if (errorCorners.length != 3) {
 			throw new IllegalArgumentException("errorCorners is not of length 3, but of length " + errorCorners.length);
 		}
@@ -506,10 +529,6 @@ public class Geometry {
 
 		return removeCorners;
 	}
-
-	/**
-	 * Calculates the indices between the speci
-	 */
 
 	/**
 	 * Calculate indices for the lowest possible polygon area while still valid
@@ -596,31 +615,74 @@ public class Geometry {
 	 * @return true if the area is large enough
 	 */
 	public static boolean isTriangleAreaOk(float area) {
-		return area > Config.Graphics.POLYGON_AREA_MIN;
+		return area > Config.Graphics.POLYGON_AREA_MIN || -Config.Graphics.POLYGON_AREA_MIN > -area;
 	}
 
 	/**
-	 * Check if vertices are at an OK distance from each other
-	 * @param vertices the vertices to check
-	 * @return true if all vertices are at an OK distance from each other
+	 * Validates if the triangle is OK, else it tries to fix it. If it can't fix the
+	 * triangle an exception is thrown.
+	 * @param triangle the triangle to validate
 	 */
-	public static boolean isVerticesAtOkDistance(Vector2[] vertices) {
-		Vector2 lengthTest = Pools.vector2.obtain();
-		boolean okDistance = true;
+	public static void validateTriangle(Vector2[] triangle) {
+		validateTriangleSides(triangle);
+		validateTriangleArea(triangle);
+	}
 
-		for (int i = 0; i < vertices.length && okDistance; i++) {
+	/**
+	 * Validate triangle side lengths and tries to fix them if they are invalid
+	 * @param triangle the triangle to validate the sides
+	 */
+	private static void validateTriangleSides(Vector2[] triangle) {
+		// Too close
+		Vector2[] tooCloseVertices;
+		while ((tooCloseVertices = getTooCloseVertices(triangle)) != null) {
+			Gdx.app.debug(Geometry.class.getSimpleName(), "LENGTHEN triangle sides - Original: " + Strings.toString(tooCloseVertices));
+			Vector2 moveVector = new Vector2();
+			moveVector.set(tooCloseVertices[1]).sub(tooCloseVertices[0]);
+			float moveLength = Config.Graphics.EDGE_LENGTH_MIN - moveVector.len() + 0.0001f;
+			moveVector.scl(moveLength * 0.5f);
+			tooCloseVertices[1].add(moveVector);
+			tooCloseVertices[0].sub(moveVector);
+			Gdx.app.debug(Geometry.class.getSimpleName(), "LENGTHEN triangle sides - Moved: " + Strings.toString(tooCloseVertices));
+		}
+	}
+
+	/**
+	 * Checks and returns the first occurrence of vertices that are too close. Run this
+	 * multiple times to check for all vertices
+	 * @param vertices the vertices to check
+	 * @return two vertices that are too close to each other, null if all vertices are at
+	 *         OK distance from each other
+	 */
+	private static Vector2[] getTooCloseVertices(Vector2[] vertices) {
+		Vector2 lengthTest = new Vector2();
+
+		for (int i = 0; i < vertices.length; i++) {
 			Vector2 vertex1 = vertices[i];
 			int nextIndex = com.spiddekauga.utils.Collections.nextIndex(vertices.length, i);
 			Vector2 vertex2 = vertices[nextIndex];
 
 			lengthTest.set(vertex1).sub(vertex2);
 			if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
-				okDistance = false;
+				return new Vector2[] { vertex1, vertex2 };
 			}
 		}
 
-		Pools.vector2.free(lengthTest);
-		return okDistance;
+		return null;
+	}
+
+	/**
+	 * Validate triangle area and tries to fix the area if it's invalid
+	 * @param triangle the triangle to validate the area
+	 */
+	private static void validateTriangleArea(Vector2[] triangle) {
+		float area = calculateTriangleArea(triangle);
+		Gdx.app.debug(Geometry.class.getSimpleName(), "Area: " + area);
+
+		// Skip
+		if (!isTriangleAreaOk(area)) {
+			throw new PolygonAreaTooSmallException(area, triangle);
+		}
 	}
 
 	/**
@@ -628,7 +690,7 @@ public class Geometry {
 	 * @param triangle all vertices in the triangle
 	 */
 	public static void enlargenTriangle(Vector2[] triangle) {
-		Gdx.app.log(Geometry.class.getSimpleName(), "ENLARGEN - Original triangle: {" + Strings.toString(triangle, "; ") + "}");
+		Gdx.app.debug(Geometry.class.getSimpleName(), "ENLARGEN - Original triangle: {" + Strings.toString(triangle, "; ") + "}");
 
 		Vector2 center = new Vector2();
 		for (Vector2 point : triangle) {
@@ -645,7 +707,7 @@ public class Geometry {
 		}
 
 		// Get move vector
-		Gdx.app.log(Geometry.class.getSimpleName(), "ENLARGEN - Enlargen triangle: {" + Strings.toString(triangle, "; ") + "}");
+		Gdx.app.debug(Geometry.class.getSimpleName(), "ENLARGEN - Enlargen triangle: {" + Strings.toString(triangle, "; ") + "}");
 	}
 
 	/**
@@ -735,8 +797,8 @@ public class Geometry {
 	 * @return array with the vertices of the circle, all vertices are created from
 	 *         Vector2Pool
 	 */
-	public static ArrayList<Vector2> createCircle(float radius, float zoom) {
-		ArrayList<Vector2> polygon = new ArrayList<>();
+	public static List<Vector2> createCircle(float radius, float zoom) {
+		List<Vector2> polygon = new ArrayList<>();
 
 		int segments = calculateCircleSegments(radius, zoom);
 
@@ -757,14 +819,13 @@ public class Geometry {
 		return polygon;
 	}
 
-
 	/**
 	 * Creates a circle, or rather returns vertices that can be created as a circle.
 	 * @param radius the radius of the circle
 	 * @return array with the vertices of the circle, all vertices are created from
 	 *         Vector2Pool
 	 */
-	public static ArrayList<Vector2> createCircle(float radius) {
+	public static List<Vector2> createCircle(float radius) {
 		return createCircle(radius, 1);
 	}
 
@@ -1614,9 +1675,32 @@ public class Geometry {
 	}
 
 	/**
+	 * Common exception for all polygon exceptions
+	 */
+	public abstract static class PolygonException extends GdxRuntimeException {
+
+		/**
+		 * Default constructor
+		 */
+		public PolygonException() {
+			super("");
+		}
+
+		/**
+		 * Writes a message to the exception
+		 * @param message
+		 */
+		public PolygonException(String message) {
+			super(message);
+		}
+
+		private static final long serialVersionUID = 7284792423481359886L;
+	}
+
+	/**
 	 * Polygon complex exception
 	 */
-	public static class PolygonComplexException extends GdxRuntimeException {
+	public static class PolygonComplexException extends PolygonException {
 		/**
 		 * Default constructor
 		 */
@@ -1624,14 +1708,13 @@ public class Geometry {
 			super("");
 		}
 
-		/** serialize id */
 		private static final long serialVersionUID = 6341884787418006713L;
 	}
 
 	/**
 	 * Polygon corners are too close
 	 */
-	public static class PolygonCornersTooCloseException extends GdxRuntimeException {
+	public static class PolygonCornersTooCloseException extends PolygonException {
 		/**
 		 * Writes a message to the exception
 		 * @param message
@@ -1648,14 +1731,13 @@ public class Geometry {
 			super("Corners too close: " + distance);
 		}
 
-		/** serialize id */
 		private static final long serialVersionUID = -3852020475614942724L;
 	}
 
 	/**
 	 * Polygon area is too small (usually triangles)
 	 */
-	public static class PolygonAreaTooSmallException extends GdxRuntimeException {
+	public static class PolygonAreaTooSmallException extends PolygonException {
 		/**
 		 * Writes a message to the exception
 		 * @param area the area of the polygon

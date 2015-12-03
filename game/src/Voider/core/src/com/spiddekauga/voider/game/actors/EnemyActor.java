@@ -1024,19 +1024,19 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 					Vector2 maxPos = SceneSwitcher.getWorldMaxCoordinates();
 
 					// Left
-					if (getPosition().x + getDef().getVisual().getBoundingRadius() < minPos.x) {
+					if (getPosition().x + getDef().getShape().getBoundingRadius() < minPos.x) {
 						deactivate = true;
 					}
 					// Right
-					else if (getPosition().x - getDef().getVisual().getBoundingRadius() > maxPos.x) {
+					else if (getPosition().x - getDef().getShape().getBoundingRadius() > maxPos.x) {
 						deactivate = true;
 					}
 					// Bottom
-					else if (getPosition().y + getDef().getVisual().getBoundingRadius() < minPos.y) {
+					else if (getPosition().y + getDef().getShape().getBoundingRadius() < minPos.y) {
 						deactivate = true;
 					}
 					// Top
-					else if (getPosition().y - getDef().getVisual().getBoundingRadius() > maxPos.y) {
+					else if (getPosition().y - getDef().getShape().getBoundingRadius() > maxPos.y) {
 						deactivate = true;
 					}
 				} else {
@@ -1058,7 +1058,7 @@ public class EnemyActor extends Actor implements IResourceEditorRenderSprite {
 	 */
 	private void checkStationaryDeactivate() {
 		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
-			if (getPosition().x + getDef().getVisual().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+			if (getPosition().x + getDef().getShape().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 				deactivate();
 				destroyBody();
 			}

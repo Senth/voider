@@ -845,7 +845,7 @@ public class GameScene extends WorldScene {
 			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
 			// Get radius of player and offset it with the width
-			float boundingRadius = mPlayerActor.getDef().getVisual().getBoundingRadius();
+			float boundingRadius = mPlayerActor.getDef().getShape().getBoundingRadius();
 			playerPosition.x += boundingRadius * 2;
 			mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
 		}

@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor.brushes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -72,7 +73,7 @@ public class VectorBrush extends Brush implements IResourceCorner, Disposable {
 	}
 
 	@Override
-	public ArrayList<Vector2> getCorners() {
+	public List<Vector2> getCorners() {
 		return mCorners;
 	}
 

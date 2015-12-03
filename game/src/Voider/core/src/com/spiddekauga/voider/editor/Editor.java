@@ -338,7 +338,7 @@ public abstract class Editor extends WorldScene
 	 */
 	private void saveResourceScreenshot() {
 		// Only render if it has valid shape
-		if (mSavingActorDef.getVisual().isPolygonShapeValid()) {
+		if (mSavingActorDef.getShape().isPolygonShapeValid()) {
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
 			mSavingActor.renderShape(mShapeRenderer);
@@ -515,8 +515,8 @@ public abstract class Editor extends WorldScene
 	 * definition.
 	 */
 	private void createActorDefTexture() {
-		float width = mSavingActorDef.getVisual().getWidth();
-		float height = mSavingActorDef.getVisual().getHeight();
+		float width = mSavingActorDef.getShape().getWidth();
+		float height = mSavingActorDef.getShape().getHeight();
 
 		// Skip if actor doesn't have a valid shape
 		if (width == 0 || height == 0) {
@@ -538,8 +538,8 @@ public abstract class Editor extends WorldScene
 		}
 
 		// Normalize width and height vertices to use SAVE_TEXTURE_SIZE pixels
-		copy.getVisual().setCenterOffset(0, 0);
-		List<Vector2> triangleVertices = copy.getVisual().getTriangleVertices();
+		copy.getShape().setCenterOffset(0, 0);
+		List<Vector2> triangleVertices = copy.getShape().getTriangleVertices();
 		IdentityMap<Vector2, Vector2> scaledVertices = new IdentityMap<>();
 		for (Vector2 vertex : triangleVertices) {
 			if (!scaledVertices.containsKey(vertex)) {
@@ -548,7 +548,7 @@ public abstract class Editor extends WorldScene
 			}
 		}
 
-		List<Vector2> polygonVertices = copy.getVisual().getPolygonShape();
+		List<Vector2> polygonVertices = copy.getShape().getPolygonShape();
 		for (Vector2 vertex : polygonVertices) {
 			vertex.scl(normalizeLength);
 		}
@@ -556,14 +556,14 @@ public abstract class Editor extends WorldScene
 		// Center to the rectangle screenshot area.
 		Vector2 offset = new Vector2();
 		offset.set(0, 0);
-		copy.getVisual().calculateBounds();
-		height = copy.getVisual().getHeight();
+		copy.getShape().calculateBounds();
+		height = copy.getShape().getHeight();
 		float maxSize = Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio;
 		if (height < maxSize) {
 			float offsetHeight = (maxSize - height) * 0.5f;
 			offset.sub(0, offsetHeight);
 		}
-		width = copy.getVisual().getWidth();
+		width = copy.getShape().getWidth();
 		if (width < maxSize) {
 			float offsetWidth = (maxSize - width) * 0.5f;
 			offset.sub(offsetWidth, 0);

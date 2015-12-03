@@ -3,6 +3,7 @@ package com.spiddekauga.voider.scene;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -366,7 +367,7 @@ public class SceneSwitcher {
 	 * @return picking vertices for editor scenes, null if the scene doesn't have picking
 	 *         vertices or no scene exists.
 	 */
-	public static ArrayList<Vector2> getPickingVertices() {
+	public static List<Vector2> getPickingVertices() {
 		if (mScenes.isEmpty()) {
 			return null;
 		} else {

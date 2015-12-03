@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -332,7 +333,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	protected ArrayList<Vector2> getPickingVertices() {
+	protected List<Vector2> getPickingVertices() {
 		return mPickingVertices;
 	}
 
@@ -418,5 +419,5 @@ public abstract class WorldScene extends Scene {
 	/** Picking fixture definition (for body) */
 	private FixtureDef mPickingFixtureDef = null;
 	/** Picking vertices (for drawing) */
-	private ArrayList<Vector2> mPickingVertices = null;
+	private List<Vector2> mPickingVertices = null;
 }

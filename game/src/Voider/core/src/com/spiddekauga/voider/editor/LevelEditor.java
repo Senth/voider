@@ -529,7 +529,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			// Set default color
 			if (isNew) {
 				if (resource instanceof StaticTerrainActor) {
-					((StaticTerrainActor) resource).getDef().getVisual().setColor(mDefaultTerrainColor);
+					((StaticTerrainActor) resource).getDef().getShape().setColor(mDefaultTerrainColor);
 				}
 			}
 
@@ -1068,7 +1068,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
 
 		for (StaticTerrainActor terrain : terrains) {
-			Color terrainColor = terrain.getDef().getVisual().getColor();
+			Color terrainColor = terrain.getDef().getShape().getColor();
 			terrainColor.r = color.r;
 			terrainColor.g = color.g;
 			terrainColor.b = color.b;
@@ -1085,13 +1085,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 
 		if (!terrains.isEmpty()) {
-			Color terrainColor = new Color(terrains.get(0).getDef().getVisual().getColor());
+			Color terrainColor = new Color(terrains.get(0).getDef().getShape().getColor());
 			terrainColor.a = 1;
 
 			// Check for different colors -> Return default color
 			Color testColor = new Color();
 			for (StaticTerrainActor terrain : terrains) {
-				testColor.set(terrain.getDef().getVisual().getColor());
+				testColor.set(terrain.getDef().getShape().getColor());
 				testColor.a = 1;
 
 				if (!terrainColor.equals(testColor)) {
@@ -1113,7 +1113,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
 
 		for (StaticTerrainActor terrain : terrains) {
-			terrain.getDef().getVisual().getColor().a = opacity / 100f;
+			terrain.getDef().getShape().getColor().a = opacity / 100f;
 		}
 	}
 
@@ -1126,11 +1126,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ArrayList<StaticTerrainActor> terrains = mSelection.getSelectedResourcesOfType(StaticTerrainActor.class);
 
 		if (!terrains.isEmpty()) {
-			float opacity = terrains.get(0).getDef().getVisual().getColor().a;
+			float opacity = terrains.get(0).getDef().getShape().getColor().a;
 
 			// Check for different colors -> Return default color
 			for (StaticTerrainActor terrain : terrains) {
-				if (opacity != terrain.getDef().getVisual().getColor().a) {
+				if (opacity != terrain.getDef().getShape().getColor().a) {
 					return -1;
 				}
 			}

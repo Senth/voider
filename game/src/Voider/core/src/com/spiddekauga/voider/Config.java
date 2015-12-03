@@ -572,12 +572,12 @@ public class Config {
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Epsilon for box 2d */
 		private final static float EPSILON = 1.19209289550781250000e-7F;
-		/** Minimum length between two corners in a polygon */
-		public final static float EDGE_LENGTH_MIN = EPSILON * 1.1f;
 		/** Minimum length between two corners in a polygon, squared */
-		public final static float EDGE_LENGTH_MIN_SQUARED = EDGE_LENGTH_MIN * EDGE_LENGTH_MIN;
+		public final static float EDGE_LENGTH_MIN_SQUARED = 0.0025f;
+		/** Minimum length between two corners in a polygon */
+		public final static float EDGE_LENGTH_MIN = (float) Math.sqrt(EDGE_LENGTH_MIN_SQUARED);
 		/** Minimum area of a polygon shape */
-		public final static float POLYGON_AREA_MIN = EPSILON * 100f;
+		public final static float POLYGON_AREA_MIN = EPSILON * 10000f;
 		/** Default width of the graphics, also minimum */
 		public final static int WIDTH_DEFAULT = 800;
 		/** Default height of the graphics, also minimum */

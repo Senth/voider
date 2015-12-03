@@ -116,7 +116,7 @@ public class BulletEditor extends ActorEditor {
 	@Override
 	public void newDef() {
 		BulletActorDef newDef = new BulletActorDef();
-		newDef.getVisual().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
+		newDef.getShape().setColor((Color) SkinNames.getResource(SkinNames.EditorVars.BULLET_COLOR_DEFAULT));
 		setActorDef(newDef);
 		getGui().resetValues();
 		setSaved();
