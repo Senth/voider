@@ -2,6 +2,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import com.badlogicgames.packr.Packr
+import groovy.util.AntBuilder
 
 buildscript {
     repositories {
@@ -13,6 +15,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:1.2.2'
         classpath 'org.robovm:robovm-gradle-plugin:1.0.0-beta-04'
 		classpath 'com.google.appengine:gradle-appengine-plugin:1.9.28'
+		classpath 'com.badlogicgames.packr:packr:1.2'
     }
 }
 
@@ -22,6 +25,9 @@ ext.cronFile = "server/src/main/webapp/WEB-INF/cron.xml"
 ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
 ext.appengineExplodedWebFile = "server/build/exploded-app/WEB-INF/appengine-web.xml"
 ext.defaultBuild = "DEV_LOCAL"
+ext.home = System.properties['user.home'] + '/'
+ext.dropbox = home + 'Dropbox/'
+ext.outDir = "${projectDir.absolutePath}/build/"
 
 allprojects {
     apply plugin: "eclipse"
@@ -226,7 +232,7 @@ tasks.eclipse.doLast {
 }
 
 //--------------------------------------------
-//				DEPLOYMENT
+//				DEPLOYMENT - GAME
 //--------------------------------------------
 task deployGameNightlyDev(dependsOn: ['setBuildNightlyDev', ':core:clean', ':desktop:dist']) << {
 	deployGame("NIGHTLY_DEV")
@@ -260,7 +266,161 @@ task deployGameRelease(dependsOn: ['setBuildRelease', 'core:clean', ':desktop:di
 	deployGame("RELEASE")
 }
 
+// Deploy Game to dropbox and other places
+def deployGame2(buildName) {
+	def dropboxDir = dropbox + 'Voider/'
+	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
+	def dropboxCopyTo = ""
+	def exportDir = projectDir.absolutePath + "/build/";
+	def exportFile = ""
+	switch ( buildName ) {
+		case "NIGHTLY_DEV":
+			dropboxCopyTo = "Voider - editable resources/Voider.jar"
+			break
+		
+		case "NIGHTLY_RELEASE":
+			dropboxCopyTo = "Voider/Voider-nightly.jar"
+			break
+		
+		case "BETA":
+			exportFile = "Voider-beta.jar"
+			dropboxCopyTo = "Voider/Voider-beta.jar"
+			break
 
+		case "RELEASE":
+			exportFile = "Voider.jar"
+			break
+	}
+
+	// Copy to dropbox
+	if (dropboxCopyTo != "") {
+		dropboxCopyTo = dropboxDir + dropboxCopyTo
+		Files.copy(Paths.get(desktopFile), Paths.get(dropboxCopyTo), StandardCopyOption.REPLACE_EXISTING)
+	}
+	// Copy to appengine
+	if (exportFile != "") {
+		exportFile = exportDir + exportFile
+		Files.copy(Paths.get(desktopFile), Paths.get(exportFile), StandardCopyOption.REPLACE_EXISTING)
+	}
+	replaceBuildName(project.defaultBuild)
+}
+
+// Deploy Game to dropbox and other places
+def deployGame(buildName) {
+	def dropboxDir = dropbox + 'Voider/'
+	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
+	def exportDirs = null
+	switch ( buildName ) {
+		case "NIGHTLY_DEV":
+			exportDirs = ["${dropboxDir}Voider - editable resources/Voider.jar"]
+			break
+		
+		case "NIGHTLY_RELEASE":
+			exportDirs = ["${dropboxDir}Voider/Voider-nightly.jar"]
+			break
+		
+		case "BETA":
+			exportDirs = ["${dropboxDir}Voider/Voider-beta.jar", "${outDir}Voider-beta.jar"]
+			packGame(desktopFile, "Voider-beta")
+			break
+
+		case "RELEASE":
+			exportDirs = ["${dropboxDir}Voider/Voider.jar", "${outDir}Voider.jar"]
+			packGame(desktopFile, "Voider")
+			break
+	}
+
+	exportDirs.each {
+		Files.copy(Paths.get(desktopFile), Paths.get(it), StandardCopyOption.REPLACE_EXISTING)
+	}
+	replaceBuildName(project.defaultBuild)
+}
+
+def replaceBuildName(nextBuild) {
+	def filename = "core/src/com/spiddekauga/voider/Config.java";
+	def fromString = "BUILD = Builds.*;"
+	def toString = "BUILD = Builds." + nextBuild + ";"
+	File configFile = file(filename)
+	def updatedContent = configFile.getText('UTF-8').replaceAll(fromString, toString)
+	configFile.write(updatedContent, 'UTF-8')
+}
+
+def packGame(jar, build) {
+	['windows', 'mac'].each {
+		packGame(jar, build, it)
+	}
+}
+
+def packGame(jar, build, platform) {
+	def packDir = outDir + build + getPlatformExtension(platform)
+
+	Packr.Config config = new Packr.Config();
+	config.platform = getPlatformEnum(platform)
+	config.jdk = dropbox + 'Dev/Libs/' + getPlatformJdk(platform)
+	config.executable = build
+	config.jar = jar // V1.2
+// 	config.classpath = [jar] // V2.0
+	config.mainClass = 'com.spiddekauga.voider.desktop.DesktopLauncher'
+	config.vmArgs = ['-Xmx1G']
+	config.outDir = "${packDir}/${build}" + getPlatformExtension(platform) // ZIP HACK
+// 	config.outDir = packDir // REGULAR
+	config.minimizeJre = [
+		'jre/lib/rt/com/sun/corba',
+		'jre/lib/rt/com/sun/jmx',
+		'jre/lib/rt/com/sun/jndi',
+		'jre/lib/rt/com/sun/media',
+		'jre/lib/rt/com/sun/naming',
+		'jre/lib/rt/com/sun/org',
+		'jre/lib/rt/com/sun/rowset',
+		'jre/lib/rt/com/sun/script',
+		'jre/lib/rt/com/sun/xml',
+		'jre/lib/rt/sun/applet',
+		'jre/lib/rt/sun/corba',
+		'jre/lib/rt/sun/management'
+	]
+
+	new Packr().pack(config)
+
+	// TODO Create an installation bundle
+	// ZIP file
+	def zipFile = "${outDir}${build}-${platform}.zip"
+	Files.deleteIfExists(Paths.get(zipFile))
+	def ant = new AntBuilder()
+	ant.zip(basedir: packDir, destfile: zipFile)
+}
+
+def getPlatformEnum(platform) {
+	switch (platform) {
+		case 'windows32':
+// 			return Packr.Platform.windows32	// V2.0
+		case 'windows64':
+// 			return Packr.Platform.windows64 // V2.0
+		case 'windows':
+			return Packr.Platform.windows	// V1.2
+		case 'mac':
+			return Packr.Platform.mac
+		default:
+			return null
+	}
+}
+
+def getPlatformExtension(platform) {
+	switch (platform) {
+		case 'mac':
+			return '.app'
+		default:
+			return ''
+	}
+}
+
+def getPlatformJdk(platform) {
+	return 'openjdk-latest-icedtea-' + platform + '.zip'
+}
+
+
+//--------------------------------------------
+//		DEPLOYMENT - SERVER/APPENGINE
+//--------------------------------------------
 // Upload to GS
 task uploadBetaToGs(type: Exec) {
 	def filename = "build/Voider-beta.jar"
@@ -321,61 +481,11 @@ task deployAppengineRelease(dependsOn: ['setAppengineRelease', 'server:appengine
 	// Does nothing
 }
 
-
 // Ordering
 project(':server').appengineUpdate.mustRunAfter setAppengineDev
 project(':server').appengineUpdate.mustRunAfter setAppengineBeta
 project(':server').appengineUpdate.mustRunAfter setAppengineNightly
 project(':server').appengineUpdate.mustRunAfter setAppengineRelease
-
-
-// Deploy Game to dropbox and other places
-def deployGame(buildName) {
-	def dropboxDir = "/home/senth/Dropbox/Voider/"
-	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
-	def dropboxCopyTo = ""
-	def exportDir = projectDir.absolutePath + "/build/";
-	def exportFile = ""
-	switch ( buildName ) {
-		case "NIGHTLY_DEV":
-			dropboxCopyTo = "Voider - editable resources/Voider.jar"
-			break
-		
-		case "NIGHTLY_RELEASE":
-			dropboxCopyTo = "Voider/Voider-nightly.jar"
-			break
-		
-		case "BETA":
-			exportFile = "Voider-beta.jar"
-			dropboxCopyTo = "Voider/Voider-beta.jar"
-			break
-
-		case "RELEASE":
-			exportFile = "Voider.jar"
-			break
-	}
-
-	// Copy to dropbox
-	if (dropboxCopyTo != "") {
-		dropboxCopyTo = dropboxDir + dropboxCopyTo
-		Files.copy(Paths.get(desktopFile), Paths.get(dropboxCopyTo), StandardCopyOption.REPLACE_EXISTING)
-	}
-	// Copy to appengine
-	if (exportFile != "") {
-		exportFile = exportDir + exportFile
-		Files.copy(Paths.get(desktopFile), Paths.get(exportFile), StandardCopyOption.REPLACE_EXISTING)
-	}
-	replaceBuildName(project.defaultBuild)
-}
-
-def replaceBuildName(nextBuild) {
-	def filename = "core/src/com/spiddekauga/voider/Config.java";
-	def fromString = "BUILD = Builds.*;"
-	def toString = "BUILD = Builds." + nextBuild + ";"
-	File configFile = file(filename)
-	def updatedContent = configFile.getText('UTF-8').replaceAll(fromString, toString)
-	configFile.write(updatedContent, 'UTF-8')
-}
 
 def prepareAppengine() {
 	updateAppengineVersion()
@@ -463,3 +573,4 @@ def updateBackupCronUrl(applicationId) {
 	def updatedContent = cronFile.getText('UTF-8').replaceAll(searchFor, url)
 	cronFile.write(updatedContent, 'UTF-8')
 }
+
