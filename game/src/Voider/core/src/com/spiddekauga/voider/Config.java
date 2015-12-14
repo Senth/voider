@@ -210,7 +210,7 @@ public class Config {
 		}
 
 		/** Build level */
-		public static final Builds BUILD = Builds.BETA;
+		public static final Builds BUILD = Builds.DEV_LOCAL;
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 		/** Logging verbosity */
@@ -506,7 +506,7 @@ public class Config {
 		}
 
 		static {
-			String initialPrefix = "com.spiddekauga.voider";
+			String initialPrefix = "Voider";
 
 			// Set storage
 			if (Debug.JUNIT_TEST) {
@@ -518,24 +518,24 @@ public class Config {
 					break;
 
 				case BETA:
-					PREFERENCE_PREFIX = initialPrefix + ".beta";
+					PREFERENCE_PREFIX = initialPrefix + "-beta";
 					break;
 
 				case NIGHTLY_DEV:
 				case NIGHTLY_RELEASE:
-					PREFERENCE_PREFIX = initialPrefix + ".nightly";
+					PREFERENCE_PREFIX = initialPrefix + "-nightly";
 					break;
 
 				case DEV_SERVER:
-					PREFERENCE_PREFIX = initialPrefix + ".dev.server";
+					PREFERENCE_PREFIX = initialPrefix + "-dev-server";
 					break;
 
 				case DEV_LOCAL:
-					PREFERENCE_PREFIX = initialPrefix + ".local";
+					PREFERENCE_PREFIX = initialPrefix + "-local";
 					break;
 
 				default:
-					PREFERENCE_PREFIX = initialPrefix + ".unknown";
+					PREFERENCE_PREFIX = initialPrefix + "-unknown";
 					break;
 				}
 			}
