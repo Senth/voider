@@ -1,1 +1,5 @@
-include 'desktop', 'android', 'ios', 'html', 'core', 'network', 'server', 'server-analytics', 'backup'
+include 'desktop', 'android', 'core', 'network', 'server', 'server-analytics', 'backup', 'appengine-utils', 'common-utils'
+
+// Custom git directories
+project(':appengine-utils').projectDir = new File('../../appengine-utils')
+project(':common-utils').projectDir = new File('../../common-utils')
