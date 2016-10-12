@@ -1,6 +1,38 @@
+apply plugin: "com.android.application"
+
+configurations { natives }
+
+dependencies {
+    compile project(":core")
+    // FROM CORE
+    compile project(":network")
+    compile 'com.esotericsoftware:minlog:1.3.0'
+    compile 'com.googlecode.openbeans:openbeans:1.0'
+    compile 'org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT'
+    compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
+    compile "com.esotericsoftware:kryo:$kryoVersion"
+    compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
+    compile "com.spiddekauga:common-utils:$commonUtilsVersion"
+    compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
+    compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
+    // ANDROID STUFF
+    compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-sqlite-android:$gdxSqliteVersion"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
+    compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi"
+    natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
+}
+
 android {
-    buildToolsVersion "23.0.1"
-    compileSdkVersion 23
+    buildToolsVersion "24.0.2"
+    compileSdkVersion 24
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -9,42 +41,38 @@ android {
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+            jniLibs.srcDir 'libs'
         }
 
         instrumentTest.setRoot('tests')
     }
 
-	dexOptions {
-		preDexLibraries = false
-	}
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+    }
 
-// 	buildTypes {
-// 		debug {
-// 			applicationIdSuffix ".debug"
-// 		}
-// 	}
-}
-
-// needed to add JNI shared libraries to APK when compiling on CLI
-tasks.withType(com.android.build.gradle.tasks.PackageApplication) { pkgTask ->
-    pkgTask.jniFolders = new HashSet<File>()
-    pkgTask.jniFolders.add(new File(projectDir, 'libs'))
+    dexOptions {
+        preDexLibraries = false
+    }
 }
 
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
 // so they get packed with the APK.
-task copyAndroidNatives() { 
+task copyAndroidNatives() {
     file("libs/armeabi/").mkdirs();
     file("libs/armeabi-v7a/").mkdirs();
     file("libs/x86/").mkdirs();
 
     configurations.natives.files.each { jar ->
         def outputDir = null
-        if(jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
-        if(jar.name.endsWith("natives-armeabi.jar")) outputDir = file("libs/armeabi")
-        if(jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
-        if(outputDir != null) {
+        if (jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
+        if (jar.name.endsWith("natives-armeabi.jar")) outputDir = file("libs/armeabi")
+        if (jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
+        if (outputDir != null) {
             copy {
                 from zipTree(jar)
                 into outputDir
@@ -77,32 +105,32 @@ task run(type: Exec) {
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
-eclipse {
-    // need to specify Java source sets explicitely, SpringSource Gradle Eclipse plugin
-    // ignores any nodes added in classpath.file.withXml
-    sourceSets {
-        main {
-            java.srcDirs "src", 'gen'
-        }
-    }
-
-    jdt {
-        sourceCompatibility = 1.7
-        targetCompatibility = 1.7
-    }
-
-    classpath {
-        plusConfigurations += [ project.configurations.compile ]        
-        containers 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK', 'com.android.ide.eclipse.adt.LIBRARIES'       
-    }
-
-    project {
-        name = appName + "-android"
-        natures 'com.android.ide.eclipse.adt.AndroidNature'
-        buildCommands.clear();
-        buildCommand "com.android.ide.eclipse.adt.ResourceManagerBuilder"
-        buildCommand "com.android.ide.eclipse.adt.PreCompilerBuilder"
-        buildCommand "org.eclipse.jdt.core.javabuilder"
-        buildCommand "com.android.ide.eclipse.adt.ApkBuilder"
-    }
-}
+//eclipse {
+//    // need to specify Java source sets explicitely, SpringSource Gradle Eclipse plugin
+//    // ignores any nodes added in classpath.file.withXml
+//    sourceSets {
+//        main {
+//            java.srcDirs "src", 'gen'
+//        }
+//    }
+//
+//    jdt {
+//        sourceCompatibility = 1.7
+//        targetCompatibility = 1.7
+//    }
+//
+//    classpath {
+//        plusConfigurations += [project.configurations.compile]
+//        containers 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK', 'com.android.ide.eclipse.adt.LIBRARIES'
+//    }
+//
+//    project {
+//        name = appName + "-android"
+//        natures 'com.android.ide.eclipse.adt.AndroidNature'
+//        buildCommands.clear();
+//        buildCommand "com.android.ide.eclipse.adt.ResourceManagerBuilder"
+//        buildCommand "com.android.ide.eclipse.adt.PreCompilerBuilder"
+//        buildCommand "org.eclipse.jdt.core.javabuilder"
+//        buildCommand "com.android.ide.eclipse.adt.ApkBuilder"
+//    }
+//}

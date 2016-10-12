@@ -1,9 +1,8 @@
+import com.badlogicgames.packr.Packr
+
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
-import com.badlogicgames.packr.Packr
-import groovy.util.AntBuilder
 
 buildscript {
     repositories {
@@ -12,14 +11,12 @@ buildscript {
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:1.2.2'
-        classpath 'org.robovm:robovm-gradle-plugin:1.0.0-beta-04'
-		classpath 'com.google.appengine:gradle-appengine-plugin:1.9.28'
-		classpath 'com.badlogicgames.packr:packr:1.2'
+        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'org.robovm:robovm-gradle-plugin:1.12.0'
+        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.28'
+        classpath 'com.badlogicgames.packr:packr:1.2'
     }
 }
-
-// jvmArgs += [ '-XX:MaxPermSize=2G' ]
 
 ext.cronFile = "server/src/main/webapp/WEB-INF/cron.xml"
 ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
@@ -30,547 +27,233 @@ ext.dropbox = home + 'Dropbox/'
 ext.outDir = "${projectDir.absolutePath}/build/"
 
 allprojects {
-    apply plugin: "eclipse"
-    
     version = '0-6-0'
     ext {
         appName = 'Voider'
-		kryoVersion = '3.0.1'
+        kryoVersion = '3.0.1'
         gdxVersion = '1.6.4-SNAPSHOT'
-		gdxSqliteVersion = '0.2-SNAPSHOT'
-        roboVMVersion = '1.0.0-beta-04'
+        gdxSqliteVersion = '0.2-SNAPSHOT'
+        roboVMVersion = '1.12.0'
         box2DLightsVersion = '1.3'
         ashleyVersion = '1.3.1'
         aiVersion = '1.5.0'
         appengineVersion = '1.9.28'
         commonUtilsVersion = '0.1.0-SNAPSHOT'
-		kryoUtilsVersion = '0.1.1'
+        kryoUtilsVersion = '0.1.1'
         appengineUtilsVersion = '0.2.1-SNAPSHOT'
-		httpUrlUtilsVersion = '0.3.0'
-		jaccVersion = '0.2.3'
-		guavaVersion = '19.0-rc2'
+        httpUrlUtilsVersion = '0.3.0'
+        jaccVersion = '0.2.3'
+        guavaVersion = '19.0-rc2'
     }
 
     repositories {
-    	mavenLocal()
-    	maven { url "http://maven.senth.org/snapshots" }
-    	maven { url "http://maven.senth.org/releases" }
+        mavenLocal()
+        maven { url "http://maven.senth.org/snapshots" }
+        maven { url "http://maven.senth.org/releases" }
+        jcenter()
         mavenCentral()
     }
-    
+
     tasks.withType(JavaCompile) {
-    	options.compilerArgs << "-Xlint:deprecation"
+        options.compilerArgs << "-Xlint:deprecation"
     }
-    
+
     configurations.all {
-    	resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
-}
-
-project(":desktop") {
-    apply plugin: "java"
-
-
-    dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-sqlite-desktop:$gdxSqliteVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-    }
-}
-
-project(":android") {
-    apply plugin: "android"
-
-    configurations { natives }
-
-    dependencies {
-        compile project(":core")
-		// FROM CORE
-		compile project(":network")
-		compile 'com.esotericsoftware:minlog:1.3.0'
-		compile 'com.googlecode.openbeans:openbeans:1.0'
-		compile 'org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT'
-		compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
-		compile "com.esotericsoftware:kryo:$kryoVersion"
-		compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
-		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
-		compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
-		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
-		// ANDROID STUFF
-        compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-sqlite-android:$gdxSqliteVersion"
-        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
-        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
-        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
-        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi"
-        natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
-        natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
-    }
-
-	android {
-		packagingOptions {
-			exclude 'META-INF/LICENSE.txt'
-			exclude 'META-INF/LICENSE'
-			exclude 'META-INF/NOTICE.txt'
-			exclude 'META-INF/NOTICE'
-		}
-	}
-}
-
-project(":ios") {
-    apply plugin: "java"
-    apply plugin: "robovm"
-
-    configurations { natives }
-
-    dependencies {
-        compile project(":core")
-        compile "org.robovm:robovm-rt:${roboVMVersion}"
-        compile "org.robovm:robovm-cocoatouch:${roboVMVersion}"
-        compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-sqlite-robovm:$gdxSqliteVersion"
-        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-        natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
-    }
-}
-
-project(":html") {
-    apply plugin: "gwt"
-    apply plugin: "war"
-
-
-    dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
-    }
-}
-
-project(":core") {
-    apply plugin: "java"
-
-
-    dependencies {
-    	compile project(":network")
-		compile 'com.esotericsoftware:minlog:1.3.0'
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-		compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        compile "org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT"
-		compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
-		compile "com.esotericsoftware:kryo:$kryoVersion"
-		compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
-		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
-		compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
-		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
-    }
-}
-
-project(":network") {
-	apply plugin: "java"
-
-	dependencies {
-		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
-		compile "com.esotericsoftware:kryo:$kryoVersion"
-	}
-}
-
-project(":server") {
-	apply plugin: "java"
-	apply plugin: "war"
-	apply plugin: 'appengine'
-	
-	dependencies {
-		appengineSdk "com.google.appengine:appengine-api-1.0-sdk:$appengineVersion"
-		providedCompile 'javax.servlet:servlet-api:2.5'
-		compile project(":network")
-		compile "com.spiddekauga.appengine:appengine-utils:$appengineUtilsVersion"
-		compile "com.spiddekauga:common-utils:$commonUtilsVersion"
-		compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
-		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
-		compile "commons-fileupload:commons-fileupload:1.3.1"
-		compile "com.google.guava:guava:$guavaVersion"
-	}
-}
-
-project(":server-analytics") {
-	apply plugin: "java"
-	apply plugin: "war"
-	apply plugin: 'appengine'
-	
-	dependencies {
-		appengineSdk "com.google.appengine:appengine-api-1.0-sdk:$appengineVersion"
-		providedCompile 'javax.servlet:servlet-api:2.5'
-		compile "com.google.appengine.tools:appengine-gcs-client:0.4.4"
-		compile "com.google.appengine.tools:appengine-mapreduce:0.8.3"
-		compile "com.spiddekauga.appengine:appengine-utils:$appengineUtilsVersion"
-	}
-}
-
-project(":backup") {
-	apply plugin: 'java'
-
-	dependencies {
-		compile project(':network')
-		compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
-	}
-}
-
-tasks.eclipse.doLast {
-//     delete ".project"
 }
 
 //--------------------------------------------
 //				DEPLOYMENT - GAME
 //--------------------------------------------
-task deployGameNightlyDev(dependsOn: ['setBuildNightlyDev', ':core:clean', ':desktop:dist']) << {
-	deployGame("NIGHTLY_DEV")
+task deployGameNightlyDev(dependsOn: ['core:setBuildNightlyDev', ':core:clean', ':desktop:dist']) << {
+    deployGame("NIGHTLY_DEV")
 }
 
-task setBuildNightlyDev << {
-	replaceBuildName("NIGHTLY_DEV")
+task deployGameNightlyRelease(dependsOn: ['core:setBuildNightlyRelease', ':core:clean', ':desktop:dist']) << {
+    deployGame("NIGHTLY_RELEASE")
 }
 
-task deployGameNightlyRelease(dependsOn: ['setBuildNightlyRelease', ':core:clean', ':desktop:dist']) << {
-	deployGame("NIGHTLY_RELEASE")
+task deployGameBeta(dependsOn: ['core:setBuildBeta', ':core:clean', ':desktop:dist']) << {
+    deployGame("BETA")
 }
 
-task setBuildNightlyRelease << {
-	replaceBuildName("NIGHTLY_RELEASE")
-}
-
-task deployGameBeta(dependsOn: ['setBuildBeta', ':core:clean', ':desktop:dist']) << {
-	deployGame("BETA")
-}
-
-task setBuildBeta << {
-	replaceBuildName("BETA")
-}
-
-task setBuildRelease << {
-	replaceBuildName("RELEASE")
-}
-
-task deployGameRelease(dependsOn: ['setBuildRelease', 'core:clean', ':desktop:dist']) << {
-	deployGame("RELEASE")
+task deployGameRelease(dependsOn: ['core:setBuildRelease', 'core:clean', ':desktop:dist']) << {
+    deployGame("RELEASE")
 }
 
 // Deploy Game to dropbox and other places
 def deployGame2(buildName) {
-	def dropboxDir = dropbox + 'Voider/'
-	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
-	def dropboxCopyTo = ""
-	def exportDir = projectDir.absolutePath + "/build/";
-	def exportFile = ""
-	switch ( buildName ) {
-		case "NIGHTLY_DEV":
-			dropboxCopyTo = "Voider - editable resources/Voider.jar"
-			break
-		
-		case "NIGHTLY_RELEASE":
-			dropboxCopyTo = "Voider/Voider-nightly.jar"
-			break
-		
-		case "BETA":
-			exportFile = "Voider-beta.jar"
-			dropboxCopyTo = "Voider/Voider-beta.jar"
-			break
+    def dropboxDir = dropbox + 'Voider/'
+    def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
+    def dropboxCopyTo = ""
+    def exportDir = projectDir.absolutePath + "/build/";
+    def exportFile = ""
+    switch (buildName) {
+        case "NIGHTLY_DEV":
+            dropboxCopyTo = "Voider - editable resources/Voider.jar"
+            break
 
-		case "RELEASE":
-			exportFile = "Voider.jar"
-			break
-	}
+        case "NIGHTLY_RELEASE":
+            dropboxCopyTo = "Voider/Voider-nightly.jar"
+            break
 
-	// Copy to dropbox
-	if (dropboxCopyTo != "") {
-		dropboxCopyTo = dropboxDir + dropboxCopyTo
-		Files.copy(Paths.get(desktopFile), Paths.get(dropboxCopyTo), StandardCopyOption.REPLACE_EXISTING)
-	}
-	// Copy to appengine
-	if (exportFile != "") {
-		exportFile = exportDir + exportFile
-		Files.copy(Paths.get(desktopFile), Paths.get(exportFile), StandardCopyOption.REPLACE_EXISTING)
-	}
-	replaceBuildName(project.defaultBuild)
+        case "BETA":
+            exportFile = "Voider-beta.jar"
+            dropboxCopyTo = "Voider/Voider-beta.jar"
+            break
+
+        case "RELEASE":
+            exportFile = "Voider.jar"
+            break
+    }
+
+    // Copy to dropbox
+    if (dropboxCopyTo != "") {
+        dropboxCopyTo = dropboxDir + dropboxCopyTo
+        Files.copy(Paths.get(desktopFile), Paths.get(dropboxCopyTo), StandardCopyOption.REPLACE_EXISTING)
+    }
+    // Copy to appengine
+    if (exportFile != "") {
+        exportFile = exportDir + exportFile
+        Files.copy(Paths.get(desktopFile), Paths.get(exportFile), StandardCopyOption.REPLACE_EXISTING)
+    }
+    replaceBuildName(project.defaultBuild)
 }
 
 // Deploy Game to dropbox and other places
 def deployGame(buildName) {
-	def dropboxDir = dropbox + 'Voider/'
-	def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
-	def exportDirs = null
-	switch ( buildName ) {
-		case "NIGHTLY_DEV":
-			exportDirs = ["${dropboxDir}Voider - editable resources/Voider.jar"]
-			break
-		
-		case "NIGHTLY_RELEASE":
-			exportDirs = ["${dropboxDir}Voider/Voider-nightly.jar"]
-			break
-		
-		case "BETA":
-			exportDirs = ["${dropboxDir}Voider/Voider-beta.jar", "${outDir}Voider-beta.jar"]
-			packGame(desktopFile, "Voider-beta")
-			break
+    def dropboxDir = dropbox + 'Voider/'
+    def desktopFile = projectDir.absolutePath + "/desktop/build/libs/desktop-" + version + ".jar"
+    def exportDirs = null
+    switch (buildName) {
+        case "NIGHTLY_DEV":
+            exportDirs = ["${dropboxDir}Voider - editable resources/Voider.jar"]
+            break
 
-		case "RELEASE":
-			exportDirs = ["${dropboxDir}Voider/Voider.jar", "${outDir}Voider.jar"]
-			packGame(desktopFile, "Voider")
-			break
-	}
+        case "NIGHTLY_RELEASE":
+            exportDirs = ["${dropboxDir}Voider/Voider-nightly.jar"]
+            break
 
-	exportDirs.each {
-		Files.copy(Paths.get(desktopFile), Paths.get(it), StandardCopyOption.REPLACE_EXISTING)
-	}
-	replaceBuildName(project.defaultBuild)
-}
+        case "BETA":
+            exportDirs = ["${dropboxDir}Voider/Voider-beta.jar", "${outDir}Voider-beta.jar"]
+            packGame(desktopFile, "Voider-beta")
+            break
 
-def replaceBuildName(nextBuild) {
-	def filename = "core/src/com/spiddekauga/voider/Config.java";
-	def fromString = "BUILD = Builds.*;"
-	def toString = "BUILD = Builds." + nextBuild + ";"
-	File configFile = file(filename)
-	def updatedContent = configFile.getText('UTF-8').replaceAll(fromString, toString)
-	configFile.write(updatedContent, 'UTF-8')
+        case "RELEASE":
+            exportDirs = ["${dropboxDir}Voider/Voider.jar", "${outDir}Voider.jar"]
+            packGame(desktopFile, "Voider")
+            break
+    }
+
+    exportDirs.each {
+        Files.copy(Paths.get(desktopFile), Paths.get(it), StandardCopyOption.REPLACE_EXISTING)
+    }
+    replaceBuildName(project.defaultBuild)
 }
 
 def packGame(jar, build) {
-	['windows', 'mac'].each {
-		packGame(jar, build, it)
-	}
+    ['windows', 'mac'].each {
+        packGame(jar, build, it)
+    }
 }
 
 def packGame(jar, build, platform) {
-	def packDir = outDir + build + getPlatformExtension(platform)
-
-	Packr.Config config = new Packr.Config();
-	config.platform = getPlatformEnum(platform)
-	config.jdk = dropbox + 'Dev/Libs/' + getPlatformJdk(platform)
-	config.executable = build
-	config.jar = jar // V1.2
-// 	config.classpath = [jar] // V2.0
-	config.mainClass = 'com.spiddekauga.voider.desktop.DesktopLauncher'
-	config.vmArgs = ['-Xmx1G']
-	config.outDir = "${packDir}/${build}" + getPlatformExtension(platform) // ZIP HACK
-// 	config.outDir = packDir // REGULAR
-	config.minimizeJre = [
-		'jre/lib/rt/com/sun/corba',
-		'jre/lib/rt/com/sun/jmx',
-		'jre/lib/rt/com/sun/jndi',
-		'jre/lib/rt/com/sun/media',
-		'jre/lib/rt/com/sun/naming',
-		'jre/lib/rt/com/sun/org',
-		'jre/lib/rt/com/sun/rowset',
-		'jre/lib/rt/com/sun/script',
-		'jre/lib/rt/com/sun/xml',
-		'jre/lib/rt/sun/applet',
-		'jre/lib/rt/sun/corba',
-		'jre/lib/rt/sun/management'
-	]
-
-	new Packr().pack(config)
-
-	// TODO Create an installation bundle
-	// ZIP file
-	def zipFile = "${outDir}${build}-${platform}.zip"
-	Files.deleteIfExists(Paths.get(zipFile))
-	def ant = new AntBuilder()
-	ant.zip(basedir: packDir, destfile: zipFile)
+//    def packDir = outDir + build + getPlatformExtension(platform)
+//
+//    Packr.Config config = new Packr.Config();
+//    config.platform = getPlatformEnum(platform)
+//    config.jdk = dropbox + 'Dev/Libs/' + getPlatformJdk(platform)
+//    config.executable = build
+//    config.jar = jar // V1.2
+//// 	config.classpath = [jar] // V2.0
+//    config.mainClass = 'com.spiddekauga.voider.desktop.DesktopLauncher'
+//    config.vmArgs = ['-Xmx1G']
+//    config.outDir = "${packDir}/${build}" + getPlatformExtension(platform) // ZIP HACK
+//// 	config.outDir = packDir // REGULAR
+//    config.minimizeJre = [
+//            'jre/lib/rt/com/sun/corba',
+//            'jre/lib/rt/com/sun/jmx',
+//            'jre/lib/rt/com/sun/jndi',
+//            'jre/lib/rt/com/sun/media',
+//            'jre/lib/rt/com/sun/naming',
+//            'jre/lib/rt/com/sun/org',
+//            'jre/lib/rt/com/sun/rowset',
+//            'jre/lib/rt/com/sun/script',
+//            'jre/lib/rt/com/sun/xml',
+//            'jre/lib/rt/sun/applet',
+//            'jre/lib/rt/sun/corba',
+//            'jre/lib/rt/sun/management'
+//    ]
+//
+//    new Packr().pack(config)
+//
+//    // TODO Create an installation bundle
+//    // ZIP file
+//    def zipFile = "${outDir}${build}-${platform}.zip"
+//    Files.deleteIfExists(Paths.get(zipFile))
+//    def ant = new AntBuilder()
+//    ant.zip(basedir: packDir, destfile: zipFile)
 }
 
 def getPlatformEnum(platform) {
-	switch (platform) {
-		case 'windows32':
+    switch (platform) {
+        case 'windows32':
 // 			return Packr.Platform.windows32	// V2.0
-		case 'windows64':
+        case 'windows64':
 // 			return Packr.Platform.windows64 // V2.0
-		case 'windows':
-			return Packr.Platform.windows	// V1.2
-		case 'mac':
-			return Packr.Platform.mac
-		default:
-			return null
-	}
+        case 'windows':
+            return Packr.Platform.windows    // V1.2
+        case 'mac':
+            return Packr.Platform.mac
+        default:
+            return null
+    }
 }
 
 def getPlatformExtension(platform) {
-	switch (platform) {
-		case 'mac':
-			return '.app'
-		default:
-			return ''
-	}
+    switch (platform) {
+        case 'mac':
+            return '.app'
+        default:
+            return ''
+    }
 }
 
 def getPlatformJdk(platform) {
-	return 'openjdk-latest-icedtea-' + platform + '.zip'
+    return 'openjdk-latest-icedtea-' + platform + '.zip'
 }
-
 
 //--------------------------------------------
 //		DEPLOYMENT - SERVER/APPENGINE
 //--------------------------------------------
 // Upload to GS
 task uploadBetaToGs(type: Exec) {
-	def filename = "build/Voider-beta.jar"
-	def gsFile = "gs://voider-shared/app/"
+    def filename = "build/Voider-beta.jar"
+    def gsFile = "gs://voider-shared/app/"
 
-	commandLine 'gsutil', 'cp', filename, gsFile
+    commandLine 'gsutil', 'cp', filename, gsFile
 }
 
 // task uploadReleaseToGs(type: Exec) << {
 // 	Does nothing yet...
 // }
 
-// Ordering
-project(':core').compileJava.mustRunAfter setBuildRelease
-project(':core').compileJava.mustRunAfter setBuildBeta
-project(':core').compileJava.mustRunAfter setBuildNightlyDev
-project(':core').compileJava.mustRunAfter setBuildNightlyRelease
-
-
-// Appengine tasks
-task setAppengineDev << {
-	prepareAppengine()
-	updateApplicationId('voider-dev')
-	updateBackupCronUrl('voider-dev')
+task deployAppengineDev(dependsOn: ['server:setAppengineDev', 'server:appengineUpdate']) << {
+    // Does nothing
 }
 
-task setAppengineNightly << {
-	prepareAppengine()
-	updateApplicationId('voider-nightly')
-	updateBackupCronUrl('voider-nightly')
+task deployAppengineNightly(dependsOn: ['server:setAppengineNightly', 'server:appengineUpdate']) << {
+    // Does nothing
 }
 
-task setAppengineBeta() << {
-	prepareAppengine()
-	updateApplicationId('voider-beta')
-	updateBackupCronUrl('voider-beta')
+task deployAppengineBeta(dependsOn: ['uploadBetaToGs', 'server:setAppengineBeta', 'server:appengineUpdate']) << {
+    // Does nothing
 }
 
-task setAppengineRelease() << {
-	prepareAppengine()
-	updateApplicationId('voider-thegame')
-	updateBackupCronUrl('voider-thegame')
+task deployAppengineRelease(dependsOn: ['server:setAppengineRelease', 'server:appengineUpdate']) << {
+    // Does nothing
 }
 
-task deployAppengineDev(dependsOn: ['setAppengineDev', 'server:appengineUpdate']) << {
-	// Does nothing
-}
-
-task deployAppengineNightly(dependsOn: ['setAppengineNightly', 'server:appengineUpdate']) << {
-	// Does nothing
-}
-
-task deployAppengineBeta(dependsOn: ['uploadBetaToGs', 'setAppengineBeta', 'server:appengineUpdate']) << {
-	// Does nothing
-}
-
-task deployAppengineRelease(dependsOn: ['setAppengineRelease', 'server:appengineUpdate']) << {
-	// Does nothing
-}
-
-// Ordering
-project(':server').appengineUpdate.mustRunAfter setAppengineDev
-project(':server').appengineUpdate.mustRunAfter setAppengineBeta
-project(':server').appengineUpdate.mustRunAfter setAppengineNightly
-project(':server').appengineUpdate.mustRunAfter setAppengineRelease
-
-def prepareAppengine() {
-	updateAppengineVersion()
-	copyAppengineFiles()
-}
-
-def copyAppengineFiles() {
-	// These should be relative to the asset folders
-	def COPY_THESE = ['txt/changelog.txt']
-	def ANDROID_ASSET_DIR = projectDir.absolutePath + "/android/assets/"
-	def SERVER_ASSET_DIR = projectDir.absolutePath + "/server/src/main/webapp/assets/"
-
-	COPY_THESE.each {
-		def copyFrom = Paths.get(ANDROID_ASSET_DIR + it)
-		def copyTo = Paths.get(SERVER_ASSET_DIR + it)
-		def copyToDir = copyTo.getParent()
-		Files.createDirectories(copyToDir)
-		Files.copy(copyFrom, copyTo, StandardCopyOption.REPLACE_EXISTING);
-	}
-}
-
-def updateAppengineVersion() {
-	def searchFor = "<version>.*</version>"
-	def replaceWith = "<version>" + version + "</version>"
-	
-	File webappFile = file(project.appengineWebFile)
-	def updatedContent = webappFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
-	webappFile.write(updatedContent, 'UTF-8')
-	
-	File explodedFile = file(project.appengineExplodedWebFile)
-	updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
-	explodedFile.write(updatedContent, 'UTF-8')
-}
-
-def updateApplicationId(applicationId) {
-	def searchFor = "<application>.*</application>"
-	def replaceWith = "<application>" + applicationId + "</application>"
-	
-	File webappFile = file(project.appengineWebFile)
-	def updatedContent = webappFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
-	webappFile.write(updatedContent, 'UTF-8')
-	
-	File explodedFile = file(project.appengineExplodedWebFile)
-	updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
-	explodedFile.write(updatedContent, 'UTF-8')
-}
-
-def updateBackupCronUrl(applicationId) {
-	// Create URL
-	def url = "<url>/_ah/datastore_admin/backup.create?"
-	url += "name=cron-"
-	url += "&amp;queue=backup"
-	url += "&amp;filesystem=gs"
-	url += "&amp;gs_bucket_name=" + applicationId + "/backup_datastore"
-	
-	def kinds = [
-		"beta_group",
-		"beta_key",
-		"beta_signup",
-		"dependency",
-		"highscore",
-		"level_stat",
-		"level_tag",
-		"motd",
-		"published",
-		"sync_published",
-		"user_level_stat",
-		"user_resources",
-		"user_resources_deleted",
-		"users"
-	]
-
-	// Add these kinds
-	kinds.each {
-		url += "&amp;kind=${it}"
-	}
-
-	url += "</url><!--backup-replace-->"
-	
-
-	// Replace URL
-	def searchFor = "<url>.*</url><!--backup-replace-->"
-
-	File cronFile = file(project.cronFile)
-	def updatedContent = cronFile.getText('UTF-8').replaceAll(searchFor, url)
-	cronFile.write(updatedContent, 'UTF-8')
-}
 

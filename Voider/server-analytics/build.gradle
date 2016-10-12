@@ -1,4 +1,14 @@
+apply plugin: "java"
+apply plugin: "war"
 apply plugin: 'appengine'
+
+dependencies {
+    appengineSdk "com.google.appengine:appengine-api-1.0-sdk:$appengineVersion"
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    compile "com.google.appengine.tools:appengine-gcs-client:0.4.4"
+    compile "com.google.appengine.tools:appengine-mapreduce:0.8.3"
+    compile "com.spiddekauga.appengine:appengine-utils:$appengineUtilsVersion"
+}
 
 buildscript {
     repositories {
@@ -19,13 +29,8 @@ appengine {
     httpPort = 8888
 
     appcfg {
-    	oauth2 = true
+        oauth2 = true
     }
 }
 
-sourceSets.main.java.srcDirs = [ "src/main/java" ]
-
-
-eclipse.project {
-    name = appName + "-server-analytics"
-}
+sourceSets.main.java.srcDirs = ["src/main/java"]
