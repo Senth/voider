@@ -1,5 +1,8 @@
-include 'desktop', 'android', 'core', 'network', 'server', 'server-analytics', 'backup', 'appengine-utils', 'common-utils'
+include 'desktop', 'android', 'core', 'network', 'server', 'server-analytics', 'backup', 'TexturePacker', 'ui-raw', 'internal-resources', 'appengine-utils', 'common-utils'
 
 // Custom git directories
+project(':TexturePacker').projectDir = new File('../tools/TexturePacker')
+project(':ui-raw').projectDir = new File('../ui')
+project(':internal-resources').projectDir = new File(dropboxDir + "/Voider/Voider - editable resources/internal_resources")
 project(':appengine-utils').projectDir = new File('../../appengine-utils')
 project(':common-utils').projectDir = new File('../../common-utils')

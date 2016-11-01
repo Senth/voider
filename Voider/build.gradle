@@ -1,4 +1,5 @@
 import com.badlogicgames.packr.Packr
+import groovy.io.FileType
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -11,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'org.robovm:robovm-gradle-plugin:1.12.0'
         classpath 'com.google.appengine:gradle-appengine-plugin:1.9.28'
         classpath 'com.badlogicgames.packr:packr:1.2'
@@ -61,6 +62,64 @@ allprojects {
     configurations.all {
         resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+//--------------------------------------------
+//			SYNC - DROPBOX -> GIT
+//--------------------------------------------
+task dropboxImportUi() << {
+    def dropboxAssetDir = project(':internal-resources').projectDir.absolutePath
+    def gitRawDir = project(':ui-raw').projectDir.absolutePath
+
+    syncUiRaw(dropboxAssetDir, gitRawDir)
+    syncBackgroundsRaw(dropboxAssetDir, gitRawDir)
+    syncAssets(dropboxAssetDir)
+}
+
+def syncUiRaw(dropboxDir, gitDir) {
+    File dropboxDirFile = new File(dropboxDir, 'ui-editable')
+    dropboxDirFile.listFiles().each { asset ->
+        if (asset.isDirectory()) {
+            File dropboxFile = new File(asset.toString())
+            File gitFile = new File(gitDir, asset.getName());
+            GFileUtils.deleteDirectory(gitFile)
+            copyDirRecursively(dropboxFile, gitFile)
+        }
+    }
+}
+
+def syncBackgroundsRaw(dropboxDir, gitDir) {
+    File dropboxFile = new File(dropboxDir, 'backgrounds-editable')
+    File gitFile = new File(gitDir, 'backgrounds')
+    GFileUtils.deleteDirectory(gitFile)
+    copyDirRecursively(dropboxFile, gitFile)
+}
+
+def syncAssets(dropboxDir) {
+    def gitDir = project(':android').projectDir.absolutePath + "/assets/"
+    ['backgrounds', 'export', 'fonts', 'gfx', 'music', 'sfx', 'shaders', 'txt', 'ui'].each { asset ->
+        File gitFile = new File(gitDir, asset)
+        GFileUtils.deleteDirectory(gitFile)
+        File dropboxFile = new File(dropboxDir, asset)
+        copyDirRecursively(dropboxFile, gitFile)
+    }
+}
+
+def copyDirRecursively(File dirFrom, File dirTo) {
+    // creation the target dir
+    if (!dirTo.exists()) {
+        dirTo.mkdir();
+    }
+    // copying the daughter files
+    dirFrom.eachFile(FileType.FILES) { File source ->
+        File target = new File(dirTo, source.getName());
+        target.bytes = source.bytes;
+    }
+    // copying the daughter dirs - recursion
+    dirFrom.eachFile(FileType.DIRECTORIES) { File source ->
+        File target = new File(dirTo, source.getName());
+        copyDirRecursively(source, target)
     }
 }
 
@@ -255,5 +314,4 @@ task deployAppengineBeta(dependsOn: ['uploadBetaToGs', 'server:setAppengineBeta'
 task deployAppengineRelease(dependsOn: ['server:setAppengineRelease', 'server:appengineUpdate']) << {
     // Does nothing
 }
-
 
