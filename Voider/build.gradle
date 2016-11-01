@@ -14,14 +14,11 @@ buildscript {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
         classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'org.robovm:robovm-gradle-plugin:1.12.0'
-        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.28'
+        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.42'
         classpath 'com.badlogicgames.packr:packr:1.2'
     }
 }
 
-ext.cronFile = "server/src/main/webapp/WEB-INF/cron.xml"
-ext.appengineWebFile = "server/src/main/webapp/WEB-INF/appengine-web.xml"
-ext.appengineExplodedWebFile = "server/build/exploded-app/WEB-INF/appengine-web.xml"
 ext.defaultBuild = "DEV_LOCAL"
 ext.home = System.properties['user.home'] + '/'
 ext.dropbox = home + 'Dropbox/'
@@ -38,7 +35,7 @@ allprojects {
         box2DLightsVersion = '1.3'
         ashleyVersion = '1.3.1'
         aiVersion = '1.5.0'
-        appengineVersion = '1.9.28'
+        appengineVersion = '1.9.42'
         commonUtilsVersion = '0.1.0-SNAPSHOT'
         kryoUtilsVersion = '0.1.1'
         appengineUtilsVersion = '0.2.1-SNAPSHOT'
@@ -209,7 +206,7 @@ def deployGame(buildName) {
     exportDirs.each {
         Files.copy(Paths.get(desktopFile), Paths.get(it), StandardCopyOption.REPLACE_EXISTING)
     }
-    replaceBuildName(project.defaultBuild)
+    project(':core').replaceBuildName(project.defaultBuild)
 }
 
 def packGame(jar, build) {
