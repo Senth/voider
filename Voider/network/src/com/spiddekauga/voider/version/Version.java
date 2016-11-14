@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Contains version information about the client
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class Version implements IEntity {
 	/**

@@ -15,53 +15,50 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Synchronously loads resources saved as Kryo objects (that has been encrypted).
  * @param <StoredType> The stored type in the JSON file
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class KryoLoaderSync<StoredType> extends SynchronousAssetLoader<StoredType, KryoParameters<StoredType>> {
-	/**
-	 * Constructor which takes a file handle resolver (where to load resources
-	 * from) and what type of object is stored in the json file.
-	 * @param resolver where to load resources from
-	 * @param type what type of object is stored in the json file
-	 */
-	public KryoLoaderSync(FileHandleResolver resolver, Class<StoredType> type) {
-		super(resolver);
+/** Type of object stored in the json file */
+Class<StoredType> mStoredType;
+/** Decrypter */
+ObjectCrypter mCrypter;
 
-		mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
-		mStoredType = type;
+/**
+ * Constructor which takes a file handle resolver (where to load resources from) and what type of
+ * object is stored in the json file.
+ * @param resolver where to load resources from
+ * @param type what type of object is stored in the json file
+ */
+public KryoLoaderSync(FileHandleResolver resolver, Class<StoredType> type) {
+	super(resolver);
+
+	mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
+	mStoredType = type;
+}
+
+@Override
+public StoredType load(AssetManager assetManager, String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
+	if (!file.exists()) {
+		throw new ResourceNotFoundException(fileName);
 	}
 
-	@Override
-	public StoredType load(AssetManager assetManager, String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
-		if (!file.exists()) {
-			throw new ResourceNotFoundException(fileName);
-		}
-
-		byte[] encryptedKryo = file.readBytes();
-		byte[] decryptedKryo;
-		try {
-			decryptedKryo = mCrypter.decrypt(encryptedKryo, byte[].class);
-		} catch (Exception e) {
-			throw new ResourceCorruptException(fileName);
-		}
-
-		Input input = new Input(decryptedKryo);
-		Kryo kryo = Pools.kryo.obtain();
-		StoredType storedObject = kryo.readObject(input, mStoredType);
-		Pools.kryo.free(kryo);
-		return storedObject;
+	byte[] encryptedKryo = file.readBytes();
+	byte[] decryptedKryo;
+	try {
+		decryptedKryo = mCrypter.decrypt(encryptedKryo, byte[].class);
+	} catch (Exception e) {
+		throw new ResourceCorruptException(fileName);
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
-		return null;
-	}
+	Input input = new Input(decryptedKryo);
+	Kryo kryo = Pools.kryo.obtain();
+	StoredType storedObject = kryo.readObject(input, mStoredType);
+	Pools.kryo.free(kryo);
+	return storedObject;
+}
 
-	/** Type of object stored in the json file */
-	Class<StoredType> mStoredType;
-
-	/** Decrypter */
-	ObjectCrypter mCrypter;
+@SuppressWarnings("rawtypes")
+@Override
+public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
+	return null;
+}
 }

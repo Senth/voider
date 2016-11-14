@@ -17,77 +17,76 @@ import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * Gui for theme select scene
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ThemeSelectGui extends Gui {
 
-	/**
-	 * Sets the scene
-	 * @param scene
-	 */
-	void setScene(ThemeSelectScene scene) {
-		mScene = scene;
-	}
+/** Theme select scene */
+private ThemeSelectScene mScene = null;
 
-	@Override
-	public void initGui() {
-		super.initGui();
+/**
+ * Sets the scene
+ * @param scene
+ */
+void setScene(ThemeSelectScene scene) {
+	mScene = scene;
+}
 
-		initBackground();
-		initButtons();
-	}
+@Override
+public void initGui() {
+	super.initGui();
 
-	/**
-	 * Initialize the scrolling background
-	 */
-	private void initBackground() {
-		ImageScrollButton background = mUiFactory.button.createImageScroll(ScrollWhen.ALWAYS, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-				ButtonStyles.PRESS, null);
+	initBackground();
+	initButtons();
+}
 
-		addActor(background);
-		background.setTouchable(Touchable.disabled);
+/**
+ * Initialize the scrolling background
+ */
+private void initBackground() {
+	ImageScrollButton background = mUiFactory.button.createImageScroll(ScrollWhen.ALWAYS, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+			ButtonStyles.PRESS, null);
 
-		// Add layers
-		Themes theme = mScene.getTheme();
-		LevelBackground levelBackground = theme.createBackground((int) background.getHeight());
-		float topLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_TOP_LAYER_SPEED);
-		float bottomLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_BOTTOM_LAYER_SPEED);
-		background.addLayer(levelBackground.getBottomLayer(), bottomLayerSpeed);
-		background.addLayer(levelBackground.getTopLayer(), topLayerSpeed);
+	addActor(background);
+	background.setTouchable(Touchable.disabled);
 
-		addActor(background);
-		background.setZIndex(0);
-	}
+	// Add layers
+	Themes theme = mScene.getTheme();
+	LevelBackground levelBackground = theme.createBackground((int) background.getHeight());
+	float topLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_TOP_LAYER_SPEED);
+	float bottomLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_BOTTOM_LAYER_SPEED);
+	background.addLayer(levelBackground.getBottomLayer(), bottomLayerSpeed);
+	background.addLayer(levelBackground.getTopLayer(), topLayerSpeed);
 
-	/**
-	 * Initialize buttons
-	 */
-	private void initButtons() {
-		mMainTable.setAlignTable(Horizontal.CENTER, Vertical.BOTTOM);
+	addActor(background);
+	background.setZIndex(0);
+}
+
+/**
+ * Initialize buttons
+ */
+private void initButtons() {
+	mMainTable.setAlignTable(Horizontal.CENTER, Vertical.BOTTOM);
 
 
-		// Cancel
-		ButtonListener listener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.cancel();
-			}
-		};
-		mUiFactory.button.addText("Cancel", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
-		mUiFactory.button.addPadding(mMainTable);
+	// Cancel
+	ButtonListener listener = new ButtonListener() {
+		@Override
+		protected void onPressed(Button button) {
+			mScene.cancel();
+		}
+	};
+	mUiFactory.button.addText("Cancel", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
+	mUiFactory.button.addPadding(mMainTable);
 
-		// Select
-		listener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.select();
-			}
-		};
-		mUiFactory.button.addText("Select", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
+	// Select
+	listener = new ButtonListener() {
+		@Override
+		protected void onPressed(Button button) {
+			mScene.select();
+		}
+	};
+	mUiFactory.button.addText("Select", TextButtonStyles.FILLED_PRESS, mMainTable, listener, null, null);
 
-		mMainTable.row().setHeight(mUiFactory.getStyles().vars.paddingSeparator);
-	}
-
-	/** Theme select scene */
-	private ThemeSelectScene mScene = null;
+	mMainTable.row().setHeight(mUiFactory.getStyles().vars.paddingSeparator);
+}
 }

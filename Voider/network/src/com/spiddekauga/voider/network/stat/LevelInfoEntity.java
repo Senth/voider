@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.resource.LevelDefEntity;
 
 /**
  * Wrapper for all level information
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LevelInfoEntity implements IEntity {
 	/** Level definition entity for the level */

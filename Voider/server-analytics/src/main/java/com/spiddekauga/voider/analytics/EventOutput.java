@@ -10,7 +10,7 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
 
 /**
  * Combines multiple analytics events from a mapper to a lilst
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class EventOutput extends Output<AnalyticsEvent, List<AnalyticsEvent>> {
 	private static class EventOutputWriter extends OutputWriter<AnalyticsEvent> {

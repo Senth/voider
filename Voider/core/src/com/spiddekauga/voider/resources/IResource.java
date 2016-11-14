@@ -8,7 +8,7 @@ import com.spiddekauga.utils.commands.Command;
 /**
  * Holds a unique id, can be used as a reference for others and can hold references to
  * other objects that needs to be bound after loading
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public interface IResource {
 	/**

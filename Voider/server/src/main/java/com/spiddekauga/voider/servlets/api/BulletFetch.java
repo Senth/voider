@@ -18,7 +18,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
 
 /**
  * Servlet for fetching bullet information
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class BulletFetch extends ActorFetch<BulletFetchMethod, BulletDefEntity> {

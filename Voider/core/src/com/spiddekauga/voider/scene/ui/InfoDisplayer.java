@@ -18,7 +18,7 @@ import com.spiddekauga.voider.utils.event.UpdateEvent;
 
 /**
  * Listens to events and displays that information on the screen
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class InfoDisplayer implements IEventListener {
 	/**

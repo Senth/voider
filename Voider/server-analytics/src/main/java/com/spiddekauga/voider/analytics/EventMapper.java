@@ -6,7 +6,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 
 /**
  * Maps events from a datastore object into an AnalyticsEvent object
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class EventMapper extends MapOnlyMapper<Entity, AnalyticsEvent> {

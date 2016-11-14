@@ -30,7 +30,7 @@ import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Common class for all world scenes
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public abstract class WorldScene extends Scene {
 	/**

@@ -8,7 +8,7 @@ import com.spiddekauga.utils.ISearchStore;
 
 /**
  * All tags
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("javadoc")
 public enum Tags implements ISearchStore {

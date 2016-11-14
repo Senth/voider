@@ -11,7 +11,7 @@ import com.google.appengine.api.utils.SystemProperty;
 
 /**
  * Server configuration
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ServerConfig {
 	/** Database tables */
@@ -309,7 +309,7 @@ public class ServerConfig {
 	/** No-reply email address */
 	public static final InternetAddress EMAIL_NO_REPLY;
 	/** Beta information location */
-	public static final String BETA_INFO_URL = Builds.RELEASE.getUrl() + "beta.jsp";
+	public static final String BETA_INFO_URL = Builds.RELEASE.getUrl() + "download.jsp";
 	/** Version (changelog) file */
 	public static final String VERSION_FILE = "assets/txt/changelog.txt";
 

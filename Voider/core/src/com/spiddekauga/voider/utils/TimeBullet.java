@@ -5,11 +5,11 @@ import com.spiddekauga.voider.game.actors.BulletActor;
 
 /**
  * Container class for bullet and time
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TimeBullet {
-	/** The bound bullet actor to this time */
-	@Tag(86) public BulletActor bulletActor = null;
-	/** Time bound to the bullet actor */
-	public float time = 0;
+/** The bound bullet actor to this time */
+@Tag(86)
+public BulletActor bulletActor = null;
+/** Time bound to the bullet actor */
+public float time = 0;
 }

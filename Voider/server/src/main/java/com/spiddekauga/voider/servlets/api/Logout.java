@@ -12,7 +12,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Called when a user tries to logout
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class Logout extends VoiderApiServlet<LogoutMethod> {

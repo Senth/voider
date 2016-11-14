@@ -7,41 +7,38 @@ import com.spiddekauga.voider.resources.IResourceBody;
 
 /**
  * Adds a new resource and calls the resource editor about the notification
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceAdd extends Command {
-	/**
-	 * Creates a command which will add and resource and notify the resource editor
-	 * about it.
-	 * @param resource the resource to add
-	 * @param editor the editor to add the resource to
-	 */
-	public CResourceAdd(IResource resource, IResourceChangeEditor editor) {
-		mResource = resource;
-		mEditor = editor;
-	}
+/** The resource to add */
+private IResource mResource;
+/** The editor to add the resource to */
+private IResourceChangeEditor mEditor;
 
-	@Override
-	public boolean execute() {
-		if (mResource instanceof IResourceBody) {
-			((IResourceBody) mResource).createBody();
-		}
-		mEditor.onResourceAdded(mResource, true);
-		return true;
-	}
+/**
+ * Creates a command which will add and resource and notify the resource editor about it.
+ * @param resource the resource to add
+ * @param editor the editor to add the resource to
+ */
+public CResourceAdd(IResource resource, IResourceChangeEditor editor) {
+	mResource = resource;
+	mEditor = editor;
+}
 
-	@Override
-	public boolean undo() {
-		mEditor.onResourceRemoved(mResource);
-		if (mResource instanceof IResourceBody) {
-			((IResourceBody) mResource).destroyBody();
-		}
-		return true;
+@Override
+public boolean execute() {
+	if (mResource instanceof IResourceBody) {
+		((IResourceBody) mResource).createBody();
 	}
+	mEditor.onResourceAdded(mResource, true);
+	return true;
+}
 
-	/** The resource to add */
-	private IResource mResource;
-	/** The editor to add the resource to */
-	private IResourceChangeEditor mEditor;
+@Override
+public boolean undo() {
+	mEditor.onResourceRemoved(mResource);
+	if (mResource instanceof IResourceBody) {
+		((IResourceBody) mResource).destroyBody();
+	}
+	return true;
+}
 }

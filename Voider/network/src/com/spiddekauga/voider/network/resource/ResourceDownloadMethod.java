@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for downloading resources from the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResourceDownloadMethod implements IMethodEntity {
 	/** Id of the resource to download */

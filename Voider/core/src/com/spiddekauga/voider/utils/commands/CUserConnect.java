@@ -5,24 +5,23 @@ import com.spiddekauga.voider.repo.user.User;
 
 /**
  * Connect the current user to the internet
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CUserConnect extends Command {
-	@Override
-	public boolean execute() {
-		User user = User.getGlobalUser();
+@Override
+public boolean execute() {
+	User user = User.getGlobalUser();
 
-		// Connect if offline
-		if (user.isLoggedIn() && !user.isOnline()) {
-			user.login();
-		}
-
-		return true;
+	// Connect if offline
+	if (user.isLoggedIn() && !user.isOnline()) {
+		user.login();
 	}
 
-	@Override
-	public boolean undo() {
-		// Cannot be undone
-		return false;
-	}
+	return true;
+}
+
+@Override
+public boolean undo() {
+	// Cannot be undone
+	return false;
+}
 }

@@ -29,8 +29,8 @@
                   <li class="<%= printIfPage("index.jsp", "active", "") %>">
                     <a href="<%= link("index.jsp") %>">Home</a>
                   </li>
-                  <li class="<%= printIfPage("beta.jsp", "active", "") %>">
-                    <a href="<%= link("beta.jsp") %>">Beta Testing</a>
+                  <li class="<%= printIfPage("download.jsp", "active", "") %>">
+                    <a href="<%= link("download.jsp") %>">Download</a>
                   </li>
                   <li>
                     <a href="http://reddit.com/r/Voider">Community</a>

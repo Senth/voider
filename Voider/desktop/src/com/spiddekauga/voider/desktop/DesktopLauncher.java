@@ -9,7 +9,7 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**
  * Desktop launcher for Voider
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class DesktopLauncher {
 	/**

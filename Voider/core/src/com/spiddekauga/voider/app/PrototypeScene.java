@@ -8,39 +8,38 @@ import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Prototype scene. Mainly for testing new things before implementing them in the game.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PrototypeScene extends Scene {
-	/**
-	 * Default constructor
-	 */
-	public PrototypeScene() {
-		super(new PrototypeGui());
+/**
+ * Default constructor
+ */
+public PrototypeScene() {
+	super(new PrototypeGui());
+}
+
+@Override
+public boolean onKeyDown(int keycode) {
+	if (KeyHelper.isBackPressed(keycode)) {
+		setOutcome(Outcomes.NOT_APPLICAPLE);
+		return true;
+	} else if (keycode == Input.Keys.F5) {
+		getGui().dispose();
+		getGui().initGui();
+		return false;
 	}
 
-	@Override
-	protected void loadResources() {
-		super.loadResources();
-		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
-	}
+	return super.onKeyDown(keycode);
+}
 
-	@Override
-	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-		super.onActivate(outcome, message, loadingOutcome);
-	}
+@Override
+protected void loadResources() {
+	super.loadResources();
+	ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
+}
 
-	@Override
-	public boolean onKeyDown(int keycode) {
-		if (KeyHelper.isBackPressed(keycode)) {
-			setOutcome(Outcomes.NOT_APPLICAPLE);
-			return true;
-		} else if (keycode == Input.Keys.F5) {
-			getGui().dispose();
-			getGui().initGui();
-			return false;
-		}
-
-		return super.onKeyDown(keycode);
-	}
+@Override
+protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onActivate(outcome, message, loadingOutcome);
+}
 
 }

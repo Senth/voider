@@ -1,9 +1,5 @@
 package com.spiddekauga.voider.game;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -36,55 +32,172 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 
 /**
  * A path that enemies and maybe something else can follow
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender,
 		IResourceSelectable, KryoPostRead {
-	/**
-	 * Default constructor, sets the unique id of the path
-	 */
-	public Path() {
-		mUniqueId = UUID.randomUUID();
+/** Initial color */
+private static final Color INITAL_COLOR = new Color(0, 0, 0, 0);
+/** Path draw color */
+private static final Color DRAW_COLOR = new Color(INITAL_COLOR);
+/** Minimum distance between chain corners, less than this will assert the program */
+private final static float CHAIN_CORNER_DISTANCE_MIN = 0.005f * 0.005f;
+/** Bounding box of the path */
+private BoundingBox mBoundingBox = new BoundingBox();
+/** If the resource is being moved */
+private boolean mIsBeingMoved = false;
+/** Path vertices for drawing in editor */
+private ArrayList<Vector2> mVertices = null;
+/** If this path is selected */
+private boolean mSelected = false;
+/** All path nodes */
+@Tag(17)
+private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();/**
+ * This actually moves the position
+ */
+@Override
+public void setPosition(Vector2 position) {
+	Vector2 diff = getPosition();
+
+	diff.sub(position);
+
+	// Move all corners
+	for (Vector2 corner : mCorners) {
+		corner.sub(diff);
 	}
 
-	@Override
-	public RenderOrders getRenderOrder() {
-		return RenderOrders.ENEMY_PATH;
+	if (mWorld != null) {
+		resetBodyCorners();
+		updateVerticesBodyFixtures();
 	}
 
-	@Override
-	public void addCorners(java.util.List<Vector2> corners) {
-		for (Vector2 corner : corners) {
-			addCorner(corner);
+	updateEnemyPositions();
+
+	updateBoundingBox();
+}
+/** Corner bodies, for picking */
+private ArrayList<Body> mBodyCorners = new ArrayList<Body>();/**
+ * Calculates the center position of all corners. This is calculated everytime this method is
+ * called.
+ * @return center position of all corner. Don't forget to run Pools.free(position) this return value
+ */
+@Override
+public Vector2 getPosition() {
+	Vector2 center = new Vector2();
+
+	for (Vector2 corner : mCorners) {
+		center.add(corner);
+	}
+
+	if (!mCorners.isEmpty()) {
+		center.scl(1f / mCorners.size());
+	}
+
+	return center;
+}
+/**
+ * What type of path type the enemy uses, only applicable if movement type is set to path
+ */
+@Tag(18)
+private PathTypes mPathType = PathTypes.BACK_AND_FORTH;
+/** World the path is bound to */
+private World mWorld = null;@Override
+public BoundingBox getBoundingBox() {
+	return mBoundingBox;
+}
+/** Body of the path */
+private Body mBody = null;@Override
+public float getBoundingRadius() {
+	// Calculate the bounding radius
+	float maxLengthSq = Float.MIN_VALUE;
+	Vector2 diffVector = new Vector2();
+	Vector2 center = getPosition();
+
+	for (Vector2 corner : mCorners) {
+		diffVector.set(center).sub(corner);
+		float lengthSq = diffVector.len2();
+
+		if (lengthSq > maxLengthSq) {
+			maxLengthSq = lengthSq;
 		}
 	}
 
-	@Override
-	public void addCorners(Vector2[] corners) {
-		for (Vector2 corner : corners) {
-			addCorner(corner);
+	float maxLength = 0;
+	if (maxLengthSq > 0) {
+		maxLength = (float) Math.sqrt(maxLengthSq);
+	}
+
+	return maxLength;
+}
+/** Enemies bound to this path */
+@Tag(19)
+private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
+
+/**
+ * Default constructor, sets the unique id of the path
+ */
+public Path() {
+	mUniqueId = UUID.randomUUID();
+}
+
+@Override
+public RenderOrders getRenderOrder() {
+	return RenderOrders.ENEMY_PATH;
+}
+
+@Override
+public void addCorners(Vector2[] corners) {
+	for (Vector2 corner : corners) {
+		addCorner(corner);
+	}
+}
+
+@Override
+public void addCorners(java.util.List<Vector2> corners) {
+	for (Vector2 corner : corners) {
+		addCorner(corner);
+	}
+}
+
+@Override
+public void addCorner(Vector2 corner) {
+	addCorner(corner, mCorners.size());
+}
+
+@Override
+public void addCorner(Vector2 corner, int index) {
+	mCorners.add(index, new Vector2(corner));
+
+	if (mWorld != null) {
+		updateVerticesBodyFixtures();
+
+		if (mSelected) {
+			createBodyCorner(corner, index);
 		}
 	}
 
-	@Override
-	public void addCorner(Vector2 corner) {
-		addCorner(corner, mCorners.size());
+	if (index == 0) {
+		updateEnemyPositions();
 	}
 
-	@Override
-	public void addCorner(Vector2 corner, int index) {
-		mCorners.add(index, new Vector2(corner));
+	updateBoundingBox();
+}
 
-		if (mWorld != null) {
-			updateVerticesBodyFixtures();
+@Override
+public Vector2 removeCorner(int index) {
+	Vector2 removedCorner = null;
 
-			if (mSelected) {
-				createBodyCorner(corner, index);
-			}
-		}
+	if (index >= 0 && index < mCorners.size()) {
+		removedCorner = mCorners.remove(index);
+		destroyBodyCorners(index);
+
+		updateVerticesBodyFixtures();
 
 		if (index == 0) {
 			updateEnemyPositions();
@@ -93,599 +206,475 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		updateBoundingBox();
 	}
 
-	/**
-	 * Updates the path's vertices, body/fixtures
-	 */
-	private void updateVerticesBodyFixtures() {
-		if (mWorld != null) {
-			createVertices();
-			destroyBodyFixture();
-			createFixture();
-		}
-	}
+	return removedCorner;
+}
 
-	/**
-	 * This actually moves the position
-	 */
-	@Override
-	public void setPosition(Vector2 position) {
-		Vector2 diff = getPosition();
-
-		diff.sub(position);
-
-		// Move all corners
-		for (Vector2 corner : mCorners) {
-			corner.sub(diff);
-		}
-
-		if (mWorld != null) {
-			resetBodyCorners();
-			updateVerticesBodyFixtures();
-		}
-
-		updateEnemyPositions();
-
-		updateBoundingBox();
-	}
-
-	/**
-	 * Calculates the center position of all corners. This is calculated everytime this
-	 * method is called.
-	 * @return center position of all corner. Don't forget to run Pools.free(position)
-	 *         this return value
-	 */
-	@Override
-	public Vector2 getPosition() {
-		Vector2 center = new Vector2();
-
-		for (Vector2 corner : mCorners) {
-			center.add(corner);
-		}
-
-		if (!mCorners.isEmpty()) {
-			center.scl(1f / mCorners.size());
-		}
-
-		return center;
-	}
-
-	/**
-	 * Update the bounding box
-	 */
-	private void updateBoundingBox() {
-		mBoundingBox = Geometry.getBoundingBox(mCorners);
-	}
-
-	@Override
-	public BoundingBox getBoundingBox() {
-		return mBoundingBox;
-	}
-
-	@Override
-	public float getBoundingRadius() {
-		// Calculate the bounding radius
-		float maxLengthSq = Float.MIN_VALUE;
-		Vector2 diffVector = new Vector2();
-		Vector2 center = getPosition();
-
-		for (Vector2 corner : mCorners) {
-			diffVector.set(center).sub(corner);
-			float lengthSq = diffVector.len2();
-
-			if (lengthSq > maxLengthSq) {
-				maxLengthSq = lengthSq;
-			}
-		}
-
-		float maxLength = 0;
-		if (maxLengthSq > 0) {
-			maxLength = (float) Math.sqrt(maxLengthSq);
-		}
-
-		return maxLength;
-	}
-
-	@Override
-	public Vector2 removeCorner(int index) {
-		Vector2 removedCorner = null;
-
-		if (index >= 0 && index < mCorners.size()) {
-			removedCorner = mCorners.remove(index);
-			destroyBodyCorners(index);
-
-			updateVerticesBodyFixtures();
-
-			if (index == 0) {
-				updateEnemyPositions();
-			}
-
-			updateBoundingBox();
-		}
-
-		return removedCorner;
-	}
-
-	@Override
-	public void clearCorners() {
-		mCorners.clear();
-
-		destroyBodyCorners();
+@Override
+public void moveCorner(int index, Vector2 newPos) {
+	if (index >= 0 && index < mCorners.size()) {
+		mCorners.get(index).set(newPos);
+		resetBodyCorners();
 		updateVerticesBodyFixtures();
-	}
 
-	@Override
-	public void moveCorner(int index, Vector2 newPos) {
-		if (index >= 0 && index < mCorners.size()) {
-			mCorners.get(index).set(newPos);
-			resetBodyCorners();
-			updateVerticesBodyFixtures();
-
-			if (index == 0) {
-				updateEnemyPositions();
-			}
-		}
-
-		updateBoundingBox();
-	}
-
-	@Override
-	public int getCornerCount() {
-		return mCorners.size();
-	}
-
-	/**
-	 * Sets the world for the path, so that a body can be created. This function also sets
-	 * activates all body etc, so that it gets drawn.
-	 * @param world the world for the path, if null it will disable drawing
-	 */
-	public void setWorld(World world) {
-		mWorld = world;
-
-		if (mWorld != null) {
-			createBody();
-		}
-		// NULL: Dispose everything
-		else {
-			if (mBody != null) {
-				mBody.getWorld().destroyBody(mBody);
-				mBody = null;
-			}
+		if (index == 0) {
+			updateEnemyPositions();
 		}
 	}
 
-	@Override
-	public Vector2 getCornerPosition(int index) {
-		return mCorners.get(index);
-	}
+	updateBoundingBox();
+}
 
-	@Override
-	public List<Vector2> getCorners() {
-		return mCorners;
-	}
+@Override
+public int getCornerCount() {
+	return mCorners.size();
+}
 
-	/**
-	 * Sets how the enemy shall follow the path. Only applicable if the enemy movement is
-	 * set to follow a path.
-	 * @param pathType how shall the enemy follow the path
-	 */
-	public void setPathType(PathTypes pathType) {
-		mPathType = pathType;
-	}
+@Override
+public Vector2 getCornerPosition(int index) {
+	return mCorners.get(index);
+}
 
-	/**
-	 * @return how the enemy is following a path. Only applicable if the enemy movement is
-	 *         set to follow a path.
-	 */
-	public PathTypes getPathType() {
-		return mPathType;
-	}
-
-	@Override
-	public void createBody() {
-		if (mWorld != null) {
-			// Destroy old body
-			if (mBody != null) {
-				mBody.getWorld().destroyBody(mBody);
-			}
-
-			mBody = mWorld.createBody(new BodyDef());
-			mBody.setUserData(this);
-
-			updateVerticesBodyFixtures();
+/**
+ * Checks what index the specified position has.
+ * @param position the position of a corner
+ * @return corner index if a corner was found at position, -1 if none was found.
+ */
+@Override
+public int getCornerIndex(Vector2 position) {
+	for (int i = 0; i < mCorners.size(); ++i) {
+		if (mCorners.get(i).equals(position)) {
+			return i;
 		}
 	}
 
-	@Override
-	public void destroyBody() {
-		if (mBody != null) {
-			mBody.getWorld().destroyBody(mBody);
-			mBody = null;
+	return -1;
+}
 
-			destroyVertices();
-		}
+@Override
+public List<Vector2> getCorners() {
+	return mCorners;
+}
+
+/**
+ * Creates all the body corners
+ */
+@Override
+public void createBodyCorners() {
+	if (!mBodyCorners.isEmpty()) {
+		Gdx.app.error("Path", "Shall only create body corners if empty!");
 	}
 
-	@Override
-	public boolean hasBody() {
-		return mBody != null;
+	for (Vector2 corner : mCorners) {
+		createBodyCorner(corner);
 	}
+}
 
-	/**
-	 * Checks what index the specified position has.
-	 * @param position the position of a corner
-	 * @return corner index if a corner was found at position, -1 if none was found.
-	 */
-	@Override
-	public int getCornerIndex(Vector2 position) {
-		for (int i = 0; i < mCorners.size(); ++i) {
-			if (mCorners.get(i).equals(position)) {
-				return i;
-			}
-		}
-
-		return -1;
+/**
+ * Destroys all body corners
+ */
+@Override
+public void destroyBodyCorners() {
+	while (!mBodyCorners.isEmpty()) {
+		destroyBodyCorners(0);
 	}
+}
 
-	@Override
-	public void dispose() {
-		if (mBody != null) {
-			destroyBody();
-			destroyBodyCorners();
+@Override
+public void clearCorners() {
+	mCorners.clear();
+
+	destroyBodyCorners();
+	updateVerticesBodyFixtures();
+}
+
+/**
+ * Creates a new body corner at the back
+ * @param position corner position to create the body in
+ */
+private void createBodyCorner(Vector2 position) {
+	createBodyCorner(position, mBodyCorners.size());
+}@Override
+public void setSelected(boolean selected) {
+	mSelected = selected;
+}
+
+/**
+ * Destroys the specified body corner and removes it from the list
+ * @param index the body corner to destroy
+ */
+private void destroyBodyCorners(int index) {
+	if (index >= 0 && index < mBodyCorners.size()) {
+		Body removedBody = mBodyCorners.remove(index);
+
+		removedBody.getWorld().destroyBody(removedBody);
+	}
+}@Override
+public boolean isSelected() {
+	return mSelected;
+}
+
+/**
+ * Updates the path's vertices, body/fixtures
+ */
+private void updateVerticesBodyFixtures() {
+	if (mWorld != null) {
+		createVertices();
+		destroyBodyFixture();
+		createFixture();
+	}
+}
+
+/**
+ * Creates a new body corner in the specified position
+ * @param position corner position to create the body in
+ * @param index the index to create the corner in
+ */
+private void createBodyCorner(Vector2 position, int index) {
+	Body cornerBody = mWorld.createBody(new BodyDef());
+	cornerBody.setTransform(position, 0);
+	cornerBody.createFixture(SceneSwitcher.getPickingFixtureDef());
+	HitWrapper hitWrapper = new HitWrapper(this);
+	hitWrapper.data = "picking";
+	cornerBody.setUserData(hitWrapper);
+
+	mBodyCorners.add(index, cornerBody);
+}
+
+/**
+ * Updates the enemies position to the first body corner's position
+ */
+private void updateEnemyPositions() {
+	if (mCorners.size() > 0) {
+		Vector2 firstCorner = mCorners.get(0);
+		for (EnemyActor enemy : mEnemies) {
+			enemy.setPosition(firstCorner);
 		}
+	}
+}
+
+/**
+ * Update the bounding box
+ */
+private void updateBoundingBox() {
+	mBoundingBox = Geometry.getBoundingBox(mCorners);
+}
+
+/**
+ * Recreates the path vertices for drawing
+ */
+private void createVertices() {
+	// Dispose of old path
+	if (mVertices != null) {
 		destroyVertices();
 	}
 
-	/**
-	 * Creates all the body corners
-	 */
-	@Override
-	public void createBodyCorners() {
-		if (!mBodyCorners.isEmpty()) {
-			Gdx.app.error("Path", "Shall only create body corners if empty!");
-		}
+	if (mCorners.size() >= 2) {
+		mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
+	} else if (mCorners.size() >= 1) {
+		ArrayList<Vector2> corners = new ArrayList<>();
+		corners.addAll(mCorners);
+		Vector2 tempCorner = new Vector2();
+		tempCorner.set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);
+		corners.add(tempCorner);
+		mVertices = Geometry.createLinePolygon(corners, Config.Editor.Level.Path.WIDTH);
+		corners = null;
+	}
+}
 
-		for (Vector2 corner : mCorners) {
-			createBodyCorner(corner);
+/**
+ * Removes existing body fixture and adds the current fixture
+ */
+private void destroyBodyFixture() {
+	if (mBody != null) {
+		Array<Fixture> originalList = mBody.getFixtureList();
+		Array<Fixture> fixtures = new Array<>(originalList);
+		for (Fixture fixture : fixtures) {
+			mBody.destroyFixture(fixture);
+		}
+	}
+}
+
+/**
+ * Creates the fixtures for the path
+ */
+private void createFixture() {
+	// Assertion test (to skip crash)
+	if (mCorners.size() >= 2) {
+		Vector2 diff = new Vector2();
+		for (int i = 0; i < mCorners.size() - 1; ++i) {
+			diff.set(mCorners.get(i)).sub(mCorners.get(i + 1));
+			if (diff.len2() <= CHAIN_CORNER_DISTANCE_MIN) {
+				return;
+			}
 		}
 	}
 
-	/**
-	 * Destroys all body corners
-	 */
-	@Override
-	public void destroyBodyCorners() {
-		while (!mBodyCorners.isEmpty()) {
-			destroyBodyCorners(0);
-		}
+	if (mBody == null || mWorld == null || mVertices == null) {
+		return;
 	}
 
-	@Override
-	public void setSelected(boolean selected) {
-		mSelected = selected;
-	}
 
-	@Override
-	public boolean isSelected() {
-		return mSelected;
-	}
+	// Temporary vertices for creating polygon shape
+	Vector2[] triangleVertices = Collections.fillNew(new Vector2[3], Vector2.class);
 
-	@Override
-	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		if (DRAW_COLOR.equals(INITAL_COLOR)) {
-			Color color = SkinNames.getResource(SkinNames.GeneralVars.PATH_COLOR);
-			DRAW_COLOR.set(color);
+	FixtureDef fixtureDef = new FixtureDef();
+	fixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
+	fixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
+
+	// Create (triangle) polygon shapes and fixture defs
+	for (int triangle = 0; triangle < mVertices.size() - 2; triangle += 3) {
+		// Copy values so that we have an array instead
+		for (int i = 0; i < 3; ++i) {
+			triangleVertices[i].set(mVertices.get(triangle + i));
 		}
 
-		if (mVertices != null) {
-			RenderOrders.offsetZValueEditor(shapeRenderer, this);
+		PolygonShape polygonShape = new PolygonShape();
+		polygonShape.set(triangleVertices);
+		fixtureDef.shape = polygonShape;
 
-			shapeRenderer.setColor(DRAW_COLOR);
+		// Create fixtures
+		mBody.createFixture(fixtureDef);
+
+		// Dispose
+		polygonShape.dispose();
+	}
+}
+
+/**
+ * Destroys all the vertices
+ */
+private void destroyVertices() {
+	if (mVertices != null) {
+		mVertices = null;
+	}
+}
+
+/**
+ * Sets the world for the path, so that a body can be created. This function also sets activates all
+ * body etc, so that it gets drawn.
+ * @param world the world for the path, if null it will disable drawing
+ */
+public void setWorld(World world) {
+	mWorld = world;
+
+	if (mWorld != null) {
+		createBody();
+	}
+	// NULL: Dispose everything
+	else {
+		if (mBody != null) {
+			mBody.getWorld().destroyBody(mBody);
+			mBody = null;
+		}
+	}
+}
+
+@Override
+public void createBody() {
+	if (mWorld != null) {
+		// Destroy old body
+		if (mBody != null) {
+			mBody.getWorld().destroyBody(mBody);
+		}
+
+		mBody = mWorld.createBody(new BodyDef());
+		mBody.setUserData(this);
+
+		updateVerticesBodyFixtures();
+	}
+}
+
+@Override
+public void destroyBody() {
+	if (mBody != null) {
+		mBody.getWorld().destroyBody(mBody);
+		mBody = null;
+
+		destroyVertices();
+	}
+}/**
+ * Resets the position of all body corners
+ */
+private void resetBodyCorners() {
+	for (int i = 0; i < mBodyCorners.size(); ++i) {
+		Body body = mBodyCorners.get(i);
+		body.setTransform(mCorners.get(i), 0);
+	}
+}
+
+@Override
+public boolean hasBody() {
+	return mBody != null;
+}
+
+/**
+ * @return how the enemy is following a path. Only applicable if the enemy movement is set to follow
+ * a path.
+ */
+public PathTypes getPathType() {
+	return mPathType;
+}
+
+/**
+ * Sets how the enemy shall follow the path. Only applicable if the enemy movement is set to follow
+ * a path.
+ * @param pathType how shall the enemy follow the path
+ */
+public void setPathType(PathTypes pathType) {
+	mPathType = pathType;
+}
+
+@Override
+public void dispose() {
+	if (mBody != null) {
+		destroyBody();
+		destroyBodyCorners();
+	}
+	destroyVertices();
+}
+
+@Override
+public void renderEditor(ShapeRendererEx shapeRenderer) {
+	if (DRAW_COLOR.equals(INITAL_COLOR)) {
+		Color color = SkinNames.getResource(SkinNames.GeneralVars.PATH_COLOR);
+		DRAW_COLOR.set(color);
+	}
+
+	if (mVertices != null) {
+		RenderOrders.offsetZValueEditor(shapeRenderer, this);
+
+		shapeRenderer.setColor(DRAW_COLOR);
+		shapeRenderer.triangles(mVertices);
+
+		if (mSelected) {
+			shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
+			shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.SELECTED_COLOR_UTILITY));
 			shapeRenderer.triangles(mVertices);
 
-			if (mSelected) {
+
+			// Render corners
+			if (!mBodyCorners.isEmpty()) {
+				shapeRenderer.push(ShapeType.Line);
 				shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
-				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.SELECTED_COLOR_UTILITY));
-				shapeRenderer.triangles(mVertices);
 
-
-				// Render corners
-				if (!mBodyCorners.isEmpty()) {
-					shapeRenderer.push(ShapeType.Line);
-					shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
-
-					shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
-					for (Vector2 corner : mCorners) {
-						shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, corner);
-					}
-
-					shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
-					shapeRenderer.pop();
+				shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
+				for (Vector2 corner : mCorners) {
+					shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, corner);
 				}
+
 				shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
+				shapeRenderer.pop();
 			}
-
-			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
+			shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 		}
+
+		RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 	}
+}
 
-	/**
-	 * Adds an enemy to the path
-	 * @param enemy enemy that uses this path
-	 */
-	public void addEnemy(EnemyActor enemy) {
-		mEnemies.add(enemy);
-	}
+/**
+ * Adds an enemy to the path
+ * @param enemy enemy that uses this path
+ */
+public void addEnemy(EnemyActor enemy) {
+	mEnemies.add(enemy);
+}@Override
+public void setIsBeingMoved(boolean isBeingMoved) {
+	mIsBeingMoved = isBeingMoved;
+}
 
-	/**
-	 * Removes an enemy from the path
-	 * @param enemy enemy that uses this path
-	 */
-	public void removeEnemy(EnemyActor enemy) {
-		mEnemies.remove(enemy);
-	}
+/**
+ * Removes an enemy from the path
+ * @param enemy enemy that uses this path
+ */
+public void removeEnemy(EnemyActor enemy) {
+	mEnemies.remove(enemy);
+}@Override
+public boolean isBeingMoved() {
+	return mIsBeingMoved;
+}
 
-	/**
-	 * @return all enemies that uses this path
-	 */
-	public ArrayList<EnemyActor> getEnemies() {
-		return mEnemies;
-	}
+/**
+ * @return all enemies that uses this path
+ */
+public ArrayList<EnemyActor> getEnemies() {
+	return mEnemies;
+}
 
-	/**
-	 * Different path types, i.e. how the enemy shall follow a path (if it is set to
-	 * follow a path)
-	 */
-	public enum PathTypes {
-		// !!!NEVER EVER remove or change order of these!!!
-		/** Goes back and forth on the path */
-		BACK_AND_FORTH,
-		/**
-		 * Once the enemy comes to the last node in the path it walks towards the first
-		 * node and goes around in a loop
-		 */
-		LOOP,
-		/**
-		 * Follows the path once and then continues in its last direction after it has
-		 * come to the last node
-		 */
-		ONCE
-	}
-
-	/**
-	 * Creates the fixtures for the path
-	 */
-	private void createFixture() {
-		// Assertion test (to skip crash)
-		if (mCorners.size() >= 2) {
-			Vector2 diff = new Vector2();
-			for (int i = 0; i < mCorners.size() - 1; ++i) {
-				diff.set(mCorners.get(i)).sub(mCorners.get(i + 1));
-				if (diff.len2() <= CHAIN_CORNER_DISTANCE_MIN) {
-					return;
-				}
-			}
-		}
-
-		if (mBody == null || mWorld == null || mVertices == null) {
-			return;
-		}
-
-
-		// Temporary vertices for creating polygon shape
-		Vector2[] triangleVertices = Collections.fillNew(new Vector2[3], Vector2.class);
-
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
-		fixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
-
-		// Create (triangle) polygon shapes and fixture defs
-		for (int triangle = 0; triangle < mVertices.size() - 2; triangle += 3) {
-			// Copy values so that we have an array instead
-			for (int i = 0; i < 3; ++i) {
-				triangleVertices[i].set(mVertices.get(triangle + i));
-			}
-
-			PolygonShape polygonShape = new PolygonShape();
-			polygonShape.set(triangleVertices);
-			fixtureDef.shape = polygonShape;
-
-			// Create fixtures
-			mBody.createFixture(fixtureDef);
-
-			// Dispose
-			polygonShape.dispose();
-		}
-	}
-
-	/**
-	 * Removes existing body fixture and adds the current fixture
-	 */
-	private void destroyBodyFixture() {
-		if (mBody != null) {
-			Array<Fixture> originalList = mBody.getFixtureList();
-			Array<Fixture> fixtures = new Array<>(originalList);
-			for (Fixture fixture : fixtures) {
-				mBody.destroyFixture(fixture);
-			}
-		}
-	}
-
-	/**
-	 * Creates a new body corner at the back
-	 * @param position corner position to create the body in
-	 */
-	private void createBodyCorner(Vector2 position) {
-		createBodyCorner(position, mBodyCorners.size());
-	}
-
-	/**
-	 * Creates a new body corner in the specified position
-	 * @param position corner position to create the body in
-	 * @param index the index to create the corner in
-	 */
-	private void createBodyCorner(Vector2 position, int index) {
-		Body cornerBody = mWorld.createBody(new BodyDef());
-		cornerBody.setTransform(position, 0);
-		cornerBody.createFixture(SceneSwitcher.getPickingFixtureDef());
-		HitWrapper hitWrapper = new HitWrapper(this);
-		hitWrapper.data = "picking";
-		cornerBody.setUserData(hitWrapper);
-
-		mBodyCorners.add(index, cornerBody);
-	}
-
-	/**
-	 * Destroys the specified body corner and removes it from the list
-	 * @param index the body corner to destroy
-	 */
-	private void destroyBodyCorners(int index) {
-		if (index >= 0 && index < mBodyCorners.size()) {
-			Body removedBody = mBodyCorners.remove(index);
-
-			removedBody.getWorld().destroyBody(removedBody);
-		}
-	}
-
-	/**
-	 * Resets the position of all body corners
-	 */
-	private void resetBodyCorners() {
-		for (int i = 0; i < mBodyCorners.size(); ++i) {
-			Body body = mBodyCorners.get(i);
-			body.setTransform(mCorners.get(i), 0);
-		}
-	}
-
-	/**
-	 * Updates the enemies position to the first body corner's position
-	 */
-	private void updateEnemyPositions() {
-		if (mCorners.size() > 0) {
-			Vector2 firstCorner = mCorners.get(0);
-			for (EnemyActor enemy : mEnemies) {
-				enemy.setPosition(firstCorner);
-			}
-		}
-	}
-
-	/**
-	 * Recreates the path vertices for drawing
-	 */
-	private void createVertices() {
-		// Dispose of old path
-		if (mVertices != null) {
-			destroyVertices();
-		}
-
-		if (mCorners.size() >= 2) {
-			mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
-		} else if (mCorners.size() >= 1) {
-			ArrayList<Vector2> corners = new ArrayList<>();
-			corners.addAll(mCorners);
-			Vector2 tempCorner = new Vector2();
-			tempCorner.set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);
-			corners.add(tempCorner);
-			mVertices = Geometry.createLinePolygon(corners, Config.Editor.Level.Path.WIDTH);
-			corners = null;
-		}
-	}
-
-	/**
-	 * Destroys all the vertices
-	 */
-	private void destroyVertices() {
-		if (mVertices != null) {
-			mVertices = null;
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((mCorners == null) ? 0 : mCorners.hashCode());
-		result = prime * result + ((mEnemies == null) ? 0 : mEnemies.hashCode());
-		result = prime * result + ((mPathType == null) ? 0 : mPathType.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Path other = (Path) obj;
-		if (mCorners == null) {
-			if (other.mCorners != null) {
-				return false;
-			}
-		} else if (!mCorners.equals(other.mCorners)) {
-			return false;
-		}
-		if (mEnemies == null) {
-			if (other.mEnemies != null) {
-				return false;
-			}
-		} else if (!mEnemies.equals(other.mEnemies)) {
-			return false;
-		}
-		if (mPathType != other.mPathType) {
-			return false;
-		}
+@Override
+public boolean equals(Object obj) {
+	if (this == obj) {
 		return true;
 	}
-
-	@Override
-	public void setIsBeingMoved(boolean isBeingMoved) {
-		mIsBeingMoved = isBeingMoved;
+	if (!super.equals(obj)) {
+		return false;
 	}
-
-	@Override
-	public boolean isBeingMoved() {
-		return mIsBeingMoved;
+	if (getClass() != obj.getClass()) {
+		return false;
 	}
-
-	@Override
-	public void postRead() {
-		super.postRead();
-
-		updateBoundingBox();
+	Path other = (Path) obj;
+	if (mCorners == null) {
+		if (other.mCorners != null) {
+			return false;
+		}
+	} else if (!mCorners.equals(other.mCorners)) {
+		return false;
 	}
+	if (mEnemies == null) {
+		if (other.mEnemies != null) {
+			return false;
+		}
+	} else if (!mEnemies.equals(other.mEnemies)) {
+		return false;
+	}
+	if (mPathType != other.mPathType) {
+		return false;
+	}
+	return true;
+}
 
-	/** Bounding box of the path */
-	private BoundingBox mBoundingBox = new BoundingBox();
-	/** If the resource is being moved */
-	private boolean mIsBeingMoved = false;
-	/** Path vertices for drawing in editor */
-	private ArrayList<Vector2> mVertices = null;
-	/** If this path is selected */
-	private boolean mSelected = false;
-	/** All path nodes */
-	@Tag(17) private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
-	/** Corner bodies, for picking */
-	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
+@Override
+public void postRead() {
+	super.postRead();
+
+	updateBoundingBox();
+}
+
+@Override
+public int hashCode() {
+	final int prime = 31;
+	int result = super.hashCode();
+	result = prime * result + ((mCorners == null) ? 0 : mCorners.hashCode());
+	result = prime * result + ((mEnemies == null) ? 0 : mEnemies.hashCode());
+	result = prime * result + ((mPathType == null) ? 0 : mPathType.hashCode());
+	return result;
+}
+/**
+ * Different path types, i.e. how the enemy shall follow a path (if it is set to follow a path)
+ */
+public enum PathTypes {
+	// !!!NEVER EVER remove or change order of these!!!
+	/** Goes back and forth on the path */
+	BACK_AND_FORTH,
 	/**
-	 * What type of path type the enemy uses, only applicable if movement type is set to
-	 * path
+	 * Once the enemy comes to the last node in the path it walks towards the first node and goes
+	 * around in a loop
 	 */
-	@Tag(18) private PathTypes mPathType = PathTypes.BACK_AND_FORTH;
-	/** World the path is bound to */
-	private World mWorld = null;
-	/** Body of the path */
-	private Body mBody = null;
-	/** Enemies bound to this path */
-	@Tag(19) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
+	LOOP,
+	/**
+	 * Follows the path once and then continues in its last direction after it has come to the last
+	 * node
+	 */
+	ONCE
+}
 
-	/** Initial color */
-	private static final Color INITAL_COLOR = new Color(0, 0, 0, 0);
-	/** Path draw color */
-	private static final Color DRAW_COLOR = new Color(INITAL_COLOR);
-	/** Minimum distance between chain corners, less than this will assert the program */
-	private final static float CHAIN_CORNER_DISTANCE_MIN = 0.005f * 0.005f;
+
+
+
+
+
+
+
+
+
 }

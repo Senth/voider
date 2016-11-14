@@ -57,19 +57,19 @@ task setAppengineDev(dependsOn: ['appengineExplodeApp']) << {
     updateBackupCronUrl('voider-dev')
 }
 
-task setAppengineNightly(dependsOn: ['build']) << {
+task setAppengineNightly(dependsOn: ['appengineExplodeApp']) << {
     prepareAppengine()
     updateApplicationId('voider-nightly')
     updateBackupCronUrl('voider-nightly')
 }
 
-task setAppengineBeta(dependsOn: ['build']) << {
+task setAppengineBeta(dependsOn: ['appengineExplodeApp']) << {
     prepareAppengine()
     updateApplicationId('voider-beta')
     updateBackupCronUrl('voider-beta')
 }
 
-task setAppengineRelease(dependsOn: ['build']) << {
+task setAppengineRelease(dependsOn: ['appengineExplodeApp']) << {
     prepareAppengine()
     updateApplicationId('voider-thegame')
     updateBackupCronUrl('voider-thegame')

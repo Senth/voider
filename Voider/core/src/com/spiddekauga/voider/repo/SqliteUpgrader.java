@@ -1,140 +1,49 @@
 package com.spiddekauga.voider.repo;
 
+import com.badlogic.gdx.sql.Database;
+import com.badlogic.gdx.sql.DatabaseCursor;
+import com.badlogic.gdx.sql.SQLiteGdxException;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.badlogic.gdx.sql.Database;
-import com.badlogic.gdx.sql.DatabaseCursor;
-import com.badlogic.gdx.sql.SQLiteGdxException;
-
 /**
  * Upgrades or clears the SQLite database to the latest version
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SqliteUpgrader {
-	/**
-	 * @param database the database to do upgrading on
-	 */
-	SqliteUpgrader(Database database) {
-		mDatabase = database;
+/** Version table column */
+private static final int VERSION__VERSION = 0;
+/** Version version column */
+private static final int VERSION__TABLE_NAME = 1;
+/** DB version */
+private static final int DB_VERSION = 9;
+/** Create version table */
+private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
+/** Database to do the upgrading on */
+private Database mDatabase;
+/** If the database has been upgraded or deleted */
+private boolean mUpgradedOrDeleted = false;
+/** Tables that weren't found in the version table */
+private Set<String> mNotFoundTables = new HashSet<String>();
+/** Create table queries for all tables */
+private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 
-		fillTables();
-	}
+/**
+ * @param database the database to do upgrading on
+ */
+SqliteUpgrader(Database database) {
+	mDatabase = database;
 
-	/**
-	 * Initializes and upgrade the SQLite database to the latest version
-	 * @throws SQLiteGdxException thrown when an error occurs
-	 */
-	void initAndUpgrade() throws SQLiteGdxException {
-		if (!mUpgradedOrDeleted) {
-			// Create version table
-			mDatabase.execSQL(TABLE_VERSION_CREATE);
+	fillTables();
+}
 
-			createOrUpgradeTables();
-
-			mUpgradedOrDeleted = true;
-		}
-	}
-
-	/**
-	 * Clear all tables.
-	 * @throws SQLiteGdxException
-	 */
-	void clearTables() throws SQLiteGdxException {
-		if (!mUpgradedOrDeleted) {
-			for (String table : mNotFoundTables) {
-				mDatabase.execSQL("DELETE FROM " + table + ";");
-			}
-
-			mUpgradedOrDeleted = true;
-		}
-	}
-
-	/**
-	 * Checks for all tables in the database and either creates or updates them
-	 * @throws SQLiteGdxException
-	 */
-	private void createOrUpgradeTables() throws SQLiteGdxException {
-		DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM version");
-
-		while (cursor.next()) {
-			int version = cursor.getInt(VERSION__VERSION);
-			String tableName = cursor.getString(VERSION__TABLE_NAME);
-
-			if (version < DB_VERSION) {
-				upgradeTable(tableName, version);
-			}
-
-			mNotFoundTables.remove(tableName);
-		}
-
-		// Update version for all tables
-		mDatabase.execSQL("UPDATE version SET version=" + DB_VERSION + ";");
-
-		// Create tables that weren't found
-		createTables();
-	}
-
-	/**
-	 * Upgrade a table
-	 * @param table name of the table to upgrade
-	 * @param fromVersion the version to upgrade from
-	 * @throws SQLiteGdxException
-	 */
-	private void upgradeTable(String table, int fromVersion) throws SQLiteGdxException {
-		// Resource revision
-		if (table.equals("resource_revision")) {
-			// 2 — Added uploaded status
-			if (fromVersion < 2) {
-				mDatabase.execSQL("ALTER TABLE resource_revision ADD COLUMN uploaded INTEGER DEFAULT 0;");
-			}
-		}
-
-
-		// Level stat
-		if (table.equals("level_stat")) {
-			// 6 — Added comment to level stats
-			if (fromVersion < 6) {
-				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN comment TEXT DEFAULT '';");
-			}
-			// 9 - Added death count to level stats
-			if (fromVersion < 9) {
-				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN death_count INTEGER DEFAULT 0;");
-				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN deaths_to_sync INTEGER DEFAULT 0;");
-			}
-		}
-
-
-		// Analytics event
-		if (table.equals("analytics_event")) {
-			// 8 - Added column type
-			if (fromVersion < 8) {
-				mDatabase.execSQL("ALTER TABLE analytics_event ADD COLUMN type INTEGER");
-				mDatabase.execSQL("UPDATE analytics_event SET type=0 WHERE type IS NULL");
-			}
-		}
-	}
-
-	/**
-	 * Creates tables that weren't found
-	 * @throws SQLiteGdxException
-	 */
-	private void createTables() throws SQLiteGdxException {
-		for (String table : mNotFoundTables) {
-			mDatabase.execSQL(mCreateTableQueries.get(table));
-
-			// Add to version table
-			mDatabase.execSQL("INSERT INTO version VALUES (" + DB_VERSION + ", '" + table + "');");
-		}
-	}
-
-	/**
-	 * Fill tables variable
-	 */
-	private void fillTables() {
-		// @formatter:off
+/**
+ * Fill tables variable
+ */
+private void fillTables() {
+	// @formatter:off
 
 		// !!! DON'T add table 'version' to this list
 
@@ -219,31 +128,119 @@ class SqliteUpgrader {
 				+ "type INTEGER);");
 
 		// @formatter:on
+}
+
+/**
+ * @return get DB version
+ */
+static int getDbVersion() {
+	return DB_VERSION;
+}
+
+/**
+ * Initializes and upgrade the SQLite database to the latest version
+ * @throws SQLiteGdxException thrown when an error occurs
+ */
+void initAndUpgrade() throws SQLiteGdxException {
+	if (!mUpgradedOrDeleted) {
+		// Create version table
+		mDatabase.execSQL(TABLE_VERSION_CREATE);
+
+		createOrUpgradeTables();
+
+		mUpgradedOrDeleted = true;
+	}
+}
+
+/**
+ * Checks for all tables in the database and either creates or updates them
+ * @throws SQLiteGdxException
+ */
+private void createOrUpgradeTables() throws SQLiteGdxException {
+	DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM version");
+
+	while (cursor.next()) {
+		int version = cursor.getInt(VERSION__VERSION);
+		String tableName = cursor.getString(VERSION__TABLE_NAME);
+
+		if (version < DB_VERSION) {
+			upgradeTable(tableName, version);
+		}
+
+		mNotFoundTables.remove(tableName);
 	}
 
-	/**
-	 * @return get DB version
-	 */
-	static int getDbVersion() {
-		return DB_VERSION;
+	// Update version for all tables
+	mDatabase.execSQL("UPDATE version SET version=" + DB_VERSION + ";");
+
+	// Create tables that weren't found
+	createTables();
+}
+
+/**
+ * Upgrade a table
+ * @param table name of the table to upgrade
+ * @param fromVersion the version to upgrade from
+ * @throws SQLiteGdxException
+ */
+private void upgradeTable(String table, int fromVersion) throws SQLiteGdxException {
+	// Resource revision
+	if (table.equals("resource_revision")) {
+		// 2 — Added uploaded status
+		if (fromVersion < 2) {
+			mDatabase.execSQL("ALTER TABLE resource_revision ADD COLUMN uploaded INTEGER DEFAULT 0;");
+		}
 	}
 
-	/** Database to do the upgrading on */
-	private Database mDatabase;
 
-	/** Version table column */
-	private static final int VERSION__VERSION = 0;
-	/** Version version column */
-	private static final int VERSION__TABLE_NAME = 1;
+	// Level stat
+	if (table.equals("level_stat")) {
+		// 6 — Added comment to level stats
+		if (fromVersion < 6) {
+			mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN comment TEXT DEFAULT '';");
+		}
+		// 9 - Added death count to level stats
+		if (fromVersion < 9) {
+			mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN death_count INTEGER DEFAULT 0;");
+			mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN deaths_to_sync INTEGER DEFAULT 0;");
+		}
+	}
 
-	/** If the database has been upgraded or deleted */
-	private boolean mUpgradedOrDeleted = false;
-	/** Tables that weren't found in the version table */
-	private Set<String> mNotFoundTables = new HashSet<String>();
-	/** Create table queries for all tables */
-	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
-	/** DB version */
-	private static final int DB_VERSION = 9;
-	/** Create version table */
-	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
+
+	// Analytics event
+	if (table.equals("analytics_event")) {
+		// 8 - Added column type
+		if (fromVersion < 8) {
+			mDatabase.execSQL("ALTER TABLE analytics_event ADD COLUMN type INTEGER");
+			mDatabase.execSQL("UPDATE analytics_event SET type=0 WHERE type IS NULL");
+		}
+	}
+}
+
+/**
+ * Creates tables that weren't found
+ * @throws SQLiteGdxException
+ */
+private void createTables() throws SQLiteGdxException {
+	for (String table : mNotFoundTables) {
+		mDatabase.execSQL(mCreateTableQueries.get(table));
+
+		// Add to version table
+		mDatabase.execSQL("INSERT INTO version VALUES (" + DB_VERSION + ", '" + table + "');");
+	}
+}
+
+/**
+ * Clear all tables.
+ * @throws SQLiteGdxException
+ */
+void clearTables() throws SQLiteGdxException {
+	if (!mUpgradedOrDeleted) {
+		for (String table : mNotFoundTables) {
+			mDatabase.execSQL("DELETE FROM " + table + ";");
+		}
+
+		mUpgradedOrDeleted = true;
+	}
+}
 }

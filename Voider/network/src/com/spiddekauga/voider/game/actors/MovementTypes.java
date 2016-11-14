@@ -7,7 +7,7 @@ import com.spiddekauga.utils.ISearchStore;
 
 /**
  * Enumeration for all enemy movement types
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public enum MovementTypes implements ISearchStore, IIdStore {
 	// NEVER EVER remove or change the order of these!

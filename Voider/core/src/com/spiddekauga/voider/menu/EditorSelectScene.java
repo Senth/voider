@@ -8,47 +8,46 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Scene for selecting editor
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class EditorSelectScene extends MenuScene {
-	/**
-	 * Default constructor
-	 */
-	public EditorSelectScene() {
-		super(new EditorSelectGui());
-		getGui().setScene(this);
-	}
+/**
+ * Default constructor
+ */
+public EditorSelectScene() {
+	super(new EditorSelectGui());
+	getGui().setScene(this);
+}
 
-	/**
-	 * Go to level editor
-	 */
-	void gotoLevelEditor() {
-		SceneSwitcher.switchTo(new LevelEditor());
-	}
+@Override
+protected EditorSelectGui getGui() {
+	return (EditorSelectGui) super.getGui();
+}
 
-	/**
-	 * Go to enemy editor
-	 */
-	void gotoEnemyEditor() {
-		SceneSwitcher.switchTo(new EnemyEditor());
-	}
+/**
+ * Go to level editor
+ */
+void gotoLevelEditor() {
+	SceneSwitcher.switchTo(new LevelEditor());
+}
 
-	/**
-	 * Go to bullet editor
-	 */
-	void gotoBulletEditor() {
-		SceneSwitcher.switchTo(new BulletEditor());
-	}
+/**
+ * Go to enemy editor
+ */
+void gotoEnemyEditor() {
+	SceneSwitcher.switchTo(new EnemyEditor());
+}
 
-	/**
-	 * Go to ship editor
-	 */
-	void gotoShipEditor() {
-		SceneSwitcher.switchTo(new ShipEditor());
-	}
+/**
+ * Go to bullet editor
+ */
+void gotoBulletEditor() {
+	SceneSwitcher.switchTo(new BulletEditor());
+}
 
-	@Override
-	protected EditorSelectGui getGui() {
-		return (EditorSelectGui) super.getGui();
-	}
+/**
+ * Go to ship editor
+ */
+void gotoShipEditor() {
+	SceneSwitcher.switchTo(new ShipEditor());
+}
 }

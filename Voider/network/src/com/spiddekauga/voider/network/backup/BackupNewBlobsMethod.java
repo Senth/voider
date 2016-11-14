@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Backup new blobs
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BackupNewBlobsMethod implements IMethodEntity {
 	/** Date of last backup */

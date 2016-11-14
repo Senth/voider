@@ -11,7 +11,7 @@ import com.google.appengine.tools.pipeline.JobSetting;
 
 /**
  * Analytics server configuration
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AnalyticsConfig {
 	/** Number of shards for datastore inputs */

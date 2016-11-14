@@ -11,7 +11,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 
 /**
  * Cleanup pipelins that finished, or didn't finish correctly
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class Cleanup extends HttpServlet {

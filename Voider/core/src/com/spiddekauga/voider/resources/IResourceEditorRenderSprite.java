@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * A resource that contains sprites to be rendered, but only in an editor
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public interface IResourceEditorRenderSprite {
 	/**

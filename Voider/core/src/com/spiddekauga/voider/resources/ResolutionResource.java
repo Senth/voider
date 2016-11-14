@@ -7,7 +7,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 /**
  * Wrapper for when these resolutions should be loaded used depending on what the game's
  * current resolution is
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResolutionResource implements IInternalResource {
 	/**

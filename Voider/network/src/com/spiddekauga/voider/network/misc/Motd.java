@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Message of the Day
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class Motd implements IEntity {
 	/** When the message was created */

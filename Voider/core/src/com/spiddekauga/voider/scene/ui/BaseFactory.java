@@ -2,7 +2,7 @@ package com.spiddekauga.voider.scene.ui;
 
 /**
  * Base class for all UI factories
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 abstract class BaseFactory {
 	/**

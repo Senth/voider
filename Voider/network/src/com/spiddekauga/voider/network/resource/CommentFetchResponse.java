@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.stat.CommentEntity;
 
 /**
  * Returns comments for the specified level
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class CommentFetchResponse extends FetchResponse {
 	/** All level comments */

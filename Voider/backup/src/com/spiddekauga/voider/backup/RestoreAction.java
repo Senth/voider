@@ -20,7 +20,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Restore actions from the Internet
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class RestoreAction extends Action {
 

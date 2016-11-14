@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Contains all the versions
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class VersionContainer {
 	/**

@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Change account settings such as password
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AccountChangeMethod implements IMethodEntity {
 	/** Old password of the user, set as null to skip changing password */

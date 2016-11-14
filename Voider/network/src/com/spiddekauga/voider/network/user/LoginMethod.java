@@ -10,7 +10,7 @@ import com.spiddekauga.voider.version.Version;
 
 /**
  * Log in method. Can use either private key or password.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LoginMethod implements IMethodEntity {
 	@Override

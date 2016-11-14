@@ -54,7 +54,7 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 /**
  * Factory for creating UI objects, more specifically combined UI objects. This factory
  * class gets its default settings from general.json
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class UiFactory implements Disposable {
 	/** Create labels and text */

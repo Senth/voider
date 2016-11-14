@@ -106,7 +106,7 @@ import com.spiddekauga.voider.version.Version;
 /**
  * Pool for network Kryo instance. When creating a new instance Kryo registers all
  * necessary classes used in the Network.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class KryoNetPool {
 

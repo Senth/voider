@@ -23,7 +23,7 @@ import com.spiddekauga.utils.Strings;
 
 /**
  * Gateway for getting entities and sending an entity response
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class NetworkGateway {
 	/**

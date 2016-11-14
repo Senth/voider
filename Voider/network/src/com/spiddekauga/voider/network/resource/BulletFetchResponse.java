@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Information about bullets we fetched or search for
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BulletFetchResponse extends FetchResponse {
 	/** All bullets */

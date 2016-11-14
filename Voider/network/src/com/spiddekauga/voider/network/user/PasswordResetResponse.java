@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Response when trying to reset the password
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class PasswordResetResponse implements IEntity {
 	/** Response status */

@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for synchronizing stats
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class StatSyncMethod implements IMethodEntity {
 	/** Stats to sync */

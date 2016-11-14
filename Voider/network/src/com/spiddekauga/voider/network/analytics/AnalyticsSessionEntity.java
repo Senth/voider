@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Session analytics
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AnalyticsSessionEntity implements IEntity {
 	/** Session id */

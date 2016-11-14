@@ -2,7 +2,7 @@ package com.spiddekauga.voider.backup;
 
 /**
  * Main application for the Voider backup
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class Application {
 	/**

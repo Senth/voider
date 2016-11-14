@@ -1,10 +1,5 @@
 package com.spiddekauga.voider.repo.resource;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.ini4j.Ini;
-
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -18,10 +13,14 @@ import com.spiddekauga.utils.Path;
 import com.spiddekauga.voider.Config.File;
 import com.spiddekauga.voider.version.VersionContainer;
 
+import org.ini4j.Ini;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * All static resources. Name and a corresponding filename This includes: \li Textures \li
- * Music \li Sound
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ * All static resources. Name and a corresponding filename This includes: \li Textures \li Music \li
+ * Sound
  */
 @SuppressWarnings("javadoc")
 public enum InternalNames {
@@ -110,137 +109,131 @@ public enum InternalNames {
 	SOUND_ENEMY_EXLODES("enemy_explodes.mp3", Sound.class),
 	SOUND_SHIP_LOST("ship_lost.mp3", Sound.class),
 	SOUND_UI_BUTTON_HOVER("ui_button_hover.mp3", Sound.class),
-	SOUND_UI_BUTTON_CLICK("ui_button_click.mp3", Sound.class),
+	SOUND_UI_BUTTON_CLICK("ui_button_click.mp3", Sound.class),;
 
-	;
+/** Map for all resource paths */
+private static Map<Class<?>, String> mResourcePaths = null;
+private static String TEXTURE_PATH = "gfx/";
+private static String UI_PATH = "";
+private static String SHADER_PATH = "shaders/";
+private static String PARTICLE_PATH = "particles/";
+private static String SOUND_PATH = "sfx/";
+private static String MUSIC_PATH = "music/";
+private static String TEXT_PATH = "txt/";
+private static String FONT_PATH = "fonts/";
 
-	/**
-	 * Initializes the enum with a filename
-	 * @param filename the filename (not full path)
-	 * @param type the class type of resource
-	 */
-	private InternalNames(String filename, Class<?> type) {
-		this.mFilename = filename;
-		this.mType = type;
-	}
+static {
+	// -- Resource names --
+	if (mResourcePaths == null) {
+		mResourcePaths = new HashMap<Class<?>, String>();
 
-	/**
-	 * @return file path of this resource
-	 */
-	public String getFilePath() {
-		return getDirPath(mType) + mFilename;
-	}
+		if (File.USE_EXTERNAL_RESOURCES) {
+			String execDir = Path.getExecDir();
+			String dir = execDir + "internal_resources/";
 
-	/**
-	 * @return true if loaded
-	 */
-	public boolean isLoaded() {
-		return ResourceCacheFacade.isLoaded(this);
-	}
-
-	/**
-	 * @return stored type of the resource
-	 */
-	Class<?> getType() {
-		return mType;
-	}
-
-	/**
-	 * @return loading parameters
-	 */
-	AssetLoaderParameters<?> getParameters() {
-		if (mParameters instanceof IParameterGenerate) {
-			if (!isLoaded()) {
-				((IParameterGenerate) mParameters).generate();
-			}
-		}
-		return mParameters;
-	}
-
-	/** Optional parameters */
-	private AssetLoaderParameters<?> mParameters = null;
-	private final String mFilename;
-	private final Class<?> mType;
-
-
-	/**
-	 * Gets the fully qualified folder name the resource should be in
-	 * @param type the class type of the resource. This determines where to look
-	 * @return full path to the resource
-	 */
-	private static String getDirPath(Class<?> type) {
-		return mResourcePaths.get(type);
-	}
-
-	/** Map for all resource paths */
-	private static Map<Class<?>, String> mResourcePaths = null;
-
-	private static String TEXTURE_PATH = "gfx/";
-	private static String UI_PATH = "";
-	private static String SHADER_PATH = "shaders/";
-	private static String PARTICLE_PATH = "particles/";
-	private static String SOUND_PATH = "sfx/";
-	private static String MUSIC_PATH = "music/";
-	private static String TEXT_PATH = "txt/";
-	private static String FONT_PATH = "fonts/";
-
-
-	static {
-		// -- Resource names --
-		if (mResourcePaths == null) {
-			mResourcePaths = new HashMap<Class<?>, String>();
-
-			if (File.USE_EXTERNAL_RESOURCES) {
-				String execDir = Path.getExecDir();
-				String dir = execDir + "internal_resources/";
-
-				TEXTURE_PATH = dir + TEXTURE_PATH;
-				UI_PATH = dir + UI_PATH;
-				SHADER_PATH = dir + SHADER_PATH;
-				PARTICLE_PATH = dir + PARTICLE_PATH;
-				SOUND_PATH = dir + SOUND_PATH;
-				TEXT_PATH = dir + TEXT_PATH;
-				MUSIC_PATH = dir + MUSIC_PATH;
-				FONT_PATH = dir + FONT_PATH;
-			}
-
-
-			mResourcePaths.put(Texture.class, TEXTURE_PATH);
-			mResourcePaths.put(ShaderProgram.class, SHADER_PATH);
-			mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
-			mResourcePaths.put(Skin.class, UI_PATH);
-			mResourcePaths.put(TextureAtlas.class, "");
-			mResourcePaths.put(Sound.class, SOUND_PATH);
-			mResourcePaths.put(Ini.class, TEXT_PATH);
-			mResourcePaths.put(String.class, TEXT_PATH);
-			mResourcePaths.put(VersionContainer.class, TEXT_PATH);
-			mResourcePaths.put(Music.class, MUSIC_PATH);
-			mResourcePaths.put(FreeType.class, FONT_PATH);
+			TEXTURE_PATH = dir + TEXTURE_PATH;
+			UI_PATH = dir + UI_PATH;
+			SHADER_PATH = dir + SHADER_PATH;
+			PARTICLE_PATH = dir + PARTICLE_PATH;
+			SOUND_PATH = dir + SOUND_PATH;
+			TEXT_PATH = dir + TEXT_PATH;
+			MUSIC_PATH = dir + MUSIC_PATH;
+			FONT_PATH = dir + FONT_PATH;
 		}
 
 
-		// -- Parameters --
-		// Fonts
-		// MDPI
-		SkinFontParameter fontParameter = new SkinFontParameter();
-		fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 24, 36);
-		fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 12, 16, 24, 36);
-		fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 12, 16, 24, 36);
-		UI_GENERAL_MDPI.mParameters = fontParameter;
-
-		// HDPI
-		fontParameter = new SkinFontParameter();
-		fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 36, 54);
-		fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 18, 24, 36, 54);
-		fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 18, 24, 36, 54);
-		UI_GENERAL_HDPI.mParameters = fontParameter;
-
-		// HDPI
-		fontParameter = new SkinFontParameter();
-		fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 48, 72);
-		fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 24, 32, 48, 72);
-		fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 24, 32, 48, 72);
-		UI_GENERAL_XHDPI.mParameters = fontParameter;
-
+		mResourcePaths.put(Texture.class, TEXTURE_PATH);
+		mResourcePaths.put(ShaderProgram.class, SHADER_PATH);
+		mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
+		mResourcePaths.put(Skin.class, UI_PATH);
+		mResourcePaths.put(TextureAtlas.class, "");
+		mResourcePaths.put(Sound.class, SOUND_PATH);
+		mResourcePaths.put(Ini.class, TEXT_PATH);
+		mResourcePaths.put(String.class, TEXT_PATH);
+		mResourcePaths.put(VersionContainer.class, TEXT_PATH);
+		mResourcePaths.put(Music.class, MUSIC_PATH);
+		mResourcePaths.put(FreeType.class, FONT_PATH);
 	}
+
+
+	// -- Parameters --
+	// Fonts
+	// MDPI
+	SkinFontParameter fontParameter = new SkinFontParameter();
+	fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 24, 36);
+	fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 12, 16, 24, 36);
+	fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 12, 16, 24, 36);
+	UI_GENERAL_MDPI.mParameters = fontParameter;
+
+	// HDPI
+	fontParameter = new SkinFontParameter();
+	fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 36, 54);
+	fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 18, 24, 36, 54);
+	fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 18, 24, 36, 54);
+	UI_GENERAL_HDPI.mParameters = fontParameter;
+
+	// HDPI
+	fontParameter = new SkinFontParameter();
+	fontParameter.addFont(FONT_NESOBRITE_NO_RG, "nesobrite_no_rg", 48, 72);
+	fontParameter.addFont(FONT_NESOBRITE_NO_BD, "nesobrite_no_bd", 24, 32, 48, 72);
+	fontParameter.addFont(FONT_NESOBRITE_NO_BL, "nesobrite_no_bl", 24, 32, 48, 72);
+	UI_GENERAL_XHDPI.mParameters = fontParameter;
+
+}
+
+private final String mFilename;
+private final Class<?> mType;
+/** Optional parameters */
+private AssetLoaderParameters<?> mParameters = null;
+/**
+ * Initializes the enum with a filename
+ * @param filename the filename (not full path)
+ * @param type the class type of resource
+ */
+private InternalNames(String filename, Class<?> type) {
+	this.mFilename = filename;
+	this.mType = type;
+}
+
+/**
+ * @return file path of this resource
+ */
+public String getFilePath() {
+	return getDirPath(mType) + mFilename;
+}
+
+/**
+ * Gets the fully qualified folder name the resource should be in
+ * @param type the class type of the resource. This determines where to look
+ * @return full path to the resource
+ */
+private static String getDirPath(Class<?> type) {
+	return mResourcePaths.get(type);
+}
+
+/**
+ * @return stored type of the resource
+ */
+Class<?> getType() {
+	return mType;
+}
+
+/**
+ * @return loading parameters
+ */
+AssetLoaderParameters<?> getParameters() {
+	if (mParameters instanceof IParameterGenerate) {
+		if (!isLoaded()) {
+			((IParameterGenerate) mParameters).generate();
+		}
+	}
+	return mParameters;
+}
+
+/**
+ * @return true if loaded
+ */
+public boolean isLoaded() {
+	return ResourceCacheFacade.isLoaded(this);
+}
 }

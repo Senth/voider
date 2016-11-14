@@ -3,7 +3,7 @@ package com.spiddekauga.voider.resources;
 
 /**
  * What type of resolution the internal resources are used for
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResolutionRange {
 	/**

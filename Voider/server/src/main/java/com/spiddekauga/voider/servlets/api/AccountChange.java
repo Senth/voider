@@ -18,7 +18,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Change account settings of a user
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class AccountChange extends VoiderApiServlet<AccountChangeMethod> {

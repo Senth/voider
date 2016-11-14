@@ -30,7 +30,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Get resource comments in batches
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class CommentFetch extends VoiderApiServlet<CommentFetchMethod> {

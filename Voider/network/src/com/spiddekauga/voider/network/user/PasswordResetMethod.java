@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for resetting the password
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class PasswordResetMethod implements IMethodEntity {
 	/** Email of the user */

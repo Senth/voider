@@ -18,7 +18,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Deletes all blobs from the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class DeleteAllBlobs extends VoiderApiServlet<DeleteAllBlobsMethod> {

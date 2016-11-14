@@ -11,64 +11,63 @@ import com.spiddekauga.voider.resources.Resource;
 
 /**
  * Player actor definition, does nothing more than specify that the actor is a player
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayerActorDef extends ActorDef {
-	/**
-	 * Default constructor
-	 */
-	public PlayerActorDef() {
-		super(ActorTypes.PLAYER);
-		setHealthMax(Config.Actor.Player.HEALTH_MAX);
-		getBodyDef().type = BodyType.DynamicBody;
-		getBodyDef().fixedRotation = true;
+/** Maximum force a mouse joint can have on this player actor */
+@Tag(125)
+private float mMouseJointForceMax = 10000;
 
-		mVisualVars.setShapeType(ActorShapeTypes.CIRCLE);
-	}
+/**
+ * Default constructor
+ */
+public PlayerActorDef() {
+	super(ActorTypes.PLAYER);
+	setHealthMax(Config.Actor.Player.HEALTH_MAX);
+	getBodyDef().type = BodyType.DynamicBody;
+	getBodyDef().fixedRotation = true;
 
-	/**
-	 * Sets the maximum force the mouse joint can have on this object
-	 * @param force maximum mouse joint force
-	 */
-	public void setMouseJointForceMax(float force) {
-		mMouseJointForceMax = force;
-	}
+	mVisualVars.setShapeType(ActorShapeTypes.CIRCLE);
+}
 
-	/**
-	 * @return maximum mouse joint force on this player ship
-	 */
-	public float getMouseJointForceMax() {
-		return mMouseJointForceMax;
-	}
+@Override
+public void set(Resource resource) {
+	super.set(resource);
 
-	@Override
-	public void set(Resource resource) {
-		super.set(resource);
+	PlayerActorDef def = (PlayerActorDef) resource;
+	mMouseJointForceMax = def.mMouseJointForceMax;
+}
 
-		PlayerActorDef def = (PlayerActorDef) resource;
-		mMouseJointForceMax = def.mMouseJointForceMax;
-	}
+/**
+ * Create a mouse joint definition
+ * @param mouseBody body of the mouse
+ * @param playerBody body of the player
+ * @return new mouse joint definition
+ */
+MouseJointDef createMouseJointDef(Body mouseBody, Body playerBody) {
+	IC_Ship.IC_Settings icSettings = ConfigIni.getInstance().editor.ship.settings;
+	MouseJointDef mouseJointDef = new MouseJointDef();
 
-	/**
-	 * Create a mouse joint definition
-	 * @param mouseBody body of the mouse
-	 * @param playerBody body of the player
-	 * @return new mouse joint definition
-	 */
-	MouseJointDef createMouseJointDef(Body mouseBody, Body playerBody) {
-		IC_Ship.IC_Settings icSettings = ConfigIni.getInstance().editor.ship.settings;
-		MouseJointDef mouseJointDef = new MouseJointDef();
+	mouseJointDef.frequencyHz = icSettings.getFrequencyDefault();
+	mouseJointDef.bodyA = mouseBody;
+	mouseJointDef.bodyB = playerBody;
+	mouseJointDef.collideConnected = true;
+	mouseJointDef.maxForce = getMouseJointForceMax();
 
-		mouseJointDef.frequencyHz = icSettings.getFrequencyDefault();
-		mouseJointDef.bodyA = mouseBody;
-		mouseJointDef.bodyB = playerBody;
-		mouseJointDef.collideConnected = true;
-		mouseJointDef.maxForce = getMouseJointForceMax();
+	return mouseJointDef;
+}
 
-		return mouseJointDef;
-	}
+/**
+ * @return maximum mouse joint force on this player ship
+ */
+public float getMouseJointForceMax() {
+	return mMouseJointForceMax;
+}
 
-
-	/** Maximum force a mouse joint can have on this player actor */
-	@Tag(125) private float mMouseJointForceMax = 10000;
+/**
+ * Sets the maximum force the mouse joint can have on this object
+ * @param force maximum mouse joint force
+ */
+public void setMouseJointForceMax(float force) {
+	mMouseJointForceMax = force;
+}
 }

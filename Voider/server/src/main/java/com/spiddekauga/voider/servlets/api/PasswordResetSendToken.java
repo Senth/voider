@@ -33,7 +33,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Sends a key to the user's mail to
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class PasswordResetSendToken extends VoiderApiServlet<PasswordResetSendTokenMethod> {

@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 /**
  * Parses the argument for backup and creates the appropriate action
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 class ActionCreator {
 	/**

@@ -14,7 +14,7 @@ import com.spiddekauga.voider.config.AnalyticsConfig;
 
 /**
  * Creates a pipeline that converts new analytics datastore entries to
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class AnalyticsDatastoreToBigQuery extends HttpServlet {

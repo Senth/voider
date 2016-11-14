@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Publishes resources
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class PublishMethod implements IMethodEntity {
 	@Override

@@ -4,7 +4,7 @@ import com.spiddekauga.utils.ISearchStore;
 
 /**
  * Search ranges for level difficulty
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("javadoc")
 public enum LevelDifficultySearchRanges implements ISearchStore {

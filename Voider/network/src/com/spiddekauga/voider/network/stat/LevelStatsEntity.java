@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.resource.LevelDifficultySearchRanges;
 
 /**
  * Level statistics
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LevelStatsEntity implements IEntity {
 	/** Total plays */

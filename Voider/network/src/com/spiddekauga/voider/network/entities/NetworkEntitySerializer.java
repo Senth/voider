@@ -15,7 +15,7 @@ import com.spiddekauga.voider.network.misc.ServerMessage;
 
 /**
  * Serializes the entity into a byte string or vice versa
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class NetworkEntitySerializer {
 	/**

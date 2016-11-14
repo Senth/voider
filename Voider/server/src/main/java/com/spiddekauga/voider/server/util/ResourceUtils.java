@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.resource.UploadTypes;
 /**
  * Common methods for resources
  * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResourceUtils {
 	/**

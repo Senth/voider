@@ -7,51 +7,49 @@ import com.spiddekauga.voider.resources.IResourceBody;
 
 /**
  * Removes an resource from the specified resource editor
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceRemove extends Command {
-	/**
-	 * Creates a command which will remove the resource and notify the resource editor
-	 * about it.
-	 * @param resource the resource to remove
-	 * @param editor the editor to remove the resource from
-	 */
-	public CResourceRemove(IResource resource, IResourceChangeEditor editor) {
-		mResource = resource;
-		mEditor = editor;
-	}
+/** True if a body should be created on undo */
+private boolean mCreateBody = false;
+/** The resource to remove */
+private IResource mResource;
+/** The editor to remove the resource from */
+private IResourceChangeEditor mEditor;
 
-	@Override
-	public boolean execute() {
-		mEditor.onResourceRemoved(mResource);
+/**
+ * Creates a command which will remove the resource and notify the resource editor about it.
+ * @param resource the resource to remove
+ * @param editor the editor to remove the resource from
+ */
+public CResourceRemove(IResource resource, IResourceChangeEditor editor) {
+	mResource = resource;
+	mEditor = editor;
+}
 
-		if (mResource instanceof IResourceBody) {
-			IResourceBody resourceBody = (IResourceBody) mResource;
-			mCreateBody = resourceBody.hasBody();
-			if (mCreateBody) {
-				resourceBody.destroyBody();
-			}
-		}
-		return true;
-	}
+@Override
+public boolean execute() {
+	mEditor.onResourceRemoved(mResource);
 
-	@Override
-	public boolean undo() {
+	if (mResource instanceof IResourceBody) {
+		IResourceBody resourceBody = (IResourceBody) mResource;
+		mCreateBody = resourceBody.hasBody();
 		if (mCreateBody) {
-			if (mResource instanceof IResourceBody) {
-				((IResourceBody) mResource).createBody();
-			}
+			resourceBody.destroyBody();
 		}
+	}
+	return true;
+}
 
-		mEditor.onResourceAdded(mResource, false);
-
-		return true;
+@Override
+public boolean undo() {
+	if (mCreateBody) {
+		if (mResource instanceof IResourceBody) {
+			((IResourceBody) mResource).createBody();
+		}
 	}
 
-	/** True if a body should be created on undo */
-	private boolean mCreateBody = false;
-	/** The resource to remove */
-	private IResource mResource;
-	/** The editor to remove the resource from */
-	private IResourceChangeEditor mEditor;
+	mEditor.onResourceAdded(mResource, false);
+
+	return true;
+}
 }

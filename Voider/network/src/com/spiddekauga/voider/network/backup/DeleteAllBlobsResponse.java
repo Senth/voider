@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response when deleting blobs from the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class DeleteAllBlobsResponse implements IEntity, ISuccessStatuses {
 	/** Response status from the server */

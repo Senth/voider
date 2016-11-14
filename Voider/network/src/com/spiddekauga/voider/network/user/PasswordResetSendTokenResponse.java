@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Response from the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class PasswordResetSendTokenResponse implements IEntity {
 	/** Response status from the server */

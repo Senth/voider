@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 
 /**
  * All levels that matched the query
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LevelFetchResponse extends FetchResponse {
 	/** All levels */

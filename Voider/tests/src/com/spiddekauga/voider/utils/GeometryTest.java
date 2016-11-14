@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Testing Geometry class
  * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class GeometryTest {
 

@@ -1,9 +1,5 @@
 package com.spiddekauga.voider.editor.tools;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
@@ -19,232 +15,231 @@ import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+
 /**
  * Container class for all the selected actors in the level editor
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectionTool extends TouchTool {
-	/**
-	 * @param editor the editor the selection tool uses
-	 * @param selection the selection to use
-	 */
-	public SelectionTool(IResourceChangeEditor editor, ISelection selection) {
-		super(editor, selection);
-	}
-
-	/**
-	 * Adds, removes or sets the hit resources
-	 * @return true if the selection list was changed
-	 */
-	private boolean addRemoveOrSetHitResources() {
-		boolean handled = false;
-
-		if (!mHitResources.isEmpty()) {
-			for (IResource resource : mHitResources) {
-				// Add to selection
-				if (KeyHelper.isShiftPressed()) {
-					if (!mSelection.isSelected(resource)) {
-						mInvoker.execute(new CSelectionAdd(mSelection, resource));
-						handled = true;
-					}
-				}
-				// Remove from selection
-				else if (KeyHelper.isCtrlPressed()) {
-					if (mSelection.isSelected(resource)) {
-						mInvoker.execute(new CSelectionRemove(mSelection, resource));
-						handled = true;
-					}
-				}
-				// Set selection
-				else {
-					if (!mSelection.isSelected(resource)) {
-						mInvoker.execute(new CSelectionSet(mSelection, resource));
-						handled = true;
-					}
-				}
-			}
-		}
-
-		return handled;
-	}
-
-	/**
-	 * @param resourceType the resource type to test if it can be selected
-	 * @return true if the resource type can be selected
-	 */
-	private boolean isResourceSelectable(Class<? extends IResource> resourceType) {
-		boolean isSelectable = false;
-
-		// Check if we are allowed to select this
-		Iterator<Class<? extends IResource>> iterator = mSelectableResourceTypes.iterator();
-		while (iterator.hasNext() && !isSelectable) {
-			if (iterator.next().isAssignableFrom(resourceType)) {
-				isSelectable = true;
-			}
-		}
-
-		// Check the current selection and if we are allowed to select this
-		if (isSelectable && !mCanChangeResourceTypeSelection) {
-			if (!mSelection.isSelected(resourceType) && !mSelection.isEmpty()) {
-				isSelectable = false;
-			}
-		}
-
-		return isSelectable;
-	}
-
-	/**
-	 * Removes all resources that aren't allowed to be selected
-	 */
-	private void removeUnallowedResources() {
-		Iterator<IResource> iterator = mHitResources.iterator();
-		while (iterator.hasNext()) {
-			if (!isResourceSelectable(iterator.next().getClass())) {
-				iterator.remove();
-			}
-		}
-	}
-
+/** If we are allowed to change resource types independent of the current selection */
+private boolean mCanChangeResourceTypeSelection = true;
+/** Rectangle brush */
+private RectangleBrush mRectangleBrush = null;
+/** All hit resources */
+private HashSet<IResource> mHitResources = new HashSet<IResource>();
+/** Picking for paths */
+private QueryCallback mCallbackPaths = new QueryCallback() {
 	@Override
-	protected boolean down(int button) {
-		// Draw selection box
-		if (isActive()) {
-			mRectangleBrush = new RectangleBrush(Config.Editor.BRUSH_SELECTION_COLOR, mTouchCurrent);
-			mEditor.onResourceAdded(mRectangleBrush, true);
+	public boolean reportFixture(Fixture fixture) {
+		Body body = fixture.getBody();
+
+		if (body.getUserData() instanceof Path) {
+			mHitResources.add((IResource) body.getUserData());
 		}
-		// Test if we shall add or remove any actors
+
+		return true;
+	}
+};
+/** Picking for paths */
+private QueryCallback mCallbackTriggers = new QueryCallback() {
+	@Override
+	public boolean reportFixture(Fixture fixture) {
+		Body body = fixture.getBody();
+
+		if (body.getUserData() instanceof Trigger) {
+			mHitResources.add((IResource) body.getUserData());
+		}
+
+		return true;
+	}
+};
+/** Picking for resources */
+private QueryCallback mCallbackResources = new QueryCallback() {
+	@Override
+	public boolean reportFixture(Fixture fixture) {
+		Body body = fixture.getBody();
+
+		if (body.getUserData() instanceof IResource) {
+			mHitResources.add((IResource) body.getUserData());
+		}
+
+		return true;
+	}
+};
+
+/**
+ * @param editor the editor the selection tool uses
+ * @param selection the selection to use
+ */
+public SelectionTool(IResourceChangeEditor editor, ISelection selection) {
+	super(editor, selection);
+}
+
+@Override
+protected boolean dragged() {
+	if (mRectangleBrush != null) {
+		mRectangleBrush.setEndPosition(mTouchCurrent);
+	}
+	return isActive();
+}
+
+@Override
+protected boolean up(int button) {
+	mSelection.setSelectionChangedDuringDown(false);
+
+	if (mRectangleBrush != null) {
+		// Check with AABB which actors were inside the selection box
+		testPickAabb(mCallbackResources, mTouchOrigin, mTouchCurrent);
+
+		// Add resources to selection
+		if (KeyHelper.isShiftPressed()) {
+			mInvoker.execute(new CSelectionAdd(mSelection, mHitResources));
+		}
+		// Remove resources from selection
+		else if (KeyHelper.isCtrlPressed()) {
+			mInvoker.execute(new CSelectionRemove(mSelection, mHitResources));
+		}
+		// Set selected resources
 		else {
-			if (isResourceSelectable(Path.class)) {
-				testPickAabb(mCallbackPaths, Editor.PICK_TRIGGER_SIZE);
-			}
-			if (isResourceSelectable(Trigger.class)) {
-				testPickAabb(mCallbackTriggers, Editor.PICK_PATH_SIZE);
-			}
-			testPickPoint(mCallbackResources);
-
-			removeUnallowedResources();
-
-			if (addRemoveOrSetHitResources()) {
-				mSelection.setSelectionChangedDuringDown(true);
-			}
+			mInvoker.execute(new CSelectionSet(mSelection, mHitResources));
 		}
 
-		return isActive();
+
+		mEditor.onResourceRemoved(mRectangleBrush);
+		mRectangleBrush = null;
 	}
 
-	@Override
-	protected boolean dragged() {
-		if (mRectangleBrush != null) {
-			mRectangleBrush.setEndPosition(mTouchCurrent);
+	mHitResources.clear();
+
+	return isActive();
+}
+
+@Override
+protected boolean down(int button) {
+	// Draw selection box
+	if (isActive()) {
+		mRectangleBrush = new RectangleBrush(Config.Editor.BRUSH_SELECTION_COLOR, mTouchCurrent);
+		mEditor.onResourceAdded(mRectangleBrush, true);
+	}
+	// Test if we shall add or remove any actors
+	else {
+		if (isResourceSelectable(Path.class)) {
+			testPickAabb(mCallbackPaths, Editor.PICK_TRIGGER_SIZE);
 		}
-		return isActive();
-	}
-
-	@Override
-	protected boolean up(int button) {
-		mSelection.setSelectionChangedDuringDown(false);
-
-		if (mRectangleBrush != null) {
-			// Check with AABB which actors were inside the selection box
-			testPickAabb(mCallbackResources, mTouchOrigin, mTouchCurrent);
-
-			// Add resources to selection
-			if (KeyHelper.isShiftPressed()) {
-				mInvoker.execute(new CSelectionAdd(mSelection, mHitResources));
-			}
-			// Remove resources from selection
-			else if (KeyHelper.isCtrlPressed()) {
-				mInvoker.execute(new CSelectionRemove(mSelection, mHitResources));
-			}
-			// Set selected resources
-			else {
-				mInvoker.execute(new CSelectionSet(mSelection, mHitResources));
-			}
-
-
-			mEditor.onResourceRemoved(mRectangleBrush);
-			mRectangleBrush = null;
+		if (isResourceSelectable(Trigger.class)) {
+			testPickAabb(mCallbackTriggers, Editor.PICK_PATH_SIZE);
 		}
+		testPickPoint(mCallbackResources);
 
-		mHitResources.clear();
-
-		return isActive();
-	}
-
-	/**
-	 * Set the current selectable resource
-	 * @param selectableResourceTypes what kind of resource the selection tool is allowed
-	 *        to select
-	 * @param canChangeResourceType if the selection tool is allowed to change the
-	 *        selection independent of the current selection. E.g. if it is allowed to
-	 *        change the selection to an enemy from a trigger.
-	 */
-	public void setSelectableResourceTypes(ArrayList<Class<? extends IResource>> selectableResourceTypes, boolean canChangeResourceType) {
-		mSelectableResourceTypes = selectableResourceTypes;
-		mCanChangeResourceTypeSelection = canChangeResourceType;
-
-		clearSelectionFromUnallowedResources();
-	}
-
-	/**
-	 * Clears the current selection from the resources that aren't allowed to be selected.
-	 */
-	private void clearSelectionFromUnallowedResources() {
-		mHitResources.clear();
-		mHitResources.addAll(mSelection.getSelectedResources());
 		removeUnallowedResources();
-		mInvoker.execute(new CSelectionSet(mSelection, mHitResources));
-		mHitResources.clear();
+
+		if (addRemoveOrSetHitResources()) {
+			mSelection.setSelectionChangedDuringDown(true);
+		}
 	}
 
-	/** Picking for paths */
-	private QueryCallback mCallbackPaths = new QueryCallback() {
-		@Override
-		public boolean reportFixture(Fixture fixture) {
-			Body body = fixture.getBody();
+	return isActive();
+}
 
-			if (body.getUserData() instanceof Path) {
-				mHitResources.add((IResource) body.getUserData());
-			}
+/**
+ * @param resourceType the resource type to test if it can be selected
+ * @return true if the resource type can be selected
+ */
+private boolean isResourceSelectable(Class<? extends IResource> resourceType) {
+	boolean isSelectable = false;
 
-			return true;
+	// Check if we are allowed to select this
+	Iterator<Class<? extends IResource>> iterator = mSelectableResourceTypes.iterator();
+	while (iterator.hasNext() && !isSelectable) {
+		if (iterator.next().isAssignableFrom(resourceType)) {
+			isSelectable = true;
 		}
-	};
+	}
 
-	/** Picking for paths */
-	private QueryCallback mCallbackTriggers = new QueryCallback() {
-		@Override
-		public boolean reportFixture(Fixture fixture) {
-			Body body = fixture.getBody();
-
-			if (body.getUserData() instanceof Trigger) {
-				mHitResources.add((IResource) body.getUserData());
-			}
-
-			return true;
+	// Check the current selection and if we are allowed to select this
+	if (isSelectable && !mCanChangeResourceTypeSelection) {
+		if (!mSelection.isSelected(resourceType) && !mSelection.isEmpty()) {
+			isSelectable = false;
 		}
-	};
+	}
 
-	/** Picking for resources */
-	private QueryCallback mCallbackResources = new QueryCallback() {
-		@Override
-		public boolean reportFixture(Fixture fixture) {
-			Body body = fixture.getBody();
+	return isSelectable;
+}
 
-			if (body.getUserData() instanceof IResource) {
-				mHitResources.add((IResource) body.getUserData());
-			}
-
-			return true;
+/**
+ * Removes all resources that aren't allowed to be selected
+ */
+private void removeUnallowedResources() {
+	Iterator<IResource> iterator = mHitResources.iterator();
+	while (iterator.hasNext()) {
+		if (!isResourceSelectable(iterator.next().getClass())) {
+			iterator.remove();
 		}
-	};
+	}
+}
 
-	/** If we are allowed to change resource types independent of the current selection */
-	private boolean mCanChangeResourceTypeSelection = true;
-	/** Rectangle brush */
-	private RectangleBrush mRectangleBrush = null;
-	/** All hit resources */
-	private HashSet<IResource> mHitResources = new HashSet<IResource>();
+/**
+ * Adds, removes or sets the hit resources
+ * @return true if the selection list was changed
+ */
+private boolean addRemoveOrSetHitResources() {
+	boolean handled = false;
+
+	if (!mHitResources.isEmpty()) {
+		for (IResource resource : mHitResources) {
+			// Add to selection
+			if (KeyHelper.isShiftPressed()) {
+				if (!mSelection.isSelected(resource)) {
+					mInvoker.execute(new CSelectionAdd(mSelection, resource));
+					handled = true;
+				}
+			}
+			// Remove from selection
+			else if (KeyHelper.isCtrlPressed()) {
+				if (mSelection.isSelected(resource)) {
+					mInvoker.execute(new CSelectionRemove(mSelection, resource));
+					handled = true;
+				}
+			}
+			// Set selection
+			else {
+				if (!mSelection.isSelected(resource)) {
+					mInvoker.execute(new CSelectionSet(mSelection, resource));
+					handled = true;
+				}
+			}
+		}
+	}
+
+	return handled;
+}
+
+/**
+ * Set the current selectable resource
+ * @param selectableResourceTypes what kind of resource the selection tool is allowed to select
+ * @param canChangeResourceType if the selection tool is allowed to change the selection independent
+ * of the current selection. E.g. if it is allowed to change the selection to an enemy from a
+ * trigger.
+ */
+public void setSelectableResourceTypes(ArrayList<Class<? extends IResource>> selectableResourceTypes, boolean canChangeResourceType) {
+	mSelectableResourceTypes = selectableResourceTypes;
+	mCanChangeResourceTypeSelection = canChangeResourceType;
+
+	clearSelectionFromUnallowedResources();
+}
+
+/**
+ * Clears the current selection from the resources that aren't allowed to be selected.
+ */
+private void clearSelectionFromUnallowedResources() {
+	mHitResources.clear();
+	mHitResources.addAll(mSelection.getSelectedResources());
+	removeUnallowedResources();
+	mInvoker.execute(new CSelectionSet(mSelection, mHitResources));
+	mHitResources.clear();
+}
 
 
 }

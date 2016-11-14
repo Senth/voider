@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Chat messages from server to client, or vice versa
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  * @param <DataType> type of data to store
  */
 public class ServerMessage<DataType> implements IEntity, Serializable {

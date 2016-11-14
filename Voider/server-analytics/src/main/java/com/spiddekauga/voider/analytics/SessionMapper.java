@@ -9,7 +9,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 
 /**
  * Maps sessions from a datastore object into an AnalyticsSession object
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class SessionMapper extends MapOnlyMapper<Entity, AnalyticsSession> {

@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for syncing user resources (with revisions)
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class UserResourceSyncMethod implements IMethodEntity {
 	/** All resource revisions that were uploaded */

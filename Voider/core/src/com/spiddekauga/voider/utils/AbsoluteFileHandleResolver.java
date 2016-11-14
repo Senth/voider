@@ -5,14 +5,14 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 
 /**
- * 
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ *
+ *
+
  */
 public class AbsoluteFileHandleResolver implements FileHandleResolver {
-	@Override
-	public FileHandle resolve(String fileName) {
-		return Gdx.files.absolute(fileName);
-	}
+@Override
+public FileHandle resolve(String fileName) {
+	return Gdx.files.absolute(fileName);
+}
 
 }

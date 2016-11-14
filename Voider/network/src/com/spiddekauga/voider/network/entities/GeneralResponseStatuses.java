@@ -3,7 +3,7 @@ package com.spiddekauga.voider.network.entities;
 
 /**
  * General response statuses
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public enum GeneralResponseStatuses implements ISuccessStatuses {
 	/** Server method completed successfully. */

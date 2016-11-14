@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Server response from changing account
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AccountChangeResponse implements IEntity, ISuccessStatuses {
 	/** Response status */

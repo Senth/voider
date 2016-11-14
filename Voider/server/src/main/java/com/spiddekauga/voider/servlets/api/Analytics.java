@@ -25,7 +25,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Analytics for Voider
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class Analytics extends VoiderApiServlet<AnalyticsMethod> {

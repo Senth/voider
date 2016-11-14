@@ -10,7 +10,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Bug report information
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BugReportEntity implements IEntity {
 	/** User that's reporting, null if anonymous */

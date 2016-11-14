@@ -6,7 +6,7 @@ import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 
 /**
  * Base class for all loading scenes
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public abstract class LoadingScene extends Scene {
 	/**

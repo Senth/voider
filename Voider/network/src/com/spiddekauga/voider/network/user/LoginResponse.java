@@ -14,7 +14,7 @@ import com.spiddekauga.voider.version.Version;
 
 /**
  * Response from the login method
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LoginResponse implements IEntity, ISuccessStatuses {
 	/** Username, the user could log in with email, thus reply with the real username */

@@ -12,7 +12,7 @@ import com.google.common.base.CaseFormat;
 
 /**
  * Controller for the all web stuff
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public abstract class VoiderController extends VoiderServlet {

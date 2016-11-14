@@ -6,10 +6,9 @@ import com.spiddekauga.voider.resources.InternalDeps;
 
 /**
  * All various music types to play
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum Music {
-	// !!!NEVER EVER remove or change order of these!!!
+// !!!NEVER EVER remove or change order of these!!!
 	/** Space theme */
 	SPACE(InternalNames.MUSIC_SPACE, InternalDeps.MUSIC_SPACE),
 	/** Surface theme */
@@ -25,93 +24,91 @@ public enum Music {
 	/** Game completed */
 	LEVEL_COMPLETED(InternalNames.MUSIC_LEVEL_COMPLETED),
 	/** Main theme */
-	TITLE(InternalNames.MUSIC_TITLE),
+	TITLE(InternalNames.MUSIC_TITLE),;
 
-	;
+/** Internal dependencies for level themes */
+private InternalDeps mInternalDeps = null;
+private InternalNames mInternalName;
+private boolean mLoop = true;
 
-	@Override
-	public String toString() {
-		return name().charAt(0) + name().substring(1).toLowerCase();
+
+/**
+ * Sets the internal resource this music uses
+ * @param internalName the internal resource this music uses
+ */
+private Music(InternalNames internalName) {
+	this(internalName, null, true);
+}
+
+/**
+ * Sets the internal resource this music uses
+ * @param internalName the internal resource this music uses
+ * @param internalDeps internal dependencies for level themes
+ * @param loop true if the track should be looping (default: true)
+ */
+private Music(InternalNames internalName, InternalDeps internalDeps, boolean loop) {
+	mInternalName = internalName;
+	mInternalDeps = internalDeps;
+	mLoop = loop;
+}
+
+/**
+ * Sets the internal resource this music uses
+ * @param internalName the internal resource this music uses
+ * @param internalDeps internal dependencies for level themes
+ */
+private Music(InternalNames internalName, InternalDeps internalDeps) {
+	this(internalName, internalDeps, true);
+}
+
+/**
+ * Sets the internal resource this music uses
+ * @param internalName the internal resource this music uses
+ * @param loop true if the track should be looping (default: true)
+ */
+private Music(InternalNames internalName, boolean loop) {
+	this(internalName, null, loop);
+}
+
+/**
+ * @return a list of all level themes
+ */
+public static Music[] getLevelThemes() {
+	Music[] themes = new Music[4];
+	themes[0] = SPACE;
+	themes[1] = SURFACE;
+	themes[2] = TUNNELS;
+	themes[3] = CORE;
+	return themes;
+}
+
+@Override
+public String toString() {
+	return name().charAt(0) + name().substring(1).toLowerCase();
+}
+
+/**
+ * @return the actual music track, null if not loaded
+ */
+com.badlogic.gdx.audio.Music getTrack() {
+	com.badlogic.gdx.audio.Music track = ResourceCacheFacade.get(mInternalName);
+	if (track != null) {
+		track.setLooping(mLoop);
 	}
+	return track;
+}
 
-	/**
-	 * Sets the internal resource this music uses
-	 * @param internalName the internal resource this music uses
-	 */
-	private Music(InternalNames internalName) {
-		this(internalName, null, true);
-	}
+/**
+ * @return internal dependencies for the level themes
+ */
+public InternalDeps getDependency() {
+	return mInternalDeps;
+}
 
-	/**
-	 * Sets the internal resource this music uses
-	 * @param internalName the internal resource this music uses
-	 * @param internalDeps internal dependencies for level themes
-	 */
-	private Music(InternalNames internalName, InternalDeps internalDeps) {
-		this(internalName, internalDeps, true);
-	}
-
-
-	/**
-	 * Sets the internal resource this music uses
-	 * @param internalName the internal resource this music uses
-	 * @param loop true if the track should be looping (default: true)
-	 */
-	private Music(InternalNames internalName, boolean loop) {
-		this(internalName, null, loop);
-	}
-
-	/**
-	 * Sets the internal resource this music uses
-	 * @param internalName the internal resource this music uses
-	 * @param internalDeps internal dependencies for level themes
-	 * @param loop true if the track should be looping (default: true)
-	 */
-	private Music(InternalNames internalName, InternalDeps internalDeps, boolean loop) {
-		mInternalName = internalName;
-		mInternalDeps = internalDeps;
-		mLoop = loop;
-	}
-
-	/**
-	 * @return the actual music track, null if not loaded
-	 */
-	com.badlogic.gdx.audio.Music getTrack() {
-		com.badlogic.gdx.audio.Music track = ResourceCacheFacade.get(mInternalName);
-		if (track != null) {
-			track.setLooping(mLoop);
-		}
-		return track;
-	}
-
-	/**
-	 * @return internal dependencies for the level themes
-	 */
-	public InternalDeps getDependency() {
-		return mInternalDeps;
-	}
-
-	/**
-	 * @return true if the track should be looped
-	 */
-	public boolean isLoop() {
-		return mLoop;
-	}
-
-	/**
-	 * @return a list of all level themes
-	 */
-	public static Music[] getLevelThemes() {
-		Music[] themes = new Music[4];
-		themes[0] = SPACE;
-		themes[1] = SURFACE;
-		themes[2] = TUNNELS;
-		themes[3] = CORE;
-		return themes;
-	}
-
-	/** Internal dependencies for level themes */
-	private InternalDeps mInternalDeps = null;
-	private InternalNames mInternalName;
-	private boolean mLoop = true;
+/**
+ * @return true if the track should be looped
+ */
+public boolean isLoop() {
+	return mLoop;
+}
 }

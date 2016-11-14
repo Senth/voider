@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Level statistics a single player
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class UserLevelStatsEntity implements IEntity {
 	/** If the player has bookmarked the level */

@@ -5,7 +5,7 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
 
 /**
  * Enemy definition entity
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class EnemyDefEntity extends DefEntity {
 	/**

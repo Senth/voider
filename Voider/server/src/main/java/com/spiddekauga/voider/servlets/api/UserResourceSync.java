@@ -41,7 +41,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Synchronizes user resource revisions
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class UserResourceSync extends VoiderApiServlet<UserResourceSyncMethod> {

@@ -12,63 +12,62 @@ import com.spiddekauga.voider.scene.Gui;
 
 /**
  * GUI for the splash screen.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SplashScreenGui extends Gui {
-	@Override
-	public void initGui() {
-		super.initGui();
+/** Splash screen image */
+private Image mSplashScreenImage = null;
 
-		if (ResourceCacheFacade.isLoaded(InternalNames.IMAGE_SPLASH_SCREEN)) {
-			Texture splashScreenTexture = ResourceCacheFacade.get(InternalNames.IMAGE_SPLASH_SCREEN);
-
-			if (splashScreenTexture != null) {
-				mSplashScreenImage = new Image(splashScreenTexture);
-				getStage().addActor(mSplashScreenImage);
-
-				// Scale
-				float scaling = Gdx.graphics.getWidth() / mSplashScreenImage.getPrefWidth();
-				mSplashScreenImage.setScale(scaling);
-
-				// Center
-				float yOffset = (Gdx.graphics.getHeight() - mSplashScreenImage.getHeight() * scaling) * 0.5f;
-				mSplashScreenImage.setPosition(0, yOffset);
-
-				// Fade in
-				IC_Time icTime = ConfigIni.getInstance().menu.time;
-				mSplashScreenImage.setColor(1, 1, 1, 0);
-				mSplashScreenImage.addAction(Actions.sequence(Actions.delay(icTime.getSceneEnterTime()),
-						Actions.fadeIn(icTime.getSplashScreenFadeIn())));
-			}
-		}
+/**
+ * Fade out the splash screen
+ */
+public void fadeOut() {
+	if (mSplashScreenImage != null) {
+		IC_Time icTime = ConfigIni.getInstance().menu.time;
+		mSplashScreenImage.addAction(Actions.sequence(Actions.fadeOut(icTime.getSplashScreenFadeOut()), Actions.delay(icTime.getSceneExitTime()),
+				Actions.removeActor()));
 	}
+}
 
-	/**
-	 * Fade out the splash screen
-	 */
-	public void fadeOut() {
-		if (mSplashScreenImage != null) {
+@Override
+public void dispose() {
+	super.dispose();
+	if (mSplashScreenImage != null) {
+		mSplashScreenImage.remove();
+	}
+}
+
+@Override
+public void initGui() {
+	super.initGui();
+
+	if (ResourceCacheFacade.isLoaded(InternalNames.IMAGE_SPLASH_SCREEN)) {
+		Texture splashScreenTexture = ResourceCacheFacade.get(InternalNames.IMAGE_SPLASH_SCREEN);
+
+		if (splashScreenTexture != null) {
+			mSplashScreenImage = new Image(splashScreenTexture);
+			getStage().addActor(mSplashScreenImage);
+
+			// Scale
+			float scaling = Gdx.graphics.getWidth() / mSplashScreenImage.getPrefWidth();
+			mSplashScreenImage.setScale(scaling);
+
+			// Center
+			float yOffset = (Gdx.graphics.getHeight() - mSplashScreenImage.getHeight() * scaling) * 0.5f;
+			mSplashScreenImage.setPosition(0, yOffset);
+
+			// Fade in
 			IC_Time icTime = ConfigIni.getInstance().menu.time;
-			mSplashScreenImage.addAction(Actions.sequence(Actions.fadeOut(icTime.getSplashScreenFadeOut()), Actions.delay(icTime.getSceneExitTime()),
-					Actions.removeActor()));
+			mSplashScreenImage.setColor(1, 1, 1, 0);
+			mSplashScreenImage.addAction(Actions.sequence(Actions.delay(icTime.getSceneEnterTime()),
+					Actions.fadeIn(icTime.getSplashScreenFadeIn())));
 		}
 	}
+}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-		if (mSplashScreenImage != null) {
-			mSplashScreenImage.remove();
-		}
-	}
-
-	/**
-	 * @return true when the splash screen has faded
-	 */
-	public boolean hasFaded() {
-		return mSplashScreenImage == null || mSplashScreenImage.getStage() == null;
-	}
-
-	/** Splash screen image */
-	private Image mSplashScreenImage = null;
+/**
+ * @return true when the splash screen has faded
+ */
+public boolean hasFaded() {
+	return mSplashScreenImage == null || mSplashScreenImage.getStage() == null;
+}
 }

@@ -9,32 +9,31 @@ import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Menu scene
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class MenuScene extends Scene {
-	/**
-	 * @param gui
-	 */
-	protected MenuScene(Gui gui) {
-		super(gui);
+/**
+ * @param gui
+ */
+protected MenuScene(Gui gui) {
+	super(gui);
+}
+
+@Override
+protected boolean onKeyDown(int keycode) {
+	if (KeyHelper.isBackPressed(keycode)) {
+		endScene();
+		return true;
 	}
 
-	@Override
-	protected void loadResources() {
-		super.loadResources();
+	return super.onKeyDown(keycode);
+}
 
-		ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
-		ResourceCacheFacade.load(this, InternalNames.MUSIC_TITLE);
-		ResourceCacheFacade.load(this, InternalDeps.UI_SFX);
-	}
+@Override
+protected void loadResources() {
+	super.loadResources();
 
-	@Override
-	protected boolean onKeyDown(int keycode) {
-		if (KeyHelper.isBackPressed(keycode)) {
-			endScene();
-			return true;
-		}
-
-		return super.onKeyDown(keycode);
-	}
+	ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
+	ResourceCacheFacade.load(this, InternalNames.MUSIC_TITLE);
+	ResourceCacheFacade.load(this, InternalDeps.UI_SFX);
+}
 }

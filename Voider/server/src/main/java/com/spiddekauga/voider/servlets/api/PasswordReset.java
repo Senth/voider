@@ -22,7 +22,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Try to reset a password
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class PasswordReset extends VoiderApiServlet<PasswordResetMethod> {

@@ -26,7 +26,7 @@ import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
  * Switches between scenes in an game/app.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class SceneSwitcher {
 	/**

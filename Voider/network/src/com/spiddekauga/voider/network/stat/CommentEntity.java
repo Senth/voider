@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Entity for level comments
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class CommentEntity implements IEntity {
 	/** The actual comment */

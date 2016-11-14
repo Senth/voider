@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for syncronizing highscore
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class HighscoreSyncMethod implements IMethodEntity {
 	/** Highscores to syncronize */

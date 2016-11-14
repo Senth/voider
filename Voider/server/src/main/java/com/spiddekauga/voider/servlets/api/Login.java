@@ -35,7 +35,7 @@ import com.spiddekauga.voider.version.VersionParser;
 
 /**
  * Tries to login to the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class Login extends VoiderApiServlet<LoginMethod> {

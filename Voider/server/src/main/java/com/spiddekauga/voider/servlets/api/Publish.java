@@ -59,7 +59,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Tries to publish one or more definitions
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class Publish extends VoiderApiServlet<PublishMethod> {

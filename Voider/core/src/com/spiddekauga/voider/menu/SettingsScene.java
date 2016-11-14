@@ -6,196 +6,194 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 
 /**
  * Scene for game settings
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SettingsScene extends MenuScene {
-	/**
-	 * Creates a settings scene
-	 */
-	public SettingsScene() {
-		super(new SettingsGui());
+private SettingRepo mSettingRepo = SettingRepo.getInstance();
 
-		getGui().setScene(this);
-	}
+/**
+ * Creates a settings scene
+ */
+public SettingsScene() {
+	super(new SettingsGui());
 
-	/**
-	 * Set master sound
-	 * @param volume
-	 */
-	void setMasterVolume(float volume) {
-		mSettingRepo.sound().setMasterVolume(volume / 100f);
-	}
+	getGui().setScene(this);
+}
 
-	/**
-	 * @return get master volume
-	 */
-	float getMasterVolume() {
-		return mSettingRepo.sound().getMasterVolume() * 100;
-	}
+@Override
+protected SettingsGui getGui() {
+	return (SettingsGui) super.getGui();
+}
 
-	/**
-	 * Set music volume
-	 * @param volume
-	 */
-	void setMusicVolume(float volume) {
-		mSettingRepo.sound().setMusicVolume(volume / 100f);
-	}
+/**
+ * @return get master volume
+ */
+float getMasterVolume() {
+	return mSettingRepo.sound().getMasterVolume() * 100;
+}
 
-	/**
-	 * @return get music volume
-	 */
-	float getMusicVolume() {
-		return mSettingRepo.sound().getMusicVolume() * 100;
-	}
+/**
+ * Set master sound
+ * @param volume
+ */
+void setMasterVolume(float volume) {
+	mSettingRepo.sound().setMasterVolume(volume / 100f);
+}
 
-	/**
-	 * Set game effects volume
-	 * @param volume
-	 */
-	void setGameVolume(float volume) {
-		mSettingRepo.sound().setEffectsVolume(volume / 100f);
-	}
+/**
+ * @return get music volume
+ */
+float getMusicVolume() {
+	return mSettingRepo.sound().getMusicVolume() * 100;
+}
 
-	/**
-	 * @return game volume
-	 */
-	float getGameVolume() {
-		return mSettingRepo.sound().getEffectsVolume() * 100;
-	}
+/**
+ * Set music volume
+ * @param volume
+ */
+void setMusicVolume(float volume) {
+	mSettingRepo.sound().setMusicVolume(volume / 100f);
+}
 
-	/**
-	 * Set UI volume
-	 * @param volume
-	 */
-	void setUiVolume(float volume) {
-		mSettingRepo.sound().setUiVolume(volume / 100f);
-	}
+/**
+ * @return game volume
+ */
+float getGameVolume() {
+	return mSettingRepo.sound().getEffectsVolume() * 100;
+}
 
-	/**
-	 * @return UI / Button volume
-	 */
-	float getUiVolume() {
-		return mSettingRepo.sound().getUiVolume() * 100;
-	}
+/**
+ * Set game effects volume
+ * @param volume
+ */
+void setGameVolume(float volume) {
+	mSettingRepo.sound().setEffectsVolume(volume / 100f);
+}
 
-	/**
-	 * Set 24 hours format
-	 * @param time24h true if the time should be set to 24 hours format
-	 */
-	void set24HourFormat(boolean time24h) {
-		mSettingRepo.date().set24h(time24h);
-	}
+/**
+ * @return UI / Button volume
+ */
+float getUiVolume() {
+	return mSettingRepo.sound().getUiVolume() * 100;
+}
 
-	/**
-	 * @return true if time is shown in 24 hours format
-	 */
-	boolean is24HourFormat() {
-		return mSettingRepo.date().is24h();
-	}
+/**
+ * Set UI volume
+ * @param volume
+ */
+void setUiVolume(float volume) {
+	mSettingRepo.sound().setUiVolume(volume / 100f);
+}
 
-	/**
-	 * Set date format
-	 * @param dateFormat the date format
-	 */
-	void setDateFormat(String dateFormat) {
-		mSettingRepo.date().setDateFormat(dateFormat);
-	}
+/**
+ * @return true if time is shown in 24 hours format
+ */
+boolean is24HourFormat() {
+	return mSettingRepo.date().is24h();
+}
 
-	/**
-	 * @return current date format
-	 */
-	String getDateFormat() {
-		return mSettingRepo.date().getDateFormat();
-	}
+/**
+ * Set 24 hours format
+ * @param time24h true if the time should be set to 24 hours format
+ */
+void set24HourFormat(boolean time24h) {
+	mSettingRepo.date().set24h(time24h);
+}
 
-	/**
-	 * Sets if the screen should be in fullscreen
-	 * @param fullscreen
-	 */
-	void setFullscreen(boolean fullscreen) {
-		mSettingRepo.display().setFullscreen(fullscreen);
-	}
+/**
+ * @return current date format
+ */
+String getDateFormat() {
+	return mSettingRepo.date().getDateFormat();
+}
 
-	/**
-	 * @return true if fullscreen
-	 */
-	boolean isFullscreen() {
-		return mSettingRepo.display().isFullscreen();
-	}
+/**
+ * Set date format
+ * @param dateFormat the date format
+ */
+void setDateFormat(String dateFormat) {
+	mSettingRepo.date().setDateFormat(dateFormat);
+}
 
-	/**
-	 * Sets the fullscreen resolution of the game
-	 * @param resolution
-	 */
-	void setResolutionFullscreen(Resolution resolution) {
-		mSettingRepo.display().setResolutionFullscreen(resolution);
-	}
+/**
+ * @return true if fullscreen
+ */
+boolean isFullscreen() {
+	return mSettingRepo.display().isFullscreen();
+}
 
-	/**
-	 * @return fullscreen resolution of the game
-	 */
-	Resolution getResolutionFullscreen() {
-		return mSettingRepo.display().getResolutionFullscreen();
-	}
+/**
+ * Sets if the screen should be in fullscreen
+ * @param fullscreen
+ */
+void setFullscreen(boolean fullscreen) {
+	mSettingRepo.display().setFullscreen(fullscreen);
+}
 
-	/**
-	 * Sets the windowed resolution of the game
-	 * @param resolution
-	 */
-	void setResolutionWindowed(Resolution resolution) {
-		mSettingRepo.display().setResolutionWindowed(resolution);
-	}
+/**
+ * @return fullscreen resolution of the game
+ */
+Resolution getResolutionFullscreen() {
+	return mSettingRepo.display().getResolutionFullscreen();
+}
 
-	/**
-	 * @return windowed resolution of the game
-	 */
-	Resolution getResolutionWindowed() {
-		return mSettingRepo.display().getResolutionWindowed();
-	}
+/**
+ * Sets the fullscreen resolution of the game
+ * @param resolution
+ */
+void setResolutionFullscreen(Resolution resolution) {
+	mSettingRepo.display().setResolutionFullscreen(resolution);
+}
 
-	/**
-	 * Sets the UI/icon size of the game
-	 * @param iconSize
-	 */
-	void setIconSize(IconSizes iconSize) {
-		mSettingRepo.display().setIconSize(iconSize);
-	}
+/**
+ * @return windowed resolution of the game
+ */
+Resolution getResolutionWindowed() {
+	return mSettingRepo.display().getResolutionWindowed();
+}
 
-	/**
-	 * @return current icon size
-	 */
-	IconSizes getIconSize() {
-		return mSettingRepo.display().getIconSize();
-	}
+/**
+ * Sets the windowed resolution of the game
+ * @param resolution
+ */
+void setResolutionWindowed(Resolution resolution) {
+	mSettingRepo.display().setResolutionWindowed(resolution);
+}
 
-	/**
-	 * Sets if we're allowed to use mobile data connections
-	 * @param allow true if we're allowed to use mobile data
-	 */
-	void setMobileDataAllowed(boolean allow) {
-		mSettingRepo.network().setMobileDataAllowed(allow);
-	}
+/**
+ * @return current icon size
+ */
+IconSizes getIconSize() {
+	return mSettingRepo.display().getIconSize();
+}
 
-	/**
-	 * @return true if we are allowed to use mobile data connection
-	 */
-	boolean isMobileDataAllowed() {
-		return mSettingRepo.network().isMobileDataAllowed();
-	}
+/**
+ * Sets the UI/icon size of the game
+ * @param iconSize
+ */
+void setIconSize(IconSizes iconSize) {
+	mSettingRepo.display().setIconSize(iconSize);
+}
 
-	/**
-	 * Clears the database, files and settings for the current logged in account and then
-	 * logs out the user
-	 */
-	public void clearData() {
-		mSettingRepo.debug().clearData();
-	}
+/**
+ * @return true if we are allowed to use mobile data connection
+ */
+boolean isMobileDataAllowed() {
+	return mSettingRepo.network().isMobileDataAllowed();
+}
 
+/**
+ * Sets if we're allowed to use mobile data connections
+ * @param allow true if we're allowed to use mobile data
+ */
+void setMobileDataAllowed(boolean allow) {
+	mSettingRepo.network().setMobileDataAllowed(allow);
+}
 
-	@Override
-	protected SettingsGui getGui() {
-		return (SettingsGui) super.getGui();
-	}
-
-	private SettingRepo mSettingRepo = SettingRepo.getInstance();
+/**
+ * Clears the database, files and settings for the current logged in account and then logs out the
+ * user
+ */
+public void clearData() {
+	mSettingRepo.debug().clearData();
+}
 }

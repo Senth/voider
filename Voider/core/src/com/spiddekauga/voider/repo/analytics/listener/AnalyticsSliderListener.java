@@ -8,33 +8,32 @@ import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 
 /**
  * Posts analytics events when a slider is changed
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AnalyticsSliderListener extends ChangeListener {
-	/**
-	 * @param eventName event name
-	 */
-	public AnalyticsSliderListener(String eventName) {
-		mName = eventName;
-	}
+/** Analytics repository */
+protected static AnalyticsRepo mAnalyticsRepo = AnalyticsRepo.getInstance();
+/** Event name */
+private String mName;
 
-	@Override
-	public void changed(ChangeEvent event, Actor actor) {
-		if (actor instanceof Slider) {
-			mAnalyticsRepo.addEvent(mName, AnalyticsEventTypes.SLIDER, String.valueOf(((Slider) actor).getValue()));
-		}
-	}
+/**
+ * @param eventName event name
+ */
+public AnalyticsSliderListener(String eventName) {
+	mName = eventName;
+}
 
-	/**
-	 * @return name of the event
-	 */
-	protected String getName() {
-		return mName;
+@Override
+public void changed(ChangeEvent event, Actor actor) {
+	if (actor instanceof Slider) {
+		mAnalyticsRepo.addEvent(mName, AnalyticsEventTypes.SLIDER, String.valueOf(((Slider) actor).getValue()));
 	}
+}
 
-	/** Event name */
-	private String mName;
-	/** Analytics repository */
-	protected static AnalyticsRepo mAnalyticsRepo = AnalyticsRepo.getInstance();
+/**
+ * @return name of the event
+ */
+protected String getName() {
+	return mName;
+}
 
 }

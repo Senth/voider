@@ -4,8 +4,8 @@ import java.util.UUID;
 
 /**
  * Common class for resource exceptions
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ *
+
  */
 public abstract class ResourceException extends RuntimeException {
 	/**

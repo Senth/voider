@@ -45,7 +45,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SLevel;
 
 /**
  * Get all levels with specified filters
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class LevelFetch extends ResourceFetch<LevelFetchMethod, LevelInfoEntity> {

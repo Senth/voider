@@ -25,7 +25,7 @@ import com.spiddekauga.voider.utils.Graphics;
 /**
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions shall
  * derive from this class.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public abstract class Def extends Resource implements IResourceDependency, IResourceRevision, Disposable, IResourceTexture, IResourcePng,
 		KryoPostRead {

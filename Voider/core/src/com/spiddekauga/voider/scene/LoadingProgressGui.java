@@ -10,7 +10,7 @@ import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 
 /**
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LoadingProgressGui extends Gui {
 

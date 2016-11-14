@@ -14,7 +14,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 /**
  * Contains all the resources. Used for example in levels to later bind all resources that
  * have been loaded.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResourceContainer {
 

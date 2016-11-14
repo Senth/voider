@@ -22,7 +22,7 @@ import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
 
 /**
  * Backups the blobs from Internet
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BackupAction extends Action {
 	@Override

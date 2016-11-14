@@ -9,30 +9,29 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Common class for all menus used by Main Menu Scene
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class MenuGui extends Gui {
-	@Override
-	public void initGui() {
-		super.initGui();
+@Override
+public void initGui() {
+	super.initGui();
 
-		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
-	}
+	setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
+}
 
-	/**
-	 * Adds a back button
-	 */
-	protected void addBackButton() {
-		ButtonListener buttonListener = new ButtonListener() {
-			@Override
-			protected void onPressed(Button button) {
-				Scene scene = SceneSwitcher.getActiveScene(true);
-				if (scene != null) {
-					scene.endScene();
-				}
+/**
+ * Adds a back button
+ */
+protected void addBackButton() {
+	ButtonListener buttonListener = new ButtonListener() {
+		@Override
+		protected void onPressed(Button button) {
+			Scene scene = SceneSwitcher.getActiveScene(true);
+			if (scene != null) {
+				scene.endScene();
 			}
-		};
+		}
+	};
 
-		addActor(mUiFactory.button.createBackButton(buttonListener));
-	}
+	addActor(mUiFactory.button.createBackButton(buttonListener));
+}
 }

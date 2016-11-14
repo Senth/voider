@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 /**
  * Different event types for analytics
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public enum AnalyticsEventTypes {
 	/** Unknown event type */

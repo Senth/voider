@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response from highscore get method
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class HighscoreGetResponse implements IEntity, ISuccessStatuses {
 	/**

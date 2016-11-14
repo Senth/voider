@@ -3,7 +3,7 @@ package com.spiddekauga.voider.network.entities;
 
 /**
  * Abstract class for all method entities
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public abstract interface IMethodEntity extends IEntity {
 	/**

@@ -2,8 +2,8 @@ package com.spiddekauga.voider.resources;
 
 /**
  * Implement this if the resource is selectable
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ *
+
  */
 public interface IResourceSelectable {
 	/**

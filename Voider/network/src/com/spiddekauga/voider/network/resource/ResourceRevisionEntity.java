@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Wrapper for resource a resource revision to upload or download
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResourceRevisionEntity implements IEntity {
 	/** Resource id */

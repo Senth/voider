@@ -26,7 +26,7 @@ import com.spiddekauga.voider.network.misc.GetUploadUrlResponse;
 
 /**
  * Interface for various actions
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 abstract class Action {
 	/**

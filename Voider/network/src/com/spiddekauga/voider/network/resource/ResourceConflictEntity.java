@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Wrapper for conflicting resources
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResourceConflictEntity implements IEntity {
 	/** Resource id */

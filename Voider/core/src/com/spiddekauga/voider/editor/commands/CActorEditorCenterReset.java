@@ -6,32 +6,31 @@ import com.spiddekauga.voider.editor.IActorEditor;
 
 /**
  * Calls the reset actor in the actor editor.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CActorEditorCenterReset extends Command {
-	/**
-	 * Resets the actor definitions center offset from an actor editor.
-	 * @param actorEditor the actor editor to call resetCenterOffset()
-	 */
-	public CActorEditorCenterReset(IActorEditor actorEditor) {
-		mActorEditor = actorEditor;
-		mCenterOld.set(mActorEditor.getCenterOffset());
-	}
+/** The actor editor */
+private IActorEditor mActorEditor;
+/** Old center position of the actor */
+private Vector2 mCenterOld = new Vector2();
 
-	@Override
-	public boolean execute() {
-		mActorEditor.resetCenterOffset();
-		return true;
-	}
+/**
+ * Resets the actor definitions center offset from an actor editor.
+ * @param actorEditor the actor editor to call resetCenterOffset()
+ */
+public CActorEditorCenterReset(IActorEditor actorEditor) {
+	mActorEditor = actorEditor;
+	mCenterOld.set(mActorEditor.getCenterOffset());
+}
 
-	@Override
-	public boolean undo() {
-		mActorEditor.setCenterOffset(mCenterOld);
-		return true;
-	}
+@Override
+public boolean execute() {
+	mActorEditor.resetCenterOffset();
+	return true;
+}
 
-	/** The actor editor */
-	private IActorEditor mActorEditor;
-	/** Old center position of the actor */
-	private Vector2 mCenterOld = new Vector2();
+@Override
+public boolean undo() {
+	mActorEditor.setCenterOffset(mCenterOld);
+	return true;
+}
 }

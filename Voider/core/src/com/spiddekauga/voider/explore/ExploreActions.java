@@ -2,7 +2,6 @@ package com.spiddekauga.voider.explore;
 
 /**
  * What action to do when if the resource is selected
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum ExploreActions {
 	/** Play the selected level */
@@ -10,12 +9,10 @@ public enum ExploreActions {
 	/** Select a resource, can't select specific revisions */
 	SELECT,
 	/** Load a resource, can select specific revision if exists */
-	LOAD,
+	LOAD,;
 
-	;
-
-	@Override
-	public String toString() {
-		return name().substring(0, 1) + name().substring(1).toLowerCase();
-	}
+@Override
+public String toString() {
+	return name().substring(0, 1) + name().substring(1).toLowerCase();
+}
 }

@@ -20,7 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Game configuration
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class Config {
 	/**
@@ -219,7 +219,7 @@ private Config() {
 		/** Logging verbosity */
 		public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.RELEASE) ? Application.LOG_ERROR : Application.LOG_DEBUG;
 		/** Skip loading text */
-		public static final boolean SKIP_LOADING_TIME = isBuildOrBelow(Builds.NIGHTLY_RELEASE) ? true : false;
+		public static final boolean SKIP_LOADING_TIME = isBuildOrBelow(Builds.NIGHTLY_RELEASE);
 		/** Beta key length */
 		public static final int REGISTER_KEY_LENGTH = 22;
 		/** Set to true in JUNIT tests */

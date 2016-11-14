@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response of publish method.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class PublishResponse implements IEntity, ISuccessStatuses {
 	/** If publish was successful */

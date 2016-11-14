@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.stat.Tags;
 
 /**
  * Fetches information about all levels
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LevelFetchMethod extends FetchMethod {
 	/** Sorting */

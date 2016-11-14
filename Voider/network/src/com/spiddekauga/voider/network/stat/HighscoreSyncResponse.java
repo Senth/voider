@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response from synchronizing highscores
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class HighscoreSyncResponse implements IEntity, ISuccessStatuses {
 	/** Upload status */

@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Deletes all blobs
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class DeleteAllBlobsMethod implements IMethodEntity {
 	/** Secret key for deleting all blobs, not very secure, but secure enough */

@@ -39,7 +39,7 @@ import com.spiddekauga.voider.utils.Synchronizer;
 
 /**
  * The main application, i.e. start point
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class VoiderGame implements ApplicationListener {
 

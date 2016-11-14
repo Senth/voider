@@ -2,7 +2,7 @@ package com.spiddekauga.voider.network.resource;
 
 /**
  * Search ranges for enemies' bullet speed
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("javadoc")
 public enum BulletSpeedSearchRanges implements IRangeEnum {

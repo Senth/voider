@@ -12,42 +12,41 @@ import com.spiddekauga.voider.repo.resource.TextLoader.TextLoaderParameters;
 
 /**
  * Loads text files
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TextLoader extends AsynchronousAssetLoader<String, TextLoaderParameters> {
-	/**
-	 * @param resolver
-	 */
-	public TextLoader(FileHandleResolver resolver) {
-		super(resolver);
+/** Stored text */
+private String mText = null;
+
+/**
+ * @param resolver
+ */
+public TextLoader(FileHandleResolver resolver) {
+	super(resolver);
+}
+
+@Override
+public void loadAsync(AssetManager manager, String fileName, FileHandle file, TextLoaderParameters parameter) {
+	mText = null;
+
+	if (!file.exists()) {
+		throw new GdxRuntimeException("File not found: " + fileName);
 	}
 
-	@Override
-	public void loadAsync(AssetManager manager, String fileName, FileHandle file, TextLoaderParameters parameter) {
-		mText = null;
+	mText = file.readString();
+}
 
-		if (!file.exists()) {
-			throw new GdxRuntimeException("File not found: " + fileName);
-		}
+@Override
+public String loadSync(AssetManager manager, String fileName, FileHandle file, TextLoaderParameters parameter) {
+	return mText;
+}
 
-		mText = file.readString();
-	}
+@SuppressWarnings("rawtypes")
+@Override
+public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, TextLoaderParameters parameter) {
+	return null;
+}
 
-	@Override
-	public String loadSync(AssetManager manager, String fileName, FileHandle file, TextLoaderParameters parameter) {
-		return mText;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, TextLoaderParameters parameter) {
-		return null;
-	}
-
-	/** Parameters for TextLoader */
-	public static class TextLoaderParameters extends AssetLoaderParameters<String> {
-	}
-
-	/** Stored text */
-	private String mText = null;
+/** Parameters for TextLoader */
+public static class TextLoaderParameters extends AssetLoaderParameters<String> {
+}
 }

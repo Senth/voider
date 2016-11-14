@@ -6,22 +6,21 @@ import com.spiddekauga.voider.network.resource.DefEntity;
 
 /**
  * Bullet actor definition, does nothing more than specify that the actor is a bullet
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletActorDef extends ActorDef {
-	/**
-	 * Default constructor
-	 */
-	public BulletActorDef() {
-		super(ActorTypes.BULLET);
+/**
+ * Default constructor
+ */
+public BulletActorDef() {
+	super(ActorTypes.BULLET);
 
-		getBodyDef().type = BodyType.DynamicBody;
+	getBodyDef().type = BodyType.DynamicBody;
 
-		setDestroyOnCollide(true);
-	}
+	setDestroyOnCollide(true);
+}
 
-	@Override
-	protected DefEntity newDefEntity() {
-		return new BulletDefEntity();
-	}
+@Override
+protected DefEntity newDefEntity() {
+	return new BulletDefEntity();
+}
 }

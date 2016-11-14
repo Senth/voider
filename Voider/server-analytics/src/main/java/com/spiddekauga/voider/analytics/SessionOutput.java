@@ -10,7 +10,7 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
 
 /**
  * Combines multiple analytics sessions from a mapper to a list
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class SessionOutput extends Output<AnalyticsSession, List<AnalyticsSession>> {
 	private static class SessionOutputWriter extends OutputWriter<AnalyticsSession> {

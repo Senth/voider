@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Registers a new user
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class RegisterUserMethod implements IMethodEntity {
 	@Override

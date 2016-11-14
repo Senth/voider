@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Wrapper class for a resource and its type
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResourceBlobEntity implements IEntity {
 	/** Resource id */

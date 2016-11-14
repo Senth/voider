@@ -26,7 +26,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
 
 /**
  * Ability to revert to a restore point.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class Maintenance extends VoiderController {

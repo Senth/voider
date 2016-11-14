@@ -14,98 +14,97 @@ import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 
 /**
- * Common GUI class for exploring actors. Override this class to make the layout and
- * actions more specific
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ * Common GUI class for exploring actors. Override this class to make the layout and actions more
+ * specific
  */
 public class ExploreActorGui extends ExploreGui {
-	/**
-	 * Hidden constructor
-	 */
-	protected ExploreActorGui() {
-		// Does nothing
-	}
+private ExploreActorScene mScene = null;
 
-	/**
-	 * Creates actor content table
-	 * @param actor the actor to create
-	 * @param selected true if the actor is selected
-	 * @return table with actor image and name
-	 */
-	@Override
-	protected AlignTable createContentActor(final DefEntity actor, boolean selected) {
-		AlignTable table = new AlignTable();
-		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+/**
+ * Hidden constructor
+ */
+protected ExploreActorGui() {
+	// Does nothing
+}
 
-		ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
-		ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
-		imageButtonStyle.imageUp = (Drawable) actor.drawable;
+/**
+ * Creates actor content table
+ * @param actor the actor to create
+ * @param selected true if the actor is selected
+ * @return table with actor image and name
+ */
+@Override
+protected AlignTable createContentActor(final DefEntity actor, boolean selected) {
+	AlignTable table = new AlignTable();
+	table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
-		ImageButton button = new ImageButton(imageButtonStyle);
-		button.setChecked(selected);
-		table.row().setFillWidth(true);
-		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
+	ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
+	ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
+	imageButtonStyle.imageUp = (Drawable) actor.drawable;
 
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mScene.setSelected(actor);
-				}
+	ImageButton button = new ImageButton(imageButtonStyle);
+	button.setChecked(selected);
+	table.row().setFillWidth(true);
+	table.add(button).setFillWidth(true).setKeepAspectRatio(true);
+
+	new ButtonListener(button) {
+		/** If this actor was selected before */
+		private boolean mWasCheckedOnDown = false;
+
+		@Override
+		protected void onChecked(Button button, boolean checked) {
+			if (checked) {
+				mScene.setSelected(actor);
 			}
-
-			@Override
-			protected void onDown(Button button) {
-				mWasCheckedOnDown = button.isChecked();
-			}
-
-			@Override
-			protected void onUp(Button button) {
-				if (mWasCheckedOnDown) {
-					mScene.selectAction();
-				}
-			}
-
-			/** If this actor was selected before */
-			private boolean mWasCheckedOnDown = false;
-		};
-		addContentButton(button);
-
-		// Analytics
-		String fullActorType = actor.getClass().getSimpleName();
-		int actorNameIndex = fullActorType.indexOf("DefEntity");
-		String actorType = fullActorType;
-		if (actorNameIndex != -1) {
-			actorType = fullActorType.substring(0, actorNameIndex);
 		}
-		new AnalyticsButtonListener(button, "Explore" + actorType + " _Select", actor.name + " (" + actor.resourceId + ":" + actor.revision + ")");
 
+		@Override
+		protected void onDown(Button button) {
+			mWasCheckedOnDown = button.isChecked();
+		}
 
-		// Actor name
-		table.row();
-		mUiFactory.text.add(actor.name, table);
-		table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
+		@Override
+		protected void onUp(Button button) {
+			if (mWasCheckedOnDown) {
+				mScene.selectAction();
+			}
+		}
+	};
+	addContentButton(button);
 
-		return table;
+	// Analytics
+	String fullActorType = actor.getClass().getSimpleName();
+	int actorNameIndex = fullActorType.indexOf("DefEntity");
+	String actorType = fullActorType;
+	if (actorNameIndex != -1) {
+		actorType = fullActorType.substring(0, actorNameIndex);
 	}
+	new AnalyticsButtonListener(button, "Explore" + actorType + " _Select", actor.name + " (" + actor.resourceId + ":" + actor.revision + ")");
 
-	/**
-	 * Sets the actor scene
-	 * @param scene
-	 */
-	protected void setActorScene(ExploreActorScene scene) {
-		mScene = scene;
-	}
 
-	@Override
-	protected void onFetchMoreContent() {
-		// Does nothing
-	}
+	// Actor name
+	table.row();
+	mUiFactory.text.add(actor.name, table);
+	table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 
-	@Override
-	protected float getMaxActorWidth() {
-		return Config.Actor.SAVE_TEXTURE_SIZE;
-	}
+	return table;
+}
 
-	private ExploreActorScene mScene = null;
+@Override
+protected void onFetchMoreContent() {
+	// Does nothing
+}
+
+@Override
+protected float getMaxActorWidth() {
+	return Config.Actor.SAVE_TEXTURE_SIZE;
+}
+
+/**
+ * Sets the actor scene
+ * @param scene
+ */
+protected void setActorScene(ExploreActorScene scene) {
+	mScene = scene;
+}
 }

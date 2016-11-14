@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response for downloading a resource
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ResourceDownloadResponse implements IEntity, ISuccessStatuses {
 	/** Status of the response */

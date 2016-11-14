@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.misc.BlobDownloadMethod;
 
 /**
  * A test action
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class TestAction extends Action {
 

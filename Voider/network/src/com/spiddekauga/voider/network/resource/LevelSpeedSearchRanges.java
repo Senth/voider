@@ -2,7 +2,7 @@ package com.spiddekauga.voider.network.resource;
 
 /**
  * Level speed searches
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("javadoc")
 public enum LevelSpeedSearchRanges implements IRangeEnum {

@@ -55,7 +55,7 @@ import com.spiddekauga.voider.version.Version;
 
 /**
  * Message box factory
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class MsgBoxFactory {
 	/**

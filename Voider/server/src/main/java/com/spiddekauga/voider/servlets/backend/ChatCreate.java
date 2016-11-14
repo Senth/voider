@@ -16,7 +16,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Creates a chat connection (or closes one)
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class ChatCreate extends VoiderServlet {

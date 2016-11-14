@@ -2,8 +2,8 @@ package com.spiddekauga.voider.resources;
 
 /**
  * Resource has PNG image
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ *
+
  */
 public interface IResourcePng extends IResource {
 	/**

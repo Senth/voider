@@ -23,7 +23,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
 
 /**
  * View, edit and generate new MOTDs for Voider
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class Motd extends VoiderController {

@@ -4,40 +4,39 @@ import com.badlogic.gdx.utils.Disposable;
 
 /**
  * Common interface for commands that can be passed as argument and executed later.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Command implements Disposable {
-	/**
-	 * Executes the command
-	 * @return true if the command was successfully executed
-	 */
-	public abstract boolean execute();
+/** True if the command shall be chanied, just as SequenceCommand */
+private boolean mChained = false;
 
-	/**
-	 * Executes the undo command, i.e. it reverses the effect of the execute command
-	 * @return true if the command was successfully undone
-	 */
-	public abstract boolean undo();
+/**
+ * Executes the command
+ * @return true if the command was successfully executed
+ */
+public abstract boolean execute();
 
-	@Override
-	public void dispose() {
-		// Does nothing
-	}
+/**
+ * Executes the undo command, i.e. it reverses the effect of the execute command
+ * @return true if the command was successfully undone
+ */
+public abstract boolean undo();
 
-	/**
-	 * Sets the command as chained
-	 */
-	void setAsChanied() {
-		mChained = true;
-	}
+@Override
+public void dispose() {
+	// Does nothing
+}
 
-	/**
-	 * @return true if this command is chained
-	 */
-	boolean isChained() {
-		return mChained;
-	}
+/**
+ * Sets the command as chained
+ */
+void setAsChanied() {
+	mChained = true;
+}
 
-	/** True if the command shall be chanied, just as SequenceCommand */
-	private boolean mChained = false;
+/**
+ * @return true if this command is chained
+ */
+boolean isChained() {
+	return mChained;
+}
 }

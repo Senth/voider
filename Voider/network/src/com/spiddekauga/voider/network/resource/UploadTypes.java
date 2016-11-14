@@ -7,7 +7,7 @@ import com.spiddekauga.utils.IIdStore;
 
 /**
  * All definition types that can be uploaded
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("javadoc")
 public enum UploadTypes implements IIdStore {

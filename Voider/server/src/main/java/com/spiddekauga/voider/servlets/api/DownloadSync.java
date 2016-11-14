@@ -23,7 +23,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 /**
  * Checks if there are new published resources to sync to the client depending on the time
  * of last sync.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class DownloadSync extends VoiderApiServlet<DownloadSyncMethod> {

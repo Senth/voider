@@ -3,10 +3,9 @@ package com.spiddekauga.voider.utils.event;
 
 /**
  * All the different game events
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum EventTypes {
-	// --- USER ---
+// --- USER ---
 	/** User logged in */
 	USER_LOGIN,
 	/** User gone online */

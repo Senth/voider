@@ -47,7 +47,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Synchronizes various statistics
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class StatSync extends VoiderApiServlet<StatSyncMethod> {

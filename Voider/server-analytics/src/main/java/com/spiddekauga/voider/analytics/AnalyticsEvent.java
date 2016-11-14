@@ -7,7 +7,7 @@ import com.google.appengine.api.datastore.Key;
 
 /**
  * Event information for BigQuery
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AnalyticsEvent implements Serializable {
 	/**

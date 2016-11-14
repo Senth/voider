@@ -8,7 +8,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 
 /**
  * Maps scenes from a datastore object into an AnalyticsScene object
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class SceneMapper extends MapOnlyMapper<Entity, AnalyticsScene> {

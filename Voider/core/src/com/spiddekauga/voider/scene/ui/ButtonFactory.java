@@ -41,7 +41,7 @@ import com.spiddekauga.voider.sound.Sounds;
 
 /**
  * UI factory for buttons
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class ButtonFactory extends BaseFactory {
 	/**

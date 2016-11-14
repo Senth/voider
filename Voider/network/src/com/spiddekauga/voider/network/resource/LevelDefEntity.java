@@ -4,7 +4,7 @@ import java.util.UUID;
 
 /**
  * Level definition entity
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LevelDefEntity extends DefEntity {
 	/**

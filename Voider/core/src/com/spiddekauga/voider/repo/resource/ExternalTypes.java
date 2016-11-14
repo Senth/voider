@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.repo.resource;
 
-import java.util.HashMap;
-
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
@@ -13,6 +11,8 @@ import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.network.resource.UploadTypes;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
+
+import java.util.HashMap;
 
 /**
  * All the different external resource types
@@ -31,70 +31,72 @@ public enum ExternalTypes {
 	CAMPAIGN_DEF(UploadTypes.CAMPAIGN_DEF, null), // TODO add campaign
 
 	;
-	/**
-	 * Constructor which sets the type
-	 * @param uploadType the connected upload type for this external type
-	 * @param type the class type of resource
-	 */
-	private ExternalTypes(UploadTypes uploadType, Class<? extends IResource> type) {
-		mId = uploadType.toId();
-		mType = type;
-	}
 
-	/**
-	 * @return type of the resource
-	 */
-	public Class<? extends IResource> getClassType() {
-		return mType;
-	}
+/** All enumeration types */
+private static HashMap<Class<? extends IResource>, ExternalTypes> mClassToEnum = new HashMap<>();
+/** From id to type */
+private static HashMap<Integer, ExternalTypes> mIdToEnum = new HashMap<>();
 
-	/**
-	 * @return id of the enumeration
-	 */
-	public int getId() {
-		return mId;
+static {
+	for (ExternalTypes externalTypes : ExternalTypes.values()) {
+		mIdToEnum.put(externalTypes.mId, externalTypes);
+		mClassToEnum.put(externalTypes.mType, externalTypes);
 	}
+}
 
-	/**
-	 * Converts a class type to an enumeration
-	 * @param type the type to get an enumeration for
-	 * @return enumeration of this type
-	 */
-	public static ExternalTypes fromType(Class<? extends IResource> type) {
-		return mClassToEnum.get(type);
-	}
+/** Unique integer id of the enum */
+private int mId;
+/** Resource type */
+private Class<? extends IResource> mType;
 
-	/**
-	 * Converts an integer id type to an enumeration
-	 * @param id the id type to get an enumeration for
-	 * @return enumeration of this id type
-	 */
-	public static ExternalTypes fromId(int id) {
-		return mIdToEnum.get(id);
-	}
+/**
+ * Constructor which sets the type
+ * @param uploadType the connected upload type for this external type
+ * @param type the class type of resource
+ */
+private ExternalTypes(UploadTypes uploadType, Class<? extends IResource> type) {
+	mId = uploadType.toId();
+	mType = type;
+}
 
-	/**
-	 * Converts an upload type enumeration to an external type enumeration
-	 * @param uploadType the upload type to get an external type for
-	 * @return external type enumeration of uploadType
-	 */
-	public static ExternalTypes fromUploadType(UploadTypes uploadType) {
-		return mIdToEnum.get(uploadType.toId());
-	}
+/**
+ * Converts a class type to an enumeration
+ * @param type the type to get an enumeration for
+ * @return enumeration of this type
+ */
+public static ExternalTypes fromType(Class<? extends IResource> type) {
+	return mClassToEnum.get(type);
+}
 
-	/** Unique integer id of the enum */
-	private int mId;
-	/** Resource type */
-	private Class<? extends IResource> mType;
-	/** All enumeration types */
-	private static HashMap<Class<? extends IResource>, ExternalTypes> mClassToEnum = new HashMap<>();
-	/** From id to type */
-	private static HashMap<Integer, ExternalTypes> mIdToEnum = new HashMap<>();
+/**
+ * Converts an integer id type to an enumeration
+ * @param id the id type to get an enumeration for
+ * @return enumeration of this id type
+ */
+public static ExternalTypes fromId(int id) {
+	return mIdToEnum.get(id);
+}
 
-	static {
-		for (ExternalTypes externalTypes : ExternalTypes.values()) {
-			mIdToEnum.put(externalTypes.mId, externalTypes);
-			mClassToEnum.put(externalTypes.mType, externalTypes);
-		}
-	}
+/**
+ * Converts an upload type enumeration to an external type enumeration
+ * @param uploadType the upload type to get an external type for
+ * @return external type enumeration of uploadType
+ */
+public static ExternalTypes fromUploadType(UploadTypes uploadType) {
+	return mIdToEnum.get(uploadType.toId());
+}
+
+/**
+ * @return type of the resource
+ */
+public Class<? extends IResource> getClassType() {
+	return mType;
+}
+
+/**
+ * @return id of the enumeration
+ */
+public int getId() {
+	return mId;
+}
 }

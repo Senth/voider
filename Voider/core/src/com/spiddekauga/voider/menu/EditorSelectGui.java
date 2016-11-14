@@ -11,74 +11,73 @@ import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 
 /**
  * GUI for enemy editor
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class EditorSelectGui extends MenuGui {
-	/**
-	 * Set the editor selection scene
-	 * @param scene
-	 */
-	void setScene(EditorSelectScene scene) {
-		mScene = scene;
-	}
+private EditorSelectScene mScene = null;
 
-	@Override
-	public void initGui() {
-		super.initGui();
+/**
+ * Set the editor selection scene
+ * @param scene
+ */
+void setScene(EditorSelectScene scene) {
+	mScene = scene;
+}
 
-		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+@Override
+public void initGui() {
+	super.initGui();
 
-		initMenu();
+	mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
-		addBackButton();
-	}
+	initMenu();
 
-	/**
-	 * Initializes the menu
-	 */
-	private void initMenu() {
-		Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_LEVEL_BIG, "Level", Positions.BOTTOM, null, mMainTable, null,
-				null);
-		mUiFactory.button.addSound(button);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.gotoLevelEditor();
-			}
-		};
+	addBackButton();
+}
 
-		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_ENEMY_BIG, "Enemy", Positions.BOTTOM, null, mMainTable, null, null);
-		mUiFactory.button.addSound(button);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.gotoEnemyEditor();
-			}
-		};
-		mUiFactory.button.addPadding(mMainTable);
-
-		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_BULLET_BIG, "Bullet", Positions.BOTTOM, null, mMainTable, null, null);
-		mUiFactory.button.addSound(button);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed(Button button) {
-				mScene.gotoBulletEditor();
-			}
-		};
-		mUiFactory.button.addPadding(mMainTable);
-
-		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
-			button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_SHIP_BIG, "Ship", Positions.BOTTOM, null, mMainTable, null, null);
-			mUiFactory.button.addSound(button);
-			new ButtonListener(button) {
-				@Override
-				protected void onPressed(Button button) {
-					mScene.gotoShipEditor();
-				}
-			};
-			mUiFactory.button.addPadding(mMainTable);
+/**
+ * Initializes the menu
+ */
+private void initMenu() {
+	Button button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_LEVEL_BIG, "Level", Positions.BOTTOM, null, mMainTable, null,
+			null);
+	mUiFactory.button.addSound(button);
+	new ButtonListener(button) {
+		@Override
+		protected void onPressed(Button button) {
+			mScene.gotoLevelEditor();
 		}
-	}
+	};
 
-	private EditorSelectScene mScene = null;
+	button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_ENEMY_BIG, "Enemy", Positions.BOTTOM, null, mMainTable, null, null);
+	mUiFactory.button.addSound(button);
+	new ButtonListener(button) {
+		@Override
+		protected void onPressed(Button button) {
+			mScene.gotoEnemyEditor();
+		}
+	};
+	mUiFactory.button.addPadding(mMainTable);
+
+	button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_BULLET_BIG, "Bullet", Positions.BOTTOM, null, mMainTable, null, null);
+	mUiFactory.button.addSound(button);
+	new ButtonListener(button) {
+		@Override
+		protected void onPressed(Button button) {
+			mScene.gotoBulletEditor();
+		}
+	};
+	mUiFactory.button.addPadding(mMainTable);
+
+	if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE)) {
+		button = mUiFactory.button.addImageWithLabel(SkinNames.General.EDITOR_SHIP_BIG, "Ship", Positions.BOTTOM, null, mMainTable, null, null);
+		mUiFactory.button.addSound(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed(Button button) {
+				mScene.gotoShipEditor();
+			}
+		};
+		mUiFactory.button.addPadding(mMainTable);
+	}
+}
 }

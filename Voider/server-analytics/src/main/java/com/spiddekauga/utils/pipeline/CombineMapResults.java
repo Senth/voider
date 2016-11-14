@@ -9,7 +9,7 @@ import com.google.appengine.tools.pipeline.Value;
 
 /**
  * Waits for and combines the result from multiple MapReduce jobs
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  * @param <ReturnType> what the jobs return
  */
 public class CombineMapResults<ReturnType> extends Job1<List<ReturnType>, List<MapReduceResult<ReturnType>>> {

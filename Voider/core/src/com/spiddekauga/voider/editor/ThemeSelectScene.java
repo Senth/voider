@@ -9,60 +9,59 @@ import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Scene for selecting theme on a mobile device
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ThemeSelectScene extends Scene {
-	/**
-	 * Sets the theme to display
-	 * @param theme the theme to display in fullscreen
-	 */
-	public ThemeSelectScene(Themes theme) {
-		super(new ThemeSelectGui());
-		mTheme = theme;
+/** Theme to display */
+private Themes mTheme;
 
-		((ThemeSelectGui) getGui()).setScene(this);
+/**
+ * Sets the theme to display
+ * @param theme the theme to display in fullscreen
+ */
+public ThemeSelectScene(Themes theme) {
+	super(new ThemeSelectGui());
+	mTheme = theme;
+
+	((ThemeSelectGui) getGui()).setScene(this);
+}
+
+@Override
+protected boolean onKeyDown(int keycode) {
+	if (KeyHelper.isBackPressed(keycode)) {
+		cancel();
+	} else if (keycode == Input.Keys.ENTER) {
+		select();
 	}
 
-	@Override
-	protected void loadResources() {
-		ResourceCacheFacade.load(this, InternalDeps.UI_EDITOR);
-		ResourceCacheFacade.load(this, mTheme.getDependency());
+	return super.onKeyDown(keycode);
+}
 
-		super.loadResources();
-	}
+@Override
+protected void loadResources() {
+	ResourceCacheFacade.load(this, InternalDeps.UI_EDITOR);
+	ResourceCacheFacade.load(this, mTheme.getDependency());
 
-	@Override
-	protected boolean onKeyDown(int keycode) {
-		if (KeyHelper.isBackPressed(keycode)) {
-			cancel();
-		} else if (keycode == Input.Keys.ENTER) {
-			select();
-		}
+	super.loadResources();
+}
 
-		return super.onKeyDown(keycode);
-	}
+/**
+ * Cancel selection
+ */
+void cancel() {
+	setOutcome(Outcomes.THEME_SELECT_CANCEL);
+}
 
-	/**
-	 * @return theme to select
-	 */
-	Themes getTheme() {
-		return mTheme;
-	}
+/**
+ * Select the theme
+ */
+void select() {
+	setOutcome(Outcomes.THEME_SELECTED, mTheme);
+}
 
-	/**
-	 * Cancel selection
-	 */
-	void cancel() {
-		setOutcome(Outcomes.THEME_SELECT_CANCEL);
-	}
-
-	/**
-	 * Select the theme
-	 */
-	void select() {
-		setOutcome(Outcomes.THEME_SELECTED, mTheme);
-	}
-
-	/** Theme to display */
-	private Themes mTheme;
+/**
+ * @return theme to select
+ */
+Themes getTheme() {
+	return mTheme;
+}
 }

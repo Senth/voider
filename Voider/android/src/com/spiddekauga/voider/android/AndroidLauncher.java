@@ -9,7 +9,7 @@ import com.spiddekauga.voider.VoiderGame;
 
 /**
  * Launches the game on the Android
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AndroidLauncher extends AndroidApplication {
 	@Override

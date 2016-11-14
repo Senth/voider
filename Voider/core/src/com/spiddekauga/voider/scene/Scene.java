@@ -35,7 +35,7 @@ import com.spiddekauga.voider.sound.MusicPlayer;
  * Base class for all scenes that should be rendered. Examples of scenes: Game, Menus,
  * Editors. It extends InputAdapter which makes it able to handle all input events through
  * derived classes (if necessary).
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/**

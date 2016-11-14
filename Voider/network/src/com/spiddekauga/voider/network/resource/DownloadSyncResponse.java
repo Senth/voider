@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * All resources that should be downloaded (synced) from the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class DownloadSyncResponse implements IEntity, ISuccessStatuses {
 	/** All published resources to download */

@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Abstract class for all session variables
  * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public abstract class SessionVariable implements Serializable {
 

@@ -31,7 +31,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Downloads resources
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class ResourceDownload extends VoiderApiServlet<ResourceDownloadMethod> {

@@ -25,7 +25,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Synchronizes highscores with clients
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class HighscoreSync extends VoiderApiServlet<HighscoreSyncMethod> {

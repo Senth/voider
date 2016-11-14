@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Information about enemies we fetched or search for
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class EnemyFetchResponse extends FetchResponse {
 	/** All enemies */

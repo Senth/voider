@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response when restoring blobs
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class RestoreBlobsResponse implements IEntity, ISuccessStatuses {
 	/** Response status */

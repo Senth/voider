@@ -4,7 +4,7 @@ import com.spiddekauga.utils.ShapeRendererEx;
 
 /**
  * A Resource that can be rendered
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public interface IResourceRenderShape extends IResourceRenderOrder {
 	/**

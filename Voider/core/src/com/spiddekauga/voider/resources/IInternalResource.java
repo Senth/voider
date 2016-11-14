@@ -4,7 +4,7 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**
  * Internal resource
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 interface IInternalResource {
 	/**

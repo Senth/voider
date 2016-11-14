@@ -5,7 +5,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Base class for all resource responses
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class FetchResponse implements IEntity, ISuccessStatuses {
 	/** Datastore cursor to continue the query */

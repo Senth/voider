@@ -27,7 +27,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SEnemy;
 
 /**
  * Servlet for fetching enemy information
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class EnemyFetch extends ActorFetch<EnemyFetchMethod, EnemyDefEntity> {

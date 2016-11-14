@@ -13,7 +13,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 
 /**
  * GUI for the prologue scene
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 class LoadingTextSceneGui extends Gui {
 	/**

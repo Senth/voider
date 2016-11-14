@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
 
 /**
  * Bug report to store locally
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BugReportDef extends Resource {
 	/**

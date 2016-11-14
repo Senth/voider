@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 
 /**
  * Available density buckets for Voider
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public enum DensityBuckets {
 	/** Medium DPI */

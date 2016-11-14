@@ -7,7 +7,7 @@ import com.google.appengine.tools.pipeline.Value;
 
 /**
  * Waits for and combines the result from multiple jobs
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  * @param <ReturnType> what the jobs return
  */
 public class CombineJobResults<ReturnType> extends Job1<List<ReturnType>, List<ReturnType>> {

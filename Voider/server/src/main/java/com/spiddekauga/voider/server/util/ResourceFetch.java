@@ -21,7 +21,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 
 /**
  * Common class for getting resources
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  * @param <Method>
  * @param <ReturnType>
  */

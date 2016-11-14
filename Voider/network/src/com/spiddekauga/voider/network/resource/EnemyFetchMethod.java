@@ -7,7 +7,7 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
 
 /**
  * Fetches information about enemies
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class EnemyFetchMethod extends FetchMethod {
 	/** Search by text if not empty */

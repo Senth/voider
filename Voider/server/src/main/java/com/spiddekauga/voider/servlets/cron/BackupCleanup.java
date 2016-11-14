@@ -18,7 +18,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 /**
  * This method deletes backups older than 1 month and newer than 6 months, but keeps all
  * backups made on the 1st of a month.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class BackupCleanup extends VoiderServlet {

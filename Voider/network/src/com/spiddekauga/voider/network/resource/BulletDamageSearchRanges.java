@@ -2,7 +2,7 @@ package com.spiddekauga.voider.network.resource;
 
 /**
  * Search ranges for bullet damage
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("javadoc")
 public enum BulletDamageSearchRanges implements IRangeEnum {

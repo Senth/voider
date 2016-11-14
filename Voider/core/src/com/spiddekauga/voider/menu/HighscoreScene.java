@@ -1,9 +1,5 @@
 package com.spiddekauga.voider.menu;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
-
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
@@ -17,125 +13,126 @@ import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 import com.spiddekauga.voider.utils.event.IEventListener;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.UUID;
+
 /**
  * Scene for highscores
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HighscoreScene extends Scene implements IResponseListener {
-	/**
-	 * Creates highscore scene
-	 * @param levelId id of the level
-	 * @param score how much the player scored this time
-	 * @param newHighscore true if the player score a new highscore. This causes the
-	 *        highscore scene to wait for the score to be published before getting new
-	 *        score from the server
-	 */
-	public HighscoreScene(UUID levelId, int score, boolean newHighscore) {
-		super(new HighscoreGui());
-		mIsHighscoreThisTime = newHighscore;
-		mLevelId = levelId;
-
-		getGui().setHighscoreScene(this);
-		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
-
-		if (mIsHighscoreThisTime) {
-			EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-			eventDispatcher.connect(EventTypes.SYNC_HIGHSCORE_SUCCESS, mHighscoreSyncListener);
-			eventDispatcher.connect(EventTypes.SYNC_HIGHSCORE_FAILED, mHighscoreSyncListener);
-		} else {
+/** Score this time */
+private int mScore;
+private UUID mLevelId;
+private IEventListener mHighscoreSyncListener = new IEventListener() {
+	@Override
+	public void handleEvent(GameEvent event) {
+		if (event.type == EventTypes.SYNC_HIGHSCORE_SUCCESS) {
 			fetchHighscoreFromServer();
-		}
-
-		mScore = score;
-	}
-
-	@Override
-	protected void onDeactivate() {
-		super.onDeactivate();
-
-		if (mIsHighscoreThisTime) {
-			EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-			eventDispatcher.disconnect(EventTypes.SYNC_HIGHSCORE_SUCCESS, mHighscoreSyncListener);
-			eventDispatcher.disconnect(EventTypes.SYNC_HIGHSCORE_FAILED, mHighscoreSyncListener);
-		}
-	}
-
-	@Override
-	protected void update(float deltaTime) {
-		super.update(deltaTime);
-
-		handleWebResponses();
-	}
-
-	@Override
-	public synchronized void handleWebResponse(IMethodEntity method, IEntity response) {
-		mWebResponses.add(new WebWrapper(method, response));
-	}
-
-	/**
-	 * Handle existing web responses
-	 */
-	private synchronized void handleWebResponses() {
-		Iterator<WebWrapper> webIt = mWebResponses.iterator();
-
-		while (webIt.hasNext()) {
-			WebWrapper webWrapper = webIt.next();
-			IEntity response = webWrapper.response;
-
-			if (response instanceof HighscoreGetResponse) {
-				handleGetUserScores((HighscoreGetResponse) response);
-			}
-
-			webIt.remove();
-		}
-	}
-
-	/**
-	 * Handle get user scores
-	 * @param response server response
-	 */
-	private void handleGetUserScores(HighscoreGetResponse response) {
-		if (response.isSuccessful()) {
-			getGui().setFirstPlace(response.firstPlace);
-			getGui().populateUserScores(mScore, response.userScore, response.userPlace, response.beforeUser, response.afterUser);
 		} else {
 			endScene();
 		}
 	}
+};
+private boolean mIsHighscoreThisTime = false;
+private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
 
-	/**
-	 * @return true if it's a highscore this time
-	 */
-	boolean isHighScoreThisTime() {
-		return mIsHighscoreThisTime;
+/**
+ * Creates highscore scene
+ * @param levelId id of the level
+ * @param score how much the player scored this time
+ * @param newHighscore true if the player score a new highscore. This causes the highscore scene to
+ * wait for the score to be published before getting new score from the server
+ */
+public HighscoreScene(UUID levelId, int score, boolean newHighscore) {
+	super(new HighscoreGui());
+	mIsHighscoreThisTime = newHighscore;
+	mLevelId = levelId;
+
+	getGui().setHighscoreScene(this);
+	setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
+
+	if (mIsHighscoreThisTime) {
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.connect(EventTypes.SYNC_HIGHSCORE_SUCCESS, mHighscoreSyncListener);
+		eventDispatcher.connect(EventTypes.SYNC_HIGHSCORE_FAILED, mHighscoreSyncListener);
+	} else {
+		fetchHighscoreFromServer();
 	}
 
-	/**
-	 * Fetch highscore from the server
-	 */
-	private void fetchHighscoreFromServer() {
-		HighscoreRepo.getInstance().getPlayerServerScore(mLevelId, this);
-	}
+	mScore = score;
+}
 
-	@Override
-	protected HighscoreGui getGui() {
-		return (HighscoreGui) super.getGui();
-	}
+/**
+ * Fetch highscore from the server
+ */
+private void fetchHighscoreFromServer() {
+	HighscoreRepo.getInstance().getPlayerServerScore(mLevelId, this);
+}
 
-	private IEventListener mHighscoreSyncListener = new IEventListener() {
-		@Override
-		public void handleEvent(GameEvent event) {
-			if (event.type == EventTypes.SYNC_HIGHSCORE_SUCCESS) {
-				fetchHighscoreFromServer();
-			} else {
-				endScene();
-			}
+@Override
+protected void update(float deltaTime) {
+	super.update(deltaTime);
+
+	handleWebResponses();
+}
+
+@Override
+protected void onDeactivate() {
+	super.onDeactivate();
+
+	if (mIsHighscoreThisTime) {
+		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+		eventDispatcher.disconnect(EventTypes.SYNC_HIGHSCORE_SUCCESS, mHighscoreSyncListener);
+		eventDispatcher.disconnect(EventTypes.SYNC_HIGHSCORE_FAILED, mHighscoreSyncListener);
+	}
+}
+
+@Override
+protected HighscoreGui getGui() {
+	return (HighscoreGui) super.getGui();
+}
+
+/**
+ * Handle existing web responses
+ */
+private synchronized void handleWebResponses() {
+	Iterator<WebWrapper> webIt = mWebResponses.iterator();
+
+	while (webIt.hasNext()) {
+		WebWrapper webWrapper = webIt.next();
+		IEntity response = webWrapper.response;
+
+		if (response instanceof HighscoreGetResponse) {
+			handleGetUserScores((HighscoreGetResponse) response);
 		}
-	};
 
-	/** Score this time */
-	private int mScore;
-	private UUID mLevelId;
-	private boolean mIsHighscoreThisTime = false;
-	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
+		webIt.remove();
+	}
+}
+
+/**
+ * Handle get user scores
+ * @param response server response
+ */
+private void handleGetUserScores(HighscoreGetResponse response) {
+	if (response.isSuccessful()) {
+		getGui().setFirstPlace(response.firstPlace);
+		getGui().populateUserScores(mScore, response.userScore, response.userPlace, response.beforeUser, response.afterUser);
+	} else {
+		endScene();
+	}
+}
+
+@Override
+public synchronized void handleWebResponse(IMethodEntity method, IEntity response) {
+	mWebResponses.add(new WebWrapper(method, response));
+}
+
+/**
+ * @return true if it's a highscore this time
+ */
+boolean isHighScoreThisTime() {
+	return mIsHighscoreThisTime;
+}
 }

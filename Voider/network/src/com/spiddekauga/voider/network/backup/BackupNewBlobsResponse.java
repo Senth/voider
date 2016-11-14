@@ -10,7 +10,7 @@ import com.spiddekauga.voider.network.resource.ResourceRevisionBlobEntity;
 
 /**
  * All the new blobs to backup.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BackupNewBlobsResponse implements IEntity, ISuccessStatuses {
 	/** Status of the blob */

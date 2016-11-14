@@ -2,8 +2,8 @@ package com.spiddekauga.voider.resources;
 
 /**
  * A resource that needs updating
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ *
+
  */
 public interface IResourceUpdate {
 	/**

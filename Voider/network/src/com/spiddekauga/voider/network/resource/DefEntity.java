@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Common class for def entities
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class DefEntity implements IEntity {
 	/** Def name */

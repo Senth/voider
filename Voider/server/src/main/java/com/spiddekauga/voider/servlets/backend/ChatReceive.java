@@ -4,7 +4,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
 
 /**
  * Forwards messages...
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class ChatReceive extends VoiderController {

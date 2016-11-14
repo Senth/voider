@@ -23,7 +23,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Get all new blobs from the server so we can download them for backup purposes.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class BackupNewBlobs extends VoiderApiServlet<BackupNewBlobsMethod> {

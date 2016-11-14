@@ -15,42 +15,41 @@ import net._01001111.text.LoremIpsum;
 
 /**
  * GUI for the prototype
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PrototypeGui extends Gui {
-	@Override
-	public void initGui() {
-		super.initGui();
+private static final String TEXT;
+private static final String[] FONTS = {"small_bold", "small_black", "medium_bold", "medium_black", "large", "large_bold", "large_black", "huge",
+		"huge_bold", "huge_black"};
 
-		initFonts();
+static {
+	LoremIpsum loremIpsum = new LoremIpsum();
+	TEXT = loremIpsum.sentences(1);
+}
+
+@Override
+public void dispose() {
+	super.dispose();
+}
+
+@Override
+public void initGui() {
+	super.initGui();
+
+	initFonts();
+}
+
+/**
+ * Initialize fonts
+ */
+private void initFonts() {
+	mMainTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+
+	for (String fontName : FONTS) {
+		Skin skin = ResourceCacheFacade.get(InternalDeps.UI_GENERAL);
+		BitmapFont font = skin.getFont(fontName);
+		LabelStyle labelStyle = new LabelStyle(font, Color.WHITE);
+		mMainTable.add(new Label(fontName + "    " + TEXT, labelStyle));
+		mMainTable.row();
 	}
-
-	/**
-	 * Initialize fonts
-	 */
-	private void initFonts() {
-		mMainTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-
-		for (String fontName : FONTS) {
-			Skin skin = ResourceCacheFacade.get(InternalDeps.UI_GENERAL);
-			BitmapFont font = skin.getFont(fontName);
-			LabelStyle labelStyle = new LabelStyle(font, Color.WHITE);
-			mMainTable.add(new Label(fontName + "    " + TEXT, labelStyle));
-			mMainTable.row();
-		}
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
-
-	private static final String TEXT;
-	private static final String[] FONTS = { "small_bold", "small_black", "medium_bold", "medium_black", "large", "large_bold", "large_black", "huge",
-			"huge_bold", "huge_black" };
-
-	static {
-		LoremIpsum loremIpsum = new LoremIpsum();
-		TEXT = loremIpsum.sentences(1);
-	}
+}
 }

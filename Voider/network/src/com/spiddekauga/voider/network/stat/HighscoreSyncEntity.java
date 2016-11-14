@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Highscore of a player
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class HighscoreSyncEntity implements IEntity {
 	/** Level id */

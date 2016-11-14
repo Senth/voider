@@ -15,7 +15,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
 
 /**
  * Display all available beta keys for a group
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class BetaKeys extends VoiderController {

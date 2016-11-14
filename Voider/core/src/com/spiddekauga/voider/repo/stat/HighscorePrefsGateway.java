@@ -1,45 +1,45 @@
 package com.spiddekauga.voider.repo.stat;
 
-import java.util.Date;
-
 import com.spiddekauga.voider.repo.PrefsGateway;
+
+import java.util.Date;
 
 /**
  * Preferences gateway for highscores
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class HighscorePrefsGateway extends PrefsGateway {
-	/**
-	 * Default constructor
-	 */
-	HighscorePrefsGateway() {
-		super(true);
-	}
+/** Last highscore sync date */
+private static final String SYNC_DATE = "sync_date";
 
-	/**
-	 * Set last sync date of highscores
-	 * @param lastSync date when synced highscores the last time
-	 */
-	void setSyncDate(Date lastSync) {
-		mPreferences.putLong(SYNC_DATE, lastSync.getTime());
-		mPreferences.flush();
-	}
+/**
+ * Default constructor
+ */
+HighscorePrefsGateway() {
+	super(true);
+}
 
-	/**
-	 * @return last sync date of highscores
-	 */
-	Date getSyncDate() {
-		long dateTime = mPreferences.getLong(SYNC_DATE, 0);
-		return new Date(dateTime);
-	}
+/**
+ * @return last sync date of highscores
+ */
+Date getSyncDate() {
+	long dateTime = mPreferences.getLong(SYNC_DATE, 0);
+	return new Date(dateTime);
+}
 
-	@Override
-	protected PreferenceNames getPreferenceName() {
-		return PreferenceNames.HIGHSCORE;
-	}
+/**
+ * Set last sync date of highscores
+ * @param lastSync date when synced highscores the last time
+ */
+void setSyncDate(Date lastSync) {
+	mPreferences.putLong(SYNC_DATE, lastSync.getTime());
+	mPreferences.flush();
+}
 
-	// Names
-	// SYNC
-	/** Last highscore sync date */
-	private static final String SYNC_DATE = "sync_date";
+// Names
+// SYNC
+
+@Override
+protected PreferenceNames getPreferenceName() {
+	return PreferenceNames.HIGHSCORE;
+}
 }

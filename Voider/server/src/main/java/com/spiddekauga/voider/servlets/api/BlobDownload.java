@@ -11,7 +11,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Downloads a blob from the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class BlobDownload extends VoiderServlet {

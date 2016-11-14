@@ -9,72 +9,71 @@ import com.spiddekauga.voider.utils.event.IEventListener;
 
 /**
  * Scene for user/player settings
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UserScene extends MenuScene {
-	/**
-	 * Creates a user scene
-	 */
-	public UserScene() {
-		super(new UserGui());
-
-		getGui().setScene(this);
-	}
-
+private IEventListener mPasswordChangeListener = new IEventListener() {
 	@Override
-	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-		super.onActivate(outcome, message, loadingOutcome);
+	public void handleEvent(GameEvent event) {
+		switch (event.type) {
+		case USER_PASSWORD_CHANGE_MISMATCH:
+			getGui().setOldPasswordErrorText("wrong password");
+			break;
 
-		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-		eventDispatcher.connect(EventTypes.USER_PASSWORD_CHANGE_MISMATCH, mPasswordChangeListener);
-		eventDispatcher.connect(EventTypes.USER_PASSWORD_CHANGE_TOO_SHORT, mPasswordChangeListener);
-		eventDispatcher.connect(EventTypes.USER_PASSWORD_CHANGED, mPasswordChangeListener);
-	}
+		case USER_PASSWORD_CHANGE_TOO_SHORT:
+			getGui().setNewPasswordErrorText("too short");
+			break;
 
-	@Override
-	protected void onDeactivate() {
-		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-		eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGE_MISMATCH, mPasswordChangeListener);
-		eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGE_TOO_SHORT, mPasswordChangeListener);
-		eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGED, mPasswordChangeListener);
+		case USER_PASSWORD_CHANGED:
+			getGui().clearErrors();
+			getGui().clearPasswordFields();
+			break;
 
-		super.onDeactivate();
-	}
-
-	/**
-	 * Change password
-	 * @param oldPassword old password
-	 * @param newPassword new password
-	 */
-	void setPassword(String oldPassword, String newPassword) {
-		User.getGlobalUser().changePassword(oldPassword, newPassword);
-	}
-
-	@Override
-	protected UserGui getGui() {
-		return (UserGui) super.getGui();
-	}
-
-	private IEventListener mPasswordChangeListener = new IEventListener() {
-		@Override
-		public void handleEvent(GameEvent event) {
-			switch (event.type) {
-			case USER_PASSWORD_CHANGE_MISMATCH:
-				getGui().setOldPasswordErrorText("wrong password");
-				break;
-
-			case USER_PASSWORD_CHANGE_TOO_SHORT:
-				getGui().setNewPasswordErrorText("too short");
-				break;
-
-			case USER_PASSWORD_CHANGED:
-				getGui().clearErrors();
-				getGui().clearPasswordFields();
-				break;
-
-			default:
-				break;
-			}
+		default:
+			break;
 		}
-	};
+	}
+};
+
+/**
+ * Creates a user scene
+ */
+public UserScene() {
+	super(new UserGui());
+
+	getGui().setScene(this);
+}
+
+@Override
+protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onActivate(outcome, message, loadingOutcome);
+
+	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+	eventDispatcher.connect(EventTypes.USER_PASSWORD_CHANGE_MISMATCH, mPasswordChangeListener);
+	eventDispatcher.connect(EventTypes.USER_PASSWORD_CHANGE_TOO_SHORT, mPasswordChangeListener);
+	eventDispatcher.connect(EventTypes.USER_PASSWORD_CHANGED, mPasswordChangeListener);
+}
+
+@Override
+protected void onDeactivate() {
+	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+	eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGE_MISMATCH, mPasswordChangeListener);
+	eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGE_TOO_SHORT, mPasswordChangeListener);
+	eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGED, mPasswordChangeListener);
+
+	super.onDeactivate();
+}
+
+@Override
+protected UserGui getGui() {
+	return (UserGui) super.getGui();
+}
+
+/**
+ * Change password
+ * @param oldPassword old password
+ * @param newPassword new password
+ */
+void setPassword(String oldPassword, String newPassword) {
+	User.getGlobalUser().changePassword(oldPassword, newPassword);
+}
 }

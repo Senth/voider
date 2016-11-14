@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AnalyticsMethod implements IMethodEntity {
 	/** All sessions (with scenes and events) */

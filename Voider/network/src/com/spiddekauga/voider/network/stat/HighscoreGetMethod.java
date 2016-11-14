@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for getting highscores
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class HighscoreGetMethod implements IMethodEntity {
 	/** Id of the level to get highscores for */

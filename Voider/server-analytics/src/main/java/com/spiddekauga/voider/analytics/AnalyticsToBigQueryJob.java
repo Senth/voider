@@ -47,7 +47,7 @@ import com.spiddekauga.voider.config.AnalyticsConfig;
  * <li>Get events for all the scenes</li>
  * <li>Save JSON output in Google Cloud Storage</li>
  * </ol>
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class AnalyticsToBigQueryJob extends Job0<Void> {

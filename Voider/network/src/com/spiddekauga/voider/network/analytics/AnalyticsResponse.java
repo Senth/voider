@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Server response from adding analytics
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AnalyticsResponse implements IEntity, ISuccessStatuses {
 	/** Status */

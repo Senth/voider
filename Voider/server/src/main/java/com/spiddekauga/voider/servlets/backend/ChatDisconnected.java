@@ -23,7 +23,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CConnecte
 
 /**
  * Called when a channel has been disconnected
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class ChatDisconnected extends HttpServlet {

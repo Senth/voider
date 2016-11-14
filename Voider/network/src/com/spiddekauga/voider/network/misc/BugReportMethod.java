@@ -6,7 +6,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for reporting bugs to the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BugReportMethod implements IMethodEntity {
 	/** All bugs to report */

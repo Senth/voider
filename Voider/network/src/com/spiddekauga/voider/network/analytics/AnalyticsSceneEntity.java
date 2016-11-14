@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Scene analytics information
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AnalyticsSceneEntity implements IEntity {
 	/** The session this scene belongs to */

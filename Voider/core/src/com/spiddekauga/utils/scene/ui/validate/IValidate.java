@@ -1,23 +1,22 @@
 package com.spiddekauga.utils.scene.ui.validate;
 
 /**
- * Validate fields or something else before sending the values. The instance has to show
- * the validation error itself.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ * Validate fields or something else before sending the values. The instance has to show the
+ * validation error itself.
  */
 public interface IValidate {
-	/**
-	 * @return true if the object is valid
-	 */
-	boolean isValid();
+/**
+ * @return true if the object is valid
+ */
+boolean isValid();
 
-	/**
-	 * Reset the error message
-	 */
-	void resetError();
+/**
+ * Reset the error message
+ */
+void resetError();
 
-	/**
-	 * Print the error
-	 */
-	void printError();
+/**
+ * Print the error
+ */
+void printError();
 }

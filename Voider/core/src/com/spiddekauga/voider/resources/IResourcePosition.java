@@ -5,7 +5,7 @@ import com.spiddekauga.voider.utils.BoundingBox;
 
 /**
  * If the resource has a position
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public interface IResourcePosition extends IResource {
 	/**

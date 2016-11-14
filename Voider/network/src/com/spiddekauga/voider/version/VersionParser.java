@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 /**
  * Parses a buffer and adds the result to a version container
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class VersionParser {
 	/**

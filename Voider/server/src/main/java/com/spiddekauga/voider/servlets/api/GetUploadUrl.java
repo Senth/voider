@@ -14,7 +14,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Returns a valid upload url
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class GetUploadUrl extends VoiderApiServlet<GetUploadUrlMethod> {

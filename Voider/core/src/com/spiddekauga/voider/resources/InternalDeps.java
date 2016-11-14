@@ -7,7 +7,7 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**
  * Internal dependencies for various resources
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public enum InternalDeps {
 	// !!!NEVER EVER remove or change order of these!!!

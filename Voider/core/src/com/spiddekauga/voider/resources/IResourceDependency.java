@@ -9,7 +9,7 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**
  * This resource has dependencies
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public interface IResourceDependency extends IResource {
 	/**

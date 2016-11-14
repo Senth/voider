@@ -30,7 +30,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 /**
  * Called when blobs have been uploaded and need to be restored or bound to the correct
  * datastore object.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
@@ -180,7 +180,7 @@ public class RestoreBlobs extends VoiderApiServlet<RestoreBlobsMethod> {
 
 	/**
 	 * Thrown if the resource wasn't found
-	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
 	 */
 	private class ResourceNotFoundException extends Exception {
 		/**

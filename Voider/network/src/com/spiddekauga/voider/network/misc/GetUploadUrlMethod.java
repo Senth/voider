@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Gets an upload URL message
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class GetUploadUrlMethod implements IMethodEntity {
 	@Override

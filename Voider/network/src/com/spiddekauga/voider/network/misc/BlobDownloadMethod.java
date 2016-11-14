@@ -4,7 +4,7 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for downloading a blob
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BlobDownloadMethod implements IMethodEntity {
 	/** Blob to download */

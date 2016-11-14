@@ -13,37 +13,36 @@ import com.spiddekauga.voider.version.VersionParser;
 
 /**
  * Loads the changelog
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class VersionLoader extends AsynchronousAssetLoader<VersionContainer, VersionLoaderParameters> {
-	/**
-	 * @param resolver
-	 */
-	public VersionLoader(FileHandleResolver resolver) {
-		super(resolver);
-	}
+/** Stored version container */
+VersionContainer mVersionContainer = null;
 
-	@Override
-	public void loadAsync(AssetManager manager, String fileName, FileHandle file, VersionLoaderParameters parameter) {
-		VersionParser versionParser = new VersionParser(file.read());
-		mVersionContainer = versionParser.parse();
-	}
+/**
+ * @param resolver
+ */
+public VersionLoader(FileHandleResolver resolver) {
+	super(resolver);
+}
 
-	@Override
-	public VersionContainer loadSync(AssetManager manager, String fileName, FileHandle file, VersionLoaderParameters parameter) {
-		return mVersionContainer;
-	}
+@Override
+public void loadAsync(AssetManager manager, String fileName, FileHandle file, VersionLoaderParameters parameter) {
+	VersionParser versionParser = new VersionParser(file.read());
+	mVersionContainer = versionParser.parse();
+}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, VersionLoaderParameters parameter) {
-		return null;
-	}
+@Override
+public VersionContainer loadSync(AssetManager manager, String fileName, FileHandle file, VersionLoaderParameters parameter) {
+	return mVersionContainer;
+}
 
-	/** Parameters for version loader */
-	public static class VersionLoaderParameters extends AssetLoaderParameters<VersionContainer> {
-	}
+@SuppressWarnings("rawtypes")
+@Override
+public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, VersionLoaderParameters parameter) {
+	return null;
+}
 
-	/** Stored version container */
-	VersionContainer mVersionContainer = null;
+/** Parameters for version loader */
+public static class VersionLoaderParameters extends AssetLoaderParameters<VersionContainer> {
+}
 }

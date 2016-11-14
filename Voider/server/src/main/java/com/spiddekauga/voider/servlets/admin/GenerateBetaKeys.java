@@ -22,7 +22,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
 
 /**
  * Generate beta keys for voider
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class GenerateBetaKeys extends VoiderController {

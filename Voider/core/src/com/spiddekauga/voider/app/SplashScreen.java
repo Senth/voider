@@ -8,104 +8,102 @@ import com.spiddekauga.voider.scene.LoadingScene;
 
 /**
  * Splash screen, displays Spiddekauga Logo
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SplashScreen extends LoadingScene {
 
-	/**
-	 * Default constructor
-	 */
-	public SplashScreen() {
-		super(new SplashScreenGui());
+/** Current splash screen state */
+States mState = States.DISPLAY;
+/** How long the splash screen has been displayed */
+private float mDisplayTime = 0;
 
-		setClearColor(0, 0, 0, 0);
-	}
+/**
+ * Default constructor
+ */
+public SplashScreen() {
+	super(new SplashScreenGui());
 
-	@Override
-	protected void loadResources() {
-		super.loadResources();
-		ResourceCacheFacade.load(this, InternalNames.IMAGE_SPLASH_SCREEN);
-		ResourceCacheFacade.finishLoading();
-	}
+	setClearColor(0, 0, 0, 0);
+}
 
-	@Override
-	protected void update(float deltaTime) {
-		super.update(deltaTime);
+@Override
+protected void update(float deltaTime) {
+	super.update(deltaTime);
 
-		IC_Time icTime = ConfigIni.getInstance().menu.time;
+	IC_Time icTime = ConfigIni.getInstance().menu.time;
 
-		switch (mState) {
-		case DISPLAY:
-			mDisplayTime += deltaTime;
-			if (mDisplayTime >= icTime.getSplashScreenTime() && !ResourceCacheFacade.isLoading()) {
-				getGui().fadeOut();
-				mState = States.FADING;
-			}
-			break;
-
-
-		case FADING:
-			if (getGui().hasFaded()) {
-				setOutcome(Outcomes.LOADING_SUCCEEDED);
-			}
-			break;
+	switch (mState) {
+	case DISPLAY:
+		mDisplayTime += deltaTime;
+		if (mDisplayTime >= icTime.getSplashScreenTime() && !ResourceCacheFacade.isLoading()) {
+			getGui().fadeOut();
+			mState = States.FADING;
 		}
-	}
+		break;
 
-	@Override
-	protected boolean onKeyDown(int keycode) {
-		boolean handled = super.onKeyDown(keycode);
 
-		if (!handled) {
-			skip();
+	case FADING:
+		if (getGui().hasFaded()) {
+			setOutcome(Outcomes.LOADING_SUCCEEDED);
 		}
+		break;
+	}
+}
 
-		return true;
+@Override
+protected boolean onKeyDown(int keycode) {
+	boolean handled = super.onKeyDown(keycode);
+
+	if (!handled) {
+		skip();
 	}
 
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		boolean handled = super.touchDown(screenX, screenY, pointer, button);
+	return true;
+}
 
-		if (!handled) {
-			skip();
-		}
+@Override
+protected void loadResources() {
+	super.loadResources();
+	ResourceCacheFacade.load(this, InternalNames.IMAGE_SPLASH_SCREEN);
+	ResourceCacheFacade.finishLoading();
+}
 
-		return true;
+@Override
+protected void render() {
+	enableBlendingWithDefaults();
+	super.render();
+}
+
+@Override
+protected SplashScreenGui getGui() {
+	return (SplashScreenGui) super.getGui();
+}
+
+/**
+ * Skip the scene, i.e. sets the display time to the end
+ */
+private void skip() {
+	mDisplayTime = ConfigIni.getInstance().menu.time.getSplashScreenTime();
+}
+
+@Override
+public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+	boolean handled = super.touchDown(screenX, screenY, pointer, button);
+
+	if (!handled) {
+		skip();
 	}
 
-	/**
-	 * Skip the scene, i.e. sets the display time to the end
-	 */
-	private void skip() {
-		mDisplayTime = ConfigIni.getInstance().menu.time.getSplashScreenTime();
-	}
-
-	@Override
-	protected void render() {
-		enableBlendingWithDefaults();
-		super.render();
-	}
-
-	@Override
-	protected SplashScreenGui getGui() {
-		return (SplashScreenGui) super.getGui();
-	}
-
-	/**
-	 * States of the splash screen
-	 */
-	private enum States {
-		/** Displaying splash screen */
-		DISPLAY,
-		/** When the splash screen is fading */
-		FADING,
-	}
-
-	/** How long the splash screen has been displayed */
-	private float mDisplayTime = 0;
-	/** Current splash screen state */
-	States mState = States.DISPLAY;
+	return true;
+}
+/**
+ * States of the splash screen
+ */
+private enum States {
+	/** Displaying splash screen */
+	DISPLAY,
+	/** When the splash screen is fading */
+	FADING,
+}
 
 
 }

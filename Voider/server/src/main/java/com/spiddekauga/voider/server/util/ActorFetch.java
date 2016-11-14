@@ -25,7 +25,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 
 /**
  * Common class for fetching actors
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  * @param <Method>
  * @param <DefType> actor definitino
  */

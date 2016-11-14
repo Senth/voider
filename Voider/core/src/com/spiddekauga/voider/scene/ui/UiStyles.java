@@ -15,7 +15,7 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 
 /**
  * Container for all UI styles
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("javadoc")
 public class UiStyles {

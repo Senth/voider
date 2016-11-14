@@ -16,7 +16,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.SearchTables.SEnemy;
 
 /**
  * Test class
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class EnemyFetchTest {
 	@BeforeClass

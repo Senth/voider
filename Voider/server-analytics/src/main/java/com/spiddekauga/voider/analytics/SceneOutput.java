@@ -10,7 +10,7 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
 
 /**
  * Combines multiple analytics scenes from a mapper to a list
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class SceneOutput extends Output<AnalyticsScene, List<AnalyticsScene>> {
 	private static class SceneOutputWriter extends OutputWriter<AnalyticsScene> {

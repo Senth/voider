@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Analytics event in a scene
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class AnalyticsEventEntity implements IEntity {
 	/** Scene this event belongs to */

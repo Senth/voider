@@ -4,7 +4,7 @@ import com.spiddekauga.utils.ISearchStore;
 
 /**
  * Range enumeration / category for searches
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public interface IRangeEnum extends ISearchStore {
 	/**

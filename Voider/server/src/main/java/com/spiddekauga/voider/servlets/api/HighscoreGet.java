@@ -30,7 +30,7 @@ import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
 /**
  * Returns all highscores of a specific level
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 @SuppressWarnings("serial")
 public class HighscoreGet extends VoiderApiServlet<HighscoreGetMethod> {

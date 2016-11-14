@@ -5,14 +5,12 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Web response listener for callers
- * 
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResponseListener {
-	/**
-	 * Handle the web response
-	 * @param method the method that was called on the server
-	 * @param response the actual web response
-	 */
-	void handleWebResponse(IMethodEntity method, IEntity response);
+/**
+ * Handle the web response
+ * @param method the method that was called on the server
+ * @param response the actual web response
+ */
+void handleWebResponse(IMethodEntity method, IEntity response);
 }

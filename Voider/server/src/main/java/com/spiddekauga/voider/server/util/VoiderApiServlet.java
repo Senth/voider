@@ -16,7 +16,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.MaintenanceModes;
 
 /**
  * Wrapper for the Voider servlet
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  * @param <Method> Method from the client
  */
 @SuppressWarnings("serial")

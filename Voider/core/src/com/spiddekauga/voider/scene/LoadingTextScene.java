@@ -10,7 +10,7 @@ import com.spiddekauga.voider.resources.InternalDeps;
 /**
  * Loading scene that displays a text while loading. The text is automatically calculates
  * the amount of time to show the text depending on the length of the text.
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class LoadingTextScene extends LoadingScene {
 	/**

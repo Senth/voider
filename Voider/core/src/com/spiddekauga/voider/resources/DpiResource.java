@@ -8,7 +8,7 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 /**
  * Wrapper for when these resources should be loaded for a specific screen DPI (or
  * setting)
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 class DpiResource implements IInternalResource {
 	/**

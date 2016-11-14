@@ -11,80 +11,76 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 
 /**
  * Level background
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelBackground {
-	/**
-	 * Create a level background from an internal name
-	 * @param internalName this have to be loaded!
-	 */
-	public LevelBackground(InternalNames internalName) {
-		if (!ResourceCacheFacade.isLoaded(internalName)) {
-			throw new IllegalArgumentException("Resource not loaded! " + internalName);
-		}
+private ImageScroll mTopLayer;
+private ImageScroll mBottomLayer;
+private InternalNames mName;
 
-		mName = internalName;
-
-
-		// Get all Region names
-		TextureAtlas atlas = ResourceCacheFacade.get(mName);
-
-		mTopLayer = new ImageScroll(atlas, "top");
-		mBottomLayer = new ImageScroll(atlas, "bottom");
+/**
+ * Create a level background from an internal name
+ * @param internalName this have to be loaded!
+ */
+public LevelBackground(InternalNames internalName) {
+	if (!ResourceCacheFacade.isLoaded(internalName)) {
+		throw new IllegalArgumentException("Resource not loaded! " + internalName);
 	}
 
+	mName = internalName;
 
-	/**
-	 * Render the background layers on the entire screen
-	 * @param spriteBatch
-	 * @param offset x offset of the level
-	 */
-	public void render(SpriteBatch spriteBatch, float offset) {
-		render(spriteBatch, offset, 0, Gdx.graphics.getHeight());
-	}
 
-	/**
-	 * Render the background layers on a part of the screen (not the whole height but
-	 * whole width of the screen)
-	 * @param spriteBatch
-	 * @param offset x offset of the level
-	 * @param y y-coordinate to start rendering on
-	 * @param height how high the strip should be
-	 */
-	public void render(SpriteBatch spriteBatch, float offset, int y, int height) {
-		IC_Game icGame = ConfigIni.getInstance().game;
+	// Get all Region names
+	TextureAtlas atlas = ResourceCacheFacade.get(mName);
 
-		// Bottom
-		mBottomLayer.setScrollSpeed(icGame.getLayerBottomSpeed());
-		mBottomLayer.render(spriteBatch, offset, y, height);
+	mTopLayer = new ImageScroll(atlas, "top");
+	mBottomLayer = new ImageScroll(atlas, "bottom");
+}
 
-		// Top
-		mTopLayer.setScrollSpeed(icGame.getLayerTopSpeed());
-		mTopLayer.render(spriteBatch, offset, y, height);
-	}
+/**
+ * Render the background layers on the entire screen
+ * @param offset x offset of the level
+ */
+public void render(SpriteBatch spriteBatch, float offset) {
+	render(spriteBatch, offset, 0, Gdx.graphics.getHeight());
+}
 
-	/**
-	 * @return dependency of the level background
-	 */
-	public InternalNames getDependency() {
-		return mName;
-	}
+/**
+ * Render the background layers on a part of the screen (not the whole height but whole width of the
+ * screen)
+ * @param offset x offset of the level
+ * @param y y-coordinate to start rendering on
+ * @param height how high the strip should be
+ */
+public void render(SpriteBatch spriteBatch, float offset, int y, int height) {
+	IC_Game icGame = ConfigIni.getInstance().game;
 
-	/**
-	 * @return top layer of the level background
-	 */
-	public ImageScroll getTopLayer() {
-		return mTopLayer;
-	}
+	// Bottom
+	mBottomLayer.setScrollSpeed(icGame.getLayerBottomSpeed());
+	mBottomLayer.render(spriteBatch, offset, y, height);
 
-	/**
-	 * @return bottom layer of the level background
-	 */
-	public ImageScroll getBottomLayer() {
-		return mBottomLayer;
-	}
+	// Top
+	mTopLayer.setScrollSpeed(icGame.getLayerTopSpeed());
+	mTopLayer.render(spriteBatch, offset, y, height);
+}
 
-	private ImageScroll mTopLayer;
-	private ImageScroll mBottomLayer;
-	private InternalNames mName;
+/**
+ * @return dependency of the level background
+ */
+public InternalNames getDependency() {
+	return mName;
+}
+
+/**
+ * @return top layer of the level background
+ */
+public ImageScroll getTopLayer() {
+	return mTopLayer;
+}
+
+/**
+ * @return bottom layer of the level background
+ */
+public ImageScroll getBottomLayer() {
+	return mBottomLayer;
+}
 }

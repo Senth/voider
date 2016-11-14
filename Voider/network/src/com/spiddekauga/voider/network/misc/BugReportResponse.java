@@ -9,7 +9,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Bug report response from the server
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class BugReportResponse implements IEntity, ISuccessStatuses {
 	/** Bug reports that failed to send */

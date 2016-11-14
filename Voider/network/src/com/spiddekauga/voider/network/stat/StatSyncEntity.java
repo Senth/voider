@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * All statistics that should be synced
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public class StatSyncEntity implements IEntity {
 	/** Level/Campaign stats to sync */

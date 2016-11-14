@@ -42,7 +42,7 @@ import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
 /**
  * Base class for all GUI containing windows
- * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+
  */
 public abstract class Gui implements Disposable {
 	/**
