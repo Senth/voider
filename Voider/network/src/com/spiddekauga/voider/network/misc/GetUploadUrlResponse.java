@@ -4,9 +4,8 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Response from GetUploadUrlMethod
-
  */
 public class GetUploadUrlResponse implements IEntity {
-	/** The upload url */
-	public String uploadUrl = null;
+/** The upload url */
+public String uploadUrl = null;
 }

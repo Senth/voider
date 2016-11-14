@@ -1,9 +1,5 @@
 package com.spiddekauga.voider.servlets.api;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -16,80 +12,83 @@ import com.spiddekauga.voider.server.util.ActorFetch;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.SearchTables;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+
 /**
  * Servlet for fetching bullet information
-
  */
 @SuppressWarnings("serial")
 public class BulletFetch extends ActorFetch<BulletFetchMethod, BulletDefEntity> {
 
-	@Override
-	protected IEntity onRequest(BulletFetchMethod method) throws ServletException, IOException {
-		if (mUser.isLoggedIn()) {
-			mParameters = method;
+private BulletFetchMethod mParameters = null;
+private BulletFetchResponse mResponse = null;
 
-			if (hasSearchOptions()) {
-				mResponse.status = searchAndSetFoundDefs(SearchTables.BULLET, mParameters.nextCursor, mResponse.bullets);
-			} else {
-				getAndSetNewestBullets();
-			}
+@Override
+protected IEntity onRequest(BulletFetchMethod method) throws ServletException, IOException {
+	if (mUser.isLoggedIn()) {
+		mParameters = method;
+
+		if (hasSearchOptions()) {
+			mResponse.status = searchAndSetFoundDefs(SearchTables.BULLET, mParameters.nextCursor, mResponse.bullets);
 		} else {
-			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
+			getAndSetNewestBullets();
 		}
-
-		return mResponse;
+	} else {
+		mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
 	}
 
-	@Override
-	protected String buildSearchString() {
-		SearchUtils.Builder builder = new SearchUtils.Builder();
+	return mResponse;
+}
 
-		// Free text search
-		if (mParameters.searchString != null && mParameters.searchString.length() >= ServerConfig.SEARCH_TEXT_LENGTH_MIN) {
-			builder.text(mParameters.searchString);
-		}
-
-		return builder.build();
+/**
+ * Checks if we should search for bullets or just get them
+ * @return true if we should perform a custom search
+ */
+private boolean hasSearchOptions() {
+	if (mParameters.searchString != null && mParameters.searchString.length() >= ServerConfig.SEARCH_TEXT_LENGTH_MIN) {
+		return true;
 	}
 
-	/**
-	 * Get and set the newest actors
-	 */
-	private void getAndSetNewestBullets() {
-		getNewestActors(UploadTypes.BULLET_DEF, mParameters.nextCursor, mResponse.bullets);
-		mResponse.cursor = getNextCursor();
-		mResponse.status = getFetchStatus();
+	return false;
+}
+
+/**
+ * Get and set the newest actors
+ */
+private void getAndSetNewestBullets() {
+	getNewestActors(UploadTypes.BULLET_DEF, mParameters.nextCursor, mResponse.bullets);
+	mResponse.cursor = getNextCursor();
+	mResponse.status = getFetchStatus();
+}
+
+@Override
+protected String buildSearchString() {
+	SearchUtils.Builder builder = new SearchUtils.Builder();
+
+	// Free text search
+	if (mParameters.searchString != null && mParameters.searchString.length() >= ServerConfig.SEARCH_TEXT_LENGTH_MIN) {
+		builder.text(mParameters.searchString);
 	}
 
-	/**
-	 * Checks if we should search for bullets or just get them
-	 * @return true if we should perform a custom search
-	 */
-	private boolean hasSearchOptions() {
-		if (mParameters.searchString != null && mParameters.searchString.length() >= ServerConfig.SEARCH_TEXT_LENGTH_MIN) {
-			return true;
-		}
+	return builder.build();
+}
 
-		return false;
-	}
+@Override
+protected BulletDefEntity newNetworkDef() {
+	return new BulletDefEntity();
+}
 
-	@Override
-	protected void onInit() {
-		super.onInit();
+@Override
+protected void setAdditionalDefInformation(Entity publishedEntity, BulletDefEntity actorDef) {
+	// Does nothing
+}
 
-		mResponse = new BulletFetchResponse();
-	}
+@Override
+protected void onInit() {
+	super.onInit();
 
-	@Override
-	protected void setAdditionalDefInformation(Entity publishedEntity, BulletDefEntity actorDef) {
-		// Does nothing
-	}
-
-	@Override
-	protected BulletDefEntity newNetworkDef() {
-		return new BulletDefEntity();
-	}
-
-	private BulletFetchMethod mParameters = null;
-	private BulletFetchResponse mResponse = null;
+	mResponse = new BulletFetchResponse();
+}
 }

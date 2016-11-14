@@ -3,7 +3,6 @@ package com.spiddekauga.voider.network.entities;
 
 /**
  * General response statuses
-
  */
 public enum GeneralResponseStatuses implements ISuccessStatuses {
 	/** Server method completed successfully. */
@@ -15,13 +14,11 @@ public enum GeneralResponseStatuses implements ISuccessStatuses {
 	/** Failed to connect to the server */
 	FAILED_SERVER_CONNECTION,
 	/** User not logged in */
-	FAILED_USER_NOT_LOGGED_IN,
+	FAILED_USER_NOT_LOGGED_IN,;
 
-	;
-
-	@Override
-	public boolean isSuccessful() {
-		return this == SUCCESS;
-	}
+@Override
+public boolean isSuccessful() {
+	return this == SUCCESS;
+}
 
 }

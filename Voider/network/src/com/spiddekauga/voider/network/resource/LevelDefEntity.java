@@ -4,20 +4,18 @@ import java.util.UUID;
 
 /**
  * Level definition entity
-
  */
 public class LevelDefEntity extends DefEntity {
-	/**
-	 * Sets default variables
-	 */
-	public LevelDefEntity() {
-		type = UploadTypes.LEVEL_DEF;
-	}
-
-	/** Level length */
-	public float levelLength = 0;
-	/** Level speed */
-	public float levelSpeed = 0;
-	/** Level id, not definition */
-	public UUID levelId = null;
+/** Level length */
+public float levelLength = 0;
+/** Level speed */
+public float levelSpeed = 0;
+/** Level id, not definition */
+public UUID levelId = null;
+/**
+ * Sets default variables
+ */
+public LevelDefEntity() {
+	type = UploadTypes.LEVEL_DEF;
+}
 }

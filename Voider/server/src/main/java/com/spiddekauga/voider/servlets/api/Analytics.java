@@ -1,12 +1,5 @@
 package com.spiddekauga.voider.servlets.api;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
@@ -23,138 +16,144 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalytic
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CAnalyticsSession;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+
 /**
  * Analytics for Voider
-
  */
 @SuppressWarnings("serial")
 public class Analytics extends VoiderApiServlet<AnalyticsMethod> {
-	@Override
-	protected void onInit() {
-		mResponse = new AnalyticsResponse();
+/** Parameters */
+private AnalyticsMethod mParameters = null;
+/** Response */
+private AnalyticsResponse mResponse = null;
+
+@Override
+protected void onInit() {
+	mResponse = new AnalyticsResponse();
+}
+
+@Override
+protected IEntity onRequest(AnalyticsMethod method) throws ServletException, IOException {
+	if (mUser.isLoggedIn()) {
+		mParameters = method;
+		saveSessions();
+
+		if (mResponse.status == null) {
+			mResponse.status = GeneralResponseStatuses.SUCCESS;
+		}
+	} else {
+		mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
 	}
 
-	@Override
-	protected IEntity onRequest(AnalyticsMethod method) throws ServletException, IOException {
-		if (mUser.isLoggedIn()) {
-			mParameters = method;
-			saveSessions();
+	return mResponse;
+}
 
-			if (mResponse.status == null) {
-				mResponse.status = GeneralResponseStatuses.SUCCESS;
-			}
-		} else {
-			mResponse.status = GeneralResponseStatuses.FAILED_USER_NOT_LOGGED_IN;
-		}
+/**
+ * Parse sessions
+ */
+private void saveSessions() {
+	ArrayList<Entity> sessionEntities = new ArrayList<>();
+	for (AnalyticsSessionEntity networkEntity : mParameters.sessions) {
+		Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_SESSION);
+		datastoreEntity.setProperty(CAnalyticsSession.EXPORTED, false);
 
-		return mResponse;
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.START_TIME, networkEntity.startTime);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.USER_ANALYTICS_ID, mParameters.userAnalyticsId);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.PLATFORM, mParameters.platform);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.OS, mParameters.os);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.SCREEN_SIZE, networkEntity.screenSize);
+
+		// Length
+		long diffDate = networkEntity.endTime.getTime() - networkEntity.startTime.getTime();
+		double seconds = diffDate / 1000d;
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.LENGTH, seconds);
+
+		sessionEntities.add(datastoreEntity);
 	}
 
-	/**
-	 * Parse sessions
-	 */
-	private void saveSessions() {
-		ArrayList<Entity> sessionEntities = new ArrayList<>();
-		for (AnalyticsSessionEntity networkEntity : mParameters.sessions) {
-			Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_SESSION);
-			datastoreEntity.setProperty(CAnalyticsSession.EXPORTED, false);
+	List<Key> sessionKeys = DatastoreUtils.put(sessionEntities);
 
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.START_TIME, networkEntity.startTime);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.USER_ANALYTICS_ID, mParameters.userAnalyticsId);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.PLATFORM, mParameters.platform);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.OS, mParameters.os);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.SCREEN_SIZE, networkEntity.screenSize);
-
-			// Length
-			long diffDate = networkEntity.endTime.getTime() - networkEntity.startTime.getTime();
-			double seconds = diffDate / 1000d;
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsSession.LENGTH, seconds);
-
-			sessionEntities.add(datastoreEntity);
+	if (sessionKeys != null && sessionKeys.size() == mParameters.sessions.size()) {
+		for (int i = 0; i < mParameters.sessions.size(); i++) {
+			saveScenes(sessionKeys.get(i), mParameters.sessions.get(i).scenes);
 		}
+	} else {
+		mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
+	}
+}
 
-		List<Key> sessionKeys = DatastoreUtils.put(sessionEntities);
+/**
+ * Save scenes
+ * @param sessionKey session the scenes belong to
+ * @param scenes all scenes to save
+ */
+private void saveScenes(Key sessionKey, List<AnalyticsSceneEntity> scenes) {
+	ArrayList<Entity> sceneEntities = new ArrayList<>();
 
-		if (sessionKeys != null && sessionKeys.size() == mParameters.sessions.size()) {
-			for (int i = 0; i < mParameters.sessions.size(); i++) {
-				saveScenes(sessionKeys.get(i), mParameters.sessions.get(i).scenes);
-			}
-		} else {
-			mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
-		}
+	for (AnalyticsSceneEntity networkEntity : scenes) {
+		Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_SCENE, sessionKey);
+
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.START_TIME, networkEntity.startTime);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.NAME, networkEntity.name);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.LOAD_TIME, networkEntity.loadTime);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.DROPOUT, networkEntity.dropout);
+		datastoreEntity.setProperty(CAnalyticsScene.EXPORTED, false);
+
+		// Length
+		long diffMs = networkEntity.endTime.getTime() - networkEntity.startTime.getTime();
+		double seconds = diffMs / 1000d;
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.LENGTH, seconds);
+
+		sceneEntities.add(datastoreEntity);
 	}
 
-	/**
-	 * Save scenes
-	 * @param sessionKey session the scenes belong to
-	 * @param scenes all scenes to save
-	 */
-	private void saveScenes(Key sessionKey, List<AnalyticsSceneEntity> scenes) {
-		ArrayList<Entity> sceneEntities = new ArrayList<>();
+	List<Key> sceneKeys = DatastoreUtils.put(sceneEntities);
 
-		for (AnalyticsSceneEntity networkEntity : scenes) {
-			Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_SCENE, sessionKey);
-
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.START_TIME, networkEntity.startTime);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.NAME, networkEntity.name);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.LOAD_TIME, networkEntity.loadTime);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.DROPOUT, networkEntity.dropout);
-			datastoreEntity.setProperty(CAnalyticsScene.EXPORTED, false);
-
-			// Length
-			long diffMs = networkEntity.endTime.getTime() - networkEntity.startTime.getTime();
-			double seconds = diffMs / 1000d;
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsScene.LENGTH, seconds);
-
-			sceneEntities.add(datastoreEntity);
+	if (sceneKeys != null && sceneKeys.size() == scenes.size()) {
+		for (int i = 0; i < scenes.size(); ++i) {
+			AnalyticsSceneEntity scene = scenes.get(i);
+			saveEvents(sceneKeys.get(i), scene.startTime, scene.events);
 		}
+	} else {
+		mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
+	}
+}
 
-		List<Key> sceneKeys = DatastoreUtils.put(sceneEntities);
+/**
+ * Save events
+ * @param sceneKey scene the event belongs to
+ * @param sceneStartTime start time of the scene
+ * @param events all events to save
+ */
+private void saveEvents(Key sceneKey, Date sceneStartTime, List<AnalyticsEventEntity> events) {
+	ArrayList<Entity> eventEntities = new ArrayList<>();
 
-		if (sceneKeys != null && sceneKeys.size() == scenes.size()) {
-			for (int i = 0; i < scenes.size(); ++i) {
-				AnalyticsSceneEntity scene = scenes.get(i);
-				saveEvents(sceneKeys.get(i), scene.startTime, scene.events);
-			}
-		} else {
-			mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
-		}
+	for (AnalyticsEventEntity networkEntity : events) {
+		Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_EVENT, sceneKey);
+
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.NAME, networkEntity.name);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.DATA, networkEntity.data);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TYPE, networkEntity.type.toId());
+		datastoreEntity.setProperty(CAnalyticsEvent.EXPORTED, false);
+
+		// Time
+		long diffMs = networkEntity.time.getTime() - sceneStartTime.getTime();
+		double time = diffMs * 0.001;
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TIME, time);
+
+		eventEntities.add(datastoreEntity);
 	}
 
-	/**
-	 * Save events
-	 * @param sceneKey scene the event belongs to
-	 * @param sceneStartTime start time of the scene
-	 * @param events all events to save
-	 */
-	private void saveEvents(Key sceneKey, Date sceneStartTime, List<AnalyticsEventEntity> events) {
-		ArrayList<Entity> eventEntities = new ArrayList<>();
+	List<Key> eventKeys = DatastoreUtils.put(eventEntities);
 
-		for (AnalyticsEventEntity networkEntity : events) {
-			Entity datastoreEntity = new Entity(DatastoreTables.ANALYTICS_EVENT, sceneKey);
-
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.NAME, networkEntity.name);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.DATA, networkEntity.data);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TYPE, networkEntity.type.toId());
-			datastoreEntity.setProperty(CAnalyticsEvent.EXPORTED, false);
-
-			// Time
-			long diffMs = networkEntity.time.getTime() - sceneStartTime.getTime();
-			double time = diffMs * 0.001;
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, CAnalyticsEvent.TIME, time);
-
-			eventEntities.add(datastoreEntity);
-		}
-
-		List<Key> eventKeys = DatastoreUtils.put(eventEntities);
-
-		if (eventKeys == null || eventKeys.size() != events.size()) {
-			mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
-		}
+	if (eventKeys == null || eventKeys.size() != events.size()) {
+		mResponse.status = GeneralResponseStatuses.SUCCESS_PARTIAL;
 	}
-
-	/** Parameters */
-	private AnalyticsMethod mParameters = null;
-	/** Response */
-	private AnalyticsResponse mResponse = null;
+}
 }

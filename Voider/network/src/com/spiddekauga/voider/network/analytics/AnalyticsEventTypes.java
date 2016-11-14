@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 /**
  * Different event types for analytics
-
  */
 public enum AnalyticsEventTypes {
 	/** Unknown event type */
@@ -14,39 +13,38 @@ public enum AnalyticsEventTypes {
 	/** Keyboard/hotkey */
 	KEY(2),
 	/** Slider */
-	SLIDER(3),
+	SLIDER(3),;
 
-	;
+private static HashMap<Integer, AnalyticsEventTypes> mIdToEnum = new HashMap<>();
 
-	/**
-	 * @param id the id saved in datastore
-	 */
-	private AnalyticsEventTypes(int id) {
-		mId = id;
+static {
+	for (AnalyticsEventTypes type : AnalyticsEventTypes.values()) {
+		mIdToEnum.put(type.mId, type);
 	}
+}
 
-	/**
-	 * @return id of the movement type
-	 */
-	public int toId() {
-		return mId;
-	}
+private int mId;
 
-	/**
-	 * Get the enum with the specified id
-	 * @param id id of the enum to get
-	 * @return enum with the specified id, null if not found
-	 */
-	public static AnalyticsEventTypes fromId(int id) {
-		return mIdToEnum.get(id);
-	}
+/**
+ * @param id the id saved in datastore
+ */
+private AnalyticsEventTypes(int id) {
+	mId = id;
+}
 
-	private int mId;
-	private static HashMap<Integer, AnalyticsEventTypes> mIdToEnum = new HashMap<>();
+/**
+ * Get the enum with the specified id
+ * @param id id of the enum to get
+ * @return enum with the specified id, null if not found
+ */
+public static AnalyticsEventTypes fromId(int id) {
+	return mIdToEnum.get(id);
+}
 
-	static {
-		for (AnalyticsEventTypes type : AnalyticsEventTypes.values()) {
-			mIdToEnum.put(type.mId, type);
-		}
-	}
+/**
+ * @return id of the movement type
+ */
+public int toId() {
+	return mId;
+}
 }

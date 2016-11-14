@@ -1,27 +1,26 @@
 package com.spiddekauga.voider.network.user;
 
-import java.util.UUID;
-
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+
+import java.util.UUID;
 
 /**
  * Registers a new user
-
  */
 public class RegisterUserMethod implements IMethodEntity {
-	@Override
-	public MethodNames getMethodName() {
-		return MethodNames.REGISTER_USER;
-	}
+/** Register key; for the beta */
+public String key;
+/** Username */
+public String username;
+/** Password */
+public String password;
+/** email */
+public String email;
+/** Client id */
+public UUID clientId;
 
-	/** Register key; for the beta */
-	public String key;
-	/** Username */
-	public String username;
-	/** Password */
-	public String password;
-	/** email */
-	public String email;
-	/** Client id */
-	public UUID clientId;
+@Override
+public MethodNames getMethodName() {
+	return MethodNames.REGISTER_USER;
+}
 }

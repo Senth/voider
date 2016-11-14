@@ -1,11 +1,5 @@
 package com.spiddekauga.voider.servlets.backend;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -14,48 +8,53 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CConnectedUser;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
+
+import javax.servlet.ServletException;
+
 /**
  * Creates a chat connection (or closes one)
-
  */
 @SuppressWarnings("serial")
 public class ChatCreate extends VoiderServlet {
 
-	@Override
-	protected void handleRequest() throws ServletException, IOException {
-		String channelKey = getRequest().getParameter("c");
+private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
 
-		// Create a Channel using the 'channelKey' we received from the client
-		String token = mChannelService.createChannel(channelKey);
+@Override
+protected void handleRequest() throws ServletException, IOException {
+	String channelKey = getRequest().getParameter("c");
 
-		setChannelKey(channelKey);
+	// Create a Channel using the 'channelKey' we received from the client
+	String token = mChannelService.createChannel(channelKey);
 
-		// Send the client the 'token' + the 'channelKey' this way the client
-		// can start using the new channel
-		getResponse().setContentType("text/html");
-		StringBuffer sb = new StringBuffer();
-		sb.append("{\"channelKey\":\"");
-		sb.append(channelKey);
-		sb.append("\",\"token\":\"");
-		sb.append(token);
-		sb.append("\"}");
-		getResponse().getWriter().write(sb.toString());
-	}
+	setChannelKey(channelKey);
 
-	/**
-	 * Set/Add channel key
-	 * @param channelKey the channel key
-	 */
-	private void setChannelKey(String channelKey) {
-		mUser.setChannelId(UUID.fromString(channelKey));
+	// Send the client the 'token' + the 'channelKey' this way the client
+	// can start using the new channel
+	getResponse().setContentType("text/html");
+	StringBuffer sb = new StringBuffer();
+	sb.append("{\"channelKey\":\"");
+	sb.append(channelKey);
+	sb.append("\",\"token\":\"");
+	sb.append(token);
+	sb.append("\"}");
+	getResponse().getWriter().write(sb.toString());
+}
 
-		// Add to Datastore
-		Entity entity = new Entity(DatastoreTables.CONNECTED_USER, mUser.getKey());
-		entity.setProperty(CConnectedUser.CHANNEL_ID, channelKey);
-		entity.setProperty(CConnectedUser.CONNECTED_TIME, new Date());
+/**
+ * Set/Add channel key
+ * @param channelKey the channel key
+ */
+private void setChannelKey(String channelKey) {
+	mUser.setChannelId(UUID.fromString(channelKey));
 
-		DatastoreUtils.put(entity);
-	}
+	// Add to Datastore
+	Entity entity = new Entity(DatastoreTables.CONNECTED_USER, mUser.getKey());
+	entity.setProperty(CConnectedUser.CHANNEL_ID, channelKey);
+	entity.setProperty(CConnectedUser.CONNECTED_TIME, new Date());
 
-	private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
+	DatastoreUtils.put(entity);
+}
 }

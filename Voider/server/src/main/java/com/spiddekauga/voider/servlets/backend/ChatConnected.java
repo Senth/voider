@@ -9,17 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet that does nothing
-
  */
 @SuppressWarnings("serial")
 public class ChatConnected extends HttpServlet {
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doGet(req, resp);
-	}
+@Override
+protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	doGet(req, resp);
+}
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setStatus(HttpServletResponse.SC_OK);
-	}
+@Override
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	resp.setStatus(HttpServletResponse.SC_OK);
+}
 }

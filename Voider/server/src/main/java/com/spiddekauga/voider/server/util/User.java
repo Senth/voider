@@ -1,96 +1,94 @@
 package com.spiddekauga.voider.server.util;
 
+import com.google.appengine.api.datastore.Key;
+
 import java.io.Serializable;
 import java.util.UUID;
 
-import com.google.appengine.api.datastore.Key;
-
 /**
  * Logged in user
-
  */
 public class User extends SessionVariable implements Serializable {
-	/**
-	 * Login the user and set all parameters
-	 * @param userId id/key of the user in the datastore
-	 * @param username
-	 * @param clientId where the user logged in from
-	 */
-	public void login(Key userId, String username, UUID clientId) {
-		mId = userId;
-		mIsLoggedIn = true;
-		mClientId = clientId;
-		mUsername = username;
-		setChanged();
-	}
+/** Serializable id */
+private static final long serialVersionUID = -7213740820922710320L;
+/** Username */
+private String mUsername = null;
+/** User identity key */
+private Key mId = null;
+/** If the user is logged in */
+private boolean mIsLoggedIn = false;
+/** Client id */
+private UUID mClientId = null;
+/** Channel id */
+private UUID mChannelId = null;
 
-	/**
-	 * Logs out the user
-	 */
-	public void logout() {
-		mId = null;
-		mIsLoggedIn = false;
-		mClientId = null;
-		mUsername = null;
-		mChannelId = null;
-		setChanged();
-	}
+/**
+ * Login the user and set all parameters
+ * @param userId id/key of the user in the datastore
+ * @param username
+ * @param clientId where the user logged in from
+ */
+public void login(Key userId, String username, UUID clientId) {
+	mId = userId;
+	mIsLoggedIn = true;
+	mClientId = clientId;
+	mUsername = username;
+	setChanged();
+}
 
-	/**
-	 * @return username
-	 */
-	public String getUsername() {
-		return mUsername;
-	}
+/**
+ * Logs out the user
+ */
+public void logout() {
+	mId = null;
+	mIsLoggedIn = false;
+	mClientId = null;
+	mUsername = null;
+	mChannelId = null;
+	setChanged();
+}
 
-	/**
-	 * @return true if the user is logged in
-	 */
-	public boolean isLoggedIn() {
-		return mIsLoggedIn;
-	}
+/**
+ * @return username
+ */
+public String getUsername() {
+	return mUsername;
+}
 
-	/**
-	 * @return user id/key in the datastore
-	 */
-	public Key getKey() {
-		return mId;
-	}
+/**
+ * @return true if the user is logged in
+ */
+public boolean isLoggedIn() {
+	return mIsLoggedIn;
+}
 
-	/**
-	 * @return client the user is logged in from
-	 */
-	public UUID getClientId() {
-		return mClientId;
-	}
+/**
+ * @return user id/key in the datastore
+ */
+public Key getKey() {
+	return mId;
+}
 
-	/**
-	 * Set the channel id for the user
-	 * @param channelId id of the channel
-	 */
-	public void setChannelId(UUID channelId) {
-		mChannelId = channelId;
-		setChanged();
-	}
+/**
+ * @return client the user is logged in from
+ */
+public UUID getClientId() {
+	return mClientId;
+}
 
-	/**
-	 * @return channel id of the user
-	 */
-	public UUID getChannelId() {
-		return mChannelId;
-	}
+/**
+ * @return channel id of the user
+ */
+public UUID getChannelId() {
+	return mChannelId;
+}
 
-	/** Username */
-	private String mUsername = null;
-	/** User identity key */
-	private Key mId = null;
-	/** If the user is logged in */
-	private boolean mIsLoggedIn = false;
-	/** Client id */
-	private UUID mClientId = null;
-	/** Channel id */
-	private UUID mChannelId = null;
-
-	/** Serializable id */
-	private static final long serialVersionUID = -7213740820922710320L;
+/**
+ * Set the channel id for the user
+ * @param channelId id of the channel
+ */
+public void setChannelId(UUID channelId) {
+	mChannelId = channelId;
+	setChanged();
+}
 }

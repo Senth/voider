@@ -1,11 +1,5 @@
 package com.spiddekauga.voider.servlets.api;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
@@ -28,134 +22,138 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResource
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
+
+import javax.servlet.ServletException;
+
 /**
  * Get resource comments in batches
-
  */
 @SuppressWarnings("serial")
 public class CommentFetch extends VoiderApiServlet<CommentFetchMethod> {
 
-	@Override
-	protected void onInit() {
-		mResponse = new CommentFetchResponse();
-		mResponse.status = FetchStatuses.FAILED_SERVER_ERROR;
-	}
+// Tables
+private static final String T_PUBLISHED = DatastoreTables.PUBLISHED;
+private static final String T_COMMENT = DatastoreTables.RESOURCE_COMMENT;
+private CommentFetchResponse mResponse = null;
 
-	@Override
-	protected IEntity onRequest(CommentFetchMethod method) throws ServletException, IOException {
-		if (!mUser.isLoggedIn()) {
-			mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
-			return mResponse;
-		}
+@Override
+protected void onInit() {
+	mResponse = new CommentFetchResponse();
+	mResponse.status = FetchStatuses.FAILED_SERVER_ERROR;
+}
 
-		UUID resourceId = method.resourceId;
-		String cursor = method.nextCursor;
-
-		// Get level key
-		Key resourceKey = getResourceKey(resourceId);
-
-		QueryResultList<Entity> comments = getComments(resourceKey, cursor);
-		addCommentsToResponse(comments);
-
-		// Get player's comment for first query
-		if (cursor == null) {
-			mResponse.userComment = getUserComment(resourceKey);
-		}
-
-		// Fetched all
-		if (mResponse.comments.size() < ServerConfig.FetchSizes.COMMENTS || mResponse.cursor == null) {
-			mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
-		} else {
-			mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
-		}
-
+@Override
+protected IEntity onRequest(CommentFetchMethod method) throws ServletException, IOException {
+	if (!mUser.isLoggedIn()) {
+		mResponse.status = FetchStatuses.FAILED_USER_NOT_LOGGED_IN;
 		return mResponse;
 	}
 
-	/**
-	 * Get resource key from resource
-	 * @param resourceId
-	 * @return get resource key
-	 */
-	private Key getResourceKey(UUID resourceId) {
-		FilterWrapper idFilter = new FilterWrapper(CPublished.RESOURCE_ID, resourceId);
-		return DatastoreUtils.getSingleKey(T_PUBLISHED, idFilter);
+	UUID resourceId = method.resourceId;
+	String cursor = method.nextCursor;
+
+	// Get level key
+	Key resourceKey = getResourceKey(resourceId);
+
+	QueryResultList<Entity> comments = getComments(resourceKey, cursor);
+	addCommentsToResponse(comments);
+
+	// Get player's comment for first query
+	if (cursor == null) {
+		mResponse.userComment = getUserComment(resourceKey);
 	}
 
-	/**
-	 * Gets comments from the datastore
-	 * @param resourceKey key of the resource to get comments from
-	 * @param startCursor where to start getting comments from
-	 * @return batch list of comments
-	 */
-	private QueryResultList<Entity> getComments(Key resourceKey, String startCursor) {
-		Query query = new Query(T_COMMENT, resourceKey);
-
-		// Sort after latest comment
-		query.addSort(CResourceComment.DATE, SortDirection.DESCENDING);
-		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
-
-		// Limit
-		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(FetchSizes.COMMENTS);
-
-		// Start from previous cursor
-		if (startCursor != null) {
-			fetchOptions.startCursor(Cursor.fromWebSafeString(startCursor));
-		}
-
-		return preparedQuery.asQueryResultList(fetchOptions);
+	// Fetched all
+	if (mResponse.comments.size() < ServerConfig.FetchSizes.COMMENTS || mResponse.cursor == null) {
+		mResponse.status = FetchStatuses.SUCCESS_FETCHED_ALL;
+	} else {
+		mResponse.status = FetchStatuses.SUCCESS_MORE_EXISTS;
 	}
 
-	/**
-	 * Add the datastore comments to the method response
-	 * @param comments the comments to add to the method response
-	 */
-	private void addCommentsToResponse(QueryResultList<Entity> comments) {
-		// Convert to network entities
-		for (Entity comment : comments) {
-			CommentEntity networkEntity = createNetworkEntity(comment);
-			mResponse.comments.add(networkEntity);
-		}
+	return mResponse;
+}
 
-		// Set cursor
-		Cursor cursor = comments.getCursor();
-		if (cursor != null) {
-			mResponse.cursor = cursor.toWebSafeString();
-		}
+/**
+ * Get resource key from resource
+ * @param resourceId
+ * @return get resource key
+ */
+private Key getResourceKey(UUID resourceId) {
+	FilterWrapper idFilter = new FilterWrapper(CPublished.RESOURCE_ID, resourceId);
+	return DatastoreUtils.getSingleKey(T_PUBLISHED, idFilter);
+}
+
+/**
+ * Gets comments from the datastore
+ * @param resourceKey key of the resource to get comments from
+ * @param startCursor where to start getting comments from
+ * @return batch list of comments
+ */
+private QueryResultList<Entity> getComments(Key resourceKey, String startCursor) {
+	Query query = new Query(T_COMMENT, resourceKey);
+
+	// Sort after latest comment
+	query.addSort(CResourceComment.DATE, SortDirection.DESCENDING);
+	PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
+
+	// Limit
+	FetchOptions fetchOptions = FetchOptions.Builder.withLimit(FetchSizes.COMMENTS);
+
+	// Start from previous cursor
+	if (startCursor != null) {
+		fetchOptions.startCursor(Cursor.fromWebSafeString(startCursor));
 	}
 
-	/**
-	 * Get user comment for the specified level
-	 * @param levelKey the level to get the user comment from
-	 * @return the user comment, null if not found.
-	 */
-	private CommentEntity getUserComment(Key levelKey) {
-		Entity entity = DatastoreUtils.getSingleEntity(T_COMMENT, levelKey, new FilterWrapper(CResourceComment.USERNAME, mUser.getUsername()));
+	return preparedQuery.asQueryResultList(fetchOptions);
+}
 
-		if (entity != null) {
-			return createNetworkEntity(entity);
-		}
-
-		return null;
+/**
+ * Add the datastore comments to the method response
+ * @param comments the comments to add to the method response
+ */
+private void addCommentsToResponse(QueryResultList<Entity> comments) {
+	// Convert to network entities
+	for (Entity comment : comments) {
+		CommentEntity networkEntity = createNetworkEntity(comment);
+		mResponse.comments.add(networkEntity);
 	}
 
-	/**
-	 * Create a level comment entity from a datastore entity
-	 * @param datastoreEntity the datastore entity
-	 * @return a level comment entity
-	 */
-	private CommentEntity createNetworkEntity(Entity datastoreEntity) {
-		CommentEntity networkEntity = new CommentEntity();
-		networkEntity.comment = (String) datastoreEntity.getProperty(CResourceComment.COMMENT);
-		networkEntity.date = (Date) datastoreEntity.getProperty(CResourceComment.DATE);
-		networkEntity.username = (String) datastoreEntity.getProperty(CResourceComment.USERNAME);
+	// Set cursor
+	Cursor cursor = comments.getCursor();
+	if (cursor != null) {
+		mResponse.cursor = cursor.toWebSafeString();
+	}
+}
 
-		return networkEntity;
+/**
+ * Get user comment for the specified level
+ * @param levelKey the level to get the user comment from
+ * @return the user comment, null if not found.
+ */
+private CommentEntity getUserComment(Key levelKey) {
+	Entity entity = DatastoreUtils.getSingleEntity(T_COMMENT, levelKey, new FilterWrapper(CResourceComment.USERNAME, mUser.getUsername()));
+
+	if (entity != null) {
+		return createNetworkEntity(entity);
 	}
 
-	private CommentFetchResponse mResponse = null;
+	return null;
+}
 
-	// Tables
-	private static final String T_PUBLISHED = DatastoreTables.PUBLISHED;
-	private static final String T_COMMENT = DatastoreTables.RESOURCE_COMMENT;
+/**
+ * Create a level comment entity from a datastore entity
+ * @param datastoreEntity the datastore entity
+ * @return a level comment entity
+ */
+private CommentEntity createNetworkEntity(Entity datastoreEntity) {
+	CommentEntity networkEntity = new CommentEntity();
+	networkEntity.comment = (String) datastoreEntity.getProperty(CResourceComment.COMMENT);
+	networkEntity.date = (Date) datastoreEntity.getProperty(CResourceComment.DATE);
+	networkEntity.username = (String) datastoreEntity.getProperty(CResourceComment.USERNAME);
+
+	return networkEntity;
+}
 }

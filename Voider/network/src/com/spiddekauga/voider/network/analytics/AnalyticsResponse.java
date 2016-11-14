@@ -6,15 +6,14 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Server response from adding analytics
-
  */
 public class AnalyticsResponse implements IEntity, ISuccessStatuses {
-	/** Status */
-	public GeneralResponseStatuses status = null;
+/** Status */
+public GeneralResponseStatuses status = null;
 
-	@Override
-	public boolean isSuccessful() {
-		return status != null && status.isSuccessful();
-	}
+@Override
+public boolean isSuccessful() {
+	return status != null && status.isSuccessful();
+}
 
 }

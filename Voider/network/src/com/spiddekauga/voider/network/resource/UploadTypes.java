@@ -1,13 +1,12 @@
 package com.spiddekauga.voider.network.resource;
 
-import java.util.HashMap;
-
 import com.spiddekauga.utils.IIdStore;
+
+import java.util.HashMap;
 
 
 /**
  * All definition types that can be uploaded
-
  */
 @SuppressWarnings("javadoc")
 public enum UploadTypes implements IIdStore {
@@ -25,45 +24,47 @@ public enum UploadTypes implements IIdStore {
 	// NEXT ID: 11
 
 	;
-	/**
-	 * Id for saving in datastore
-	 * @param id the id saved in the datastore
-	 */
-	private UploadTypes(int id) {
-		mId = id;
-		mName = name().toLowerCase();
-	}
 
-	@Override
-	public String toString() {
-		return mName;
-	}
+/** Map from id to def types */
+private static HashMap<Integer, UploadTypes> mIdToEnum = new HashMap<>();
 
-	@Override
-	public int toId() {
-		return mId;
+static {
+	for (UploadTypes type : UploadTypes.values()) {
+		mIdToEnum.put(type.mId, type);
 	}
+}
 
-	/**
-	 * Get the correct def type from the id
-	 * @param id the id to get the def type of
-	 * @return the correct def type for this id, null if invalid id
-	 */
-	public static UploadTypes fromId(int id) {
-		return mIdToEnum.get(id);
-	}
+/** Id for saving in datastore */
+private int mId;
+/** Human readable name for the type */
+private String mName;
 
-	/** Id for saving in datastore */
-	private int mId;
-	/** Human readable name for the type */
-	private String mName;
-	/** Map from id to def types */
-	private static HashMap<Integer, UploadTypes> mIdToEnum = new HashMap<>();
+/**
+ * Id for saving in datastore
+ * @param id the id saved in the datastore
+ */
+private UploadTypes(int id) {
+	mId = id;
+	mName = name().toLowerCase();
+}
 
-	static {
-		for (UploadTypes type : UploadTypes.values()) {
-			mIdToEnum.put(type.mId, type);
-		}
-	}
+/**
+ * Get the correct def type from the id
+ * @param id the id to get the def type of
+ * @return the correct def type for this id, null if invalid id
+ */
+public static UploadTypes fromId(int id) {
+	return mIdToEnum.get(id);
+}
+
+@Override
+public String toString() {
+	return mName;
+}
+
+@Override
+public int toId() {
+	return mId;
+}
 
 }

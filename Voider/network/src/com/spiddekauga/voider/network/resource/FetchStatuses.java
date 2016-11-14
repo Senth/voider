@@ -15,11 +15,10 @@ public enum FetchStatuses implements ISuccessStatuses {
 	/** Failed to connect to the server */
 	FAILED_SERVER_CONNECTION,
 	/** User not logged in */
-	FAILED_USER_NOT_LOGGED_IN,
+	FAILED_USER_NOT_LOGGED_IN,;
 
-	;
-	@Override
-	public boolean isSuccessful() {
-		return name().contains("SUCCESS");
-	}
+@Override
+public boolean isSuccessful() {
+	return name().contains("SUCCESS");
+}
 }

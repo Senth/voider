@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 /**
  * Information about bullets we fetched or search for
-
  */
 public class BulletFetchResponse extends FetchResponse {
-	/** All bullets */
-	public ArrayList<BulletDefEntity> bullets = new ArrayList<>();
+/** All bullets */
+public ArrayList<BulletDefEntity> bullets = new ArrayList<>();
 }
