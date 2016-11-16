@@ -158,7 +158,7 @@ public class SettingInfoRepo {
 	private SettingGeneralLocalRepo mLocalRepo = SettingLocalRepo.getInstance().general;
 
 	/**
-	 * Updates the client version to the latest client version
+	 * Updates the client gameVersion to the latest client gameVersion
 	 */
 	public void updateClientVersion() {
 		mLocalRepo.updateLastUsedVersion();
@@ -172,7 +172,7 @@ public class SettingInfoRepo {
 	}
 
 	/**
-	 * @return version container which has information about all versions
+	 * @return gameVersion container which has information about all versions
 	 */
 	public VersionContainer getVersions() {
 		return mLocalRepo.getVersions();
@@ -186,7 +186,7 @@ public class SettingInfoRepo {
 	}
 
 	/**
-	 * @return current (latest) client version
+	 * @return current (latest) client gameVersion
 	 */
 	public Version getCurrentVersion() {
 		return mLocalRepo.getCurrentVersion();
@@ -273,7 +273,7 @@ public class SettingDateRepo {
 	}
 
 	/**
-	 * Sets the date time format if it has been changed, and updates the server version.
+	 * Sets the date time format if it has been changed, and updates the server gameVersion.
 	 * @param format new date time format.
 	 */
 	private void setDateTimeFormat(String format) {

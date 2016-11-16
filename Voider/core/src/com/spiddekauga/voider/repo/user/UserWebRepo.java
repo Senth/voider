@@ -32,7 +32,7 @@ private static UserWebRepo mInstance = null;
 /**
  * Protected constructor to enforce singleton usage
  */
-protected UserWebRepo() {
+private UserWebRepo() {
 	// Does nothing
 }
 
@@ -78,7 +78,7 @@ void register(User user, UUID clientId, IResponseListener... responseListeners) 
 	registerMethod.email = user.getEmail();
 	registerMethod.username = user.getUsername();
 	registerMethod.password = user.getPassword();
-	registerMethod.key = user.getRegisterKey();
+	registerMethod.key = user.getBetaKey();
 
 	sendInNewThread(registerMethod, responseListeners);
 }
@@ -123,8 +123,6 @@ void passwordReset(String email, String password, String token, IResponseListene
 
 /**
  * Tries to change the password
- * @param oldPassword
- * @param newPassword
  * @param responseListeners listens to the web response
  */
 void changePassword(String oldPassword, String newPassword, IResponseListener... responseListeners) {

@@ -101,7 +101,7 @@ void get(UUID levelId, Fetch fetchOption, IResponseListener... responseListeners
  * Get cache response
  * @param levelId id of the level
  * @param fetchOption what to fetch
- * @return new response that can be used instead of the server response, null if no cached version
+ * @return new response that can be used instead of the server response, null if no cached gameVersion
  * of the level exists
  */
 private HighscoreGetResponse getCached(UUID levelId, Fetch fetchOption) {

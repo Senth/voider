@@ -10,22 +10,22 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Upgrades or clears the SQLite database to the latest version
+ * Upgrades or clears the SQLite database to the latest gameVersion
  */
 class SqliteUpgrader {
 /** Version table column */
 private static final int VERSION__VERSION = 0;
-/** Version version column */
+/** Version gameVersion column */
 private static final int VERSION__TABLE_NAME = 1;
-/** DB version */
+/** DB gameVersion */
 private static final int DB_VERSION = 9;
-/** Create version table */
-private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
+/** Create gameVersion table */
+private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS gameVersion (gameVersion INTEGER, table_name TEXT);";
 /** Database to do the upgrading on */
 private Database mDatabase;
 /** If the database has been upgraded or deleted */
 private boolean mUpgradedOrDeleted = false;
-/** Tables that weren't found in the version table */
+/** Tables that weren't found in the gameVersion table */
 private Set<String> mNotFoundTables = new HashSet<String>();
 /** Create table queries for all tables */
 private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
@@ -45,7 +45,7 @@ SqliteUpgrader(Database database) {
 private void fillTables() {
 	// @formatter:off
 
-		// !!! DON'T add table 'version' to this list
+		// !!! DON'T add table 'gameVersion' to this list
 
 		// revisions
 		mNotFoundTables.add("resource_revision");
@@ -131,19 +131,19 @@ private void fillTables() {
 }
 
 /**
- * @return get DB version
+ * @return get DB gameVersion
  */
 static int getDbVersion() {
 	return DB_VERSION;
 }
 
 /**
- * Initializes and upgrade the SQLite database to the latest version
+ * Initializes and upgrade the SQLite database to the latest gameVersion
  * @throws SQLiteGdxException thrown when an error occurs
  */
 void initAndUpgrade() throws SQLiteGdxException {
 	if (!mUpgradedOrDeleted) {
-		// Create version table
+		// Create gameVersion table
 		mDatabase.execSQL(TABLE_VERSION_CREATE);
 
 		createOrUpgradeTables();
@@ -157,7 +157,7 @@ void initAndUpgrade() throws SQLiteGdxException {
  * @throws SQLiteGdxException
  */
 private void createOrUpgradeTables() throws SQLiteGdxException {
-	DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM version");
+	DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM gameVersion");
 
 	while (cursor.next()) {
 		int version = cursor.getInt(VERSION__VERSION);
@@ -170,8 +170,8 @@ private void createOrUpgradeTables() throws SQLiteGdxException {
 		mNotFoundTables.remove(tableName);
 	}
 
-	// Update version for all tables
-	mDatabase.execSQL("UPDATE version SET version=" + DB_VERSION + ";");
+	// Update gameVersion for all tables
+	mDatabase.execSQL("UPDATE gameVersion SET gameVersion=" + DB_VERSION + ";");
 
 	// Create tables that weren't found
 	createTables();
@@ -180,7 +180,7 @@ private void createOrUpgradeTables() throws SQLiteGdxException {
 /**
  * Upgrade a table
  * @param table name of the table to upgrade
- * @param fromVersion the version to upgrade from
+ * @param fromVersion the gameVersion to upgrade from
  * @throws SQLiteGdxException
  */
 private void upgradeTable(String table, int fromVersion) throws SQLiteGdxException {
@@ -225,8 +225,8 @@ private void createTables() throws SQLiteGdxException {
 	for (String table : mNotFoundTables) {
 		mDatabase.execSQL(mCreateTableQueries.get(table));
 
-		// Add to version table
-		mDatabase.execSQL("INSERT INTO version VALUES (" + DB_VERSION + ", '" + table + "');");
+		// Add to gameVersion table
+		mDatabase.execSQL("INSERT INTO gameVersion VALUES (" + DB_VERSION + ", '" + table + "');");
 	}
 }
 

@@ -67,7 +67,7 @@ private void checkAndCreateResources() {
 	if (isMissingPlayerShips()) {
 		createPlayerShips();
 	} else if (Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE) && Debug.isBuildOrAbove(Builds.DEV_SERVER)) {
-		// Remove player ship than add it again... Added a wrong version first time
+		// Remove player ship than add it again... Added a wrong gameVersion first time
 		removePlayerShips();
 		createPlayerShips();
 	}

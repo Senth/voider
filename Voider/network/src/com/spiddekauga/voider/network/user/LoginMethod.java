@@ -27,7 +27,7 @@ public UUID privateKey;
 /** Previous login date on this client */
 @Tag(22)
 public Date lastLogin;
-/** Current version of the client */
+/** Current gameVersion of the client */
 @Tag(24)
 public Version currentVersion;
 @Deprecated

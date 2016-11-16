@@ -50,7 +50,7 @@ public enum Builds {
 	/** Release server */
 	RELEASE("voider-thegame", "http://voider-game.com/", "https://voider-thegame.appspot.com/", null),;
 
-	private static final String DOWNLOAD_URL_PREFIX = "http://storage.googleapis.com/voider-shared/app/";
+	private static final String DOWNLOAD_URL_PREFIX = "https://storage.googleapis.com/voider-shared/app/";
 	private static final String DESKTOP_SUFFIX = ".jar";
 	private String mAppId;
 	private String mUrl;

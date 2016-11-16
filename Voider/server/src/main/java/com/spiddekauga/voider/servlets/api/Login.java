@@ -21,6 +21,7 @@ import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CRestoreDate;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
+import com.spiddekauga.voider.version.Version;
 import com.spiddekauga.voider.version.VersionContainer;
 import com.spiddekauga.voider.version.VersionParser;
 
@@ -48,7 +49,7 @@ static {
 private LoginResponse mResponse = null;
 
 /**
- * Loads the current version container
+ * Loads the current gameVersion container
  */
 private static void loadVersionContainer() {
 	File file = new File(ServerConfig.VERSION_FILE);
@@ -100,13 +101,15 @@ protected IEntity onRequest(LoginMethod method) throws ServletException, IOExcep
 }
 
 /**
- * Check client version and sets the client version status in the response depending on the client
- * version.
- * @param method
+ * Check client gameVersion and sets the client gameVersion status in the response depending on the
+ * client gameVersion.
  */
 private void checkClientVersion(LoginMethod method) {
 	// New versions available
-	if (!mVersionContainer.isLatest(method.currentVersion)) {
+	Version latestVersion = mVersionContainer.getLatest();
+	mLogger.info("Latest version: " + latestVersion.getVersion() + ", client version: " + method.currentVersion.getVersion());
+	if (latestVersion.isNewerThan(method.currentVersion)) {
+		mLogger.info("Newer version available");
 		// Check client needs to be updated
 		if (mVersionContainer.isUpdateRequired(method.currentVersion)) {
 			mResponse.versionInfo.status = VersionInformation.Statuses.UPDATE_REQUIRED;
@@ -128,7 +131,6 @@ private void checkClientVersion(LoginMethod method) {
 
 /**
  * Check if the client needs to revert and restore the local data
- * @param method
  */
 private void checkRestoreDate(LoginMethod method) {
 	if (method.lastLogin != null) {
@@ -153,7 +155,6 @@ private void checkRestoreDate(LoginMethod method) {
 
 /**
  * Try to login
- * @param method
  */
 private void login(LoginMethod method) {
 	// Check username vs username first
@@ -181,7 +182,7 @@ private void login(LoginMethod method) {
 			mResponse.email = (String) datastoreEntity.getProperty(CUsers.EMAIL);
 			updateLastLoggedIn(datastoreEntity);
 
-			// Only login online if we have a valid version
+			// Only login online if we have a valid gameVersion
 			if (mResponse.isServerLoginAvailable()) {
 				mUser.login(datastoreEntity.getKey(), mResponse.username, method.clientId);
 			}

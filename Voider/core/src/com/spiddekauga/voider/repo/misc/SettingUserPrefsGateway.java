@@ -50,8 +50,8 @@ void setDateTime(String dateTime) {
 }
 
 /**
- * Updates the client version to the latest client version
- * @param version last used version string
+ * Updates the client gameVersion to the latest client gameVersion
+ * @param version last used gameVersion string
  */
 void updateLastUsedVersion(String version) {
 	mPreferences.putString(CLIENT__LAST_USED_VERSION, version);
@@ -63,7 +63,7 @@ void updateLastUsedVersion(String version) {
 // ----------------
 
 /**
- * @return the last client version this client used, null if not found
+ * @return the last client gameVersion this client used, null if not found
  */
 String getLastUsedVersion() {
 	return mPreferences.getString(CLIENT__LAST_USED_VERSION, null);

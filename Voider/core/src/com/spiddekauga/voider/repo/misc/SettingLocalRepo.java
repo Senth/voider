@@ -84,14 +84,14 @@ class SettingGeneralLocalRepo {
 	}
 
 	/**
-	 * Updates the client version to the latest client version
+	 * Updates the client gameVersion to the latest client gameVersion
 	 */
 	void updateLastUsedVersion() {
 		mUserPrefsGateway.updateLastUsedVersion(mVersionContainer.getLatest().getVersion());
 	}
 
 	/**
-	 * @return version container which has information about all versions
+	 * @return gameVersion container which has information about all versions
 	 */
 	VersionContainer getVersions() {
 		return mVersionContainer;
@@ -105,7 +105,7 @@ class SettingGeneralLocalRepo {
 	}
 
 	/**
-	 * @return the last client version this client used
+	 * @return the last client gameVersion this client used
 	 */
 	Version getLastUsedVersion() {
 		String versionString = mUserPrefsGateway.getLastUsedVersion();
@@ -123,7 +123,7 @@ class SettingGeneralLocalRepo {
 	}
 
 	/**
-	 * @return current client version
+	 * @return current client gameVersion
 	 */
 	Version getCurrentVersion() {
 		return mVersionContainer.getLatest();

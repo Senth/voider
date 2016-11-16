@@ -127,7 +127,7 @@ private boolean isRegisterKeyValid(String registerKey) {
 		}
 		return false;
 	}
-	// Not beta build
+	// Not beta buildType
 	else {
 		return true;
 	}

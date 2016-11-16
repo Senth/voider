@@ -1,4 +1,11 @@
+[0.6.1]
+required=true
+hotfix=false
+date=2016-11-15
+Improved bug reports (for the developer)
+
 [0.6.0]
+date=2016-11-01
 required=true
 hotfix=false
 Login Method

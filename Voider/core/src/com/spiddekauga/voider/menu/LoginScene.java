@@ -2,8 +2,6 @@ package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.PasswordResetMethod;
@@ -70,12 +68,6 @@ public boolean onKeyDown(int keycode) {
 		return true;
 	}
 
-
-	// Debug tests
-	if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
-
-	}
-
 	return super.onKeyDown(keycode);
 }
 
@@ -124,7 +116,7 @@ protected LoginGui getGui() {
 /**
  * Try to login using stored username and private key
  */
-void login() {
+private void login() {
 	User userInfo = mUserRepo.getLastUser();
 
 	if (userInfo != null && userInfo.isOnline()) {
@@ -149,7 +141,7 @@ void register(String username, String password, String email, String registerKey
 	mLoggingInUser.setUsername(username);
 	mLoggingInUser.setEmail(email);
 	mLoggingInUser.setPassword(password);
-	mLoggingInUser.setRegisterKey(registerKey);
+	mLoggingInUser.setBetaKey(registerKey);
 	mLoggingInUser.register(this);
 	getGui().showWaitWindow("Registering...");
 }
@@ -165,9 +157,9 @@ void passwordResetSendToken(String email) {
 
 /**
  * Try and reset the user's password
- * @param email
- * @param password
- * @param token
+ * @param email user email or username
+ * @param password new password
+ * @param token password token gotten from the email
  */
 void resetPassword(String email, String password, String token) {
 	mUserRepo.passwordReset(email, password, token, this);
