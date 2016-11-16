@@ -49,7 +49,6 @@ appengine {
 
 sourceSets.main.java.srcDirs = ["src/main/java"]
 
-
 // Appengine tasks
 task setAppengineDev(dependsOn: ['appengineExplodeApp']) << {
     prepareAppengine()

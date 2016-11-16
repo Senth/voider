@@ -482,7 +482,7 @@ public class Messages {
 	}
 
 	/**
-	 * Client version messages
+	 * Client gameVersion messages
 	 */
 	public static class Version {
 
@@ -492,17 +492,17 @@ public class Messages {
 		private static final String UPDATE_REQUIRED = "You are offline!\n"
 				+ "A _mandatory_ update is available for Voider. "
 				+ "Please update Voider access online features.\n\n"
-				+ "Your version: " + OLD_VERSION_STRING + "\n"
-				+ "Latest version: " + NEW_VERSION_STRING;
+				+ "Your gameVersion: " + OLD_VERSION_STRING + "\n"
+				+ "Latest gameVersion: " + NEW_VERSION_STRING;
 		/** Update available message */
 		private static final String UPDATE_OPTIONAL = "An optional update is available for Voider. "
 				+ "Please update Voider for bugfixes, improvements and new features.\n\n"
-				+ "Your version: " + OLD_VERSION_STRING + "\n"
-				+ "Latest version: " + NEW_VERSION_STRING;
+				+ "Your gameVersion: " + OLD_VERSION_STRING + "\n"
+				+ "Latest gameVersion: " + NEW_VERSION_STRING;
 
 		/**
 		 * Get required update message
-		 * @param newVersion latest client version available
+		 * @param newVersion latest client gameVersion available
 		 * @return required message update
 		 */
 		public static String getRequiredUpdate(String newVersion) {
@@ -514,7 +514,7 @@ public class Messages {
 
 		/**
 		 * Get available update message
-		 * @param newVersion latest client version available
+		 * @param newVersion latest client gameVersion available
 		 * @return available message update
 		 */
 		public static String getOptionalUpdate(String newVersion) {

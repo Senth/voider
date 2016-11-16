@@ -87,7 +87,7 @@ private boolean mCompletedLevel;
 /** True if the level is running */
 private boolean mRunning = false;
 private PlayerActor mPlayerActor = null;
-/** Read class version */
+/** Read class gameVersion */
 private int mClassVersion = CLASS_REVISION;
 /** Multiple enemies in a group, but just save the leader and number of enemies */
 @Deprecated

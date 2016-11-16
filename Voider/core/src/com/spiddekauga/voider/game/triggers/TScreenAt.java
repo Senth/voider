@@ -179,7 +179,7 @@ public RenderOrders getRenderOrder() {
 
 
 /**
- * Creates the vertices for the graphical version of the trigger
+ * Creates the vertices for the graphical gameVersion of the trigger
  */
 private void createVertices() {
 	if (!isHidden()) {
@@ -202,7 +202,7 @@ private void createVertices() {
 }
 
 /**
- * Destroys the graphical version of the trigger
+ * Destroys the graphical gameVersion of the trigger
  */
 private void destroyVertices() {
 	if (mVertices != null) {

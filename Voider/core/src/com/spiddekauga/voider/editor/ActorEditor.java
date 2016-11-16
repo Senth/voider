@@ -363,7 +363,7 @@ protected void saveToFile() {
 	mNotification.showSuccess(Messages.Info.SAVED);
 	showSyncMessage();
 
-	// Saved first time? Then load it and use the loaded version
+	// Saved first time? Then load it and use the loaded gameVersion
 	if (!ResourceCacheFacade.isLoaded(mActorDef.getId())) {
 		ResourceCacheFacade.load(this, mActorDef.getId(), true);
 		ResourceCacheFacade.finishLoading();

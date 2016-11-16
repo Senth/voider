@@ -8,7 +8,7 @@ import java.util.List;
  * Contains update information
  */
 public class UpdateEvent extends GameEvent {
-/** Latest client version */
+/** Latest client gameVersion */
 public final Version newestVersion;
 /** All versions */
 public final List<Version> newVersions;

@@ -224,7 +224,7 @@ public void synchronizeAll(IResponseListener responseListener) {
 /**
  * Fix conflicts
  * @param keepLocal true if we want to keep the local versions, false if we want to keep the server
- * version.
+ * gameVersion.
  */
 public void fixConflict(boolean keepLocal) {
 	if (mConflictsFound != null && User.getGlobalUser().isOnline()) {

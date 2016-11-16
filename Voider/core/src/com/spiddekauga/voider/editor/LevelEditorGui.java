@@ -81,7 +81,7 @@ private InnerWidgets mWidgets = new InnerWidgets();
  * Sets the level editor this GUI will act on.
  * @param levelEditor the scene this GUI will act on
  */
-public void setLevelEditor(LevelEditor levelEditor) {
+void setLevelEditor(LevelEditor levelEditor) {
 	mLevelEditor = levelEditor;
 	mInvoker = mLevelEditor.getInvoker();
 
@@ -109,7 +109,7 @@ public void initGui() {
 	initEnemyOptions();
 	initEnemyAddOptions();
 	initSettingsMenu();
-	initColor();
+	initTerrainColor();
 }
 
 @Override
@@ -130,7 +130,7 @@ public void resetValues() {
 /**
  * Reset path options
  */
-void resetPathOptions() {
+private void resetPathOptions() {
 	if (mLevelEditor.isPathSelected()) {
 		mWidgets.path.hiderTab.show();
 
@@ -216,7 +216,7 @@ void resetEnemyOptions() {
 /**
  * Reset level info
  */
-void resetLevelInfo() {
+private void resetLevelInfo() {
 	mWidgets.info.description.setText(mLevelEditor.getDescription());
 	mWidgets.info.name.setText(mLevelEditor.getName());
 	mWidgets.info.prologue.setText(mLevelEditor.getPrologue());
@@ -240,7 +240,7 @@ void resetEnemyAddTable() {
 	mWidgets.enemyAdd.scrollTable.dispose(true);
 
 
-	ButtonGroup<ResourceTextureButton> buttonGroup = new ButtonGroup<ResourceTextureButton>();
+	ButtonGroup<ResourceTextureButton> buttonGroup = new ButtonGroup<>();
 	int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
 	int cColumEnemy = enemiesPerColumn;
 	float maxScrollPaneHeight = getEnemyScrollListMaxHeight();
@@ -432,9 +432,10 @@ void resetMusic() {
 }
 
 /**
+ * Calculate and get max scroll table height for the enemy list. {@link ScrollPane} needs to be set
+ * to height 0 and wrapper table must call layout() as it calculates the height of the rest of the
+ * widgets.
  * @return calculate and get max scroll table height for the enemy list.
- * @note scrollPane needs to be set to height 0 and wrapper table must call layout() as it
- * calculates the height of the rest of the widgets.
  */
 private float getEnemyScrollListMaxHeight() {
 	mWidgets.enemyAdd.scrollPane.setHeight(0);
@@ -458,9 +459,7 @@ private float getEnemyScrollListMaxHeight() {
  * @return get tooltip of the specified enemy
  */
 private String getEnemyTooltip(EnemyActorDef enemyDef) {
-	String text = "Click on level to add enemy '" + enemyDef.getName() + "'";
-
-	return text;
+	return "Click on level to add enemy '" + enemyDef.getName() + "'";
 }
 
 @Override
@@ -917,7 +916,7 @@ private void initPathOptions() {
 
 	// Buttons
 	ImageButton button;
-	ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<ImageButton>();
+	ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<>();
 	buttonGroup.setMinCheckCount(0);
 
 	GuiCheckCommandCreator checkCommandCreator = new GuiCheckCommandCreator(mInvoker);
@@ -1082,9 +1081,9 @@ private void initEnemyAddOptions() {
 }
 
 /**
- * Initializes color settings
+ * Initializes terrain color settings
  */
-private void initColor() {
+private void initTerrainColor() {
 	AlignTable table = mWidgets.color.table;
 	table.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 

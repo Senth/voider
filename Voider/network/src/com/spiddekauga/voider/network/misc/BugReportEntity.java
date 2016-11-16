@@ -12,23 +12,20 @@ import java.util.UUID;
  * Bug report information
  */
 public class BugReportEntity implements IEntity {
-/** User that's reporting, null if anonymous */
 public String userKey = null;
-/** Subject */
 public String subject;
-/** Additional description */
 public String description;
-/** Date of the report */
 public Date date;
 /** Additional information such as exception, optional */
-public String additionalInformation = "";
+public String exception = "";
 /** Analytics information (events, scenes, last actions...), optional */
 public AnalyticsSessionEntity analyticsSession = null;
-/** System information */
-public String systemInformation;
+public String os;
+public String gameVersion;
+public String buildType;
+public String resolution;
 /** id of the report, only used locally */
 public UUID id = UUID.randomUUID();
-/** Bug report type */
 public BugReportTypes type;
 
 /**

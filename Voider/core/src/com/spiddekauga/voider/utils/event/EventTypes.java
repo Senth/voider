@@ -74,7 +74,7 @@ public enum EventTypes {
 
 
 	// --- SERVER RESTORED TO PREVIOUS VERSION ---
-	/** The server restored/rewound to an earlier version of its database */
+	/** The server restored/rewound to an earlier gameVersion of its database */
 	SERVER_RESTORE,
 	/** Server maintenance */
 	SERVER_MAINTENANCE,

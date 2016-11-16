@@ -87,59 +87,93 @@ private void createBugReportEntity() {
 	mBugReport.date = new Date();
 	mBugReport.subject = "";
 	mBugReport.description = "";
-	mBugReport.systemInformation = getSystemInformation();
+	setSystemInformation(mBugReport);
 
 	// Exception
 	if (mException != null) {
-		String stackTrace = Strings.exceptionToString(mException);
-		stackTrace = Strings.toHtmlString(stackTrace);
-		mBugReport.additionalInformation = stackTrace;
-		mBugReport.additionalInformation += "</br></br>";
+		mBugReport.exception = Strings.exceptionToString(mException);
 		mBugReport.type = BugReportTypes.BUG_EXCEPTION;
 
 		// Get analytics
 		mBugReport.analyticsSession = AnalyticsRepo.getInstance().getSession();
+	} else {
+		mBugReport.type = BugReportTypes.BUG_CUSTOM;
 	}
 }
 
 /**
- * @return string with system information
+ * Get the system information that is sent to the server
+ * @return system information
  */
 public static String getSystemInformation() {
-	StringBuilder builder = new StringBuilder();
+	String info = "OS: ";
 
-	builder.append("OS: ");
 	switch (Gdx.app.getType()) {
 	case Android:
-		builder.append("Android API v.").append(Gdx.app.getVersion());
+		info += "Android API v." + Gdx.app.getVersion();
 		break;
 
 	case Applet:
-		builder.append("Applet");
+		info += "Applet";
 		break;
 
 	case Desktop:
-		builder.append(System.getProperty("os.name"));
+		info += System.getProperty("os.name");
 		break;
 
 	case WebGL:
-		builder.append("WebGL");
+		info += "WebGL";
 		break;
 
 	case iOS:
-		builder.append("iOS v.").append(Gdx.app.getVersion());
+		info += "iOS v." + Gdx.app.getVersion();
 		break;
 
 	default:
 		break;
 	}
 
-	builder.append("\n");
-	builder.append("Screen size: ").append(Gdx.graphics.getWidth()).append("x").append(Gdx.graphics.getHeight()).append("\n");
-	builder.append("Version: ").append(SettingRepo.getInstance().info().getCurrentVersion().getVersion()).append("\n");
-	builder.append("Build: ").append(Config.Debug.BUILD.toString());
 
-	return builder.toString();
+	info += "\nGame Version: " + SettingRepo.getInstance().info().getCurrentVersion().getVersion();
+	info += "\nBuild type: " + Config.Debug.BUILD.toString();
+	info += "\nScreen resolution: " + Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
+
+	return info;
+}
+
+/**
+ * Set the system information of the bug report
+ * @param bugReport the bug report to set
+ */
+private static void setSystemInformation(BugReportEntity bugReport) {
+	switch (Gdx.app.getType()) {
+	case Android:
+		bugReport.os = "Android API v." + Gdx.app.getVersion();
+		break;
+
+	case Applet:
+		bugReport.os = "Applet";
+		break;
+
+	case Desktop:
+		bugReport.os = System.getProperty("os.name");
+		break;
+
+	case WebGL:
+		bugReport.os = "WebGL";
+		break;
+
+	case iOS:
+		bugReport.os = "iOS v." + Gdx.app.getVersion();
+		break;
+
+	default:
+		break;
+	}
+
+	bugReport.resolution = "" + Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
+	bugReport.gameVersion = SettingRepo.getInstance().info().getCurrentVersion().getVersion();
+	bugReport.buildType = Config.Debug.BUILD.toString();
 }
 
 @Override
@@ -166,8 +200,8 @@ private void handleBugReportResponse(BugReportResponse response) {
 
 /**
  * Show message box for sent report
- * @param title
- * @param message
+ * @param title message box title
+ * @param message the message of the sent report
  */
 private void showSentMessage(String title, String message) {
 	// Message box
@@ -241,7 +275,7 @@ public void setSendAnonymously(boolean anonymously) {
 
 /**
  * Set the subject of the bug report
- * @param subject
+ * @param subject email subject
  */
 public void setSubject(String subject) {
 	mBugReport.subject = subject;
@@ -249,7 +283,7 @@ public void setSubject(String subject) {
 
 /**
  * Set the description of the bug report
- * @param description
+ * @param description optional description of the bug report
  */
 public void setDescription(String description) {
 	mBugReport.description = description;
@@ -257,7 +291,7 @@ public void setDescription(String description) {
 
 /**
  * Set the bug type
- * @param bugReportType
+ * @param bugReportType type of bug report
  */
 public void setType(BugReportTypes bugReportType) {
 	mBugReport.type = bugReportType;
