@@ -28,7 +28,7 @@ import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 

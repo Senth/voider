@@ -8,7 +8,7 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;

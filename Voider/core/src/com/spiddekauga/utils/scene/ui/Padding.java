@@ -6,13 +6,9 @@ import com.badlogic.gdx.utils.Pool.Poolable;
  * Wrapper for padding variables
  */
 public class Padding implements Poolable {
-/** Left padding */
 public float left = 0;
-/** right padding */
 public float right = 0;
-/** top padding */
 public float top = 0;
-/** bottom padding */
 public float bottom = 0;
 
 /**

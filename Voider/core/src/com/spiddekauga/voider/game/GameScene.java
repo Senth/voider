@@ -31,10 +31,10 @@ import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.LoadingScene;
-import com.spiddekauga.voider.scene.LoadingTextScene;
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.utils.scene.ui.LoadingScene;
+import com.spiddekauga.utils.scene.ui.LoadingTextScene;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.WorldScene;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.SoundPlayer;
@@ -108,16 +108,16 @@ public GameScene(boolean runningFromEditor, boolean invulnerable) {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 	mWorld.setContactListener(mCollisionResolver);
 	mSoundEffectListener = new SoundEffectListener();
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 // Set last played
@@ -302,8 +302,8 @@ private void updateLives() {
 }
 
 @Override
-protected void onDeactivate() {
-	super.onDeactivate();
+protected void onPause() {
+	super.onPause();
 
 	mSoundPlayer.stopAll();
 }
@@ -381,7 +381,7 @@ protected void render() {
 }
 
 @Override
-protected void onDispose() {
+protected void onDestroy() {
 	// Save the level
 	if (!mRunningFromEditor) {
 		// Remove old saved game
@@ -405,7 +405,7 @@ protected void onDispose() {
 	mSoundEffectListener.dispose();
 	mPlayerStats.dispose();
 
-	super.onDispose();
+	super.onDestroy();
 }
 
 @Override

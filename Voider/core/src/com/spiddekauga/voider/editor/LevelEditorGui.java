@@ -33,7 +33,7 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
@@ -54,7 +54,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
@@ -89,30 +89,6 @@ void setLevelEditor(LevelEditor levelEditor) {
 }
 
 @Override
-public void dispose() {
-	mWidgets.dispose();
-	mInfoTable.dispose();
-
-	super.dispose();
-}
-
-@Override
-public void initGui() {
-	super.initGui();
-
-
-	mInfoTable.setPreferences(mMainTable);
-
-	initToolMenu();
-	initInfo();
-	initPathOptions();
-	initEnemyOptions();
-	initEnemyAddOptions();
-	initSettingsMenu();
-	initTerrainColor();
-}
-
-@Override
 public void resetValues() {
 	super.resetValues();
 
@@ -127,339 +103,28 @@ public void resetValues() {
 	resetMusic();
 }
 
-/**
- * Reset path options
- */
-private void resetPathOptions() {
-	if (mLevelEditor.isPathSelected()) {
-		mWidgets.path.hiderTab.show();
+@Override
+public void onDestroy() {
+	mWidgets.dispose();
+	mInfoTable.dispose();
 
-		if (mLevelEditor.getPathType() != null) {
-			switch (mLevelEditor.getPathType()) {
-			case BACK_AND_FORTH:
-				mWidgets.path.backAndForth.setChecked(true);
-				break;
-
-			case LOOP:
-				mWidgets.path.loop.setChecked(true);
-				break;
-
-			case ONCE:
-				mWidgets.path.once.setChecked(true);
-				break;
-			}
-		}
-		// No paths selected or they have different path types -> Uncheck all
-		else {
-			mWidgets.path.backAndForth.setChecked(false);
-			mWidgets.path.loop.setChecked(false);
-			mWidgets.path.once.setChecked(false);
-		}
-	} else {
-		mWidgets.path.hiderTab.hide();
-	}
+	super.onDestroy();
 }
 
-/**
- * Resets enemy option values
- */
-void resetEnemyOptions() {
-	// Show/Hide options
-	if (mLevelEditor.isEnemySelected()) {
-		mWidgets.enemy.hiderTab.show();
-
-		// Update enemy count slider values
-		if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
-			mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue(), false),
-					true);
-		}
-
-		// Update enemy delay slider values
-		if (mLevelEditor.getEnemySpawnDelay() >= 0 && mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
-			mInvoker.execute(
-					new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue(), false),
-					true);
-		}
-
-		// Has activate trigger -> Show trigger delay
-		if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
-			mWidgets.enemy.hiderActivateDelay.show();
-
-			float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
-			if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
-				mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue(), false),
-						true);
-			}
-		} else {
-			mWidgets.enemy.hiderActivateDelay.hide();
-		}
+@Override
+public void onCreate() {
+	super.onCreate();
 
 
-		// Has deactivate trigger -> Show trigger delay
-		if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
-			mWidgets.enemy.hiderDeactivateDelay.show();
+	mInfoTable.setPreferences(mMainTable);
 
-			float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
-			if (deactivateDelay >= 0 && deactivateDelay != mWidgets.enemy.deactivateDelay.getValue()) {
-				mInvoker.execute(
-						new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue(), false), true);
-			}
-		} else {
-			mWidgets.enemy.hiderDeactivateDelay.hide();
-		}
-
-	} else {
-		mWidgets.enemy.hiderTab.hide();
-	}
-}
-
-/**
- * Reset level info
- */
-private void resetLevelInfo() {
-	mWidgets.info.description.setText(mLevelEditor.getDescription());
-	mWidgets.info.name.setText(mLevelEditor.getName());
-	mWidgets.info.prologue.setText(mLevelEditor.getPrologue());
-	mWidgets.info.epilogue.setText(mLevelEditor.getEpilogue());
-	mWidgets.info.speed.setValue(mLevelEditor.getLevelStartingSpeed());
-	resetTheme();
-}
-
-/**
- * Reset enemy add table
- */
-void resetEnemyAddTable() {
-	// Skip if invisible or not initialized
-	if (!mWidgets.enemyAdd.hiderTable.isVisible() && mWidgets.enemyAdd.scrollTable == null) {
-		return;
-	}
-
-	ArrayList<EnemyActorDef> enemyDefs = mLevelEditor.getAddEnemies();
-	EnemyActorDef selectedEnemyActor = mLevelEditor.getSelectedEnemyToCreate();
-
-	mWidgets.enemyAdd.scrollTable.dispose(true);
-
-
-	ButtonGroup<ResourceTextureButton> buttonGroup = new ButtonGroup<>();
-	int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
-	int cColumEnemy = enemiesPerColumn;
-	float maxScrollPaneHeight = getEnemyScrollListMaxHeight();
-
-	Cell enemyButtonCell = null;
-
-	for (EnemyActorDef enemyDef : enemyDefs) {
-		ResourceTextureButton button = new ResourceTextureButton(enemyDef,
-				(ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
-
-		// Analytics
-		new AnalyticsButtonListener(button, "Level_EnemySelect",
-				enemyDef.getName() + " (" + enemyDef.getId() + ":" + enemyDef.getRevision() + ")");
-
-		// Create tooltip
-		CustomTooltip tooltip = new CustomTooltip(getEnemyTooltip(enemyDef), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, 3);
-		tooltip.setHideWhenHidden(false);
-		mTooltip.add(button, tooltip);
-
-		if (cColumEnemy == enemiesPerColumn) {
-			cColumEnemy = 0;
-			mWidgets.enemyAdd.scrollTable.row().setFillWidth(true).setEqualCellSize(true);
-		}
-
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(Button button, boolean checked) {
-				if (checked) {
-					mLevelEditor.createNewEnemy((EnemyActorDef) ((ResourceTextureButton) button).getResource());
-				}
-			}
-		};
-		buttonGroup.add(button);
-
-		enemyButtonCell = mWidgets.enemyAdd.scrollTable.add(button).setKeepAspectRatio(true).setFillWidth(true);
-		cColumEnemy++;
-
-		if (enemyDef.equals(selectedEnemyActor)) {
-			button.setChecked(true);
-		}
-	}
-
-	// Fill rest of row with empty cell
-	if (cColumEnemy > 0 && cColumEnemy < enemiesPerColumn) {
-		mWidgets.enemyAdd.scrollTable.add(enemiesPerColumn - cColumEnemy);
-	}
-
-	// Fix height of scroll pane
-	mWidgets.enemyAdd.table.layout();
-	float innerHeight = mWidgets.enemyAdd.scrollTable.getHeight();
-	// OK height
-	if (innerHeight < maxScrollPaneHeight) {
-		mWidgets.enemyAdd.scrollPane.setHeight(innerHeight);
-	} else {
-		// Calculate maximum number of rows
-		if (enemyButtonCell != null) {
-			int rows = (int) (maxScrollPaneHeight / enemyButtonCell.getHeight());
-			mWidgets.enemyAdd.scrollPane.setHeight(rows * enemyButtonCell.getHeight());
-		}
-	}
-}
-
-/**
- * Reset tools
- */
-void resetTools() {
-	switch (mLevelEditor.getSelectedTool()) {
-	case ADD_MOVE_CORNER:
-		mWidgets.tool.cornerAdd.setChecked(true);
-		break;
-
-	case DELETE:
-		mWidgets.tool.delete.setChecked(true);
-		break;
-
-	case ENEMY_ADD:
-		mWidgets.tool.enemyAdd.setChecked(true);
-		break;
-
-	case ENEMY_SET_ACTIVATE_TRIGGER:
-		mWidgets.tool.triggerActivate.setChecked(true);
-		break;
-
-	case ENEMY_SET_DEACTIVATE_TRIGGER:
-		mWidgets.tool.triggerDeactivate.setChecked(true);
-		break;
-
-	case MOVE:
-		mWidgets.tool.move.setChecked(true);
-		break;
-
-	case PAN:
-		mWidgets.tool.pan.setChecked(true);
-		break;
-
-	case PATH_ADD:
-		mWidgets.tool.pathAdd.setChecked(true);
-		break;
-
-	case PICKUP_ADD:
-		// TODO add pickup
-		break;
-
-	case REMOVE_CORNER:
-		mWidgets.tool.cornerRemove.setChecked(true);
-		break;
-
-	case SELECTION:
-		mWidgets.tool.select.setChecked(true);
-		break;
-
-	case TERRAIN_DRAW_APPEND:
-		mWidgets.tool.drawAppend.setChecked(true);
-		break;
-
-	case TERRAIN_DRAW_ERASE:
-		mWidgets.tool.drawErase.setChecked(true);
-		break;
-
-	default:
-		break;
-
-	}
-}
-
-/**
- * Update screenshot image
- */
-void resetImage() {
-	float width = mUiFactory.getStyles().vars.textFieldWidth;
-	float height = width / Config.Level.SAVE_TEXTURE_RATIO;
-
-	mWidgets.info.image.setDrawable(mLevelEditor.getImage());
-	mWidgets.info.image.setSize(width, height);
-	mWidgets.info.image.setVisible(true);
-	mWidgets.info.image.invalidate();
-}
-
-/**
- * Resets the color
- */
-void resetColor() {
-	// Update hiders
-	mWidgets.color.hiderDefault.setVisibility(mLevelEditor.isTerrainToolSelected());
-	mWidgets.color.hiderTerrain.setVisibility(mLevelEditor.isTerrainSelected());
-
-	if (mLevelEditor.isTerrainSelected() || mLevelEditor.isTerrainToolSelected()) {
-		mWidgets.color.hiderTab.show();
-	} else {
-		mWidgets.color.hiderTab.hide();
-	}
-
-	// Set widgets
-	mWidgets.color.defaultPicker.setPickColor(mLevelEditor.getDefaultTerrainColor());
-	mWidgets.color.defaultOpacity.setValue(mLevelEditor.getDefaultTerrainOpacity());
-
-	// Current terrain color
-	Color selectedColor = mLevelEditor.getSelectedTerrainColor();
-	if (selectedColor != null) {
-		mWidgets.color.terrainPicker.setPickColor(selectedColor);
-	}
-	float selectedOpacity = mLevelEditor.getSelectedTerrainOpacity();
-	if (selectedOpacity != -1) {
-		mWidgets.color.terrainOpacity.setValue(selectedOpacity);
-	}
-}
-
-/**
- * Update theme image button
- */
-void resetTheme() {
-	ImageScrollButton button = mWidgets.info.theme;
-	Themes theme = mLevelEditor.getTheme();
-
-	button.clearLayers();
-
-	LevelBackground background = theme.createBackground((int) button.getHeight());
-	button.addLayer(background.getBottomLayer());
-	button.addLayer(background.getTopLayer());
-}
-
-/**
- * Update music selection
- */
-void resetMusic() {
-	SelectBox<Music> selectBox = mWidgets.info.music;
-	Music music = mLevelEditor.getMusic();
-	selectBox.setSelected(music);
-}
-
-/**
- * Calculate and get max scroll table height for the enemy list. {@link ScrollPane} needs to be set
- * to height 0 and wrapper table must call layout() as it calculates the height of the rest of the
- * widgets.
- * @return calculate and get max scroll table height for the enemy list.
- */
-private float getEnemyScrollListMaxHeight() {
-	mWidgets.enemyAdd.scrollPane.setHeight(0);
-	mWidgets.enemyAdd.table.invalidate();
-	mSettingTabs.invalidate();
-	mSettingTabs.layout();
-
-
-	// Calculate maximum size
-	float availableHeight = mSettingTabs.getAvailableHeight();
-
-	// Decrease with other widgets in the tab
-	availableHeight -= mWidgets.enemyAdd.table.getHeight();
-
-	return availableHeight;
-}
-
-/**
- * Get tooltip text for an enemy
- * @param enemyDef definition of the enemy
- * @return get tooltip of the specified enemy
- */
-private String getEnemyTooltip(EnemyActorDef enemyDef) {
-	return "Click on level to add enemy '" + enemyDef.getName() + "'";
+	initToolMenu();
+	initInfo();
+	initPathOptions();
+	initEnemyOptions();
+	initEnemyAddOptions();
+	initSettingsMenu();
+	initTerrainColor();
 }
 
 @Override
@@ -1139,7 +804,7 @@ private void initTerrainColor() {
  * Show theme selection message box
  */
 private void showThemeSelectWindow() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Theme");
+	MsgBox msgBox = mUiFactory.msgBox.add("Select Theme");
 
 	boolean checkable = true;
 	ButtonListener listener = null;
@@ -1228,6 +893,341 @@ private void togglePlayVisibility(boolean showPlay) {
  */
 private float getInnerRightPanelWidth() {
 	return mUiFactory.getStyles().vars.rightPanelWidth;
+}
+
+/**
+ * Reset path options
+ */
+private void resetPathOptions() {
+	if (mLevelEditor.isPathSelected()) {
+		mWidgets.path.hiderTab.show();
+
+		if (mLevelEditor.getPathType() != null) {
+			switch (mLevelEditor.getPathType()) {
+			case BACK_AND_FORTH:
+				mWidgets.path.backAndForth.setChecked(true);
+				break;
+
+			case LOOP:
+				mWidgets.path.loop.setChecked(true);
+				break;
+
+			case ONCE:
+				mWidgets.path.once.setChecked(true);
+				break;
+			}
+		}
+		// No paths selected or they have different path types -> Uncheck all
+		else {
+			mWidgets.path.backAndForth.setChecked(false);
+			mWidgets.path.loop.setChecked(false);
+			mWidgets.path.once.setChecked(false);
+		}
+	} else {
+		mWidgets.path.hiderTab.hide();
+	}
+}
+
+/**
+ * Resets enemy option values
+ */
+void resetEnemyOptions() {
+	// Show/Hide options
+	if (mLevelEditor.isEnemySelected()) {
+		mWidgets.enemy.hiderTab.show();
+
+		// Update enemy count slider values
+		if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
+			mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue(), false),
+					true);
+		}
+
+		// Update enemy delay slider values
+		if (mLevelEditor.getEnemySpawnDelay() >= 0 && mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
+			mInvoker.execute(
+					new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue(), false),
+					true);
+		}
+
+		// Has activate trigger -> Show trigger delay
+		if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
+			mWidgets.enemy.hiderActivateDelay.show();
+
+			float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
+			if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
+				mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue(), false),
+						true);
+			}
+		} else {
+			mWidgets.enemy.hiderActivateDelay.hide();
+		}
+
+
+		// Has deactivate trigger -> Show trigger delay
+		if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
+			mWidgets.enemy.hiderDeactivateDelay.show();
+
+			float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
+			if (deactivateDelay >= 0 && deactivateDelay != mWidgets.enemy.deactivateDelay.getValue()) {
+				mInvoker.execute(
+						new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue(), false), true);
+			}
+		} else {
+			mWidgets.enemy.hiderDeactivateDelay.hide();
+		}
+
+	} else {
+		mWidgets.enemy.hiderTab.hide();
+	}
+}
+
+/**
+ * Reset level info
+ */
+private void resetLevelInfo() {
+	mWidgets.info.description.setText(mLevelEditor.getDescription());
+	mWidgets.info.name.setText(mLevelEditor.getName());
+	mWidgets.info.prologue.setText(mLevelEditor.getPrologue());
+	mWidgets.info.epilogue.setText(mLevelEditor.getEpilogue());
+	mWidgets.info.speed.setValue(mLevelEditor.getLevelStartingSpeed());
+	resetTheme();
+}
+
+/**
+ * Reset enemy add table
+ */
+void resetEnemyAddTable() {
+	// Skip if invisible or not initialized
+	if (!mWidgets.enemyAdd.hiderTable.isVisible() && mWidgets.enemyAdd.scrollTable == null) {
+		return;
+	}
+
+	ArrayList<EnemyActorDef> enemyDefs = mLevelEditor.getAddEnemies();
+	EnemyActorDef selectedEnemyActor = mLevelEditor.getSelectedEnemyToCreate();
+
+	mWidgets.enemyAdd.scrollTable.dispose(true);
+
+
+	ButtonGroup<ResourceTextureButton> buttonGroup = new ButtonGroup<>();
+	int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
+	int cColumEnemy = enemiesPerColumn;
+	float maxScrollPaneHeight = getEnemyScrollListMaxHeight();
+
+	Cell enemyButtonCell = null;
+
+	for (EnemyActorDef enemyDef : enemyDefs) {
+		ResourceTextureButton button = new ResourceTextureButton(enemyDef,
+				(ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
+
+		// Analytics
+		new AnalyticsButtonListener(button, "Level_EnemySelect",
+				enemyDef.getName() + " (" + enemyDef.getId() + ":" + enemyDef.getRevision() + ")");
+
+		// Create tooltip
+		CustomTooltip tooltip = new CustomTooltip(getEnemyTooltip(enemyDef), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, 3);
+		tooltip.setHideWhenHidden(false);
+		mTooltip.add(button, tooltip);
+
+		if (cColumEnemy == enemiesPerColumn) {
+			cColumEnemy = 0;
+			mWidgets.enemyAdd.scrollTable.row().setFillWidth(true).setEqualCellSize(true);
+		}
+
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(Button button, boolean checked) {
+				if (checked) {
+					mLevelEditor.createNewEnemy((EnemyActorDef) ((ResourceTextureButton) button).getResource());
+				}
+			}
+		};
+		buttonGroup.add(button);
+
+		enemyButtonCell = mWidgets.enemyAdd.scrollTable.add(button).setKeepAspectRatio(true).setFillWidth(true);
+		cColumEnemy++;
+
+		if (enemyDef.equals(selectedEnemyActor)) {
+			button.setChecked(true);
+		}
+	}
+
+	// Fill rest of row with empty cell
+	if (cColumEnemy > 0 && cColumEnemy < enemiesPerColumn) {
+		mWidgets.enemyAdd.scrollTable.add(enemiesPerColumn - cColumEnemy);
+	}
+
+	// Fix height of scroll pane
+	mWidgets.enemyAdd.table.layout();
+	float innerHeight = mWidgets.enemyAdd.scrollTable.getHeight();
+	// OK height
+	if (innerHeight < maxScrollPaneHeight) {
+		mWidgets.enemyAdd.scrollPane.setHeight(innerHeight);
+	} else {
+		// Calculate maximum number of rows
+		if (enemyButtonCell != null) {
+			int rows = (int) (maxScrollPaneHeight / enemyButtonCell.getHeight());
+			mWidgets.enemyAdd.scrollPane.setHeight(rows * enemyButtonCell.getHeight());
+		}
+	}
+}
+
+/**
+ * Reset tools
+ */
+void resetTools() {
+	switch (mLevelEditor.getSelectedTool()) {
+	case ADD_MOVE_CORNER:
+		mWidgets.tool.cornerAdd.setChecked(true);
+		break;
+
+	case DELETE:
+		mWidgets.tool.delete.setChecked(true);
+		break;
+
+	case ENEMY_ADD:
+		mWidgets.tool.enemyAdd.setChecked(true);
+		break;
+
+	case ENEMY_SET_ACTIVATE_TRIGGER:
+		mWidgets.tool.triggerActivate.setChecked(true);
+		break;
+
+	case ENEMY_SET_DEACTIVATE_TRIGGER:
+		mWidgets.tool.triggerDeactivate.setChecked(true);
+		break;
+
+	case MOVE:
+		mWidgets.tool.move.setChecked(true);
+		break;
+
+	case PAN:
+		mWidgets.tool.pan.setChecked(true);
+		break;
+
+	case PATH_ADD:
+		mWidgets.tool.pathAdd.setChecked(true);
+		break;
+
+	case PICKUP_ADD:
+		// TODO add pickup
+		break;
+
+	case REMOVE_CORNER:
+		mWidgets.tool.cornerRemove.setChecked(true);
+		break;
+
+	case SELECTION:
+		mWidgets.tool.select.setChecked(true);
+		break;
+
+	case TERRAIN_DRAW_APPEND:
+		mWidgets.tool.drawAppend.setChecked(true);
+		break;
+
+	case TERRAIN_DRAW_ERASE:
+		mWidgets.tool.drawErase.setChecked(true);
+		break;
+
+	default:
+		break;
+
+	}
+}
+
+/**
+ * Update screenshot image
+ */
+void resetImage() {
+	float width = mUiFactory.getStyles().vars.textFieldWidth;
+	float height = width / Config.Level.SAVE_TEXTURE_RATIO;
+
+	mWidgets.info.image.setDrawable(mLevelEditor.getImage());
+	mWidgets.info.image.setSize(width, height);
+	mWidgets.info.image.setVisible(true);
+	mWidgets.info.image.invalidate();
+}
+
+/**
+ * Resets the color
+ */
+void resetColor() {
+	// Update hiders
+	mWidgets.color.hiderDefault.setVisibility(mLevelEditor.isTerrainToolSelected());
+	mWidgets.color.hiderTerrain.setVisibility(mLevelEditor.isTerrainSelected());
+
+	if (mLevelEditor.isTerrainSelected() || mLevelEditor.isTerrainToolSelected()) {
+		mWidgets.color.hiderTab.show();
+	} else {
+		mWidgets.color.hiderTab.hide();
+	}
+
+	// Set widgets
+	mWidgets.color.defaultPicker.setPickColor(mLevelEditor.getDefaultTerrainColor());
+	mWidgets.color.defaultOpacity.setValue(mLevelEditor.getDefaultTerrainOpacity());
+
+	// Current terrain color
+	Color selectedColor = mLevelEditor.getSelectedTerrainColor();
+	if (selectedColor != null) {
+		mWidgets.color.terrainPicker.setPickColor(selectedColor);
+	}
+	float selectedOpacity = mLevelEditor.getSelectedTerrainOpacity();
+	if (selectedOpacity != -1) {
+		mWidgets.color.terrainOpacity.setValue(selectedOpacity);
+	}
+}
+
+/**
+ * Update theme image button
+ */
+void resetTheme() {
+	ImageScrollButton button = mWidgets.info.theme;
+	Themes theme = mLevelEditor.getTheme();
+
+	button.clearLayers();
+
+	LevelBackground background = theme.createBackground((int) button.getHeight());
+	button.addLayer(background.getBottomLayer());
+	button.addLayer(background.getTopLayer());
+}
+
+/**
+ * Update music selection
+ */
+void resetMusic() {
+	SelectBox<Music> selectBox = mWidgets.info.music;
+	Music music = mLevelEditor.getMusic();
+	selectBox.setSelected(music);
+}
+
+/**
+ * Calculate and get max scroll table height for the enemy list. {@link ScrollPane} needs to be set
+ * to height 0 and wrapper table must call layout() as it calculates the height of the rest of the
+ * widgets.
+ * @return calculate and get max scroll table height for the enemy list.
+ */
+private float getEnemyScrollListMaxHeight() {
+	mWidgets.enemyAdd.scrollPane.setHeight(0);
+	mWidgets.enemyAdd.table.invalidate();
+	mSettingTabs.invalidate();
+	mSettingTabs.layout();
+
+
+	// Calculate maximum size
+	float availableHeight = mSettingTabs.getAvailableHeight();
+
+	// Decrease with other widgets in the tab
+	availableHeight -= mWidgets.enemyAdd.table.getHeight();
+
+	return availableHeight;
+}
+
+/**
+ * Get tooltip text for an enemy
+ * @param enemyDef definition of the enemy
+ * @return get tooltip of the specified enemy
+ */
+private String getEnemyTooltip(EnemyActorDef enemyDef) {
+	return "Click on level to add enemy '" + enemyDef.getName() + "'";
 }
 
 /**

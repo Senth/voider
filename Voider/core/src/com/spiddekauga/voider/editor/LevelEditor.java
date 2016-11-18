@@ -71,8 +71,8 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -122,14 +122,14 @@ public void handleEvent(GameEvent event) {
 }
 
 @Override
-protected void onInit() {
+protected void onCreate() {
 	mDefaultTerrainColor.set((Color) SkinNames.getResource(SkinNames.EditorVars.TERRAIN_COLOR_DEFAULT));
 	mDefaultTerrainColor.a = SkinNames.getResource(SkinNames.EditorVars.TERRAIN_ALPHA_DEFAULT);
 
 	mSelection = new Selection();
 	mSelection.addListener(this);
 
-	super.onInit();
+	super.onCreate();
 
 	IC_Level icLevel = ConfigIni.getInstance().editor.level;
 	mZoomTool = new ZoomTool(this, icLevel.getZoomMin(), icLevel.getZoomMax());
@@ -160,8 +160,8 @@ protected void onInit() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	// Check so that all resources have been loaded
 	if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
@@ -294,8 +294,8 @@ protected void render() {
 }
 
 @Override
-protected void onDispose() {
-	super.onDispose();
+protected void onDestroy() {
+	super.onDestroy();
 
 	setLevel(null);
 }

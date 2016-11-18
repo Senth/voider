@@ -8,7 +8,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceDependency;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 
 import java.util.ArrayList;
 import java.util.Map;

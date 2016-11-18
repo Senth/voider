@@ -137,7 +137,7 @@ public Padding getPad() {
 
 /**
  * Disposes the cell, the actor can be saved
- * @param disposeActor true if you want to call dispose() on the actor
+ * @param disposeActor true if you want to call onDestroy() on the actor
  */
 public void dispose(boolean disposeActor) {
 	if (mActor != null) {

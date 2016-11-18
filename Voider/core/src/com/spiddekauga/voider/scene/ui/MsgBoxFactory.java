@@ -19,11 +19,10 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBox;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
-import com.spiddekauga.voider.config.ConfigIni;
-import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
 import com.spiddekauga.voider.network.misc.Motd;
@@ -34,9 +33,6 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
@@ -60,7 +56,7 @@ public class MsgBoxFactory {
 private static final int HEIGHT_MAX = (int) (Gdx.graphics.getHeight() * 0.6f);
 private static final int WIDTH_MAX = (int) (Gdx.graphics.getWidth() * 0.7f);
 /** Inactive/free message boxes */
-private Stack<MsgBoxExecuter> mFreeMsgBoxes = new Stack<>();
+private Stack<MsgBox> mFreeMsgBoxes = new Stack<>();
 private UiStyles mStyles = null;
 private UiFactory mUiFactory = null;
 
@@ -77,18 +73,13 @@ MsgBoxFactory() {
 void init(UiStyles styles) {
 	mStyles = styles;
 	mUiFactory = UiFactory.getInstance();
-
-	// Set msgbox default fade in time
-	IC_Time time = ConfigIni.getInstance().menu.time;
-	MsgBox.setFadeInTime(time.getMsgBoxFadeIn());
-	MsgBox.setFadeOutTime(time.getMsgBoxFadeOut());
 }
 
 /**
  * Show conflict window
  */
 public synchronized void conflictWindow() {
-	MsgBoxExecuter msgBox = add("Sync Conflict");
+	MsgBox msgBox = add("Sync Conflict");
 
 	// Set layout
 	float buttonWidth = mUiFactory.getStyles().vars.textButtonWidth * 1.5f;
@@ -138,21 +129,16 @@ public synchronized void conflictWindow() {
  * @param title setting this automatically receives a style with a title. Set to null to skip
  * @return message box that was added to
  */
-public synchronized MsgBoxExecuter add(String title) {
-	Gui gui = SceneSwitcher.getGui();
-	if (gui == null) {
-		return null;
-	}
-
+public synchronized MsgBox add(String title) {
 	WindowStyle windowStyle = title != null ? mStyles.window.title : mStyles.window.noTitle;
 
-	MsgBoxExecuter msgBox = null;
+	MsgBox msgBox = null;
 	if (!mFreeMsgBoxes.isEmpty()) {
 		msgBox = mFreeMsgBoxes.pop();
 	}
 
 	if (msgBox == null) {
-		msgBox = new MsgBoxExecuter(windowStyle);
+		msgBox = new MsgBox(windowStyle);
 		Skin skin = ResourceCacheFacade.get(InternalDeps.UI_GENERAL);
 		msgBox.setSkin(skin);
 		msgBox.setButtonPad(mStyles.vars.paddingButton);
@@ -166,7 +152,7 @@ public synchronized MsgBoxExecuter add(String title) {
 	if (title != null) {
 		msgBox.setTitle(title);
 	}
-	gui.showMsgBox(msgBox);
+	msgBox.show();
 	msgBox.invalidate();
 
 	return msgBox;
@@ -180,7 +166,7 @@ void motd(Motd motd) {
 	SettingDateRepo dateRepo = SettingRepo.getInstance().date();
 	String date = dateRepo.getDateTime(motd.created);
 
-	MsgBoxExecuter msgBox = add("Message from Voider :)    (" + date + ")");
+	MsgBox msgBox = add("Message from Voider :)    (" + date + ")");
 
 	Label label = mUiFactory.text.create(motd.title, LabelStyles.HEADER);
 	label.setAlignment(Align.center);
@@ -228,7 +214,7 @@ public void bugReport() {
  * @param endScene true if we should end the scene
  */
 public void bugReport(final Exception exception, boolean endScene) {
-	MsgBoxExecuter msgBox = exception != null ? add("Bug Report") : add("Bug Report / Feature Request");
+	MsgBox msgBox = exception != null ? add("Bug Report") : add("Bug Report / Feature Request");
 
 	AlignTable content = new AlignTable();
 	float width = mStyles.vars.textFieldWidth * 2 + mStyles.vars.paddingInner;
@@ -332,7 +318,7 @@ public void bugReport(final Exception exception, boolean endScene) {
 		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = add("Additional Error Information");
+				MsgBox msgBox = add("Additional Error Information");
 
 				AlignTable outerTable = new AlignTable();
 				AlignTable table = new AlignTable();
@@ -390,7 +376,7 @@ public void bugReport(final Exception exception, boolean endScene) {
  */
 public void goOnline() {
 	if (User.getGlobalUser().isAskToGoOnline()) {
-		MsgBoxExecuter msgBox = add("Go Online?");
+		MsgBox msgBox = add("Go Online?");
 
 		Label label = mUiFactory.text.create("To use online features you need to connect to the server.");
 		msgBox.content(label);
@@ -426,7 +412,7 @@ void updateMessage(final UpdateEvent updateInfo) {
 		break;
 	}
 
-	MsgBoxExecuter msgBox = add(title);
+	MsgBox msgBox = add(title);
 
 	Label info = mUiFactory.text.create(message, true, LabelStyles.HIGHLIGHT);
 	info.setWidth(WIDTH_MAX);
@@ -464,7 +450,7 @@ void updateMessage(final UpdateEvent updateInfo) {
  * @param versions all the versions to show
  */
 public void changeLog(String title, String topMessage, List<Version> versions) {
-	MsgBoxExecuter changeLogMsgBox = add(title);
+	MsgBox changeLogMsgBox = add(title);
 
 	Label label;
 	if (topMessage != null) {
@@ -504,7 +490,7 @@ public void changeLog(String title, String topMessage, List<Version> versions) {
  */
 void serverRestored(final ServerRestoreEvent serverRestoreEvent) {
 	String title = "Server database has been reverted";
-	MsgBoxExecuter msgBox = add(title);
+	MsgBox msgBox = add(title);
 
 	String message = Messages.Info.getServerRestored(serverRestoreEvent.from, serverRestoreEvent.to);
 	Label info = mUiFactory.text.create(message, true, LabelStyles.HIGHLIGHT);
@@ -539,7 +525,7 @@ void serverRestored(final ServerRestoreEvent serverRestoreEvent) {
  * @param text the text to display
  */
 public void scrollable(String title, String text) {
-	MsgBoxExecuter msgBox = add(title);
+	MsgBox msgBox = add(title);
 
 	Label label = mUiFactory.text.create(text, true);
 	label.setWidth(WIDTH_MAX - 32);
@@ -561,7 +547,7 @@ public void scrollable(String title, String text) {
  * Add a free message box (i.e. this is not longer used in the GUI instance)
  * @param msgBox the message box to free for reuse
  */
-public synchronized void free(MsgBoxExecuter msgBox) {
+public synchronized void free(MsgBox msgBox) {
 	mFreeMsgBoxes.push(msgBox);
 }
 

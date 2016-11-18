@@ -47,8 +47,8 @@ void setScene(SettingsScene scene) {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 	mWidgets.dispose();
 }
 
@@ -63,8 +63,8 @@ public void resetValues() {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initHeader();
 	initTabs();

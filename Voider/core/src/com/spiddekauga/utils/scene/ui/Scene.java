@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -11,16 +11,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.utils.Timer;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.IExceptionHandler;
 import com.spiddekauga.utils.InputMultiplexerExceptionSnatcher;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
-import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
-import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
@@ -28,6 +28,8 @@ import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.MusicPlayer;
+
+import net._01001111.text.LoremIpsum;
 
 import java.util.List;
 
@@ -37,34 +39,22 @@ import java.util.List;
  * necessary).
  */
 public abstract class Scene extends InputAdapter implements IExceptionHandler {
-private static AnalyticsRepo mAnalyticsRepo = AnalyticsRepo.getInstance();
+protected static final MusicPlayer mMusicPlayer = MusicPlayer.getInstance();
+private static final AnalyticsRepo mAnalyticsRepo = AnalyticsRepo.getInstance();
+protected static NotificationShower mNotification = null;
 /** For ray testing on player ship when touching it */
 private static Vector3 mTestPoint = new Vector3();
-/** Shape Renderer used for rendering stuff */
 protected ShapeRendererEx mShapeRenderer = null;
-/** Input multiplexer */
 protected InputMultiplexerExceptionSnatcher mInputMultiplexer = null;
-/** Notification messages */
-protected NotificationShower mNotification = null;
-/** The music player */
-protected MusicPlayer mMusicPlayer = MusicPlayer.getInstance();
-/** GUI for the scene */
 private Gui mGui = null;
-/** If the current scene is loading */
-private boolean mLoading = false;
-/** Game time of current scene */
+private boolean mIsLoading = false;
 private GameTime mGameTime = new GameTime();
 /** Outcome of scene, this is set when a derived class calls setOutcome */
 private Outcomes mOutcome = null;
-/** Message of the outcome */
 private Object mOutcomeMessage = null;
-/** Clear color */
 private Color mClearColor = new Color(0, 0, 0, 1);
-/** If resource has been loaded */
 private boolean mResourceLoaded = false;
-/** The next scene to be run */
 private Scene mNextScene = null;
-/** If the scene has been initialized */
 private boolean mInitialized = false;
 
 /**
@@ -157,7 +147,7 @@ protected static float clampY(float y) {
 
 @Override
 public final boolean keyDown(int keycode) {
-	if (!mGui.isMsgBoxActive()) {
+	if (!mGui.getDialogShower().isActive()) {
 		return onKeyDown(keycode);
 	} else {
 		return false;
@@ -166,20 +156,12 @@ public final boolean keyDown(int keycode) {
 
 @Override
 public final boolean keyUp(int keycode) {
-	if (!mGui.isMsgBoxActive()) {
-		return onKeyUp(keycode);
-	} else {
-		return false;
-	}
+	return !mGui.isMsgBoxActive() && onKeyUp(keycode);
 }
 
 @Override
 public final boolean keyTyped(char character) {
-	if (!mGui.isMsgBoxActive()) {
-		return onKeyTyped(character);
-	} else {
-		return false;
-	}
+	return !mGui.isMsgBoxActive() && onKeyTyped(character);
 }
 
 /**
@@ -219,23 +201,20 @@ protected boolean onKeyDown(int keycode) {
 	if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY_DEV)) {
 		// UI - reload
 		if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F3) {
-			mGui.dispose();
-			mGui.initGui();
+			mGui.onDestroy();
+			mGui.onCreate();
 		}
 		// INI - reload
 		else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F2) {
 			ConfigIni.getInstance().reload();
+		} else if (KeyHelper.isCtrlPressed() && keycode == Input.Keys.F5) {
+		} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F5) {
 		} else if (keycode == Input.Keys.F5) {
-			if (KeyHelper.isCtrlPressed()) {
-				throw new RuntimeException("Testing");
-			} else if (KeyHelper.isShiftPressed()) {
-				SceneSwitcher.switchTo(new PrototypeScene());
-			} else {
-				UiFactory.getInstance().msgBox.changeLog("ChangeLog", "Top Message", SettingRepo.getInstance().info().getVersions().getAll());
-			}
+			testMsgBox("The first message box");
+		} else if (KeyHelper.isCtrlPressed() && keycode == Input.Keys.F6) {
+		} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F6) {
 		} else if (keycode == Input.Keys.F6) {
-			mNotification.showHighlight("This is a highlight!");
-		} else if (KeyHelper.isAltPressed() && keycode == Input.Keys.F7) {
+		} else if (KeyHelper.isCtrlPressed() && keycode == Input.Keys.F7) {
 		} else if (KeyHelper.isShiftPressed() && keycode == Input.Keys.F7) {
 		} else if (keycode == Input.Keys.F7) {
 		} else if (keycode == Input.Keys.F10) {
@@ -246,6 +225,42 @@ protected boolean onKeyDown(int keycode) {
 	}
 
 	return false;
+}
+
+private void testMsgBox(String message) {
+	final MsgBox msgBox = UiFactory.getInstance().msgBox.add("Test");
+	msgBox.content(message);
+	msgBox.button("MsgBox", new Command() {
+		@Override
+		public boolean execute() {
+			testMsgBox("This message\nBox is way too long" + new LoremIpsum().paragraph());
+			return false;
+		}
+
+		@Override
+		public boolean undo() {
+			return false;
+		}
+	});
+	msgBox.button("Spinner", new Command() {
+		@Override
+		public boolean execute() {
+			ProgressBar.showSpinner(new LoremIpsum().words(10));
+			Timer.schedule(new Timer.Task() {
+				@Override
+				public void run() {
+					ProgressBar.hide();
+				}
+			}, 2);
+			return false;
+		}
+
+		@Override
+		public boolean undo() {
+			return false;
+		}
+	});
+	msgBox.addCancelButtonAndKeys();
 }
 
 /**
@@ -382,7 +397,7 @@ protected LoadingScene getLoadingScene() {
 }
 
 /**
- * Loads the resources of the scene. Called before #onActivate(Outcome,String)
+ * Loads the resources of the scene. Called before #onResume(Outcome,String)
  * @see #getLoadingScene() if this scene should have some sort of loading scene
  */
 protected void loadResources() {
@@ -392,7 +407,7 @@ protected void loadResources() {
 /**
  * Unloads the resources of the scene. If unloadResourcesOnDeactivate() returns true this function
  * will get called whenever this scene is deactivated, except when it supplied a loading scene.
- * Called after #onDispose() and #onDeactive().
+ * Called after #onDestroy() and #onDeactive().
  */
 protected void unloadResources() {
 	mResourceLoaded = false;
@@ -416,14 +431,13 @@ protected boolean isResourcesLoaded() {
 }
 
 /**
- * Called first time the scene activates, before {@link #onActivate(Outcomes, Object, Outcomes)} .
+ * Called first time the scene activates, before {@link #onResume(Outcomes, Object, Outcomes)} .
  */
-protected void onInit() {
+protected void onCreate() {
 	mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
 
 	if (!mGui.isInitialized()) {
-		mGui.initGui();
-		mGui.resetValues();
+		mGui.create();
 		mInputMultiplexer.addProcessor(mGui.getStage());
 
 		if (mGui.mNotification != null) {
@@ -464,38 +478,34 @@ public boolean isInitialized() {
  * @param message the outcome message provided with the outcome, null if none was provided.
  * @param loadingOutcome outcome from a loading scene
  */
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 	Gdx.input.setInputProcessor(mInputMultiplexer);
 
-	if (!mGui.isInitialized()) {
-		Gdx.app.error("Scene", "Failed to load scene!");
-	} else {
-		if (!(this instanceof LoadingScene)) {
-			mAnalyticsRepo.startScene(getClass().getSimpleName());
-		}
-		mGui.resetValues();
-
-		if (mNotification != null) {
-			mNotification.setStage(mGui.getStage());
-		}
+	if (!(this instanceof LoadingScene)) {
+		mAnalyticsRepo.startScene(getClass().getSimpleName());
 	}
+
+	mGui.resume();
 }
 
 /**
- * Called when the scene deactivates (another one is activated, push onto the scene stack).
- * @note #onDisposed() instead when this scene is deleted (popped from the scene stack).
+ * Called when the scene deactivates (another one is activated, push onto the scene stack). {@link
+ * #onDestroy()} is called when this scene is deleted (popped from the scene stack).
  */
-protected void onDeactivate() {
+protected void onPause() {
 	if (!(this instanceof LoadingScene)) {
 		mAnalyticsRepo.endScene();
 	}
+
+	mGui.pause();
 }
 
 /**
- * Called when the scene is deleted. Called before #unloadResources() if this scene has resources.
+ * Called when the scene is deleted. Called before {@link #unloadResources()} if this scene has
+ * resources.
  */
-protected void onDispose() {
-	mGui.dispose();
+protected void onDestroy() {
+	mGui.destroy();
 }
 
 /**
@@ -572,7 +582,7 @@ protected void setGameTime(GameTime gameTime) {
  * @return true if the scene is loading
  */
 protected boolean isLoading() {
-	return mLoading;
+	return mIsLoading;
 }
 
 /**
@@ -580,7 +590,7 @@ protected boolean isLoading() {
  * @param loading set to true if the scene is loading.
  */
 void setLoading(boolean loading) {
-	mLoading = loading;
+	mIsLoading = loading;
 }
 
 /**

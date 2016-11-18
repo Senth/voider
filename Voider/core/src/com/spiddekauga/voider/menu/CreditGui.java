@@ -42,8 +42,8 @@ private AlignTable mCreditTable = new AlignTable();
 private ScrollPane mScrollPane = null;
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mCreditTable.setName("credit-table");
 	setDisposeAfterResize(true);
@@ -209,8 +209,8 @@ private void addLogo(IImageNames logo) {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 
 }
 

@@ -44,11 +44,11 @@ import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.scene.LoadingProgressScene;
-import com.spiddekauga.voider.scene.LoadingScene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.LoadingProgressScene;
+import com.spiddekauga.utils.scene.ui.LoadingScene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.WorldScene;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -105,14 +105,14 @@ public Editor(Gui gui, float pickRadius, Class<? extends Def> defType) {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 	EventDispatcher.getInstance().connect(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS, this);
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	mMusicPlayer.stop(MusicInterpolations.FADE_OUT);
 
@@ -129,8 +129,8 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 }
 
 @Override
-protected void onDeactivate() {
-	super.onDeactivate();
+protected void onPause() {
+	super.onPause();
 
 	Actor.setEditorActive(false);
 }
@@ -290,8 +290,8 @@ protected void render() {
 }
 
 @Override
-protected void onDispose() {
-	super.onDispose();
+protected void onDestroy() {
+	super.onDestroy();
 	EventDispatcher.getInstance().disconnect(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS, this);
 }
 

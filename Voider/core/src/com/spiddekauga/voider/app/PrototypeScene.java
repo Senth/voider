@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 
 /**
  * Prototype scene. Mainly for testing new things before implementing them in the game.
@@ -23,8 +23,8 @@ public boolean onKeyDown(int keycode) {
 		setOutcome(Outcomes.NOT_APPLICAPLE);
 		return true;
 	} else if (keycode == Input.Keys.F5) {
-		getGui().dispose();
-		getGui().initGui();
+//		getGui().destroy();
+//		getGui().create();
 		return false;
 	}
 
@@ -38,8 +38,8 @@ protected void loadResources() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 }
 
 }

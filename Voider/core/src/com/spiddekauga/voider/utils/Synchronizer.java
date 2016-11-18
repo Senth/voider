@@ -27,7 +27,7 @@ import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;

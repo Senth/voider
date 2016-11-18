@@ -42,8 +42,8 @@ protected BulletEditorGui getGui() {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 	mWeapon.setWeaponDef(new WeaponDef());
 	Vector2 weaponPos = new Vector2();
@@ -52,8 +52,8 @@ protected void onInit() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (outcome == Outcomes.EXPLORE_LOAD) {
 		if (message instanceof BulletDefEntity) {

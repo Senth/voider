@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -25,8 +24,8 @@ class LoadingTextSceneGui extends Gui {
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
+	public void onCreate() {
+		super.onCreate();
 
 		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
 

@@ -14,7 +14,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -82,8 +82,8 @@ protected void loadResources() {
 }
 
 @Override
-public void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+public void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.connect(EventTypes.USER_LOGIN, mLoginListener);
@@ -95,12 +95,12 @@ public void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome
 }
 
 @Override
-protected void onDispose() {
+protected void onDestroy() {
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.disconnect(EventTypes.USER_LOGIN, mLoginListener);
 	eventDispatcher.disconnect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
 
-	super.onDispose();
+	super.onDestroy();
 }
 
 @Override

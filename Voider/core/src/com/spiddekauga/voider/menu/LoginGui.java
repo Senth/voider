@@ -12,13 +12,13 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
@@ -39,14 +39,14 @@ void setLoginScene(LoginScene loginScene) {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 	mWidgets.dispose();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mWidgets.login.table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
 	mWidgets.login.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
@@ -250,7 +250,9 @@ private void initPasswordResetSendToken() {
 		@Override
 		protected void onDone(String newText) {
 			mWidgets.reset.email.setText(newText);
-		}		@Override
+		}
+
+		@Override
 		protected void onEnter(String newText) {
 			sendToken();
 		}
@@ -685,7 +687,7 @@ void focusPasswordField() {
  * Show message box for creating an offline user meanwhile.
  */
 void showConnectionError() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Connection Error");
+	MsgBox msgBox = mUiFactory.msgBox.add("Connection Error");
 	msgBox.content("Could not connect to the server. To fix this either wait a couple of hours (if\n"
 			+ "server is down) or connect your device to the\n" + "Internet.\n\n" + "Sorry for your incovenience.");
 	msgBox.addCancelButtonAndKeys("OK");
@@ -784,7 +786,9 @@ private class InnerWidgets implements Disposable {
 
 		private void init() {
 			hider.addToggleActor(table);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			hider.dispose();
@@ -811,7 +815,9 @@ private class InnerWidgets implements Disposable {
 
 		private void init() {
 			hider.addToggleActor(table);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			hider.dispose();
@@ -846,7 +852,9 @@ private class InnerWidgets implements Disposable {
 
 		private void init() {
 			hider.addToggleActor(table);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			hider.dispose();

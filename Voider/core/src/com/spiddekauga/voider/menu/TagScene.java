@@ -3,7 +3,7 @@ package com.spiddekauga.voider.menu;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.stat.Tags;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 
 import java.util.ArrayList;

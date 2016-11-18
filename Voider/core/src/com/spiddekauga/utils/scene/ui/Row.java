@@ -100,7 +100,7 @@ public Row setPadBottom(float padBottom) {
 
 /**
  * Disposes all cells but can save the actors inside the cells.
- * @param disposeActor true if you want to call dispose() on the actors
+ * @param disposeActor true if you want to call onDestroy() on the actors
  */
 public void dispose(boolean disposeActor) {
 	for (Cell cell : mCells) {

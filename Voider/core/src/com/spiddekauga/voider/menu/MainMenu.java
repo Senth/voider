@@ -16,9 +16,9 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -71,8 +71,8 @@ protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.connect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
@@ -82,8 +82,8 @@ protected void onInit() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	mMusicPlayer.play(Music.TITLE, MusicInterpolations.FADE_IN);
 
@@ -126,8 +126,8 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 }
 
 @Override
-protected void onDispose() {
-	super.onDispose();
+protected void onDestroy() {
+	super.onDestroy();
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.disconnect(EventTypes.SYNC_COMMUNITY_DOWNLOAD_SUCCESS, this);
 	eventDispatcher.disconnect(EventTypes.SYNC_USER_RESOURCES_UPLOAD_SUCCESS, this);

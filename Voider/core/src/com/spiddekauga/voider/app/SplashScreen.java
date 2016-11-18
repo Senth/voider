@@ -4,7 +4,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.scene.LoadingScene;
+import com.spiddekauga.utils.scene.ui.LoadingScene;
 
 /**
  * Splash screen, displays Spiddekauga Logo

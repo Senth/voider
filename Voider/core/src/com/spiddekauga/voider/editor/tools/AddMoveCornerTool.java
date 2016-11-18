@@ -20,7 +20,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Messages;

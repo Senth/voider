@@ -9,7 +9,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 
 import net._01001111.text.LoremIpsum;
 
@@ -27,13 +27,13 @@ static {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initFonts();
 }

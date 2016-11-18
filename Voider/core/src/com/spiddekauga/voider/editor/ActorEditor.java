@@ -37,7 +37,7 @@ import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Messages;
@@ -156,8 +156,8 @@ public float getShapeHeight() {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 	IC_Actor icActor = ConfigIni.getInstance().editor.actor;
 
@@ -202,8 +202,8 @@ public void resetCenterOffset() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (mDrawingActor != null && mDrawingActor.hasBody()) {
 		mDrawingActor.destroyBody();

@@ -568,10 +568,14 @@ public enum GeneralVars implements ISkinNames {
 	ROW_HEIGHT(Float.class),
 	/** Row height for panel section (smaller text) */
 	ROW_HEIGHT_SECTION(Float.class),
-	/** Second of fade in for the wait window */
-	WAIT_WINDOW_FADE_IN(Float.class),
-	/** Seconds of fade out for the wait window */
-	WAIT_WINDOW_FADE_OUT(Float.class),
+	/** Fade in time for message boxes */
+	MSGBOX_FADE_IN(Float.class),
+	/** Fade out time for message boxes */
+	MSGBOX_FADE_OUT(Float.class),
+	/** Fade in time for progress bar */
+	PROGRESSBAR_FADE_IN(Float.class),
+	/** Fade out time for progress bar */
+	PROGRESSBAR_FADE_OUT(Float.class),
 	/** Text area height */
 	TEXT_AREA_HEIGHT(Float.class),
 	/** Default text button height */

@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
@@ -21,13 +21,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.EventBus;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
@@ -43,31 +40,26 @@ import java.util.Stack;
 /**
  * Base class for all GUI containing windows
  */
-public abstract class Gui implements Disposable {
-/** UI Factory for creating UI elements */
-protected static UiFactory mUiFactory = UiFactory.getInstance();
-/** Main table for the layout */
+public abstract class Gui {
+protected static final UiFactory mUiFactory = UiFactory.getInstance();
+private static final EventBus mEventBus = EventBus.getInstance();
+private static Gui mActiveGui = null;
 protected AlignTable mMainTable = new AlignTable();
-/** True if the GUI has been initialized */
 protected boolean mInitialized = false;
-/** Notification messages */
 protected NotificationShower mNotification = null;
 private boolean mDisposeAfterResize = false;
 private boolean mIsResizing = false;
-/** If the GUI is visible */
 private boolean mVisible = true;
-/** Stage for the GUI */
 private Stage mStage = null;
-/** Active message boxes */
-private Stack<MsgBoxExecuter> mActiveMsgBoxes = new Stack<>();
-/** Various widgets */
+private Stack<MsgBox> mActiveMsgBoxes = new Stack<>();
 private InnerWidgets mWidgets = new InnerWidgets();
+private DialogShower mDialogShower = null;
 
 /**
  * Default constructor
  */
 public Gui() {
-	// Does nothing
+	mDialogShower = new DialogShower(this);
 }
 
 /**
@@ -85,14 +77,70 @@ protected static Button getCheckedButton(Event event) {
 	return null;
 }
 
-@Override
-public void dispose() {
-	if (mStage != null) {
-		// Remove notification shower
-		if (mNotification != null && mNotification.getStage() == mStage) {
-			mNotification.setStage(null);
-		}
+/**
+ * @return the current active GUI
+ */
+static Gui getActiveGui() {
+	return mActiveGui;
+}
 
+DialogShower getDialogShower() {
+	return mDialogShower;
+}
+
+/**
+ * Resume the GUI. Will call {@link #onResume()}.
+ */
+void resume() {
+	onResume();
+	mActiveGui = this;
+	mEventBus.post(new GuiEvent(GuiEvent.EventTypes.RESUME, this));
+}
+
+/**
+ * Called when the GUI is resumed. {@link Scene} instances should call {@link #resume()} instead of
+ * calling this method directly.
+ */
+protected void onResume() {
+	resetValues();
+}
+
+/**
+ * Resets the value of the GUI
+ */
+public void resetValues() {
+}
+
+/**
+ * Pause the GUI. Will call {@link #onPause()}.
+ */
+void pause() {
+	onPause();
+	mEventBus.post(new GuiEvent(GuiEvent.EventTypes.PAUSE, this));
+}
+
+/**
+ * Called when the GUI is paused. Called before the next GUI is activated. {@link Scene} instances
+ * should call {@link #pause()} instead of calling this method directly.
+ */
+protected void onPause() {
+}
+
+/**
+ * Destroy the GUI instance. Will call {@link #onDestroy()}.
+ */
+void destroy() {
+	onDestroy();
+	mEventBus.post(new GuiEvent(GuiEvent.EventTypes.DESTROY, this));
+	mActiveGui = null;
+}
+
+/**
+ * Called when the GUI should be destroyed and not used anymore. {@link Scene} instances should call
+ * {@link #destroy()} instead of calling this method directly.
+ */
+protected void onDestroy() {
+	if (mStage != null) {
 		ArrayList<Actor> actorsToRemove = new ArrayList<>();
 		for (Actor actor : mStage.getRoot().getChildren()) {
 			if (actor instanceof AlignTable) {
@@ -108,15 +156,17 @@ public void dispose() {
 		}
 	}
 
+	mDialogShower.dispose();
+
 	mInitialized = false;
 }
 
 /**
- * Resizes the GUI object to the appropriate size
+ * Resize the GUI object to the appropriate size
  * @param width new width of the GUI
  * @param height new height of the GUI
  */
-public void resize(int width, int height) {
+protected void resize(int width, int height) {
 	if (isInitialized()) {
 		mIsResizing = true;
 		if (mStage != null) {
@@ -125,8 +175,8 @@ public void resize(int width, int height) {
 			updateBackground();
 		}
 		if (isDisposedAfterResize()) {
-			dispose();
-			initGui();
+			onDestroy();
+			onCreate();
 			resetValues();
 		} else {
 			invalidateAllActors();
@@ -313,7 +363,7 @@ public void update() {
 
 	// Remove active message box if it has been hidden
 	if (!mActiveMsgBoxes.isEmpty() && !isWaitOrProgressShowing()) {
-		MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.peek();
+		MsgBox activeMsgBox = mActiveMsgBoxes.peek();
 
 		// If the active message box was hidden. Show the previous one
 		if (activeMsgBox.isHidden()) {
@@ -350,8 +400,8 @@ private boolean isWaitOrProgressShowing() {
 private void fadeInMessageBox() {
 	if (!mActiveMsgBoxes.isEmpty()) {
 		float waitDelay = Config.Gui.MSG_BOX_SHOW_WAIT_TIME;
-		final MsgBoxExecuter msgBox = mActiveMsgBoxes.peek();
-		msgBox.addAction(Actions.sequence(Actions.delay(waitDelay), Actions.show(), MsgBoxExecuter.fadeInActionDefault()));
+		final MsgBox msgBox = mActiveMsgBoxes.peek();
+		msgBox.addAction(Actions.sequence(Actions.delay(waitDelay), Actions.show(), MsgBox.fadeInActionDefault()));
 	}
 }
 
@@ -362,9 +412,9 @@ public void popMsgBoxes() {
 	if (mActiveMsgBoxes.size() >= 2) {
 		// Only the latest message box is shown, i.e. just remove all except the
 		// last message box which we hide.
-		Iterator<MsgBoxExecuter> msgBoxIt = mActiveMsgBoxes.iterator();
+		Iterator<MsgBox> msgBoxIt = mActiveMsgBoxes.iterator();
 		while (msgBoxIt.hasNext()) {
-			MsgBoxExecuter msgBox = msgBoxIt.next();
+			MsgBox msgBox = msgBoxIt.next();
 			msgBoxIt.remove();
 			mUiFactory.msgBox.free(msgBox);
 
@@ -373,7 +423,7 @@ public void popMsgBoxes() {
 			}
 		}
 	} else if (mActiveMsgBoxes.size() == 1) {
-		MsgBoxExecuter msgBox = mActiveMsgBoxes.pop();
+		MsgBox msgBox = mActiveMsgBoxes.pop();
 		mUiFactory.msgBox.free(msgBox);
 		msgBox.hide();
 	}
@@ -384,7 +434,7 @@ public void popMsgBoxes() {
  */
 public void popMsgBoxActive() {
 	if (!mActiveMsgBoxes.isEmpty()) {
-		MsgBoxExecuter msgBox = mActiveMsgBoxes.pop();
+		MsgBox msgBox = mActiveMsgBoxes.pop();
 		msgBox.hide();
 		mUiFactory.msgBox.free(msgBox);
 
@@ -402,7 +452,7 @@ public void popMsgBoxActive() {
  * active box has been fully hidden).
  * @param msgBox the message box to show
  */
-public void showMsgBox(MsgBoxExecuter msgBox) {
+public void showMsgBox(MsgBox msgBox) {
 	// Progress bar or wait window is showing
 	if (isWaitOrProgressShowing()) {
 		mActiveMsgBoxes.push(msgBox);
@@ -451,7 +501,7 @@ public synchronized void showWaitWindow(String message) {
 		// Center
 		centerWindow(mWidgets.waitWindow.window);
 
-		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
+		float fadeInDuration = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_IN);
 		mWidgets.waitWindow.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
 	}
 	// Else just change the text
@@ -466,7 +516,7 @@ public synchronized void showWaitWindow(String message) {
  */
 private void hideMsgBoxActive() {
 	if (!mActiveMsgBoxes.isEmpty()) {
-		MsgBoxExecuter msgBox = mActiveMsgBoxes.peek();
+		MsgBox msgBox = mActiveMsgBoxes.peek();
 		msgBox.clearActions();
 		msgBox.setVisible(false);
 	}
@@ -495,7 +545,7 @@ public synchronized void hideWaitWindow() {
 		return;
 	}
 
-	float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
+	float fadeOutDuriation = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_OUT);
 	mWidgets.waitWindow.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
 }
 
@@ -520,7 +570,7 @@ public synchronized void showProgressBar(String message) {
 	mWidgets.progressBar.label.pack();
 	mWidgets.progressBar.window.pack();
 
-	float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
+	float fadeInDuration = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_IN);
 	mWidgets.progressBar.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
 
 	centerWindow(mWidgets.progressBar.window);
@@ -550,7 +600,7 @@ public synchronized void hideProgressBar() {
 	}
 
 	// Fade out
-	float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
+	float fadeOutDuriation = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_OUT);
 	mWidgets.progressBar.window.clearActions();
 	mWidgets.progressBar.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
 }
@@ -564,9 +614,18 @@ public synchronized void updateProgressBar(float percentage) {
 }
 
 /**
- * Initializes the GUI
+ * Create the GUI instance. Will call {@link #onCreate()}.
  */
-public void initGui() {
+void create() {
+	onCreate();
+	mEventBus.post(new GuiEvent(GuiEvent.EventTypes.CREATE, this));
+}
+
+/**
+ * Called first time the GUI is activated/created. {@link Scene} instances should call {@link
+ * #create()} instead of calling this method directly.
+ */
+protected void onCreate() {
 	if (mStage == null) {
 		mStage = new Stage();
 		mStage.addActor(mMainTable);
@@ -594,6 +653,8 @@ public void initGui() {
 	}
 
 	mInitialized = true;
+
+	resetValues();
 }
 
 /**
@@ -644,12 +705,6 @@ private void initProgressBar() {
  */
 public boolean isInitialized() {
 	return mInitialized;
-}
-
-/**
- * Resets the value of the GUI
- */
-public void resetValues() {
 }
 
 /**

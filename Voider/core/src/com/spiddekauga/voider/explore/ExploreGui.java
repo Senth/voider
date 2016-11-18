@@ -24,7 +24,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
@@ -37,7 +37,7 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
@@ -113,14 +113,22 @@ void setExploreScene(ExploreScene exploreScene) {
 }
 
 @Override
-public void dispose() {
+public void resetValues() {
+	super.resetValues();
+
+	resetSearchFilters();
+	resetInfo();
+}
+
+@Override
+public void onDestroy() {
 	mWidgets.dispose();
 	mLeftPanel.dispose();
 	mRightPanel.dispose();
 
 	disconnectUserListeners();
 
-	super.dispose();
+	super.onDestroy();
 }
 
 @Override
@@ -138,8 +146,8 @@ protected void onResize(int width, int height) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mWidgets = new Widgets();
 
@@ -161,12 +169,13 @@ public void initGui() {
 	getStage().setScrollFocus(mWidgets.content.scrollPane);
 }
 
-@Override
-public void resetValues() {
-	super.resetValues();
-
-	resetSearchFilters();
-	resetInfo();
+/**
+ * Disconnect user listeners
+ */
+private void disconnectUserListeners() {
+	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+	eventDispatcher.disconnect(EventTypes.USER_CONNECTED, mUserListener);
+	eventDispatcher.disconnect(EventTypes.USER_DISCONNECTED, mUserListener);
 }
 
 /**
@@ -221,15 +230,6 @@ protected void resetInfo() {
 			mWidgets.info.revisedHider.hide();
 		}
 	}
-}
-
-/**
- * Disconnect user listeners
- */
-private void disconnectUserListeners() {
-	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-	eventDispatcher.disconnect(EventTypes.USER_CONNECTED, mUserListener);
-	eventDispatcher.disconnect(EventTypes.USER_DISCONNECTED, mUserListener);
 }
 
 /**
@@ -674,7 +674,7 @@ private void initRightPanel() {
  * Show select revision message box
  */
 private void showSelectRevisionMsgBox() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Revision");
+	MsgBox msgBox = mUiFactory.msgBox.add("Select Revision");
 	float width = mWidgets.revision.scrollPane.getWidth();
 	float height = mWidgets.revision.scrollPane.getHeight();
 	msgBox.content(mWidgets.revision.scrollPane).size(width, height);
@@ -973,7 +973,9 @@ private class Widgets implements Disposable {
 			viewHider.addChild(contentHider);
 			contentHider.addChild(publishedHider);
 			publishedHider.addChild(onlyMineHider);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			contentHider.dispose();

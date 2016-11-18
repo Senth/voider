@@ -8,13 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.EventBus;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
+import com.squareup.otto.Subscribe;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.delay;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
@@ -25,8 +26,9 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 /**
  * Shows error messages on the screen
  */
-public class NotificationShower implements Disposable {
-private static UiFactory mUiFactory = UiFactory.getInstance();
+public class NotificationShower {
+private static final UiFactory mUiFactory = UiFactory.getInstance();
+private static final EventBus mEventBus = EventBus.getInstance();
 private static NotificationShower mInstance = null;
 private AlignTable mOuterTable = new AlignTable();
 private Stage mStage;
@@ -42,6 +44,7 @@ private Color mBackgroundColor = null;
  */
 private NotificationShower() {
 	mOuterTable.setName("notification-table");
+	mEventBus.register(this);
 }
 
 /**
@@ -82,23 +85,28 @@ private void init() {
 	}
 }
 
-@Override
 public void dispose() {
 	mInitialized = false;
 }
 
 /**
- * @return stage of the notification shower
+ * Called when a GUI event has been posted
  */
-public Stage getStage() {
-	return mStage;
+@Subscribe
+@SuppressWarnings("unused")
+public void updateStage(GuiEvent event) {
+	if (event.getEventType() == GuiEvent.EventTypes.RESUME) {
+		setStage(event.getGui().getStage());
+	} else if (event.getEventType() == GuiEvent.EventTypes.PAUSE) {
+		setStage(null);
+	}
 }
 
 /**
  * Sets the stage of the message shower. Will move all existing message to the new stage
  * @param stage new stage, null to remove from the current stage
  */
-public void setStage(Stage stage) {
+private void setStage(Stage stage) {
 	if (mStage != stage) {
 		mStage = stage;
 		if (mStage != null) {
@@ -122,11 +130,11 @@ public void pushToFront() {
  */
 public void resetPosition() {
 	mOuterTable.invalidate();
-}/*
+}
+
 /**
  * Remove all messages directly
  */
-
 public void removeAllMessages() {
 	mOuterTable.dispose(true);
 }

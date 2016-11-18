@@ -2,7 +2,7 @@ package com.spiddekauga.utils;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 
 import java.util.LinkedList;
 

@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
@@ -60,8 +60,8 @@ protected void loadResources() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 }
 
 /**
@@ -70,7 +70,7 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 private void reloadUi() {
 	ResourceCacheFacade.reload(InternalDeps.UI_GENERAL);
 
-	getGui().dispose();
-	getGui().initGui();
+//	getGui().destroy();
+//	getGui().create();
 }
 }

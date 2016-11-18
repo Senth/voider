@@ -3,7 +3,7 @@ package com.spiddekauga.utils.commands;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.Strings;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -17,7 +17,7 @@ import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -205,7 +205,7 @@ private void handleBugReportResponse(BugReportResponse response) {
  */
 private void showSentMessage(String title, String message) {
 	// Message box
-	MsgBoxExecuter msgBox = UiFactory.getInstance().msgBox.add(title);
+	MsgBox msgBox = UiFactory.getInstance().msgBox.add(title);
 	msgBox.content(message);
 
 	if (mEndScene) {

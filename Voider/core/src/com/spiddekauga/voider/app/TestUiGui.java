@@ -22,13 +22,13 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.IRatingListener;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
@@ -49,8 +49,8 @@ Slider mLoadingBar = null;
 Slider mHealthBar = null;
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 	if (mTopRight != null) {
 		mTopRight.dispose();
 	}
@@ -63,8 +63,8 @@ public void update() {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mGeneralSkin = ResourceCacheFacade.get(InternalDeps.UI_GENERAL);
 	mGameSkin = ResourceCacheFacade.get(InternalDeps.UI_GAME);
@@ -206,7 +206,7 @@ private void initWindows() {
 	new ButtonListener(button) {
 		@Override
 		protected void onPressed(Button button) {
-			MsgBoxExecuter msgBox = mUiFactory.msgBox.add(null);
+			MsgBox msgBox = mUiFactory.msgBox.add(null);
 			msgBox.content("Modal window");
 			msgBox.addCancelButtonAndKeys("OK");
 		}
@@ -218,7 +218,7 @@ private void initWindows() {
 	new ButtonListener(button) {
 		@Override
 		protected void onPressed(Button button) {
-			MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Title");
+			MsgBox msgBox = mUiFactory.msgBox.add("Title");
 			msgBox.content("Modal window");
 			msgBox.addCancelButtonAndKeys("OK");
 		}

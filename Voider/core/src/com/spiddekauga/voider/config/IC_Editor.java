@@ -7,7 +7,7 @@ import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.ShipEditor;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.ActorTypes;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 
 import org.ini4j.Ini;
 import org.ini4j.Profile.Section;

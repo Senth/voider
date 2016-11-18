@@ -6,9 +6,9 @@ import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.VoiderGame;
-import com.spiddekauga.voider.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,11 +100,9 @@ protected synchronized void load(Scene scene, Identifier identifier) {
  */
 private void log(String message) {
 	log(ResourceLoader.class, message);
-	;
 }
 
 /**
- * @param instance
  * @return get the correct class name for an instance
  */
 protected String getClassName(Object instance) {

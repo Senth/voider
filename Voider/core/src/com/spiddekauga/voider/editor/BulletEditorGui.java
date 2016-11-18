@@ -29,15 +29,15 @@ private BulletEditor mBulletEditor = null;
 private InnerWidgets mWidgets = new InnerWidgets();
 
 @Override
-public void dispose() {
+public void onDestroy() {
 	mWeaponTable.dispose();
 
-	super.dispose();
+	super.onDestroy();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mWeaponTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 	mWeaponTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);

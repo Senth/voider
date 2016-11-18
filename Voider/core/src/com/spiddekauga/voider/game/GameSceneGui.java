@@ -14,11 +14,11 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.voider.menu.SettingsScene;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.scene.Scene.Outcomes;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.Scene.Outcomes;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.sound.Music;
@@ -48,8 +48,27 @@ public void setGameScene(GameScene gameScene) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void resetValues() {
+	super.resetValues();
+
+	mWidgets.score.setText(mGameScene.getPlayerScore());
+	mWidgets.score.pack();
+	mWidgets.multiplier.setText("(X" + mGameScene.getPlayerMultiplier() + ")");
+	mWidgets.multiplier.invalidateHierarchy();
+	if (mWidgets.health != null) {
+		mWidgets.health.setValue(mGameScene.getPercentageHealth());
+	}
+
+	if (mWidgets.screenShot != null) {
+		mWidgets.screenShot.setDisabled(mGameScene.isPublished());
+	}
+
+	mMainTable.pack();
+}
+
+@Override
+public void onCreate() {
+	super.onCreate();
 
 	addActor(mLifeTable);
 	addActor(mOptionBar);
@@ -78,25 +97,6 @@ public void initGui() {
 	if (mGameScene.isRunningFromEditor() && !mGameScene.isPublished()) {
 		initTestRunOptionBar();
 	}
-}
-
-@Override
-public void resetValues() {
-	super.resetValues();
-
-	mWidgets.score.setText(mGameScene.getPlayerScore());
-	mWidgets.score.pack();
-	mWidgets.multiplier.setText("(X" + mGameScene.getPlayerMultiplier() + ")");
-	mWidgets.multiplier.invalidateHierarchy();
-	if (mWidgets.health != null) {
-		mWidgets.health.setValue(mGameScene.getPercentageHealth());
-	}
-
-	if (mWidgets.screenShot != null) {
-		mWidgets.screenShot.setDisabled(mGameScene.isPublished());
-	}
-
-	mMainTable.pack();
 }
 
 /**
@@ -207,7 +207,7 @@ void updateLives(int current, int max) {
  * Show menu for resuming game or going back
  */
 void showMenu() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Menu");
+	MsgBox msgBox = mUiFactory.msgBox.add("Menu");
 	msgBox.button("Resume Game");
 	msgBox.buttonRow();
 	msgBox.button("Restart Game", new CSceneEnd(Outcomes.LEVEL_RESTART));

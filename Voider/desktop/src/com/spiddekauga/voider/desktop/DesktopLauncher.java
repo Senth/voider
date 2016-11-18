@@ -9,30 +9,26 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**
  * Desktop launcher for Voider
-
  */
 public class DesktopLauncher {
-	/**
-	 * @param arg
-	 */
-	public static void main(String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+public static void main(String[] arg) {
+	LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-		config.resizable = false;
-		config.vSyncEnabled = false;
-		config.title = "Voider";
-		config.width = Config.Graphics.WIDTH_START;
-		config.height = Config.Graphics.HEIGHT_START;
-		config.foregroundFPS = 60;
+	config.resizable = false;
+	config.vSyncEnabled = false;
+	config.title = "Voider";
+	config.width = Config.Graphics.WIDTH_START;
+	config.height = Config.Graphics.HEIGHT_START;
+	config.foregroundFPS = 60;
 
 
-		// Add icons
-		FileType fileType = Config.File.USE_EXTERNAL_RESOURCES ? FileType.Absolute : FileType.Internal;
-		config.addIcon(InternalNames.ICON_256.getFilePath(), fileType);
-		config.addIcon(InternalNames.ICON_128.getFilePath(), fileType);
-		config.addIcon(InternalNames.ICON_64.getFilePath(), fileType);
-		config.addIcon(InternalNames.ICON_32.getFilePath(), fileType);
+	// Add icons
+	FileType fileType = Config.File.USE_EXTERNAL_RESOURCES ? FileType.Absolute : FileType.Internal;
+	config.addIcon(InternalNames.ICON_256.getFilePath(), fileType);
+	config.addIcon(InternalNames.ICON_128.getFilePath(), fileType);
+	config.addIcon(InternalNames.ICON_64.getFilePath(), fileType);
+	config.addIcon(InternalNames.ICON_32.getFilePath(), fileType);
 
-		new LwjglApplication(new VoiderGame(), config);
-	}
+	new LwjglApplication(new VoiderGame(), config);
+}
 }

@@ -1,8 +1,8 @@
 package com.spiddekauga.utils.commands;
 
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.Scene.Outcomes;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.Scene.Outcomes;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 
 /**
  * End the current scene by setting an outcome

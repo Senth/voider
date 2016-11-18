@@ -83,7 +83,7 @@ public void setEnemyEditor(EnemyEditor enemyEditor) {
 }
 
 @Override
-public void dispose() {
+public void onDestroy() {
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.disconnect(EventTypes.CAMERA_ZOOM_CHANGE, mCameraListener);
 	eventDispatcher.disconnect(EventTypes.CAMERA_MOVED, mCameraListener);
@@ -97,12 +97,12 @@ public void dispose() {
 	mPathHider.dispose();
 	mAiHider.dispose();
 
-	super.dispose();
+	super.onDestroy();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mMovementTable.setName("movementTable");
 	mMovementTable.setPreferences(getVisualTable());

@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class AnimationWidget extends Image {
 /** The current animation */
 private Animation mAnimation = null;
-/** Total elapsed time */
 private float mTimeElapsed = 0;
 /** Current drawable texture region */
 private TextureRegionDrawable mDrawableTextureRegion = new TextureRegionDrawable();

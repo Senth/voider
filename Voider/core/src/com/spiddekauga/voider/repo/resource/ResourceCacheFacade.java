@@ -7,7 +7,7 @@ import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

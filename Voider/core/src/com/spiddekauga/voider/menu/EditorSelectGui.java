@@ -24,8 +24,8 @@ void setScene(EditorSelectScene scene) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 

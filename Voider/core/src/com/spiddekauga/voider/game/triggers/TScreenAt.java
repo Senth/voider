@@ -18,7 +18,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 

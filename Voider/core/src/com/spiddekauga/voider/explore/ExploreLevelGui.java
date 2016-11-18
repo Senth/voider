@@ -194,14 +194,14 @@ void setUserComment(String comment, String date) {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 	mWidgets.dispose();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initRightPanel();
 	initSort();

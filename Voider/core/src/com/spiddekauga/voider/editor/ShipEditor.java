@@ -67,8 +67,8 @@ public ShipEditor() {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 	createBorder();
 
@@ -84,8 +84,8 @@ protected void update(float deltaTime) {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (outcome == Outcomes.EXPLORE_LOAD) {
 		if (message instanceof DefEntity) {

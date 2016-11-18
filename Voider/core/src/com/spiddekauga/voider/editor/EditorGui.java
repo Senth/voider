@@ -30,7 +30,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget;
@@ -55,8 +55,8 @@ import com.spiddekauga.voider.repo.resource.SkinNames.EditorIcons;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceTexture;
-import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.sound.MusicInterpolations;
@@ -106,7 +106,48 @@ private Label mNameLabel = null;
 private ArrayList<Body> mBodies = new ArrayList<>();
 
 @Override
-public void dispose() {
+public void resetValues() {
+	super.resetValues();
+
+	if (mGridRender != null) {
+		mGridRender.setChecked(mEditor.isGridOn());
+	}
+
+	// Name
+	resetName();
+
+	// Disabled / Enable actors if published / unpublished
+	boolean published = mEditor.isPublished();
+	Touchable touchable = published ? Touchable.disabled : Touchable.enabled;
+	for (Actor actor : mDisabledWhenPublished) {
+		// Button
+		if (actor instanceof Button) {
+			((Button) actor).setDisabled(published);
+		}
+
+		// Text field
+		else if (actor instanceof TextField) {
+			if (published) {
+				((TextField) actor).setDisabled(true);
+				actor.setName(Config.Gui.TEXT_FIELD_DISABLED_NAME);
+			} else {
+				if (actor.isVisible()) {
+					((TextField) actor).setDisabled(false);
+				}
+
+				actor.setName(null);
+			}
+		}
+
+		// Other UI types that can't be disabled, make them untouchable
+		else {
+			actor.setTouchable(touchable);
+		}
+	}
+}
+
+@Override
+public void onDestroy() {
 	mEditorMenu.dispose();
 	mFileMenu.dispose();
 	mToolMenu.dispose();
@@ -135,12 +176,12 @@ public void dispose() {
 		removeActor.remove();
 	}
 
-	super.dispose();
+	super.onDestroy();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	if (mEditorMenu.getStage() == null) {
 		addActor(mEditorMenu);
@@ -182,45 +223,14 @@ public void initGui() {
 	initTopBottomBar();
 }
 
-@Override
-public void resetValues() {
-	super.resetValues();
-
-	if (mGridRender != null) {
-		mGridRender.setChecked(mEditor.isGridOn());
+/**
+ * Clears the collision boxes
+ */
+void clearCollisionBoxes() {
+	for (Body body : mBodies) {
+		body.getWorld().destroyBody(body);
 	}
-
-	// Name
-	resetName();
-
-	// Disabled / Enable actors if published / unpublished
-	boolean published = mEditor.isPublished();
-	Touchable touchable = published ? Touchable.disabled : Touchable.enabled;
-	for (Actor actor : mDisabledWhenPublished) {
-		// Button
-		if (actor instanceof Button) {
-			((Button) actor).setDisabled(published);
-		}
-
-		// Text field
-		else if (actor instanceof TextField) {
-			if (published) {
-				((TextField) actor).setDisabled(true);
-				actor.setName(Config.Gui.TEXT_FIELD_DISABLED_NAME);
-			} else {
-				if (actor.isVisible()) {
-					((TextField) actor).setDisabled(false);
-				}
-
-				actor.setName(null);
-			}
-		}
-
-		// Other UI types that can't be disabled, make them untouchable
-		else {
-			actor.setTouchable(touchable);
-		}
-	}
+	mBodies.clear();
 }
 
 /**
@@ -230,16 +240,6 @@ void resetName() {
 	if (mNameLabel != null) {
 		mNameLabel.setText(mEditor.getName());
 	}
-}
-
-/**
- * Clears the collision boxes
- */
-void clearCollisionBoxes() {
-	for (Body body : mBodies) {
-		body.getWorld().destroyBody(body);
-	}
-	mBodies.clear();
 }
 
 /**
@@ -294,7 +294,7 @@ private void initNameTable() {
  * Shows the first time menu
  */
 void showFirstTimeMenu() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add(null);
+	MsgBox msgBox = mUiFactory.msgBox.add(null);
 
 	// New
 	msgBox.button("New", new CEditorNew(mEditor));
@@ -457,7 +457,7 @@ private void initEditMenu() {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = mUiFactory.msgBox.add(Messages.Level.RUN_INVULNERABLE_TITLE);
+				MsgBox msgBox = mUiFactory.msgBox.add(Messages.Level.RUN_INVULNERABLE_TITLE);
 
 				msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
 				msgBox.addCancelButtonAndKeys();
@@ -472,7 +472,7 @@ private void initEditMenu() {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed(Button button) {
-				MsgBoxExecuter msgBox = mUiFactory.msgBox.add(Messages.Level.RUN_INVULNERABLE_TITLE);
+				MsgBox msgBox = mUiFactory.msgBox.add(Messages.Level.RUN_INVULNERABLE_TITLE);
 
 				msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
 				msgBox.addCancelButtonAndKeys();
@@ -575,7 +575,7 @@ private void initFileMenu() {
 					if (!((LevelEditor) mEditor).hasScreenshot()) {
 						showPublish = false;
 
-						MsgBoxExecuter msgBox = mUiFactory.msgBox.add("No Screenshot Taken");
+						MsgBox msgBox = mUiFactory.msgBox.add("No Screenshot Taken");
 						String text = "Please take a screenshot of this level before publishing it. "
 								+ "You can do this by test running the level and click on the camera " + "icon in the top bar.";
 						Label label = mUiFactory.text.create(text, true);
@@ -589,7 +589,7 @@ private void initFileMenu() {
 					if (showPublish && levelLength < icLevel.getPublishLengthMin()) {
 						showPublish = false;
 
-						MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Level Too Short");
+						MsgBox msgBox = mUiFactory.msgBox.add("Level Too Short");
 						String text = "Please add more content to your level. Your current level has a length of " + ((int) levelLength)
 								+ " seconds, minimum is 30 seconds.";
 						msgBox.content(text).setActorWidth(Gdx.graphics.getWidth() * 0.5f);
@@ -602,7 +602,7 @@ private void initFileMenu() {
 				if (showPublish && !User.getGlobalUser().isOnline()) {
 					showPublish = false;
 
-					MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Go Online?");
+					MsgBox msgBox = mUiFactory.msgBox.add("Go Online?");
 					String text = "You need to go online to publish the " + getResourceTypeName() + ".";
 					Label label = mUiFactory.text.create(text, false);
 
@@ -654,7 +654,7 @@ void open() {
  * Shows the publish message box
  */
 private void showPublishDialog() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Publish");
+	MsgBox msgBox = mUiFactory.msgBox.add("Publish");
 
 	AlignTable content = new AlignTable();
 	content.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
@@ -727,7 +727,7 @@ private void showPublishDialog() {
  */
 void showExitConfirmDialog() {
 	if (mEditor.isSaved()) {
-		MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Exit to Main Menu");
+		MsgBox msgBox = mUiFactory.msgBox.add("Exit to Main Menu");
 		msgBox.content(Messages.Editor.EXIT_TO_MAIN_MENU);
 		msgBox.addCancelButtonAndKeys();
 		msgBox.button("Exit", new CSceneReturn(MainMenu.class));
@@ -789,7 +789,7 @@ protected void executeCommandAndCheckSave(Command command, String title, String 
 	if (!mEditor.isSaved() || alwaysShow) {
 		Command saveAndExecute = new CEditorSave(mEditor, command);
 
-		MsgBoxExecuter msgBox = mUiFactory.msgBox.add(title);
+		MsgBox msgBox = mUiFactory.msgBox.add(title);
 		msgBox.content(content);
 		msgBox.addCancelButtonAndKeys();
 		msgBox.button(saveButtonText, saveAndExecute);
@@ -815,7 +815,7 @@ protected void showInfoDialog() {
 	String OPTION_DELIMITER = "option-dialog";
 
 	mInvoker.pushDelimiter(OPTION_DELIMITER);
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add(getResourceTypeNameCapital() + " Options");
+	MsgBox msgBox = mUiFactory.msgBox.add(getResourceTypeNameCapital() + " Options");
 	msgBox.content(mInfoTable);
 	if (mEditor.isJustCreated()) {
 		msgBox.addCancelButtonAndKeys(new CEditorUndoJustCreated(mEditor));
@@ -881,7 +881,7 @@ protected void showDuplicateDialog() {
 	description.setMaxLength(ConfigIni.getInstance().editor.general.getDescriptionLengthMax());
 
 
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Set copy information");
+	MsgBox msgBox = mUiFactory.msgBox.add("Set copy information");
 	msgBox.content(table);
 	msgBox.addCancelButtonAndKeys();
 	msgBox.button("Create Copy", editorDuplicate, validateNameLength);

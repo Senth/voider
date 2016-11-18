@@ -47,7 +47,7 @@ private InnerWidgets mWidgets = new InnerWidgets();
 private IActorEditor mActorEditor = null;
 
 @Override
-public void dispose() {
+public void onDestroy() {
 	mWidgets.visual.table.dispose();
 	mWidgets.collision.table.dispose();
 	mInfoTable.dispose();
@@ -57,12 +57,12 @@ public void dispose() {
 	mWidgets.collision.hider.dispose();
 	mWidgets.visual.hider.dispose();
 
-	super.dispose();
+	super.onDestroy();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	// Tabs
 	mWidgets.collision.table.setAlignTable(Horizontal.LEFT, Vertical.TOP);

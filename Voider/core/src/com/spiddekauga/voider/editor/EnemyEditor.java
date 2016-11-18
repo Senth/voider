@@ -40,7 +40,7 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -144,8 +144,8 @@ protected EnemyEditorGui getGui() {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 
 	mPlayerActor = new PlayerActor();
@@ -176,8 +176,8 @@ protected void onInit() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (!mPlayerActor.hasBody()) {
 		mPlayerActor.createBody();
@@ -635,23 +635,23 @@ Vector2[] getPathPositions() {
 }
 
 @Override
-protected void onDeactivate() {
+protected void onPause() {
 	EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_ZOOM_CHANGE, mBorderLlistener);
 	EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_MOVED, mBorderLlistener);
 	getGui().clearCollisionBoxes();
 	Actor.setPlayerActor(null);
-	super.onDeactivate();
+	super.onPause();
 }
 
 @Override
-protected void onDispose() {
+protected void onDestroy() {
 	mPlayerActor.dispose();
 	mEnemyActor.dispose();
 	mEnemyPathBackAndForth.dispose();
 	mEnemyPathLoop.dispose();
 	mEnemyPathOnce.dispose();
 
-	super.onDispose();
+	super.onDestroy();
 }
 
 /**
