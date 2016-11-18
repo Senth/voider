@@ -3,9 +3,10 @@ package com.spiddekauga.voider.app;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 
 /**
@@ -32,10 +33,10 @@ public boolean onKeyDown(int keycode) {
 	} else if (KeyHelper.isBackPressed(keycode)) {
 		Gdx.app.exit();
 	} else if (keycode == Input.Keys.F11) {
-		getGui().showProgressBar("This is a progress window that is quite long...\nMultiple lines...");
-		getGui().updateProgressBar(50, "50 / 100");
+		ProgressBar.showProgress("This is a progress window that is quite long...\nMultiple lines...");
+		ProgressBar.updateProgress(50, "50 / 100");
 	} else if (keycode == Input.Keys.F12) {
-		getGui().hideProgressBar();
+		ProgressBar.hide();
 	}
 
 	return false;

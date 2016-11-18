@@ -2,6 +2,8 @@ package com.spiddekauga.voider.explore;
 
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.resource.DefEntity;
@@ -18,7 +20,6 @@ import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Graphics;
 
@@ -134,7 +135,7 @@ protected void onWebResponse(IMethodEntity method, IEntity response) {
  * @param response server response
  */
 private void handleResourceDownloadResponse(ResourceDownloadMethod method, ResourceDownloadResponse response) {
-	getGui().hideWaitWindow();
+	ProgressBar.hide();
 	if (response.status.isSuccessful()) {
 		onResourceDownloaded(mAction);
 	} else {
@@ -247,7 +248,7 @@ protected void downloadResource(DefEntity defEntity) {
 	if (defEntity != null) {
 		if (!ResourceLocalRepo.exists(defEntity.resourceId)) {
 			mResourceRepo.download(defEntity.resourceId, this);
-			getGui().showWaitWindow("Downloading " + defEntity.name);
+			ProgressBar.showSpinner("Downloading " + defEntity.name);
 		} else {
 			onResourceDownloaded(mAction);
 		}
@@ -436,6 +437,7 @@ ArrayList<RevisionEntity> getSelectedResourceRevisions() {
 		return new ArrayList<>();
 	}
 }
+
 /**
  * Different possible views
  */

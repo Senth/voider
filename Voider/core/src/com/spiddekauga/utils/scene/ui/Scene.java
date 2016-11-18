@@ -147,7 +147,7 @@ protected static float clampY(float y) {
 
 @Override
 public final boolean keyDown(int keycode) {
-	if (!mGui.getDialogShower().isActive()) {
+	if (!mGui.isDialogActive()) {
 		return onKeyDown(keycode);
 	} else {
 		return false;
@@ -156,12 +156,12 @@ public final boolean keyDown(int keycode) {
 
 @Override
 public final boolean keyUp(int keycode) {
-	return !mGui.isMsgBoxActive() && onKeyUp(keycode);
+	return !mGui.isDialogActive() && onKeyUp(keycode);
 }
 
 @Override
 public final boolean keyTyped(char character) {
-	return !mGui.isMsgBoxActive() && onKeyTyped(character);
+	return !mGui.isDialogActive() && onKeyTyped(character);
 }
 
 /**
@@ -278,7 +278,7 @@ final void run() {
 	Gdx.gl.glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
 	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-	if (!mGui.isMsgBoxActive()) {
+	if (!mGui.isDialogActive()) {
 		mGameTime.update(Gdx.graphics.getDeltaTime());
 		update(mGameTime.getDeltaTime());
 	}

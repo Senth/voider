@@ -20,7 +20,13 @@ import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.LoadingProgressScene;
+import com.spiddekauga.utils.scene.ui.LoadingScene;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.WorldScene;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -44,11 +50,6 @@ import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.utils.scene.ui.Gui;
-import com.spiddekauga.utils.scene.ui.LoadingProgressScene;
-import com.spiddekauga.utils.scene.ui.LoadingScene;
-import com.spiddekauga.utils.scene.ui.SceneSwitcher;
-import com.spiddekauga.utils.scene.ui.WorldScene;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -473,13 +474,11 @@ private void renderGrid() {
 
 /**
  * Handle a web response in main thread synchronously
- * @param method
- * @param response
  */
 protected void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
 	// Publish
 	if (response instanceof PublishResponse) {
-		getGui().hideProgressBar();
+		ProgressBar.hide();
 		if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
 			mNotification.show(NotificationTypes.SUCCESS, "Publish successful!");
 			getGui().resetValues();
@@ -509,7 +508,7 @@ protected boolean onKeyDown(int keycode) {
 	}
 	// Back - main menu
 	else if (KeyHelper.isBackPressed(keycode)) {
-		if (!getGui().isMsgBoxActive()) {
+		if (!getGui().isDialogActive()) {
 			getGui().showExitConfirmDialog();
 			return true;
 		}
@@ -530,14 +529,6 @@ protected boolean onKeyDown(int keycode) {
 	return super.onKeyDown(keycode);
 }
 
-/**
- * @return invoker for the editor
- */
-@Override
-public Invoker getInvoker() {
-	return mInvoker;
-}
-
 @Override
 public LoadingScene getLoadingScene() {
 	return new LoadingProgressScene();
@@ -549,6 +540,14 @@ protected void loadResources() {
 	ResourceCacheFacade.load(this, InternalDeps.UI_EDITOR);
 	ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
 	ResourceCacheFacade.load(this, InternalNames.SHADER_DEFAULT);
+}
+
+/**
+ * @return invoker for the editor
+ */
+@Override
+public Invoker getInvoker() {
+	return mInvoker;
 }
 
 @Override
@@ -570,7 +569,7 @@ public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
 		percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
 	}
 
-	getGui().updateProgressBar(percentage);
+	ProgressBar.updateProgress(percentage);
 }
 
 /**
@@ -739,8 +738,6 @@ protected static class ImageSaveOnActor {
 
 	/**
 	 * Sets the location and image to render
-	 * @param textureRegion
-	 * @param location
 	 */
 	protected ImageSaveOnActor(TextureRegion textureRegion, Locations location) {
 		mTextureRegion = textureRegion;

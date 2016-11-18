@@ -71,7 +71,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 			mInvoker.dispose();
 		}
 	} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-		getGui().popMsgBoxes();
+		getGui().removeAllMsgBoxes();
 	}
 }
 
@@ -167,9 +167,6 @@ float getCooldownMin() {
  */
 void setCooldownMin(float time) {
 	mWeapon.getDef().setCooldownMin(time);
-}@Override
-public void setDrawOnlyOutline(boolean drawOnlyOutline) {
-	// Does nothing
 }
 
 /**
@@ -182,9 +179,6 @@ float getCooldownMax() {
 	} else {
 		return 0;
 	}
-}@Override
-public boolean isDrawOnlyOutline() {
-	return false;
 }
 
 /**
@@ -193,6 +187,16 @@ public boolean isDrawOnlyOutline() {
  */
 void setCooldownMax(float time) {
 	mWeapon.getDef().setCooldownMax(time);
+}
+
+@Override
+public boolean isDrawOnlyOutline() {
+	return false;
+}
+
+@Override
+public void setDrawOnlyOutline(boolean drawOnlyOutline) {
+	// Does nothing
 }
 
 /**
@@ -214,6 +218,4 @@ float getBulletSpeed() {
 void setBulletSpeed(float bulletSpeed) {
 	mWeapon.getDef().setBulletSpeed(bulletSpeed);
 }
-
-
 }

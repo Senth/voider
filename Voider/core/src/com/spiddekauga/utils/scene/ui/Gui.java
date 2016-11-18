@@ -1,22 +1,12 @@
 package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -24,18 +14,13 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.EventBus;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.ui.UiFactory;
-import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Stack;
 
 /**
  * Base class for all GUI containing windows
@@ -51,7 +36,6 @@ private boolean mDisposeAfterResize = false;
 private boolean mIsResizing = false;
 private boolean mVisible = true;
 private Stage mStage = null;
-private Stack<MsgBox> mActiveMsgBoxes = new Stack<>();
 private InnerWidgets mWidgets = new InnerWidgets();
 private DialogShower mDialogShower = null;
 
@@ -86,6 +70,20 @@ static Gui getActiveGui() {
 
 DialogShower getDialogShower() {
 	return mDialogShower;
+}
+
+/**
+ * Remove all message boxes
+ */
+public void removeAllMsgBoxes() {
+	mDialogShower.removeAllMsgBoxes();
+}
+
+/**
+ * @return true if an dialog is active
+ */
+public boolean isDialogActive() {
+	return mDialogShower.isActive();
 }
 
 /**
@@ -360,257 +358,6 @@ public void update() {
 	if (mNotification != null) {
 		mNotification.pushToFront();
 	}
-
-	// Remove active message box if it has been hidden
-	if (!mActiveMsgBoxes.isEmpty() && !isWaitOrProgressShowing()) {
-		MsgBox activeMsgBox = mActiveMsgBoxes.peek();
-
-		// If the active message box was hidden. Show the previous one
-		if (activeMsgBox.isHidden()) {
-			mActiveMsgBoxes.pop();
-			mUiFactory.msgBox.free(activeMsgBox);
-
-			// Show the previous message box if one exists
-			if (!mActiveMsgBoxes.isEmpty()) {
-				mActiveMsgBoxes.peek().show(mStage);
-			}
-		}
-		// Fade in the message box as wait or progress window has been hidden
-		else if (!activeMsgBox.isVisible() && activeMsgBox.getActions().size == 0) {
-			fadeInMessageBox();
-		}
-	}
-
-	if (mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null) {
-		mWidgets.waitWindow.animation.act(Gdx.graphics.getDeltaTime());
-	}
-}
-
-/**
- * @return true if either wait window or progress bar is showing
- */
-private boolean isWaitOrProgressShowing() {
-	return (mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null)
-			|| (mWidgets.progressBar.window != null && mWidgets.progressBar.window.getStage() != null);
-}
-
-/**
- * Fade in message box after wait window or progress bar is removed.
- */
-private void fadeInMessageBox() {
-	if (!mActiveMsgBoxes.isEmpty()) {
-		float waitDelay = Config.Gui.MSG_BOX_SHOW_WAIT_TIME;
-		final MsgBox msgBox = mActiveMsgBoxes.peek();
-		msgBox.addAction(Actions.sequence(Actions.delay(waitDelay), Actions.show(), MsgBox.fadeInActionDefault()));
-	}
-}
-
-/**
- * Remove all active message boxes
- */
-public void popMsgBoxes() {
-	if (mActiveMsgBoxes.size() >= 2) {
-		// Only the latest message box is shown, i.e. just remove all except the
-		// last message box which we hide.
-		Iterator<MsgBox> msgBoxIt = mActiveMsgBoxes.iterator();
-		while (msgBoxIt.hasNext()) {
-			MsgBox msgBox = msgBoxIt.next();
-			msgBoxIt.remove();
-			mUiFactory.msgBox.free(msgBox);
-
-			if (!msgBox.isHidden()) {
-				msgBox.hide();
-			}
-		}
-	} else if (mActiveMsgBoxes.size() == 1) {
-		MsgBox msgBox = mActiveMsgBoxes.pop();
-		mUiFactory.msgBox.free(msgBox);
-		msgBox.hide();
-	}
-}
-
-/**
- * Pop/Remove active message box. Will activate the previous message box if one is available
- */
-public void popMsgBoxActive() {
-	if (!mActiveMsgBoxes.isEmpty()) {
-		MsgBox msgBox = mActiveMsgBoxes.pop();
-		msgBox.hide();
-		mUiFactory.msgBox.free(msgBox);
-
-		// Show previous
-		if (!mActiveMsgBoxes.isEmpty()) {
-			mActiveMsgBoxes.peek().clearActions();
-			mActiveMsgBoxes.peek().show(mStage);
-		}
-	}
-}
-
-/**
- * Shows the specified message box. This will hide any active message box, remove the specified
- * message box from the inactive list, and then show the specified active box (once the currently
- * active box has been fully hidden).
- * @param msgBox the message box to show
- */
-public void showMsgBox(MsgBox msgBox) {
-	// Progress bar or wait window is showing
-	if (isWaitOrProgressShowing()) {
-		mActiveMsgBoxes.push(msgBox);
-		msgBox.setVisible(false);
-	} else {
-		// Hide active
-		if (!mActiveMsgBoxes.isEmpty()) {
-			mActiveMsgBoxes.peek().hide();
-		}
-		msgBox.setVisible(true);
-		mActiveMsgBoxes.push(msgBox);
-	}
-
-	// Wait for the stage to be initialized
-	while (mStage == null) {
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-		}
-	}
-
-	msgBox.show(mStage);
-}
-
-/**
- * Show wait window
- * @param message optional message to display
- */
-public synchronized void showWaitWindow(String message) {
-	if (mWidgets.waitWindow.window == null) {
-		return;
-	}
-
-	// Hide message box
-	hideMsgBoxActive();
-
-	// Show window if it doesn't belong to a stage
-	if (mWidgets.waitWindow.window.getStage() == null) {
-
-		mWidgets.waitWindow.animation.reset();
-
-		// Set text or empty if null
-		setWaitWindowText(message);
-		mStage.addActor(mWidgets.waitWindow.window);
-
-		// Center
-		centerWindow(mWidgets.waitWindow.window);
-
-		float fadeInDuration = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_IN);
-		mWidgets.waitWindow.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
-	}
-	// Else just change the text
-	else {
-		setWaitWindowText(message);
-	}
-}
-
-/**
- * Hide the current message box by making it invisible. This also clear any actions of the message
- * box
- */
-private void hideMsgBoxActive() {
-	if (!mActiveMsgBoxes.isEmpty()) {
-		MsgBox msgBox = mActiveMsgBoxes.peek();
-		msgBox.clearActions();
-		msgBox.setVisible(false);
-	}
-}
-
-/**
- * Sets the wait text
- * @param message the wait message to set, null will set it to empty
- */
-public synchronized void setWaitWindowText(String message) {
-	mWidgets.waitWindow.label.setText(message != null ? message : "");
-	mWidgets.waitWindow.window.pack();
-}
-
-private static void centerWindow(Window window) {
-	int xPosition = (int) ((Gdx.graphics.getWidth() - window.getWidth()) * 0.5f);
-	int yPosition = (int) ((Gdx.graphics.getHeight() - window.getHeight()) * 0.5f);
-	window.setPosition(xPosition, yPosition);
-}
-
-/**
- * Hides the wait window. Does nothing if the wait window isn't shown
- */
-public synchronized void hideWaitWindow() {
-	if (mWidgets.waitWindow.window == null || mWidgets.waitWindow.window.getStage() == null) {
-		return;
-	}
-
-	float fadeOutDuriation = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_OUT);
-	mWidgets.waitWindow.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
-}
-
-/**
- * Shows the a progress bar for loading/downloading/uploading window
- * @param message the message to display
- */
-public synchronized void showProgressBar(String message) {
-	if (mWidgets.progressBar.window == null) {
-		return;
-	}
-
-	// Hide message box
-	hideMsgBoxActive();
-
-	mWidgets.progressBar.window.clearActions();
-
-	mStage.addActor(mWidgets.progressBar.window);
-	mWidgets.progressBar.label.setText(message);
-	updateProgressBar(0, "");
-	mWidgets.progressBar.window.pack();
-	mWidgets.progressBar.label.pack();
-	mWidgets.progressBar.window.pack();
-
-	float fadeInDuration = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_IN);
-	mWidgets.progressBar.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
-
-	centerWindow(mWidgets.progressBar.window);
-}
-
-/**
- * Updates the progress bar
- * @param percentage how many percentage that has been loaded
- * @param progressText optional message, keeps previous if null
- */
-public synchronized void updateProgressBar(float percentage, String progressText) {
-	if (progressText != null) {
-		mWidgets.progressBar.progressLabel.setText(progressText);
-	}
-	mWidgets.progressBar.slider.setValue(percentage);
-	mWidgets.progressBar.window.pack();
-
-	centerWindow(mWidgets.progressBar.window);
-}
-
-/**
- * Hides the progress bar
- */
-public synchronized void hideProgressBar() {
-	if (mWidgets.progressBar.window == null || mWidgets.progressBar.window.getStage() == null) {
-		return;
-	}
-
-	// Fade out
-	float fadeOutDuriation = SkinNames.getResource(SkinNames.GeneralVars.PROGRESSBAR_FADE_OUT);
-	mWidgets.progressBar.window.clearActions();
-	mWidgets.progressBar.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
-}
-
-/**
- * Updates the progress bar, doesn't set the text
- * @param percentage how many percentage that has been loaded
- */
-public synchronized void updateProgressBar(float percentage) {
-	updateProgressBar(percentage, null);
 }
 
 /**
@@ -642,14 +389,6 @@ protected void onCreate() {
 		if (!mIsResizing) {
 			mNotification = NotificationShower.getInstance();
 		}
-		// Wait Window
-		if (mWidgets.waitWindow.window == null) {
-			initWaitWindow();
-		}
-		// Loading progress bar
-		if (mWidgets.progressBar.window == null) {
-			initProgressBar();
-		}
 	}
 
 	mInitialized = true;
@@ -657,48 +396,6 @@ protected void onCreate() {
 	resetValues();
 }
 
-/**
- * Initialize wait window
- */
-private void initWaitWindow() {
-	mWidgets.waitWindow.window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
-	mWidgets.waitWindow.window.setModal(true);
-	mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalDeps.UI_GENERAL));
-	mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
-	mWidgets.waitWindow.label = new Label("", LabelStyles.DEFAULT.getStyle());
-	mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight(mUiFactory.getStyles().vars.paddingSeparator);
-	mWidgets.waitWindow.window.add(mWidgets.waitWindow.label).padRight(mUiFactory.getStyles().vars.paddingInner);
-}
-
-/**
- * Initialize progress bar
- */
-private void initProgressBar() {
-	Window window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
-	mWidgets.progressBar.window = window;
-	window.setModal(true);
-	window.align(Align.center);
-
-	window.pad(mUiFactory.getStyles().vars.paddingInner);
-
-	// Text
-	mWidgets.progressBar.label = mUiFactory.text.create("");
-	window.row();
-	window.add(mWidgets.progressBar.label);
-
-	// Progress bar
-	window.row().padTop(mUiFactory.getStyles().vars.paddingInner);
-	mWidgets.progressBar.slider = new Slider(0, 100, 0.1f, false, (SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
-	mWidgets.progressBar.slider.setTouchable(Touchable.disabled);
-	window.add(mWidgets.progressBar.slider);
-
-	// Progress text
-	window.row().padTop(mUiFactory.getStyles().vars.paddingInner);
-	mWidgets.progressBar.progressLabel = mUiFactory.text.create("");
-	window.add(mWidgets.progressBar.progressLabel);
-	mWidgets.progressBar.label.pack();
-	window.pack();
-}
 
 /**
  * @return true if the GUI has been initialized
@@ -723,20 +420,6 @@ public Stage getStage() {
 }
 
 /**
- * @return true if a message box is currently shown
- */
-public boolean isMsgBoxActive() {
-	return !mActiveMsgBoxes.isEmpty();
-}
-
-/**
- * @return true if wait window is active
- */
-public boolean isWaitWindowActive() {
-	return mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null;
-}
-
-/**
  * @return true if the GUI is visible. I.e. should be drawn.
  */
 public boolean isVisible() {
@@ -753,28 +436,12 @@ public void setVisible(boolean visible) {
 
 /** Inner widgets */
 private static class InnerWidgets {
-	WaitWindow waitWindow = new WaitWindow();
-	ProgressBar progressBar = new ProgressBar();
 	Background background = new Background();
 
 	static class Background {
 		TextureRegionDrawable drawable = null;
 		boolean wrap = false;
 		ArrayList<Image> images = new ArrayList<>();
-	}
-
-	static class WaitWindow {
-		Window window = null;
-		Label label = null;
-		AnimationWidget animation = null;
-	}
-
-	static class ProgressBar {
-		Slider slider = null;
-		Window window = null;
-		Label progressLabel = null;
-		Label label = null;
-
 	}
 }
 }

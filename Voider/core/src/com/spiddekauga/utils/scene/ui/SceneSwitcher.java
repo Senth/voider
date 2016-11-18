@@ -420,65 +420,6 @@ public static void reloadUi() {
 }
 
 /**
- * Show wait window
- * @param message optional message to display
- */
-public static void showWaitWindow(String message) {
-	if (!mScenes.isEmpty()) {
-		mScenes.peek().getGui().showWaitWindow(message);
-	}
-}
-
-/**
- * Hides the wait window
- */
-public static void hideWaitWindow() {
-	if (!mScenes.isEmpty()) {
-		mScenes.peek().getGui().hideWaitWindow();
-	}
-}
-
-/**
- * Shows the a progress bar for loading/downloading/uploading window
- * @param message the message to display
- */
-public static void showProgressBar(String message) {
-	if (!mScenes.isEmpty()) {
-		mScenes.peek().getGui().showProgressBar(message);
-	}
-}
-
-/**
- * Hides the progress bar
- */
-public static void hideProgressBar() {
-	if (!mScenes.isEmpty()) {
-		mScenes.peek().getGui().hideProgressBar();
-	}
-}
-
-/**
- * Updates the progress bar, doesn't set the text
- * @param percentage how many percentage that has been loaded
- */
-public static void updateProgressBar(float percentage) {
-	if (!mScenes.isEmpty()) {
-		mScenes.peek().getGui().updateProgressBar(percentage);
-	}
-}
-
-/**
- * Updates the progress bar
- * @param percentage how many percentage that has been loaded
- * @param message optional message, keeps previous if null
- */
-public static void updateProgressBar(float percentage, String message) {
-	if (!mScenes.isEmpty()) {
-		mScenes.peek().getGui().updateProgressBar(percentage, message);
-	}
-}
-
-/**
  * Add a listener to the scene's input multiplexor
  * @param processor the listener to add
  */

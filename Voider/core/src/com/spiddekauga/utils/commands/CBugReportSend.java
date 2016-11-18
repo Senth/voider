@@ -3,7 +3,9 @@ package com.spiddekauga.utils.commands;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.Strings;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.utils.scene.ui.MsgBox;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -17,7 +19,6 @@ import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
-import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -189,7 +190,7 @@ public void handleWebResponse(IMethodEntity method, IEntity response) {
  * @param response server's method response
  */
 private void handleBugReportResponse(BugReportResponse response) {
-	mGui.hideWaitWindow();
+	ProgressBar.hide();
 	if (response.status.isSuccessful()) {
 		showSentMessage("Success", Messages.Info.BUG_REPORT_SENT);
 	} else {
@@ -228,7 +229,7 @@ private void saveBugReportLocally() {
 
 @Override
 public boolean execute() {
-	mGui.showWaitWindow("");
+	ProgressBar.showSpinner("");
 	if (User.getGlobalUser().isOnline()) {
 		sendBugReport();
 	} else {
@@ -242,7 +243,7 @@ public boolean execute() {
  * Tries to send the bug report online
  */
 private void sendBugReport() {
-	mGui.setWaitWindowText("Sending bug report");
+	ProgressBar.showSpinner("Sending bug report");
 	BugReportWebRepo.getInstance().sendBugReport(mBugReport, this);
 }
 
@@ -254,7 +255,7 @@ private void goOnline() {
 	eventDispatcher.connect(EventTypes.USER_CONNECTED, mLoginListener);
 	eventDispatcher.connect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
 
-	mGui.setWaitWindowText("Going online");
+	ProgressBar.showSpinner("Going online");
 	User user = User.getGlobalUser();
 	user.login();
 }

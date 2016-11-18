@@ -12,6 +12,9 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -71,8 +74,6 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.utils.scene.ui.Scene;
-import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -173,7 +174,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 				setLevel(loadedLevel);
 				switchTool(Tools.SELECTION);
 				getGui().resetTools();
-				getGui().popMsgBoxes();
+				getGui().removeAllMsgBoxes();
 				setSaved();
 				mLoadingLevel = null;
 			} else {
@@ -185,7 +186,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 			mInvoker.execute(new CLevelEnemyDefAdd(((EnemyDefEntity) message).resourceId, this));
 		}
 	} else if (outcome == Outcomes.EXPLORE_LOAD) {
-		getGui().popMsgBoxes();
+		getGui().removeAllMsgBoxes();
 
 		if (message instanceof LevelDefEntity) {
 			LevelDefEntity levelDefEntity = (LevelDefEntity) message;
@@ -212,7 +213,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 			}
 		}
 	} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-		getGui().popMsgBoxes();
+		getGui().removeAllMsgBoxes();
 	}
 	// Set as unsaved if took screenshot
 	else if (outcome == Outcomes.LEVEL_PLAYER_DIED || outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_QUIT) {
@@ -226,7 +227,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 	else if (outcome == Outcomes.THEME_SELECTED) {
 		final Themes theme = (Themes) message;
 		setTheme(theme);
-		getGui().popMsgBoxActive();
+		getGui().removeAllMsgBoxes();
 	}
 
 	if (mLevel != null) {
@@ -439,7 +440,7 @@ public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
 		percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
 	}
 
-	getGui().updateProgressBar(percentage);
+	ProgressBar.updateProgress(percentage);
 }
 
 @Override
@@ -457,8 +458,7 @@ public void onResourceChanged(IResource resource) {
 private void renderBackground() {
 	float renderHeightDefault = Gdx.graphics.getHeight() * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
 	int renderHeight = (int) (renderHeightDefault / mCamera.zoom);
-	int offsetY = 0;
-	offsetY = (int) (renderHeightDefault - (renderHeight * 0.5f));
+	int offsetY = (int) (renderHeightDefault - (renderHeight * 0.5f));
 	offsetY -= mCamera.position.y / getScreenToWorldScale();
 
 
@@ -599,7 +599,6 @@ void switchTool(Tools tool) {
 
 /**
  * Checks if the tool should be available in the background
- * @param tool
  * @return true if the tool should be available when inactive (but with limited functionality)
  */
 private boolean isAvailableWhenInactive(Tools tool) {
@@ -751,11 +750,7 @@ public void onResourceDeselected(IResource resource) {
  * @return true if an enemy is currently selected
  */
 boolean isEnemySelected() {
-	if (mSelection != null) {
-		return mSelection.isSelected(EnemyActor.class);
-	} else {
-		return false;
-	}
+	return mSelection != null && mSelection.isSelected(EnemyActor.class);
 }
 
 /**
@@ -800,7 +795,7 @@ private void runFromPos(boolean invulnerable, float xPosition) {
  * Calculates the current starting position when test running
  * @return start position of the level when test running from here
  */
-public float getRunFromHerePosition() {
+private float getRunFromHerePosition() {
 	return mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
 }
 
@@ -817,10 +812,8 @@ private void removeTriggersBeforeRun(Level level) {
 	for (TScreenAt trigger : triggers) {
 		if (trigger.isTriggered()) {
 			// Remove triggers left of the screen
-			if (trigger instanceof TScreenAt) {
-				if (trigger.getPosition().x <= leftXCoord) {
-					toBeRemoved.add(trigger);
-				}
+			if (trigger.getPosition().x <= leftXCoord) {
+				toBeRemoved.add(trigger);
 			}
 		}
 	}
@@ -879,16 +872,13 @@ public void duplicateDef(String name, String description) {
 
 @Override
 public boolean isDrawing() {
-	if (mTool.getTool() != null) {
-		return mTool.getTool().isDrawing();
-	}
-	return false;
+	return mTool.getTool() != null && mTool.getTool().isDrawing();
 }
 
 @Override
 public void publishDef() {
 	if (mLevel != null) {
-		getGui().showProgressBar("Uploading...");
+		ProgressBar.showProgress("Uploading...");
 		mResourceRepo.publish(this, this, mLevel);
 	}
 }
@@ -931,7 +921,7 @@ public String getName() {
 public void setName(String name) {
 	if (mLevel != null) {
 		mLevel.getDef().setName(name);
-		((EditorGui) getGui()).resetName();
+		getGui().resetName();
 		setUnsaved();
 	}
 }
@@ -992,17 +982,6 @@ void setLevelStartingSpeed(float speed) {
 }
 
 /**
- * @return current revision of the level, empty string if no level is available
- */
-String getLevelRevision() {
-	if (mLevel != null) {
-		return String.valueOf(mLevel.getRevision());
-	} else {
-		return "";
-	}
-}
-
-/**
  * @return story that will be displayed before the level, empty string if no level is available
  */
 String getPrologue() {
@@ -1054,12 +1033,7 @@ void setEpilogue(String storyText) {
  * @return true if screenshot has been taken for the level
  */
 boolean hasScreenshot() {
-	if (mLevel != null) {
-		return mLevel.getDef().getPngImage() != null;
-	}
-	return false;
-
-
+	return mLevel != null && mLevel.getDef().getPngImage() != null;
 }
 
 /**
@@ -1716,7 +1690,6 @@ void createNewEnemy(EnemyActorDef enemyDef) {
 
 /**
  * Set the theme internally
- * @param theme
  */
 private void _setTheme(Themes theme) {
 	if (mLevel != null) {
@@ -1853,7 +1826,6 @@ void setMusic(final Music music) {
 
 /**
  * Set the music internally
- * @param music
  */
 private void _setMusic(Music music) {
 	if (mLevel != null) {

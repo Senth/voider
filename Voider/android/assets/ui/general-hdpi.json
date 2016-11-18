@@ -86,9 +86,9 @@ java.lang.Float: {
 	// Outer padding
 	padding_outer: {value: 6},
 	// Inner padding
-	padding_inner: {value: 18},
+	padding_inner: {value: 24},
 	// Padding between radio or checkbox buttons
-	padding_checkbox: {value: 18},
+	padding_checkbox: {value: 24},
 	// Padding between checkbox icon and text
 	padding_checkbox_text: {value: 6},
 	// Transparent button padding (so text doesn't touch the borders)

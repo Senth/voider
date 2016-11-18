@@ -95,6 +95,16 @@ private void _show(ProgressBar progressBar) {
 }
 
 /**
+ * Remove all message boxes
+ */
+void removeAllMsgBoxes() {
+	while (!mActiveMessageBoxes.isEmpty()) {
+		MsgBox msgBox = mActiveMessageBoxes.pop();
+		msgBox.remove();
+	}
+}
+
+/**
  * @return return true if any dialog is active
  */
 boolean isActive() {

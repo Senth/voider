@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.InternalDeps;
@@ -49,9 +48,6 @@ protected ProgressBar() {
 
 	setModal(true);
 	setSkin((Skin) ResourceCacheFacade.get(InternalDeps.UI_GENERAL));
-	align(Align.center);
-	padRight(paddingInner);
-
 
 	// Spinner
 	mSpinnerTable = new AlignTable();
@@ -66,22 +62,24 @@ protected ProgressBar() {
 	mSpinnerTable.add(mMessageSpinner);
 
 
-	// Horizontal Bar
+	// Horizontal (Progress) Bar
 	mHorizontalTable = new AlignTable();
 	mHorizontalShower.addToggleActor(mHorizontalTable);
 
 	// Message
+	Align align = new Align(Align.Horizontal.CENTER, Align.Vertical.MIDDLE);
+	mHorizontalTable.row(align);
 	mMessageHorizontal = uiFactory.text.create("");
 	mHorizontalTable.add(mMessageHorizontal);
 
 	// Progress bar
-	mHorizontalTable.row().setPadTop(paddingInner);
+	mHorizontalTable.row(align).setPadTop(paddingInner);
 	mHorizontalSlider = new Slider(0, 100, 0.1f, false, (Slider.SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
 	mHorizontalSlider.setTouchable(Touchable.disabled);
 	mHorizontalTable.add(mHorizontalSlider);
 
 	// Progress label
-	mHorizontalTable.row().setPadTop(paddingInner);
+	mHorizontalTable.row(align).setPadTop(paddingInner);
 	mProgressLabel = uiFactory.text.create("");
 	mHorizontalTable.add(mProgressLabel);
 	mProgressLabel.pack();
@@ -120,6 +118,8 @@ public static void showProgress(String message, String progressText) {
 	mInstance.mProgressLabel.setText(displayText);
 	mInstance.mProgressLabel.pack();
 	mInstance.mHorizontalSlider.setValue(0);
+
+	mInstance.pad(UiFactory.getInstance().getStyles().vars.paddingInner);
 
 	DialogShower.show(mInstance);
 }
@@ -161,6 +161,8 @@ public static void showSpinner(String message) {
 	mInstance.mMessageSpinner.setText(message);
 	mInstance.mMessageSpinner.pack();
 
+	mInstance.padRight(UiFactory.getInstance().getStyles().vars.paddingSeparator);
+
 	DialogShower.show(mInstance);
 }
 
@@ -179,18 +181,20 @@ public static void hide() {
  * Show the progress bar
  */
 void show(Stage stage) {
+	clearActions();
+
 	// Add to stage
 	if (getStage() != stage) {
 		stage.addActor(this);
 		stage.setKeyboardFocus(this);
 		stage.setScrollFocus(this);
-
-		// Fade in
-		addAction(Actions.sequence(
-				Actions.fadeIn(mFadeInTime, Interpolation.linear),
-				new DialogEvent.PostEventAction(DialogEvent.EventTypes.SHOW)
-		));
 	}
+
+	// Fade in
+	addAction(Actions.sequence(
+			Actions.fadeIn(mFadeInTime, Interpolation.linear),
+			new DialogEvent.PostEventAction(DialogEvent.EventTypes.SHOW)
+	));
 
 	mInstance.mHorizontalTable.layout();
 	mInstance.mSpinnerTable.layout();
