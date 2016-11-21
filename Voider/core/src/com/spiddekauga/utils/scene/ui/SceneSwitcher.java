@@ -514,6 +514,11 @@ private static void handleException(RuntimeException exception) {
 	if (handleException) {
 		Scene currentScene = mScenes.peek();
 
+		// Show exception in console
+		if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
+			exception.printStackTrace();
+		}
+
 		// End non-initialized scenes
 		while (!currentScene.isInitialized() && mScenes.size() > 1) {
 			popCurrentScene();
@@ -523,10 +528,6 @@ private static void handleException(RuntimeException exception) {
 		// Special cases to just quit
 		if (!currentScene.isInitialized() || currentScene instanceof LoginScene) {
 			throw exception;
-		}
-		// Show exception in console
-		else if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
-			exception.printStackTrace();
 		}
 
 		currentScene.handleException(exception, true);

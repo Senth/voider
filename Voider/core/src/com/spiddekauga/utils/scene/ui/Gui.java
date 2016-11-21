@@ -366,6 +366,7 @@ public void update() {
 void create() {
 	onCreate();
 	mEventBus.post(new GuiEvent(GuiEvent.EventTypes.CREATE, this));
+	resetValues();
 }
 
 /**
@@ -392,8 +393,6 @@ protected void onCreate() {
 	}
 
 	mInitialized = true;
-
-	resetValues();
 }
 
 
