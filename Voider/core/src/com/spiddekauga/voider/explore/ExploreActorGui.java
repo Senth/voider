@@ -3,15 +3,18 @@ package com.spiddekauga.voider.explore;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
+import com.spiddekauga.voider.scene.ui.UiStyles;
 
 /**
  * Common GUI class for exploring actors. Override this class to make the layout and actions more
@@ -83,9 +86,12 @@ protected AlignTable createContentActor(final DefEntity actor, boolean selected)
 
 
 	// Actor name
-	table.row();
-	mUiFactory.text.add(actor.name, table);
-	table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
+	Row row = table.row(Horizontal.CENTER, Vertical.TOP).setFillWidth(true).setPadTop(mUiFactory.getStyles().vars.paddingOuter);
+	Label label = mUiFactory.text.add(actor.name, true, table);
+	table.getCell().setFillWidth(true);
+	Label.LabelStyle labelStyle = UiStyles.LabelStyles.DEFAULT.getStyle();
+	float lineHeight = labelStyle.font.getLineHeight();
+	row.setHeight(lineHeight * 2);
 
 	return table;
 }
@@ -102,9 +108,8 @@ protected float getMaxActorWidth() {
 
 /**
  * Sets the actor scene
- * @param scene
  */
-protected void setActorScene(ExploreActorScene scene) {
+void setActorScene(ExploreActorScene scene) {
 	mScene = scene;
 }
 }

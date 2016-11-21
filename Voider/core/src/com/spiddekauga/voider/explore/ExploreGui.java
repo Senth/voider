@@ -21,6 +21,7 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
@@ -37,7 +38,6 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
-import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
@@ -207,7 +207,7 @@ protected void resetInfo() {
 	if (actor != null) {
 		// Has created UI elements
 		if (mWidgets.info.name != null) {
-			mWidgets.info.createbBy.setText(actor.originalCreator);
+			mWidgets.info.createdBy.setText(actor.originalCreator);
 			mWidgets.info.date.setText(mDateRepo.getDate(actor.date));
 			mWidgets.info.description.setText(actor.description);
 			mWidgets.info.name.setText(actor.name);
@@ -223,7 +223,7 @@ protected void resetInfo() {
 	} else {
 		// Has created UI elements
 		if (mWidgets.info.name != null) {
-			mWidgets.info.createbBy.setText("");
+			mWidgets.info.createdBy.setText("");
 			mWidgets.info.date.setText("");
 			mWidgets.info.description.setText("");
 			mWidgets.info.name.setText("");
@@ -382,10 +382,17 @@ protected void addContent(Actor actor) {
 
 	// Add new row
 	if (table.getRow() == null || table.getRow().getCellCount() == mActorsPerRow) {
-		table.row().setPadTop(paddingExplore).setFillWidth(true).setEqualCellSize(true).setPadRight(paddingExplore);
+		table.row()
+				.setPadTop(paddingExplore)
+				.setPadBottom(paddingExplore)
+				.setFillWidth(true)
+				.setEqualCellSize(true);
 	}
 
-	table.add(actor).setFillWidth(true).setPadLeft(paddingExplore);
+	table.add(actor)
+			.setFillWidth(true)
+			.setPadLeft(paddingExplore)
+			.setPadRight(paddingExplore);
 }
 
 /**
@@ -514,7 +521,6 @@ protected void resetViewButtons() {
 /**
  * Initialize search filters tab
  * @param table content table
- * @param contentHider
  */
 protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
 	// Tab Button
@@ -801,7 +807,8 @@ private void repopulateContent() {
  * Calculates the number of actors to display per row in the content
  */
 private void calculateActorsPerRow() {
-	float floatActorsPerRow = mWidgets.content.scrollPane.getWidth() / getMaxActorWidth();
+	float padding = mUiFactory.getStyles().vars.paddingExplore * 2;
+	float floatActorsPerRow = mWidgets.content.scrollPane.getWidth() / (getMaxActorWidth() + padding);
 	mActorsPerRow = (int) floatActorsPerRow;
 	if (!MathUtils.isEqual(floatActorsPerRow, mActorsPerRow)) {
 		mActorsPerRow++;
@@ -854,7 +861,7 @@ protected void initInfo(AlignTable table, HideListener hider) {
 
 	// Created by
 	mUiFactory.text.addPanelSection("Created By", table, null);
-	mWidgets.info.createbBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAYER, "", false, table, null);
+	mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAYER, "", false, table, null);
 
 	// Revised by
 	mUiFactory.text.addPanelSection("Revised By", table, mWidgets.info.revisedHider);
@@ -901,7 +908,7 @@ private class Widgets implements Disposable {
 		HideListener hider = new HideListener(true);
 		Label name = null;
 		Label description = null;
-		Label createbBy = null;
+		Label createdBy = null;
 		Label revisedBy = null;
 		Label date = null;
 		HideManual revisedHider = new HideManual();

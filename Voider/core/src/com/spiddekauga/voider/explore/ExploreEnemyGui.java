@@ -406,7 +406,6 @@ protected void initInfo(AlignTable table, HideListener hider) {
 
 /**
  * Sets the explore scene
- * @param exploreScene
  */
 void setExploreEnemyScene(ExploreEnemyScene exploreScene) {
 	mScene = exploreScene;

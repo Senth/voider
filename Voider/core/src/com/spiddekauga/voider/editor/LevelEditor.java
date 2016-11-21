@@ -297,8 +297,6 @@ protected void render() {
 @Override
 protected void onDestroy() {
 	super.onDestroy();
-
-	setLevel(null);
 }
 
 @Override

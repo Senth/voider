@@ -62,7 +62,6 @@ protected void initViewButtons() {
 
 /**
  * Sets the explore scene
- * @param exploreScene
  */
 void setExploreBulletScene(ExploreBulletScene exploreScene) {
 	mScene = exploreScene;
