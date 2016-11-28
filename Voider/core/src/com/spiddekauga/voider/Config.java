@@ -46,8 +46,6 @@ public static void dispose() {
  * Actors
  */
 public static class Actor {
-	/** Border width of all actors */
-	public final static float BORDER_WIDTH = 0.5f;
 	/** Bounding box color */
 	public final static Color BOUNDING_BOX_COLOR = Color.CYAN;
 	/** Outline color */
@@ -214,7 +212,7 @@ public static class Crypto {
  */
 public static class Debug {
 	/** Build level */
-	public static final Builds BUILD = Builds.DEV_SERVER;
+	public static final Builds BUILD = Builds.DEV_LOCAL;
 	/** Logging verbosity */
 	public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.RELEASE) ? Application.LOG_ERROR : Application.LOG_DEBUG;
 	/** Skip loading text */

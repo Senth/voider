@@ -14,6 +14,10 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.scene.ui.LoadingScene;
+import com.spiddekauga.utils.scene.ui.LoadingTextScene;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.WorldScene;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
@@ -31,10 +35,6 @@ import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.utils.scene.ui.LoadingScene;
-import com.spiddekauga.utils.scene.ui.LoadingTextScene;
-import com.spiddekauga.utils.scene.ui.Scene;
-import com.spiddekauga.utils.scene.ui.WorldScene;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.sound.SoundPlayer;
@@ -53,8 +53,9 @@ import java.util.UUID;
 public class GameScene extends WorldScene {
 /** Invalid pointer id */
 private static final int INVALID_POINTER = -1;
-private static ResourceRepo mResourceRepo = ResourceRepo.getInstance();
-private static StatLocalRepo mStatRepo = StatLocalRepo.getInstance();
+private static final ResourceRepo mResourceRepo = ResourceRepo.getInstance();
+private static final StatLocalRepo mStatRepo = StatLocalRepo.getInstance();
+private static final SoundPlayer mSoundPlayer = SoundPlayer.getInstance();
 /** Bar height in world coordinates */
 private float mBarHeight = -1;
 private SpriteBatch mSpriteBatch = null;
@@ -63,7 +64,6 @@ private Matrix4 mProjectionMatrixDefault = new Matrix4();
 private LevelDef mLevelToLoad = null;
 private Level mLevelToRun = null;
 private Level mLevel = null;
-/** Running from editor */
 private boolean mRunningFromEditor = false;
 private boolean mInvulnerable = false;
 /** Resumed game save definition, will only be set if resumed a game */
@@ -79,12 +79,11 @@ private Vector2 mBodyShepherdMaxPos = new Vector2();
 private PlayerStats mPlayerStats = null;
 private boolean mTakeScreenshot = false;
 private SoundEffectListener mSoundEffectListener = null;
-private SoundPlayer mSoundPlayer = SoundPlayer.getInstance();
 /** Used for next scene if online and the level is published */
 private HighscoreScene mHighscoreScene = null;
-// Mouse Joint / Moving Ship
+/** Mouse Joint / Moving Ship */
 private Vector2 mCursorScreen = new Vector2();
-// Temporary variables
+/** Temporary variables */
 private Vector2 mCursorWorld = new Vector2();
 
 /**
@@ -120,19 +119,19 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 	super.onResume(outcome, message, loadingOutcome);
 
 	if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
-// Set last played
+		// Set last played
 		if (isPublished()) {
 			mStatRepo.updateLastPlayed(getLevelId());
 		}
 
 		fixCamera();
 
-// Start a level
+		// Start a level
 		if (mLevelToRun != null) {
 			setLevel(mLevelToRun);
 		}
 
-// Loaded level
+		// Loaded level
 		else if (mLevelToLoad != null) {
 			Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
 			level.setStartPosition(level.getLevelDef().getStartXCoord());
@@ -145,7 +144,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 			}
 		}
 
-// Resume a level
+		// Resume a level
 		else if (mGameSaveDef != null) {
 			mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId());
 			mGameSave.reinitialize();
@@ -164,7 +163,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 			}
 		}
 
-// Play music
+		// Play music
 		mMusicPlayer.play(mLevel.getLevelDef().getMusic(), MusicInterpolations.CROSSFADE);
 
 		createPlayerShip();
@@ -180,11 +179,7 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 boolean isPublished() {
 	UUID levelDefId = getLevelId();
 
-	if (levelDefId != null) {
-		return ResourceLocalRepo.isPublished(levelDefId);
-	} else {
-		return false;
-	}
+	return levelDefId != null && ResourceLocalRepo.isPublished(levelDefId);
 }
 
 /**
@@ -223,9 +218,9 @@ private void setLevel(Level level) {
  * Create player ship
  */
 private void createPlayerShip() {
-// Create a new ship when we're not resuming a game
+	// Create a new ship when we're not resuming a game
 	if (mGameSaveDef == null) {
-// Find player ship
+		// Find player ship
 		PlayerActorDef shipDefault = ResourceLocalRepo.getPlayerShipDefault();
 		if (shipDefault == null) {
 			setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find default ships");
@@ -245,7 +240,7 @@ private void createPlayerShip() {
 
 	mPlayerActor.getBody().setLinearVelocity(new Vector2(mLevel.getSpeed(), 0));
 
-// Set lives
+	// Set lives
 	mLevel.setPlayer(mPlayerActor);
 	updateLives();
 	getGui().resetValues();
@@ -287,7 +282,7 @@ private void resetPlayerPosition() {
 		Vector2 playerPosition = new Vector2();
 		playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
-// Get radius of player and offset it with the width
+		// Get radius of player and offset it with the width
 		float boundingRadius = mPlayerActor.getDef().getShape().getBoundingRadius();
 		playerPosition.x += boundingRadius * 2;
 		mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
@@ -330,7 +325,7 @@ protected void update(float deltaTime) {
 	checkCompletedLevel();
 	mPlayerStats.updateScore(mLevel.getXCoord());
 
-// GUI
+	// GUI
 	getGui().resetValues();
 }
 
@@ -486,8 +481,8 @@ private void takeScreenshotNow() {
 	mTakeScreenshot = false;
 
 	// Screenshot size
-	int ssHeight = 0;
-	int ssWidth = 0;
+	int ssHeight;
+	int ssWidth;
 	int y = 0;
 
 	float screenRatioCurrent = ((float) Gdx.graphics.getWidth()) / Gdx.graphics.getHeight();
@@ -573,9 +568,11 @@ private void checkCompletedLevel() {
 	if (mLevel.isCompletedLevel()) {
 		mPlayerStats.calculateEndScore();
 		setOutcome(Outcomes.LEVEL_COMPLETED);
+		mSoundPlayer.stopAll();
 
 		if (!mRunningFromEditor) {
-			mMusicPlayer.play(Music.LEVEL_COMPLETED, MusicInterpolations.FADE_OUT);
+			mMusicPlayer.play(Music.LEVEL_COMPLETED_INTRO);
+			mMusicPlayer.queue(Music.LEVEL_COMPLETED_LOOP);
 		}
 	}
 }
@@ -592,9 +589,11 @@ private void checkPlayerLives() {
 		} else {
 			mPlayerStats.calculateEndScore();
 			setOutcome(Outcomes.LEVEL_PLAYER_DIED);
+			mSoundPlayer.stopAll();
 
 			if (!mRunningFromEditor) {
-				mMusicPlayer.play(Music.GAME_OVER_INTRO, MusicInterpolations.CROSSFADE);
+				mMusicPlayer.play(Music.GAME_OVER_INTRO);
+				mMusicPlayer.queue(Music.GAME_OVER_LOOP);
 			}
 		}
 	}
@@ -642,8 +641,6 @@ public boolean touchDragged(int x, int y, int pointer) {
 /**
  * Move the player ship to the specific location. Note that this will be relative to the mouse
  * offset
- * @param x
- * @param y
  */
 private void moveShipTo(int x, int y) {
 	mCursorScreen.set(x, y);
@@ -661,8 +658,6 @@ private void stopMovingShip() {
 
 /**
  * Set the ship offset to the mouse
- * @param x
- * @param y
  * @param pointer which pointer the ship is moving relative to
  */
 private void startMovingShip(int x, int y, int pointer) {
@@ -802,7 +797,7 @@ protected Scene getNextScene() {
 			if (scoreScene != null) {
 				scoreScene.setLevelCompleted(true);
 			}
-			LevelDef levelDef = null;
+			LevelDef levelDef;
 			if (mLevelToLoad != null || mGameSave != null) {
 				levelDef = mLevel.getDef();
 				if (levelDef != null && !levelDef.getEpilogue().equals("")) {

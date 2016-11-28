@@ -340,14 +340,14 @@ bullet_select_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-bullet_select_down
+weapon_down
   rotate: false
   xy: 462, 869
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-weapon_down
+bullet_select_down
   rotate: false
   xy: 462, 869
   size: 64, 64
@@ -808,7 +808,7 @@ draw_erase_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_draw_erase_down
+terrain_draw_erase_checked
   rotate: false
   xy: 332, 539
   size: 64, 64
@@ -822,7 +822,7 @@ draw_erase_down
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_draw_erase_checked
+terrain_draw_erase_down
   rotate: false
   xy: 332, 539
   size: 64, 64
@@ -830,6 +830,13 @@ terrain_draw_erase_checked
   offset: 0, 0
   index: -1
 draw_erase_checked_over
+  rotate: false
+  xy: 398, 605
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+draw_erase_over
   rotate: false
   xy: 398, 605
   size: 64, 64
@@ -844,13 +851,6 @@ terrain_draw_erase_checked_over
   offset: 0, 0
   index: -1
 terrain_draw_erase_over
-  rotate: false
-  xy: 398, 605
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-draw_erase_over
   rotate: false
   xy: 398, 605
   size: 64, 64
@@ -1977,7 +1977,7 @@ path_add_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_add_down
+path_tab_down
   rotate: false
   xy: 332, 11
   size: 64, 64
@@ -1991,7 +1991,7 @@ path_tab_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_tab_down
+path_add_down
   rotate: false
   xy: 332, 11
   size: 64, 64
@@ -1999,6 +1999,13 @@ path_tab_down
   offset: 0, 0
   index: -1
 path_add_checked_over
+  rotate: false
+  xy: 398, 77
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+path_add_over
   rotate: false
   xy: 398, 77
   size: 64, 64
@@ -2013,13 +2020,6 @@ path_tab_checked_over
   offset: 0, 0
   index: -1
 path_tab_over
-  rotate: false
-  xy: 398, 77
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-path_add_over
   rotate: false
   xy: 398, 77
   size: 64, 64
@@ -2747,14 +2747,14 @@ shape_from_image_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-ship_editor_over
+ship_editor_checked_over
   rotate: false
   xy: 1256, 671
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-ship_editor_checked_over
+ship_editor_over
   rotate: false
   xy: 1256, 671
   size: 64, 64

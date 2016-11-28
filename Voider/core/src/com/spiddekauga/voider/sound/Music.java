@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.sound;
 
+import com.spiddekauga.utils.EventBus;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
@@ -17,19 +18,23 @@ public enum Music {
 	TUNNELS(InternalNames.MUSIC_TUNNEL, InternalDeps.MUSIC_TUNNEL),
 	/** Core theme */
 	CORE(InternalNames.MUSIC_CORE, InternalDeps.MUSIC_CORE),
-	/** Game over */
+	/** Game over fanfare */
 	GAME_OVER_INTRO(InternalNames.MUSIC_GAME_OVER_INTRO, false),
 	/** Game over loop */
 	GAME_OVER_LOOP(InternalNames.MUSIC_GAME_OVER_LOOP),
-	/** Game completed */
-	LEVEL_COMPLETED(InternalNames.MUSIC_LEVEL_COMPLETED),
+	/** Game completed fanfare */
+	LEVEL_COMPLETED_INTRO(InternalNames.MUSIC_LEVEL_COMPLETED_INTRO, false),
 	/** Main theme */
-	TITLE(InternalNames.MUSIC_TITLE),;
+	TITLE(InternalNames.MUSIC_TITLE),
+	/** Game completed music loop */
+	LEVEL_COMPLETED_LOOP(InternalNames.MUSIC_LEVEL_COMPLETED_LOOP);
 
-/** Internal dependencies for level themes */
+private static final EventBus mEventBus = EventBus.getInstance();
 private InternalDeps mInternalDeps = null;
 private InternalNames mInternalName;
 private boolean mLoop = true;
+private boolean mPlaying = false;
+private OnCompletionListener mOnCompletionListener = new OnCompletionListener();
 
 
 /**
@@ -93,6 +98,7 @@ public String toString() {
 com.badlogic.gdx.audio.Music getTrack() {
 	com.badlogic.gdx.audio.Music track = ResourceCacheFacade.get(mInternalName);
 	if (track != null) {
+		track.setOnCompletionListener(mOnCompletionListener);
 		track.setLooping(mLoop);
 	}
 	return track;
@@ -111,4 +117,29 @@ public InternalDeps getDependency() {
 public boolean isLoop() {
 	return mLoop;
 }
+
+/**
+ * @return true if the track is playing
+ */
+public boolean isPlaying() {
+	return mPlaying;
+}
+
+/**
+ * Set the music as playing
+ * @param playing set true for playing, false for stopped
+ */
+void setPlaying(boolean playing) {
+	mPlaying = playing;
+}
+
+public class OnCompletionListener implements com.badlogic.gdx.audio.Music.OnCompletionListener {
+	@Override
+	public void onCompletion(com.badlogic.gdx.audio.Music music) {
+		mPlaying = false;
+		mEventBus.post(new MusicCompleteEvent(Music.this));
+	}
+}
+
+
 }

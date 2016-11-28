@@ -316,7 +316,7 @@ protected void saveToFile() {
 	mLevel.calculateStartEndPosition();
 
 	int oldRevision = mLevel.getRevision();
-	mResourceRepo.save(mLevel.getDef(), mLevel);
+	mResourceRepo.save((IResource) mLevel.getDef(), mLevel);
 	mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
 	showSyncMessage();
 

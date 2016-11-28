@@ -1,12 +1,14 @@
 package com.spiddekauga.voider.menu;
 
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.stat.HighscoreGetResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
-import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -75,6 +77,12 @@ protected void update(float deltaTime) {
 	super.update(deltaTime);
 
 	handleWebResponses();
+}
+
+@Override
+protected void loadResources() {
+	super.loadResources();
+	ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
 }
 
 @Override

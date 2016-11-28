@@ -12,6 +12,8 @@ import com.spiddekauga.utils.EventBus;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.utils.Strings;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
@@ -26,12 +28,11 @@ import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDisplayRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceChecker;
 import com.spiddekauga.voider.repo.user.User;
-import com.spiddekauga.utils.scene.ui.Scene;
-import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.InfoDisplayer;
 import com.spiddekauga.voider.server.ServerMessageReciever;
 import com.spiddekauga.voider.sound.MusicPlayer;
 import com.spiddekauga.voider.utils.Synchronizer;
+import com.squareup.otto.ThreadEnforcer;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -62,7 +63,8 @@ public static boolean isMainThread() {
 @Override
 public void create() {
 	mMainThreadId = Thread.currentThread().getId();
-	EventBus.setMainThreadId(Thread.currentThread().getId());
+	EventBus.setThreadEnforcer(ThreadEnforcer.ANY);
+//	EventBus.setMainThreadId(Thread.currentThread().getId());
 
 	Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 	Box2D.init();
