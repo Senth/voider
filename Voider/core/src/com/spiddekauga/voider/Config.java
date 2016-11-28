@@ -212,7 +212,7 @@ public static class Crypto {
  */
 public static class Debug {
 	/** Build level */
-	public static final Builds BUILD = Builds.DEV_LOCAL;
+	public static final Builds BUILD = Builds.BETA;
 	/** Logging verbosity */
 	public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.RELEASE) ? Application.LOG_ERROR : Application.LOG_DEBUG;
 	/** Skip loading text */
@@ -288,7 +288,7 @@ public static class Debug {
 	/**
 	 * Control over debug messages
 	 */
-	public static class Messages {
+	public static class Log {
 		/** If loading/unloading debug messages should be turned on/off */
 		public static final boolean LOAD_UNLOAD = false;
 	}

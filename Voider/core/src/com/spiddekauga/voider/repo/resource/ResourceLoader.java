@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.Config;
@@ -24,36 +23,20 @@ import java.util.Set;
  * @param <Resource> the actual resource that is loaded
  */
 abstract class ResourceLoader<Identifier, Resource> {
-private static Map<Class<?>, IResourceUnloadReady> mUnloadReadyMethods = new HashMap<>();
-
-static {
-	mUnloadReadyMethods.put(Music.class, new IResourceUnloadReady() {
-		@Override
-		public boolean isReadyToUnload(Object resource) {
-			if (resource instanceof Music) {
-				return !((Music) resource).isPlaying();
-			}
-			return true;
-		}
-
-		;
-	});
-}
-
+protected Map<Class<?>, IResourceUnloadReady> mResourceUnloadReadyHandlers = new HashMap<>();
 protected AssetManager mAssetManager;
 protected HashMap<Identifier, LoadedResource> mLoadedResources = new HashMap<>();
 protected HashMap<Identifier, LoadedResource> mLoadingQueue = new HashMap<>();
-private ArrayList<Identifier> mUnloadQueue = new ArrayList<>();
+private HashMap<Identifier, LoadedResource> mUnloadQueue = new HashMap<>();
 private ArrayList<ReloadResource> mReloadQueue = new ArrayList<>();
 
 /**
  * Initializes the resource loader with the an asset manager
- * @param assetManager
  */
 protected ResourceLoader(AssetManager assetManager) {
 	mAssetManager = assetManager;
 
-	if (Config.Debug.Messages.LOAD_UNLOAD) {
+	if (Config.Debug.Log.LOAD_UNLOAD) {
 		mAssetManager.getLogger().setLevel(Config.Debug.LOG_VERBOSITY);
 	} else {
 		mAssetManager.getLogger().setLevel(Application.LOG_NONE);
@@ -83,8 +66,14 @@ protected synchronized void load(Scene scene, Identifier identifier) {
 
 			log("load(" + getClassName(scene) + ", " + loadedResource.identifier + "): add scene. Scene count: " + loadedResource.scenes.size());
 		}
+
+		// Remove from unloading queue if it's there
+		LoadedResource unloadResource = mUnloadQueue.remove(identifier);
+		if (unloadResource != null) {
+			log("load(" + getClassName(scene) + "): Removed " + identifier + " from unload queue.");
+		}
 	}
-	// Else no resource loaded create new
+	// Else no resource loaded
 	else {
 		loadedResource = new LoadedResource(identifier, scene);
 		mAssetManager.load(loadedResource.filepath, getType(identifier), getParameters(identifier));
@@ -136,7 +125,7 @@ protected AssetLoaderParameters getParameters(Identifier identifier) {
  * @param message the message to display
  */
 protected void log(Class<?> clazz, String message) {
-	if (Config.Debug.Messages.LOAD_UNLOAD) {
+	if (Config.Debug.Log.LOAD_UNLOAD) {
 		Gdx.app.debug(clazz.getSimpleName(), message);
 	}
 }
@@ -151,11 +140,7 @@ protected synchronized boolean isLoading(Scene scene, Identifier identifier) {
 	boolean found = false;
 	LoadedResource loadedResource = mLoadingQueue.get(identifier);
 	if (loadedResource != null) {
-		if (scene != null) {
-			found = loadedResource.scenes.contains(scene);
-		} else {
-			found = true;
-		}
+		found = scene == null || loadedResource.scenes.contains(scene);
 	}
 
 	return found;
@@ -178,11 +163,27 @@ protected synchronized void unload(Scene scene) {
 
 			// Unload the resource fully
 			if (loadedResource.scenes.isEmpty()) {
-				mAssetManager.unload(loadedResource.filepath);
-				iterator.remove();
-				onUnload(entry.getKey());
+				boolean unloadNow = true;
 
-				log("unload(" + getClassName(scene) + "): Fully removed " + loadedResource.identifier);
+				if (loadedResource.resource != null) {
+					IResourceUnloadReady resourceUnloadReady = mResourceUnloadReadyHandlers.get(getType(loadedResource.identifier));
+
+					if (resourceUnloadReady != null) {
+						log("unload(" + getClassName(scene) + "): Unload queue " + loadedResource.identifier);
+						mUnloadQueue.put(loadedResource.identifier, loadedResource);
+						unloadNow = false;
+					}
+				} else {
+					unloadNow = true;
+				}
+
+				if (unloadNow) {
+					mAssetManager.unload(loadedResource.filepath);
+					iterator.remove();
+					onUnload(entry.getKey());
+
+					log("unload(" + getClassName(scene) + "): Fully removed " + loadedResource.identifier);
+				}
 			} else {
 				log("unload(" + getClassName(scene) + "): Removed " + loadedResource.identifier + " from this scene. Scene count: "
 						+ loadedResource.scenes.size());
@@ -204,9 +205,9 @@ protected void onUnload(Identifier identifier) {
  * @param identifier the resource identifier
  */
 protected synchronized void unload(Identifier identifier) {
-	if (isLoaded(identifier)) {
-		mLoadedResources.remove(identifier);
-		mUnloadQueue.add(identifier);
+	LoadedResource loadedResource = mLoadedResources.remove(identifier);
+	if (loadedResource != null) {
+		mUnloadQueue.put(identifier, loadedResource);
 
 		// Unload directly if main thread
 		if (VoiderGame.isMainThread()) {
@@ -217,15 +218,6 @@ protected synchronized void unload(Identifier identifier) {
 			waitTillUnloadingIsDone();
 		}
 	}
-}
-
-/**
- * Check if the resource has been loaded
- * @param identifier the resource identifier
- * @return true if the resource has been loaded
- */
-protected synchronized boolean isLoaded(Identifier identifier) {
-	return isLoaded(null, identifier);
 }
 
 /**
@@ -240,15 +232,18 @@ protected synchronized boolean update() {
 	}
 
 	// Unload queue
-	Iterator<Identifier> unloadIt = mUnloadQueue.iterator();
+	Iterator<LoadedResource> unloadIt = mUnloadQueue.values().iterator();
 	while (unloadIt.hasNext()) {
-		Identifier identifier = unloadIt.next();
+		LoadedResource loadedResource = unloadIt.next();
+		Identifier identifier = loadedResource.identifier;
+
 		String filepath = getFilepath(identifier);
 
 		// Unload if the resource is ready to be unloaded
-		IResourceUnloadReady unloadReady = mUnloadReadyMethods.get(getType(identifier));
-		if (unloadReady == null || unloadReady.isReadyToUnload(getResource(identifier))) {
+		IResourceUnloadReady unloadReady = mResourceUnloadReadyHandlers.get(getType(identifier));
+		if (unloadReady == null || unloadReady.isReadyToUnload(loadedResource.resource)) {
 			if (mAssetManager.isLoaded(filepath)) {
+				log("update(): Unload queue — Unload: " + identifier);
 				mAssetManager.unload(filepath);
 			}
 			onUnload(identifier);
@@ -325,26 +320,6 @@ protected void waitTillUnloadingIsDone() {
 }
 
 /**
- * Check if the resource has been loaded into the specified scene
- * @param scene if this resource has been loaded into this scene, null to use any
- * @param identifier the resource identifier
- * @return true if the resource has been loaded into the specified scene
- */
-protected synchronized boolean isLoaded(Scene scene, Identifier identifier) {
-	boolean found = false;
-	LoadedResource loadedResource = mLoadedResources.get(identifier);
-	if (loadedResource != null) {
-		if (scene != null) {
-			found = loadedResource.scenes.contains(scene);
-		} else {
-			found = true;
-		}
-	}
-
-	return found;
-}
-
-/**
  * Override this method to handle the exception, by default this just rethrows the exception
  * @param exception the exception to handle
  */
@@ -360,21 +335,6 @@ void handleException(GdxRuntimeException exception) {
 protected abstract String getFilepath(Identifier identifier);
 
 /**
- * @param <ResourceType> the resource type
- * @param identifier the resource to get
- * @return the loaded resource with the specified id, null if not loaded
- */
-@SuppressWarnings("unchecked")
-protected synchronized <ResourceType extends Resource> ResourceType getResource(Identifier identifier) {
-	LoadedResource loadedResource = mLoadedResources.get(identifier);
-	if (loadedResource != null) {
-		return (ResourceType) loadedResource.resource;
-	} else {
-		return null;
-	}
-}
-
-/**
  * Called when a resource has been updated
  * @param oldResource the old resource
  * @param newResource the new resource
@@ -388,6 +348,31 @@ protected void onReloaded(Resource oldResource, Resource newResource) {
  */
 protected synchronized boolean isLoading() {
 	return !mLoadingQueue.isEmpty() || !mReloadQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
+}
+
+/**
+ * Check if the resource has been loaded
+ * @param identifier the resource identifier
+ * @return true if the resource has been loaded
+ */
+protected synchronized boolean isLoaded(Identifier identifier) {
+	return isLoaded(null, identifier);
+}
+
+/**
+ * Check if the resource has been loaded into the specified scene
+ * @param scene if this resource has been loaded into this scene, null to use any
+ * @param identifier the resource identifier
+ * @return true if the resource has been loaded into the specified scene
+ */
+protected synchronized boolean isLoaded(Scene scene, Identifier identifier) {
+	boolean found = false;
+	LoadedResource loadedResource = mLoadedResources.get(identifier);
+	if (loadedResource != null) {
+		found = scene == null || loadedResource.scenes.contains(scene);
+	}
+
+	return found;
 }
 
 /**
@@ -410,6 +395,21 @@ protected synchronized void reload(Identifier identifier) {
 		}
 	} else {
 		Gdx.app.error(ResourceLoader.class.getSimpleName(), "Latest resource was not loaded while trying to reload it");
+	}
+}
+
+/**
+ * @param <ResourceType> the resource type
+ * @param identifier the resource to get
+ * @return the loaded resource with the specified id, null if not loaded
+ */
+@SuppressWarnings("unchecked")
+protected synchronized <ResourceType extends Resource> ResourceType getResource(Identifier identifier) {
+	LoadedResource loadedResource = mLoadedResources.get(identifier);
+	if (loadedResource != null) {
+		return (ResourceType) loadedResource.resource;
+	} else {
+		return null;
 	}
 }
 

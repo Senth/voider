@@ -165,6 +165,7 @@ public void queue(Music music, MusicInterpolations interpolation) {
 	}
 
 	if (queue) {
+		music.setInUse(true);
 		mQueue.add(new MusicQueue(music, interpolation));
 	} else if (play) {
 		play(music, interpolation);

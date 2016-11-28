@@ -24,9 +24,6 @@ import org.ini4j.Ini;
  * Loads internal resource (images, skins, fonts, etc).
  */
 class ResourceInternalLoader extends ResourceLoader<InternalNames, Object> {
-/**
- * @param assetManager
- */
 ResourceInternalLoader(AssetManager assetManager) {
 	super(assetManager);
 
@@ -44,6 +41,8 @@ ResourceInternalLoader(AssetManager assetManager) {
 	mAssetManager.setLoader(TextureAtlas.class, new TextureAtlasLoader(internalFileHandleResolver));
 	mAssetManager.setLoader(String.class, new TextLoader(internalFileHandleResolver));
 	mAssetManager.setLoader(VersionContainer.class, new VersionLoader(internalFileHandleResolver));
+
+	mResourceUnloadReadyHandlers.put(Music.class, new UnloadReadyMusic());
 }
 
 @Override
@@ -86,6 +85,20 @@ void replace(InternalNames oldIdentifier, InternalNames newIdentifier) {
 		mLoadedResources.put(newIdentifier, loadedResource);
 	} else {
 		Gdx.app.error(ResourceInternalLoader.class.getSimpleName(), "Cannot find resource: " + oldIdentifier);
+	}
+}
+
+private static class UnloadReadyMusic implements IResourceUnloadReady {
+	@Override
+	public boolean isReadyToUnload(Object resource) {
+		if (resource instanceof Music) {
+			Music track = (Music) resource;
+			com.spiddekauga.voider.sound.Music music = com.spiddekauga.voider.sound.Music.fromTrack(track);
+			if (music != null) {
+				return !music.isInUse();
+			}
+		}
+		return true;
 	}
 }
 }
