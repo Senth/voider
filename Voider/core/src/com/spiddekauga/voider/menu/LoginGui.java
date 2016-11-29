@@ -11,6 +11,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
@@ -18,7 +19,6 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
@@ -338,11 +338,11 @@ private void initRegisterTable() {
 	mWidgets.register.emailError = mUiFactory.text.getLastCreatedErrorLabel();
 
 	// Beta key
-	if (Config.Debug.BUILD == Builds.BETA) {
-		mWidgets.register.keyListener = new RegisterListener();
-		mWidgets.register.key = mUiFactory.addTextField("Beta Key", true, "", mWidgets.register.keyListener, table, null);
-		mWidgets.register.keyError = mUiFactory.text.getLastCreatedErrorLabel();
-	}
+//	if (Config.Debug.BUILD == Builds.BETA) {
+//		mWidgets.register.keyListener = new RegisterListener();
+//		mWidgets.register.key = mUiFactory.addTextField("Beta Key", true, "", mWidgets.register.keyListener, table, null);
+//		mWidgets.register.keyError = mUiFactory.text.getLastCreatedErrorLabel();
+//	}
 
 	// Accept terms
 	mWidgets.register.acceptTermsError = mUiFactory.text.addError("Accept ", true, table, null);
@@ -352,7 +352,7 @@ private void initRegisterTable() {
 	table.row();
 	mWidgets.register.acceptTerms = mUiFactory.button.addImage(SkinNames.General.BUTTON_CHECK_BOX, table, null, null);
 	table.row();
-	ButtonListener buttonListener = new ButtonListener(termsButton) {
+	new ButtonListener(termsButton) {
 		@Override
 		protected void onPressed(Button button) {
 			showTerms();
@@ -366,7 +366,7 @@ private void initRegisterTable() {
 
 	// Back
 	table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(mUiFactory.getStyles().vars.paddingButton);
-	buttonListener = new ButtonListener() {
+	ButtonListener buttonListener = new ButtonListener() {
 		@Override
 		protected void onPressed(Button button) {
 			mWidgets.register.hider.hide();

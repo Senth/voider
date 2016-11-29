@@ -69,9 +69,9 @@ protected IEntity onRequest(RegisterUserMethod method) throws ServletException, 
 		validFields = false;
 	}
 	// Check beta key
-	else if (!isRegisterKeyValid(mParameters.key)) {
-		validFields = false;
-	}
+//	else if (!isRegisterKeyValid(mParameters.key)) {
+//		validFields = false;
+//	}
 
 	// All valid
 	if (validFields) {
@@ -100,44 +100,10 @@ static boolean isPasswordLengthValid(String password) {
 }
 
 /**
- * Check if beta key is valid (and required)
- * @param registerKey
- * @return true if this client doesn't need a register key or if the register key is valid.
- */
-private boolean isRegisterKeyValid(String registerKey) {
-	if (Builds.BETA.isCurrent()) {
-		if (registerKey != null) {
-			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.BETA_KEY, new FilterWrapper(CBetaKey.KEY, registerKey));
-
-			// Found key
-			if (entity != null) {
-				// Not used
-				Boolean used = (Boolean) entity.getProperty(CBetaKey.USED);
-				if (used != null && !used) {
-					mBetaKeyEntity = entity;
-					return true;
-				} else {
-					mResponse.status = Statuses.FAIL_REGISTER_KEY_USED;
-				}
-			} else {
-				mResponse.status = Statuses.FAIL_REGISTER_KEY_INVALID;
-			}
-		} else {
-			mResponse.status = Statuses.FAIL_REGISTER_KEY_INVALID;
-		}
-		return false;
-	}
-	// Not beta buildType
-	else {
-		return true;
-	}
-}
-
-/**
  * Adds the new user to the datastore
  */
 private void createNewUser() {
-	Entity datastoreEntity = new Entity(DatastoreTables.USERS.toString());
+	Entity datastoreEntity = new Entity(DatastoreTables.USERS);
 
 	datastoreEntity.setProperty(CUsers.USERNAME, mParameters.username);
 	datastoreEntity.setProperty(CUsers.USERNAME_LOWCASE, mParameters.username.toLowerCase(Locale.ENGLISH));
@@ -173,5 +139,38 @@ private void createNewUser() {
 private void setBetaKeyAsUsed() {
 	mBetaKeyEntity.setProperty(CBetaKey.USED, true);
 	DatastoreUtils.put(mBetaKeyEntity);
+}
+
+/**
+ * Check if beta key is valid (and required)
+ * @return true if this client doesn't need a register key or if the register key is valid.
+ */
+private boolean isRegisterKeyValid(String registerKey) {
+	if (Builds.BETA.isCurrent()) {
+		if (registerKey != null) {
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.BETA_KEY, new FilterWrapper(CBetaKey.KEY, registerKey));
+
+			// Found key
+			if (entity != null) {
+				// Not used
+				Boolean used = (Boolean) entity.getProperty(CBetaKey.USED);
+				if (used != null && !used) {
+					mBetaKeyEntity = entity;
+					return true;
+				} else {
+					mResponse.status = Statuses.FAIL_REGISTER_KEY_USED;
+				}
+			} else {
+				mResponse.status = Statuses.FAIL_REGISTER_KEY_INVALID;
+			}
+		} else {
+			mResponse.status = Statuses.FAIL_REGISTER_KEY_INVALID;
+		}
+		return false;
+	}
+	// Not beta buildType
+	else {
+		return true;
+	}
 }
 }
