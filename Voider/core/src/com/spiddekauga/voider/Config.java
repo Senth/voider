@@ -67,8 +67,6 @@ public static class Actor {
 	public static class Bullet {
 		/** How often to check if the bullet is out of bounds */
 		public final static float CHECK_OUT_OF_BOUNDS_TIME = 1;
-		/** Maximum number of bullets */
-		public final static int BULLETS_MAX = 1000;
 		/** Linear damping of the bullet */
 		public final static float FRICTION = 0.025f;
 	}
@@ -154,15 +152,12 @@ public static class Crypto {
 	private static final byte[] PASSWORD_KEY_BYTES = {11, 120, 8, 86, 5, 22, 9, 15, -88, 38, 100, -35, 35, 35, -6, 79, 95, 22, 22, 2, 15, 65, 8, -15, -27, -35};
 	/** The actual file key */
 	private static SecretKeySpec mFileKey = null;
+	/** The actual password key */
+	private static SecretKeySpec mPasswordKey = null;
 
-	// @formatter:off
-		/** The actual password key */
-		private static SecretKeySpec mPasswordKey = null;
-
-		static {
-			init();
-		}
-		// @formatter:on
+	static {
+		init();
+	}
 
 	/**
 	 * Initialization of the config class
@@ -379,18 +374,12 @@ public static class Editor {
 			public final static float TRIGGER_ACTIVATE_DELAY_MIN = 0;
 			/** Maximum start trigger delay */
 			public final static float TRIGGER_ACTIVATE_DELAY_MAX = 30;
-			/** Default trigger delay */
-			public final static float TRIGGER_ACTIVATE_DELAY_DEFAULT = 0;
 			/** Step size of trigger delay */
 			public final static float TRIGGER_ACTIVATE_DELAY_STEP_SIZE = 0.1f;
 			/** Minimum deactivation trigger delay */
 			public final static float TRIGGER_DEACTIVATE_DELAY_MIN = 0;
 			/** Maximum deactivation trigger delay */
 			public final static float TRIGGER_DEACTIVATE_DELAY_MAX = 300;
-			/** Default deactivation trigger delay */
-			public final static float TRIGGER_DEACTIVATE_DELAY_DEFAULT = 0;
-			/** Step size of deactivation trigger delay */
-			public final static float TRIGGER_DEACTIVATE_DELAY_STEP_SIZE = 1;
 			/** Number of enemies per row when adding enemies */
 			public final static int LIST_COLUMNS = 3;
 		}
@@ -473,8 +462,6 @@ public static class File {
 	public final static String PREFERENCE_PREFIX;
 	/** The external directory used for storing game data */
 	public final static String STORAGE;
-	/** Revision number length */
-	public final static int REVISION_LENGTH = 10;
 	/** Uses external images, etc. instead of internal for resources */
 	public final static boolean USE_EXTERNAL_RESOURCES = Debug.BUILD == Builds.NIGHTLY_DEV;
 	/** Database filename */
@@ -600,12 +587,8 @@ public static class Graphics {
 	public final static float LEVEL_EDITOR_HEIGHT_SCALE_INVERT = 1 / LEVEL_EDITOR_HEIGHT_SCALE;
 	/** Level editor scale, this allows the player to see above and below the level */
 	public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
-	/** Maximum frame time length */
-	public final static float FRAME_LENGTH_MAX = 0.1f;
 	/** Depth level step size */
 	public final static float DEPTH_STEP_SIZE = 0.001f;
-	/** Widescreen ratio */
-	public final static float WIDESCREEN_RATIO = 1.6f / 0.9f;
 	/** Epsilon for box 2d */
 	private final static float EPSILON = 1.19209289550781250000e-7F;
 	/** Minimum area of a polygon shape */
@@ -657,7 +640,7 @@ public static class Graphics {
 		/**
 		 * Default constructor that sets the z-value
 		 */
-		private RenderOrders() {
+		RenderOrders() {
 			mZValue = -ordinal();
 		}
 
@@ -796,16 +779,10 @@ public static class Graphics {
 public static class Gui {
 	/** Temporary GUI name when using an invoker */
 	public final static String GUI_INVOKER_TEMP_NAME = "invoker";
-	/**
-	 * Temporary GUI name when disabling text fields (so GuiHider doesn't reenable them)
-	 */
+	/** Temporary GUI name when disabling text fields (so GuiHider doesn't reenable them) */
 	public final static String TEXT_FIELD_DISABLED_NAME = "DISABLED";
 	/** Seconds before any GUI commands aren't combinable */
 	public final static float COMMAND_COMBINABLE_WITHIN = 2;
-	/**
-	 * Time to wait for message boxes to be shown after a wait window or progress bar
-	 */
-	public final static float MSG_BOX_SHOW_WAIT_TIME = 0f;
 }
 
 /**
@@ -821,18 +798,9 @@ public static class Input {
  */
 public static class Level {
 	/**
-	 * How much offset from the first resource inside the level the beginning of the level should be
-	 * placed
-	 */
-	@Deprecated public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.1f;
-	/**
 	 * How much offset from the last resource inside the level the x-coordinate should appear
 	 */
 	public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE;
-	/** Speed of the front/top background layer, relative to the level speed */
-	public final static float BACKGROUND_TOP_SPEED = 0.75f;
-	/** Speed of the back/bottom background layer, relative to the level speed */
-	public final static float BACKGROUND_BOTTOM_SPEED = 0.5f;
 	/** Screenshot texture width */
 	public final static int SAVE_TEXTURE_WIDTH = 256;
 	/** Screenshot ratio */

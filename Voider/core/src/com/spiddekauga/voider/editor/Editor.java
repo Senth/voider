@@ -52,7 +52,6 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.IEventListener;
@@ -71,7 +70,6 @@ public abstract class Editor extends WorldScene
 
 private static final int COLOR_TRANSPARENT = 0x00000000;
 private static final int COLOR_BLACK = 0x000000FF;
-protected static Synchronizer mSynchronizer = Synchronizer.getInstance();
 protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 protected Invoker mInvoker = new Invoker();
 protected SpriteBatch mSpriteBatch = new SpriteBatch();
