@@ -227,7 +227,7 @@ protected abstract boolean hasMoreContent();
 protected abstract void fetchMoreContent();
 
 /**
- * Call this when #onSelectAction should be called with the correct action
+ * Call this when #onSelect should be called with the correct action
  */
 final void selectAction() {
 	onSelectAction(mAction);

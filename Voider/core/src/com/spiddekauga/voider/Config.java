@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceRenderShape;
@@ -783,6 +784,22 @@ public static class Gui {
 	public final static String TEXT_FIELD_DISABLED_NAME = "DISABLED";
 	/** Seconds before any GUI commands aren't combinable */
 	public final static float COMMAND_COMBINABLE_WITHIN = 2;
+
+	/**
+	 * @return get rating width of the current icon size
+	 */
+	public static int getRatingWidth() {
+		switch (SettingRepo.getInstance().display().getIconSize()) {
+		case SMALL:
+			return 32 * 5;
+		case MEDIUM:
+			return 48 * 5;
+		case LARGE:
+			return 64 * 5;
+		}
+
+		return 0;
+	}
 }
 
 /**
@@ -802,7 +819,7 @@ public static class Level {
 	 */
 	public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE;
 	/** Screenshot texture width */
-	public final static int SAVE_TEXTURE_WIDTH = 256;
+	public final static int SAVE_TEXTURE_WIDTH = 512;
 	/** Screenshot ratio */
 	public final static float SAVE_TEXTURE_RATIO = 1.6f;
 	/** Screenshot texture height */
@@ -813,10 +830,9 @@ public static class Level {
  * Network
  */
 public static class Network {
-	/** Reddit URL */
-	public static final String REDDIT_URL = "http://reddit.com/r/Voider";
 	/** Server host */
 	public static final String SERVER_HOST;
+	public static final String REDDIT_URL = "http://reddit.com/r/Voider";
 	/**
 	 * Set this variable to a specific buildType to override the current server host to point to
 	 * this buildType instead

@@ -519,7 +519,7 @@ void updateSize(float width, float height) {
 			if (cell.isVisible()) {
 				cellWidthTotal += cell.getWidth();
 
-				if (cell.shallfillWidth()) {
+				if (cell.shallFillWidth()) {
 					cCellFillWidth++;
 				}
 			}
@@ -534,7 +534,7 @@ void updateSize(float width, float height) {
 		for (Cell cell : mCells) {
 			if (cell.isVisible()) {
 				float newCellWidth = cell.getWidth();
-				if (cell.shallfillWidth()) {
+				if (cell.shallFillWidth()) {
 					newCellWidth += extraWidthPerFillWidthCell;
 				}
 
@@ -576,7 +576,7 @@ void layout(Vector2 startPos, Vector2 availableSize) {
 	// Check if there's a cell that wants to fill the width
 	boolean cellFillWidth = false;
 	for (Cell cell : mCells) {
-		if (cell.isVisible() && cell.shallfillWidth()) {
+		if (cell.isVisible() && cell.shallFillWidth()) {
 			cellFillWidth = true;
 			break;
 		}

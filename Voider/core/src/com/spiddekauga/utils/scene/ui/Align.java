@@ -27,6 +27,44 @@ Align(Horizontal horizontal, Vertical vertical) {
 }
 
 /**
+ * Convert this alignment to libgdx's internal alignment
+ * @return libgdx's internal alignment
+ */
+public static int toLibgdxAlign(Horizontal horizontal, Vertical vertical) {
+	int align = 0;
+
+	if (horizontal != null) {
+		switch (horizontal) {
+		case LEFT:
+			align = com.badlogic.gdx.utils.Align.left;
+			break;
+		case CENTER:
+			align = com.badlogic.gdx.utils.Align.center;
+			break;
+		case RIGHT:
+			align = com.badlogic.gdx.utils.Align.right;
+			break;
+		}
+	}
+
+	if (vertical != null) {
+		switch (vertical) {
+		case TOP:
+			align |= com.badlogic.gdx.utils.Align.top;
+			break;
+		case MIDDLE:
+			// N/A
+			break;
+		case BOTTOM:
+			align |= com.badlogic.gdx.utils.Align.bottom;
+			break;
+		}
+	}
+
+	return align;
+}
+
+/**
  * Sets the alignment from another alignment
  * @param align the other alignment to copy values from
  */
