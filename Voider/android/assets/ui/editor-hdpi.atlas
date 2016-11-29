@@ -32,14 +32,14 @@ add_move_corner_checked_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_add_move_corner_over
+terrain_add_move_corner_checked_over
   rotate: false
   xy: 2, 352
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_add_move_corner_checked_over
+terrain_add_move_corner_over
   rotate: false
   xy: 2, 352
   size: 48, 48
@@ -340,13 +340,6 @@ bullet_select_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
-weapon_checked
-  rotate: false
-  xy: 152, 259
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 bullet_select_down
   rotate: false
   xy: 152, 259
@@ -361,6 +354,13 @@ weapon_down
   orig: 48, 48
   offset: 0, 0
   index: -1
+weapon_checked
+  rotate: false
+  xy: 152, 259
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
 bullet_select_checked_over
   rotate: false
   xy: 202, 309
@@ -368,7 +368,7 @@ bullet_select_checked_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-bullet_select_over
+weapon_checked_over
   rotate: false
   xy: 202, 309
   size: 48, 48
@@ -382,7 +382,7 @@ weapon_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-weapon_checked_over
+bullet_select_over
   rotate: false
   xy: 202, 309
   size: 48, 48
@@ -836,14 +836,14 @@ draw_erase_checked_over
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_draw_erase_over
+terrain_draw_erase_checked_over
   rotate: false
   xy: 302, 209
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_draw_erase_checked_over
+terrain_draw_erase_over
   rotate: false
   xy: 302, 209
   size: 48, 48
@@ -1977,7 +1977,7 @@ path_add_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_add_down
+path_tab_down
   rotate: false
   xy: 802, 159
   size: 48, 48
@@ -1991,7 +1991,7 @@ path_tab_checked
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_tab_down
+path_add_down
   rotate: false
   xy: 802, 159
   size: 48, 48

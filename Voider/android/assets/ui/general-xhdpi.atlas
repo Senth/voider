@@ -229,23 +229,7 @@ button_default_checked
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_default_down
-  rotate: false
-  xy: 1602, 109
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
 button_tag_down
-  rotate: false
-  xy: 1602, 109
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button_transparent_down
   rotate: false
   xy: 1602, 109
   size: 7, 7
@@ -261,6 +245,22 @@ button_transparent_checked
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_default_down
+  rotate: false
+  xy: 1602, 109
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_down
+  rotate: false
+  xy: 1602, 109
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_default_checked_over
   rotate: false
   xy: 502, 13
@@ -269,7 +269,7 @@ button_default_checked_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_transparent_over
+button_tag_over
   rotate: false
   xy: 502, 13
   size: 7, 7
@@ -293,7 +293,7 @@ button_default_over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button_tag_over
+button_transparent_over
   rotate: false
   xy: 502, 13
   size: 7, 7
@@ -809,14 +809,14 @@ icon_size_large_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-icon_size_large_down
+star_checked
   rotate: false
   xy: 1932, 810
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-star_checked
+icon_size_large_down
   rotate: false
   xy: 1932, 810
   size: 64, 64
@@ -837,14 +837,14 @@ icon_size_large_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-star_over
+star_checked_over
   rotate: false
   xy: 1932, 744
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-star_checked_over
+star_over
   rotate: false
   xy: 1932, 744
   size: 64, 64
@@ -1371,14 +1371,14 @@ scroll_horizontal_knob
   orig: 32, 32
   offset: 0, 0
   index: -1
-scroll_vertical_knob
+slider_knob
   rotate: false
   xy: 1992, 1710
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-slider_knob
+scroll_vertical_knob
   rotate: false
   xy: 1992, 1710
   size: 32, 32
@@ -2370,13 +2370,6 @@ settings_network_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
-settings_statistics_checked
-  rotate: false
-  xy: 1496, 590
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 settings_network_down
   rotate: false
   xy: 1496, 590
@@ -2391,14 +2384,14 @@ settings_statistics_down
   orig: 64, 64
   offset: 0, 0
   index: -1
-settings_network_checked_over
+settings_statistics_checked
   rotate: false
-  xy: 1592, 788
+  xy: 1496, 590
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-settings_statistics_checked_over
+settings_network_checked_over
   rotate: false
   xy: 1592, 788
   size: 64, 64
@@ -2413,6 +2406,13 @@ settings_statistics_over
   offset: 0, 0
   index: -1
 settings_network_over
+  rotate: false
+  xy: 1592, 788
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+settings_statistics_checked_over
   rotate: false
   xy: 1592, 788
   size: 64, 64
