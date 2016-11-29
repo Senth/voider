@@ -239,7 +239,7 @@ public class Messages {
 		 * Constructs a temporary tooltip
 		 * @param text tooltip text to display
 		 */
-		private EditorTooltips(String text) {
+		EditorTooltips(String text) {
 			mText = text;
 		}
 
@@ -248,7 +248,7 @@ public class Messages {
 		 * @param text tooltip text to display
 		 * @param youtubeTime time in the YouTube tutorial
 		 */
-		private EditorTooltips(String text, String youtubeTime) {
+		EditorTooltips(String text, String youtubeTime) {
 			mText = text;
 			mYoutubeTime = youtubeTime;
 		}
@@ -259,7 +259,7 @@ public class Messages {
 		 * @param youtubeTime time in the YouTube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
 		 */
-		private EditorTooltips(String text, String youtubeTime, ITooltip parent) {
+		EditorTooltips(String text, String youtubeTime, ITooltip parent) {
 			mText = text;
 			mYoutubeTime = youtubeTime;
 			mParent = parent;
@@ -273,7 +273,7 @@ public class Messages {
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
-		private EditorTooltips(String text, String youtubeTime, ITooltip parent, Integer permanentLevel) {
+		EditorTooltips(String text, String youtubeTime, ITooltip parent, Integer permanentLevel) {
 			mText = text;
 			mYoutubeTime = youtubeTime;
 			mPermanentLevel = permanentLevel;
@@ -287,7 +287,7 @@ public class Messages {
 		 * @param permanentLevel set to the level of priority the permanent should have.
 		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
-		private EditorTooltips(String text, String youtubeTime, Integer permanentLevel) {
+		EditorTooltips(String text, String youtubeTime, Integer permanentLevel) {
 			mText = text;
 			mYoutubeTime = youtubeTime;
 			mPermanentLevel = permanentLevel;
@@ -308,7 +308,7 @@ public class Messages {
 		 *        hidden. If false the tooltip will be shown even though the actor is
 		 *        hidden.
 		 */
-		private EditorTooltips(String text, String youtubeTime, ITooltip parent, Integer permanentLevel, String hotkey, boolean youtubeOnly,
+		EditorTooltips(String text, String youtubeTime, ITooltip parent, Integer permanentLevel, String hotkey, boolean youtubeOnly,
 				boolean hideWhenHidden) {
 			mText = text;
 			mPermanentLevel = permanentLevel;
@@ -424,10 +424,6 @@ public class Messages {
 		 */
 		public final static String RUN_INVULNERABLE_CONTENT = "Do you want to be invulnerable when you're testing the level?\n\n"
 				+ "Hit Escape or Back when you want to go back.";
-		/** Header for successfully completing the level */
-		public final static String COMPLETED_HEADER = "Congratulations!";
-		/** Header for game over */
-		public final static String GAME_OVER_HEADER = "Game Over!";
 		/** Prologue default field */
 		public final static String PROLOGUE_DEFAULT = "Write a short prologue to be displayed at the start of the level...";
 		/** Epilogue default field */
@@ -468,12 +464,6 @@ public class Messages {
 		public final static String POLYGON_COMPLEX_ADD = "Can't add a corner here, would create an intersection";
 		/** Polygon complex remove corner */
 		public final static String POLYGON_COMPLEX_REMOVE = "Can't remove this corner, would create an intersection";
-		/** Polygon complex move corner */
-		public final static String POLYGON_COMPLEX_MOVE = "Can't move here, would create an intersection";
-		/** Polygon complex draw/erase */
-		public final static String POLYGON_COMPLEX_DRAW_ERASE = POLYGON_COMPLEX_DRAW_APPEND;
-		/** Polygon draw/erase line is complex */
-		public final static String POLYGON_DRAW_ERASE_LINE_COMPLEX = POLYGON_COMPLEX_DRAW_APPEND;
 		/** Bug report */
 		public final static String BUG_REPORT_INFO = "You found a bug! "
 				+ "Please describe the last things you did. This helps enormously when debugging, thank you :)";

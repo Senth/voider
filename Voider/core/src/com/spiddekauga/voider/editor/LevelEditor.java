@@ -390,10 +390,10 @@ public boolean onKeyDown(int keycode) {
 	// Tools - Trigger
 	else if (keycode == Input.Keys.T) {
 		if (KeyHelper.isShiftPressed()) {
-			switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+			switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
 			return true;
 		} else if (KeyHelper.isNoModifiersPressed()) {
-			switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
+			switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
 			return true;
 		}
 	}
