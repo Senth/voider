@@ -16,14 +16,14 @@ import com.spiddekauga.voider.utils.Pools;
  * Asynchronously loads resources saved as Kryo objects (that has been encrypted)
  * @param <StoredType> what type of object is stored in the json file
  */
-public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, KryoParameters<StoredType>> {
+class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, KryoParameters<StoredType>> {
 
 /** The actual object that was stored */
-StoredType mStoredObject = null;
+private StoredType mStoredObject = null;
 /** Type of object stored in the json file */
-Class<StoredType> mStoredType;
+private Class<StoredType> mStoredType;
 /** Decrypter */
-ObjectCrypter mCrypter;
+private ObjectCrypter mCrypter;
 
 /**
  * Constructor which takes a file handle resolver (where to load resources from) and what type of
@@ -31,7 +31,7 @@ ObjectCrypter mCrypter;
  * @param resolver where to load resources from
  * @param type what type of object is stored in the json file
  */
-public KryoLoaderAsync(FileHandleResolver resolver, Class<StoredType> type) {
+KryoLoaderAsync(FileHandleResolver resolver, Class<StoredType> type) {
 	super(resolver);
 	mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
 	mStoredType = type;

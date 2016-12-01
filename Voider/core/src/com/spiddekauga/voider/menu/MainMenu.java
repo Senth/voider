@@ -9,8 +9,8 @@ import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.resource.DefEntity;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
+import com.spiddekauga.voider.settings.*;
+import com.spiddekauga.voider.settings.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
@@ -236,7 +236,7 @@ enum Scenes {
 	/** Credits */
 	CREDITS(CreditScene.class),
 	/** Game settings */
-	SETTINGS(SettingsScene.class),
+	SETTINGS(com.spiddekauga.voider.settings.SettingsScene.class),
 	/** User settings */
 	USER(UserScene.class),;
 

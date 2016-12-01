@@ -15,7 +15,7 @@ import com.spiddekauga.voider.network.misc.BugReportResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;

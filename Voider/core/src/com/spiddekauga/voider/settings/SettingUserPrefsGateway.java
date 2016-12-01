@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.repo.misc;
+package com.spiddekauga.voider.settings;
 
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Network;
@@ -95,7 +95,6 @@ long getTermsLength() {
 
 /**
  * Set the length of the current terms document
- * @param length
  */
 void setTermsLength(long length) {
 	mPreferences.putLong(TERMS__LENGTH, length);

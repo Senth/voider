@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config.Debug.Builds;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceRenderShape;
@@ -461,12 +461,12 @@ public static class Explore {
 public static class File {
 	/** Preferences name prefix */
 	public final static String PREFERENCE_PREFIX;
-	/** The external directory used for storing game data */
-	public final static String STORAGE;
 	/** Uses external images, etc. instead of internal for resources */
 	public final static boolean USE_EXTERNAL_RESOURCES = Debug.BUILD == Builds.NIGHTLY_DEV;
 	/** Database filename */
 	public final static String DB_FILENAME = "Voider.db";
+	/** The external directory used for storing game data */
+	final static String STORAGE;
 	/** User storage */
 	private static String mUserStorage;
 	/** User preferences prefix */
@@ -524,6 +524,13 @@ public static class File {
 	}
 
 	/**
+	 * @return screenshot storage path
+	 */
+	public static String getScreenshotStorage() {
+		return mUserStorage + "screenshots/";
+	}
+
+	/**
 	 * Set the user paths
 	 * @param username username of the user to get the path
 	 */
@@ -531,10 +538,12 @@ public static class File {
 		mUserStorage = STORAGE + username + "/";
 		mUserPreferencesPrefix = PREFERENCE_PREFIX + "." + username + ".";
 
-		// Create folder if it doesn't exist
-		FileHandle folder = Gdx.files.external(mUserStorage);
-		if (!folder.exists()) {
-			folder.mkdirs();
+		// Only create empty folders for real users
+		if (!username.equals("(None)")) {
+			FileHandle folder = Gdx.files.external(mUserStorage);
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
 		}
 	}
 }
@@ -830,18 +839,17 @@ public static class Level {
  * Network
  */
 public static class Network {
-	/** Server host */
 	public static final String SERVER_HOST;
 	public static final String REDDIT_URL = "http://reddit.com/r/Voider";
-	/**
-	 * Set this variable to a specific buildType to override the current server host to point to
-	 * this buildType instead
-	 */
-	public static final Builds OVERRIDE_HOST = null;
 	/** Maximum number of connections */
 	public static final int CONNECTIONS_MAX = Debug.isBuildOrBelow(Builds.DEV_LOCAL) ? 1 : 5;
 	/** How many retries to download a blob */
 	public static final int RETRIES_MAX = 5;
+	/**
+	 * Set this variable to a specific buildType to override the current server host to point to
+	 * this buildType instead
+	 */
+	static final Builds OVERRIDE_HOST = null;
 
 	static {
 		Builds build = Debug.BUILD;

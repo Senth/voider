@@ -2,8 +2,8 @@ package com.spiddekauga.voider.sound;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.EventBus;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.SettingSoundRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingSoundRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;

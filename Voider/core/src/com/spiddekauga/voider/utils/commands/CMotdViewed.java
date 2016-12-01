@@ -2,7 +2,7 @@ package com.spiddekauga.voider.utils.commands;
 
 import com.spiddekauga.utils.commands.CRun;
 import com.spiddekauga.voider.network.misc.Motd;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.user.User;
 
 /**

@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.repo.misc;
+package com.spiddekauga.voider.settings;
 
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -7,14 +7,14 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.Repo;
-import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingDisplayLocalRepo;
-import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingGeneralLocalRepo;
-import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingNetworkLocalRepo;
-import com.spiddekauga.voider.repo.misc.SettingLocalRepo.SettingSoundLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.resources.DensityBuckets;
+import com.spiddekauga.voider.settings.SettingLocalRepo.SettingDisplayLocalRepo;
+import com.spiddekauga.voider.settings.SettingLocalRepo.SettingGeneralLocalRepo;
+import com.spiddekauga.voider.settings.SettingLocalRepo.SettingNetworkLocalRepo;
+import com.spiddekauga.voider.settings.SettingLocalRepo.SettingSoundLocalRepo;
 import com.spiddekauga.voider.version.Version;
 import com.spiddekauga.voider.version.VersionContainer;
 
@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -154,7 +155,7 @@ public enum IconSizes {
 /**
  * Info settings
  */
-public class SettingInfoRepo {
+public static class SettingInfoRepo {
 	private SettingGeneralLocalRepo mLocalRepo = SettingLocalRepo.getInstance().general;
 
 	/**
@@ -236,7 +237,7 @@ public class SettingInfoRepo {
 /**
  * Date setting repository. Access through SettingRepo,
  */
-public class SettingDateRepo {
+public static class SettingDateRepo {
 	private SimpleDateFormat mDateTimeFormatter = null;
 	private SimpleDateFormat mDateFormatter = null;
 	private SimpleDateFormat mTimeFormatter = null;
@@ -254,7 +255,36 @@ public class SettingDateRepo {
 	 */
 	public boolean is24h() {
 		IC_General icGeneral = ConfigIni.getInstance().setting.general;
-		return icGeneral.getTime24hFormat().equals(getTimeFormat());
+		return icGeneral.getTime24hFormat().equals(getFormat(FormatTypes.TIME));
+	}
+
+	/**
+	 * @return get the formatting to convert a date into a string
+	 */
+	String getFormat(FormatTypes formatType) {
+		String format = "";
+		switch (formatType) {
+		case DATE:
+			String dateTime = mGeneralLocalRepo.getDateTime();
+			if (!dateTime.isEmpty()) {
+				int firstSpaceIndex = dateTime.indexOf(' ');
+				if (firstSpaceIndex != -1) {
+					return dateTime.substring(0, firstSpaceIndex);
+				}
+			}
+			break;
+		case TIME:
+			dateTime = mGeneralLocalRepo.getDateTime();
+			if (!dateTime.isEmpty()) {
+				int firstSpaceIndex = dateTime.indexOf(' ');
+				if (firstSpaceIndex != -1) {
+					return dateTime.substring(firstSpaceIndex + 1);
+				}
+			}
+			break;
+		}
+
+		return format;
 	}
 
 	/**
@@ -262,14 +292,14 @@ public class SettingDateRepo {
 	 * @param time24h true to use 24hr format, false to use AM/PM
 	 */
 	public void set24h(boolean time24h) {
-		String timeFormat = null;
+		String timeFormat;
 		IC_General icGeneral = ConfigIni.getInstance().setting.general;
 		if (time24h) {
 			timeFormat = icGeneral.getTime24hFormat();
 		} else {
 			timeFormat = icGeneral.getTimeAmPmFormat();
 		}
-		setDateTimeFormat(getDateFormat() + " " + timeFormat);
+		setDateTimeFormat(getFormat(FormatTypes.DATE) + " " + timeFormat);
 	}
 
 	/**
@@ -286,65 +316,10 @@ public class SettingDateRepo {
 	}
 
 	/**
-	 * @return get date format
-	 */
-	public String getDateFormat() {
-		return getFormatPart(true);
-	}
-
-	/**
 	 * Set the date format (not time)
-	 * @param format
 	 */
 	public void setDateFormat(String format) {
-		setDateTimeFormat(format + " " + getTimeFormat());
-	}
-
-	/**
-	 * @return time format
-	 */
-	private String getTimeFormat() {
-		return getFormatPart(false);
-	}
-
-	/**
-	 * Get first or second part of the date time string
-	 * @param datePart true if we want to get the date part, false for the time part
-	 * @return specific split part of the date time string
-	 */
-	private String getFormatPart(boolean datePart) {
-		String dateTime = mGeneralLocalRepo.getDateTime();
-		if (!dateTime.isEmpty()) {
-			int lastSpaceIndex = dateTime.lastIndexOf(' ');
-
-			if (lastSpaceIndex != -1) {
-				// Date part
-				if (datePart) {
-					return dateTime.substring(0, lastSpaceIndex);
-				}
-				// Time part
-				else {
-					return dateTime.substring(lastSpaceIndex + 1);
-				}
-			}
-		}
-
-		return "";
-	}
-
-	/**
-	 * Convert a date to human-readable date and time string using the internal date time format
-	 * @param date the date to format
-	 * @return human-readable date time string
-	 */
-	public String getDateTime(Date date) {
-		if (mDateTimeFormatter == null) {
-			mDateTimeFormatter = new SimpleDateFormat(mGeneralLocalRepo.getDateTime());
-		} else if (!mDateTimeFormatter.toPattern().equals(mGeneralLocalRepo.getDateTime())) {
-			mDateTimeFormatter.applyPattern(mGeneralLocalRepo.getDateTime());
-		}
-
-		return mDateTimeFormatter.format(date);
+		setDateTimeFormat(format + " " + getFormat(FormatTypes.TIME));
 	}
 
 	/**
@@ -357,35 +332,71 @@ public class SettingDateRepo {
 			return "";
 		}
 
+		// Create or update formatter
+		String dateFormat = getFormat(FormatTypes.DATE);
 		if (mDateFormatter == null) {
-			mDateFormatter = new SimpleDateFormat(getDateFormat());
-		} else if (!mDateFormatter.toPattern().equals(getDateFormat())) {
-			mDateFormatter.applyPattern(getDateFormat());
+			mDateFormatter = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
+		} else if (!mDateFormatter.toPattern().equals(dateFormat)) {
+			mDateFormatter.applyPattern(dateFormat);
 		}
 
 		return mDateFormatter.format(date);
 	}
 
 	/**
-	 * Convert a date to human-readable time string using the internal time format
+	 * Convert a date to human-readable date and time (without seconds) string using the internal
+	 * date time format
+	 * @param date the date to format
+	 * @return human-readable date time string
+	 */
+	public String getDateTime(Date date) {
+		if (date == null) {
+			return "";
+		}
+
+		// Create or update formatter
+		if (mDateTimeFormatter == null) {
+			mDateTimeFormatter = new SimpleDateFormat(mGeneralLocalRepo.getDateTime(), Locale.ENGLISH);
+		} else if (!mDateTimeFormatter.toPattern().equals(mGeneralLocalRepo.getDateTime())) {
+			mDateTimeFormatter.applyPattern(mGeneralLocalRepo.getDateTime());
+		}
+
+		return mDateTimeFormatter.format(date);
+	}
+
+	/**
+	 * Convert a date to human-readable time string using the internal time format (without
+	 * seconds)
 	 * @param date the date to format
 	 * @return human-readable time string
+	 * @see #getTimeWithSeconds(Date) to include the seconds
 	 */
 	public String getTime(Date date) {
+		if (date == null) {
+			return "";
+		}
+
+		// Create or update formatter
+		String timeFormat = getFormat(FormatTypes.TIME);
 		if (mTimeFormatter == null) {
-			mTimeFormatter = new SimpleDateFormat(getTimeFormat());
-		} else if (!mTimeFormatter.toPattern().equals(getTimeFormat())) {
-			mTimeFormatter.applyPattern(getTimeFormat());
+			mTimeFormatter = new SimpleDateFormat(timeFormat, Locale.ENGLISH);
+		} else if (!mTimeFormatter.toPattern().equals(timeFormat)) {
+			mTimeFormatter.applyPattern(timeFormat);
 		}
 
 		return mTimeFormatter.format(date);
+	}
+
+	enum FormatTypes {
+		DATE,
+		TIME,
 	}
 }
 
 /**
  * Sound settings repository. Access through SettingRepo.
  */
-public class SettingSoundRepo {
+public static class SettingSoundRepo {
 	private SettingSoundLocalRepo mSoundLocalRepo = SettingLocalRepo.getInstance().sound;
 
 	/**
@@ -483,7 +494,7 @@ public class SettingSoundRepo {
 /**
  * Display settings
  */
-public class SettingDisplayRepo {
+public static class SettingDisplayRepo {
 	private SettingDisplayLocalRepo mLocalRepo = SettingLocalRepo.getInstance().display;
 
 	/**
@@ -510,7 +521,6 @@ public class SettingDisplayRepo {
 
 	/**
 	 * Sets the startup resolution of the game (in windowed mode)
-	 * @param resolution
 	 */
 	public void setResolutionWindowed(Resolution resolution) {
 		mLocalRepo.setResolutionWindowed(resolution);
@@ -525,7 +535,6 @@ public class SettingDisplayRepo {
 
 	/**
 	 * Sets the fullscreen resolution of the game
-	 * @param resolution
 	 */
 	public void setResolutionFullscreen(Resolution resolution) {
 		mLocalRepo.setResolutionFullscreen(resolution);
@@ -557,7 +566,7 @@ public class SettingDisplayRepo {
 /**
  * Network settings
  */
-public class SettingNetworkRepo {
+public static class SettingNetworkRepo {
 	private SettingNetworkLocalRepo mLocalRepo = SettingLocalRepo.getInstance().network;
 
 	/**
@@ -594,7 +603,7 @@ public class SettingNetworkRepo {
 /**
  * Debug settings
  */
-public class SettingDebugRepo {
+public static class SettingDebugRepo {
 	/**
 	 * Clears the database, files and settings for the current logged in account and then logs out
 	 * the user

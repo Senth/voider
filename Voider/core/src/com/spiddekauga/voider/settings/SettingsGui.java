@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.menu;
+package com.spiddekauga.voider.settings;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -23,7 +23,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
-import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
+import com.spiddekauga.voider.menu.*;
+import com.spiddekauga.voider.settings.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;

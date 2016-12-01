@@ -1,10 +1,9 @@
-package com.spiddekauga.voider.repo.misc;
+package com.spiddekauga.voider.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.Motd;
-import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
@@ -383,7 +382,7 @@ class SettingDisplayLocalRepo {
 	 * Set icon/UI size
 	 * @param iconSize set the icon size
 	 */
-	void setIconSize(IconSizes iconSize) {
+	void setIconSize(SettingRepo.IconSizes iconSize) {
 		if (iconSize != getIconSize()) {
 			InternalNames[] oldSizes = InternalDeps.getDependencies(InternalDeps.UI_ALL);
 
@@ -401,7 +400,7 @@ class SettingDisplayLocalRepo {
 	/**
 	 * @return current iconSize
 	 */
-	IconSizes getIconSize() {
+	SettingRepo.IconSizes getIconSize() {
 		return mClientPrefsGateway.getIconSize();
 	}
 

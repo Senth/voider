@@ -16,6 +16,7 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.IExceptionHandler;
 import com.spiddekauga.utils.InputMultiplexerExceptionSnatcher;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
@@ -24,7 +25,7 @@ import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.sound.MusicPlayer;
@@ -195,6 +196,12 @@ protected boolean onKeyDown(int keycode) {
 	// Open Bug Report Window
 	if (User.getGlobalUser().isLoggedIn() && keycode == Input.Keys.INSERT) {
 		UiFactory.getInstance().msgBox.bugReport();
+	}
+
+	// Save screenshot
+	if (Gdx.app.getType() == ApplicationType.Desktop && keycode == Input.Keys.HOME) {
+		Screens.saveScreenshot();
+		mNotification.show(NotificationShower.NotificationTypes.INFO, "Screenshot saved");
 	}
 
 	// Testing

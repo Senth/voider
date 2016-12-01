@@ -2,7 +2,7 @@ package com.spiddekauga.voider.utils;
 
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 
 import java.util.Date;
 

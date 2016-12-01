@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.repo.misc;
+package com.spiddekauga.voider.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
@@ -7,7 +7,6 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Display;
 import com.spiddekauga.voider.config.IC_Setting.IC_Sound;
 import com.spiddekauga.voider.repo.PrefsGateway;
-import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 
 /**
  * Game settings gateway
@@ -59,17 +58,17 @@ void setFullscreen(boolean fullscreen) {
 /**
  * @return current iconSize
  */
-IconSizes getIconSize() {
+SettingRepo.IconSizes getIconSize() {
 	IC_Display icDisplay = ConfigIni.getInstance().setting.display;
 	String iconSizeString = mPreferences.getString(DISPLAY__ICON_SIZE, icDisplay.getIconSize());
-	return IconSizes.fromName(iconSizeString);
+	return SettingRepo.IconSizes.fromName(iconSizeString);
 }
 
 /**
  * Set icon/UI size
  * @param iconSize set the icon size
  */
-void setIconSize(IconSizes iconSize) {
+void setIconSize(SettingRepo.IconSizes iconSize) {
 	mPreferences.putString(DISPLAY__ICON_SIZE, iconSize.toString());
 	mPreferences.flush();
 }

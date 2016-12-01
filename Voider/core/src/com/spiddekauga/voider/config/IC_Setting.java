@@ -62,9 +62,14 @@ public class IC_General extends IniClass {
 	protected String time24hFormat;
 	protected String timeAmPmFormat;
 	protected String dateTimeFormatDefault;
+	protected String fileTimestampFormat;
 
 	private IC_General(Ini ini, Section classSection) {
 		super(ini, classSection);
+	}
+
+	public String getFileTimestampFormat() {
+		return fileTimestampFormat;
 	}
 
 	public String[] getDateFormats() {

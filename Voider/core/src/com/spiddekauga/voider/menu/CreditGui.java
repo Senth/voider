@@ -13,7 +13,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.menu.CreditScene.CreditLine;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.CreditImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;

@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.scene.ui;
 
 import com.spiddekauga.voider.network.misc.Motd;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.SettingInfoRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;

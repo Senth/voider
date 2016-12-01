@@ -15,7 +15,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBox;
-import com.spiddekauga.voider.menu.SettingsScene;
+import com.spiddekauga.voider.settings.SettingsScene;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.utils.scene.ui.Scene.Outcomes;
