@@ -2,6 +2,7 @@ package com.spiddekauga.voider.repo.user;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -13,7 +14,6 @@ import com.spiddekauga.voider.network.user.LoginResponse.VersionInformation.Stat
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
-import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -32,7 +32,7 @@ private static NotificationShower mNotification = NotificationShower.getInstance
 private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 private static UserRepo mUserRepo = UserRepo.getInstance();
 private static User mGlobalUser = new User();
-private String mUsername = "(None)";
+private String mUsername = Config.User.INVALID_USERNAME;
 private String mServerKey = null;
 private boolean mOnline = false;
 private String mPassword = null;
@@ -260,7 +260,7 @@ private static void loginGlobalUser(User user, boolean online) {
 	// Update user path
 	Config.File.setUserPaths(mGlobalUser.mUsername);
 
-	mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN));
+	mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGGED_IN));
 
 	if (online) {
 		mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
@@ -384,11 +384,28 @@ public void setOnline(boolean online) {
 }
 
 /**
- * Logs out the user, only works for the global user
+ * Logs out the user, only works for the global user.
+ * @see #logout() if you only want to set the user as logged out. But not change scenes
  */
-public void logout() {
+public void logoutAndGotoLogin() {
 	// Update user path
 	if (this == mGlobalUser) {
+
+		logout();
+
+		SceneSwitcher.clearScenes();
+		SceneSwitcher.switchTo(new LoginScene());
+	}
+}
+
+/**
+ * Logout the user
+ */
+public void logout() {
+	if (this == mGlobalUser) {
+		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGGING_OUT));
+		mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
+
 		UserRepo.getInstance().logout(false);
 
 		mEmail = null;
@@ -397,18 +414,15 @@ public void logout() {
 		mPrivateKey = null;
 		mServerKey = null;
 		mLoggedIn = false;
-		mUsername = "(None)";
+		mUsername = Config.User.INVALID_USERNAME;
 
-		Config.File.setUserPaths(mUsername);
+
 		AnalyticsRepo analyticsRepo = AnalyticsRepo.getInstance();
 		analyticsRepo.endSession();
 		analyticsRepo.newSession();
-		SceneSwitcher.clearScenes();
+		Config.File.setUserPaths(mUsername);
 
-		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGOUT));
-		mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
-
-		SceneSwitcher.switchTo(new LoginScene());
+		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGGED_OUT));
 	}
 }
 

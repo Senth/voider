@@ -1,8 +1,6 @@
 package com.spiddekauga.utils;
 
 import com.badlogic.gdx.InputMultiplexer;
-import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug.Builds;
 
 /**
  * Snatches all exceptions thrown by the input multiplexer and sends them to the appropriate
@@ -105,10 +103,6 @@ public boolean scrolled(int amount) {
  * @param exception the exception that was thrown
  */
 private void handleException(RuntimeException exception) {
-	if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
-		exception.printStackTrace();
-	}
-
-	mExceptionHandler.handleException(exception, true);
+	mExceptionHandler.handleException(exception);
 }
 }

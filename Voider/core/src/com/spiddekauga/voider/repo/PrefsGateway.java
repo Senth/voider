@@ -33,8 +33,8 @@ protected PrefsGateway(boolean userPreferences) {
 		}
 
 		EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-		eventDispatcher.connect(EventTypes.USER_LOGIN, this);
-		eventDispatcher.connect(EventTypes.USER_LOGOUT, this);
+		eventDispatcher.connect(EventTypes.USER_LOGGED_IN, this);
+		eventDispatcher.connect(EventTypes.USER_LOGGED_OUT, this);
 	} else {
 		open();
 	}
@@ -68,11 +68,11 @@ public static void clearUserPreferences() {
 @Override
 public void handleEvent(GameEvent event) {
 	switch (event.type) {
-	case USER_LOGIN:
+	case USER_LOGGED_IN:
 		open();
 		break;
 
-	case USER_LOGOUT:
+	case USER_LOGGED_OUT:
 		close();
 		break;
 

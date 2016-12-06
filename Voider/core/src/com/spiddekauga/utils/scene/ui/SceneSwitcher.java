@@ -13,10 +13,15 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.menu.LoginScene;
+import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceCorruptException;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.utils.event.EventDispatcher;
+import com.spiddekauga.voider.utils.event.EventTypes;
+import com.spiddekauga.voider.utils.event.GameEvent;
+import com.spiddekauga.voider.utils.event.IEventListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,13 +33,17 @@ import java.util.List;
  */
 public class SceneSwitcher {
 /** Stack with all the active scenes */
-private static LinkedList<Scene> mScenes = new LinkedList<Scene>();
+private static LinkedList<Scene> mScenes = new LinkedList<>();
 /** Generally last popped scene that needs unloading, but could be several */
-private static ArrayList<Scene> mScenesNeedUnloading = new ArrayList<Scene>();
+private static ArrayList<Scene> mScenesNeedUnloading = new ArrayList<>();
 /** Outcome of last scene */
-private static Outcomes mOutcome = null;
+private static Outcomes mOutcome = Outcomes.NOT_APPLICAPLE;
 /** Message from the last outcome */
 private static Object mOutcomeMessage = null;
+
+static {
+	EventDispatcher.getInstance().connect(EventTypes.USER_LOGGING_OUT, new ForceUnloadListener());
+}
 
 /**
  * Private constructor to ensure no instance is created
@@ -102,8 +111,8 @@ public static boolean switchTo(Class<? extends Scene> sceneType) {
 		if (foundScene.unloadResourcesOnDeactivate()) {
 			loadActiveSceneResources();
 		} else {
-			foundScene.reloadResourcesOnActivate(Outcomes.NOT_APPLICAPLE, null);
-			activateCurrentScene(Outcomes.NOT_APPLICAPLE, null);
+			foundScene.reloadResourcesOnActivate(mOutcome, mOutcomeMessage);
+			activateCurrentScene();
 		}
 
 		return true;
@@ -139,18 +148,14 @@ public static boolean returnTo(Class<? extends Scene> sceneType) {
 
 			// If it was the last scene, deactivate it too
 			if (!sceneIt.hasNext()) {
-				currentScene.onPause();
-				mScenesNeedUnloading.add(currentScene);
-			}
-			// Else check if needs to unload resources
-			else {
-				if (currentScene.isResourcesLoaded()) {
-					mScenesNeedUnloading.add(currentScene);
-				}
+				currentScene.pause();
 			}
 
-			currentScene.setOutcome(Outcomes.NOT_APPLICAPLE);
-			currentScene.onDestroy();
+			// Unload loaded resources
+			if (currentScene.isResourcesLoaded()) {
+				mScenesNeedUnloading.add(currentScene);
+			}
+			currentScene.destroy();
 		}
 	}
 
@@ -161,8 +166,8 @@ public static boolean returnTo(Class<? extends Scene> sceneType) {
 		if (activateScene.unloadResourcesOnDeactivate()) {
 			loadActiveSceneResources();
 		} else {
-			activateScene.reloadResourcesOnActivate(Outcomes.NOT_APPLICAPLE, null);
-			activateCurrentScene(Outcomes.NOT_APPLICAPLE, null);
+			activateScene.reloadResourcesOnActivate(mOutcome, mOutcomeMessage);
+			activateCurrentScene();
 		}
 	}
 
@@ -176,11 +181,11 @@ public static boolean returnTo(Class<? extends Scene> sceneType) {
 public static void clearScenes() {
 	// Deactivate the current scene
 	if (!mScenes.isEmpty()) {
-		mScenes.peek().onPause();
+		mScenes.peek().pause();
 	}
 
 	for (Scene scene : mScenes) {
-		scene.onDestroy();
+		scene.destroy();
 		mScenesNeedUnloading.add(scene);
 	}
 
@@ -194,7 +199,7 @@ public static void clearScenes() {
 public static void dispose() {
 	if (mScenes != null) {
 		for (Scene scene : mScenes) {
-			scene.onDestroy();
+			scene.destroy();
 			if (scene.isResourcesLoaded()) {
 				scene.unloadResources();
 			}
@@ -473,21 +478,15 @@ public static void update() {
 
 				// Loading done -> Activate scene
 				if (allLoaded) {
-					if (mOutcome != null) {
-						activateCurrentScene(mOutcome, mOutcomeMessage, Outcomes.LOADING_SUCCEEDED);
-						mOutcome = null;
-						mOutcomeMessage = null;
-					} else {
-						activateCurrentScene(Outcomes.NOT_APPLICAPLE, null, Outcomes.LOADING_SUCCEEDED);
-					}
+					activateCurrentScene(Outcomes.LOADING_SUCCEEDED);
 					currentScene.setLoading(false);
 				}
 			} catch (ResourceNotFoundException e) {
 				e.printStackTrace();
-				activateCurrentScene(Outcomes.NOT_APPLICAPLE, e.toString(), Outcomes.LOADING_FAILED_MISSING_FILE);
+				activateCurrentScene(Outcomes.LOADING_FAILED_MISSING_FILE);
 			} catch (ResourceCorruptException e) {
 				e.printStackTrace();
-				activateCurrentScene(Outcomes.NOT_APPLICAPLE, e.toString(), Outcomes.LOADING_FAILED_CORRUPT_FILE);
+				activateCurrentScene(Outcomes.LOADING_FAILED_CORRUPT_FILE);
 			}
 		}
 		// Scene is done, pop it
@@ -506,85 +505,122 @@ public static void update() {
 }
 
 /**
- * Handles the exception
+ * Handles the exception. And goes back to {@link MainMenu} or {@link LoginScene}.
  * @param exception the exception to handle
  */
-private static void handleException(RuntimeException exception) {
-	boolean handleException = !mScenes.isEmpty();
-	if (handleException) {
-		Scene currentScene = mScenes.peek();
-
-		// Show exception in console
-		if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
-			exception.printStackTrace();
-		}
-
-		// End non-initialized scenes
-		while (!currentScene.isInitialized() && mScenes.size() > 1) {
-			popCurrentScene();
-			currentScene = mScenes.peek();
-		}
-
-		// Special cases to just quit
-		if (!currentScene.isInitialized() || currentScene instanceof LoginScene) {
-			throw exception;
-		}
-
-		currentScene.handleException(exception, true);
-
-	} else {
+public static void handleException(RuntimeException exception) {
+	if (mScenes.isEmpty()) {
 		throw exception;
+	}
+
+
+	Scene currentScene = mScenes.peek();
+
+	// Show exception in console
+	if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
+		exception.printStackTrace();
+	}
+
+	mOutcome = Outcomes.EXCEPTION;
+	mOutcomeMessage = exception;
+
+
+	if (currentScene instanceof LoginScene) {
+		// TODO implement exception handling when not logged in
+//		// Restart the scene and show the exception
+//		if (currentScene.isInitialized()) {
+//			currentScene.setNextScene(new LoginScene());
+//			popCurrentScene();
+//		}
+//		// Quit the game if not initialized
+//		else {
+//			throw exception;
+//		}
+		Gdx.app.exit();
+		return;
+	}
+	// Go back to Main Menu (or login scene)
+	else {
+		// Restart Main Menu or go back to Login
+		if (currentScene instanceof MainMenu) {
+			if (currentScene.isInitialized()) {
+				currentScene.setNextScene(new MainMenu());
+			} else {
+				// TODO implement exception handling when not logged in
+//				currentScene.setNextScene(new LoginScene());
+				Gdx.app.exit();
+				return;
+			}
+			popCurrentScene();
+
+			// Logout user
+//			if (!currentScene.isInitialized()) {
+//				User.getGlobalUser().logout();
+//			}
+		}
+		// Go back to Main Menu
+		else {
+			returnTo(MainMenu.class);
+		}
 	}
 }
 
 /**
  * Activates the current scene
- * @param outcome the outcome of the previous scene
- * @param message message of the previous scene
  */
-private static void activateCurrentScene(Outcomes outcome, Object message) {
-	activateCurrentScene(outcome, message, Outcomes.NOT_APPLICAPLE);
+private static void activateCurrentScene() {
+	activateCurrentScene(Outcomes.NOT_APPLICAPLE);
 }
 
 /**
  * Activates the current scene
- * @param outcome the outcome of the previous scene
- * @param message message of the previous scene
  * @param loadingOutcome outcome from loading scene
  */
-private static void activateCurrentScene(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+private static void activateCurrentScene(Outcomes loadingOutcome) {
 	Scene currentScene = mScenes.peek();
 
 	if (!currentScene.isInitialized()) {
-		currentScene.onCreate();
+		currentScene.create();
 	}
 
-	currentScene.onResume(outcome, message, loadingOutcome);
+	if (mOutcome == null) {
+		Config.Debug.assertException(new IllegalStateException("Outcome has been set to null!"));
+	}
+
+	currentScene.resume(mOutcome, mOutcomeMessage, loadingOutcome);
+	mOutcome = Outcomes.NOT_APPLICAPLE;
+	mOutcomeMessage = null;
 }
 
 /**
- * Pops the current scene
+ * Calls {@link Scene#pause()}, {@link Scene#destroy()}, and unloads the scene resources. Goes to
+ * the next scene if {@link Scene#getNextScene()} doesn't return null. Otherwise it returns to the
+ * previous scene.
  */
 private static void popCurrentScene() {
 	Scene poppedScene = mScenes.pop();
-	Outcomes outcome = poppedScene.getOutcome();
-	Object outcomeMessage = poppedScene.getOutcomeMessage();
 	Outcomes loadingOutcome = Outcomes.NOT_APPLICAPLE;
 
-	poppedScene.onPause();
-	poppedScene.onDestroy();
+	poppedScene.pause();
+	poppedScene.destroy();
+
+	if (poppedScene instanceof LoadingScene) {
+		loadingOutcome = poppedScene.getOutcome();
+	}
+	// Set outcome if we haven't set one to be applied
+	else if (mOutcome == Outcomes.NOT_APPLICAPLE) {
+		mOutcome = poppedScene.getOutcome();
+		mOutcomeMessage = poppedScene.getOutcomeMessage();
+	}
 
 	// Unload resources from the old scene
 	if (poppedScene.isResourcesLoaded()) {
 		mScenesNeedUnloading.add(poppedScene);
 	}
 
-	// Go to next scene, or return to the previous?
 	// Go to next scene
 	Scene nextScene = poppedScene.getNextScene();
 	if (nextScene != null) {
-		mOutcome = outcome;
-		mOutcomeMessage = outcomeMessage;
 		mScenes.push(nextScene);
 		loadActiveSceneResources();
 	}
@@ -596,23 +632,10 @@ private static void popCurrentScene() {
 		// If the popped scene is a LoadingScene it should not try to load again...
 		if (!previousScene.isResourcesLoaded()) {
 			// Save outcome so that we don't get LOADING_SUCCESS
-			mOutcome = outcome;
-			mOutcomeMessage = outcomeMessage;
 			loadActiveSceneResources();
 		} else {
-			// Use old outcome instead of LOADING_SUCCESS
-			if (mOutcome != null) {
-				outcome = mOutcome;
-				outcomeMessage = mOutcomeMessage;
-				mOutcome = null;
-				mOutcomeMessage = null;
-			} else if (poppedScene instanceof LoadingScene) {
-				loadingOutcome = poppedScene.getOutcome();
-				outcome = Outcomes.NOT_APPLICAPLE;
-				outcomeMessage = null;
-			}
-			previousScene.reloadResourcesOnActivate(outcome, outcomeMessage);
-			activateCurrentScene(outcome, outcomeMessage, loadingOutcome);
+			previousScene.reloadResourcesOnActivate(mOutcome, mOutcomeMessage);
+			activateCurrentScene(loadingOutcome);
 		}
 	}
 }
@@ -646,8 +669,8 @@ private static void loadActiveSceneResources(LoadingScene forceLoadingScene) {
 	currentScene.loadResources();
 
 	if (currentScene instanceof LoadingScene) {
-		currentScene.onCreate();
-		currentScene.onResume(Outcomes.NOT_APPLICAPLE, null, Outcomes.NOT_APPLICAPLE);
+		currentScene.create();
+		currentScene.resume(Outcomes.NOT_APPLICAPLE, null, Outcomes.NOT_APPLICAPLE);
 	}
 }
 
@@ -658,7 +681,7 @@ private static void deactivateCurrentScene() {
 	if (!mScenes.isEmpty()) {
 		Scene previousScene = mScenes.peek();
 		if (previousScene.isInitialized()) {
-			previousScene.onPause();
+			previousScene.pause();
 		}
 
 		// Should we unload resources?
@@ -669,12 +692,18 @@ private static void deactivateCurrentScene() {
 }
 
 /**
- * Report an exception
- * @param exception the exception that was thrown
+ * Force unload of all resources when the user logs out
  */
-public static void handleException(Exception exception) {
-	if (!mScenes.isEmpty()) {
-		mScenes.peek().handleException(exception, false);
+private static class ForceUnloadListener implements IEventListener {
+	@Override
+	public void handleEvent(GameEvent event) {
+		if (event.type == EventTypes.USER_LOGGING_OUT) {
+			for (Scene scene : mScenesNeedUnloading) {
+				ResourceCacheFacade.unload(scene);
+			}
+			ResourceCacheFacade.finishLoading();
+			mScenesNeedUnloading.clear();
+		}
 	}
 }
 }

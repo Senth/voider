@@ -132,7 +132,7 @@ public Cell resetSize() {
 public Cell resetHeight() {
 	mFixedHeight = false;
 	if (mActor instanceof Layout) {
-		mActor.setHeight(((Layout) mActor).getPrefHeight());
+		mActor.setHeight((int) ((Layout) mActor).getPrefHeight());
 
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).setKeepHeight(false);
@@ -148,7 +148,7 @@ public Cell resetHeight() {
 public Cell resetWidth() {
 	mFixedWidth = false;
 	if (mActor instanceof Layout) {
-		mActor.setWidth(((Layout) mActor).getPrefWidth());
+		mActor.setWidth((int) ((Layout) mActor).getPrefWidth());
 
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).setKeepWidth(false);
@@ -337,8 +337,8 @@ void calculatePreferredSize() {
 	}
 
 	if (mBoxShape && !mFillWidth && !mFillHeight) {
-		mActor.setWidth(mWidthBeforeFill);
-		mActor.setHeight(mHeightBeforeFill);
+		mActor.setWidth((int) mWidthBeforeFill);
+		mActor.setHeight((int) mHeightBeforeFill);
 	}
 
 	if (mKeepAspectRatio) {
@@ -387,16 +387,16 @@ void updateSize(float width, float height) {
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).updateSize(actorWidth, actorHeight);
 		} else {
-			mActor.setSize(actorWidth, actorHeight);
+			mActor.setSize((int) actorWidth, (int) actorHeight);
 
 			if (mBoxShape && !mFillWidth && !mFillHeight) {
 				mWidthBeforeFill = mActor.getWidth();
 				mHeightBeforeFill = mActor.getHeight();
 
 				if (mActor.getWidth() < mActor.getHeight()) {
-					mActor.setWidth(mActor.getHeight());
+					mActor.setWidth((int) mActor.getHeight());
 				} else if (mActor.getHeight() < mActor.getWidth()) {
-					mActor.setHeight(mActor.getWidth());
+					mActor.setHeight((int) mActor.getWidth());
 				}
 			} else if (mKeepAspectRatio) {
 				mWidthBeforeFill = mActor.getWidth();
@@ -430,8 +430,8 @@ void updateSize(float width, float height) {
 					correctWidth = mActor.getHeight() * mAspectRatio;
 				}
 
-				mActor.setWidth(correctWidth);
-				mActor.setHeight(correctHeight);
+				mActor.setWidth((int) correctWidth);
+				mActor.setHeight((int) correctHeight);
 			}
 		}
 	} else {
@@ -508,7 +508,7 @@ public float getWidth() {
  */
 public Cell setWidth(float width) {
 	if (mActor != null) {
-		mActor.setWidth(width);
+		mActor.setWidth((int) width);
 		mFixedWidth = true;
 
 		if (mActor instanceof AlignTable) {
@@ -546,7 +546,7 @@ public float getHeight() {
  */
 public Cell setHeight(float height) {
 	if (mActor != null) {
-		mActor.setHeight(height);
+		mActor.setHeight((int) height);
 		mFixedHeight = true;
 
 		if (mActor instanceof AlignTable) {
@@ -592,10 +592,10 @@ Cell setActor(Actor actor) {
 
 	if (mActor instanceof Layout) {
 		if (mActor.getHeight() == 0) {
-			mActor.setHeight(((Layout) mActor).getPrefHeight());
+			mActor.setHeight((int) ((Layout) mActor).getPrefHeight());
 		}
 		if (mActor.getWidth() == 0) {
-			mActor.setWidth(((Layout) mActor).getPrefWidth());
+			mActor.setWidth((int) ((Layout) mActor).getPrefWidth());
 		}
 	}
 

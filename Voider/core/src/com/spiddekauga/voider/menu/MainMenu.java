@@ -2,6 +2,9 @@ package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.explore.ExploreActions;
 import com.spiddekauga.voider.explore.ExploreFactory;
@@ -9,16 +12,13 @@ import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.resource.DefEntity;
-import com.spiddekauga.voider.settings.*;
-import com.spiddekauga.voider.settings.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.utils.scene.ui.Gui;
-import com.spiddekauga.utils.scene.ui.Scene;
-import com.spiddekauga.utils.scene.ui.SceneSwitcher;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingInfoRepo;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -45,15 +45,6 @@ public MainMenu() {
 }
 
 @Override
-protected void loadResources() {
-	super.loadResources();
-
-	ResourceCacheFacade.load(this, InternalNames.TXT_TERMS);
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
-}
-
-@Override
 public boolean onKeyDown(int keycode) {
 	if (KeyHelper.isBackPressed(keycode)) {
 		getGui().showQuitMsgBox();
@@ -61,6 +52,15 @@ public boolean onKeyDown(int keycode) {
 	}
 
 	return super.onKeyDown(keycode);
+}
+
+@Override
+protected void loadResources() {
+	super.loadResources();
+
+	ResourceCacheFacade.load(this, InternalNames.TXT_TERMS);
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
 }
 
 @Override
@@ -140,6 +140,14 @@ protected MainMenuGui getGui() {
 	return (MainMenuGui) super.getGui();
 }
 
+/**
+ * Update username
+ */
+private void updateUsername() {
+	User user = User.getGlobalUser();
+	getGui().resetUsername(user.getUsername(), user.isOnline());
+}
+
 @Override
 public void handleEvent(GameEvent event) {
 	switch (event.type) {
@@ -157,14 +165,6 @@ public void handleEvent(GameEvent event) {
 	default:
 		break;
 	}
-}
-
-/**
- * Update username
- */
-private void updateUsername() {
-	User user = User.getGlobalUser();
-	getGui().resetUsername(user.getUsername(), user.isOnline());
 }
 
 // -- Play --

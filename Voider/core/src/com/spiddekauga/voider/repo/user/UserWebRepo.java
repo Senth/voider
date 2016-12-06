@@ -84,7 +84,7 @@ void register(User user, UUID clientId, IResponseListener... responseListeners) 
 }
 
 /**
- * Tries to logout the current user
+ * Tries to logoutAndGotoLogin the current user
  * @param responseListeners listens to the web response
  */
 void logout(IResponseListener... responseListeners) {

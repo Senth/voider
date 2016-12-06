@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config.Debug.Builds;
-import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceRenderShape;
+import com.spiddekauga.voider.settings.SettingRepo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -208,7 +208,7 @@ public static class Crypto {
  */
 public static class Debug {
 	/** Build level */
-	public static final Builds BUILD = Builds.BETA;
+	public static final Builds BUILD = Builds.DEV_SERVER;
 	/** Logging verbosity */
 	public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.RELEASE) ? Application.LOG_ERROR : Application.LOG_DEBUG;
 	/** Skip loading text */
@@ -247,9 +247,20 @@ public static class Debug {
 	 * if it is then it only throws an exception in development servers
 	 * @param message the message why this should never be called
 	 */
-	public static void debugException(String message) {
+	public static void assertException(String message) {
 		if (isBuildOrBelow(Builds.DEV_SERVER)) {
-			throw new DebugException(message);
+			assertException(new DebugAssertException(message));
+		}
+	}
+
+	/**
+	 * Call this method to throw a debug assertion exception. Only throws an exception on
+	 * development servers
+	 * @param exception the exception to throw
+	 */
+	public static void assertException(RuntimeException exception) {
+		if (isBuildOrBelow(Builds.DEV_SERVER)) {
+			throw exception;
 		}
 	}
 
@@ -292,13 +303,13 @@ public static class Debug {
 	/**
 	 * Debug exception
 	 */
-	public static class DebugException extends RuntimeException {
+	public static class DebugAssertException extends RuntimeException {
 		private static final long serialVersionUID = -4071174543732515552L;
 
 		/**
 		 * @param message the message why this exception is thrown
 		 */
-		public DebugException(String message) {
+		public DebugAssertException(String message) {
 			super(message);
 		}
 
@@ -539,7 +550,7 @@ public static class File {
 		mUserPreferencesPrefix = PREFERENCE_PREFIX + "." + username + ".";
 
 		// Only create empty folders for real users
-		if (!username.equals("(None)")) {
+		if (!username.equals(User.INVALID_USERNAME)) {
 			FileHandle folder = Gdx.files.external(mUserStorage);
 			if (!folder.exists()) {
 				folder.mkdirs();
@@ -894,5 +905,6 @@ public static class User {
 	public static final int PASSWORD_LENGTH_MIN = 5;
 	/** Minimum username lengeth */
 	public static final int NAME_LENGTH_MIN = 3;
+	public static final String INVALID_USERNAME = "(INVALID_USERNAME_DELUXE)";
 }
 }

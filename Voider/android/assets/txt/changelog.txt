@@ -17,6 +17,7 @@ Various Fixes & Improvements
     Fixed too big text when loading levels, enemies, and bullets
     Update required message is now shown correctly
     Bug Report window is now hidden correctly after a bug report has been submitted
+    When a bug occurs you are always returned to the Main Menu now
     Removed beta key requirement to register
     Can now take screenshots on PC by pressing the 'Home' key
 

@@ -62,7 +62,7 @@ void register(User user, IResponseListener... responseListeners) {
 }
 
 /**
- * Tries to logout the current user
+ * Tries to logoutAndGotoLogin the current user
  * @param keepUser when true it will keep the last logged in user.
  * @param responseListeners listens to the web response
  */

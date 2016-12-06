@@ -32,7 +32,7 @@ private IEventListener mLoginListener = new IEventListener() {
 	@Override
 	public void handleEvent(GameEvent event) {
 		switch (event.type) {
-		case USER_LOGIN:
+		case USER_LOGGED_IN:
 			ProgressBar.hide();
 			setOutcome(Outcomes.LOGGED_IN);
 			break;
@@ -87,7 +87,7 @@ public void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) 
 	super.onResume(outcome, message, loadingOutcome);
 
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-	eventDispatcher.connect(EventTypes.USER_LOGIN, mLoginListener);
+	eventDispatcher.connect(EventTypes.USER_LOGGED_IN, mLoginListener);
 	eventDispatcher.connect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
 
 	mMusicPlayer.play(Music.TITLE, MusicInterpolations.FADE_IN);
@@ -98,7 +98,7 @@ public void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) 
 @Override
 protected void onDestroy() {
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-	eventDispatcher.disconnect(EventTypes.USER_LOGIN, mLoginListener);
+	eventDispatcher.disconnect(EventTypes.USER_LOGGED_IN, mLoginListener);
 	eventDispatcher.disconnect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
 
 	super.onDestroy();
@@ -106,7 +106,10 @@ protected void onDestroy() {
 
 @Override
 protected Scene getNextScene() {
-	return new MainMenu();
+	if (super.getNextScene() == null) {
+		return new MainMenu();
+	}
+	return super.getNextScene();
 }
 
 @Override

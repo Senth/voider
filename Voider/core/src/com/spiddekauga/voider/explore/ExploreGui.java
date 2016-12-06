@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Scaling;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -38,8 +37,6 @@ import com.spiddekauga.voider.network.resource.DefEntity;
 import com.spiddekauga.voider.network.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
-import com.spiddekauga.voider.settings.SettingRepo;
-import com.spiddekauga.voider.settings.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
@@ -49,6 +46,8 @@ import com.spiddekauga.voider.scene.ui.UiStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -849,7 +848,6 @@ void addImageButtonField(DefEntity defEntity, boolean selected, AlignTable table
 
 	ImageButtonFill button = new ImageButtonFill(imageButtonStyle);
 	button.setChecked(selected);
-	button.getImage().setScaling(Scaling.fill);
 	table.row().setFillWidth(true);
 	table.add(button).setFillWidth(true).setKeepAspectRatio(true);
 	new ButtonListener(button) {

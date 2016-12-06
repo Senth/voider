@@ -2,12 +2,12 @@ package com.spiddekauga.voider.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -35,6 +35,7 @@ SettingGeneralLocalRepo general = new SettingGeneralLocalRepo();
 private EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 private SettingUserPrefsGateway mUserPrefsGateway = new SettingUserPrefsGateway();
 private SettingClientPrefsGateway mClientPrefsGateway = new SettingClientPrefsGateway();
+
 /**
  * Private constructor to enforce singleton usage
  */
@@ -199,7 +200,7 @@ class SettingGeneralLocalRepo {
 			}
 
 		} else {
-			Config.Debug.debugException("Terms not loaded when calling isTermsNew()");
+			Config.Debug.assertException("Terms not loaded when calling isTermsNew()");
 		}
 		return false;
 	}
@@ -213,7 +214,7 @@ class SettingGeneralLocalRepo {
 			String terms = ResourceCacheFacade.get(InternalNames.TXT_TERMS);
 			mUserPrefsGateway.setTermsLength(terms.length());
 		} else {
-			Config.Debug.debugException("Terms not loaded when calling acceptTerms()");
+			Config.Debug.assertException("Terms not loaded when calling acceptTerms()");
 		}
 	}
 }
@@ -328,7 +329,32 @@ class SettingDisplayLocalRepo {
 	void toggleFullscreen() {
 		mClientPrefsGateway.setFullscreen(!mClientPrefsGateway.isFullscreen());
 		updateScreenSize();
-	}	/**
+	}
+
+	/**
+	 * Update screen size
+	 */
+	private void updateScreenSize() {
+		// Fullscreen
+		if (isFullscreen()) {
+			Resolution resolution = getResolutionFullscreen();
+			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), true);
+		}
+		// Windowed
+		else {
+			Resolution resolution = getResolutionWindowed();
+			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), false);
+		}
+	}
+
+	/**
+	 * @return true if game should start in fullscreen mode
+	 */
+	boolean isFullscreen() {
+		return mClientPrefsGateway.isFullscreen();
+	}
+
+	/**
 	 * Sets if game should start in fullscreen mode
 	 * @param fullscreen true for fullscreen
 	 */
@@ -338,10 +364,17 @@ class SettingDisplayLocalRepo {
 	}
 
 	/**
-	 * @return true if game should start in fullscreen mode
+	 * @return fullscreen resolution of the game
 	 */
-	boolean isFullscreen() {
-		return mClientPrefsGateway.isFullscreen();
+	Resolution getResolutionFullscreen() {
+		return mClientPrefsGateway.getResolutionFullscreen();
+	}
+
+	/**
+	 * @return startup resolution of the game
+	 */
+	Resolution getResolutionWindowed() {
+		return mClientPrefsGateway.getResolutionWindowed();
 	}
 
 	/**
@@ -354,13 +387,6 @@ class SettingDisplayLocalRepo {
 	}
 
 	/**
-	 * @return startup resolution of the game
-	 */
-	Resolution getResolutionWindowed() {
-		return mClientPrefsGateway.getResolutionWindowed();
-	}
-
-	/**
 	 * Sets the fullscreen resolution of the game
 	 * @param resolution
 	 */
@@ -368,15 +394,6 @@ class SettingDisplayLocalRepo {
 		mClientPrefsGateway.setResolutionFullscreen(resolution);
 		updateScreenSize();
 	}
-
-	/**
-	 * @return fullscreen resolution of the game
-	 */
-	Resolution getResolutionFullscreen() {
-		return mClientPrefsGateway.getResolutionFullscreen();
-	}
-
-
 
 	/**
 	 * Set icon/UI size
@@ -404,21 +421,7 @@ class SettingDisplayLocalRepo {
 		return mClientPrefsGateway.getIconSize();
 	}
 
-	/**
-	 * Update screen size
-	 */
-	private void updateScreenSize() {
-		// Fullscreen
-		if (isFullscreen()) {
-			Resolution resolution = getResolutionFullscreen();
-			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), true);
-		}
-		// Windowed
-		else {
-			Resolution resolution = getResolutionWindowed();
-			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), false);
-		}
-	}
+
 }
 
 /**

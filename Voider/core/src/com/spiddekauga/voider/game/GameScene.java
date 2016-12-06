@@ -134,32 +134,46 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 		// Loaded level
 		else if (mLevelToLoad != null) {
 			Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
-			level.setStartPosition(level.getLevelDef().getStartXCoord());
-			level.createDefaultTriggers();
-			setLevel(level);
 
-			if (isPublished()) {
-				mStatRepo.increasePlayCount(getLevelId());
-				Synchronizer.getInstance().synchronize(SyncTypes.STATS);
+			if (level != null) {
+				level.setStartPosition(level.getLevelDef().getStartXCoord());
+				level.createDefaultTriggers();
+				setLevel(level);
+
+				if (isPublished()) {
+					mStatRepo.increasePlayCount(getLevelId());
+					Synchronizer.getInstance().synchronize(SyncTypes.STATS);
+				}
+			} else {
+				setOutcome(Outcomes.LEVEL_NOT_FOUND);
+				mNotification.showError("Level not found");
+				return;
 			}
 		}
 
 		// Resume a level
 		else if (mGameSaveDef != null) {
 			mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId());
-			mGameSave.reinitialize();
 
-			mPlayerActor = mGameSave.getPlayerActor();
-			mBulletDestroyer = mGameSave.getBulletDestroyer();
-			setGameTime(mGameSave.getGameTime());
-			setLevel(mGameSave.getLevel());
+			if (mGameSave != null) {
+				mGameSave.reinitialize();
 
-			// Get player stats from level
-			ArrayList<PlayerStats> playerStats = mLevel.getResources(PlayerStats.class);
-			if (!playerStats.isEmpty()) {
-				mPlayerStats = playerStats.get(0);
+				mPlayerActor = mGameSave.getPlayerActor();
+				mBulletDestroyer = mGameSave.getBulletDestroyer();
+				setGameTime(mGameSave.getGameTime());
+				setLevel(mGameSave.getLevel());
+
+				// Get player stats from level
+				ArrayList<PlayerStats> playerStats = mLevel.getResources(PlayerStats.class);
+				if (!playerStats.isEmpty()) {
+					mPlayerStats = playerStats.get(0);
+				} else {
+					Gdx.app.error("GameSave", "Could not find player stats in level!");
+				}
 			} else {
-				Gdx.app.error("GameSave", "Could not find player stats in level!");
+				setOutcome(Outcomes.LEVEL_NOT_FOUND);
+				mNotification.showError("Game save not found");
+				return;
 			}
 		}
 
@@ -173,129 +187,6 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
 	Actor.setPlayerActor(mPlayerActor);
 }
 
-/**
- * @return true if the level is published.
- */
-boolean isPublished() {
-	UUID levelDefId = getLevelId();
-
-	return levelDefId != null && ResourceLocalRepo.isPublished(levelDefId);
-}
-
-/**
- * @return level id
- */
-private UUID getLevelId() {
-	UUID levelDefId = null;
-
-	if (mLevel != null) {
-		levelDefId = mLevel.getDef().getId();
-	} else if (mLevelToLoad != null) {
-		levelDefId = mLevelToLoad.getId();
-	} else if (mLevelToRun != null) {
-		levelDefId = mLevelToRun.getDef().getId();
-	}
-
-	return levelDefId;
-}
-
-/**
- * Sets the level that shall be played
- * @param level level to play
- */
-private void setLevel(Level level) {
-	mLevel = level;
-	mLevel.run();
-
-	mBodyShepherd.setActors(mLevel.getResources(Actor.class));
-
-	updateCameraPosition();
-	createBorder();
-	Actor.setLevel(mLevel);
-}
-
-/**
- * Create player ship
- */
-private void createPlayerShip() {
-	// Create a new ship when we're not resuming a game
-	if (mGameSaveDef == null) {
-		// Find player ship
-		PlayerActorDef shipDefault = ResourceLocalRepo.getPlayerShipDefault();
-		if (shipDefault == null) {
-			setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find default ships");
-			return;
-		}
-
-		mPlayerActor = new PlayerActor(shipDefault);
-		mPlayerActor.createBody();
-		resetPlayerPosition();
-
-		LevelDef levelDef = mLevel.getLevelDef();
-		mPlayerStats = new PlayerStats(levelDef.getStartXCoord(), levelDef.getEndXCoord(), levelDef.getLengthInTime());
-		mLevel.addResource(mPlayerStats);
-	} else {
-		mPlayerActor.createBody();
-	}
-
-	mPlayerActor.getBody().setLinearVelocity(new Vector2(mLevel.getSpeed(), 0));
-
-	// Set lives
-	mLevel.setPlayer(mPlayerActor);
-	updateLives();
-	getGui().resetValues();
-}
-
-/**
- * @return true if the level was started from the level editor
- */
-boolean isRunningFromEditor() {
-	return mRunningFromEditor;
-}
-
-/**
- * @return height of the option bar in world coordinates
- */
-private float getBarHeightInWorldCoordinates() {
-	if (mBarHeight == -1) {
-		float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
-		float barHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		mBarHeight = heightScale * barHeight;
-
-	}
-	return mBarHeight;
-}
-
-/**
- * Updates the camera's position depending on where on the level location
- */
-private void updateCameraPosition() {
-	mCamera.position.x = mLevel.getXCoord() - mCamera.viewportWidth * 0.5f;
-	mCamera.update();
-}
-
-/**
- * Resets the player position
- */
-private void resetPlayerPosition() {
-	if (mPlayerActor != null && mPlayerActor.getBody() != null) {
-		Vector2 playerPosition = new Vector2();
-		playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
-
-		// Get radius of player and offset it with the width
-		float boundingRadius = mPlayerActor.getDef().getShape().getBoundingRadius();
-		playerPosition.x += boundingRadius * 2;
-		mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
-	}
-}
-
-/**
- * Updates the lives
- */
-private void updateLives() {
-	getGui().updateLives(mPlayerStats.getExtraLives(), PlayerStats.getStartLives());
-}
-
 @Override
 protected void onPause() {
 	super.onPause();
@@ -307,6 +198,14 @@ protected void onPause() {
 protected void onResize(int width, int height) {
 	super.onResize(width, height);
 	updateCameraPosition();
+}
+
+/**
+ * Updates the camera's position depending on where on the level location
+ */
+private void updateCameraPosition() {
+	mCamera.position.x = mLevel.getXCoord() - mCamera.viewportWidth * 0.5f;
+	mCamera.update();
 }
 
 @Override
@@ -449,6 +348,121 @@ protected Vector2[][] getBorderBoxes() {
 	}
 
 	return boxes;
+}
+
+/**
+ * @return true if the level was started from the level editor
+ */
+boolean isRunningFromEditor() {
+	return mRunningFromEditor;
+}
+
+/**
+ * @return true if the level is published.
+ */
+boolean isPublished() {
+	UUID levelDefId = getLevelId();
+
+	return levelDefId != null && ResourceLocalRepo.isPublished(levelDefId);
+}
+
+/**
+ * @return height of the option bar in world coordinates
+ */
+private float getBarHeightInWorldCoordinates() {
+	if (mBarHeight == -1) {
+		float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
+		float barHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		mBarHeight = heightScale * barHeight;
+
+	}
+	return mBarHeight;
+}
+
+/**
+ * @return level id
+ */
+private UUID getLevelId() {
+	UUID levelDefId = null;
+
+	if (mLevel != null) {
+		levelDefId = mLevel.getDef().getId();
+	} else if (mLevelToLoad != null) {
+		levelDefId = mLevelToLoad.getId();
+	} else if (mLevelToRun != null) {
+		levelDefId = mLevelToRun.getDef().getId();
+	}
+
+	return levelDefId;
+}
+
+/**
+ * Sets the level that shall be played
+ * @param level level to play
+ */
+private void setLevel(Level level) {
+	mLevel = level;
+	mLevel.run();
+
+	mBodyShepherd.setActors(mLevel.getResources(Actor.class));
+
+	updateCameraPosition();
+	createBorder();
+	Actor.setLevel(mLevel);
+}
+
+/**
+ * Create player ship
+ */
+private void createPlayerShip() {
+	// Create a new ship when we're not resuming a game
+	if (mGameSaveDef == null) {
+		// Find player ship
+		PlayerActorDef shipDefault = ResourceLocalRepo.getPlayerShipDefault();
+		if (shipDefault == null) {
+			setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find default ships");
+			return;
+		}
+
+		mPlayerActor = new PlayerActor(shipDefault);
+		mPlayerActor.createBody();
+		resetPlayerPosition();
+
+		LevelDef levelDef = mLevel.getLevelDef();
+		mPlayerStats = new PlayerStats(levelDef.getStartXCoord(), levelDef.getEndXCoord(), levelDef.getLengthInTime());
+		mLevel.addResource(mPlayerStats);
+	} else {
+		mPlayerActor.createBody();
+	}
+
+	mPlayerActor.getBody().setLinearVelocity(new Vector2(mLevel.getSpeed(), 0));
+
+	// Set lives
+	mLevel.setPlayer(mPlayerActor);
+	updateLives();
+	getGui().resetValues();
+}
+
+/**
+ * Resets the player position
+ */
+private void resetPlayerPosition() {
+	if (mPlayerActor != null && mPlayerActor.getBody() != null) {
+		Vector2 playerPosition = new Vector2();
+		playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
+
+		// Get radius of player and offset it with the width
+		float boundingRadius = mPlayerActor.getDef().getShape().getBoundingRadius();
+		playerPosition.x += boundingRadius * 2;
+		mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
+	}
+}
+
+/**
+ * Updates the lives
+ */
+private void updateLives() {
+	getGui().updateLives(mPlayerStats.getExtraLives(), PlayerStats.getStartLives());
 }
 
 /**

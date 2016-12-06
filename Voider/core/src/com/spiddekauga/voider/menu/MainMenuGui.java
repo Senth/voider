@@ -235,7 +235,7 @@ private void initTopBarTable(AlignTable table, Horizontal position) {
 }
 
 /**
- * Show Confirm logout message box
+ * Show Confirm logoutAndGotoLogin message box
  */
 void showConfirmLogout() {
 	MsgBox msgBox = mUiFactory.msgBox.add("Confirm Logout");

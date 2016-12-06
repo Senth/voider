@@ -611,7 +611,7 @@ public static class SettingDebugRepo {
 	public void clearData() {
 		ResourceLocalRepo.removeAll();
 		UserRepo.getInstance().clearUserData();
-		User.getGlobalUser().logout();
+		User.getGlobalUser().logoutAndGotoLogin();
 	}
 }
 }

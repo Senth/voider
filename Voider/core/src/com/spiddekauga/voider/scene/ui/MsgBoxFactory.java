@@ -13,22 +13,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.CBugReportSend;
 import com.spiddekauga.utils.commands.CRun;
-import com.spiddekauga.utils.commands.CSceneEnd;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBox;
-import com.spiddekauga.utils.scene.ui.Scene;
-import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.validate.VFieldLength;
-import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.network.misc.BugReportEntity.BugReportTypes;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
-import com.spiddekauga.voider.settings.SettingRepo;
-import com.spiddekauga.voider.settings.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
@@ -37,6 +31,8 @@ import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.commands.CMotdViewed;
 import com.spiddekauga.voider.utils.commands.CSyncFixConflict;
@@ -205,15 +201,14 @@ void motd(Motd motd) {
  * Show a custom bug report window
  */
 public void bugReport() {
-	bugReport(null, false);
+	bugReport(null);
 }
 
 /**
  * Show a bug report window
  * @param exception the exception that was thrown, null if no exception was thrown
- * @param endScene true if we should end the scene
  */
-public void bugReport(final Exception exception, boolean endScene) {
+public void bugReport(final Exception exception) {
 	MsgBox msgBox = exception != null ? add("Bug Report") : add("Bug Report / Feature Request");
 
 	AlignTable content = new AlignTable();
@@ -226,7 +221,7 @@ public void bugReport(final Exception exception, boolean endScene) {
 	left.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 	right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 
-	final CBugReportSend bugReportSend = new CBugReportSend(SceneSwitcher.getGui(), exception, endScene);
+	final CBugReportSend bugReportSend = new CBugReportSend(exception);
 
 	// Info text
 	if (exception == null) {
@@ -356,14 +351,7 @@ public void bugReport(final Exception exception, boolean endScene) {
 	msgBox.content(content);
 
 	if (exception != null) {
-
-		// Set next scene as MainMenu if we're there
-		Scene currentScene = SceneSwitcher.getActiveScene(false);
-		if (currentScene instanceof MainMenu) {
-			currentScene.setNextScene(new MainMenu());
-		}
-
-		msgBox.button("Continue", new CSceneEnd());
+		msgBox.button("Continue");
 		msgBox.button("Send and Continue", bugReportSend);
 	} else {
 		msgBox.button("Cancel");

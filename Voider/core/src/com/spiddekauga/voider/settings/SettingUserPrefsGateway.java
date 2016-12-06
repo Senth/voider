@@ -106,7 +106,11 @@ void setTermsLength(long length) {
  */
 boolean isBugReportSentAnonymously() {
 	IC_Network icNetwork = ConfigIni.getInstance().setting.network;
-	return mPreferences.getBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, icNetwork.isSendBugReportAnonymouslyByDefault());
+	if (mPreferences != null) {
+		return mPreferences.getBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, icNetwork.isSendBugReportAnonymouslyByDefault());
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -114,7 +118,9 @@ boolean isBugReportSentAnonymously() {
  * @param anonymously true if they should be sent anonymously
  */
 void setBugReportSendAnonymously(boolean anonymously) {
-	mPreferences.putBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, anonymously);
-	mPreferences.flush();
+	if (mPreferences != null) {
+		mPreferences.putBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, anonymously);
+		mPreferences.flush();
+	}
 }
 }

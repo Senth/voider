@@ -1,9 +1,7 @@
 package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.Strings;
-import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.ProgressBar;
 import com.spiddekauga.voider.Config;
@@ -15,11 +13,11 @@ import com.spiddekauga.voider.network.misc.BugReportResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
-import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -32,12 +30,10 @@ import java.util.Date;
  * Sends a bug report to the server
  */
 public class CBugReportSend extends Command implements IResponseListener {
-private boolean mEndScene;
 private boolean mSendAnonymously = false;
 private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 private Exception mException;
 private BugReportEntity mBugReport = null;
-private Gui mGui;
 private IEventListener mLoginListener = new IEventListener() {
 	@Override
 	public void handleEvent(GameEvent event) {
@@ -62,14 +58,10 @@ private IEventListener mLoginListener = new IEventListener() {
 
 /**
  * Creates a command that will send a bug report.
- * @param gui the GUI to show progress and success on
  * @param exception the exception that was thrown
- * @param endScene TODO
  */
-public CBugReportSend(Gui gui, Exception exception, boolean endScene) {
-	mGui = gui;
+public CBugReportSend(Exception exception) {
 	mException = exception;
-	mEndScene = endScene;
 	createBugReportEntity();
 }
 
@@ -208,16 +200,7 @@ private void showSentMessage(String title, String message) {
 	// Message box
 	MsgBox msgBox = UiFactory.getInstance().msgBox.add(title);
 	msgBox.content(message);
-
-	if (mEndScene) {
-		Command command = new CSceneEnd();
-		msgBox.button("OK", command);
-		msgBox.key(Input.Keys.ESCAPE, command);
-		msgBox.key(Input.Keys.ENTER, command);
-		msgBox.key(Input.Keys.BACK, command);
-	} else {
-		msgBox.addCancelButtonAndKeys("Continue");
-	}
+	msgBox.addCancelButtonAndKeys("Continue");
 }
 
 /**

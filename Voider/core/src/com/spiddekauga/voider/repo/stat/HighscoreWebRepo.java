@@ -42,7 +42,7 @@ private Cache<UUID, UserCache> mUserCache = new Cache<>();
  * Private constructor to enforce singleton pattern
  */
 private HighscoreWebRepo() {
-	EventDispatcher.getInstance().connect(EventTypes.USER_LOGOUT, new IEventListener() {
+	EventDispatcher.getInstance().connect(EventTypes.USER_LOGGING_OUT, new IEventListener() {
 		@Override
 		public void handleEvent(GameEvent event) {
 			mUserCache.clear();

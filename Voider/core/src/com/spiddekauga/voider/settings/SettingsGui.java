@@ -256,7 +256,7 @@ private void initDebug() {
 		}
 	};
 	table.row().setFillWidth(true);
-	mUiFactory.button.addText("Clear all data and logout", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null).setFillWidth(true);
+	mUiFactory.button.addText("Clear all data and logoutAndGotoLogin", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null).setFillWidth(true);
 
 	table.row();
 	mUiFactory.text.add("This clears all local user data and logs out the user.", true, table, LabelStyles.HIGHLIGHT);

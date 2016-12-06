@@ -198,11 +198,11 @@ public boolean synchronize(SyncTypes type, IResponseListener responseListener) {
 		break;
 
 	case USER_RESOURCE_FIX_CONFLICTS:
-		Config.Debug.debugException("Cannot fix user resource conflict through synchronize() method");
+		Config.Debug.assertException("Cannot fix user resource conflict through synchronize() method");
 		break;
 
 	case WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR:
-		Config.Debug.debugException("Cannoct call WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR through synchronize() method");
+		Config.Debug.assertException("Cannoct call WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR through synchronize() method");
 		break;
 	}
 

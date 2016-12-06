@@ -8,12 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 /**
- * Image button that makes it possible to increase the size of the image button and the image inside
- * it will be resized accordingly.
+ * Image button that makes it possible to increase the size of the mImage button and the mImage
+ * inside it will be resized accordingly.
  */
 public class ImageButtonFill extends Button {
-private final ImageFill image;
-private ImageButton.ImageButtonStyle style;
+private final ImageFill mImage;
+private ImageButton.ImageButtonStyle mStyle;
 
 public ImageButtonFill(Skin skin) {
 	this(skin.get(ImageButton.ImageButtonStyle.class));
@@ -21,27 +21,27 @@ public ImageButtonFill(Skin skin) {
 
 public ImageButtonFill(ImageButton.ImageButtonStyle style) {
 	super(style);
-	image = new ImageFill();
-	add(image);
+	mImage = new ImageFill();
+	add(mImage);
 	setStyle(style);
-	setSize(image.getOriginalWidth(), image.getOriginHeight());
+	setSize(mImage.getOriginalWidth(), mImage.getOriginHeight());
 }
 
 private void updateImage() {
 	Drawable drawable = null;
-	if (isDisabled() && style.imageDisabled != null) {
-		drawable = style.imageDisabled;
-	} else if (isPressed() && style.imageDown != null) {
-		drawable = style.imageDown;
-	} else if (isChecked() && style.imageChecked != null) {
-		drawable = (style.imageCheckedOver != null && isOver()) ? style.imageCheckedOver : style.imageChecked;
-	} else if (isOver() && style.imageOver != null) {
-		drawable = style.imageOver;
-	} else if (style.imageUp != null) //
+	if (isDisabled() && mStyle.imageDisabled != null) {
+		drawable = mStyle.imageDisabled;
+	} else if (isPressed() && mStyle.imageDown != null) {
+		drawable = mStyle.imageDown;
+	} else if (isChecked() && mStyle.imageChecked != null) {
+		drawable = (mStyle.imageCheckedOver != null && isOver()) ? mStyle.imageCheckedOver : mStyle.imageChecked;
+	} else if (isOver() && mStyle.imageOver != null) {
+		drawable = mStyle.imageOver;
+	} else if (mStyle.imageUp != null) //
 	{
-		drawable = style.imageUp;
+		drawable = mStyle.imageUp;
 	}
-	image.setDrawable(drawable);
+	mImage.setDrawable(drawable);
 }
 
 public ImageButtonFill(Skin skin, String styleName) {
@@ -61,29 +61,28 @@ public ImageButtonFill(Drawable imageUp, Drawable imageDown, Drawable imageCheck
 }
 
 public Image getImage() {
-	return image;
+	return mImage;
 }
 
 public com.badlogic.gdx.scenes.scene2d.ui.Cell getImageCell() {
-	return getCell(image);
+	return getCell(mImage);
 }
 
 public void setStyle(ButtonStyle style) {
 	if (!(style instanceof ImageButton.ImageButtonStyle)) {
-		throw new IllegalArgumentException("style must be an ImageButtonStyle.");
+		throw new IllegalArgumentException("mStyle must be an ImageButtonStyle.");
 	}
 	super.setStyle(style);
-	this.style = (ImageButton.ImageButtonStyle) style;
-	if (image != null) {
+	this.mStyle = (ImageButton.ImageButtonStyle) style;
+	if (mImage != null) {
 		updateImage();
 	}
 }
 
 
 public ImageButton.ImageButtonStyle getStyle() {
-	return style;
+	return mStyle;
 }
-
 
 public void draw(Batch batch, float parentAlpha) {
 	updateImage();

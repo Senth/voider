@@ -48,9 +48,7 @@ public static void saveScreenshot() {
  */
 public static void saveScreenshot(FileHandle file) {
 	byte[] bytes = getScreenshotInPng(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-
-	boolean append = false;
-	file.writeBytes(bytes, append);
+	file.writeBytes(bytes, false);
 }
 
 /**

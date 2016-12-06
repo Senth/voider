@@ -25,9 +25,9 @@ import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
-import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.sound.MusicPlayer;
 
 import net._01001111.text.LoremIpsum;
@@ -51,12 +51,13 @@ private Gui mGui = null;
 private boolean mIsLoading = false;
 private GameTime mGameTime = new GameTime();
 /** Outcome of scene, this is set when a derived class calls setOutcome */
-private Outcomes mOutcome = null;
+private Outcomes mOutcome = Outcomes.NOT_APPLICAPLE;
 private Object mOutcomeMessage = null;
 private Color mClearColor = new Color(0, 0, 0, 1);
 private boolean mResourceLoaded = false;
 private Scene mNextScene = null;
 private boolean mInitialized = false;
+private boolean mDone = false;
 
 /**
  * Creates the input multiplexer. UI always has priority over everything else.
@@ -75,7 +76,7 @@ protected Scene(Gui gui) {
  * @param worldCoordinates all the vectors to set the world coordinate for
  * @param clamp if the x and y coordinates should be clamped
  */
-public static void screenToWorldCoord(Camera camera, Vector2[] screenPositions, Vector2[] worldCoordinates, boolean clamp) {
+protected static void screenToWorldCoord(Camera camera, Vector2[] screenPositions, Vector2[] worldCoordinates, boolean clamp) {
 	if (screenPositions.length != worldCoordinates.length) {
 		throw new IllegalArgumentException("screenpositions.length != worldCoordinates.length");
 	}
@@ -279,6 +280,27 @@ public void endScene() {
 }
 
 /**
+ * Sets the outcome of the scene, including a description of the outcome. E.g.
+ * LOADING_FAILED_MISSING_FILE can specify the missing file in this message. Outcomes can only be
+ * set once, this to prevent another later outcome to overwrite the original outcome.
+ * @param outcome the outcome of the scene
+ * @param message a descriptive outcome message.
+ */
+public synchronized void setOutcome(Outcomes outcome, Object message) {
+	if (outcome == null) {
+		throw new IllegalArgumentException("outcome can't be null");
+	}
+
+	if (!mDone) {
+		mDone = true;
+		mOutcome = outcome;
+		mOutcomeMessage = message;
+	} else {
+		Config.Debug.assertException(new IllegalStateException("Outcome has already been set to " + mOutcome + ". Message: " + mOutcomeMessage));
+	}
+}
+
+/**
  * Runs the scene. Clears the screen, renders it, and updates the scene elements.
  */
 final void run() {
@@ -321,10 +343,8 @@ protected void render() {
 }
 
 @Override
-public synchronized void handleException(Exception exception, boolean endScene) {
-	if (mGui.isInitialized()) {
-		UiFactory.getInstance().msgBox.bugReport(exception, endScene);
-	}
+public synchronized void handleException(RuntimeException exception) {
+	SceneSwitcher.handleException(exception);
 }
 
 /**
@@ -438,9 +458,9 @@ protected boolean isResourcesLoaded() {
 }
 
 /**
- * Called first time the scene activates, before {@link #onResume(Outcomes, Object, Outcomes)} .
+ * Call this the first time the scene activates
  */
-protected void onCreate() {
+void create() {
 	mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
 
 	if (!mGui.isInitialized()) {
@@ -460,6 +480,7 @@ protected void onCreate() {
 		getInvoker().dispose();
 	}
 
+	onCreate();
 
 	mInitialized = true;
 }
@@ -472,10 +493,42 @@ public Invoker getInvoker() {
 }
 
 /**
+ * Called first time the scene activates, before {@link #onResume(Outcomes, Object, Outcomes)} .
+ */
+protected void onCreate() {
+}
+
+/**
  * @return true if the scene has been initialized
  */
 public boolean isInitialized() {
 	return mInitialized;
+}
+
+
+/**
+ * Call before the scene activates.
+ * @param outcome the outcome of the previous scene that was on the stack if there was any, else
+ * null.
+ * @param message the outcome message provided with the outcome, null if none was provided.
+ * @param loadingOutcome outcome from a loading scene
+ */
+void resume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	Gdx.input.setInputProcessor(mInputMultiplexer);
+
+	if (!(this instanceof LoadingScene)) {
+		mAnalyticsRepo.startScene(getClass().getSimpleName());
+	}
+
+	mGui.resume();
+
+	if (outcome == Outcomes.EXCEPTION) {
+		if (message instanceof Exception) {
+			UiFactory.getInstance().msgBox.bugReport((Exception) message);
+		}
+	}
+
+	onResume(outcome, message, loadingOutcome);
 }
 
 /**
@@ -486,25 +539,37 @@ public boolean isInitialized() {
  * @param loadingOutcome outcome from a loading scene
  */
 protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	Gdx.input.setInputProcessor(mInputMultiplexer);
-
-	if (!(this instanceof LoadingScene)) {
-		mAnalyticsRepo.startScene(getClass().getSimpleName());
-	}
-
-	mGui.resume();
 }
 
 /**
- * Called when the scene deactivates (another one is activated, push onto the scene stack). {@link
- * #onDestroy()} is called when this scene is deleted (popped from the scene stack).
+ * Call when the scene is paused (deactivated).
  */
-protected void onPause() {
+void pause() {
 	if (!(this instanceof LoadingScene)) {
 		mAnalyticsRepo.endScene();
 	}
 
 	mGui.pause();
+
+	onPause();
+}
+
+/**
+ * Called when the scene deactivates. If this scene {@link #isDone()} {@link #onDestroy()} will also
+ * be called afterwards.
+ */
+protected void onPause() {
+}
+
+
+/**
+ * Call when the scene is deleted. Called before {@link #unloadResources()} if this scene has
+ * resources.
+ */
+void destroy() {
+	mGui.destroy();
+
+	onDestroy();
 }
 
 /**
@@ -512,14 +577,13 @@ protected void onPause() {
  * resources.
  */
 protected void onDestroy() {
-	mGui.destroy();
 }
 
 /**
  * @return true if the scene is done with it work, i.e. it should be popped from the stack.
  */
 protected final boolean isDone() {
-	return mOutcome != null;
+	return mDone;
 }
 
 /**
@@ -537,9 +601,7 @@ protected synchronized final Outcomes getOutcome() {
  * @param outcome the outcome of the scene
  */
 protected synchronized void setOutcome(Outcomes outcome) {
-	if (mOutcome == null) {
-		mOutcome = outcome;
-	}
+	setOutcome(outcome, null);
 }
 
 /**
@@ -554,20 +616,6 @@ protected synchronized final Object getOutcomeMessage() {
  */
 protected final InputMultiplexer getInputMultiplexer() {
 	return mInputMultiplexer;
-}
-
-/**
- * Sets the outcome of the scene, including a description of the outcome. E.g.
- * LOADING_FAILED_MISSING_FILE can specify the missing file in this message. Outcomes can only be
- * set once, this to prevent another later outcome to overwrite the original outcome.
- * @param outcome the outcome of the scene
- * @param message a descriptive outcome message.
- */
-public synchronized void setOutcome(Outcomes outcome, Object message) {
-	if (mOutcome == null) {
-		setOutcome(outcome);
-		mOutcomeMessage = message;
-	}
 }
 
 /**
@@ -689,6 +737,8 @@ public enum Outcomes {
 	LEVEL_QUIT,
 	/** Restart a level */
 	LEVEL_RESTART,
+	/** Level not found */
+	LEVEL_NOT_FOUND,
 	/** Loading succeeded */
 	LOADING_SUCCEEDED,
 	/** Loading failed, missing file */
@@ -703,6 +753,8 @@ public enum Outcomes {
 	THEME_SELECTED,
 	/** Theme selection canceled */
 	THEME_SELECT_CANCEL,
+	/** Exception was thrown */
+	EXCEPTION,
 
 	/** No outcome when an outcome isn't applicable, e.g. first time */
 	NOT_APPLICAPLE,

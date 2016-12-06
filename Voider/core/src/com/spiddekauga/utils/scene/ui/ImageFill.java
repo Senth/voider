@@ -2,11 +2,16 @@ package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.utils.Scaling;
 
 /**
  * Image for {@link ImageButtonFill}.
  */
 public class ImageFill extends Image {
+
+public ImageFill() {
+	setScaling(Scaling.stretch);
+}
 
 /**
  * @return original image width
@@ -34,7 +39,7 @@ public float getPrefWidth() {
 			float borderWidth = 0;
 
 			if (imageButtonStyle.up != null) {
-				borderWidth = imageButtonStyle.up.getMinWidth();
+				borderWidth = imageButtonStyle.up.getLeftWidth() + imageButtonStyle.up.getRightWidth();
 			}
 
 			prefWidth = ((int) imageButtonFill.getWidth()) - borderWidth;
@@ -56,7 +61,7 @@ public float getPrefHeight() {
 			float borderHeight = 0;
 
 			if (imageButtonStyle.up != null) {
-				borderHeight = imageButtonStyle.up.getMinHeight();
+				borderHeight = imageButtonStyle.up.getTopHeight() + imageButtonStyle.up.getBottomHeight();
 			}
 
 			prefHeight = ((int) imageButtonFill.getHeight()) - borderHeight;
