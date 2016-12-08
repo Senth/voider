@@ -5,7 +5,9 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.utils.Exceptions;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
@@ -25,12 +27,13 @@ import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
-import com.spiddekauga.utils.scene.ui.Scene;
 
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Handles loading user resources
@@ -157,17 +160,19 @@ protected Class<?> getType(UserResourceIdentifier identifier) {
 void handleException(GdxRuntimeException exception) {
 	RuntimeException throwException = exception;
 
-	if (exception.getCause() != null && exception.getCause().getCause() != null && exception.getCause().getCause().getCause() != null) {
-		Throwable source = exception.getCause().getCause().getCause();
-		Class<?> type = source.getClass();
-		ResourceException resourceException = null;
+	ResourceException resourceException = Exceptions.findFirstCauseOf(exception, ResourceException.class);
 
-		if (type == ResourceNotFoundException.class) {
-			resourceException = new ResourceNotFoundException(source.getMessage());
-		} else if (type == ResourceCorruptException.class) {
-			resourceException = new ResourceCorruptException(source.getMessage());
+	// Try to create a resource exception from GdxRuntimeException
+	if (resourceException == null) {
+		Pattern pattern = Pattern.compile("resources\\/([a-z0-9]*-[a-z0-9]*-[a-z0-9]*-[a-z0-9]*-[a-z0-9]*)");
+		Matcher matcher = pattern.matcher(exception.getMessage());
+		if (matcher.find() && matcher.groupCount() == 1) {
+			String resourceFilepath = matcher.group(1);
+			resourceException = new ResourceCorruptException(resourceFilepath);
 		}
+	}
 
+	if (resourceException != null) {
 		NotificationShower notification = NotificationShower.getInstance();
 		if (User.getGlobalUser().isOnline()) {
 			notification.showError("Found a corrupt or missing file, redownloading...");

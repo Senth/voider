@@ -22,7 +22,6 @@ class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, Kr
 private StoredType mStoredObject = null;
 /** Type of object stored in the json file */
 private Class<StoredType> mStoredType;
-/** Decrypter */
 private ObjectCrypter mCrypter;
 
 /**

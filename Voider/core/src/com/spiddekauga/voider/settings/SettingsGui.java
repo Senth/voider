@@ -23,19 +23,19 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
-import com.spiddekauga.voider.menu.*;
-import com.spiddekauga.voider.settings.SettingRepo.IconSizes;
+import com.spiddekauga.voider.menu.MenuGui;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
+import com.spiddekauga.voider.settings.SettingRepo.IconSizes;
 
 /**
  * GUI for game settings
  */
 public class SettingsGui extends MenuGui {
 
-private final static Builds SHOW_DEBUG = Builds.NIGHTLY_RELEASE;
+private final static Builds SHOW_DEBUG = Builds.BETA;
 private Widgets mWidgets = new Widgets();
 private SettingsScene mScene = null;
 
@@ -45,22 +45,6 @@ private SettingsScene mScene = null;
  */
 void setScene(SettingsScene scene) {
 	mScene = scene;
-}
-
-@Override
-public void onDestroy() {
-	super.onDestroy();
-	mWidgets.dispose();
-}
-
-@Override
-public void resetValues() {
-	super.resetValues();
-
-	resetSound();
-	resetDisplay();
-	resetGeneral();
-	resetNetwork();
 }
 
 @Override
@@ -262,6 +246,22 @@ private void initDebug() {
 	mUiFactory.text.add("This clears all local user data and logs out the user.", true, table, LabelStyles.HIGHLIGHT);
 }
 
+@Override
+public void resetValues() {
+	super.resetValues();
+
+	resetSound();
+	resetDisplay();
+	resetGeneral();
+	resetNetwork();
+}
+
+@Override
+public void onDestroy() {
+	super.onDestroy();
+	mWidgets.dispose();
+}
+
 /**
  * Initializes the table with a header
  * @param table the table to initialize
@@ -379,7 +379,9 @@ private class Widgets implements Disposable {
 		private void init() {
 			hider.addChild(showFullscreenResolution);
 			hider.addChild(showWindowedResolution);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			hider.dispose();

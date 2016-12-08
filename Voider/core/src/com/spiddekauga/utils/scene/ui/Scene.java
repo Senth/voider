@@ -58,6 +58,7 @@ private boolean mResourceLoaded = false;
 private Scene mNextScene = null;
 private boolean mInitialized = false;
 private boolean mDone = false;
+private boolean mRunning = false;
 
 /**
  * Creates the input multiplexer. UI always has priority over everything else.
@@ -529,6 +530,8 @@ void resume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 	}
 
 	onResume(outcome, message, loadingOutcome);
+
+	mRunning = true;
 }
 
 /**
@@ -545,13 +548,17 @@ protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcom
  * Call when the scene is paused (deactivated).
  */
 void pause() {
-	if (!(this instanceof LoadingScene)) {
-		mAnalyticsRepo.endScene();
+	if (mRunning) {
+		mRunning = false;
+
+		if (!(this instanceof LoadingScene)) {
+			mAnalyticsRepo.endScene();
+		}
+
+		mGui.pause();
+
+		onPause();
 	}
-
-	mGui.pause();
-
-	onPause();
 }
 
 /**
@@ -567,9 +574,11 @@ protected void onPause() {
  * resources.
  */
 void destroy() {
-	mGui.destroy();
+	if (mInitialized) {
+		mGui.destroy();
 
-	onDestroy();
+		onDestroy();
+	}
 }
 
 /**

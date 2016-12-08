@@ -153,7 +153,12 @@ public static boolean returnTo(Class<? extends Scene> sceneType) {
 
 			// Unload loaded resources
 			if (currentScene.isResourcesLoaded()) {
-				mScenesNeedUnloading.add(currentScene);
+				// Unload directly if this is an exception
+				if (mOutcome == Outcomes.EXCEPTION) {
+					ResourceCacheFacade.unload(currentScene);
+				} else {
+					mScenesNeedUnloading.add(currentScene);
+				}
 			}
 			currentScene.destroy();
 		}

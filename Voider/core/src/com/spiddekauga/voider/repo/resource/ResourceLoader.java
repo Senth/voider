@@ -151,6 +151,46 @@ protected synchronized boolean isLoading(Scene scene, Identifier identifier) {
  * @param scene unload all resources in this scene
  */
 protected synchronized void unload(Scene scene) {
+	ArrayList<LoadedResource> resourcesToUnload = new ArrayList<>();
+	resourcesToUnload.addAll(mLoadedResources.values());
+	resourcesToUnload.addAll(mLoadingQueue.values());
+
+	for (LoadedResource loadedResource : resourcesToUnload) {
+		if (loadedResource.scenes.contains(scene)) {
+			loadedResource.scenes.remove(scene);
+
+			// Unload the resource fully
+			if (loadedResource.scenes.isEmpty()) {
+				boolean unloadNow = true;
+
+				if (loadedResource.resource != null) {
+					IResourceUnloadReady resourceUnloadReady = mResourceUnloadReadyHandlers.get(getType(loadedResource.identifier));
+
+					if (resourceUnloadReady != null) {
+						log("unload(" + getClassName(scene) + "): Unload queue " + loadedResource.identifier);
+						mUnloadQueue.put(loadedResource.identifier, loadedResource);
+						unloadNow = false;
+					}
+				} else {
+					unloadNow = true;
+				}
+
+				if (unloadNow) {
+					if (mAssetManager.isLoaded(loadedResource.filepath)) {
+						mAssetManager.unload(loadedResource.filepath);
+					}
+					mLoadedResources.remove(loadedResource.identifier);
+					mLoadingQueue.remove(loadedResource.identifier);
+					onUnload(loadedResource.identifier);
+					log("unload(" + getClassName(scene) + "): Fully removed " + loadedResource.identifier);
+				}
+			} else {
+				log("unload(" + getClassName(scene) + "): Removed " + loadedResource.identifier + " from this scene. Scene count: "
+						+ loadedResource.scenes.size());
+			}
+		}
+	}
+
 	Set<Entry<Identifier, LoadedResource>> entrySet = mLoadedResources.entrySet();
 	Iterator<Entry<Identifier, LoadedResource>> iterator = entrySet.iterator();
 
@@ -180,7 +220,7 @@ protected synchronized void unload(Scene scene) {
 				if (unloadNow) {
 					mAssetManager.unload(loadedResource.filepath);
 					iterator.remove();
-					onUnload(entry.getKey());
+					onUnload(loadedResource.identifier);
 
 					log("unload(" + getClassName(scene) + "): Fully removed " + loadedResource.identifier);
 				}
