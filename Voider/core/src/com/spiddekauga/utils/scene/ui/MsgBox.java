@@ -22,41 +22,40 @@ import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.validate.IValidate;
+import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 /**
  * Message box wrapper for dialog. This allows other content than just text.
  */
-public class MsgBox extends Dialog {
-/** Default cancel text */
+public class MsgBox extends Dialog implements IDialog {
 private static final String CANCEL_TEXT = "Cancel";
-/** Default fade in time in seconds */
-private static float mFadeInTimeDefault = 0.3f;
-/** Default fade out time in seconds */
-private static float mFadeOutTimeDefault = 0.3f;
-/** UiFactory */
-private static UiFactory mUiFactory = UiFactory.getInstance();
+private static final float mFadeInTime;
+private static final float mFadeOutTime;
+private static final UiFactory mUiFactory = UiFactory.getInstance();
+
+static {
+	mFadeInTime = SkinNames.getResource(SkinNames.GeneralVars.MSGBOX_FADE_IN);
+	mFadeOutTime = SkinNames.getResource(SkinNames.GeneralVars.MSGBOX_FADE_OUT);
+}
+
 /** If the message box is hiding */
-protected boolean mHiding = false;
-/** Skin of the message box */
-protected Skin mSkin = null;
-/** Pointer to cancelHide in Dialog */
-Field mfCancelHide = null;
-/** Button padding */
+private boolean mHidden = false;
+private Skin mSkin = null;
+private Field mfCancelHide = null;
 private float mButtonPad = 0;
 /** Objects associated with a button */
 private ObjectMap<Actor, Object> mValues = new ObjectMap<>();
 /** Validations when a button is pressed */
 private ObjectMap<Actor, IValidate[]> mValidations = new ObjectMap<>();
-/** Button table */
 private AlignTable mButtonTable = new AlignTable();
 
 /**
  * Creates a message box with a skin to use for the message box
  * @param skin skin for the window, buttons, and text.
  */
-public MsgBox(Skin skin) {
+MsgBox(Skin skin) {
 	super("", skin);
 	mSkin = skin;
 	init();
@@ -136,8 +135,8 @@ private void init() {
 /**
  * @return new default fade out action for message boxes
  */
-public static Action fadeOutActionDefault() {
-	return Actions.fadeOut(mFadeOutTimeDefault, Interpolation.linear);
+private static Action fadeOutActionDefault() {
+	return Actions.fadeOut(mFadeOutTime, Interpolation.linear);
 }
 
 /**
@@ -161,22 +160,6 @@ public MsgBox(WindowStyle windowStyle) {
 }
 
 /**
- * Set the default fade in time for all message boxes
- * @param seconds number of seconds
- */
-public static void setFadeInTime(float seconds) {
-	mFadeInTimeDefault = seconds;
-}
-
-/**
- * Set the default fade out time for all message boxes
- * @param seconds number of seconds
- */
-public static void setFadeOutTime(float seconds) {
-	mFadeOutTimeDefault = seconds;
-}
-
-/**
  * Clears the content and button tables. Sets message box as modal, non-movable, and keep within
  * stage.
  */
@@ -196,7 +179,6 @@ public void clear() {
 
 /**
  * Set title of the message box
- * @param title
  */
 public void setTitle(String title) {
 	Label label = getTitleLabel();
@@ -368,8 +350,9 @@ public MsgBox button(Button button, Object object) {
 @Override
 public MsgBox show(Stage stage, Action action) {
 	mButtonTable.layout();
-	super.show(stage, action);
-	mHiding = false;
+	getColor().a = 0;
+	super.show(stage, Actions.sequence(action, new DialogEvent.PostEventAction(DialogEvent.EventTypes.SHOW)));
+	mHidden = false;
 	return this;
 }
 
@@ -381,8 +364,10 @@ public MsgBox show(Stage stage) {
 
 @Override
 public void hide(Action action) {
-	super.hide(action);
-	mHiding = true;
+	Action sequenceAction = Actions.sequence(action,
+			new DialogEvent.PostEventAction(DialogEvent.EventTypes.REMOVE));
+	super.hide(sequenceAction);
+	mHidden = true;
 }
 
 @Override
@@ -398,10 +383,29 @@ public void setObject(Actor actor, Object object) {
 }
 
 /**
+ * Called when a button is clicked. The dialog will be hidden after this method returns unless
+ * {@link #cancel()} is called.
+ * @param object The object specified when the button was added. If the object is a {@link Command}
+ * {@link Command#execute()} will be called, if the execution failed {@link #cancel()} will be
+ * called. {@link Command#dispose()} is called at the end.
+ */
+@Override
+public void result(Object object) {
+	if (object instanceof Command) {
+		boolean success = ((Command) object).execute();
+		if (!success) {
+			cancel();
+		}
+
+		((Command) object).dispose();
+	}
+}
+
+/**
  * @return a new default fade in action for message boxes
  */
 public static Action fadeInActionDefault() {
-	return Actions.fadeIn(mFadeInTimeDefault, Interpolation.linear);
+	return Actions.fadeIn(mFadeInTime, Interpolation.linear);
 }
 
 /**
@@ -418,6 +422,14 @@ private Button addButton(String text) {
 	}
 
 	return (Button) cell.getActor();
+}
+
+/**
+ * Show the message box
+ */
+public MsgBox show() {
+	DialogShower.show(this);
+	return this;
 }
 
 /**
@@ -445,12 +457,9 @@ public MsgBox button(String text, Object object, IValidate... validations) {
 
 /**
  * Associate an actor with object and possible validations
- * @param actor
- * @param object
- * @param validations
  * @return this for chaining
  */
-public MsgBox setObject(Actor actor, Object object, IValidate... validations) {
+private MsgBox setObject(Actor actor, Object object, IValidate... validations) {
 	setObject(actor, object);
 	if (validations != null && validations.length > 0) {
 		mValidations.put(actor, validations);
@@ -563,18 +572,14 @@ public MsgBox addCancelOkButtonAndKeys(String buttonText, Command cancelCommand)
  * @return true if the message box is hidden
  */
 public boolean isHidden() {
-	return mHiding && !isHideInProgress();
+	return mHidden && !isHideInProgress();
 }
 
 /**
  * @return true if hiding is in progress
  */
-public boolean isHideInProgress() {
-	if (mHiding) {
-		return getStage() != null;
-	} else {
-		return false;
-	}
+private boolean isHideInProgress() {
+	return mHidden && getStage() != null;
 }
 
 /**
@@ -613,5 +618,22 @@ private void centerPosition() {
 	if (getStage() != null) {
 		setPosition(Math.round((getStage().getWidth() - getWidth()) / 2), Math.round((getStage().getHeight() - getHeight()) / 2));
 	}
+}
+
+/**
+ * Fade out the message box. This will sort of hide the message box.
+ */
+public void fadeOut() {
+	clearActions();
+	addAction(fadeOutActionDefault());
+}
+
+/**
+ * Fade in a message box
+ */
+public void fadeIn() {
+	clearActions();
+	getStage().setKeyboardFocus(this);
+	addAction(fadeInActionDefault());
 }
 }

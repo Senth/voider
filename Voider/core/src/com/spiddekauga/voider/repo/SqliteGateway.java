@@ -31,8 +31,8 @@ private boolean mQueueIfFail = false;
  * Default constructor
  */
 protected SqliteGateway() {
-	EventDispatcher.getInstance().connect(EventTypes.USER_LOGIN, this);
-	EventDispatcher.getInstance().connect(EventTypes.USER_LOGOUT, this);
+	EventDispatcher.getInstance().connect(EventTypes.USER_LOGGED_IN, this);
+	EventDispatcher.getInstance().connect(EventTypes.USER_LOGGED_OUT, this);
 
 	// Connect if logged in already
 	if (User.getGlobalUser().isLoggedIn()) {
@@ -143,11 +143,11 @@ public static void clearDatabase() {
 @Override
 public void handleEvent(GameEvent event) {
 	switch (event.type) {
-	case USER_LOGIN:
+	case USER_LOGGED_IN:
 		connect();
 		break;
 
-	case USER_LOGOUT:
+	case USER_LOGGED_OUT:
 		dispose();
 		break;
 

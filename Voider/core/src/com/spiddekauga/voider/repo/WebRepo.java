@@ -18,7 +18,7 @@ import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 
 import java.io.File;
 import java.util.ArrayList;

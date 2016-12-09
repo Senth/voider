@@ -33,8 +33,8 @@ void setScene(UserScene scene) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initHeader();
 	initTabs();

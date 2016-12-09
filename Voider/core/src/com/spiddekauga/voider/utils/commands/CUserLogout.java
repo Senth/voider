@@ -10,7 +10,7 @@ public class CUserLogout extends Command {
 @Override
 public boolean execute() {
 	User user = User.getGlobalUser();
-	user.logout();
+	user.logoutAndGotoLogin();
 	return true;
 }
 

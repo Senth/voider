@@ -7,7 +7,6 @@ import com.spiddekauga.voider.network.user.AccountChangeResponse;
 import com.spiddekauga.voider.network.user.AccountChangeResponse.AccountChangeStatuses;
 import com.spiddekauga.voider.network.user.LoginMethod;
 import com.spiddekauga.voider.network.user.LoginResponse;
-import com.spiddekauga.voider.network.user.LogoutMethod;
 import com.spiddekauga.voider.network.user.RegisterUserMethod;
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -63,7 +62,7 @@ void register(User user, IResponseListener... responseListeners) {
 }
 
 /**
- * Tries to logout the current user
+ * Tries to logoutAndGotoLogin the current user
  * @param keepUser when true it will keep the last logged in user.
  * @param responseListeners listens to the web response
  */
@@ -98,8 +97,6 @@ public void passwordReset(String email, String password, String token, IResponse
 
 /**
  * Tries to change the password
- * @param oldPassword
- * @param newPassword
  * @param responseListeners listens to the web response
  */
 void changePassword(String oldPassword, String newPassword, IResponseListener... responseListeners) {
@@ -121,13 +118,6 @@ public UUID getAnalyticsId() {
 	return mLocalRepo.getAnalyticsId();
 }
 
-/**
- * @return client ID
- */
-public UUID getClientId() {
-	return mLocalRepo.getClientId();
-}
-
 @Override
 public void handleWebResponse(IMethodEntity method, IEntity response) {
 	// Register
@@ -137,10 +127,6 @@ public void handleWebResponse(IMethodEntity method, IEntity response) {
 	// Login
 	else if (method instanceof LoginMethod) {
 		handleLogin((LoginMethod) method, (LoginResponse) response);
-	}
-	// Logout
-	else if (method instanceof LogoutMethod) {
-		// Does nothing
 	}
 	// Account Change
 	else if (method instanceof AccountChangeMethod) {
@@ -156,6 +142,7 @@ private void handleRegister(RegisterUserMethod method, RegisterUserResponse resp
 	}
 }
 
+@SuppressWarnings("unused")
 private void handleLogin(LoginMethod method, LoginResponse response) {
 	if (response.isSuccessful()) {
 		// Logged in through text (not auto-login) -> Set last user
@@ -170,6 +157,7 @@ private void handleLogin(LoginMethod method, LoginResponse response) {
 	}
 }
 
+@SuppressWarnings("unused")
 private void handleAccountChange(AccountChangeMethod method, AccountChangeResponse response) {
 	if (response.status.isSuccessful()) {
 		// Change password success -> Set new private key

@@ -21,8 +21,8 @@ protected ExploreBulletGui() {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	resetContentMargins();
 	mScene.repopulateContent();
@@ -62,7 +62,6 @@ protected void initViewButtons() {
 
 /**
  * Sets the explore scene
- * @param exploreScene
  */
 void setExploreBulletScene(ExploreBulletScene exploreScene) {
 	mScene = exploreScene;

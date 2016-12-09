@@ -3,7 +3,7 @@ package com.spiddekauga.voider.resources;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 
 /**
  * Wrapper to simplify the queue. Only available for this pacakage

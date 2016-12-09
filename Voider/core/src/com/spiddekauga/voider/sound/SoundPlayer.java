@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.config.ConfigIni;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.SettingSoundRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingSoundRepo;
 
 /**
  * Singleton class for playing sound effects

@@ -24,7 +24,7 @@ ext.dropbox = home + 'Dropbox/'
 ext.outDir = "${projectDir.absolutePath}/build/"
 
 allprojects {
-    version = '0-6-0'
+    version = '0-7-0'
     ext {
         appName = 'Voider'
         kryoVersion = '3.0.1'

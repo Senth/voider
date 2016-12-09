@@ -39,15 +39,15 @@ protected ExploreEnemyGui() {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 
 	mWidgets.dispose();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	resetContentMargins();
 	mScene.repopulateContent();
@@ -406,7 +406,6 @@ protected void initInfo(AlignTable table, HideListener hider) {
 
 /**
  * Sets the explore scene
- * @param exploreScene
  */
 void setExploreEnemyScene(ExploreEnemyScene exploreScene) {
 	mScene = exploreScene;

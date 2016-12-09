@@ -8,7 +8,7 @@ import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Menu.IC_Time;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 
 /**
  * GUI for the splash screen.
@@ -29,16 +29,16 @@ public void fadeOut() {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 	if (mSplashScreenImage != null) {
 		mSplashScreenImage.remove();
 	}
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	if (ResourceCacheFacade.isLoaded(InternalNames.IMAGE_SPLASH_SCREEN)) {
 		Texture splashScreenTexture = ResourceCacheFacade.get(InternalNames.IMAGE_SPLASH_SCREEN);

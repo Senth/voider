@@ -1,4 +1,35 @@
+[0.7.0]
+date=2016-12-20
+required=true
+hotfix=false
+Gameplay
+    Created 4 basic levels (Level 1, 2, 3, and 4)
+    Player ship is now scaled correctly on all devices
+Sound & Music
+    Dying doesn't keep the 'low health' sound playing
+    Game over and success music is now played
+    Game over and success music now loops better
+LevelEditor
+    Background now scrolls at correct speed
+    Triggers now have the correct hotkeys
+    Terrain color is now saved correctly
+Various Fixes & Improvements
+    Fixed too big text when loading levels, enemies, and bullets
+    Update required message is now shown correctly
+    Bug Report window is now hidden correctly after a bug report has been submitted
+    When a bug occurs you are always returned to the Main Menu now
+    Removed beta key requirement to register
+    Can now take screenshots on PC by pressing the 'Home' key
+
+
+[0.6.1]
+required=true
+hotfix=false
+date=2016-11-15
+Improved bug reports (for the developer)
+
 [0.6.0]
+date=2016-11-01
 required=true
 hotfix=false
 Login Method

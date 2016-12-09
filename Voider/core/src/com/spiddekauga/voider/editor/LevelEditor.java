@@ -12,6 +12,9 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -71,8 +74,6 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -122,14 +123,14 @@ public void handleEvent(GameEvent event) {
 }
 
 @Override
-protected void onInit() {
+protected void onCreate() {
 	mDefaultTerrainColor.set((Color) SkinNames.getResource(SkinNames.EditorVars.TERRAIN_COLOR_DEFAULT));
 	mDefaultTerrainColor.a = SkinNames.getResource(SkinNames.EditorVars.TERRAIN_ALPHA_DEFAULT);
 
 	mSelection = new Selection();
 	mSelection.addListener(this);
 
-	super.onInit();
+	super.onCreate();
 
 	IC_Level icLevel = ConfigIni.getInstance().editor.level;
 	mZoomTool = new ZoomTool(this, icLevel.getZoomMin(), icLevel.getZoomMax());
@@ -160,8 +161,8 @@ protected void onInit() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	// Check so that all resources have been loaded
 	if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
@@ -173,7 +174,7 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 				setLevel(loadedLevel);
 				switchTool(Tools.SELECTION);
 				getGui().resetTools();
-				getGui().popMsgBoxes();
+				getGui().removeAllMsgBoxes();
 				setSaved();
 				mLoadingLevel = null;
 			} else {
@@ -185,7 +186,7 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 			mInvoker.execute(new CLevelEnemyDefAdd(((EnemyDefEntity) message).resourceId, this));
 		}
 	} else if (outcome == Outcomes.EXPLORE_LOAD) {
-		getGui().popMsgBoxes();
+		getGui().removeAllMsgBoxes();
 
 		if (message instanceof LevelDefEntity) {
 			LevelDefEntity levelDefEntity = (LevelDefEntity) message;
@@ -212,7 +213,7 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 			}
 		}
 	} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-		getGui().popMsgBoxes();
+		getGui().removeAllMsgBoxes();
 	}
 	// Set as unsaved if took screenshot
 	else if (outcome == Outcomes.LEVEL_PLAYER_DIED || outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_QUIT) {
@@ -226,7 +227,7 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 	else if (outcome == Outcomes.THEME_SELECTED) {
 		final Themes theme = (Themes) message;
 		setTheme(theme);
-		getGui().popMsgBoxActive();
+		getGui().removeAllMsgBoxes();
 	}
 
 	if (mLevel != null) {
@@ -246,6 +247,14 @@ protected void update(float deltaTime) {
 	mObjects.update(deltaTime);
 
 	((PanTool) Tools.PAN.getTool()).update(deltaTime);
+}
+
+@Override
+protected void saveImpl(Command command) {
+	saveToFile();
+	if (command != null) {
+		command.execute();
+	}
 }
 
 @Override
@@ -286,10 +295,207 @@ protected void render() {
 }
 
 @Override
-protected void onDispose() {
-	super.onDispose();
+protected void onDestroy() {
+	super.onDestroy();
+}
 
-	setLevel(null);
+@Override
+public void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
+	super.handleWebResponseSyncronously(method, response);
+
+	// Publish -> Update available tools
+	if (response instanceof PublishResponse) {
+		if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
+			updateAvailableTools(false, true);
+		}
+	}
+}
+
+@Override
+protected void saveToFile() {
+	mLevel.calculateStartEndPosition();
+
+	int oldRevision = mLevel.getRevision();
+	mResourceRepo.save((IResource) mLevel.getDef(), mLevel);
+	mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
+	showSyncMessage();
+
+	// Update latest resource if revision was changed by more than one
+	if (oldRevision != mLevel.getDef().getRevision() - 1) {
+		ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
+		ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
+	}
+
+	// Saved first time? Then load level and def and use loaded versions instead
+	if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {
+		ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
+		ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
+		ResourceCacheFacade.finishLoading();
+
+		// Reset the level to old revision
+		mLevel.getDef().setRevision(oldRevision);
+
+		setLevel((Level) ResourceCacheFacade.get(mLevel.getId()));
+	}
+
+	setSaved();
+}
+
+@Override
+public boolean onKeyDown(int keycode) {
+	// Back - Deselect or go back
+	if (KeyHelper.isBackPressed(keycode)) {
+		if (!mSelection.isEmpty()) {
+			mInvoker.execute(new CSelectionSet(mSelection));
+			return true;
+		}
+	}
+
+	// Tools - General
+	if (KeyHelper.isNoModifiersPressed()) {
+		if (keycode == Input.Keys.S) {
+			switchTool(Tools.SELECTION);
+			return true;
+		} else if (keycode == Input.Keys.P) {
+			switchTool(Tools.PATH_ADD);
+			return true;
+		} else if (keycode == Input.Keys.M) {
+			switchTool(Tools.MOVE);
+			return true;
+		} else if (keycode == Input.Keys.E) {
+			switchTool(Tools.ENEMY_ADD);
+			return true;
+		}
+	}
+
+	// Tools - Terrain
+	if (keycode == Input.Keys.D) {
+		if (KeyHelper.isShiftPressed()) {
+			switchTool(Tools.TERRAIN_DRAW_ERASE);
+			return true;
+		} else if (KeyHelper.isNoModifiersPressed()) {
+			switchTool(Tools.TERRAIN_DRAW_APPEND);
+			return true;
+		}
+	} else if (keycode == Input.Keys.C) {
+		if (KeyHelper.isShiftPressed()) {
+			switchTool(Tools.ADD_MOVE_CORNER);
+			return true;
+		} else if (KeyHelper.isNoModifiersPressed()) {
+			switchTool(Tools.REMOVE_CORNER);
+			return true;
+		}
+	}
+
+	// Tools - Trigger
+	else if (keycode == Input.Keys.T) {
+		if (KeyHelper.isShiftPressed()) {
+			switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
+			return true;
+		} else if (KeyHelper.isNoModifiersPressed()) {
+			switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+			return true;
+		}
+	}
+
+	// Tools - zoom
+	else if (keycode == Input.Keys.Z) {
+		if (KeyHelper.isShiftPressed()) {
+			switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+			return true;
+		} else if (KeyHelper.isNoModifiersPressed()) {
+			switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
+			return true;
+		}
+	}
+
+	return super.onKeyDown(keycode);
+}
+
+// --------------------------------
+// Resource loading etc.
+// --------------------------------
+@Override
+protected void loadResources() {
+	super.loadResources();
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.PICKUP_DEF, true);
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+
+	ResourceCacheFacade.load(this, InternalDeps.MUSIC_LEVEL_THEMES);
+	ResourceCacheFacade.load(this, InternalDeps.THEME_ALL);
+}
+
+@Override
+protected LevelEditorGui getGui() {
+	return (LevelEditorGui) super.getGui();
+}
+
+@Override
+public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
+	float percentage = 0;
+	if (mcTotalBytes != 0) {
+		percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
+	}
+
+	ProgressBar.updateProgress(percentage);
+}
+
+@Override
+public void onResourceChanged(IResource resource) {
+	super.onResourceChanged(resource);
+
+	if (resource instanceof EnemyActor) {
+		getGui().resetEnemyOptions();
+	}
+}
+
+/**
+ * Render the background
+ */
+private void renderBackground() {
+	float renderHeightDefault = Gdx.graphics.getHeight() * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
+	int renderHeight = (int) (renderHeightDefault / mCamera.zoom);
+	int offsetY = (int) (renderHeightDefault - (renderHeight * 0.5f));
+	offsetY -= mCamera.position.y / getScreenToWorldScale();
+
+
+	if (mBackground == null) {
+		mBackground = mLevel.getLevelDef().getTheme().createBackground(renderHeight);
+	} else {
+		mBackground = mLevel.getLevelDef().getTheme().updateBackground(mBackground, (int) (renderHeight / getScreenToWorldScale()));
+	}
+
+	float x = mCamera.position.x / mCamera.zoom * ConfigIni.getInstance().game.getLayerTopSpeed();
+
+	enableBlendingWithDefaults();
+	mSpriteBatch.setProjectionMatrix(getProjectionMatrixDefault());
+	mSpriteBatch.begin();
+	mBackground.render(mSpriteBatch, x, offsetY, renderHeight);
+	mSpriteBatch.end();
+}
+
+/**
+ * Renders the above and below borders
+ */
+private void renderAboveBelowBorders() {
+	// Get screen corners in world coordinates
+	Vector2 minPos = new Vector2();
+	Vector2 maxPos = new Vector2();
+	screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
+	screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
+
+	float yCoord = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.WORLD_SCALE * 0.5f;
+
+	mShapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.LEVEL_ABOVE_BELOW_COLOR));
+
+	// Draw borders
+	RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.LEVEL_UPPER_LOWER_BORDERS);
+	// Upper
+	mShapeRenderer.rect(minPos.x, minPos.y, maxPos.x, -yCoord, true);
+	// Lower
+	mShapeRenderer.rect(minPos.x, maxPos.y, maxPos.x, yCoord, true);
+	RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.LEVEL_UPPER_LOWER_BORDERS);
 }
 
 /**
@@ -391,7 +597,6 @@ void switchTool(Tools tool) {
 
 /**
  * Checks if the tool should be available in the background
- * @param tool
  * @return true if the tool should be available when inactive (but with limited functionality)
  */
 private boolean isAvailableWhenInactive(Tools tool) {
@@ -404,72 +609,6 @@ private boolean isAvailableWhenInactive(Tools tool) {
 	default:
 		return false;
 	}
-}
-
-@Override
-protected void fixCamera() {
-	float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
-	// Decrease scale of width depending on height scaled
-	float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
-	width *= heightScale;
-	float height = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.LEVEL_EDITOR_SCALE;
-
-	if (mCamera != null) {
-		mCamera.viewportHeight = height;
-		mCamera.viewportWidth = width;
-		mCamera.update();
-	} else {
-		mCamera = new OrthographicCamera(width, height);
-	}
-}
-
-/**
- * Render the background
- */
-private void renderBackground() {
-	float renderHeightDefault = Gdx.graphics.getHeight() * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
-	int renderHeight = (int) (renderHeightDefault / mCamera.zoom);
-	int offsetY = 0;
-	offsetY = (int) (renderHeightDefault - (renderHeight * 0.5f));
-	offsetY -= mCamera.position.y / getScreenToWorldScale();
-
-
-	if (mBackground == null) {
-		mBackground = mLevel.getLevelDef().getTheme().createBackground(renderHeight);
-	} else {
-		mBackground = mLevel.getLevelDef().getTheme().updateBackground(mBackground, (int) (renderHeight / getScreenToWorldScale()));
-	}
-
-	float x = mCamera.position.x / mCamera.zoom * ConfigIni.getInstance().game.getLayerTopSpeed();
-
-	enableBlendingWithDefaults();
-	mSpriteBatch.setProjectionMatrix(getProjectionMatrixDefault());
-	mSpriteBatch.begin();
-	mBackground.render(mSpriteBatch, x, offsetY, renderHeight);
-	mSpriteBatch.end();
-}
-
-/**
- * Renders the above and below borders
- */
-private void renderAboveBelowBorders() {
-	// Get screen corners in world coordinates
-	Vector2 minPos = new Vector2();
-	Vector2 maxPos = new Vector2();
-	screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
-	screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
-
-	float yCoord = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.WORLD_SCALE * 0.5f;
-
-	mShapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.LEVEL_ABOVE_BELOW_COLOR));
-
-	// Draw borders
-	RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.LEVEL_UPPER_LOWER_BORDERS);
-	// Upper
-	mShapeRenderer.rect(minPos.x, minPos.y, maxPos.x, -yCoord, true);
-	// Lower
-	mShapeRenderer.rect(minPos.x, maxPos.y, maxPos.x, yCoord, true);
-	RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.LEVEL_UPPER_LOWER_BORDERS);
 }
 
 /**
@@ -487,161 +626,11 @@ private void updateCameraLimits() {
 }
 
 @Override
-public boolean onKeyDown(int keycode) {
-	// Back - Deselect or go back
-	if (KeyHelper.isBackPressed(keycode)) {
-		if (!mSelection.isEmpty()) {
-			mInvoker.execute(new CSelectionSet(mSelection));
-			return true;
-		}
-	}
-
-	// Tools - General
-	if (KeyHelper.isNoModifiersPressed()) {
-		if (keycode == Input.Keys.S) {
-			switchTool(Tools.SELECTION);
-			return true;
-		} else if (keycode == Input.Keys.P) {
-			switchTool(Tools.PATH_ADD);
-			return true;
-		} else if (keycode == Input.Keys.M) {
-			switchTool(Tools.MOVE);
-			return true;
-		} else if (keycode == Input.Keys.E) {
-			switchTool(Tools.ENEMY_ADD);
-			return true;
-		}
-	}
-
-	// Tools - Terrain
-	if (keycode == Input.Keys.D) {
-		if (KeyHelper.isShiftPressed()) {
-			switchTool(Tools.TERRAIN_DRAW_ERASE);
-			return true;
-		} else if (KeyHelper.isNoModifiersPressed()) {
-			switchTool(Tools.TERRAIN_DRAW_APPEND);
-			return true;
-		}
-	} else if (keycode == Input.Keys.C) {
-		if (KeyHelper.isShiftPressed()) {
-			switchTool(Tools.ADD_MOVE_CORNER);
-			return true;
-		} else if (KeyHelper.isNoModifiersPressed()) {
-			switchTool(Tools.REMOVE_CORNER);
-			return true;
-		}
-	}
-
-	// Tools - Trigger
-	else if (keycode == Input.Keys.T) {
-		if (KeyHelper.isShiftPressed()) {
-			switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
-			return true;
-		} else if (KeyHelper.isNoModifiersPressed()) {
-			switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
-			return true;
-		}
-	}
-
-	// Tools - zoom
-	else if (keycode == Input.Keys.Z) {
-		if (KeyHelper.isShiftPressed()) {
-			switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
-			return true;
-		} else if (KeyHelper.isNoModifiersPressed()) {
-			switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
-			return true;
-		}
-	}
-
-	return super.onKeyDown(keycode);
-}
-
-// --------------------------------
-// Resource loading etc.
-// --------------------------------
-@Override
-protected void loadResources() {
-	super.loadResources();
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.PICKUP_DEF, true);
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
-
-	ResourceCacheFacade.load(this, InternalDeps.MUSIC_LEVEL_THEMES);
-	ResourceCacheFacade.load(this, InternalDeps.THEME_ALL);
-}
-
-@Override
 protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 	super.reloadResourcesOnActivate(outcome, message);
 
 	// Check if we have created any new enemies, load them in that case
 	ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
-}
-
-@Override
-protected LevelEditorGui getGui() {
-	return (LevelEditorGui) super.getGui();
-}
-
-@Override
-public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
-	float percentage = 0;
-	if (mcTotalBytes != 0) {
-		percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
-	}
-
-	getGui().updateProgressBar(percentage);
-}
-
-@Override
-public void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
-	super.handleWebResponseSyncronously(method, response);
-
-	// Publish -> Update available tools
-	if (response instanceof PublishResponse) {
-		if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
-			updateAvailableTools(false, true);
-		}
-	}
-}
-
-@Override
-protected void saveImpl(Command command) {
-	saveToFile();
-	if (command != null) {
-		command.execute();
-	}
-}
-
-@Override
-protected void saveToFile() {
-	mLevel.calculateStartEndPosition();
-
-	int oldRevision = mLevel.getRevision();
-	mResourceRepo.save(mLevel.getDef(), mLevel);
-	mNotification.show(NotificationTypes.SUCCESS, Messages.Info.SAVED);
-	showSyncMessage();
-
-	// Update latest resource if revision was changed by more than one
-	if (oldRevision != mLevel.getDef().getRevision() - 1) {
-		ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
-		ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
-	}
-
-	// Saved first time? Then load level and def and use loaded versions instead
-	if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {
-		ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
-		ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
-		ResourceCacheFacade.finishLoading();
-
-		// Reset the level to old revision
-		mLevel.getDef().setRevision(oldRevision);
-
-		setLevel((Level) ResourceCacheFacade.get(mLevel.getId()));
-	}
-
-	setSaved();
 }
 
 /**
@@ -746,15 +735,6 @@ public void onResourceRemoved(IResource resource) {
 }
 
 @Override
-public void onResourceChanged(IResource resource) {
-	super.onResourceChanged(resource);
-
-	if (resource instanceof EnemyActor) {
-		getGui().resetEnemyOptions();
-	}
-}
-
-@Override
 public void onResourceSelected(IResource resource) {
 	getGui().resetValues();
 }
@@ -768,11 +748,7 @@ public void onResourceDeselected(IResource resource) {
  * @return true if an enemy is currently selected
  */
 boolean isEnemySelected() {
-	if (mSelection != null) {
-		return mSelection.isSelected(EnemyActor.class);
-	} else {
-		return false;
-	}
+	return mSelection != null && mSelection.isSelected(EnemyActor.class);
 }
 
 /**
@@ -817,7 +793,7 @@ private void runFromPos(boolean invulnerable, float xPosition) {
  * Calculates the current starting position when test running
  * @return start position of the level when test running from here
  */
-public float getRunFromHerePosition() {
+private float getRunFromHerePosition() {
 	return mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
 }
 
@@ -834,10 +810,8 @@ private void removeTriggersBeforeRun(Level level) {
 	for (TScreenAt trigger : triggers) {
 		if (trigger.isTriggered()) {
 			// Remove triggers left of the screen
-			if (trigger instanceof TScreenAt) {
-				if (trigger.getPosition().x <= leftXCoord) {
-					toBeRemoved.add(trigger);
-				}
+			if (trigger.getPosition().x <= leftXCoord) {
+				toBeRemoved.add(trigger);
 			}
 		}
 	}
@@ -896,16 +870,13 @@ public void duplicateDef(String name, String description) {
 
 @Override
 public boolean isDrawing() {
-	if (mTool.getTool() != null) {
-		return mTool.getTool().isDrawing();
-	}
-	return false;
+	return mTool.getTool() != null && mTool.getTool().isDrawing();
 }
 
 @Override
 public void publishDef() {
 	if (mLevel != null) {
-		getGui().showProgressBar("Uploading...");
+		ProgressBar.showProgress("Uploading...");
 		mResourceRepo.publish(this, this, mLevel);
 	}
 }
@@ -948,7 +919,7 @@ public String getName() {
 public void setName(String name) {
 	if (mLevel != null) {
 		mLevel.getDef().setName(name);
-		((EditorGui) getGui()).resetName();
+		getGui().resetName();
 		setUnsaved();
 	}
 }
@@ -1009,17 +980,6 @@ void setLevelStartingSpeed(float speed) {
 }
 
 /**
- * @return current revision of the level, empty string if no level is available
- */
-String getLevelRevision() {
-	if (mLevel != null) {
-		return String.valueOf(mLevel.getRevision());
-	} else {
-		return "";
-	}
-}
-
-/**
  * @return story that will be displayed before the level, empty string if no level is available
  */
 String getPrologue() {
@@ -1071,12 +1031,7 @@ void setEpilogue(String storyText) {
  * @return true if screenshot has been taken for the level
  */
 boolean hasScreenshot() {
-	if (mLevel != null) {
-		return mLevel.getDef().getPngImage() != null;
-	}
-	return false;
-
-
+	return mLevel != null && mLevel.getDef().getPngImage() != null;
 }
 
 /**
@@ -1120,6 +1075,8 @@ void setSelectedTerrainColor(Color color) {
 		terrainColor.g = color.g;
 		terrainColor.b = color.b;
 	}
+
+	setUnsaved();
 }
 
 /**
@@ -1677,6 +1634,23 @@ void resetZoom() {
 	}
 }
 
+@Override
+protected void fixCamera() {
+	float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
+	// Decrease scale of width depending on height scaled
+	float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
+	width *= heightScale;
+	float height = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.LEVEL_EDITOR_SCALE;
+
+	if (mCamera != null) {
+		mCamera.viewportHeight = height;
+		mCamera.viewportWidth = width;
+		mCamera.update();
+	} else {
+		mCamera = new OrthographicCamera(width, height);
+	}
+}
+
 /**
  * Zoom in
  */
@@ -1714,7 +1688,6 @@ void createNewEnemy(EnemyActorDef enemyDef) {
 
 /**
  * Set the theme internally
- * @param theme
  */
 private void _setTheme(Themes theme) {
 	if (mLevel != null) {
@@ -1822,7 +1795,9 @@ enum Tools {
 	public void setTool(TouchTool tool) {
 		mTool = tool;
 	}
-}/**
+}
+
+/**
  * Sets the music for the level
  * @param music the music for the level
  */
@@ -1849,7 +1824,6 @@ void setMusic(final Music music) {
 
 /**
  * Set the music internally
- * @param music
  */
 private void _setMusic(Music music) {
 	if (mLevel != null) {

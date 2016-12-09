@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.menu;
+package com.spiddekauga.voider.settings;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -23,18 +23,19 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_General;
-import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
+import com.spiddekauga.voider.menu.MenuGui;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
+import com.spiddekauga.voider.settings.SettingRepo.IconSizes;
 
 /**
  * GUI for game settings
  */
 public class SettingsGui extends MenuGui {
 
-private final static Builds SHOW_DEBUG = Builds.NIGHTLY_RELEASE;
+private final static Builds SHOW_DEBUG = Builds.BETA;
 private Widgets mWidgets = new Widgets();
 private SettingsScene mScene = null;
 
@@ -47,24 +48,8 @@ void setScene(SettingsScene scene) {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
-	mWidgets.dispose();
-}
-
-@Override
-public void resetValues() {
-	super.resetValues();
-
-	resetSound();
-	resetDisplay();
-	resetGeneral();
-	resetNetwork();
-}
-
-@Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initHeader();
 	initTabs();
@@ -255,10 +240,26 @@ private void initDebug() {
 		}
 	};
 	table.row().setFillWidth(true);
-	mUiFactory.button.addText("Clear all data and logout", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null).setFillWidth(true);
+	mUiFactory.button.addText("Clear all data and logoutAndGotoLogin", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null).setFillWidth(true);
 
 	table.row();
 	mUiFactory.text.add("This clears all local user data and logs out the user.", true, table, LabelStyles.HIGHLIGHT);
+}
+
+@Override
+public void resetValues() {
+	super.resetValues();
+
+	resetSound();
+	resetDisplay();
+	resetGeneral();
+	resetNetwork();
+}
+
+@Override
+public void onDestroy() {
+	super.onDestroy();
+	mWidgets.dispose();
 }
 
 /**
@@ -378,7 +379,9 @@ private class Widgets implements Disposable {
 		private void init() {
 			hider.addChild(showFullscreenResolution);
 			hider.addChild(showWindowedResolution);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			hider.dispose();

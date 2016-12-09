@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public abstract class SessionVariable implements Serializable {
 
-/** Serialized serial version */
+/** Serialized serial gameVersion */
 private static final long serialVersionUID = -5396331642856090956L;
 /** If the variable has been changed since last session read */
 private boolean mChanged = true;

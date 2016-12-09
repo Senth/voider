@@ -5,7 +5,7 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.utils.scene.ui.Scene;
 
 /**
  * Scene for selecting theme on a mobile device

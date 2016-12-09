@@ -3,12 +3,12 @@ package com.spiddekauga.voider.repo.resource;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceDependency;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -149,7 +149,7 @@ synchronized <ResourceType> void load(Scene scene, UUID resourceId, int revision
  * @param message
  */
 private void log(String message) {
-	if (Config.Debug.Messages.LOAD_UNLOAD) {
+	if (Config.Debug.Log.LOAD_UNLOAD) {
 		Gdx.app.debug(ResourceDependencyLoader.class.getSimpleName(), message);
 	}
 }

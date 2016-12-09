@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parses a buffer and adds the result to a version container
+ * Parses a buffer and adds the result to a gameVersion container
  */
 public class VersionParser {
 private static final Pattern VERSION_PATTERN = Pattern.compile("\\[(.*)\\]");
@@ -24,7 +24,7 @@ private VersionContainer mContainer = new VersionContainer();
 private BufferedReader mInput;
 
 /**
- * Creates the version parser
+ * Creates the gameVersion parser
  * @param input buffer input
  */
 public VersionParser(InputStream input) {
@@ -32,7 +32,7 @@ public VersionParser(InputStream input) {
 }
 
 /**
- * Creates the version parser
+ * Creates the gameVersion parser
  * @param input buffer input
  */
 public VersionParser(BufferedReader input) {
@@ -66,7 +66,7 @@ public VersionContainer parse() {
  * @param line the line that was read
  */
 private void parseLine(String line) {
-	// New version
+	// New gameVersion
 	if (line.charAt(0) == '[') {
 		addParsingVersion();
 		createNewVersion(line);
@@ -109,7 +109,7 @@ private void close() {
 }
 
 /**
- * Add parsing version to the container
+ * Add parsing gameVersion to the container
  */
 private void addParsingVersion() {
 	if (mParsingVersion != null && mParsingVersion.getChangeLog() != null) {
@@ -119,8 +119,8 @@ private void addParsingVersion() {
 }
 
 /**
- * Create a new parsing version
- * @param line the line containing the version
+ * Create a new parsing gameVersion
+ * @param line the line containing the gameVersion
  */
 private void createNewVersion(String line) {
 	Matcher matcher = VERSION_PATTERN.matcher(line);

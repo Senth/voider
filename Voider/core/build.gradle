@@ -1,12 +1,12 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = ["src/"]
 
 dependencies {
     compile project(":network")
+    compile project(":common-utils")
     compile 'com.esotericsoftware:minlog:1.3.0'
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -15,7 +15,6 @@ dependencies {
     compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
     compile "com.esotericsoftware:kryo:$kryoVersion"
     compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
-    compile "com.spiddekauga:common-utils:$commonUtilsVersion"
     compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
     compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
 }

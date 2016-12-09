@@ -60,8 +60,8 @@ protected void fetchMoreContent() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (!User.getGlobalUser().isOnline()) {
 		UiFactory.getInstance().msgBox.goOnline();

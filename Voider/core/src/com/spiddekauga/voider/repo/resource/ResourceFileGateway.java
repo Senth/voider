@@ -13,6 +13,7 @@ import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.utils.Pools;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -90,7 +91,7 @@ String getFilepath(UUID resourceId) {
  * @param revision which revision to make a copy of
  * @return true if copy was successful
  */
-boolean copyFromResourceToRevision(UUID resourceId, int revision) {
+private boolean copyFromResourceToRevision(UUID resourceId, int revision) {
 	String resourceFile = getFilepath(resourceId);
 	String revisionFile = getRevisionFilepath(resourceId, revision);
 
@@ -100,7 +101,7 @@ boolean copyFromResourceToRevision(UUID resourceId, int revision) {
 /**
  * @return resource directory
  */
-String getDir() {
+private String getDir() {
 	return Config.File.getUserStorage() + "resources/";
 }
 
@@ -143,7 +144,7 @@ private boolean copy(String from, String to) {
  * @param resourceId id of the resource to get resource revision directory for
  * @return directory where the resource's revisions are located
  */
-String getRevisionDir(UUID resourceId) {
+private String getRevisionDir(UUID resourceId) {
 	return getDir() + resourceId + REVISION_DIR_POSTFIX;
 }
 
@@ -151,8 +152,8 @@ String getRevisionDir(UUID resourceId) {
  * @param revision the revision to get the format of
  * @return revision file format from the revision
  */
-String getRevisionFormat(int revision) {
-	return String.format("%010d", revision);
+private String getRevisionFormat(int revision) {
+	return String.format(Locale.ENGLISH, "%010d", revision);
 }
 
 /**
@@ -185,10 +186,9 @@ void removeRevisionDir(UUID resourceId) {
  * @param fromRevision remove all revisions from this one
  */
 void removeRevisions(UUID resourceId, int fromRevision) {
-	int revision = fromRevision;
 
 	while (true) {
-		String path = getRevisionFilepath(resourceId, revision);
+		String path = getRevisionFilepath(resourceId, fromRevision);
 		FileHandle file = Gdx.files.external(path);
 
 		if (!file.exists()) {

@@ -140,10 +140,7 @@ public static boolean isShiftAltPressed() {
  * @return true if control + alt + shift is pressed
  */
 public static boolean isCtrlAltShiftPressed() {
-	if (isShift() && isCtrlAlt()) {
-		return true;
-	}
-	return false;
+	return isShift() && isCtrlAlt();
 }
 
 /**
@@ -172,42 +169,5 @@ public static boolean isScrolling(int button) {
 	}
 
 	return false;
-}
-
-/**
- * Tooltip helper keys
- */
-public static class Tooltip {
-	/**
-	 * @param keycode the key to check
-	 * @return true if we shall show YouTube
-	 */
-	public static boolean isShowYoutubePressed(int keycode) {
-		return keycode == Keys.Y;
-	}
-
-	/**
-	 * @param keycode the key to check
-	 * @return true if we shall toggle the animation window in the tooltip
-	 */
-	public static boolean isToggleAnimationPressed(int keycode) {
-		return keycode == Keys.A;
-	}
-
-	/**
-	 * @param keycode the key to check
-	 * @return true if we shall go to the next animation in the tooltip
-	 */
-	public static boolean isNextAnimationPressed(int keycode) {
-		return keycode == Keys.SPACE;
-	}
-
-	/**
-	 * @param keycode the key to check
-	 * @return true if we shall toggle the text description
-	 */
-	public static boolean isToggleTextPressed(int keycode) {
-		return keycode == Keys.T;
-	}
 }
 }

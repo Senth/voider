@@ -35,11 +35,10 @@ public class SkinNames {
  */
 public static Drawable getDrawable(IImageNames imageName) {
 	Skin skin = ResourceCacheFacade.get(imageName.getSkinName());
-	if (skin != null) {
-		return skin.getDrawable(imageName.toString());
-	} else {
-		return null;
+	if (skin == null) {
+		throw new IllegalStateException("Skin " + imageName.getSkinName() + " hasn't been loaded");
 	}
+	return skin.getDrawable(imageName.toString());
 }
 
 /**
@@ -49,15 +48,15 @@ public static Drawable getDrawable(IImageNames imageName) {
  */
 public static TextureRegion getRegion(IImageNames imageName) {
 	Skin skin = ResourceCacheFacade.get(imageName.getSkinName());
-	if (skin != null) {
-		return skin.getRegion(imageName.toString());
-	} else {
-		return null;
+	if (skin == null) {
+		throw new IllegalStateException("Skin " + imageName.getSkinName() + " hasn't been loaded");
 	}
+
+	return skin.getRegion(imageName.toString());
 }
 
 /**
- * / * Method for getting a skin name from the loaded resources
+ * Method for getting a skin name from the loaded resources
  * @param <ResourceType> The resource type to return
  * @param skinName the skin name to get the resource from
  * @return the resource that was fetched :)
@@ -65,14 +64,15 @@ public static TextureRegion getRegion(IImageNames imageName) {
 @SuppressWarnings("unchecked")
 public static <ResourceType> ResourceType getResource(ISkinNames skinName) {
 	Skin skin = ResourceCacheFacade.get(skinName.getSkinName());
-	if (skin != null) {
-		return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
-	} else {
-		return null;
+	if (skin == null) {
+		throw new IllegalStateException("Skin " + skinName.getSkinName() + " hasn't been loaded");
 	}
+
+	return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
 }
 
-/* * @param imageName
+/**
+ * @param imageName check if this image has been loaded
  * @return true if the specified resource has been loaded
  */
 public static boolean isLoaded(IImageNames imageName) {
@@ -80,15 +80,13 @@ public static boolean isLoaded(IImageNames imageName) {
 }
 
 /**
- * @param skinName
+ * @param skinName check if this skin has been loaded
  * @return true if the specified resource has been loaded
  */
 public static boolean isLoaded(ISkinNames skinName) {
 	return ResourceCacheFacade.isLoaded(skinName.getSkinName());
 }
 
-/*
-*
 /**
  * Editor icon names
  */
@@ -570,10 +568,14 @@ public enum GeneralVars implements ISkinNames {
 	ROW_HEIGHT(Float.class),
 	/** Row height for panel section (smaller text) */
 	ROW_HEIGHT_SECTION(Float.class),
-	/** Second of fade in for the wait window */
-	WAIT_WINDOW_FADE_IN(Float.class),
-	/** Seconds of fade out for the wait window */
-	WAIT_WINDOW_FADE_OUT(Float.class),
+	/** Fade in time for message boxes */
+	MSGBOX_FADE_IN(Float.class),
+	/** Fade out time for message boxes */
+	MSGBOX_FADE_OUT(Float.class),
+	/** Fade in time for progress bar */
+	PROGRESSBAR_FADE_IN(Float.class),
+	/** Fade out time for progress bar */
+	PROGRESSBAR_FADE_OUT(Float.class),
 	/** Text area height */
 	TEXT_AREA_HEIGHT(Float.class),
 	/** Default text button height */

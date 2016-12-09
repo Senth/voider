@@ -106,9 +106,9 @@ public static class VersionInformation implements IEntity {
 	public enum Statuses {
 		/** Client is up to date */
 		UP_TO_DATE,
-		/** A new version is available, update not required */
+		/** A new gameVersion is available, update not required */
 		NEW_VERSION_AVAILABLE,
-		/** A new version is available and required to login online */
+		/** A new gameVersion is available and required to login online */
 		UPDATE_REQUIRED,
 		/** Unknown status */
 		UNKNOWN,

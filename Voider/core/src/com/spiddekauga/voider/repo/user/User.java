@@ -2,6 +2,7 @@ package com.spiddekauga.voider.repo.user;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -13,7 +14,6 @@ import com.spiddekauga.voider.network.user.LoginResponse.VersionInformation.Stat
 import com.spiddekauga.voider.network.user.RegisterUserResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -31,18 +31,13 @@ public class User {
 private static NotificationShower mNotification = NotificationShower.getInstance();
 private static EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 private static UserRepo mUserRepo = UserRepo.getInstance();
-/** Global user */
 private static User mGlobalUser = new User();
-private String mUsername = "(None)";
+private String mUsername = Config.User.INVALID_USERNAME;
 private String mServerKey = null;
 private boolean mOnline = false;
-/** Password, usually not used or stored */
 private String mPassword = null;
-/** Email, usually not used or stored */
 private String mEmail = null;
-/** Register key for the beta */
-private String mRegisterKey = null;
-/** Private login key */
+private String mBetaKey = null;
 private UUID mPrivateKey = null;
 private boolean mLoggedIn = false;
 private boolean mAskToGoOnline = true;
@@ -134,12 +129,8 @@ private IResponseListener mResponseListener = new IResponseListener() {
 			if (response.versionInfo.status == Statuses.UPDATE_REQUIRED) {
 				mNotification.showHighlight("Update required to go online");
 			}
-			// Server restored since last login
-			else if (response.restoreDate != null) {
-				// Does nothing
-			}
-			// Connect
-			else {
+			// Server didn't restored since last login - Connect
+			else if (response.restoreDate == null) {
 				connectGlobalUser();
 			}
 		}
@@ -150,14 +141,9 @@ private IResponseListener mResponseListener = new IResponseListener() {
 			mServerKey = response.userKey;
 			mEmail = response.email;
 
-			// Login online
-			if (response.isServerLoginAvailable()) {
-				loginGlobalUser(User.this, true);
-			}
-			// Login offline
-			else {
-				loginGlobalUser(User.this, false);
-			}
+			// Login
+			boolean loginOnline = response.isServerLoginAvailable();
+			loginGlobalUser(User.this, loginOnline);
 		}
 	}
 
@@ -209,7 +195,7 @@ private IResponseListener mResponseListener = new IResponseListener() {
 		}
 
 
-		// New version
+		// New gameVersion
 		if (!response.versionInfo.newVersions.isEmpty()) {
 			EventTypes updateType = null;
 			switch (response.versionInfo.status) {
@@ -250,8 +236,9 @@ private IResponseListener mResponseListener = new IResponseListener() {
 };
 
 /**
+ * Get global instance of this user. Users can still be created (and should be); this is not a
+ * singleton class
  * @return global instance of this user, logged in or logged out.
- * @note Users can still be created, this is not a singleton class
  */
 public static User getGlobalUser() {
 	return mGlobalUser;
@@ -273,7 +260,7 @@ private static void loginGlobalUser(User user, boolean online) {
 	// Update user path
 	Config.File.setUserPaths(mGlobalUser.mUsername);
 
-	mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGIN));
+	mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGGED_IN));
 
 	if (online) {
 		mEventDispatcher.fire(new GameEvent(EventTypes.USER_CONNECTED));
@@ -304,7 +291,7 @@ public void setUsername(String username) {
 /**
  * @return private login key
  */
-public UUID getPrivateKey() {
+UUID getPrivateKey() {
 	return mPrivateKey;
 }
 
@@ -319,7 +306,7 @@ public String getServerKey() {
  * Sets the user id on the server. Does not work for the global user.
  * @param serverKey user id of the server
  */
-public void setServerKey(String serverKey) {
+void setServerKey(String serverKey) {
 	if (this != mGlobalUser) {
 		mServerKey = serverKey;
 	}
@@ -346,7 +333,7 @@ public void setEmail(String email) {
  * Does not work for the global user.
  * @param privateKey private login key to set
  */
-public void setPrivateKey(UUID privateKey) {
+void setPrivateKey(UUID privateKey) {
 	if (this != mGlobalUser) {
 		mPrivateKey = privateKey;
 	}
@@ -368,8 +355,6 @@ private static void connectGlobalUser() {
 /**
  * Tries to change the password of the user. Can fire game events: USER_PASSWORD_CHANGE_MISMATCH,
  * USER_PASSWORD_CHANGE_TOO_SHORT, USER_PASSWORD_CHANGED
- * @param oldPassword
- * @param newPassword
  */
 public void changePassword(String oldPassword, String newPassword) {
 	if (this == mGlobalUser) {
@@ -399,11 +384,28 @@ public void setOnline(boolean online) {
 }
 
 /**
- * Logs out the user, only works for the global user
+ * Logs out the user, only works for the global user.
+ * @see #logout() if you only want to set the user as logged out. But not change scenes
  */
-public void logout() {
+public void logoutAndGotoLogin() {
 	// Update user path
 	if (this == mGlobalUser) {
+
+		logout();
+
+		SceneSwitcher.clearScenes();
+		SceneSwitcher.switchTo(new LoginScene());
+	}
+}
+
+/**
+ * Logout the user
+ */
+public void logout() {
+	if (this == mGlobalUser) {
+		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGGING_OUT));
+		mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
+
 		UserRepo.getInstance().logout(false);
 
 		mEmail = null;
@@ -412,18 +414,15 @@ public void logout() {
 		mPrivateKey = null;
 		mServerKey = null;
 		mLoggedIn = false;
-		mUsername = "(None)";
+		mUsername = Config.User.INVALID_USERNAME;
 
-		Config.File.setUserPaths(mUsername);
+
 		AnalyticsRepo analyticsRepo = AnalyticsRepo.getInstance();
 		analyticsRepo.endSession();
 		analyticsRepo.newSession();
-		SceneSwitcher.clearScenes();
+		Config.File.setUserPaths(mUsername);
 
-		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGOUT));
-		mEventDispatcher.fire(new GameEvent(EventTypes.USER_DISCONNECTED));
-
-		SceneSwitcher.switchTo(new LoginScene());
+		mEventDispatcher.fire(new GameEvent(EventTypes.USER_LOGGED_OUT));
 	}
 }
 
@@ -470,7 +469,7 @@ public void login() {
  * @param responseListener listens to the web response
  */
 public void login(IResponseListener responseListener) {
-	IResponseListener[] listeners = null;
+	IResponseListener[] listeners;
 	if (responseListener != null) {
 		listeners = new IResponseListener[2];
 		listeners[1] = responseListener;
@@ -542,15 +541,15 @@ public void setAskToGoOnline(boolean ask) {
 /**
  * @return the register (beta) key
  */
-public String getRegisterKey() {
-	return mRegisterKey;
+String getBetaKey() {
+	return mBetaKey;
 }
 
 /**
  * Set register (beta) key
- * @param registerKey
+ * @param betaKey set the register key from the beta
  */
-public void setRegisterKey(String registerKey) {
-	mRegisterKey = registerKey;
+public void setBetaKey(String betaKey) {
+	mBetaKey = betaKey;
 }
 }

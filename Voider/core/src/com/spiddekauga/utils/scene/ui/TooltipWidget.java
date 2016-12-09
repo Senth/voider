@@ -28,10 +28,91 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+
 /**
  * Widget for displaying tooltips in editors
  */
 public class TooltipWidget extends WidgetGroup {
+/** Table where the tooltips are located */
+private AlignTable mTable = new AlignTable();
+/** Tooltips bound to specific actors */
+private HashMap<Actor, ITooltip> mTooltips = new HashMap<>();
+/** Actors bound to the tooltips */
+private HashMap<ITooltip, Actor> mActors = new HashMap<>();
+/** All permanents sorted with by levels, higher level first */
+private SortedMap<Integer, ArrayList<Actor>> mSortedPermanents = new TreeMap<>(new Comparator<Integer>() {
+	@Override
+	public int compare(Integer o1, Integer o2) {
+		return o1.intValue() - o2.intValue();
+	}
+});
+/** Temporary tooltips */
+private ArrayList<ITooltip> mTemporaryTooltips = new ArrayList<>();
+/** Permanent tooltips */
+private ArrayList<ITooltip> mPermanentTooltips = new ArrayList<>();
+/** The tooltip labels */
+private ArrayList<Label> mTooltipLabels = new ArrayList<>();
+/** Tooltip spacing labels, i.e. —> */
+private ArrayList<Label> mTooltipSpacing = new ArrayList<>();
+/** YouTube Label */
+private Label mYoutubeLabel = null;
+/** YouTube image button */
+private ImageButton mYoutubeButton = null;
+/** Tooltip image button */
+private Image mTooltipImage = new Image();
+/** URL listener */
+private GotoUrlListener mUrlListener = new GotoUrlListener();
+/** Listener for actors */
+private EventListener mActorListener = new EventListener() {
+	@Override
+	public boolean handle(Event event) {
+		// Hover
+		if (event instanceof InputEvent) {
+			InputEvent inputEvent = (InputEvent) event;
+
+			// Enter
+			if (inputEvent.getType() == Type.enter) {
+				ITooltip tooltip = getTooltipFromEvent(event);
+				if (tooltip != null) {
+					handleEnter(tooltip);
+				}
+			}
+			// Exit
+			else if (inputEvent.getType() == Type.exit) {
+				// Only exit if mouse actually left
+				Actor actor = event.getTarget();
+				if (!SceneUtils.isStagePointInsideActor(actor, inputEvent.getStageX(), inputEvent.getStageY())) {
+					ITooltip tooltip = getTooltipFromEvent(event);
+					if (tooltip != null) {
+						handleExit(tooltip);
+					}
+				}
+			}
+		}
+		// Pressed or visible/invisible
+		else if (event instanceof ChangeEvent) {
+			Actor actor = event.getTarget();
+			if (actor instanceof Button) {
+				// Pressed
+				if (((Button) actor).isChecked()) {
+					ITooltip tooltip = getTooltipFromEvent(event);
+					handlePressed(tooltip);
+				}
+
+				// Invisible and current
+				if (event instanceof VisibilityChangeEvent && !actor.isVisible()) {
+					ITooltip tooltip = getTooltipFromEvent(event);
+					if (tooltip.shouldHideWhenHidden() && isCurrentPermanentTooltip(tooltip)) {
+						handleInvisible();
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+};
+
 /**
  * Constructor which sets the youtube image
  * @param tooltipImage a drawable to display to most left
@@ -99,6 +180,18 @@ public TooltipWidget(Drawable tooltipImage, ImageButtonStyle youtubeImage, Label
 }
 
 /**
+ * Add a tooltip for several actors
+ * @param actors the actors the tooltip is bound to
+ * @param tooltip the tooltip to display when the actor is hovered, active (depends on tooltip
+ * settings)
+ */
+public void add(ArrayList<Actor> actors, ITooltip tooltip) {
+	for (Actor actor : actors) {
+		add(actor, tooltip);
+	}
+}
+
+/**
  * Add a tooltip to the widget
  * @param actor the actor the tooltip is bound to
  * @param tooltip the tooltip to display when the actor is hovered, active (depends on tooltip
@@ -118,18 +211,6 @@ public void add(Actor actor, ITooltip tooltip) {
 		}
 
 		permanents.add(actor);
-	}
-}
-
-/**
- * Add a tooltip for several actors
- * @param actors the actors the tooltip is bound to
- * @param tooltip the tooltip to display when the actor is hovered, active (depends on tooltip
- * settings)
- */
-public void add(ArrayList<Actor> actors, ITooltip tooltip) {
-	for (Actor actor : actors) {
-		add(actor, tooltip);
 	}
 }
 
@@ -168,6 +249,71 @@ private void handleEnter(ITooltip tooltip) {
 }
 
 /**
+ * Set a temporary tooltip
+ * @param tooltip the tooltip to set as a temporary
+ */
+private void setTemporaryTooltip(ITooltip tooltip) {
+	mTemporaryTooltips.clear();
+	addHierarchyToList(tooltip, mTemporaryTooltips);
+	setLabels(mTemporaryTooltips);
+}
+
+/**
+ * Set YouTube link
+ * @param tooltip the tooltip to display the youtube link for
+ */
+private void setYoutubeLink(ITooltip tooltip) {
+	mUrlListener.setUrl(tooltip.getYoutubeLink());
+	mYoutubeLabel.setText(tooltip.getText());
+	mYoutubeButton.setVisible(true);
+	mYoutubeButton.invalidateHierarchy();
+}
+
+/**
+ * Add tooltip hierarchy to the specified tooltip list
+ * @param tooltip the tooltip hierarchy to add
+ * @param list add hierarchy to this list
+ */
+private static void addHierarchyToList(ITooltip tooltip, ArrayList<ITooltip> list) {
+	ITooltip currentTooltip = tooltip;
+	do {
+		list.add(0, currentTooltip);
+		currentTooltip = currentTooltip.getParent();
+	} while (currentTooltip != null);
+}
+
+/**
+ * Sets the labels correctly depending on the number of tooltips that are visible
+ * @param tooltips
+ */
+private void setLabels(ArrayList<ITooltip> tooltips) {
+	for (int i = 0; i < mTooltipLabels.size(); ++i) {
+		Label label = mTooltipLabels.get(i);
+		String tooltipText = "";
+		String hotkey = "";
+		if (i < tooltips.size()) {
+			ITooltip tooltip = tooltips.get(i);
+			tooltipText = tooltip.getText();
+
+			// Set hotkey on Desktop
+			if (tooltip.hasHotkey() && Gdx.app.getType() == ApplicationType.Desktop) {
+				hotkey = "(" + tooltip.getHotkey() + ") ";
+			}
+		}
+		label.setText(hotkey + tooltipText);
+	}
+
+	// Show/hide the correct amount of tooltip spacing —>
+	for (int i = 0; i < mTooltipSpacing.size(); ++i) {
+		if (i < tooltips.size() - 1) {
+			mTooltipSpacing.get(i).setVisible(true);
+		} else {
+			mTooltipSpacing.get(i).setVisible(false);
+		}
+	}
+}
+
+/**
  * Handle exit event for a tooltip
  * @param tooltip the tooltip that should be hidden again when exited
  */
@@ -175,6 +321,28 @@ private void handleExit(ITooltip tooltip) {
 	if (!tooltip.isYoutubeOnly()) {
 		clearTemporaryTooltip(tooltip);
 	}
+}
+
+;
+
+/**
+ * Clear a temporary tooltip
+ * @param tooltip the temporary tooltip must be this tooltip to work
+ */
+private void clearTemporaryTooltip(ITooltip tooltip) {
+	if (isCurrentTemporaryTooltip(tooltip)) {
+		mTemporaryTooltips.clear();
+		setLabels(mPermanentTooltips);
+	}
+}
+
+/**
+ * Checks if this is the current temporary tooltip
+ * @param tooltip the tooltip to check
+ * @return true if the tooltip is the current temporary tooltip
+ */
+private boolean isCurrentTemporaryTooltip(ITooltip tooltip) {
+	return mTemporaryTooltips.size() > 0 && tooltip == mTemporaryTooltips.get(mTemporaryTooltips.size() - 1);
 }
 
 /**
@@ -185,6 +353,18 @@ private void handlePressed(ITooltip tooltip) {
 	if (tooltip.isPermanent()) {
 		setPermanentTooltip(tooltip);
 	}
+}
+
+/**
+ * Set a permanent tooltip. Automatically clears the temporary tooltip.
+ * @param tooltip the tooltip to set as a permanent tooltip
+ */
+private void setPermanentTooltip(ITooltip tooltip) {
+	mPermanentTooltips.clear();
+	mTemporaryTooltips.clear();
+
+	addHierarchyToList(tooltip, mPermanentTooltips);
+	setLabels(mPermanentTooltips);
 }
 
 /**
@@ -240,109 +420,12 @@ private void handleInvisible() {
 }
 
 /**
- * Set a temporary tooltip
- * @param tooltip the tooltip to set as a temporary
- */
-private void setTemporaryTooltip(ITooltip tooltip) {
-	mTemporaryTooltips.clear();
-	addHierarchyToList(tooltip, mTemporaryTooltips);
-	setLabels(mTemporaryTooltips);
-}
-
-/**
- * Clear a temporary tooltip
- * @param tooltip the temporary tooltip must be this tooltip to work
- */
-private void clearTemporaryTooltip(ITooltip tooltip) {
-	if (isCurrentTemporaryTooltip(tooltip)) {
-		mTemporaryTooltips.clear();
-		setLabels(mPermanentTooltips);
-	}
-}
-
-/**
- * Checks if this is the current temporary tooltip
- * @param tooltip the tooltip to check
- * @return true if the tooltip is the current temporary tooltip
- */
-private boolean isCurrentTemporaryTooltip(ITooltip tooltip) {
-	return mTemporaryTooltips.size() > 0 && tooltip == mTemporaryTooltips.get(mTemporaryTooltips.size() - 1);
-}
-
-/**
  * Checks if this is the current permanent tooltip
  * @param tooltip the tooltip to check
  * @return true if the tooltip is the current permanent tooltip
  */
 private boolean isCurrentPermanentTooltip(ITooltip tooltip) {
 	return mPermanentTooltips.size() > 0 && tooltip == mPermanentTooltips.get(mPermanentTooltips.size() - 1);
-}
-
-/**
- * Set a permanent tooltip. Automatically clears the temporary tooltip.
- * @param tooltip the tooltip to set as a permanent tooltip
- */
-private void setPermanentTooltip(ITooltip tooltip) {
-	mPermanentTooltips.clear();
-	mTemporaryTooltips.clear();
-
-	addHierarchyToList(tooltip, mPermanentTooltips);
-	setLabels(mPermanentTooltips);
-}
-
-/**
- * Add tooltip hierarchy to the specified tooltip list
- * @param tooltip the tooltip hierarchy to add
- * @param list add hierarchy to this list
- */
-private static void addHierarchyToList(ITooltip tooltip, ArrayList<ITooltip> list) {
-	ITooltip currentTooltip = tooltip;
-	do {
-		list.add(0, currentTooltip);
-		currentTooltip = currentTooltip.getParent();
-	} while (currentTooltip != null);
-}
-
-/**
- * Sets the labels correctly depending on the number of tooltips that are visible
- * @param tooltips
- */
-private void setLabels(ArrayList<ITooltip> tooltips) {
-	for (int i = 0; i < mTooltipLabels.size(); ++i) {
-		Label label = mTooltipLabels.get(i);
-		String tooltipText = "";
-		String hotkey = "";
-		if (i < tooltips.size()) {
-			ITooltip tooltip = tooltips.get(i);
-			tooltipText = tooltip.getText();
-
-			// Set hotkey on Desktop
-			if (tooltip.hasHotkey() && Gdx.app.getType() == ApplicationType.Desktop) {
-				hotkey = "(" + tooltip.getHotkey() + ") ";
-			}
-		}
-		label.setText(hotkey + tooltipText);
-	}
-
-	// Show/hide the correct amount of tooltip spacing —>
-	for (int i = 0; i < mTooltipSpacing.size(); ++i) {
-		if (i < tooltips.size() - 1) {
-			mTooltipSpacing.get(i).setVisible(true);
-		} else {
-			mTooltipSpacing.get(i).setVisible(false);
-		}
-	}
-}
-
-/**
- * Set YouTube link
- * @param tooltip the tooltip to display the youtube link for
- */
-private void setYoutubeLink(ITooltip tooltip) {
-	mUrlListener.setUrl(tooltip.getYoutubeLink());
-	mYoutubeLabel.setText(tooltip.getText());
-	mYoutubeButton.setVisible(true);
-	mYoutubeButton.invalidateHierarchy();
 }
 
 /**
@@ -397,21 +480,13 @@ public float getMarginLeft() {
 }
 
 @Override
-@Deprecated
-public void setHeight(float height) {
-	throw new IllegalAccessError("Cannot change height of tooltip widget!");
+public float getWidth() {
+	return mTable.getWidth();
 }
-
-;
 
 @Override
 public void setWidth(float width) {
 	mTable.setWidth(width);
-}
-
-@Override
-public void layout() {
-	mTable.layout();
 }
 
 @Override
@@ -420,8 +495,9 @@ public float getHeight() {
 }
 
 @Override
-public float getWidth() {
-	return mTable.getWidth();
+@Deprecated
+public void setHeight(float height) {
+	throw new IllegalAccessError("Cannot change height of tooltip widget!");
 }
 
 @Override
@@ -454,94 +530,16 @@ public float getMaxHeight() {
 	return mTable.getMaxHeight();
 }
 
-/** Listener for actors */
-private EventListener mActorListener = new EventListener() {
-	@Override
-	public boolean handle(Event event) {
-		// Hover
-		if (event instanceof InputEvent) {
-			InputEvent inputEvent = (InputEvent) event;
-
-			// Enter
-			if (inputEvent.getType() == Type.enter) {
-				ITooltip tooltip = getTooltipFromEvent(event);
-				if (tooltip != null) {
-					handleEnter(tooltip);
-				}
-			}
-			// Exit
-			else if (inputEvent.getType() == Type.exit) {
-				// Only exit if mouse actually left
-				Actor actor = event.getTarget();
-				if (!SceneUtils.isStagePointInsideActor(actor, inputEvent.getStageX(), inputEvent.getStageY())) {
-					ITooltip tooltip = getTooltipFromEvent(event);
-					if (tooltip != null) {
-						handleExit(tooltip);
-					}
-				}
-			}
-		}
-		// Pressed or visible/invisible
-		else if (event instanceof ChangeEvent) {
-			Actor actor = event.getTarget();
-			if (actor instanceof Button) {
-				// Pressed
-				if (((Button) actor).isChecked()) {
-					ITooltip tooltip = getTooltipFromEvent(event);
-					handlePressed(tooltip);
-				}
-
-				// Invisible and current
-				if (event instanceof VisibilityChangeEvent && !actor.isVisible()) {
-					ITooltip tooltip = getTooltipFromEvent(event);
-					if (tooltip.shouldHideWhenHidden() && isCurrentPermanentTooltip(tooltip)) {
-						handleInvisible();
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-};
-
-
-/** Table where the tooltips are located */
-private AlignTable mTable = new AlignTable();
-/** Tooltips bound to specific actors */
-private HashMap<Actor, ITooltip> mTooltips = new HashMap<>();
-/** Actors bound to the tooltips */
-private HashMap<ITooltip, Actor> mActors = new HashMap<>();
-/** All permanents sorted with by levels, higher level first */
-private SortedMap<Integer, ArrayList<Actor>> mSortedPermanents = new TreeMap<>(new Comparator<Integer>() {
-	@Override
-	public int compare(Integer o1, Integer o2) {
-		return o1.intValue() - o2.intValue();
-	}
-});
-/** Temporary tooltips */
-private ArrayList<ITooltip> mTemporaryTooltips = new ArrayList<>();
-/** Permanent tooltips */
-private ArrayList<ITooltip> mPermanentTooltips = new ArrayList<>();
-/** The tooltip labels */
-private ArrayList<Label> mTooltipLabels = new ArrayList<>();
-/** Tooltip spacing labels, i.e. —> */
-private ArrayList<Label> mTooltipSpacing = new ArrayList<>();
-/** YouTube Label */
-private Label mYoutubeLabel = null;
-/** YouTube image button */
-private ImageButton mYoutubeButton = null;
-/** Tooltip image button */
-private Image mTooltipImage = new Image();
-/** URL listener */
-private GotoUrlListener mUrlListener = new GotoUrlListener();
-
+@Override
+public void layout() {
+	mTable.layout();
+}
 
 
 /**
  * Interface for tooltips. Tip! Use this as an interface for enumerations for all known tooltips
  */
-public static interface ITooltip {
+public interface ITooltip {
 	/**
 	 * @return text of the tooltip
 	 */
@@ -597,52 +595,6 @@ public static interface ITooltip {
 }
 
 /**
- * Listens to actors and opens the specified URL when pressed.
- */
-private class GotoUrlListener extends ButtonListener {
-	/** Current link to open */
-	private String mUrl = "";
-
-	@Override
-	public boolean handle(Event event) {
-		// Pressed for buttons
-		Actor actor = event.getListenerActor();
-		if (actor instanceof Button) {
-			super.handle(event);
-		}
-		// Not button
-		else {
-			if (event instanceof InputEvent) {
-				if (((InputEvent) event).getType() == Type.touchDown) {
-					openUrl();
-				}
-			}
-		}
-		return false;
-	}
-
-	@Override
-	protected void onPressed(Button button) {
-		openUrl();
-	}
-
-	/**
-	 * Opens the current URL
-	 */
-	private void openUrl() {
-		if (mUrl != null && !mUrl.isEmpty()) {
-			Gdx.app.getNet().openURI(mUrl);
-		}
-	}
-
-	/**
-	 * Set the url to open when the actors are pressed
-	 * @param url the url to go to when any of the actors are pressed
-	 */
-	public void setUrl(String url) {
-		mUrl = url;
-	}
-}/**
  * Custom tooltips
  */
 public static class CustomTooltip implements ITooltip {
@@ -803,4 +755,49 @@ public static class CustomTooltip implements ITooltip {
 	}
 }
 
+/** Listens to actors and opens the specified URL when pressed. */
+private class GotoUrlListener extends ButtonListener {
+	/** Current link to open */
+	private String mUrl = "";
+
+	@Override
+	public boolean handle(Event event) {
+		// Pressed for buttons
+		Actor actor = event.getListenerActor();
+		if (actor instanceof Button) {
+			super.handle(event);
+		}
+		// Not button
+		else {
+			if (event instanceof InputEvent) {
+				if (((InputEvent) event).getType() == Type.touchDown) {
+					openUrl();
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	protected void onPressed(Button button) {
+		openUrl();
+	}
+
+	/**
+	 * Opens the current URL
+	 */
+	private void openUrl() {
+		if (mUrl != null && !mUrl.isEmpty()) {
+			Gdx.app.getNet().openURI(mUrl);
+		}
+	}
+
+	/**
+	 * Set the url to open when the actors are pressed
+	 * @param url the url to go to when any of the actors are pressed
+	 */
+	public void setUrl(String url) {
+		mUrl = url;
+	}
+}
 }

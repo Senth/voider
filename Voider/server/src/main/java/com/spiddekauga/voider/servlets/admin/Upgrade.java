@@ -3,6 +3,7 @@ package com.spiddekauga.voider.servlets.admin;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
@@ -28,13 +29,67 @@ import javax.servlet.ServletException;
  */
 @SuppressWarnings({"serial", "unused"})
 public class Upgrade extends VoiderServlet {
+private static final String BLOB_INFO_TABLE = "__BlobInfo__";
 
 @Override
 protected void handleRequest() throws ServletException, IOException {
-	deleteBackupInfo();
+	List<ResourceWithoutBlob> resourceWithoutBlobs = getResourcesWithoutBlobs();
+	showResourcesWithoutBlobs(resourceWithoutBlobs);
 
 	getResponse().setContentType("text/html");
 	getResponse().getWriter().append("DONE !");
+}
+
+private List<ResourceWithoutBlob> getResourcesWithoutBlobs() {
+	List<ResourceWithoutBlob> resourceWithoutBlobs = new ArrayList<>();
+
+	Iterable<Entity> userResources = DatastoreUtils.getEntities(DatastoreTables.USER_RESOURCES);
+
+	for (Entity userResource : userResources) {
+		BlobKey blobKey = (BlobKey) userResource.getProperty(CUserResources.BLOB_KEY);
+		Key entityKey = KeyFactory.createKey(BLOB_INFO_TABLE, blobKey.getKeyString());
+
+		Entity blobEntity = DatastoreUtils.getEntity(entityKey);
+		if (blobEntity == null) {
+			UUID resourceId = DatastoreUtils.getPropertyUuid(userResource, CUserResources.RESOURCE_ID);
+			int revision = DatastoreUtils.getPropertyInt(userResource, CUserResources.REVISION, -1);
+			ResourceWithoutBlob resourceWithoutBlob = new ResourceWithoutBlob(resourceId, revision);
+			resourceWithoutBlobs.add(resourceWithoutBlob);
+		}
+	}
+
+	Iterable<Entity> publishedResources = DatastoreUtils.getEntities(DatastoreTables.PUBLISHED);
+	for (Entity publishedResource : publishedResources) {
+		BlobKey blobKey = (BlobKey) publishedResource.getProperty(CPublished.BLOB_KEY);
+		Key entityKey = KeyFactory.createKey(BLOB_INFO_TABLE, blobKey.getKeyString());
+
+		Entity blobEntity = DatastoreUtils.getEntity(entityKey);
+		if (blobEntity == null) {
+			UUID resourceId = DatastoreUtils.getPropertyUuid(publishedResource, CPublished.RESOURCE_ID);
+			String name = (String) publishedResource.getProperty(CPublished.NAME);
+			ResourceWithoutBlob resourceWithoutBlob = new ResourceWithoutBlob(name, resourceId);
+			resourceWithoutBlobs.add(resourceWithoutBlob);
+		}
+	}
+
+	return resourceWithoutBlobs;
+}
+
+private void showResourcesWithoutBlobs(List<ResourceWithoutBlob> resourceWithoutBlobs) throws IOException {
+	for (ResourceWithoutBlob resourceWithoutBlob : resourceWithoutBlobs) {
+		String message;
+		if (resourceWithoutBlob.mRevision != -1) {
+			message = "UserResource - ";
+		} else {
+			message = "Published - Name: " + resourceWithoutBlob.mName + ", ";
+		}
+		message += "id: " + resourceWithoutBlob.mResourceId;
+		if (resourceWithoutBlob.mRevision != -1) {
+			message += ", rev: " + resourceWithoutBlob.mRevision;
+		}
+		message += "\n<br/>";
+		getResponse().getWriter().append(message);
+	}
 }
 
 private void deleteBackupInfo() {
@@ -162,5 +217,22 @@ private void removeDeletedBlobs() {
 	DatastoreUtils.delete(resourceToRemove);
 	DatastoreUtils.put(entitiesToAdd);
 	BlobUtils.delete(blobsToRemove);
+}
+
+private static class ResourceWithoutBlob {
+	private UUID mResourceId;
+	private String mName;
+	private int mRevision;
+
+	private ResourceWithoutBlob(String name, UUID resourceId) {
+		this(resourceId, -1);
+		mName = name;
+	}
+
+	private ResourceWithoutBlob(UUID resourceId, int revision) {
+		mName = null;
+		mResourceId = resourceId;
+		mRevision = revision;
+	}
 }
 }

@@ -42,8 +42,8 @@ protected BulletEditorGui getGui() {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 	mWeapon.setWeaponDef(new WeaponDef());
 	Vector2 weaponPos = new Vector2();
@@ -52,8 +52,8 @@ protected void onInit() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (outcome == Outcomes.EXPLORE_LOAD) {
 		if (message instanceof BulletDefEntity) {
@@ -71,7 +71,7 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 			mInvoker.dispose();
 		}
 	} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-		getGui().popMsgBoxes();
+		getGui().removeAllMsgBoxes();
 	}
 }
 
@@ -167,9 +167,6 @@ float getCooldownMin() {
  */
 void setCooldownMin(float time) {
 	mWeapon.getDef().setCooldownMin(time);
-}@Override
-public void setDrawOnlyOutline(boolean drawOnlyOutline) {
-	// Does nothing
 }
 
 /**
@@ -182,9 +179,6 @@ float getCooldownMax() {
 	} else {
 		return 0;
 	}
-}@Override
-public boolean isDrawOnlyOutline() {
-	return false;
 }
 
 /**
@@ -193,6 +187,16 @@ public boolean isDrawOnlyOutline() {
  */
 void setCooldownMax(float time) {
 	mWeapon.getDef().setCooldownMax(time);
+}
+
+@Override
+public boolean isDrawOnlyOutline() {
+	return false;
+}
+
+@Override
+public void setDrawOnlyOutline(boolean drawOnlyOutline) {
+	// Does nothing
 }
 
 /**
@@ -214,6 +218,4 @@ float getBulletSpeed() {
 void setBulletSpeed(float bulletSpeed) {
 	mWeapon.getDef().setBulletSpeed(bulletSpeed);
 }
-
-
 }

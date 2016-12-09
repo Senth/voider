@@ -1,14 +1,13 @@
-package com.spiddekauga.voider.repo.misc;
+package com.spiddekauga.voider.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Resolution;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.misc.Motd;
-import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -36,6 +35,7 @@ SettingGeneralLocalRepo general = new SettingGeneralLocalRepo();
 private EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 private SettingUserPrefsGateway mUserPrefsGateway = new SettingUserPrefsGateway();
 private SettingClientPrefsGateway mClientPrefsGateway = new SettingClientPrefsGateway();
+
 /**
  * Private constructor to enforce singleton usage
  */
@@ -84,14 +84,14 @@ class SettingGeneralLocalRepo {
 	}
 
 	/**
-	 * Updates the client version to the latest client version
+	 * Updates the client gameVersion to the latest client gameVersion
 	 */
 	void updateLastUsedVersion() {
 		mUserPrefsGateway.updateLastUsedVersion(mVersionContainer.getLatest().getVersion());
 	}
 
 	/**
-	 * @return version container which has information about all versions
+	 * @return gameVersion container which has information about all versions
 	 */
 	VersionContainer getVersions() {
 		return mVersionContainer;
@@ -105,7 +105,7 @@ class SettingGeneralLocalRepo {
 	}
 
 	/**
-	 * @return the last client version this client used
+	 * @return the last client gameVersion this client used
 	 */
 	Version getLastUsedVersion() {
 		String versionString = mUserPrefsGateway.getLastUsedVersion();
@@ -123,7 +123,7 @@ class SettingGeneralLocalRepo {
 	}
 
 	/**
-	 * @return current client version
+	 * @return current client gameVersion
 	 */
 	Version getCurrentVersion() {
 		return mVersionContainer.getLatest();
@@ -200,7 +200,7 @@ class SettingGeneralLocalRepo {
 			}
 
 		} else {
-			Config.Debug.debugException("Terms not loaded when calling isTermsNew()");
+			Config.Debug.assertException("Terms not loaded when calling isTermsNew()");
 		}
 		return false;
 	}
@@ -214,7 +214,7 @@ class SettingGeneralLocalRepo {
 			String terms = ResourceCacheFacade.get(InternalNames.TXT_TERMS);
 			mUserPrefsGateway.setTermsLength(terms.length());
 		} else {
-			Config.Debug.debugException("Terms not loaded when calling acceptTerms()");
+			Config.Debug.assertException("Terms not loaded when calling acceptTerms()");
 		}
 	}
 }
@@ -329,80 +329,6 @@ class SettingDisplayLocalRepo {
 	void toggleFullscreen() {
 		mClientPrefsGateway.setFullscreen(!mClientPrefsGateway.isFullscreen());
 		updateScreenSize();
-	}	/**
-	 * Sets if game should start in fullscreen mode
-	 * @param fullscreen true for fullscreen
-	 */
-	void setFullscreen(boolean fullscreen) {
-		mClientPrefsGateway.setFullscreen(fullscreen);
-		updateScreenSize();
-	}
-
-	/**
-	 * @return true if game should start in fullscreen mode
-	 */
-	boolean isFullscreen() {
-		return mClientPrefsGateway.isFullscreen();
-	}
-
-	/**
-	 * Sets the startup resolution of the game
-	 * @param resolution
-	 */
-	void setResolutionWindowed(Resolution resolution) {
-		mClientPrefsGateway.setResolutionWindowed(resolution);
-		updateScreenSize();
-	}
-
-	/**
-	 * @return startup resolution of the game
-	 */
-	Resolution getResolutionWindowed() {
-		return mClientPrefsGateway.getResolutionWindowed();
-	}
-
-	/**
-	 * Sets the fullscreen resolution of the game
-	 * @param resolution
-	 */
-	void setResolutionFullscreen(Resolution resolution) {
-		mClientPrefsGateway.setResolutionFullscreen(resolution);
-		updateScreenSize();
-	}
-
-	/**
-	 * @return fullscreen resolution of the game
-	 */
-	Resolution getResolutionFullscreen() {
-		return mClientPrefsGateway.getResolutionFullscreen();
-	}
-
-
-
-	/**
-	 * Set icon/UI size
-	 * @param iconSize set the icon size
-	 */
-	void setIconSize(IconSizes iconSize) {
-		if (iconSize != getIconSize()) {
-			InternalNames[] oldSizes = InternalDeps.getDependencies(InternalDeps.UI_ALL);
-
-			mClientPrefsGateway.setIconSize(iconSize);
-
-			InternalNames[] newSizes = InternalDeps.getDependencies(InternalDeps.UI_ALL);
-
-			ResourceCacheFacade.replace(oldSizes, newSizes);
-			ResourceCacheFacade.finishLoading();
-
-			SceneSwitcher.reloadUi();
-		}
-	}
-
-	/**
-	 * @return current iconSize
-	 */
-	IconSizes getIconSize() {
-		return mClientPrefsGateway.getIconSize();
 	}
 
 	/**
@@ -420,6 +346,82 @@ class SettingDisplayLocalRepo {
 			Gdx.graphics.setDisplayMode(resolution.getWidth(), resolution.getHeight(), false);
 		}
 	}
+
+	/**
+	 * @return true if game should start in fullscreen mode
+	 */
+	boolean isFullscreen() {
+		return mClientPrefsGateway.isFullscreen();
+	}
+
+	/**
+	 * Sets if game should start in fullscreen mode
+	 * @param fullscreen true for fullscreen
+	 */
+	void setFullscreen(boolean fullscreen) {
+		mClientPrefsGateway.setFullscreen(fullscreen);
+		updateScreenSize();
+	}
+
+	/**
+	 * @return fullscreen resolution of the game
+	 */
+	Resolution getResolutionFullscreen() {
+		return mClientPrefsGateway.getResolutionFullscreen();
+	}
+
+	/**
+	 * @return startup resolution of the game
+	 */
+	Resolution getResolutionWindowed() {
+		return mClientPrefsGateway.getResolutionWindowed();
+	}
+
+	/**
+	 * Sets the startup resolution of the game
+	 * @param resolution
+	 */
+	void setResolutionWindowed(Resolution resolution) {
+		mClientPrefsGateway.setResolutionWindowed(resolution);
+		updateScreenSize();
+	}
+
+	/**
+	 * Sets the fullscreen resolution of the game
+	 * @param resolution
+	 */
+	void setResolutionFullscreen(Resolution resolution) {
+		mClientPrefsGateway.setResolutionFullscreen(resolution);
+		updateScreenSize();
+	}
+
+	/**
+	 * Set icon/UI size
+	 * @param iconSize set the icon size
+	 */
+	void setIconSize(SettingRepo.IconSizes iconSize) {
+		if (iconSize != getIconSize()) {
+			InternalNames[] oldSizes = InternalDeps.getDependencies(InternalDeps.UI_ALL);
+
+			mClientPrefsGateway.setIconSize(iconSize);
+
+			InternalNames[] newSizes = InternalDeps.getDependencies(InternalDeps.UI_ALL);
+
+			ResourceCacheFacade.replace(oldSizes, newSizes);
+			ResourceCacheFacade.finishLoading();
+
+			SceneSwitcher.reloadUi();
+		}
+	}
+
+	/**
+	 * @return current iconSize
+	 */
+	SettingRepo.IconSizes getIconSize() {
+		return mClientPrefsGateway.getIconSize();
+	}
+
+
 }
 
 /**

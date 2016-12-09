@@ -37,7 +37,7 @@ def fixValues(filename, multiplier):
                 try:
                     originalValue = float(originalValueString)
                 except ValueError:
-                    print "Unknown value"
+                    print("Unknown value")
                     originalValue = 1
 
             newValue = originalValue * multiplier
@@ -47,7 +47,7 @@ def fixValues(filename, multiplier):
                 pass
 
             newValueString = str(newValue)
-            print "Replacing " + variable + " -> " + newValueString
+            print("Replacing " + variable + " -> " + newValueString)
 
             skinString = skinString.replace(variable, newValueString)
         else:
@@ -64,6 +64,6 @@ for skin in SKINS_TO_CREATE:
     templateFile = skin + TEMPLATE_SUFFIX
     for density in DENSITY_BUCKETS:
         densityFile = skin + density.suffix
-        print "Copying " + templateFile + " -> " + densityFile
+        print("Copying " + templateFile + " -> " + densityFile)
         shutil.copy2(templateFile, densityFile)
         fixValues(densityFile, density.multiplier)

@@ -28,8 +28,6 @@ public class IC_Time extends IniClass {
 	protected float sceneUiFadeOut;
 	protected float sceneEnterTime;
 	protected float sceneExitTime;
-	protected float msgBoxFadeIn;
-	protected float msgBoxFadeOut;
 	/** How many words we can read per minute, helpful for loading text scenes */
 	protected float wordsPerMinute;
 
@@ -84,14 +82,6 @@ public class IC_Time extends IniClass {
 			}
 		}
 		return 0;
-	}
-
-	public float getMsgBoxFadeIn() {
-		return msgBoxFadeIn;
-	}
-
-	public float getMsgBoxFadeOut() {
-		return msgBoxFadeOut;
 	}
 }
 

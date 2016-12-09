@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 /**
- * Contains version information about the client
+ * Contains game version information about the client
  */
 public class Version implements IEntity {
 private static final int VERSION_PARTS = 3;
@@ -20,8 +20,8 @@ private String mVersion;
 private int[] mVersionParts;
 
 /**
- * Creates a new version object
- * @param versionString
+ * Creates a new Version object
+ * @param versionString string representation of the version (e.g. "0.6.0")
  */
 Version(String versionString) {
 	mVersion = versionString;
@@ -29,11 +29,11 @@ Version(String versionString) {
 }
 
 /**
- * Convert a string version to version parts
- * @param versionString
- * @return array with the appropriate version parts, null if invalid version string
+ * Convert a string version to integer version parts
+ * @param versionString the version string to convert (e.g. "0.6.0")
+ * @return array with the appropriate gameVersion parts, null if invalid gameVersion string
  */
-static int[] toVersionParts(String versionString) {
+private static int[] toVersionParts(String versionString) {
 	String[] versions = versionString.split("\\.");
 	if (versions.length == VERSION_PARTS) {
 		int[] versionParts = new int[VERSION_PARTS];
@@ -60,21 +60,21 @@ private Version() {
 }
 
 /**
- * @return full version string
+ * @return full gameVersion string
  */
 public String getVersion() {
 	return mVersion;
 }
 
 /**
- * @return version date
+ * @return gameVersion date
  */
 public Date getDate() {
 	return mDate;
 }
 
 /**
- * Set the date of the version
+ * Set the date of the gameVersion
  * @param date
  */
 public void setDate(Date date) {
@@ -84,16 +84,17 @@ public void setDate(Date date) {
 /**
  * @return true if an update is required
  */
-public boolean isUpdateRequired() {
+boolean isUpdateRequired() {
 	return mUpdateRequired;
 }
 
 /**
  * Call this to set if update is required. Automatically sets hotfix to false if this is set to
  * true
- * @param updateRequired
+ * @param updateRequired set as true if an update is required. If set to true hotfix is
+ * automatically set to false
  */
-public void setUpdateRequired(boolean updateRequired) {
+void setUpdateRequired(boolean updateRequired) {
 	mUpdateRequired = updateRequired;
 	if (mUpdateRequired) {
 		mHotfix = false;
@@ -101,18 +102,11 @@ public void setUpdateRequired(boolean updateRequired) {
 }
 
 /**
- * @return true if this is a server hotfix
- */
-public boolean isServerHotfix() {
-	return mHotfix;
-}
-
-/**
- * Set if this version is a hotfix (only server changes). Automatically sets update required to
+ * Set if this gameVersion is a hotfix (only server changes). Automatically sets update required to
  * false if this is set to true.
  * @param serverHotfix true if this is a server hotfix
  */
-public void setServerHotfix(boolean serverHotfix) {
+void setServerHotfix(boolean serverHotfix) {
 	mHotfix = serverHotfix;
 	if (mHotfix) {
 		mUpdateRequired = false;
@@ -123,7 +117,7 @@ public void setServerHotfix(boolean serverHotfix) {
  * Append a line to the change log
  * @param line a line containing the change log
  */
-public void addChangeLine(String line) {
+void addChangeLine(String line) {
 	if (mChanges == null) {
 		mChanges = line;
 	} else {
@@ -147,36 +141,34 @@ public void setChangeLog(String changes) {
 }
 
 /**
- * Check if this version is earlier than another version
- * @param otherVersion
- * @return true if this version is earlier than the specified version
+ * Check if this instance (version) is newer than olderVersion
+ * @param olderVersion the older version
+ * @return true if this instance (version) is earlier than the specified (older) version. False if
+ * olderVersion is newer than this version.
  */
-public boolean isEarlierThan(Version otherVersion) {
-	for (int i = 0; i < VERSION_PARTS; ++i) {
-		if (mVersionParts[i] > otherVersion.mVersionParts[i]) {
-			return false;
-		} else if (mVersionParts[i] < otherVersion.mVersionParts[i]) {
-			return true;
-		}
-	}
-	// Is equal
-	return false;
+public boolean isNewerThan(Version olderVersion) {
+	return olderVersion.isOlderThan(this);
 }
 
 /**
- * Check if this version is earlier than another version
- * @param otherVersion
- * @return true if this version is earlier than the specified version
+ * Check if this instance (version) is older than newerVersion
+ * @param newerVersion the newer version
+ * @return true if this instance (version) is older than the specified (newer) version. False if
+ * newerVersion is older than this version.
  */
-public boolean isLaterThan(Version otherVersion) {
+public boolean isOlderThan(Version newerVersion) {
+	if (equals(newerVersion)) {
+		return false;
+	}
+
 	for (int i = 0; i < VERSION_PARTS; ++i) {
-		if (mVersionParts[i] < otherVersion.mVersionParts[i]) {
+		if (mVersionParts[i] > newerVersion.mVersionParts[i]) {
 			return false;
-		} else if (mVersionParts[i] > otherVersion.mVersionParts[i]) {
+		} else if (mVersionParts[i] < newerVersion.mVersionParts[i]) {
 			return true;
 		}
 	}
-	// Is equal
+
 	return false;
 }
 

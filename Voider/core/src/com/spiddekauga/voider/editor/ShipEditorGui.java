@@ -22,15 +22,15 @@ private ShipEditor mShipEditor = null;
 private InnerWidgets mWidgets = new InnerWidgets();
 
 @Override
-public void dispose() {
+public void onDestroy() {
 	mWidgets.dispose();
 
-	super.dispose();
+	super.onDestroy();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initMovement();
 }

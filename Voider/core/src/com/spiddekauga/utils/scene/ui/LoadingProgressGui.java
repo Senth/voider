@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -15,8 +15,8 @@ import com.spiddekauga.voider.repo.resource.SkinNames;
 public class LoadingProgressGui extends Gui {
 
 	@Override
-	public void initGui() {
-		super.initGui();
+	public void onCreate() {
+		super.onCreate();
 
 		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
 

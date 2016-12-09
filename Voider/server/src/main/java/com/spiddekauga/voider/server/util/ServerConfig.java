@@ -50,7 +50,7 @@ public enum Builds {
 	/** Release server */
 	RELEASE("voider-thegame", "http://voider-game.com/", "https://voider-thegame.appspot.com/", null),;
 
-	private static final String DOWNLOAD_URL_PREFIX = "http://storage.googleapis.com/voider-shared/app/";
+	private static final String DOWNLOAD_URL_PREFIX = "https://storage.googleapis.com/voider-shared/app/";
 	private static final String DESKTOP_SUFFIX = ".jar";
 	private String mAppId;
 	private String mUrl;
@@ -58,7 +58,7 @@ public enum Builds {
 	private String mDownloadName;
 
 	/**
-	 * @param appId application id of the build
+	 * @param appId application id of the buildType
 	 * @param url URL for this app
 	 * @param appspotUrl appspot internal URL used for this app, set to null if same as url
 	 * @param downloadName for downloading stuff, null to not use
@@ -76,7 +76,7 @@ public enum Builds {
 	}
 
 	/**
-	 * @return get the current build, null if none was found
+	 * @return get the current buildType, null if none was found
 	 */
 	public static Builds getCurrent() {
 		for (Builds build : Builds.values()) {

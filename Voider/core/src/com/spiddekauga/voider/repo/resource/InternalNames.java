@@ -92,13 +92,10 @@ public enum InternalNames {
 	MUSIC_SURFACE("surface.mp3", Music.class),
 	MUSIC_TUNNEL("tunnels.mp3", Music.class),
 	MUSIC_CORE("core.mp3", Music.class),
-	/** Game over music */
 	MUSIC_GAME_OVER_INTRO("game_over_intro.mp3", Music.class),
-	/** Game over loop */
 	MUSIC_GAME_OVER_LOOP("game_over_loop.mp3", Music.class),
-	/** Level success music */
-	MUSIC_LEVEL_COMPLETED("level_completed.mp3", Music.class),
-	/** Main theme */
+	MUSIC_LEVEL_COMPLETED_INTRO("level_completed_intro.mp3", Music.class),
+	MUSIC_LEVEL_COMPLETED_LOOP("level_completed_loop.mp3", Music.class),
 	MUSIC_TITLE("title_theme.mp3", Music.class),
 
 
@@ -185,6 +182,7 @@ private final String mFilename;
 private final Class<?> mType;
 /** Optional parameters */
 private AssetLoaderParameters<?> mParameters = null;
+
 /**
  * Initializes the enum with a filename
  * @param filename the filename (not full path)

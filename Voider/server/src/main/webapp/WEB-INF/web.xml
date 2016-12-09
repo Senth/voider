@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns="http://java.sun.com/xml/ns/javaee"
-xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+<web-app version="2.5"
+		 xmlns="http://java.sun.com/xml/ns/javaee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 
 	<!--———————————————
@@ -58,8 +57,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>AccountChange</servlet-name>
 		<url-pattern>/api/account-change</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!-- Published -->
 	<servlet>
 		<servlet-name>Publish</servlet-name>
@@ -141,8 +140,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>StatSync</servlet-name>
 		<url-pattern>/api/stat-sync</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!-- User resources -->
 	<servlet>
 		<servlet-name>UserResourceSync</servlet-name>
@@ -152,8 +151,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>UserResourceSync</servlet-name>
 		<url-pattern>/api/user-resource-sync</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!-- Upload/Download -->
 	<servlet>
 		<servlet-name>GetUploadUrl</servlet-name>
@@ -171,8 +170,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>BlobDownload</servlet-name>
 		<url-pattern>/api/blob-download</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!-- Backup -->
 	<servlet>
 		<servlet-name>BackupNewBlobs</servlet-name>
@@ -198,8 +197,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>RestoreBlobs</servlet-name>
 		<url-pattern>/api/restore-blobs</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!-- Misc -->
 	<servlet>
 		<servlet-name>BugReport</servlet-name>
@@ -246,8 +245,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>ChatDisconnected</servlet-name>
 		<url-pattern>/_ah/channel/disconnected/</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!--———————————————
 	 		WEB
 	———————————————–-->
@@ -269,8 +268,17 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>BetaKeys</servlet-name>
 		<url-pattern>/beta-keys</url-pattern>
 	</servlet-mapping>
-	
-	
+	<!-- Download -->
+	<servlet>
+		<servlet-name>Download</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.web.Download</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Download</servlet-name>
+		<url-pattern>/download</url-pattern>
+	</servlet-mapping>
+
+
 	<!--———————————————
 	 		ADMIN
 	———————————————–-->
@@ -316,8 +324,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Fixit</servlet-name>
 		<url-pattern>/admin/fixit</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!--———————————————
 	 	  CRON
 	———————————————–-->
@@ -329,8 +337,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>BackupCleanup</servlet-name>
 		<url-pattern>/cron/backup-cleanup</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!--———————————————
 	    REMOTE API
 	———————————————–-->
@@ -344,8 +352,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>RemoteApiServlet</servlet-name>
 		<url-pattern>/_ah/remote_api</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<!--———————————————
 	 	  SECURITY
 	———————————————–-->
@@ -365,8 +373,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 			<role-name>admin</role-name>
 		</auth-constraint>
 	</security-constraint>
-	
-	
+
+
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>

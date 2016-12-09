@@ -43,7 +43,7 @@ import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceContainer;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ private boolean mCompletedLevel;
 /** True if the level is running */
 private boolean mRunning = false;
 private PlayerActor mPlayerActor = null;
-/** Read class version */
+/** Read class gameVersion */
 private int mClassVersion = CLASS_REVISION;
 /** Multiple enemies in a group, but just save the leader and number of enemies */
 @Deprecated

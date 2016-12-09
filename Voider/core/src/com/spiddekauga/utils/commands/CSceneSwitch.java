@@ -1,8 +1,8 @@
 package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 
 import java.lang.reflect.Constructor;
 

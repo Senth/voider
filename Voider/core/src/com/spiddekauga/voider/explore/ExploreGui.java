@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -21,28 +22,32 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.ImageButtonFill;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.VisibilityChangeListener;
 import com.spiddekauga.voider.explore.ExploreScene.ExploreViews;
 import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.resource.RevisionEntity;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.SettingDateRepo;
+import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.ISkinNames;
-import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.ButtonFactory.TabRadioWrapper;
 import com.spiddekauga.voider.scene.ui.UiFactory.Positions;
+import com.spiddekauga.voider.scene.ui.UiStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.LabelStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingDateRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
@@ -61,6 +66,7 @@ protected TabWidget mLeftPanel = null;
 protected TabWidget mRightPanel = null;
 /** Repository for printing in the correct date format */
 protected SettingDateRepo mDateRepo = SettingRepo.getInstance().date();
+protected SettingRepo.IconSizes mIconSize = SettingRepo.getInstance().display().getIconSize();
 private IEventListener mUserListener = new IEventListener() {
 	@Override
 	public void handleEvent(GameEvent event) {
@@ -106,21 +112,28 @@ protected static void clearButtons(Button[] buttons) {
 
 /**
  * Set the explore scene
- * @param exploreScene
  */
 void setExploreScene(ExploreScene exploreScene) {
 	mScene = exploreScene;
 }
 
 @Override
-public void dispose() {
+public void resetValues() {
+	super.resetValues();
+
+	resetSearchFilters();
+	resetInfo();
+}
+
+@Override
+public void onDestroy() {
 	mWidgets.dispose();
 	mLeftPanel.dispose();
 	mRightPanel.dispose();
 
 	disconnectUserListeners();
 
-	super.dispose();
+	super.onDestroy();
 }
 
 @Override
@@ -138,8 +151,8 @@ protected void onResize(int width, int height) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mWidgets = new Widgets();
 
@@ -161,12 +174,13 @@ public void initGui() {
 	getStage().setScrollFocus(mWidgets.content.scrollPane);
 }
 
-@Override
-public void resetValues() {
-	super.resetValues();
-
-	resetSearchFilters();
-	resetInfo();
+/**
+ * Disconnect user listeners
+ */
+private void disconnectUserListeners() {
+	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
+	eventDispatcher.disconnect(EventTypes.USER_CONNECTED, mUserListener);
+	eventDispatcher.disconnect(EventTypes.USER_DISCONNECTED, mUserListener);
 }
 
 /**
@@ -198,7 +212,7 @@ protected void resetInfo() {
 	if (actor != null) {
 		// Has created UI elements
 		if (mWidgets.info.name != null) {
-			mWidgets.info.createbBy.setText(actor.originalCreator);
+			mWidgets.info.createdBy.setText(actor.originalCreator);
 			mWidgets.info.date.setText(mDateRepo.getDate(actor.date));
 			mWidgets.info.description.setText(actor.description);
 			mWidgets.info.name.setText(actor.name);
@@ -214,22 +228,13 @@ protected void resetInfo() {
 	} else {
 		// Has created UI elements
 		if (mWidgets.info.name != null) {
-			mWidgets.info.createbBy.setText("");
+			mWidgets.info.createdBy.setText("");
 			mWidgets.info.date.setText("");
 			mWidgets.info.description.setText("");
 			mWidgets.info.name.setText("");
 			mWidgets.info.revisedHider.hide();
 		}
 	}
-}
-
-/**
- * Disconnect user listeners
- */
-private void disconnectUserListeners() {
-	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-	eventDispatcher.disconnect(EventTypes.USER_CONNECTED, mUserListener);
-	eventDispatcher.disconnect(EventTypes.USER_DISCONNECTED, mUserListener);
 }
 
 /**
@@ -382,10 +387,17 @@ protected void addContent(Actor actor) {
 
 	// Add new row
 	if (table.getRow() == null || table.getRow().getCellCount() == mActorsPerRow) {
-		table.row().setPadTop(paddingExplore).setFillWidth(true).setEqualCellSize(true).setPadRight(paddingExplore);
+		table.row()
+				.setPadTop(paddingExplore)
+				.setPadBottom(paddingExplore)
+				.setFillWidth(true)
+				.setEqualCellSize(true);
 	}
 
-	table.add(actor).setFillWidth(true).setPadLeft(paddingExplore);
+	table.add(actor)
+			.setFillWidth(true)
+			.setPadLeft(paddingExplore)
+			.setPadRight(paddingExplore);
 }
 
 /**
@@ -514,7 +526,6 @@ protected void resetViewButtons() {
 /**
  * Initialize search filters tab
  * @param table content table
- * @param contentHider
  */
 protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
 	// Tab Button
@@ -674,7 +685,7 @@ private void initRightPanel() {
  * Show select revision message box
  */
 private void showSelectRevisionMsgBox() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Select Revision");
+	MsgBox msgBox = mUiFactory.msgBox.add("Select Revision");
 	float width = mWidgets.revision.scrollPane.getWidth();
 	float height = mWidgets.revision.scrollPane.getHeight();
 	msgBox.content(mWidgets.revision.scrollPane).size(width, height);
@@ -790,6 +801,90 @@ protected void resetContentMargins() {
 }
 
 /**
+ * Create name field for the explore actor
+ * @param defEntity actor or level definition to print the name
+ * @param table the actor/level table
+ */
+void addFieldName(DefEntity defEntity, AlignTable table) {
+	Row row = table.row(Horizontal.CENTER, Vertical.TOP).setFillWidth(true).setPadTop(mUiFactory.getStyles().vars.paddingOuter);
+	mUiFactory.text.add(defEntity.name, true, table);
+	table.getCell().setFillWidth(true).setAlign(Horizontal.CENTER);
+
+	// Actors use two lines, or levels when there icon size is big
+	boolean useTwoLines = true;
+	if (mIconSize != SettingRepo.IconSizes.LARGE && defEntity instanceof LevelDefEntity) {
+		useTwoLines = false;
+	}
+
+	if (useTwoLines) {
+		Label.LabelStyle labelStyle = UiStyles.LabelStyles.DEFAULT.getStyle();
+		float lineHeight = labelStyle.font.getLineHeight();
+		row.setHeight(lineHeight * 2);
+	}
+}
+
+/**
+ * Create actor image button
+ * @param defEntity the definition that has the image
+ * @param selected if the actor is currently selected
+ * @param table table to add the image button to
+ */
+void addImageButtonField(DefEntity defEntity, boolean selected, AlignTable table) {
+	addImageButtonField(defEntity, selected, table, null);
+}
+
+/**
+ * Create actor image button
+ * @param defEntity the definition that has the image
+ * @param selected if the actor is currently selected
+ * @param table table to add the image button to
+ * @param onSelectAction optional listener that's called when an actor has been selected
+ */
+void addImageButtonField(DefEntity defEntity, boolean selected, AlignTable table, final OnSelectAction onSelectAction) {
+	// Image button
+	ImageButton.ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
+	ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle(defaultImageStyle);
+	imageButtonStyle.imageUp = (Drawable) defEntity.drawable;
+
+	ImageButtonFill button = new ImageButtonFill(imageButtonStyle);
+	button.setChecked(selected);
+	table.row().setFillWidth(true);
+	table.add(button).setFillWidth(true).setKeepAspectRatio(true);
+	new ButtonListener(button) {
+		/** If this level was selected before */
+		private boolean mWasCheckedOnDown = false;
+
+		@Override
+		protected void onChecked(Button button, boolean checked) {
+			if (checked) {
+				mScene.setSelected(defEntity);
+				if (onSelectAction != null) {
+					onSelectAction.onSelect();
+				}
+			}
+		}
+
+		@Override
+		protected void onDown(Button button) {
+			mWasCheckedOnDown = button.isChecked();
+		}
+
+		@Override
+		protected void onUp(Button button) {
+			if (mWasCheckedOnDown) {
+				mScene.selectAction();
+			}
+		}
+	};
+	mWidgets.content.buttonGroup.add(button);
+
+	// Analytics
+	String sceneName = getClass().getSimpleName();
+	sceneName = sceneName.substring(0, sceneName.length() - 3);
+	new AnalyticsButtonListener(button, sceneName + "_Select", defEntity.name + " (" + defEntity.resourceId + ":" + defEntity.revision + ")");
+}
+
+/**
  * Repopulate contents
  */
 private void repopulateContent() {
@@ -798,14 +893,32 @@ private void repopulateContent() {
 }
 
 /**
- * Calculates the number of actors to display per row in the content
+ * Calculates the number of actors to display per row in the content. Uses {@link
+ * #getActorCountPerRow()} to calculate the number of actors per row.
  */
 private void calculateActorsPerRow() {
-	float floatActorsPerRow = mWidgets.content.scrollPane.getWidth() / getMaxActorWidth();
-	mActorsPerRow = (int) floatActorsPerRow;
-	if (!MathUtils.isEqual(floatActorsPerRow, mActorsPerRow)) {
-		mActorsPerRow++;
+	mActorsPerRow = getActorCountPerRow();
+}
+
+/**
+ * Calculates the number of actors to display per row in the content
+ */
+protected int getActorCountPerRow() {
+	float padding = mUiFactory.getStyles().vars.paddingExplore * 2;
+	float floatActorsPerRow = getAvailableContentWidth() / (getMaxActorWidth() + padding);
+	int actorsPerRow = (int) floatActorsPerRow;
+	if (!MathUtils.isEqual(floatActorsPerRow, actorsPerRow)) {
+		actorsPerRow += 1;
 	}
+
+	return actorsPerRow;
+}
+
+/**
+ * @return available content width
+ */
+protected float getAvailableContentWidth() {
+	return mWidgets.content.scrollPane.getWidth();
 }
 
 /**
@@ -813,13 +926,6 @@ private void calculateActorsPerRow() {
  */
 protected abstract float getMaxActorWidth();
 
-/**
- * Add a button to the content button group
- * @param button the button to add
- */
-protected void addContentButton(ImageButton button) {
-	mWidgets.content.buttonGroup.add(button);
-}
 
 /**
  * Helper method for getting the correct string for enum ranges
@@ -854,7 +960,7 @@ protected void initInfo(AlignTable table, HideListener hider) {
 
 	// Created by
 	mUiFactory.text.addPanelSection("Created By", table, null);
-	mWidgets.info.createbBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAYER, "", false, table, null);
+	mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.INFO_PLAYER, "", false, table, null);
 
 	// Revised by
 	mUiFactory.text.addPanelSection("Revised By", table, mWidgets.info.revisedHider);
@@ -882,6 +988,13 @@ int getSelectedRevision() {
 	return -1;
 }
 
+/**
+ * Additional actions to take when an actor is selected
+ */
+interface OnSelectAction {
+	void onSelect();
+}
+
 private class Widgets implements Disposable {
 	Content content = new Content();
 	View view = new View();
@@ -901,7 +1014,7 @@ private class Widgets implements Disposable {
 		HideListener hider = new HideListener(true);
 		Label name = null;
 		Label description = null;
-		Label createbBy = null;
+		Label createdBy = null;
 		Label revisedBy = null;
 		Label date = null;
 		HideManual revisedHider = new HideManual();
@@ -926,7 +1039,7 @@ private class Widgets implements Disposable {
 	private class Content implements Disposable {
 		AlignTable table = new AlignTable();
 		ScrollPane scrollPane = null;
-		ButtonGroup<ImageButton> buttonGroup = new ButtonGroup<>();
+		ButtonGroup<ImageButtonFill> buttonGroup = new ButtonGroup<>();
 		Row waitIconRow = null;
 
 		@Override
@@ -973,7 +1086,9 @@ private class Widgets implements Disposable {
 			viewHider.addChild(contentHider);
 			contentHider.addChild(publishedHider);
 			publishedHider.addChild(onlyMineHider);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			contentHider.dispose();

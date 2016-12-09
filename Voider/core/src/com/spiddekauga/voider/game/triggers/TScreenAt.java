@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.Level;
@@ -18,7 +19,6 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.BoundingBox;
 import com.spiddekauga.voider.utils.Geometry;
 
@@ -38,13 +38,12 @@ private ArrayList<Vector2> mVertices = null;
 private Body mBody = null;
 /** Level to check for the x-coordinate */
 @Tag(34)
-private Level mLevel = null;@Override
-public float getBoundingRadius() {
-	return 0;
-}
+private Level mLevel = null;
+
 /** Temporary position, stores x-coord for getting the position */
 @Tag(35)
 private Vector2 mPosition = new Vector2();
+
 /**
  * @param level checks this level for the x coordinate
  * @param xCoord the x-coordinate we want the level to be at or beyond.
@@ -64,9 +63,6 @@ public TScreenAt(Level level, float xCoord) {
 private void updateBoundingBox() {
 	mBoundingBox.setLeft(mPosition.x);
 	mBoundingBox.setRight(mPosition.x);
-}@Override
-public BoundingBox getBoundingBox() {
-	return mBoundingBox;
 }
 
 /**
@@ -141,19 +137,6 @@ public void destroyBody() {
 	}
 
 	destroyVertices();
-}/**
- * Because we only use the x-coordinate, y will always be set to 0 here.
- */
-@Override
-public void setPosition(Vector2 position) {
-	mPosition.set(position.x, 0);
-	updateBoundingBox();
-
-	if (mBody != null) {
-		mBody.setTransform(mPosition, 0);
-	}
-
-	createVertices();
 }
 
 @Override
@@ -161,25 +144,8 @@ public boolean hasBody() {
 	return mBody != null;
 }
 
-@Override
-public void dispose() {
-	destroyBody();
-}@Override
-public Vector2 getPosition() {
-	return mPosition;
-}
-
-@Override
-public RenderOrders getRenderOrder() {
-	return RenderOrders.TRIGGER_SCREEN_AT;
-}
-
-
-
-
-
 /**
- * Creates the vertices for the graphical version of the trigger
+ * Creates the vertices for the graphical gameVersion of the trigger
  */
 private void createVertices() {
 	if (!isHidden()) {
@@ -202,7 +168,7 @@ private void createVertices() {
 }
 
 /**
- * Destroys the graphical version of the trigger
+ * Destroys the graphical gameVersion of the trigger
  */
 private void destroyVertices() {
 	if (mVertices != null) {
@@ -210,6 +176,21 @@ private void destroyVertices() {
 	}
 }
 
+@Override
+public void dispose() {
+	destroyBody();
+}
+
+@Override
+public RenderOrders getRenderOrder() {
+	return RenderOrders.TRIGGER_SCREEN_AT;
+}
+
+
+@Override
+public Vector2 getPosition() {
+	return mPosition;
+}
 
 
 @Override
@@ -217,12 +198,34 @@ public void setIsBeingMoved(boolean isBeingMoved) {
 	mIsBeingMoved = isBeingMoved;
 }
 
-
-
 @Override
 public boolean isBeingMoved() {
 	return mIsBeingMoved;
 }
 
+@Override
+public float getBoundingRadius() {
+	return 0;
+}
 
+@Override
+public BoundingBox getBoundingBox() {
+	return mBoundingBox;
+}
+
+
+/**
+ * Because we only use the x-coordinate, y will always be set to 0 here.
+ */
+@Override
+public void setPosition(Vector2 position) {
+	mPosition.set(position.x, 0);
+	updateBoundingBox();
+
+	if (mBody != null) {
+		mBody.setTransform(mPosition, 0);
+	}
+
+	createVertices();
+}
 }

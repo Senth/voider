@@ -2,12 +2,12 @@ package com.spiddekauga.voider.repo.resource;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -377,7 +377,8 @@ public static boolean isLoaded(InternalNames resource) {
 }
 
 /**
- * Waits for the cache to finish loading all files into the cache. I.e. blocks this thread
+ * Waits for the cache to finish loading (or unloading) all files into the cache. I.e. blocks this
+ * thread
  */
 public static void finishLoading() {
 	while (!update()) {
@@ -403,8 +404,8 @@ public static boolean update() {
 			ResourceItem toLoad = mLoadQueue.removeFirst();
 			mExternalLoader.load(toLoad.scene, toLoad.id, toLoad.revision);
 		}
-	} catch (ResourceException e) {
-
+	} catch (GdxRuntimeException e) {
+		mDependencyLoader.getExternalLoader().handleException(e);
 	}
 
 	return fullyLoaded;

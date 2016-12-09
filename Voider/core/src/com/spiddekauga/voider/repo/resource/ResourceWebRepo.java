@@ -107,7 +107,7 @@ void syncDownloaded(Date lastSync, IDownloadProgressListener progressListener, I
  * @param lastSync last synchronized date
  * @param conflicts optional conflicts to resolve (null if not used)
  * @param keepLocal optional how to resolve conflicts. True keeps local versions, false server
- * version, null returns the conflicts.
+ * gameVersion, null returns the conflicts.
  * @param responseListeners listens to the web response
  */
 void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ArrayList<UUID> removeResources, Date lastSync,

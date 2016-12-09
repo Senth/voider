@@ -29,8 +29,8 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class Maintenance extends VoiderController {
-static final String P_MAINTENANCE_MODE = "maintenance_mode";
-static final String P_MAINTENANCE_REASON = "maintenance_reason";
+private static final String P_MAINTENANCE_MODE = "maintenance_mode";
+private static final String P_MAINTENANCE_REASON = "maintenance_reason";
 private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS z");
 private static final String P_BACKUP_ID = "backup_id";
 

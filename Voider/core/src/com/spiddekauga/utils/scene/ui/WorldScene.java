@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +45,8 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	protected void onInit() {
-		super.onInit();
+	protected void onCreate() {
+		super.onCreate();
 
 		fixCamera();
 
@@ -58,15 +58,15 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-		super.onActivate(outcome, message, loadingOutcome);
+	protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onResume(outcome, message, loadingOutcome);
 
 		Actor.setWorld(mWorld);
 	}
 
 	@Override
-	protected void onDeactivate() {
-		super.onDeactivate();
+	protected void onPause() {
+		super.onPause();
 
 		Actor.setWorld(null);
 	}
@@ -145,11 +145,11 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	protected void onDispose() {
+	protected void onDestroy() {
 		mBulletDestroyer.dispose();
 		EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_ZOOM_CHANGE, mZoomListener);
 
-		super.onDispose();
+		super.onDestroy();
 	}
 
 	/**

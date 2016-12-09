@@ -2,8 +2,8 @@ package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug.Builds;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.Scene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.user.PasswordResetMethod;
@@ -16,7 +16,6 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.repo.user.UserRepo;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.sound.Music;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -33,13 +32,13 @@ private IEventListener mLoginListener = new IEventListener() {
 	@Override
 	public void handleEvent(GameEvent event) {
 		switch (event.type) {
-		case USER_LOGIN:
-			getGui().hideWaitWindow();
+		case USER_LOGGED_IN:
+			ProgressBar.hide();
 			setOutcome(Outcomes.LOGGED_IN);
 			break;
 
 		case USER_LOGIN_FAILED:
-			getGui().hideWaitWindow();
+			ProgressBar.hide();
 			getGui().focusPasswordField();
 			break;
 
@@ -70,12 +69,6 @@ public boolean onKeyDown(int keycode) {
 		return true;
 	}
 
-
-	// Debug tests
-	if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
-
-	}
-
 	return super.onKeyDown(keycode);
 }
 
@@ -90,11 +83,11 @@ protected void loadResources() {
 }
 
 @Override
-public void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+public void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-	eventDispatcher.connect(EventTypes.USER_LOGIN, mLoginListener);
+	eventDispatcher.connect(EventTypes.USER_LOGGED_IN, mLoginListener);
 	eventDispatcher.connect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
 
 	mMusicPlayer.play(Music.TITLE, MusicInterpolations.FADE_IN);
@@ -103,17 +96,20 @@ public void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome
 }
 
 @Override
-protected void onDispose() {
+protected void onDestroy() {
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
-	eventDispatcher.disconnect(EventTypes.USER_LOGIN, mLoginListener);
+	eventDispatcher.disconnect(EventTypes.USER_LOGGED_IN, mLoginListener);
 	eventDispatcher.disconnect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
 
-	super.onDispose();
+	super.onDestroy();
 }
 
 @Override
 protected Scene getNextScene() {
-	return new MainMenu();
+	if (super.getNextScene() == null) {
+		return new MainMenu();
+	}
+	return super.getNextScene();
 }
 
 @Override
@@ -124,13 +120,13 @@ protected LoginGui getGui() {
 /**
  * Try to login using stored username and private key
  */
-void login() {
+private void login() {
 	User userInfo = mUserRepo.getLastUser();
 
 	if (userInfo != null && userInfo.isOnline()) {
 		mLoggingInUser.set(userInfo);
 		mLoggingInUser.login();
-		getGui().showWaitWindow("Auto logging in as " + userInfo.getUsername());
+		ProgressBar.showSpinner("Auto logging in as " + userInfo.getUsername());
 	}
 	// Test offline
 	else {
@@ -149,9 +145,9 @@ void register(String username, String password, String email, String registerKey
 	mLoggingInUser.setUsername(username);
 	mLoggingInUser.setEmail(email);
 	mLoggingInUser.setPassword(password);
-	mLoggingInUser.setRegisterKey(registerKey);
+	mLoggingInUser.setBetaKey(registerKey);
 	mLoggingInUser.register(this);
-	getGui().showWaitWindow("Registering...");
+	ProgressBar.showSpinner("Registering...");
 }
 
 /**
@@ -160,18 +156,18 @@ void register(String username, String password, String email, String registerKey
  */
 void passwordResetSendToken(String email) {
 	mUserRepo.passwordResetSendToken(email, this);
-	getGui().showWaitWindow("Sending reset token to email...");
+	ProgressBar.showSpinner("Sending reset token to email...");
 }
 
 /**
  * Try and reset the user's password
- * @param email
- * @param password
- * @param token
+ * @param email user email or username
+ * @param password new password
+ * @param token password token gotten from the email
  */
 void resetPassword(String email, String password, String token) {
 	mUserRepo.passwordReset(email, password, token, this);
-	getGui().showWaitWindow("Resetting password");
+	ProgressBar.showSpinner("Resetting password");
 }
 
 /**
@@ -202,7 +198,7 @@ public void handleWebResponse(IMethodEntity method, IEntity response) {
  * @param response the register response
  */
 private void handleRegisterResponse(RegisterUserResponse response) {
-	getGui().hideWaitWindow();
+	ProgressBar.hide();
 
 	switch (response.status) {
 	case SUCCESS:
@@ -245,7 +241,7 @@ private void handleRegisterResponse(RegisterUserResponse response) {
  * @param response web response
  */
 private void handlePasswordResetSendToken(PasswordResetSendTokenResponse response) {
-	getGui().hideWaitWindow();
+	ProgressBar.hide();
 
 	switch (response.status) {
 	case FAILED_EMAIL:
@@ -268,7 +264,7 @@ private void handlePasswordResetSendToken(PasswordResetSendTokenResponse respons
  * @param response web response
  */
 private void handlePasswordReset(PasswordResetMethod method, PasswordResetResponse response) {
-	getGui().hideWaitWindow();
+	ProgressBar.hide();
 
 	switch (response.status) {
 	case FAILED_EXPIRED:
@@ -301,6 +297,6 @@ void login(String username, String password) {
 	mLoggingInUser.setUsername(username);
 	mLoggingInUser.setPassword(password);
 	mLoggingInUser.login();
-	getGui().showWaitWindow("Logging in");
+	ProgressBar.showSpinner("Logging in");
 }
 }

@@ -2,7 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**

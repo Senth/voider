@@ -32,14 +32,14 @@ add_move_corner_checked_over
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_add_move_corner_over
+terrain_add_move_corner_checked_over
   rotate: false
   xy: 2, 737
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-terrain_add_move_corner_checked_over
+terrain_add_move_corner_over
   rotate: false
   xy: 2, 737
   size: 64, 64
@@ -340,6 +340,13 @@ bullet_select_checked
   orig: 64, 64
   offset: 0, 0
   index: -1
+weapon_checked
+  rotate: false
+  xy: 462, 869
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 bullet_select_down
   rotate: false
   xy: 462, 869
@@ -354,21 +361,7 @@ weapon_down
   orig: 64, 64
   offset: 0, 0
   index: -1
-weapon_checked
-  rotate: false
-  xy: 462, 869
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 bullet_select_checked_over
-  rotate: false
-  xy: 592, 935
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-bullet_select_over
   rotate: false
   xy: 592, 935
   size: 64, 64
@@ -383,6 +376,13 @@ weapon_over
   offset: 0, 0
   index: -1
 weapon_checked_over
+  rotate: false
+  xy: 592, 935
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+bullet_select_over
   rotate: false
   xy: 592, 935
   size: 64, 64
@@ -1984,13 +1984,6 @@ path_add_down
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_tab_checked
-  rotate: false
-  xy: 332, 11
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 path_tab_down
   rotate: false
   xy: 332, 11
@@ -1998,14 +1991,14 @@ path_tab_down
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_add_checked_over
+path_tab_checked
   rotate: false
-  xy: 398, 77
+  xy: 332, 11
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-path_tab_checked_over
+path_add_checked_over
   rotate: false
   xy: 398, 77
   size: 64, 64
@@ -2020,6 +2013,13 @@ path_tab_over
   offset: 0, 0
   index: -1
 path_add_over
+  rotate: false
+  xy: 398, 77
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+path_tab_checked_over
   rotate: false
   xy: 398, 77
   size: 64, 64

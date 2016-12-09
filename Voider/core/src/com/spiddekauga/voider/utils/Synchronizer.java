@@ -3,6 +3,8 @@ package com.spiddekauga.voider.utils;
 import com.spiddekauga.net.IDownloadProgressListener;
 import com.spiddekauga.utils.scene.ui.NotificationShower;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -27,7 +29,6 @@ import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -59,11 +60,11 @@ private IDownloadProgressListener mDownloadProgressListener = new IDownloadProgr
 	@Override
 	public void handleFileDownloaded(int cComplete, int cTotal) {
 		float completePercent = cComplete / ((float) cTotal) * 100;
-		SceneSwitcher.updateProgressBar(completePercent, "" + cComplete + " / " + cTotal);
+		ProgressBar.updateProgress(completePercent, "" + cComplete + " / " + cTotal);
 
 		// Hide
 		if (cComplete == cTotal) {
-			SceneSwitcher.hideProgressBar();
+			ProgressBar.hide();
 		}
 	}
 };
@@ -197,11 +198,11 @@ public boolean synchronize(SyncTypes type, IResponseListener responseListener) {
 		break;
 
 	case USER_RESOURCE_FIX_CONFLICTS:
-		Config.Debug.debugException("Cannot fix user resource conflict through synchronize() method");
+		Config.Debug.assertException("Cannot fix user resource conflict through synchronize() method");
 		break;
 
 	case WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR:
-		Config.Debug.debugException("Cannoct call WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR through synchronize() method");
+		Config.Debug.assertException("Cannoct call WAIT_FOR_LOGIN_SCREEN_TO_DISAPPEAR through synchronize() method");
 		break;
 	}
 
@@ -224,7 +225,7 @@ public void synchronizeAll(IResponseListener responseListener) {
 /**
  * Fix conflicts
  * @param keepLocal true if we want to keep the local versions, false if we want to keep the server
- * version.
+ * gameVersion.
  */
 public void fixConflict(boolean keepLocal) {
 	if (mConflictsFound != null && User.getGlobalUser().isOnline()) {
@@ -254,7 +255,7 @@ private void synchronize(SyncClass syncClass) {
 			// Show progress bar
 			if (((SyncDownload) syncClass).showProgress) {
 				mResourceRepo.syncDownload(mDownloadProgressListener, responseListeners);
-				SceneSwitcher.showProgressBar("Downloading Internet\nThis may take a while...");
+				ProgressBar.showProgress("Downloading Internet\nThis may take a while...", "0 / 0");
 			}
 			// Silent sync
 			else {
@@ -268,7 +269,7 @@ private void synchronize(SyncClass syncClass) {
 			// Show progress bar
 			if (((SyncDownload) syncClass).showProgress) {
 				mResourceRepo.syncUserResources(mDownloadProgressListener, responseListeners);
-				SceneSwitcher.showProgressBar("Synchronizing your levels, enemies, and bullets.\nThis may take a while...");
+				ProgressBar.showProgress("Synchronizing your levels, enemies, and bullets.\nThis may take a while...", "0 / 0");
 			}
 			// Silent sync
 			else {
@@ -352,7 +353,7 @@ private void uploadBugReports(IResponseListener[] responseListeners) {
 
 	if (!bugsToSend.isEmpty()) {
 		webRepo.sendBugReport(bugsToSend, responseListeners);
-		SceneSwitcher.showWaitWindow("Uploading saved bug reports");
+		ProgressBar.showSpinner("Uploading saved bug reports");
 	} else {
 		mSemaphore.release();
 	}
@@ -360,7 +361,7 @@ private void uploadBugReports(IResponseListener[] responseListeners) {
 
 @Override
 public void handleWebResponse(IMethodEntity method, IEntity response) {
-	SceneSwitcher.hideWaitWindow();
+	ProgressBar.hide();
 
 	if (response instanceof UserResourceSyncResponse) {
 		handleSyncUserResourceResponse((UserResourceSyncMethod) method, (UserResourceSyncResponse) response);
@@ -540,7 +541,6 @@ private class SyncClass {
 
 	/**
 	 * Sets the sync type
-	 * @param syncType
 	 */
 	protected SyncClass(SyncTypes syncType) {
 		this.syncType = syncType;
@@ -548,8 +548,6 @@ private class SyncClass {
 
 	/**
 	 * Sets the sync type
-	 * @param syncType
-	 * @param responseListener
 	 */
 	protected SyncClass(SyncTypes syncType, IResponseListener responseListener) {
 		this.syncType = syncType;
@@ -565,8 +563,6 @@ private class SyncDownload extends SyncClass {
 
 	/**
 	 * Sets the sync type
-	 * @param syncType
-	 * @param responseListener
 	 * @param showProgress true if we want to show the progress bar
 	 */
 	private SyncDownload(SyncTypes syncType, IResponseListener responseListener, boolean showProgress) {
@@ -601,8 +597,6 @@ private class SyncFixConflict extends SyncClass {
 
 	/**
 	 * Sets the conflict variables
-	 * @param conflicts
-	 * @param keepLocal
 	 */
 	private SyncFixConflict(HashMap<UUID, ResourceConflictEntity> conflicts, boolean keepLocal) {
 		super(SyncTypes.USER_RESOURCE_FIX_CONFLICTS);

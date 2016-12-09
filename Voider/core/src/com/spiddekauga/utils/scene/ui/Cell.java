@@ -14,9 +14,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
  * Wrapper for a cell. Contains both the actor in the cell and align information
  */
 public class Cell implements Poolable, IPadding<Cell> {
-/** Actor in the cell */
 private Actor mActor = null;
-/** Alignment of the cell */
 private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
 /** If the cell shall fill the width of the row */
 private boolean mFillWidth = false;
@@ -31,46 +29,31 @@ private boolean mFixedHeight = false;
 /** If the cell uses fixed width */
 private boolean mFixedWidth = false;
 /** If the cell should be of box shape */
-private boolean mBoxShape = false;@Override
-public Cell setPad(Padding padding) {
-	setPadLeft(padding.left);
-	setPadRight(padding.right);
-	setPadTop(padding.top);
-	setPadBottom(padding.bottom);
-	return this;
-}
+private boolean mBoxShape = false;
 /** If the cell should keep the aspect ratio when resizing */
-private boolean mKeepAspectRatio = false;@Override
-public Cell setPadLeft(float padLeft) {
-	mPadding.left = padLeft;
-	return this;
-}
+private boolean mKeepAspectRatio = false;
 /** Width of the cell, only used when mFillWidth and mFixedWidth is true */
-private float mCellWidth = 0;@Override
-public Cell setPadRight(float padRight) {
-	mPadding.right = padRight;
-	return this;
-}
+private float mCellWidth = 0;
 /** Height of the cell, only used when mFillHeight and mFixedHeight is true */
-private float mCellHeight = 0;@Override
-public Cell setPadTop(float padTop) {
-	mPadding.top = padTop;
-	return this;
-}
+private float mCellHeight = 0;
 /** Aspect ratio of the cell */
-private float mAspectRatio = 1f;@Override
-public Cell setPadBottom(float padBottom) {
-	mPadding.bottom = padBottom;
-	return this;
-}
-/** Padding for this cell */
-private Padding mPadding = new Padding();@Override
-public float getPadLeft() {
-	return mPadding.left;
+private float mAspectRatio = 1f;
+private Padding mPadding = new Padding();
+
+/**
+ * Sets the horizontal alignment of this cell. If applicable it will also set the alignment of the
+ * actor inside.
+ * @param horizontal the horizontal alignment
+ * @return this cell for chaining
+ */
+
+public Cell setAlign(Horizontal horizontal) {
+	return setAlign(horizontal, mAlign.vertical);
 }
 
 /**
- * Sets the alignment of this cell
+ * Sets the alignment of this cell. If applicable it will also set the alignment of the actor
+ * inside.
  * @param horizontal the horizontal alignment
  * @param vertical the vertical alignment
  * @return this cell for chaining
@@ -78,93 +61,29 @@ public float getPadLeft() {
 public Cell setAlign(Horizontal horizontal, Vertical vertical) {
 	mAlign.horizontal = horizontal;
 	mAlign.vertical = vertical;
+	if (mActor instanceof Label) {
+		((Label) mActor).setAlignment(Align.toLibgdxAlign(horizontal, vertical));
+	}
 	return this;
-}@Override
-public float getPadRight() {
-	return mPadding.right;
 }
 
 /**
- * Sets the horizontal alignment of this cell
- * @param horizontal the horizontal alignment
- * @return this cell for chaining
- */
-public Cell setAlign(Horizontal horizontal) {
-	mAlign.horizontal = horizontal;
-	return this;
-}@Override
-public float getPadTop() {
-	return mPadding.top;
-}
-
-/**
- * Sets the vertical alignment of this cell
+ * Sets the vertical alignment of this cell. If applicable it will also set the alignment of the
+ * actor inside.
  * @param vertical the vertical alignment
  * @return this cell for chaining
  */
 public Cell setAlign(Vertical vertical) {
-	mAlign.vertical = vertical;
-	return this;
-}@Override
-public float getPadBottom() {
-	return mPadding.bottom;
-}
-
-@Override
-public void reset() {
-	dispose(true);
-	mAlign.horizontal = Horizontal.LEFT;
-	mAlign.vertical = Vertical.MIDDLE;
-
-	mPadding.reset();
-
-	mFillHeight = false;
-	mFillWidth = false;
-	mWidthBeforeFill = 0;
-	mHeightBeforeFill = 0;
-	mFixedHeight = false;
-	mFixedWidth = false;
-	mKeepAspectRatio = false;
-	mBoxShape = false;
-	mCellHeight = 0;
-	mCellWidth = 0;
-	mAspectRatio = 1;
-	mActor = null;
-}@Override
-public Padding getPad() {
-	return mPadding;
-}
-
-/**
- * Disposes the cell, the actor can be saved
- * @param disposeActor true if you want to call dispose() on the actor
- */
-public void dispose(boolean disposeActor) {
-	if (mActor != null) {
-		mActor.remove();
-
-		if (disposeActor) {
-			mActor.clearActions();
-			if (mActor instanceof AlignTable) {
-				((AlignTable) mActor).dispose(disposeActor);
-			} else if (mActor instanceof Disposable) {
-				((Disposable) mActor).dispose();
-			}
-		}
-	}
-
-	mActor = null;
-}@Override
-public float getPadX() {
-	return mPadding.left + mPadding.right;
+	return setAlign(mAlign.horizontal, vertical);
 }
 
 /**
  * Sets if the cell should be of box shape
  * @param boxShaped set to true to make the actor be shaped as a box
  * @return this cell for chaining
- * @throw UnsupportedOperationException if {@link #setKeepAspectRatio(boolean)} is used
+ * @throws UnsupportedOperationException if {@link #setKeepAspectRatio(boolean)} is used
  */
+
 public Cell setBoxShaped(boolean boxShaped) {
 	if (mKeepAspectRatio) {
 		throw new UnsupportedOperationException("box shape cannot be used together with keep aspect ratio!");
@@ -174,37 +93,15 @@ public Cell setBoxShaped(boolean boxShaped) {
 
 	mBoxShape = boxShaped;
 	return this;
-}@Override
-public float getPadY() {
-	return mPadding.top + mPadding.bottom;
 }
 
-@Override
-public Cell setPad(float top, float right, float bottom, float left) {
-	setPadLeft(left);
-	setPadRight(right);
-	setPadTop(top);
-	setPadBottom(bottom);
-	return this;
-}
-
-@Override
-public Cell setPad(float pad) {
-	setPadLeft(pad);
-	setPadRight(pad);
-	setPadTop(pad);
-	setPadBottom(pad);
-
-	return this;
-}
 
 /**
- * Sets the size of the cell.
+ * Sets the size of the cell. This will change the preferred size of the cell. Use #resetSize() to
+ * reset the size to the actual preferred size
  * @param width new fixed width of the cell
  * @param height new fixed height of the cell
  * @return this cell for chaining
- * @note That this will change the preferred size of the cell. Use #resetSize() to reset the size to
- * the actual preferred size
  * @see #setWidth(float)
  * @see #setHeight(float)
  * @see #resetSize()
@@ -235,7 +132,7 @@ public Cell resetSize() {
 public Cell resetHeight() {
 	mFixedHeight = false;
 	if (mActor instanceof Layout) {
-		mActor.setHeight(((Layout) mActor).getPrefHeight());
+		mActor.setHeight((int) ((Layout) mActor).getPrefHeight());
 
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).setKeepHeight(false);
@@ -251,7 +148,7 @@ public Cell resetHeight() {
 public Cell resetWidth() {
 	mFixedWidth = false;
 	if (mActor instanceof Layout) {
-		mActor.setWidth(((Layout) mActor).getPrefWidth());
+		mActor.setWidth((int) ((Layout) mActor).getPrefWidth());
 
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).setKeepWidth(false);
@@ -300,11 +197,7 @@ public Cell setFixedHeight(boolean fixedHeight) {
  * @return true if the cell is visible
  */
 public boolean isVisible() {
-	if (mActor != null) {
-		return mActor.isVisible();
-	} else {
-		return true;
-	}
+	return mActor == null || mActor.isVisible();
 }
 
 /**
@@ -319,7 +212,7 @@ public Cell setFillWidth(boolean fillWidth) {
 		throw new UnsupportedOperationException("Cannot use fill width while both fill height and box shape is used");
 	}
 
-	mFillWidth = true;
+	mFillWidth = fillWidth;
 
 	if (mFillWidth && mActor != null) {
 		mWidthBeforeFill = mActor.getWidth();
@@ -331,7 +224,7 @@ public Cell setFillWidth(boolean fillWidth) {
 /**
  * @return true if the cell shall fill the remaining width of the row
  */
-public boolean shallfillWidth() {
+public boolean shallFillWidth() {
 	return mFillWidth;
 }
 
@@ -410,8 +303,9 @@ public float getPrefHeight() {
  * Sets the cell to keep it's aspect ratio
  * @param keepAspectRatio true if the cell should keep it's aspect ratio, false otherwise
  * @return this for chaining
- * @throw UnsupportedOperationExecption if {@link #setBoxShaped(boolean)}, or both {@link
- * #setFillHeight(boolean)} and {@link #setFillWidth(boolean)} is enabled.
+ * @throws UnsupportedOperationException if {@link #setBoxShaped(boolean)}, or both {@link
+ *                                       #setFillHeight(boolean)} and {@link #setFillWidth(boolean)}
+ *                                       is enabled.
  */
 public Cell setKeepAspectRatio(boolean keepAspectRatio) {
 	if (mBoxShape) {
@@ -443,8 +337,8 @@ void calculatePreferredSize() {
 	}
 
 	if (mBoxShape && !mFillWidth && !mFillHeight) {
-		mActor.setWidth(mWidthBeforeFill);
-		mActor.setHeight(mHeightBeforeFill);
+		mActor.setWidth((int) mWidthBeforeFill);
+		mActor.setHeight((int) mHeightBeforeFill);
 	}
 
 	if (mKeepAspectRatio) {
@@ -493,16 +387,16 @@ void updateSize(float width, float height) {
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).updateSize(actorWidth, actorHeight);
 		} else {
-			mActor.setSize(actorWidth, actorHeight);
+			mActor.setSize((int) actorWidth, (int) actorHeight);
 
 			if (mBoxShape && !mFillWidth && !mFillHeight) {
 				mWidthBeforeFill = mActor.getWidth();
 				mHeightBeforeFill = mActor.getHeight();
 
 				if (mActor.getWidth() < mActor.getHeight()) {
-					mActor.setWidth(mActor.getHeight());
+					mActor.setWidth((int) mActor.getHeight());
 				} else if (mActor.getHeight() < mActor.getWidth()) {
-					mActor.setHeight(mActor.getWidth());
+					mActor.setHeight((int) mActor.getWidth());
 				}
 			} else if (mKeepAspectRatio) {
 				mWidthBeforeFill = mActor.getWidth();
@@ -536,8 +430,8 @@ void updateSize(float width, float height) {
 					correctWidth = mActor.getHeight() * mAspectRatio;
 				}
 
-				mActor.setWidth(correctWidth);
-				mActor.setHeight(correctHeight);
+				mActor.setWidth((int) correctWidth);
+				mActor.setHeight((int) correctHeight);
 			}
 		}
 	} else {
@@ -605,17 +499,16 @@ public float getWidth() {
 
 /**
  * Sets the width of the cell. Does not change the preferred width.
- * @param width new width of the cell.
+ * @param width new width of the cell. This will change the preferred size of the cell. Use
+ * #resetSize() to reset the size to the actual preferred size.
  * @return this cell for chaining.
- * @note That this will change the preferred size of the cell. Use #resetSize() to reset the size to
- * the actual preferred size
  * @see #setSize(float, float)
  * @see #setHeight(float)
  * @see #resetSize()
  */
 public Cell setWidth(float width) {
 	if (mActor != null) {
-		mActor.setWidth(width);
+		mActor.setWidth((int) width);
 		mFixedWidth = true;
 
 		if (mActor instanceof AlignTable) {
@@ -644,17 +537,16 @@ public float getHeight() {
 
 /**
  * Sets the height of the cell. Does not change the preferred height.
- * @param height new height of the cell.
+ * @param height new height of the cell. This will change the preferred size of the cell. Use
+ * #resetSize() to reset the size to the actual preferred size.
  * @return this cell for chaining
- * @note That this will change the preferred size of the cell. Use #resetSize() to reset the size to
- * the actual preferred size
  * @see #setSize(float, float)
  * @see #setWidth(float)
  * @see #resetSize()
  */
 public Cell setHeight(float height) {
 	if (mActor != null) {
-		mActor.setHeight(height);
+		mActor.setHeight((int) height);
 		mFixedHeight = true;
 
 		if (mActor instanceof AlignTable) {
@@ -700,10 +592,10 @@ Cell setActor(Actor actor) {
 
 	if (mActor instanceof Layout) {
 		if (mActor.getHeight() == 0) {
-			mActor.setHeight(((Layout) mActor).getPrefHeight());
+			mActor.setHeight((int) ((Layout) mActor).getPrefHeight());
 		}
 		if (mActor.getWidth() == 0) {
-			mActor.setWidth(((Layout) mActor).getPrefWidth());
+			mActor.setWidth((int) ((Layout) mActor).getPrefWidth());
 		}
 	}
 
@@ -717,15 +609,135 @@ boolean isEmpty() {
 	return mActor == null;
 }
 
+@Override
+public Cell setPad(float top, float right, float bottom, float left) {
+	setPadLeft(left);
+	setPadRight(right);
+	setPadTop(top);
+	setPadBottom(bottom);
+	return this;
+}
 
+@Override
+public Cell setPad(float pad) {
+	setPadLeft(pad);
+	setPadRight(pad);
+	setPadTop(pad);
+	setPadBottom(pad);
 
+	return this;
+}
 
+@Override
+public void reset() {
+	dispose(true);
+	mAlign.horizontal = Horizontal.LEFT;
+	mAlign.vertical = Vertical.MIDDLE;
 
+	mPadding.reset();
 
+	mFillHeight = false;
+	mFillWidth = false;
+	mWidthBeforeFill = 0;
+	mHeightBeforeFill = 0;
+	mFixedHeight = false;
+	mFixedWidth = false;
+	mKeepAspectRatio = false;
+	mBoxShape = false;
+	mCellHeight = 0;
+	mCellWidth = 0;
+	mAspectRatio = 1;
+	mActor = null;
+}
 
+/**
+ * Disposes the cell, the actor can be saved
+ * @param disposeActor true if you want to call onDestroy() on the actor
+ */
+public void dispose(boolean disposeActor) {
+	if (mActor != null) {
+		mActor.remove();
 
+		if (disposeActor) {
+			mActor.clearActions();
+			if (mActor instanceof AlignTable) {
+				((AlignTable) mActor).dispose(true);
+			} else if (mActor instanceof Disposable) {
+				((Disposable) mActor).dispose();
+			}
+		}
+	}
 
+	mActor = null;
+}
 
+@Override
+public Cell setPadLeft(float padLeft) {
+	mPadding.left = padLeft;
+	return this;
+}
+
+@Override
+public Cell setPadRight(float padRight) {
+	mPadding.right = padRight;
+	return this;
+}
+
+@Override
+public Cell setPad(Padding padding) {
+	setPadLeft(padding.left);
+	setPadRight(padding.right);
+	setPadTop(padding.top);
+	setPadBottom(padding.bottom);
+	return this;
+}
+
+@Override
+public float getPadX() {
+	return mPadding.left + mPadding.right;
+}
+
+@Override
+public float getPadY() {
+	return mPadding.top + mPadding.bottom;
+}
+
+@Override
+public Cell setPadTop(float padTop) {
+	mPadding.top = padTop;
+	return this;
+}
+
+@Override
+public Padding getPad() {
+	return mPadding;
+}
+
+@Override
+public float getPadBottom() {
+	return mPadding.bottom;
+}
+
+@Override
+public float getPadTop() {
+	return mPadding.top;
+}
+
+@Override
+public float getPadRight() {
+	return mPadding.right;
+}
+
+@Override
+public float getPadLeft() {
+	return mPadding.left;
+}
+
+@Override
+public Cell setPadBottom(float padBottom) {
+	mPadding.bottom = padBottom;
+	return this;
+}
 
 
 // !!! Don't forget to add to reset() !!!

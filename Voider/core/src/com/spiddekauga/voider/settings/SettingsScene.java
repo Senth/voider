@@ -1,8 +1,8 @@
-package com.spiddekauga.voider.menu;
+package com.spiddekauga.voider.settings;
 
 import com.spiddekauga.utils.Resolution;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.IconSizes;
+import com.spiddekauga.voider.menu.MenuScene;
+import com.spiddekauga.voider.settings.SettingRepo.IconSizes;
 
 /**
  * Scene for game settings
@@ -33,7 +33,6 @@ float getMasterVolume() {
 
 /**
  * Set master sound
- * @param volume
  */
 void setMasterVolume(float volume) {
 	mSettingRepo.sound().setMasterVolume(volume / 100f);
@@ -48,7 +47,6 @@ float getMusicVolume() {
 
 /**
  * Set music volume
- * @param volume
  */
 void setMusicVolume(float volume) {
 	mSettingRepo.sound().setMusicVolume(volume / 100f);
@@ -63,7 +61,6 @@ float getGameVolume() {
 
 /**
  * Set game effects volume
- * @param volume
  */
 void setGameVolume(float volume) {
 	mSettingRepo.sound().setEffectsVolume(volume / 100f);
@@ -78,7 +75,6 @@ float getUiVolume() {
 
 /**
  * Set UI volume
- * @param volume
  */
 void setUiVolume(float volume) {
 	mSettingRepo.sound().setUiVolume(volume / 100f);
@@ -103,7 +99,7 @@ void set24HourFormat(boolean time24h) {
  * @return current date format
  */
 String getDateFormat() {
-	return mSettingRepo.date().getDateFormat();
+	return mSettingRepo.date().getFormat(SettingRepo.SettingDateRepo.FormatTypes.DATE);
 }
 
 /**
@@ -123,7 +119,6 @@ boolean isFullscreen() {
 
 /**
  * Sets if the screen should be in fullscreen
- * @param fullscreen
  */
 void setFullscreen(boolean fullscreen) {
 	mSettingRepo.display().setFullscreen(fullscreen);
@@ -138,7 +133,6 @@ Resolution getResolutionFullscreen() {
 
 /**
  * Sets the fullscreen resolution of the game
- * @param resolution
  */
 void setResolutionFullscreen(Resolution resolution) {
 	mSettingRepo.display().setResolutionFullscreen(resolution);
@@ -153,7 +147,6 @@ Resolution getResolutionWindowed() {
 
 /**
  * Sets the windowed resolution of the game
- * @param resolution
  */
 void setResolutionWindowed(Resolution resolution) {
 	mSettingRepo.display().setResolutionWindowed(resolution);
@@ -168,7 +161,6 @@ IconSizes getIconSize() {
 
 /**
  * Sets the UI/icon size of the game
- * @param iconSize
  */
 void setIconSize(IconSizes iconSize) {
 	mSettingRepo.display().setIconSize(iconSize);

@@ -149,7 +149,7 @@ public void setPlayerDistanceMin(float minDistance) {
 }
 
 /**
- * @return Squared version of minimum distance from the player. This has been pre-calculated.
+ * @return Squared gameVersion of minimum distance from the player. This has been pre-calculated.
  */
 public float getPlayerDistanceMinSq() {
 	return mAiMovementVars.playerDistanceMinSq;
@@ -173,7 +173,7 @@ public void setPlayerDistanceMax(float maxDistance) {
 }
 
 /**
- * @return Squared version of maximum distance from the player. This has been pre-calculated.
+ * @return Squared gameVersion of maximum distance from the player. This has been pre-calculated.
  */
 public float getPlayerDistanceMaxSq() {
 	return mAiMovementVars.playerDistanceMaxSq;

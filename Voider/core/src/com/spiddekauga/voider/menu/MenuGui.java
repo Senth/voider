@@ -2,18 +2,18 @@ package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.Scene;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Common class for all menus used by Main Menu Scene
  */
-class MenuGui extends Gui {
+public class MenuGui extends Gui {
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
 }

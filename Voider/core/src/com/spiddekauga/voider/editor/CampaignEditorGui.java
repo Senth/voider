@@ -9,8 +9,8 @@ import com.spiddekauga.voider.utils.Messages;
 public class CampaignEditorGui extends EditorGui {
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	// TODO init gui
 }

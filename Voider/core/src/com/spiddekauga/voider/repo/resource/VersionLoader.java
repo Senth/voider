@@ -15,7 +15,7 @@ import com.spiddekauga.voider.version.VersionParser;
  * Loads the changelog
  */
 public class VersionLoader extends AsynchronousAssetLoader<VersionContainer, VersionLoaderParameters> {
-/** Stored version container */
+/** Stored gameVersion container */
 VersionContainer mVersionContainer = null;
 
 /**
@@ -42,7 +42,7 @@ public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, 
 	return null;
 }
 
-/** Parameters for version loader */
+/** Parameters for gameVersion loader */
 public static class VersionLoaderParameters extends AssetLoaderParameters<VersionContainer> {
 }
 }

@@ -1,12 +1,14 @@
 package com.spiddekauga.voider.sound;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo.SettingSoundRepo;
+import com.spiddekauga.utils.EventBus;
+import com.spiddekauga.voider.settings.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo.SettingSoundRepo;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.GameEvent;
 import com.spiddekauga.voider.utils.event.IEventListener;
+import com.squareup.otto.Subscribe;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -16,6 +18,7 @@ import java.util.Queue;
  * appropriate scene. If the music isn't loaded nothing will happen.
  */
 public class MusicPlayer {
+private static final EventBus mEventBus = EventBus.getInstance();
 private static MusicPlayer mInstance = null;
 /** Current interpolation */
 private MusicInterpolations mInterpolation = null;
@@ -39,6 +42,8 @@ private IEventListener mVolumeChangeListener = new IEventListener() {
  * Private constructor to enforce singleton usage
  */
 private MusicPlayer() {
+	mEventBus.register(this);
+
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.connect(EventTypes.SOUND_MASTER_VOLUME_CHANGED, mVolumeChangeListener);
 	eventDispatcher.connect(EventTypes.SOUND_MUSIC_VOLUME_CHANGED, mVolumeChangeListener);
@@ -77,12 +82,14 @@ public void play(Music music, MusicInterpolations interpolation) {
 		if (mInterpolation != null) {
 			if (mCurrent != null && mCurrent.getTrack() != null) {
 				mCurrent.getTrack().stop();
+				mCurrent.setPlaying(false);
 			}
 
 			mCurrent = mNext;
 		}
 
 		mNext = music;
+		mNext.setPlaying(true);
 		mInterpolation = interpolation;
 		interpolate();
 	}
@@ -103,6 +110,9 @@ private void interpolate() {
 		// Set next as current
 		if (done) {
 			mInterpolation = null;
+			if (mCurrent != null) {
+				mCurrent.setPlaying(false);
+			}
 			mCurrent = mNext;
 			mNext = null;
 			Gdx.app.debug("MusicPlayer", "Interpolation done");
@@ -155,6 +165,7 @@ public void queue(Music music, MusicInterpolations interpolation) {
 	}
 
 	if (queue) {
+		music.setInUse(true);
 		mQueue.add(new MusicQueue(music, interpolation));
 	} else if (play) {
 		play(music, interpolation);
@@ -210,15 +221,18 @@ public void resume(MusicInterpolations interpolation) {
  * Updates the music player
  */
 public void update() {
-	updateQueue();
 	interpolate();
 }
 
 /**
- * Check if current track has finished, take next in queue then
+ * Play the next piece in the queue
  */
-private void updateQueue() {
-	if (!mQueue.isEmpty() && isCurrentDone()) {
+@Subscribe
+@SuppressWarnings("unused")
+public void playNextPiece(MusicCompleteEvent event) {
+	mCurrent = null;
+
+	if (!mQueue.isEmpty()) {
 		MusicQueue queueElement = mQueue.remove();
 		mNext = queueElement.music;
 		mInterpolation = queueElement.interpolation;
@@ -228,13 +242,6 @@ private void updateQueue() {
 			mQueue.clear();
 		}
 	}
-}
-
-/**
- * @return true if the current track has finished playing and there is no next track
- */
-private boolean isCurrentDone() {
-	return (mCurrent == null || mCurrent.getTrack().isPlaying()) && mNext == null;
 }
 
 /**
@@ -253,8 +260,6 @@ private class MusicQueue {
 
 	/**
 	 * Set the music to play with an interpolation
-	 * @param music
-	 * @param interpolation
 	 */
 	private MusicQueue(Music music, MusicInterpolations interpolation) {
 		this.music = music;

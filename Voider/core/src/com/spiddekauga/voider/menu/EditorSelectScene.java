@@ -4,7 +4,7 @@ import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.ShipEditor;
-import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 
 /**
  * Scene for selecting editor

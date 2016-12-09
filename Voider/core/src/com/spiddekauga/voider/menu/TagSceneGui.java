@@ -6,7 +6,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.Config.Community;
 import com.spiddekauga.voider.network.stat.Tags;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ void setScene(TagScene scene) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 

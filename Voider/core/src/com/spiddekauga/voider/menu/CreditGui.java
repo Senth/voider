@@ -13,7 +13,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.menu.CreditScene.CreditLine;
 import com.spiddekauga.voider.menu.CreditScene.CreditSection;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.resource.SkinNames.CreditImages;
 import com.spiddekauga.voider.repo.resource.SkinNames.IImageNames;
@@ -42,8 +42,8 @@ private AlignTable mCreditTable = new AlignTable();
 private ScrollPane mScrollPane = null;
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	mCreditTable.setName("credit-table");
 	setDisposeAfterResize(true);
@@ -209,8 +209,8 @@ private void addLogo(IImageNames logo) {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void onDestroy() {
+	super.onDestroy();
 
 }
 

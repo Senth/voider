@@ -143,7 +143,7 @@ public float getMarginTop() {
 
 /**
  * Disposes the rows and cells of the table, the actors can be saved
- * @param disposeActors true if you want to call dispose() on the actors.
+ * @param disposeActors true if you want to call onDestroy() on the actors.
  */
 public void dispose(boolean disposeActors) {
 	mDisposing = true;
@@ -1345,7 +1345,7 @@ public AlignTable setHasPreferredHeight(boolean hasPreferredHeight) {
 /**
  * Removes a whole row including its actors
  * @param row the row to remove
- * @param disposeActors true if we shall call dispose on the cell's actors
+ * @param disposeActors true if we shall call onDestroy on the cell's actors
  */
 public void removeRow(Row row, boolean disposeActors) {
 	mRows.remove(row);

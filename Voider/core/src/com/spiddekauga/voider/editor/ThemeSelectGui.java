@@ -11,7 +11,7 @@ import com.spiddekauga.utils.scene.ui.ScrollWhen;
 import com.spiddekauga.voider.game.LevelBackground;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.utils.scene.ui.Gui;
 import com.spiddekauga.voider.scene.ui.UiStyles.ButtonStyles;
 import com.spiddekauga.voider.scene.ui.UiStyles.TextButtonStyles;
 
@@ -32,8 +32,8 @@ void setScene(ThemeSelectScene scene) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initBackground();
 	initButtons();

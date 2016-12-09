@@ -12,7 +12,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Cell;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.voider.menu.MainMenu.Scenes;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
@@ -49,8 +49,8 @@ void setScene(MainMenu scene) {
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initTopBar();
 	initMainMenu();
@@ -167,7 +167,7 @@ private void initRightTopBar() {
 	new ButtonListener(button) {
 		@Override
 		protected void onPressed(Button button) {
-			MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Open Reddit Community?");
+			MsgBox msgBox = mUiFactory.msgBox.add("Open Reddit Community?");
 			msgBox.content("Do you want to go to the reddit community?\n" + "This will open in your browser");
 
 			Command openReddit = new CRun() {
@@ -200,7 +200,7 @@ private void initRightTopBar() {
  * Show quit main menu dialog
  */
 void showQuitMsgBox() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Quit Game?");
+	MsgBox msgBox = mUiFactory.msgBox.add("Quit Game?");
 	msgBox.content("Do you want to quit the game?");
 	msgBox.addCancelButtonAndKeys();
 
@@ -235,10 +235,10 @@ private void initTopBarTable(AlignTable table, Horizontal position) {
 }
 
 /**
- * Show Confirm logout message box
+ * Show Confirm logoutAndGotoLogin message box
  */
 void showConfirmLogout() {
-	MsgBoxExecuter msgBox = mUiFactory.msgBox.add("Confirm Logout");
+	MsgBox msgBox = mUiFactory.msgBox.add("Confirm Logout");
 	msgBox.content("You are currently offline.\nYou can only login again if you have an Internet connection.", Align.center,
 			LabelStyles.HIGHLIGHT.getStyle());
 
@@ -247,9 +247,9 @@ void showConfirmLogout() {
 }
 
 @Override
-public void dispose() {
+public void onDestroy() {
 	mWidgets.dispose();
-	super.dispose();
+	super.onDestroy();
 }
 
 /**
@@ -286,7 +286,7 @@ void showChangesSinceLastLogin(List<Version> versions) {
  * @param terms
  */
 void showTerms(final String terms) {
-	final MsgBoxExecuter msgBox = mUiFactory.msgBox.add("New terms and conditions");
+	final MsgBox msgBox = mUiFactory.msgBox.add("New terms and conditions");
 	msgBox.content("Terms and conditions have been changed since\nyou last logged in on this device.\n\nPlease accept these.");
 
 	msgBox.button("Read Terms", new CRun() {

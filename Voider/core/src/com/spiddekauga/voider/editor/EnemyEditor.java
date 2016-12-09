@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Ship;
@@ -40,7 +41,6 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.SkinNames;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.ui.UiFactory;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
@@ -144,8 +144,8 @@ protected EnemyEditorGui getGui() {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 
 	mPlayerActor = new PlayerActor();
@@ -176,8 +176,8 @@ protected void onInit() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (!mPlayerActor.hasBody()) {
 		mPlayerActor.createBody();
@@ -206,7 +206,7 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 			setSaved();
 		}
 	} else if (outcome == Outcomes.NOT_APPLICAPLE) {
-		getGui().popMsgBoxes();
+//		getGui().popMsgBoxes();
 	}
 
 	EventDispatcher.getInstance().connect(EventTypes.CAMERA_ZOOM_CHANGE, mBorderLlistener);
@@ -405,8 +405,7 @@ private void checkForDeadActors() {
 }
 
 /**
- * Resets the player if necessary. This happens if the player gets stuck behind
- * something.
+ * Resets the player if necessary. This happens if the player gets stuck behind something.
  */
 private void checkAndResetPlayerPosition() {
 	// Skip if moving player
@@ -635,23 +634,31 @@ Vector2[] getPathPositions() {
 }
 
 @Override
-protected void onDeactivate() {
+protected void onPause() {
 	EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_ZOOM_CHANGE, mBorderLlistener);
 	EventDispatcher.getInstance().disconnect(EventTypes.CAMERA_MOVED, mBorderLlistener);
 	getGui().clearCollisionBoxes();
 	Actor.setPlayerActor(null);
-	super.onDeactivate();
+	super.onPause();
 }
 
 @Override
-protected void onDispose() {
+protected void onDestroy() {
 	mPlayerActor.dispose();
 	mEnemyActor.dispose();
 	mEnemyPathBackAndForth.dispose();
 	mEnemyPathLoop.dispose();
 	mEnemyPathOnce.dispose();
 
-	super.onDispose();
+	super.onDestroy();
+}
+
+@Override
+protected void loadResources() {
+	super.loadResources();
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
+	ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
 }
 
 /**
@@ -688,8 +695,7 @@ public boolean selectBulletDef(UUID bulletId) {
 }
 
 /**
- * @return selected bullet definition, null if none are selected, or if no weapon is
- *         available
+ * @return selected bullet definition, null if none are selected, or if no weapon is available
  */
 public BulletActorDef getSelectedBulletDef() {
 	BulletActorDef selectedBulletDef = null;
@@ -699,28 +705,6 @@ public BulletActorDef getSelectedBulletDef() {
 	}
 
 	return selectedBulletDef;
-}
-
-@Override
-public void handleEvent(GameEvent event) {
-	switch (event.type) {
-	case SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS:
-		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
-		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
-		ResourceCacheFacade.finishLoading();
-		break;
-
-	default:
-		break;
-	}
-}
-
-@Override
-protected void loadResources() {
-	super.loadResources();
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
-	ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
 }
 
 @Override
@@ -739,9 +723,6 @@ protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 	}
 }
 
-// --------------------------------
-// INPUT EVENTS (not gui)
-// --------------------------------
 @Override
 public boolean touchDown(int x, int y, int pointer, int button) {
 	// Test if touching player
@@ -805,6 +786,7 @@ public void newDef() {
 	setSaved();
 }
 
+
 @Override
 public void undoJustCreated() {
 	setActorDef(null);
@@ -862,12 +844,6 @@ void setTurning(boolean enabled) {
 	mEnemyPathLoop.resetPathMovement();
 	mEnemyPathOnce.resetPathMovement();
 	setUnsaved();
-}@Override
-public void setDrawOnlyOutline(boolean drawOnlyOutline) {
-	mEnemyActor.setDrawOnlyOutline(drawOnlyOutline);
-	mEnemyPathBackAndForth.setDrawOnlyOutline(drawOnlyOutline);
-	mEnemyPathLoop.setDrawOnlyOutline(drawOnlyOutline);
-	mEnemyPathOnce.setDrawOnlyOutline(drawOnlyOutline);
 }
 
 /**
@@ -879,21 +855,32 @@ float getPlayerDistanceMin() {
 	} else {
 		return 0;
 	}
-}@Override
-public boolean isDrawOnlyOutline() {
-	return mEnemyActor.isDrawOnlyOutline();
 }
 
 /**
  * Sets the minimum distance from the player the enemy want to be
  * @param minDistance minimum distance from the player
  */
+
 void setPlayerDistanceMin(float minDistance) {
 	if (mDef == null) {
 		return;
 	}
 	mDef.setPlayerDistanceMin(minDistance);
 	setUnsaved();
+}
+
+@Override
+public boolean isDrawOnlyOutline() {
+	return mEnemyActor.isDrawOnlyOutline();
+}
+
+@Override
+public void setDrawOnlyOutline(boolean drawOnlyOutline) {
+	mEnemyActor.setDrawOnlyOutline(drawOnlyOutline);
+	mEnemyPathBackAndForth.setDrawOnlyOutline(drawOnlyOutline);
+	mEnemyPathLoop.setDrawOnlyOutline(drawOnlyOutline);
+	mEnemyPathOnce.setDrawOnlyOutline(drawOnlyOutline);
 }
 
 /**
@@ -947,6 +934,7 @@ void setTurnSpeed(float turnSpeed) {
  * #setRandomSpread(float).
  * @param moveRandomly true if the enemy shall move randomly.
  */
+
 void setMoveRandomly(boolean moveRandomly) {
 	if (mDef == null) {
 		return;
@@ -979,8 +967,7 @@ float getRandomTimeMin() {
 }
 
 /**
- * Sets the minimum time that must have passed until the enemy will decide on another
- * direction.
+ * Sets the minimum time that must have passed until the enemy will decide on another direction.
  * @param minTime how many degrees it will can move
  * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
  */
@@ -995,6 +982,7 @@ void setRandomTimeMin(float minTime) {
 /**
  * @return Maximum time until next random move
  */
+
 float getRandomTimeMax() {
 	if (mDef != null) {
 		return mDef.getRandomTimeMax();
@@ -1004,8 +992,7 @@ float getRandomTimeMax() {
 }
 
 /**
- * Sets the maximum time that must have passed until the enemy will decide on another
- * direction.
+ * Sets the maximum time that must have passed until the enemy will decide on another direction.
  * @param maxTime how many degrees it will can move
  * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
  */
@@ -1156,8 +1143,8 @@ float getCooldownMin() {
 
 /**
  * Sets the minimum weapon cooldown. If this is equal to the max value set through
- * #setCooldownMax(float) it will always have the same cooldown; if not it will get a
- * random cooldown between min and max time.
+ * #setCooldownMax(float) it will always have the same cooldown; if not it will get a random
+ * cooldown between min and max time.
  * @param minCooldown minimum cooldown.
  */
 void setCooldownMin(float minCooldown) {
@@ -1181,8 +1168,8 @@ float getCooldownMax() {
 
 /**
  * Sets the maximum weapon cooldown. If this is equal to the min value set through
- * #setCooldownMin(float) it will always have the same cooldown; if not it will get a
- * random cooldown between min and max time.
+ * #setCooldownMin(float) it will always have the same cooldown; if not it will get a random
+ * cooldown between min and max time.
  * @param maxCooldown maximum cooldown.
  */
 void setCooldownMax(float maxCooldown) {
@@ -1284,6 +1271,17 @@ boolean isWeaponBulletsSelected() {
 	return mDef != null && mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null;
 }
 
+@Override
+public void handleEvent(GameEvent event) {
+	switch (event.type) {
+	case SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS:
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
+		ResourceCacheFacade.finishLoading();
+		break;
 
-
+	default:
+		break;
+	}
+}
 }

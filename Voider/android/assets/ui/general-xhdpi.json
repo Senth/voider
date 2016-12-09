@@ -10,14 +10,14 @@
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	small_bold: nesobrite_no_bd24,
 	small_black: nesobrite_no_bl24,
-	
+
 	medium_bold: nesobrite_no_bd32,
 	medium_black: nesobrite_no_bl32,
-	
+
 	large: nesobrite_no_rg48,
 	large_bold: nesobrite_no_bd48,
 	large_black: nesobrite_no_bl48,
-	
+
 	huge: nesobrite_no_rg72,
 	huge_bold: nesobrite_no_bd72,
 	huge_black: nesobrite_no_bl72,
@@ -30,7 +30,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
  */
 com.badlogic.gdx.graphics.Color: {
 	/** Palette */
-	
+
 	red: { r: 1, b: 0, g: 0, a: 1 },
 	green: { r: 0, b: 0, g: 1, a: 1 },
 	black: { r: 0, b: 0, g: 0, a: 1 },
@@ -39,10 +39,10 @@ com.badlogic.gdx.graphics.Color: {
 	grey_light: { r: 0.8, b: 0.8, g: 0.8, a: 1 },
 	grey_dark: { r: 0.1, g: 0.1, b: 0.1, a: 1 },
 	turquoise: { r: 0, g: 1, b: 1, a: 1 },
-	
-	
+
+
 	/** Specific colors */
-	
+
 	// Warning color
 	warning: {r:0.961, g:0.643, b:0.302, a:1},
 	// Highlight color
@@ -67,15 +67,15 @@ com.badlogic.gdx.graphics.Color: {
 
 java.lang.Float: {
 	/** Explore / Load */
-	
+
 	// Tag bar width
 	tag_bar_width: {value: 320},
-	// Maximum size of enemies/bullets on load screen (i.e. the image button) 
+	// Maximum size of enemies/bullets on load screen (i.e. the image button)
 	load_actor_size_max: {value: 160},
-	
-	
+
+
 	/** Padding - General UI */
-	
+
 	// Padding between some buttons
 	padding_buttons: {value: 8},
 	// Used to separate group of widgets, e.g. tool groups
@@ -86,9 +86,9 @@ java.lang.Float: {
 	// Outer padding
 	padding_outer: {value: 8},
 	// Inner padding
-	padding_inner: {value: 24},
+	padding_inner: {value: 32},
 	// Padding between radio or checkbox buttons
-	padding_checkbox: {value: 24},
+	padding_checkbox: {value: 32},
 	// Padding between checkbox icon and text
 	padding_checkbox_text: {value: 8},
 	// Transparent button padding (so text doesn't touch the borders)
@@ -96,16 +96,16 @@ java.lang.Float: {
 	padding_transparent_text_button: {value: 4},
 	// Top padding on a new paragraph
 	padding_paragraph: padding_inner,
-	
-	
+
+
 	/** Padding - Explore/Load */
-	
+
 	// Padding between rows
 	padding_explore: {value: 32},
-	
-	
+
+
 	/** General UI sizes */
-	
+
 	// Width of the right panel in explore and editors
 	right_panel_width: {value: 480},
 	// Text field for slider
@@ -121,23 +121,23 @@ java.lang.Float: {
 	// Row height for label sections
 	row_height_section: {value: 64},
 	// Height of upper and lower bars.
-	bar_upper_lower_height: {value: 80},	
+	bar_upper_lower_height: {value: 80},
 	// Text button height
 	text_button_height: {value: 80},
 	// Default text button width
 	text_button_width: {value: 240},
-	
-	
+
+
 	/** Settings */
-	
+
 	// Width of settings window
 	settings_width: {value: 840},
 	// Height of settings window
 	settings_height: {value: 630},
-	
-	
+
+
 	/** Notifications */
-	
+
 	// Notification messages
 	notification_width: right_panel_width,
 	// How long notification messages are shown, in seconds
@@ -146,25 +146,27 @@ java.lang.Float: {
 	notification_fade_in: 0.3,
 	// Fade out duration, in seconds
 	notification_fade_out: 1,
-	
-	
+
+
 	/** Score screen */
 	score_screen_width: {value: 960},
 	// Row height of "My Score" and "My Highscore" text
 	score_label_height: {value: 80},
-	
-	
+
+
 	/** Highscore screen */
-	
+
 	highscore_screen_width: {value: 840},
 	highscore_placement_width: {value: 128},
-	
-	
+
+
 	/** Other */
 
 	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
-	wait_window_fade_in: {value: 0.2},
-	wait_window_fade_out: {value: 0.6},
+	progressbar_fade_in: {value: 0.2},
+	progressbar_fade_out: {value: 0.6},
+	msgbox_fade_in: {value: 0.2},
+    msgbox_fade_out: {value: 0.075},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
@@ -172,131 +174,131 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		font: medium_bold,
 		fontColor: default,
 	},
-	
-	// For text beside the icon or buttons 
+
+	// For text beside the icon or buttons
 	icon: {
 		font: medium_black,
 		fontColor: default
 	},
-	
+
 	/** Headers */
-	
+
 	header: {
 		font: huge_black,
 		fontColor: grey_light,
 	},
-	
+
 	header2: {
 		font: large_black,
 		fontColor: grey_light,
 	},
-	
+
 	/** Notifications */
-	
+
 	notification_info:  {
 		font: medium_bold,
 		fontColor: highlight,
 	},
-	
+
 	notification_warning: {
 		font: medium_bold,
 		fontColor: warning,
 	},
-	
+
 	notification_error: {
 		font: medium_bold,
 		fontColor: error,
 	},
-	
+
 	notification_success: {
 		font: medium_bold,
 		fontColor: success,
 	},
-	
-	
+
+
 	/** Highlights */
-	
+
 	highlight: {
 		font: medium_black,
 		fontColor: highlight,
 	},
-	
+
 	warning: {
 		font: medium_black,
 		fontColor: warning,
 	},
-	
+
 	error: {
 		font: medium_black,
 		fontColor: error,
 	},
-	
+
 	success: {
 		font: medium_black,
 		fontColor: success,
 	},
-	
+
 	panel_section: {
 		font: medium_black,
 		fontColor: grey_light,
 	},
-	
+
 	// Extra information, sort of like a comment
 	info_extra: {
 		font: small_bold,
 		fontColor: grey_light,
 	},
-	
+
 	// Default text for text fields - NOT IMPLEMTED YET
 	textfield_default: {
 		font: medium_bold,
 		fontColor: grey_dark,
 	},
-	
-	
+
+
 	/** Comments */
-	
+
 	// Name of comment
 	comment_name: {
 		font: medium_black,
 		fontColor: highlight,
 	},
-	
+
 	// Date for the comment
 	comment_date: {
 		font: small_bold,
 		fontColor: grey_light,
 	},
-	
+
 	comment: default,
-	
-	
+
+
 	/** Editor */
-	
+
 	editor_name: {
 		font: medium_bold,
 		fontColor: grey_light,
 	},
-	
+
 	tooltip: {
 		font: medium_bold,
 		fontColor: grey_light,
 	},
-	
-	// Label for the publish names 
+
+	// Label for the publish names
 	publish_name: {
 		font: medium_bold,
 		fontColor: grey,
 	},
-	
+
 	path: {
 		font: medium_black,
 		fontColor: path_color,
 	},
-		
-	
+
+
 	/** Errors */
-	
+
 	// In front of error (usually above/below text fields)
 	// E.g. When trying to register and passwords don't match
 	error_section_info: {
@@ -308,10 +310,10 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		font: small_bold,
 		fontColor: error,
 	},
-	
-	
+
+
 	/** Credits */
-	
+
 	// Names (e.g. Matteus Magnusson)
 	credit_name: {
 		font: medium_bold,
@@ -342,7 +344,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 	},
-	
+
 	toggle: {
 		down: button_default_down,
 		checked: button_default_checked,
@@ -351,13 +353,13 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
 	},
-	
+
 	selected_pressable: {
 		up: button_default_checked,
 		over: button_default_checked_over,
 		down: button_default_down,
 	},
-	
+
 	selected:  {
 		up: button_default_checked,
 	}
@@ -370,7 +372,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 	},
-	
+
 	toggle: {
 		down: button_default_down,
 		checked: button_default_checked,
@@ -379,164 +381,164 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
 	},
-	
+
 	checkbox: {
 		up: checkbox_off,
 		down: checkbox_on,
 		checked: checkbox_on,
 	},
-	
+
 	/** Menu - Main */
-	
+
 	play: {
 		imageUp: play,
 		imageOver: play_over,
 		imageDown: play_down,
 	},
-	
+
 	create: {
 		imageUp: create,
 		imageOver: create_over,
 		imageDown: create_down,
 	},
-		
+
 	logout: {
 		imageUp: logout,
 		imageOver: logout_over,
 		imageDown: logout_down,
 	},
-	
+
 	info_big: {
 		imageUp: info_big,
 		imageOver: info_big_over,
 		imageDown: info_big_down,
 	},
-	
+
 	back_big: {
 		imageUp: back_big,
 		imageOver: back_big_over,
 		imageDown: back_big_down,
 	}
-	
+
 	terms_big: {
 		imageUp: terms_big,
 		imageOver: terms_big_over,
 		imageDown: terms_big_down,
 	},
-	
+
 	changelog_big: {
 		imageUp: changelog_big,
 		imageOver: changelog_big_over,
 		imageDown: changelog_big_down,
 	},
-	
-	
+
+
 	/** Menu - Top Panel */
-	
+
 	panel_bug: {
 		imageUp: panel_bug,
 		imageOver: panel_bug_over,
 		imageDown: panel_bug_down,
 	},
-	
+
 	panel_player: {
 		imageUp: panel_player,
 		imageOver: panel_player_over,
 		imageDown: panel_player_down,
 	},
-	
+
 	panel_shop: {
 		imageUp: panel_shop,
 		imageOver: panel_shop_over,
 		imageDown: panel_shop_down,
 		imageDisabled: panel_shop_disabled,
 	},
-	
+
 	panel_vote: {
 		imageUp: panel_vote,
 		imageOver: panel_vote_over,
 		imageDown: panel_vote_down,
 		imageDisabled: panel_vote_disabled,
 	},
-	
+
 	panel_achievements: {
 		imageUp: panel_achievements,
 		imageOver: panel_achievements_over,
 		imageDown: panel_achievements_down,
 	},
-	
+
 	panel_reddit: {
 		imageUp: panel_reddit,
 		imageOver: panel_reddit_over,
 		imageDown: panel_reddit_down,
 	},
-	
+
 	panel_settings: {
 		imageUp: panel_settings,
 		imageOver: panel_settings_over,
 		imageDown: panel_settings_down,
 	},
-	
+
 	panel_logout: {
 		imageUp: panel_logout,
 		imageOver: panel_logout_over,
 		imageDown: panel_logout_down,
 	},
-	
+
 	panel_info: {
 		imageUp: panel_info,
 		imageOver: panel_info_over,
 		imageDown: panel_info_down,
 	},
-	
+
 	panel_changelog: {
 		imageUp: panel_changelog,
 		imageOver: panel_changelog_over,
 		imageDown: panel_changelog_down,
 	},
-	
+
 	panel_terms: {
 		imageUp: panel_terms,
 		imageOver: panel_terms_over,
 		imageDown: panel_terms_down,
 	},
-	
-	
+
+
 	/** Menu - Create */
-	
+
 	bullet_editor_big: {
 		imageDown: bullet_editor_big_down,
 		imageOver: bullet_editor_big_over,
 		imageUp: bullet_editor_big
 	},
-	
+
 	campaign_editor_big: {
 		imageDown: campaign_editor_big_down,
 		imageOver: campaign_editor_big_over,
 		imageUp: campaign_editor_big
 	},
-	
+
 	level_editor_big: {
 		imageDown: level_editor_big_down,
 		imageOver: level_editor_big_over,
 		imageUp: level_editor_big
 	},
-	
+
 	enemy_editor_big: {
 		imageDown: enemy_editor_big_down,
 		imageOver: enemy_editor_big_over,
 		imageUp: enemy_editor_big
 	},
-	
+
 	ship_editor_big: {
 		imageDown: ship_editor_big_down,
 		imageOver: ship_editor_big_over,
 		imageUp: ship_editor_big
 	},
-	
-	
+
+
 	/** Menu - Settings */
-	
+
 	settings_interface: {
 		imageUp: settings_interface,
 		imageOver: settings_interface_over,
@@ -544,7 +546,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: settings_interface_checked,
 		imageCheckedOver: settings_interface_checked_over,
 	},
-	
+
 	settings_resolution: {
 		imageUp: settings_resolution,
 		imageOver: settings_resolution_over,
@@ -552,7 +554,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: settings_resolution_checked,
 		imageCheckedOver: settings_resolution_checked_over,
 	},
-	
+
 	settings_sound: {
 		imageUp: settings_sound,
 		imageOver: settings_sound_over,
@@ -560,7 +562,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: settings_sound_checked,
 		imageCheckedOver: settings_sound_checked_over,
 	},
-	
+
 	settings_network: {
 		imageUp: settings_network,
 		imageOver: settings_network_over,
@@ -568,7 +570,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: settings_network_checked,
 		imageCheckedOver: settings_network_checked_over,
 	},
-	
+
 	settings_debug: {
 		imageUp: settings_debug,
 		imageOver: settings_debug_over,
@@ -576,7 +578,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: settings_debug_checked,
 		imageCheckedOver: settings_debug_checked_over,
 	}
-	
+
 	icon_size_small: {
 		imageUp: icon_size_small,
 		imageOver: icon_size_small_over,
@@ -584,7 +586,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: icon_size_small_checked,
 		imageCheckedOver: icon_size_small_checked_over,
 	}
-	
+
 	icon_size_medium: {
 		imageUp: icon_size_medium,
 		imageOver: icon_size_medium_over,
@@ -592,7 +594,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: icon_size_medium_checked,
 		imageCheckedOver: icon_size_medium_checked_over,
 	}
-	
+
 	icon_size_large: {
 		imageUp: icon_size_large,
 		imageOver: icon_size_large_over,
@@ -600,10 +602,10 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: icon_size_large_checked,
 		imageCheckedOver: icon_size_large_checked_over,
 	}
-	
-	
+
+
 	/** Menu - User Settings */
-	
+
 	settings_account: {
 		imageUp: settings_account,
 		imageOver: settings_account_over,
@@ -611,7 +613,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: settings_account_checked,
 		imageCheckedOver: settings_account_checked_over,
 	},
-	
+
 	settings_statistics: {
 		imageUp: settings_statistics,
 		imageOver: settings_statistics_over,
@@ -619,10 +621,10 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: settings_statistics_checked,
 		imageCheckedOver: settings_statistics_checked_over,
 	},
-	
-	
+
+
 	/** Explore */
-		
+
 	explore_local: {
 		imageUp: explore_local,
 		imageOver: explore_local_over,
@@ -630,7 +632,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: explore_local_checked,
 		imageCheckedOver: explore_local_checked_over,
 	},
-	
+
 	explore_online: {
 		imageUp: explore_online,
 		imageOver: explore_online_over,
@@ -639,7 +641,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageCheckedOver: explore_online_checked_over,
 		imageDisabled: explore_online_disabled
 	},
-	
+
 	explore_online_search: {
 		imageUp: explore_online_search,
 		imageOver: explore_online_search_over,
@@ -648,10 +650,10 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageCheckedOver: explore_online_search_checked_over,
 		imageDisabled: explore_online_search_disabled
 	},
-	
-	
+
+
 	/** Explore - Tabs */
-	
+
 	comments: {
 		imageUp: comments,
 		imageOver: comments_over,
@@ -659,7 +661,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: comments_checked,
 		imageCheckedOver: comments_checked_over,
 	},
-	
+
 	images: {
 		imageUp: images,
 		imageOver: images_over,
@@ -667,7 +669,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: images_checked,
 		imageCheckedOver: images_checked_over,
 	},
-	
+
 	overview: {
 		imageUp: overview,
 		imageOver: overview_over,
@@ -675,7 +677,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: overview_checked,
 		imageCheckedOver: overview_checked_over,
 	},
-	
+
 	tags: {
 		imageUp: tags,
 		imageOver: tags_over,
@@ -683,29 +685,29 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: tags_checked,
 		imageCheckedOver: tags_checked_over,
 	},
-	
+
 	search_filter: {
 		imageUp: search_filter,
 		imageOver: search_filter_over,
 		imageDown: search_filter_down,
 		imageChecked: search_filter_checked,
 	},
-	
-	
+
+
 	/** Score */
-	
+
 	replay: {
 		imageUp: replay,
 		imageOver: replay_over,
 		imageDown: replay_down,
 	},
-	
+
 	continue: {
 		imageUp: continue,
 		imageOver: continue_over,
 		imageDown: continue_down,
 	}
-	
+
 	bookmark: {
 		imageUp: bookmark,
 		imageOver: bookmark_over,
@@ -720,7 +722,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 
 	/** Transparent */
-	
+
 	transparent: {
 		down: button_transparent_down,
 		up: button_transparent_up,
@@ -746,9 +748,9 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		checkedFontColor: highlight,
 		disabledFontColor: red,
 	},
-	
+
 	/** Flat Button */
-	
+
 	flat_press: {
 		up: button_flat_up,
 		down: button_flat_down,
@@ -765,16 +767,16 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		checkedOver: button_flat_checked_over,
 		font: medium_black,
 	},
-	
+
 	/** Tag button */
-	
+
 	tag: {
 		down: button_tag_down,
 		up: button_tag_up,
 		over: button_tag_over,
 		font: huge_black,
 	},
-	
+
 	/** Link */
 	link: {
 		font: medium_bold,

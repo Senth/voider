@@ -25,7 +25,7 @@ private static ResourceChecker mInstance = null;
  * Private constructor to enforce singleton usage
  */
 private ResourceChecker() {
-	EventDispatcher.getInstance().connect(EventTypes.USER_LOGIN, this);
+	EventDispatcher.getInstance().connect(EventTypes.USER_LOGGED_IN, this);
 }
 
 /**
@@ -42,7 +42,7 @@ public static void init() {
  */
 public static void dispose() {
 	if (mInstance != null) {
-		EventDispatcher.getInstance().disconnect(EventTypes.USER_LOGIN, mInstance);
+		EventDispatcher.getInstance().disconnect(EventTypes.USER_LOGGED_IN, mInstance);
 		mInstance = null;
 	}
 }
@@ -50,7 +50,7 @@ public static void dispose() {
 @Override
 public void handleEvent(GameEvent event) {
 	switch (event.type) {
-	case USER_LOGIN:
+	case USER_LOGGED_IN:
 		checkAndCreateResources();
 		break;
 
@@ -67,7 +67,7 @@ private void checkAndCreateResources() {
 	if (isMissingPlayerShips()) {
 		createPlayerShips();
 	} else if (Debug.isBuildOrBelow(Builds.NIGHTLY_RELEASE) && Debug.isBuildOrAbove(Builds.DEV_SERVER)) {
-		// Remove player ship than add it again... Added a wrong version first time
+		// Remove player ship than add it again... Added a wrong gameVersion first time
 		removePlayerShips();
 		createPlayerShips();
 	}

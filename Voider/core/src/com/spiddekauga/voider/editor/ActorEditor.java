@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Editor.IC_Actor;
@@ -37,7 +39,6 @@ import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Messages;
@@ -156,8 +157,8 @@ public float getShapeHeight() {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 
 	IC_Actor icActor = ConfigIni.getInstance().editor.actor;
 
@@ -202,8 +203,8 @@ public void resetCenterOffset() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	if (mDrawingActor != null && mDrawingActor.hasBody()) {
 		mDrawingActor.destroyBody();
@@ -363,7 +364,7 @@ protected void saveToFile() {
 	mNotification.showSuccess(Messages.Info.SAVED);
 	showSyncMessage();
 
-	// Saved first time? Then load it and use the loaded version
+	// Saved first time? Then load it and use the loaded gameVersion
 	if (!ResourceCacheFacade.isLoaded(mActorDef.getId())) {
 		ResourceCacheFacade.load(this, mActorDef.getId(), true);
 		ResourceCacheFacade.finishLoading();
@@ -494,7 +495,7 @@ public void activateTools(Tools activateTool) {
 @Override
 public void publishDef() {
 	if (mActorDef != null) {
-		getGui().showProgressBar("Uploading...");
+		ProgressBar.showProgress("Uploading...");
 		mResourceRepo.publish(this, this, mActorDef);
 	}
 }@Override
@@ -644,12 +645,6 @@ public float getRotationSpeed() {
 	}
 }
 
-
-
-
-
-
-
 /**
  * Creates a new actor of the current actor type via the default constructor. If an actor definition
  * has been set, this will also set that definition, else you need to set this manually if it hasn't
@@ -675,14 +670,6 @@ protected Actor newActor() {
 
 	return null;
 }
-
-
-
-
-
-
-
-
 
 @Override
 public void setShapeImageScale(float scale) {

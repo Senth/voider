@@ -48,8 +48,6 @@ protected void onInit() {
 	mResponse = new RestoreBlobsResponse();
 }
 
-;
-
 @Override
 protected IEntity onRequest(RestoreBlobsMethod method) throws ServletException, IOException {
 	try {
@@ -58,9 +56,6 @@ protected IEntity onRequest(RestoreBlobsMethod method) throws ServletException, 
 		mResponse.status = GeneralResponseStatuses.SUCCESS;
 	} catch (IllegalArgumentException e) {
 		mResponse.errorMessage = "Failed to convert fieldname to UUID: " + e.getMessage();
-		mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
-	} catch (ResourceNotFoundException e) {
-		mResponse.errorMessage = e.getErrorMessage();
 		mResponse.status = GeneralResponseStatuses.FAILED_SERVER_ERROR;
 	}
 	return mResponse;
@@ -88,9 +83,8 @@ private ResourceBlobKeyContainer getBlobKeys() {
 /**
  * Bind resources
  * @param container container for all blob keys
- * @throws ResourceNotFoundException
  */
-private void bindBlobKeys(ResourceBlobKeyContainer container) throws ResourceNotFoundException {
+private void bindBlobKeys(ResourceBlobKeyContainer container) {
 	// User resources
 	for (Entry<UUID, Map<Integer, BlobKey>> entry : container.mUserBlobKeys.entrySet()) {
 		bindUserResource(entry.getKey(), entry.getValue());
@@ -107,11 +101,8 @@ private void bindBlobKeys(ResourceBlobKeyContainer container) throws ResourceNot
 
 /**
  * Bind a user resource
- * @param resourceId
- * @param blobKeys
- * @throws ResourceNotFoundException
  */
-private void bindUserResource(UUID resourceId, Map<Integer, BlobKey> blobKeys) throws ResourceNotFoundException {
+private void bindUserResource(UUID resourceId, Map<Integer, BlobKey> blobKeys) {
 	// Search for user resource id
 	FilterWrapper filterByResourceId = new FilterWrapper(CUserResources.RESOURCE_ID, resourceId);
 	Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.USER_RESOURCES, filterByResourceId);
@@ -127,11 +118,11 @@ private void bindUserResource(UUID resourceId, Map<Integer, BlobKey> blobKeys) t
 				blobKeys.remove(entityRevision);
 			}
 		} catch (PropertyNotFoundException e) {
-			throw new ResourceNotFoundException("No revision property for user entity...");
+			mLogger.severe("Didn't find revision for entity: " + entity);
 		}
 	}
 
-	// All revisions have been published, remove uploaded blobs
+	// Remove blobs that weren't found
 	if (!blobKeys.isEmpty()) {
 		mLogger.fine("Skipping " + blobKeys.size() + " revisions for " + resourceId);
 		BlobUtils.delete(blobKeys.values());
@@ -140,12 +131,9 @@ private void bindUserResource(UUID resourceId, Map<Integer, BlobKey> blobKeys) t
 
 /**
  * Bind a published resource
- * @param resourceId
- * @param blobKey
- * @throws ResourceNotFoundException
  */
-private void bindPublishedResource(UUID resourceId, BlobKey blobKey) throws ResourceNotFoundException {
-	// Search for resource id
+private void bindPublishedResource(UUID resourceId, BlobKey blobKey) {
+	// Datastore for resource id
 	FilterWrapper filterByResourceId = new FilterWrapper(CPublished.RESOURCE_ID, resourceId);
 	Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED, filterByResourceId);
 
@@ -154,7 +142,7 @@ private void bindPublishedResource(UUID resourceId, BlobKey blobKey) throws Reso
 		entity.setUnindexedProperty(CPublished.BLOB_KEY, blobKey);
 	}
 
-	// Search level id
+	// Datastore level id
 	else {
 		FilterWrapper filterByLevelId = new FilterWrapper(CPublished.LEVEL_ID, resourceId);
 		entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED, filterByLevelId);
@@ -167,7 +155,7 @@ private void bindPublishedResource(UUID resourceId, BlobKey blobKey) throws Reso
 	// Add to datastore
 	if (entity != null) {
 		mLogger.info(entity.toString());
-		// Add directly to the datastore so both IDs are updated correctly
+		// Add published levels directly to the datastore so both blobs are updated correctly
 		if (entity.hasProperty(CPublished.LEVEL_BLOB_KEY)) {
 			mLogger.info("Put directly");
 			DatastoreUtils.put(entity);
@@ -179,30 +167,8 @@ private void bindPublishedResource(UUID resourceId, BlobKey blobKey) throws Reso
 	}
 	// Entity not found, abort
 	else {
-		throw new ResourceNotFoundException("Couldn't find resource (" + resourceId + ") in published! (least: "
+		mLogger.warning("Couldn't find resource (" + resourceId + ") in published! (least: "
 				+ resourceId.getLeastSignificantBits() + ", most: " + resourceId.getMostSignificantBits());
-	}
-}
-
-/**
- * Thrown if the resource wasn't found
- */
-private class ResourceNotFoundException extends Exception {
-	/** Where the resource wasn't found */
-	private String mErrorMessage = null;
-
-	/**
-	 * @param errorMessage
-	 */
-	private ResourceNotFoundException(String errorMessage) {
-		mErrorMessage = errorMessage;
-	}
-
-	/**
-	 * @return the error message
-	 */
-	private String getErrorMessage() {
-		return mErrorMessage;
 	}
 }
 

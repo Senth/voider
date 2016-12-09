@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.Config;

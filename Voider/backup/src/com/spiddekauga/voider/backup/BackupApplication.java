@@ -4,7 +4,7 @@ package com.spiddekauga.voider.backup;
  * Main application for the Voider backup
 
  */
-public class Application {
+public class BackupApplication {
 	/**
 	 * Main method
 	 * @param args all arguments

@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.repo.misc;
+package com.spiddekauga.voider.settings;
 
 import com.spiddekauga.voider.config.ConfigIni;
 import com.spiddekauga.voider.config.IC_Setting.IC_Network;
@@ -50,8 +50,8 @@ void setDateTime(String dateTime) {
 }
 
 /**
- * Updates the client version to the latest client version
- * @param version last used version string
+ * Updates the client gameVersion to the latest client gameVersion
+ * @param version last used gameVersion string
  */
 void updateLastUsedVersion(String version) {
 	mPreferences.putString(CLIENT__LAST_USED_VERSION, version);
@@ -63,7 +63,7 @@ void updateLastUsedVersion(String version) {
 // ----------------
 
 /**
- * @return the last client version this client used, null if not found
+ * @return the last client gameVersion this client used, null if not found
  */
 String getLastUsedVersion() {
 	return mPreferences.getString(CLIENT__LAST_USED_VERSION, null);
@@ -95,7 +95,6 @@ long getTermsLength() {
 
 /**
  * Set the length of the current terms document
- * @param length
  */
 void setTermsLength(long length) {
 	mPreferences.putLong(TERMS__LENGTH, length);
@@ -107,7 +106,11 @@ void setTermsLength(long length) {
  */
 boolean isBugReportSentAnonymously() {
 	IC_Network icNetwork = ConfigIni.getInstance().setting.network;
-	return mPreferences.getBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, icNetwork.isSendBugReportAnonymouslyByDefault());
+	if (mPreferences != null) {
+		return mPreferences.getBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, icNetwork.isSendBugReportAnonymouslyByDefault());
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -115,7 +118,9 @@ boolean isBugReportSentAnonymously() {
  * @param anonymously true if they should be sent anonymously
  */
 void setBugReportSendAnonymously(boolean anonymously) {
-	mPreferences.putBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, anonymously);
-	mPreferences.flush();
+	if (mPreferences != null) {
+		mPreferences.putBoolean(NETWORK__SEND_BUG_REPORT_ANONYMOUSLY, anonymously);
+		mPreferences.flush();
+	}
 }
 }

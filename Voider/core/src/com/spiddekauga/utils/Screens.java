@@ -5,25 +5,50 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.config.ConfigIni;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Screen utilities
  */
 public class Screens {
+private static SimpleDateFormat mFileTimestampFormat = null;
+
+/**
+ * Saves a screenshot into the user's directory
+ */
+public static void saveScreenshot() {
+	String screenshotDirPath = Config.File.getScreenshotStorage();
+	FileHandle screenshotDir = Gdx.files.external(screenshotDirPath);
+	if (!screenshotDir.exists()) {
+		screenshotDir.mkdirs();
+	}
+
+	if (mFileTimestampFormat == null) {
+		String timestampFormat = ConfigIni.getInstance().setting.general.getFileTimestampFormat();
+		mFileTimestampFormat = new SimpleDateFormat(timestampFormat, Locale.ENGLISH);
+	}
+
+	String timestamp = mFileTimestampFormat.format(new Date());
+	String screenshotName = "Voider Screenshot - " + timestamp + ".png";
+	FileHandle screenshotFile = screenshotDir.child(screenshotName);
+	saveScreenshot(screenshotFile);
+}
+
 /**
  * Saves a screenshot to the specified file
  * @param file where to save the screen shot
  */
 public static void saveScreenshot(FileHandle file) {
 	byte[] bytes = getScreenshotInPng(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-
-	boolean append = false;
-	file.writeBytes(bytes, append);
+	file.writeBytes(bytes, false);
 }
 
 /**
@@ -36,7 +61,7 @@ public static void saveScreenshot(FileHandle file) {
  * @return PNG image in bytes
  */
 public static byte[] getScreenshotInPng(int x, int y, int width, int height, boolean flipY) {
-	Pixmap pixmap = getScreenshot(x, y, width, height, true);
+	Pixmap pixmap = getScreenshot(x, y, width, height, flipY);
 	byte[] bytes;
 
 	try {
@@ -61,23 +86,20 @@ public static byte[] getScreenshotInPng(int x, int y, int width, int height, boo
 public static Pixmap getScreenshot(int x, int y, int width, int height, boolean flipY) {
 	Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
 
-	final Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
+	final Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
 	ByteBuffer pixels = pixmap.getPixels();
-	Gdx.gl.glReadPixels(x, y, width, height, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
+	Gdx.gl.glReadPixels(x, y, width, height, GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
 
-	final int numBytes = width * height * 4;
+	final int numBytes = width * height * 3;
 	byte[] lines = new byte[numBytes];
 	if (flipY) {
-		final int numBytesPerLine = width * 4;
+		final int numBytesPerLine = width * 3;
 		for (int i = 0; i < height; i++) {
 			pixels.position((height - i - 1) * numBytesPerLine);
 			pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
 		}
 		pixels.clear();
 		pixels.put(lines);
-	} else {
-		// pixels.clear();
-		// pixels.get(lines);
 	}
 
 	return pixmap;
@@ -85,7 +107,6 @@ public static Pixmap getScreenshot(int x, int y, int width, int height, boolean 
 
 /**
  * Clamp the current camera position to min/max coordinates
- * @param camera
  * @param min minimum position
  * @param max maximum position
  * @return true if clamped
@@ -101,7 +122,6 @@ public static boolean clampCamera(OrthographicCamera camera, Vector2 min, Vector
 /**
  * Clamp the specific camera position depending on custom position and zoom. I.e. neither uses the
  * camera's position nor the camera's zoom.
- * @param camera
  * @param min minimum position
  * @param max maximum position
  * @param cameraPos position of the camera

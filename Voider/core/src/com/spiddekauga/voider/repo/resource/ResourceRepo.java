@@ -194,7 +194,7 @@ public void fixUserResourceConflict(HashMap<UUID, ResourceConflictEntity> confli
 
 	HashMap<UUID, ResourceRevisionEntity> unsyncedResources = ResourceLocalRepo.getUnsyncedUserResources();
 
-	// Remove conflicted unsynced resources when keeping server version
+	// Remove conflicted unsynced resources when keeping server gameVersion
 	if (!keepLocal) {
 		for (UUID conflictId : conflicts.keySet()) {
 			unsyncedResources.remove(conflictId);

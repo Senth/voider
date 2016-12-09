@@ -20,7 +20,13 @@ import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.Gui;
+import com.spiddekauga.utils.scene.ui.LoadingProgressScene;
+import com.spiddekauga.utils.scene.ui.LoadingScene;
 import com.spiddekauga.utils.scene.ui.NotificationShower.NotificationTypes;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
+import com.spiddekauga.utils.scene.ui.SceneSwitcher;
+import com.spiddekauga.utils.scene.ui.WorldScene;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.config.ConfigIni;
@@ -44,14 +50,8 @@ import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalDeps;
-import com.spiddekauga.voider.scene.Gui;
-import com.spiddekauga.voider.scene.LoadingProgressScene;
-import com.spiddekauga.voider.scene.LoadingScene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.sound.MusicInterpolations;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
 import com.spiddekauga.voider.utils.event.IEventListener;
@@ -70,7 +70,6 @@ public abstract class Editor extends WorldScene
 
 private static final int COLOR_TRANSPARENT = 0x00000000;
 private static final int COLOR_BLACK = 0x000000FF;
-protected static Synchronizer mSynchronizer = Synchronizer.getInstance();
 protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 protected Invoker mInvoker = new Invoker();
 protected SpriteBatch mSpriteBatch = new SpriteBatch();
@@ -105,14 +104,14 @@ public Editor(Gui gui, float pickRadius, Class<? extends Def> defType) {
 }
 
 @Override
-protected void onInit() {
-	super.onInit();
+protected void onCreate() {
+	super.onCreate();
 	EventDispatcher.getInstance().connect(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS, this);
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	mMusicPlayer.stop(MusicInterpolations.FADE_OUT);
 
@@ -129,8 +128,8 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 }
 
 @Override
-protected void onDeactivate() {
-	super.onDeactivate();
+protected void onPause() {
+	super.onPause();
 
 	Actor.setEditorActive(false);
 }
@@ -290,8 +289,8 @@ protected void render() {
 }
 
 @Override
-protected void onDispose() {
-	super.onDispose();
+protected void onDestroy() {
+	super.onDestroy();
 	EventDispatcher.getInstance().disconnect(EventTypes.SYNC_USER_RESOURCES_DOWNLOAD_SUCCESS, this);
 }
 
@@ -473,13 +472,11 @@ private void renderGrid() {
 
 /**
  * Handle a web response in main thread synchronously
- * @param method
- * @param response
  */
 protected void handleWebResponseSyncronously(IMethodEntity method, IEntity response) {
 	// Publish
 	if (response instanceof PublishResponse) {
-		getGui().hideProgressBar();
+		ProgressBar.hide();
 		if (((PublishResponse) response).status == PublishResponse.Statuses.SUCCESS) {
 			mNotification.show(NotificationTypes.SUCCESS, "Publish successful!");
 			getGui().resetValues();
@@ -509,7 +506,7 @@ protected boolean onKeyDown(int keycode) {
 	}
 	// Back - main menu
 	else if (KeyHelper.isBackPressed(keycode)) {
-		if (!getGui().isMsgBoxActive()) {
+		if (!getGui().isDialogActive()) {
 			getGui().showExitConfirmDialog();
 			return true;
 		}
@@ -530,14 +527,6 @@ protected boolean onKeyDown(int keycode) {
 	return super.onKeyDown(keycode);
 }
 
-/**
- * @return invoker for the editor
- */
-@Override
-public Invoker getInvoker() {
-	return mInvoker;
-}
-
 @Override
 public LoadingScene getLoadingScene() {
 	return new LoadingProgressScene();
@@ -549,6 +538,14 @@ protected void loadResources() {
 	ResourceCacheFacade.load(this, InternalDeps.UI_EDITOR);
 	ResourceCacheFacade.load(this, InternalDeps.UI_GENERAL);
 	ResourceCacheFacade.load(this, InternalNames.SHADER_DEFAULT);
+}
+
+/**
+ * @return invoker for the editor
+ */
+@Override
+public Invoker getInvoker() {
+	return mInvoker;
 }
 
 @Override
@@ -570,7 +567,7 @@ public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
 		percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
 	}
 
-	getGui().updateProgressBar(percentage);
+	ProgressBar.updateProgress(percentage);
 }
 
 /**
@@ -739,8 +736,6 @@ protected static class ImageSaveOnActor {
 
 	/**
 	 * Sets the location and image to render
-	 * @param textureRegion
-	 * @param location
 	 */
 	protected ImageSaveOnActor(TextureRegion textureRegion, Locations location) {
 		mTextureRegion = textureRegion;

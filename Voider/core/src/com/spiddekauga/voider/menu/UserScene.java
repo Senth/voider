@@ -44,8 +44,8 @@ public UserScene() {
 }
 
 @Override
-protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
-	super.onActivate(outcome, message, loadingOutcome);
+protected void onResume(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+	super.onResume(outcome, message, loadingOutcome);
 
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.connect(EventTypes.USER_PASSWORD_CHANGE_MISMATCH, mPasswordChangeListener);
@@ -54,13 +54,13 @@ protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutc
 }
 
 @Override
-protected void onDeactivate() {
+protected void onPause() {
 	EventDispatcher eventDispatcher = EventDispatcher.getInstance();
 	eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGE_MISMATCH, mPasswordChangeListener);
 	eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGE_TOO_SHORT, mPasswordChangeListener);
 	eventDispatcher.disconnect(EventTypes.USER_PASSWORD_CHANGED, mPasswordChangeListener);
 
-	super.onDeactivate();
+	super.onPause();
 }
 
 @Override

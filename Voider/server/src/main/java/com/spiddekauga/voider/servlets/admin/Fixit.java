@@ -19,12 +19,10 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * View, edit and generate new MOTDs for Voider
+ * Fix resources without a valid blob
  */
 @SuppressWarnings("serial")
 public class Fixit extends VoiderController {
-
-/** Blobstore service */
 private static final BlobstoreService mBlobstore = BlobstoreServiceFactory.getBlobstoreService();
 
 @Override
@@ -46,7 +44,7 @@ protected void onRequest() {
  * @param request the request send to the servlet
  * @return Map with all blob keys mapped to a UUID, null if no uploads were made
  */
-public Map<UUID, BlobKey> getBlobKeysFromUpload(HttpServletRequest request) {
+private Map<UUID, BlobKey> getBlobKeysFromUpload(HttpServletRequest request) {
 	HashMap<UUID, BlobKey> blobKeys = new HashMap<>();
 
 	try {
@@ -68,7 +66,6 @@ public Map<UUID, BlobKey> getBlobKeysFromUpload(HttpServletRequest request) {
 
 /**
  * Update blob for an existing resource
- * @param resourceId
  * @param blobKey new blob key
  */
 private void updateResourceBlobKey(UUID resourceId, BlobKey blobKey) {

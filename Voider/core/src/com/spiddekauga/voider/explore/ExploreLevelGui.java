@@ -6,12 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -35,7 +33,6 @@ import com.spiddekauga.voider.network.resource.LevelSpeedSearchRanges;
 import com.spiddekauga.voider.network.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.stat.Tags;
-import com.spiddekauga.voider.repo.analytics.listener.AnalyticsButtonListener;
 import com.spiddekauga.voider.repo.resource.SkinNames;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.scene.ui.UiStyles.CheckBoxStyles;
@@ -194,14 +191,22 @@ void setUserComment(String comment, String date) {
 }
 
 @Override
-public void dispose() {
-	super.dispose();
+public void resetValues() {
+	super.resetValues();
+
+	resetComments();
+	resetRightPanel();
+}
+
+@Override
+public void onDestroy() {
+	super.onDestroy();
 	mWidgets.dispose();
 }
 
 @Override
-public void initGui() {
-	super.initGui();
+public void onCreate() {
+	super.onCreate();
 
 	initRightPanel();
 	initSort();
@@ -209,14 +214,6 @@ public void initGui() {
 	initTags();
 
 	resetContentMargins();
-}
-
-@Override
-public void resetValues() {
-	super.resetValues();
-
-	resetComments();
-	resetRightPanel();
 }
 
 /**
@@ -365,7 +362,31 @@ protected void initSearchFilters(AlignTable table, GuiHider contentHider) {
 }
 
 @Override
+protected int getActorCountPerRow() {
+	// Never have a size smaller than the rating width
+	int minSize = Config.Gui.getRatingWidth();
+	int actorsPerRow = super.getActorCountPerRow();
+	float actorWidth = getAvailableContentWidth() / actorsPerRow;
+	actorWidth -= mUiFactory.getStyles().vars.paddingExplore * 2;
+
+	if (actorWidth < minSize) {
+		actorsPerRow -= 1;
+	}
+
+	return actorsPerRow;
+}
+
+@Override
 protected float getMaxActorWidth() {
+	switch (mIconSize) {
+	case SMALL:
+		return Config.Level.SAVE_TEXTURE_WIDTH * 0.5f;
+	case MEDIUM:
+		return Config.Level.SAVE_TEXTURE_WIDTH * 0.75f;
+	case LARGE:
+		return Config.Level.SAVE_TEXTURE_WIDTH;
+	}
+
 	return Config.Level.SAVE_TEXTURE_WIDTH;
 }
 
@@ -419,29 +440,42 @@ protected void initInfo(AlignTable table, HideListener hider) {
 	}
 }
 
-/**
- * Resets the comments
- */
-void resetComments() {
-	if (mWidgets.comment.userComment != null) {
-		mWidgets.comment.userComment.setText("");
-	}
-	if (mWidgets.comment.userDate != null) {
-		mWidgets.comment.userDate.setText("");
-	}
-	mWidgets.comment.userHider.hide();
-	mWidgets.comment.comments.dispose();
-}
+private AlignTable createTable(Object entity, boolean selected) {
+	AlignTable table = new AlignTable();
+	table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
-/**
- * Resets the right panel
- */
-private void resetRightPanel() {
-	if (mScene.hasResumeLevel()) {
-		mWidgets.action.resumeLevelHider.show();
+	int rating = -1;
+	final DefEntity defEntity;
+	final LevelInfoEntity levelInfoEntity;
+	if (entity instanceof DefEntity) {
+		defEntity = (DefEntity) entity;
+		levelInfoEntity = null;
+	} else if (entity instanceof LevelInfoEntity) {
+		levelInfoEntity = (LevelInfoEntity) entity;
+		defEntity = levelInfoEntity.defEntity;
+		rating = levelInfoEntity.stats.getIntRating();
 	} else {
-		mWidgets.action.resumeLevelHider.hide();
+		return table;
 	}
+
+	addImageButtonField(defEntity, selected, table, new OnSelectAction() {
+		@Override
+		public void onSelect() {
+			mScene.setSelectedLevel(levelInfoEntity);
+		}
+	});
+
+	// Rating
+	if (rating != -1) {
+		table.row();
+		RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.disabled, table, null);
+		ratingWidget.setRating(rating);
+	}
+
+	// Level name
+	addFieldName(defEntity, table);
+
+	return table;
 }
 
 /**
@@ -584,6 +618,31 @@ private void initTags() {
 }
 
 /**
+ * Resets the comments
+ */
+void resetComments() {
+	if (mWidgets.comment.userComment != null) {
+		mWidgets.comment.userComment.setText("");
+	}
+	if (mWidgets.comment.userDate != null) {
+		mWidgets.comment.userDate.setText("");
+	}
+	mWidgets.comment.userHider.hide();
+	mWidgets.comment.comments.dispose();
+}
+
+/**
+ * Resets the right panel
+ */
+private void resetRightPanel() {
+	if (mScene.hasResumeLevel()) {
+		mWidgets.action.resumeLevelHider.show();
+	} else {
+		mWidgets.action.resumeLevelHider.hide();
+	}
+}
+
+/**
  * Adds more levels to the existing content
  * @param levels the levels to add
  */
@@ -601,77 +660,6 @@ void addContent(ArrayList<LevelInfoEntity> levels) {
 
 private AlignTable createLevelTable(LevelInfoEntity level, boolean selected) {
 	return createTable(level, selected);
-}
-
-private AlignTable createTable(Object entity, boolean selected) {
-	AlignTable table = new AlignTable();
-	table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-
-	int rating = -1;
-	final DefEntity defEntity;
-	final LevelInfoEntity levelInfoEntity;
-	if (entity instanceof DefEntity) {
-		defEntity = (DefEntity) entity;
-		levelInfoEntity = null;
-	} else if (entity instanceof LevelInfoEntity) {
-		levelInfoEntity = (LevelInfoEntity) entity;
-		defEntity = levelInfoEntity.defEntity;
-		rating = levelInfoEntity.stats.getIntRating();
-	} else {
-		return table;
-	}
-
-	// Image button
-	ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
-	ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
-	imageButtonStyle.imageUp = (Drawable) defEntity.drawable;
-
-	ImageButton button = new ImageButton(imageButtonStyle);
-	button.setChecked(selected);
-	table.row().setFillWidth(true);
-	table.add(button).setFillWidth(true).setKeepAspectRatio(true);
-	new ButtonListener(button) {
-		/** If this level was selected before */
-		private boolean mWasCheckedOnDown = false;		@Override
-		protected void onChecked(Button button, boolean checked) {
-			if (checked) {
-				mScene.setSelectedLevel(levelInfoEntity);
-				mScene.setSelected(defEntity);
-			}
-		}
-
-		@Override
-		protected void onDown(Button button) {
-			mWasCheckedOnDown = button.isChecked();
-		}
-
-		@Override
-		protected void onUp(Button button) {
-			if (mWasCheckedOnDown) {
-				mScene.selectAction();
-			}
-		}
-
-
-	};
-	addContentButton(button);
-
-	// Analytics
-	new AnalyticsButtonListener(button, "ExploreLevel_Select", defEntity.name + " (" + defEntity.resourceId + ":" + defEntity.revision + ")");
-
-	// Level name
-	table.row();
-	mUiFactory.text.add(defEntity.name, table);
-	table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
-
-	// Rating
-	if (rating != -1) {
-		table.row();
-		RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.disabled, table, null);
-		ratingWidget.setRating(rating);
-	}
-
-	return table;
 }
 
 /**
@@ -733,7 +721,9 @@ private class Widgets implements Disposable {
 
 		private void init() {
 			hider.addToggleActor(table);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			hider.dispose();
@@ -781,7 +771,9 @@ private class Widgets implements Disposable {
 
 		private void init() {
 			hider.addChild(userHider);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			table.dispose();
 			hider.dispose();
@@ -805,7 +797,9 @@ private class Widgets implements Disposable {
 			buttonGroup = new ButtonGroup<>();
 			buttonGroup.setMinCheckCount(0);
 			buttonGroup.setMaxCheckCount(5);
-		}		@Override
+		}
+
+		@Override
 		public void dispose() {
 			init();
 		}

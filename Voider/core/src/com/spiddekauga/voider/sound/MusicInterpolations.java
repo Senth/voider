@@ -39,6 +39,7 @@ static {
 
 			if (next != null && !next.isPlaying()) {
 				next.play();
+				next.setVolume(maxVolume);
 			}
 
 			return true;

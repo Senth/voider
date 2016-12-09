@@ -1,9 +1,9 @@
 package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.Strings;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.MsgBox;
+import com.spiddekauga.utils.scene.ui.ProgressBar;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -13,12 +13,11 @@ import com.spiddekauga.voider.network.misc.BugReportResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.analytics.AnalyticsRepo;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
-import com.spiddekauga.voider.repo.misc.SettingRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.user.User;
 import com.spiddekauga.voider.resources.BugReportDef;
-import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.ui.UiFactory;
+import com.spiddekauga.voider.settings.SettingRepo;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.event.EventDispatcher;
 import com.spiddekauga.voider.utils.event.EventTypes;
@@ -31,12 +30,10 @@ import java.util.Date;
  * Sends a bug report to the server
  */
 public class CBugReportSend extends Command implements IResponseListener {
-private boolean mEndScene;
 private boolean mSendAnonymously = false;
 private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 private Exception mException;
 private BugReportEntity mBugReport = null;
-private Gui mGui;
 private IEventListener mLoginListener = new IEventListener() {
 	@Override
 	public void handleEvent(GameEvent event) {
@@ -61,14 +58,10 @@ private IEventListener mLoginListener = new IEventListener() {
 
 /**
  * Creates a command that will send a bug report.
- * @param gui the GUI to show progress and success on
  * @param exception the exception that was thrown
- * @param endScene TODO
  */
-public CBugReportSend(Gui gui, Exception exception, boolean endScene) {
-	mGui = gui;
+public CBugReportSend(Exception exception) {
 	mException = exception;
-	mEndScene = endScene;
 	createBugReportEntity();
 }
 
@@ -87,59 +80,93 @@ private void createBugReportEntity() {
 	mBugReport.date = new Date();
 	mBugReport.subject = "";
 	mBugReport.description = "";
-	mBugReport.systemInformation = getSystemInformation();
+	setSystemInformation(mBugReport);
 
 	// Exception
 	if (mException != null) {
-		String stackTrace = Strings.exceptionToString(mException);
-		stackTrace = Strings.toHtmlString(stackTrace);
-		mBugReport.additionalInformation = stackTrace;
-		mBugReport.additionalInformation += "</br></br>";
+		mBugReport.exception = Strings.exceptionToString(mException);
 		mBugReport.type = BugReportTypes.BUG_EXCEPTION;
 
 		// Get analytics
 		mBugReport.analyticsSession = AnalyticsRepo.getInstance().getSession();
+	} else {
+		mBugReport.type = BugReportTypes.BUG_CUSTOM;
 	}
 }
 
 /**
- * @return string with system information
+ * Get the system information that is sent to the server
+ * @return system information
  */
 public static String getSystemInformation() {
-	StringBuilder builder = new StringBuilder();
+	String info = "OS: ";
 
-	builder.append("OS: ");
 	switch (Gdx.app.getType()) {
 	case Android:
-		builder.append("Android API v.").append(Gdx.app.getVersion());
+		info += "Android API v." + Gdx.app.getVersion();
 		break;
 
 	case Applet:
-		builder.append("Applet");
+		info += "Applet";
 		break;
 
 	case Desktop:
-		builder.append(System.getProperty("os.name"));
+		info += System.getProperty("os.name");
 		break;
 
 	case WebGL:
-		builder.append("WebGL");
+		info += "WebGL";
 		break;
 
 	case iOS:
-		builder.append("iOS v.").append(Gdx.app.getVersion());
+		info += "iOS v." + Gdx.app.getVersion();
 		break;
 
 	default:
 		break;
 	}
 
-	builder.append("\n");
-	builder.append("Screen size: ").append(Gdx.graphics.getWidth()).append("x").append(Gdx.graphics.getHeight()).append("\n");
-	builder.append("Version: ").append(SettingRepo.getInstance().info().getCurrentVersion().getVersion()).append("\n");
-	builder.append("Build: ").append(Config.Debug.BUILD.toString());
 
-	return builder.toString();
+	info += "\nGame Version: " + SettingRepo.getInstance().info().getCurrentVersion().getVersion();
+	info += "\nBuild type: " + Config.Debug.BUILD.toString();
+	info += "\nScreen resolution: " + Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
+
+	return info;
+}
+
+/**
+ * Set the system information of the bug report
+ * @param bugReport the bug report to set
+ */
+private static void setSystemInformation(BugReportEntity bugReport) {
+	switch (Gdx.app.getType()) {
+	case Android:
+		bugReport.os = "Android API v." + Gdx.app.getVersion();
+		break;
+
+	case Applet:
+		bugReport.os = "Applet";
+		break;
+
+	case Desktop:
+		bugReport.os = System.getProperty("os.name");
+		break;
+
+	case WebGL:
+		bugReport.os = "WebGL";
+		break;
+
+	case iOS:
+		bugReport.os = "iOS v." + Gdx.app.getVersion();
+		break;
+
+	default:
+		break;
+	}
+
+	bugReport.resolution = "" + Gdx.graphics.getWidth() + "x" + Gdx.graphics.getHeight();
+	bugReport.gameVersion = SettingRepo.getInstance().info().getCurrentVersion().getVersion();
+	bugReport.buildType = Config.Debug.BUILD.toString();
 }
 
 @Override
@@ -155,7 +182,7 @@ public void handleWebResponse(IMethodEntity method, IEntity response) {
  * @param response server's method response
  */
 private void handleBugReportResponse(BugReportResponse response) {
-	mGui.hideWaitWindow();
+	ProgressBar.hide();
 	if (response.status.isSuccessful()) {
 		showSentMessage("Success", Messages.Info.BUG_REPORT_SENT);
 	} else {
@@ -166,23 +193,14 @@ private void handleBugReportResponse(BugReportResponse response) {
 
 /**
  * Show message box for sent report
- * @param title
- * @param message
+ * @param title message box title
+ * @param message the message of the sent report
  */
 private void showSentMessage(String title, String message) {
 	// Message box
-	MsgBoxExecuter msgBox = UiFactory.getInstance().msgBox.add(title);
+	MsgBox msgBox = UiFactory.getInstance().msgBox.add(title);
 	msgBox.content(message);
-
-	if (mEndScene) {
-		Command command = new CSceneEnd();
-		msgBox.button("OK", command);
-		msgBox.key(Input.Keys.ESCAPE, command);
-		msgBox.key(Input.Keys.ENTER, command);
-		msgBox.key(Input.Keys.BACK, command);
-	} else {
-		msgBox.addCancelButtonAndKeys("Continue");
-	}
+	msgBox.addCancelButtonAndKeys("Continue");
 }
 
 /**
@@ -194,7 +212,7 @@ private void saveBugReportLocally() {
 
 @Override
 public boolean execute() {
-	mGui.showWaitWindow("");
+	ProgressBar.showSpinner("");
 	if (User.getGlobalUser().isOnline()) {
 		sendBugReport();
 	} else {
@@ -208,7 +226,7 @@ public boolean execute() {
  * Tries to send the bug report online
  */
 private void sendBugReport() {
-	mGui.setWaitWindowText("Sending bug report");
+	ProgressBar.showSpinner("Sending bug report");
 	BugReportWebRepo.getInstance().sendBugReport(mBugReport, this);
 }
 
@@ -220,7 +238,7 @@ private void goOnline() {
 	eventDispatcher.connect(EventTypes.USER_CONNECTED, mLoginListener);
 	eventDispatcher.connect(EventTypes.USER_LOGIN_FAILED, mLoginListener);
 
-	mGui.setWaitWindowText("Going online");
+	ProgressBar.showSpinner("Going online");
 	User user = User.getGlobalUser();
 	user.login();
 }
@@ -241,7 +259,7 @@ public void setSendAnonymously(boolean anonymously) {
 
 /**
  * Set the subject of the bug report
- * @param subject
+ * @param subject email subject
  */
 public void setSubject(String subject) {
 	mBugReport.subject = subject;
@@ -249,7 +267,7 @@ public void setSubject(String subject) {
 
 /**
  * Set the description of the bug report
- * @param description
+ * @param description optional description of the bug report
  */
 public void setDescription(String description) {
 	mBugReport.description = description;
@@ -257,7 +275,7 @@ public void setDescription(String description) {
 
 /**
  * Set the bug type
- * @param bugReportType
+ * @param bugReportType type of bug report
  */
 public void setType(BugReportTypes bugReportType) {
 	mBugReport.type = bugReportType;

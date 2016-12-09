@@ -6,14 +6,16 @@ package com.spiddekauga.voider.utils.event;
  */
 public enum EventTypes {
 // --- USER ---
-	/** User logged in */
-	USER_LOGIN,
-	/** User gone online */
+	/** User has logged in */
+	USER_LOGGED_IN,
+	/** User has connected to the server and logged in there */
 	USER_CONNECTED,
-	/** User gone offline */
+	/** User has disconnected from the server */
 	USER_DISCONNECTED,
-	/** User logged out */
-	USER_LOGOUT,
+	/** User logging out. Called before {@link #USER_LOGGED_OUT} */
+	USER_LOGGING_OUT,
+	/** Called when the user has been logged out. Called before {@link #USER_LOGGING_OUT} */
+	USER_LOGGED_OUT,
 	/** Failed to login user or connect */
 	USER_LOGIN_FAILED,
 	/** Password changed successfully */
@@ -74,7 +76,7 @@ public enum EventTypes {
 
 
 	// --- SERVER RESTORED TO PREVIOUS VERSION ---
-	/** The server restored/rewound to an earlier version of its database */
+	/** The server restored/rewound to an earlier gameVersion of its database */
 	SERVER_RESTORE,
 	/** Server maintenance */
 	SERVER_MAINTENANCE,
