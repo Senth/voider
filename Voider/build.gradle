@@ -12,9 +12,8 @@ buildscript {
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'org.robovm:robovm-gradle-plugin:1.12.0'
-        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.42'
         classpath 'com.badlogicgames.packr:packr:1.2'
     }
 }
@@ -45,7 +44,6 @@ allprojects {
     }
 
     repositories {
-        mavenLocal()
         maven { url "http://maven.senth.org/snapshots" }
         maven { url "http://maven.senth.org/releases" }
         jcenter()
@@ -296,19 +294,19 @@ task uploadBetaToGs(type: Exec) {
 // 	Does nothing yet...
 // }
 
-task deployAppengineDev(dependsOn: ['server:setAppengineDev', 'server:appengineUpdate']) << {
+task deployAppengineDev(dependsOn: ['server:setAppengineDev', 'server:appengineDeploy']) << {
     // Does nothing
 }
 
-task deployAppengineNightly(dependsOn: ['server:setAppengineNightly', 'server:appengineUpdate']) << {
+task deployAppengineNightly(dependsOn: ['server:setAppengineNightly', 'server:appengineDeploy']) << {
     // Does nothing
 }
 
-task deployAppengineBeta(dependsOn: ['uploadBetaToGs', 'server:setAppengineBeta', 'server:appengineUpdate']) << {
+task deployAppengineBeta(dependsOn: ['uploadBetaToGs', 'server:setAppengineBeta', 'server:appengineDeploy']) << {
     // Does nothing
 }
 
-task deployAppengineRelease(dependsOn: ['server:setAppengineRelease', 'server:appengineUpdate']) << {
+task deployAppengineRelease(dependsOn: ['server:setAppengineRelease', 'server:appengineDeploy']) << {
     // Does nothing
 }
 
