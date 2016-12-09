@@ -38,7 +38,7 @@ if (project.hasProperty("voider.signing")
 android {
     buildToolsVersion "24.0.3"
     compileSdkVersion 24
-    
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'

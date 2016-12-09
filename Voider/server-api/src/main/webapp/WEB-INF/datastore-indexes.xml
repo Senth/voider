@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="false">
+	<!-- HIGHSCORE -->   
+    <!-- Score DESC -->
+    <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="desc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Score ASC -->
+    <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="asc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
+	
+	<!-- Highscores to sync to client -->
+	<datastore-index kind="highscore" ancestor="false" source="manual">
+        <property name="username" direction="asc"/>
+        <property name="uploaded" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Get user score -->
+    <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="asc"/>
+    </datastore-index>
+	
+	<!-- USER LEVEL STAT -->
+	<!-- Sync to client -->
+	<datastore-index kind="user_level_stat" ancestor="true" source="manual">
+        <property name="updated" direction="asc"/>
+    </datastore-index>
+	
+	
+	<!-- LEVEL STAT -->
+	<!-- Explore — Sort by play count -->
+	<datastore-index kind="level_stat" ancestor="true" source="manual">
+		<property name="play_count" direction="desc"/>
+	</datastore-index>
+	
+	<!-- Explore — Sort by rating -->
+	<datastore-index kind="level_stat" ancestor="true" source="manual">
+		<property name="rating_avg" direction="desc"/>
+	</datastore-index>
+	
+	<!-- Explore — Sort by bookmark count -->
+	<datastore-index kind="level_stat" ancestor="true" source="manual">
+		<property name="bookmarks" direction="desc"/>
+	</datastore-index>
+	
+	
+	<!-- LEVEL_TAG -->
+	<!-- Get by count -->
+	<datastore-index kind="level_tag" ancestor="true" source="manual">
+		<property name="count" direction="desc"/>
+	</datastore-index>
+	
+	
+	<!-- RESOURCE_COMMENT -->
+	<datastore-index kind="resource_comment" ancestor="true" source="manual">
+		<property name="date" direction="desc"/>
+	</datastore-index>
+	
+	
+	<!-- SYNC PUBLISHED -->
+	<datastore-index kind="sync_published" ancestor="true" source="manual">
+        <property name="download_date" direction="asc"/>
+    </datastore-index>
+    
+
+	<!-- USER RESOURCES DELETED -->
+	<datastore-index kind="user_resources_deleted" ancestor="true" source="manual">
+        <property name="date" direction="asc"/>
+    </datastore-index>
+
+
+    <!-- USER RESOURCE SYNC -->
+    <!-- Check for conflicts, i.e. if the revision for the resource exists -->
+    <datastore-index kind="user_resources" ancestor="false" source="manual">
+    	<property name="resource_id-least" direction="asc"/>
+    	<property name="resource_id-most" direction="asc"/>
+    	<property name="revision" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Sync new to clients -->
+    <datastore-index kind="user_resources" ancestor="true" source="manual">
+        <property name="uploaded" direction="asc"/>
+        <property name="revision" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Find conflicts to remove -->
+    <datastore-index kind="user_resources" ancestor="true" source="manual">
+        <property name="resource_id-least" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+        <property name="revision" direction="asc"/>
+    </datastore-index>
+    
+    
+    <!-- PUBLISHED (EXPLORE) -->
+    <!-- Sort by newest -->   
+    <datastore-index kind="published" ancestor="false" source="manual">
+        <property name="type" direction="asc"/>
+        <property name="date" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>

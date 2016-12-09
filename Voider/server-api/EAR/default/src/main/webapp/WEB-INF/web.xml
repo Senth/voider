@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app version="2.5"
+		 xmlns="http://java.sun.com/xml/ns/javaee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+
+	<!--———————————————
+	 		WEB
+	———————————————–-->
+	<!-- Beta signup -->
+	<servlet>
+		<servlet-name>BetaSignup</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.web.BetaSignup</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BetaSignup</servlet-name>
+		<url-pattern>/beta-signup</url-pattern>
+	</servlet-mapping>
+	<!-- Browse Beta Key Group -->
+	<servlet>
+		<servlet-name>BetaKeys</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.web.BetaKeys</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BetaKeys</servlet-name>
+		<url-pattern>/beta-keys</url-pattern>
+	</servlet-mapping>
+	<!-- Download -->
+	<servlet>
+		<servlet-name>Download</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.web.Download</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Download</servlet-name>
+		<url-pattern>/download</url-pattern>
+	</servlet-mapping>
+
+
+	<!--———————————————
+	 		ADMIN
+	———————————————–-->
+	<!-- Testing -->
+	<servlet>
+		<servlet-name>Upgrade</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Upgrade</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Upgrade</servlet-name>
+		<url-pattern>/admin/upgrade-secret</url-pattern>
+	</servlet-mapping>
+	<!-- Beta Key Generator -->
+	<servlet>
+		<servlet-name>GenerateBetaKeys</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.GenerateBetaKeys</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GenerateBetaKeys</servlet-name>
+		<url-pattern>/admin/generate-beta-keys</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Motd</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Motd</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Motd</servlet-name>
+		<url-pattern>/admin/motd</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Maintenance</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Maintenance</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Maintenance</servlet-name>
+		<url-pattern>/admin/maintenance</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Fixit</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.admin.Fixit</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Fixit</servlet-name>
+		<url-pattern>/admin/fixit</url-pattern>
+	</servlet-mapping>
+
+
+	<!--———————————————
+	 	  CRON
+	———————————————–-->
+	<servlet>
+		<servlet-name>BackupCleanup</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.cron.BackupCleanup</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BackupCleanup</servlet-name>
+		<url-pattern>/cron/backup-cleanup</url-pattern>
+	</servlet-mapping>
+
+
+	<!--———————————————
+	    REMOTE API
+	———————————————–-->
+	<servlet>
+		<display-name>Remote API Servlet</display-name>
+		<servlet-name>RemoteApiServlet</servlet-name>
+		<servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RemoteApiServlet</servlet-name>
+		<url-pattern>/_ah/remote_api</url-pattern>
+	</servlet-mapping>
+
+
+	<!--———————————————
+	 	  SECURITY
+	———————————————–-->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>cron</web-resource-name>
+			<url-pattern>/cron/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+		<web-resource-collection>
+			<web-resource-name>admin</web-resource-name>
+			<url-pattern>/admin/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

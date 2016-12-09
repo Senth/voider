@@ -1,0 +1,171 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+
+apply plugin: "java"
+apply plugin: "war"
+apply plugin: 'appengine'
+
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.google.appengine:gradle-appengine-plugin:$appengineVersion"
+    }
+}
+
+dependencies {
+    appengineSdk "com.google.appengine:appengine-java-sdk:$appengineVersion"
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    compile project(':network')
+    compile project(':common-utils')
+    compile project(':appengine-utils')
+    compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
+    compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
+    compile "commons-fileupload:commons-fileupload:1.3.1"
+    compile "com.google.guava:guava:$guavaVersion"
+}
+
+ext {
+    appengineWebFile = "src/main/webapp/WEB-INF/appengine-web.xml"
+    appengineExplodedWebFile = "build/exploded-app/WEB-INF/appengine-web.xml"
+    cronFile = "src/main/webapp/WEB-INF/cron.xml"
+}
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+appengine {
+    httpPort = 8888
+    jvmFlags = ["-Ddatastore.backing_store=$projectDir.absolutePath/appengine-generated/local_db.bin", "-Xdebug", "-Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=y"]
+
+    appcfg {
+        oauth2 = true
+    }
+}
+
+sourceSets.main.java.srcDirs = ["src/main/java"]
+
+// Appengine tasks
+task setAppengineDev(dependsOn: ['appengineExplodeApp']) << {
+    prepareAppengine()
+    updateApplicationId('voider-dev')
+    updateBackupCronUrl('voider-dev')
+}
+
+task setAppengineNightly(dependsOn: ['appengineExplodeApp']) << {
+    prepareAppengine()
+    updateApplicationId('voider-nightly')
+    updateBackupCronUrl('voider-nightly')
+}
+
+task setAppengineBeta(dependsOn: ['appengineExplodeApp']) << {
+    prepareAppengine()
+    updateApplicationId('voider-beta')
+    updateBackupCronUrl('voider-beta')
+}
+
+task setAppengineRelease(dependsOn: ['appengineExplodeApp']) << {
+    prepareAppengine()
+    updateApplicationId('voider-thegame')
+    updateBackupCronUrl('voider-thegame')
+}
+
+
+def prepareAppengine() {
+    updateAppengineVersion()
+    copyAppengineFiles()
+}
+
+def copyAppengineFiles() {
+    // These should be relative to the asset folders
+    def COPY_THESE = ['txt/changelog.txt']
+    def ANDROID_ASSET_DIR = project.parent.projectDir.absolutePath + "/android/assets/"
+    def SERVER_ASSET_DIR = projectDir.absolutePath + "/src/main/webapp/assets/"
+
+    COPY_THESE.each {
+        def copyFrom = Paths.get(ANDROID_ASSET_DIR + it)
+        def copyTo = Paths.get(SERVER_ASSET_DIR + it)
+        def copyToDir = copyTo.getParent()
+        Files.createDirectories(copyToDir)
+        Files.copy(copyFrom, copyTo, StandardCopyOption.REPLACE_EXISTING);
+    }
+}
+
+def updateAppengineVersion() {
+    def searchFor = "<version>.*</version>"
+    def replaceWith = "<version>" + version + "</version>"
+
+    File webappFile = file(project.appengineWebFile)
+    def updatedContent = webappFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+    webappFile.write(updatedContent, 'UTF-8')
+
+    File explodedFile = file(project.appengineExplodedWebFile)
+    updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+    explodedFile.write(updatedContent, 'UTF-8')
+}
+
+def updateApplicationId(applicationId) {
+    def searchFor = "<application>.*</application>"
+    def replaceWith = "<application>" + applicationId + "</application>"
+
+    File webappFile = file(project.appengineWebFile)
+    def updatedContent = webappFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+    webappFile.write(updatedContent, 'UTF-8')
+
+    File explodedFile = file(project.appengineExplodedWebFile)
+    updatedContent = explodedFile.getText('UTF-8').replaceAll(searchFor, replaceWith)
+    explodedFile.write(updatedContent, 'UTF-8')
+}
+
+def updateBackupCronUrl(applicationId) {
+    // Create URL
+    def url = "<url>/_ah/datastore_admin/backup.create?"
+    url += "name=cron-"
+    url += "&amp;queue=backup"
+    url += "&amp;filesystem=gs"
+    url += "&amp;gs_bucket_name=" + applicationId + "/backup_datastore"
+
+    def kinds = [
+            "beta_group",
+            "beta_key",
+            "beta_signup",
+            "dependency",
+            "highscore",
+            "level_stat",
+            "level_tag",
+            "motd",
+            "published",
+            "sync_published",
+            "user_level_stat",
+            "user_resources",
+            "user_resources_deleted",
+            "users"
+    ]
+
+    // Add these kinds
+    kinds.each {
+        url += "&amp;kind=${it}"
+    }
+
+    url += "</url><!--backup-replace-->"
+
+    // Replace URL
+    def searchFor = "<url>.*</url><!--backup-replace-->"
+
+    File cronFile = file(project.cronFile)
+    def updatedContent = cronFile.getText('UTF-8').replaceAll(searchFor, url)
+    cronFile.write(updatedContent, 'UTF-8')
+}
+
+// Ordering
+project.appengineUpdate.mustRunAfter setAppengineDev
+project.appengineUpdate.mustRunAfter setAppengineBeta
+project.appengineUpdate.mustRunAfter setAppengineNightly
+project.appengineUpdate.mustRunAfter setAppengineRelease

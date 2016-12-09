@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app version="2.5"
+		 xmlns="http://java.sun.com/xml/ns/javaee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- User -->
+	<servlet>
+		<servlet-name>Login</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Login</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Login</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>RegisterUser</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.RegisterUser</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RegisterUser</servlet-name>
+		<url-pattern>/register-user</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Logout</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Logout</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Logout</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>PasswordResetSendToken</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.PasswordResetSendToken</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PasswordResetSendToken</servlet-name>
+		<url-pattern>/password-reset-send-token</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>PasswordReset</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.PasswordReset</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PasswordReset</servlet-name>
+		<url-pattern>/password-reset</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AccountChange</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.AccountChange</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AccountChange</servlet-name>
+		<url-pattern>/account-change</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- Published -->
+	<servlet>
+		<servlet-name>Publish</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Publish</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Publish</servlet-name>
+		<url-pattern>/publish</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>CommentFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.CommentFetch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CommentFetch</servlet-name>
+		<url-pattern>/comment-fetch</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>LevelFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.LevelFetch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LevelFetch</servlet-name>
+		<url-pattern>/level-fetch</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>EnemyFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.EnemyFetch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EnemyFetch</servlet-name>
+		<url-pattern>/enemy-fetch</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>BulletFetch</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.BulletFetch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BulletFetch</servlet-name>
+		<url-pattern>/bullet-fetch</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ResourceDownload</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.ResourceDownload</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ResourceDownload</servlet-name>
+		<url-pattern>/resource-download</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DownloadSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.DownloadSync</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DownloadSync</servlet-name>
+		<url-pattern>/download-sync</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>HighscoreSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.HighscoreSync</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HighscoreSync</servlet-name>
+		<url-pattern>/highscore-sync</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>HighscoreGet</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.HighscoreGet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HighscoreGet</servlet-name>
+		<url-pattern>/highscore-get</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>StatSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.StatSync</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>StatSync</servlet-name>
+		<url-pattern>/stat-sync</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- User resources -->
+	<servlet>
+		<servlet-name>UserResourceSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.UserResourceSync</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserResourceSync</servlet-name>
+		<url-pattern>/user-resource-sync</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- Upload/Download -->
+	<servlet>
+		<servlet-name>GetUploadUrl</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.GetUploadUrl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GetUploadUrl</servlet-name>
+		<url-pattern>/get-upload-url</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>BlobDownload</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.BlobDownload</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BlobDownload</servlet-name>
+		<url-pattern>/blob-download</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- Backup -->
+	<servlet>
+		<servlet-name>BackupNewBlobs</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.backup.BackupNewBlobs</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BackupNewBlobs</servlet-name>
+		<url-pattern>/backup-new-blobs</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DeleteAllBlobs</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.backup.DeleteAllBlobs</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteAllBlobs</servlet-name>
+		<url-pattern>/delete-all-blobs</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>RestoreBlobs</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.backup.RestoreBlobs</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RestoreBlobs</servlet-name>
+		<url-pattern>/restore-blobs</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- Misc -->
+	<servlet>
+		<servlet-name>BugReport</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.BugReport</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BugReport</servlet-name>
+		<url-pattern>/bug-report</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Analytics</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.api.Analytics</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Analytics</servlet-name>
+		<url-pattern>/analytics</url-pattern>
+	</servlet-mapping>
+
+
+	<!--———————————————
+	 		CHANNEL
+	———————————————–-->
+	<servlet>
+		<servlet-name>ChatCreate</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.backend.ChatCreate</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatCreate</servlet-name>
+		<url-pattern>/token/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatConnected</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.backend.ChatConnected</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatConnected</servlet-name>
+		<url-pattern>/_ah/channel/connected/</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatDisconnected</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.backend.ChatDisconnected</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatDisconnected</servlet-name>
+		<url-pattern>/_ah/channel/disconnected/</url-pattern>
+	</servlet-mapping>
+</web-app>

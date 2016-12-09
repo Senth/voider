@@ -6,6 +6,7 @@ sourceCompatibility = 1.7
 sourceSets.main.java.srcDirs = ["src/"]
 
 dependencies {
-    compile "com.spiddekauga:common-utils:$commonUtilsVersion"
+    compile project(':common-utils')
+    compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
     compile "com.esotericsoftware:kryo:$kryoVersion"
 }

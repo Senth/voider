@@ -1,4 +1,4 @@
-include 'desktop', 'android', 'core', 'network', 'server', 'server-analytics', 'backup', 'TexturePacker', 'ui-raw', 'internal-resources', 'appengine-utils', 'common-utils'
+include 'desktop', 'android', 'core', 'network', 'server', 'server-api', 'server-analytics', 'backup', 'TexturePacker', 'ui-raw', 'internal-resources', 'appengine-utils', 'common-utils'
 
 // Custom git directories
 project(':TexturePacker').projectDir = new File('../tools/TexturePacker')
