@@ -2,6 +2,7 @@
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
 	<application>voider-thegame</application>
 	<version>analytics</version>
+	<module>backend</module>
 
 	<!--
 		Allows App Engine to send multiple requests to one instance in parallel:
@@ -14,6 +15,6 @@
 	</system-properties>
 
 	<sessions-enabled>true</sessions-enabled>
-	<async-session-persistence enabled="true" />
+	<async-session-persistence enabled="true"/>
 	<auto-id-policy>default</auto-id-policy>
 </appengine-web-app>

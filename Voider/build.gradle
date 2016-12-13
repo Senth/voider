@@ -7,8 +7,8 @@ import java.nio.file.StandardCopyOption
 
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
@@ -34,7 +34,9 @@ allprojects {
         box2DLightsVersion = '1.3'
         ashleyVersion = '1.3.1'
         aiVersion = '1.5.0'
-        appengineVersion = '1.9.48'
+        appengineVersion = '1.9.46'
+        appenginePluginVersion = '+'
+        grettyVersion = '1.4.0'
         kryoUtilsVersion = '0.1.1'
         httpUrlUtilsVersion = '0.3.0'
         jaccVersion = '0.2.3'
@@ -46,6 +48,9 @@ allprojects {
         maven { url "http://maven.senth.org/releases" }
         jcenter()
         mavenCentral()
+        maven {
+            url 'https://maven-central.storage.googleapis.com'
+        }
     }
 
     tasks.withType(JavaCompile) {
@@ -288,23 +293,70 @@ task uploadBetaToGs(type: Exec) {
     commandLine 'gsutil', 'cp', filename, gsFile
 }
 
-// task uploadReleaseToGs(type: Exec) << {
-// 	Does nothing yet...
-// }
-
-task deployAppengineDev(dependsOn: ['server:setAppengineDev', 'server:appengineUpdate']) << {
+// Frontend
+task deployFrontendDev(dependsOn: ['server-frontend:setAppengineDev', 'server-frontend:appengineDeploy']) << {
     // Does nothing
 }
 
-task deployAppengineNightly(dependsOn: ['server:setAppengineNightly', 'server:appengineUpdate']) << {
+task deployFrontendNightly(dependsOn: ['server-frontend:setAppengineNightly', 'server-frontend:appengineDeploy']) << {
     // Does nothing
 }
 
-task deployAppengineBeta(dependsOn: ['uploadBetaToGs', 'server:setAppengineBeta', 'server:appengineUpdate']) << {
+task deployFrontendBeta(dependsOn: ['server-frontend:setAppengineBeta', 'server-frontend:appengineDeploy']) << {
     // Does nothing
 }
 
-task deployAppengineRelease(dependsOn: ['server:setAppengineRelease', 'server:appengineUpdate']) << {
+task deployFrontendRelease(dependsOn: ['server-frontend:setAppengineRelease', 'server-frontend:appengineDeploy']) << {
     // Does nothing
 }
 
+// API
+task deployApiDev(dependsOn: ['server-api:setAppengineDev', 'server-api:appengineDeploy']) << {
+    // Does nothing
+}
+
+task deployApiNightly(dependsOn: ['server-api:setAppengineNightly', 'server-api:appengineDeploy']) << {
+    // Does nothing
+}
+
+task deployApiBeta(dependsOn: ['uploadBetaToGs', 'server-api:setAppengineBeta', 'server-api:appengineDeploy']) << {
+    // Does nothing
+}
+
+task deployApiRelease(dependsOn: ['server-api:setAppengineRelease', 'server-api:appengineDeploy']) << {
+    // Does nothing
+}
+
+// Backend
+task deployBackendDev(dependsOn: ['server-backend:setAppengineDev', 'server-backend:appengineDeploy']) << {
+    // Does nothing
+}
+
+task deployBackendNightly(dependsOn: ['server-backend:setAppengineNightly', 'server-backend:appengineDeploy']) << {
+    // Does nothing
+}
+
+task deployBackendBeta(dependsOn: ['server-backend:setAppengineBeta', 'server-backend:appengineDeploy']) << {
+    // Does nothing
+}
+
+task deployBackendRelease(dependsOn: ['server-backend:setAppengineRelease', 'server-backend:appengineDeploy']) << {
+    // Does nothing
+}
+
+// All
+task deployAllDev(dependsOn: ['deployFrontendDev', 'deployApiDev', 'deployBackendDev']) << {
+    // Does nothing
+}
+
+task deployAllNightly(dependsOn: ['deployFrontendNightly', 'deployApiNightly', 'deployBackendNightly']) << {
+    // Does nothing
+}
+
+task deployAllBeta(dependsOn: ['deployFrontendBeta', 'deployApiBeta', 'deployBackendBeta']) << {
+    // Does nothing
+}
+
+task deployAllRelease(dependsOn: ['deployFrontendRelease', 'deployApiRelease', 'deployBackendRelease']) << {
+    // Does nothing
+}

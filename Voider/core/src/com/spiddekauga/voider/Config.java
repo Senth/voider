@@ -208,7 +208,7 @@ public static class Crypto {
  */
 public static class Debug {
 	/** Build level */
-	public static final Builds BUILD = Builds.BETA;
+	public static final Builds BUILD = Builds.DEV_SERVER;
 	/** Logging verbosity */
 	public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.RELEASE) ? Application.LOG_ERROR : Application.LOG_DEBUG;
 	/** Skip loading text */
