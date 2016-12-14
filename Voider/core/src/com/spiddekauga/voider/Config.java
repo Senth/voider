@@ -869,30 +869,40 @@ public static class Network {
 		}
 
 		// END URL WITH A SLASH /
+		String hostPrefix = "https://api-dot-";
+		String hostName = "";
+		String hostPostfix = ".appspot.com/";
+		String serverHost = null;
 		switch (build) {
 		case RELEASE:
-			SERVER_HOST = "https://voider-thegame.appspot.com/";
+			hostName = "voider-thegame";
 			break;
 
 		case BETA:
-			SERVER_HOST = "https://voider-beta.appspot.com/";
+			hostName = "voider-beta";
 			break;
 
 		case NIGHTLY_DEV:
 		case NIGHTLY_RELEASE:
-			SERVER_HOST = "https://voider-nightly.appspot.com/";
+			hostName = "voider-nightly";
 			break;
 
 		case DEV_SERVER:
-			SERVER_HOST = "https://voider-dev.appspot.com/";
+			hostName = "voider-dev";
 			break;
 
 		case DEV_LOCAL:
-			SERVER_HOST = "http://localhost:8888/";
+			serverHost = "http://localhost:8888/";
 			break;
 
 		default:
-			SERVER_HOST = "invalid";
+			serverHost = "invalid";
+		}
+
+		if (serverHost != null) {
+			SERVER_HOST = serverHost;
+		} else {
+			SERVER_HOST = hostPrefix + hostName + hostPostfix;
 		}
 	}
 }

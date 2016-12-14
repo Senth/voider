@@ -1,100 +1,48 @@
 package com.spiddekauga.voider.server.util;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
-import com.spiddekauga.voider.network.misc.ServerMessage;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CConnectedUser;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMaintenance;
-import com.spiddekauga.voider.server.util.ServerConfig.MaintenanceModes;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.spiddekauga.appengine.BlobUtils;
+import com.spiddekauga.servlet.AppServlet;
+import com.spiddekauga.voider.user.User;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
+import java.util.Map;
+import java.util.UUID;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
- * Base class for all Voider servlets.
+ * Common servlet for all Voider calls
  */
-@SuppressWarnings("serial")
-public abstract class VoiderServlet extends HttpServlet {
-/** Current user */
+public abstract class VoiderServlet extends AppServlet {
 protected User mUser = null;
-/** Logger */
-protected Logger mLogger = Logger.getLogger(getClass().getSimpleName());
-private HttpSession mSession = null;
-private HttpServletRequest mRequest = null;
-private HttpServletResponse mResponse = null;
+private boolean mHandlesRequestDuringMaintenance = false;
 
-@Override
-protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	handleRequest(req, resp);
-}
-
-@Override
-protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	handleRequest(req, resp);
-}
 
 /**
- * Handle request here first
- * @param request
- * @param response
- * @throws ServletException
- * @throws IOException
+ * Call this to set if this servlet should call {@link #onPost()} during maintenance mode. This
+ * method must be called in {@link AppServlet#onInit()}.
+ * @param handlesRequestDuringMaintenance set to true if this servlet handles request during
+ * maintenance. Default is false.
  */
-private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	mRequest = request;
-	mResponse = response;
+protected void setHandlesRequestDuringMaintenance(boolean handlesRequestDuringMaintenance) {
+	mHandlesRequestDuringMaintenance = handlesRequestDuringMaintenance;
+}
 
-	initSession(request);
-
+@Override
+protected void onPost() throws ServletException, IOException {
 	handleRequest();
-
-	saveSession();
 }
 
-/**
- * Initializes the session and all it's variables
- * @param request server request
- */
-private void initSession(HttpServletRequest request) {
-	mSession = request.getSession();
+@Override
+protected void onGet() throws ServletException, IOException {
+	handleRequest();
+}
 
-	// Initialize user
+@Override
+protected void onInit() throws ServletException, IOException {
+	super.onInit();
 	initUser();
-}
-
-/**
- * Handle both get and post requests
- * @throws ServletException
- * @throws IOException
- */
-protected abstract void handleRequest() throws ServletException, IOException;
-
-/**
- * Saves the session variables
- */
-private void saveSession() {
-	if (mUser.isChanged()) {
-		setSessionVariable(SessionVariableNames.USER, mUser);
-	}
 }
 
 /**
@@ -114,142 +62,83 @@ private void initUser() {
 }
 
 /**
- * Sets a session variable
- * @param name the session's variable name
- * @param variable the variable to set in the session
- */
-protected void setSessionVariable(SessionVariableNames name, Object variable) {
-	mSession.setAttribute(name.name(), variable);
-}
-
-/**
  * Gets a session variable
  * @param name the session's variable name
  * @return the variable stored in this place, or null if not found
  */
 protected Object getSessionVariable(SessionVariableNames name) {
-	return mSession.getAttribute(name.name());
+	return getSessionVariable(name.name());
 }
 
-/**
- * Send a message
- * @param receiver who we should send the message to
- * @param serverMessage sends the specified chat message
- */
-protected void sendMessage(ServerMessageReceivers receiver, ServerMessage<?> serverMessage) {
-	List<String> sendToIds = getClientIds(receiver);
-	String serializedMessage = NetworkEntitySerializer.serializeServerMessage(serverMessage);
-
-	NetworkGateway.sendMessage(sendToIds, serializedMessage);
-}
-
-/**
- * Get all receivers of the server message
- * @param receiver who we should send the message to
- * @return list with all clients we should send the message to
- */
-private List<String> getClientIds(ServerMessageReceivers receiver) {
-	Iterable<Entity> sendTo = new ArrayList<>();
-	switch (receiver) {
-	case SELF_ALL:
-		if (mUser.isLoggedIn()) {
-			sendTo = DatastoreUtils.getEntities(DatastoreTables.CONNECTED_USER, mUser.getKey());
-		} else {
-			mLogger.warning("User isn't logged in when trying to send a message to SELF");
-		}
-		break;
-
-	case SELF_OTHERS:
-		if (mUser.isLoggedIn()) {
-			FilterWrapper notThisClient = new FilterWrapper(CConnectedUser.CHANNEL_ID, FilterOperator.NOT_EQUAL, mUser.getChannelId());
-			sendTo = DatastoreUtils.getEntities(DatastoreTables.CONNECTED_USER, mUser.getKey(), notThisClient);
-		} else {
-			mLogger.warning("User isn't logged in when trying to send a message to SELF");
-		}
-		break;
-
-	case ALL:
-		sendTo = DatastoreUtils.getEntities(DatastoreTables.CONNECTED_USER);
-		break;
+private void handleRequest() throws ServletException, IOException {
+	if (Maintenance.getMaintenanceMode() == Maintenance.Modes.UP || mHandlesRequestDuringMaintenance) {
+		onRequest();
 	}
 
-	List<String> sendToIds = new ArrayList<>();
-	for (Entity entity : sendTo) {
-		String channelId = (String) entity.getProperty(CConnectedUser.CHANNEL_ID);
-		sendToIds.add(channelId);
-	}
-
-	return sendToIds;
+	saveSession();
 }
 
 /**
- * Send an email
- * @param email who to send the email to
- * @param subject
- * @param content HTML content of the email
+ * Called by the server to handle a request
+ * @throws IOException      if an input or output error is detected
+ * @throws ServletException if the request could not be handled
  */
-protected void sendEmail(String email, String subject, String content) {
-	Session session = Session.getDefaultInstance(new Properties());
-	MimeMessage message = new MimeMessage(session);
+protected abstract void onRequest() throws ServletException, IOException;
 
-	try {
-		message.setFrom(ServerConfig.EMAIL_ADMIN);
-		message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-		message.setSubject(subject);
-		message.setContent(content, "text/html");
-		Transport.send(message);
-	} catch (MessagingException e) {
-		e.printStackTrace();
+/**
+ * Saves the session variables
+ */
+private void saveSession() {
+	if (mUser.isChanged()) {
+		setSessionVariable(SessionVariableNames.USER, mUser);
 	}
 }
 
 /**
- * @return current request
+ * Sets a session variable
+ * @param name the session's variable name
+ * @param variable the variable to set in the session
  */
-protected HttpServletRequest getRequest() {
-	return mRequest;
+protected void setSessionVariable(SessionVariableNames name, Object variable) {
+	setSessionVariable(name.name(), variable);
 }
 
 /**
- * @return current response
+ * @param name name of the parameter
+ * @return true if a parameter exists
  */
-protected HttpServletResponse getResponse() {
-	return mResponse;
+protected boolean isParameterSet(String name) {
+	return getRequest().getParameter(name) != null;
 }
 
 /**
- * @return current maintenance mode
+ * @param name name of the parameter to get
+ * @return parameter value or null if it doesn't exist
  */
-protected MaintenanceModes getMaintenanceMode() {
-	Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.MAINTENANCE);
-
-	MaintenanceModes mode = MaintenanceModes.UP;
-
-	if (entity != null) {
-		String modeString = (String) entity.getProperty(CMaintenance.MODE);
-		if (modeString != null) {
-			mode = MaintenanceModes.fromString(modeString);
-		}
-	}
-
-	return mode;
+protected String getParameter(String name) {
+	return getRequest().getParameter(name);
 }
+
+/**
+ * @return get blob information from the current request, null if no uploads were made.
+ */
+protected Map<UUID, BlobKey> getUploadedBlobs() {
+	return BlobUtils.getBlobKeysFromUpload(getRequest());
+}
+
+/**
+ * @return get blob information from the current request where the uploaded resources contains
+ * revisions, null if no uploads were made.
+ */
+protected Map<UUID, Map<Integer, BlobKey>> getUploadedRevisionBlobs() {
+	return BlobUtils.getBlobKeysFromUploadRevision(getRequest());
+}
+
 /**
  * All session variable enumerations
  */
 protected enum SessionVariableNames {
 	/** The logged in user */
 	USER,
-}
-/**
- * Who we can send messages to
- */
-public enum ServerMessageReceivers {
-	/** Self, all clients (if logged in) */
-	SELF_ALL,
-	/** Send to all other clients the user is connected to */
-	SELF_OTHERS,
-	/** Broadcast to everyone */
-	ALL,
 }
 }

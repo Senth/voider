@@ -16,7 +16,6 @@ buildscript {
 
 dependencies {
     compile "com.google.appengine:appengine:$appengineVersion"
-    compile "com.google.appengine.tools:appengine-gcs-client:0.4.4"
-    compile "com.google.appengine.tools:appengine-mapreduce:0.8.3"
     compile project(':appengine-utils')
+    compile project(':appengine-pipeline')
 }

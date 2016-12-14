@@ -7,13 +7,13 @@ dependencies {
     // FROM CORE
     compile project(':network')
     compile project(':common-utils')
+    compile project(':kryo-utils')
     compile 'com.esotericsoftware:minlog:1.3.0'
     compile 'com.googlecode.openbeans:openbeans:1.0'
     compile 'org.ini4j:ini4j-openbeans:0.5.5-SNAPSHOT'
     compile "edu.gvsu.cis.masl:java-channels:$jaccVersion"
     compile "com.esotericsoftware:kryo:$kryoVersion"
     compile "com.badlogicgames.gdx:gdx-sqlite:$gdxSqliteVersion"
-    compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
     compile "com.spiddekauga.http:http-url-utils:$httpUrlUtilsVersion"
     // ANDROID STUFF
     compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
@@ -60,19 +60,15 @@ android {
         exclude 'META-INF/NOTICE'
     }
 
-    defaultConfig {
-        jackOptions {
-            enabled true
-        }
-    }
-
-    dexOptions {
-        preDexLibraries = false
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+//    defaultConfig {
+//        jackOptions {
+//            enabled true
+//        }
+//    }
+//
+//    dexOptions {
+//        preDexLibraries = false
+//    }
 }
 
 // called every time gradle gets executed, takes the native dependencies of

@@ -7,7 +7,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
 		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.AnalyticsDatastoreToBigQuery</servlet-class>
+		<servlet-class>com.spiddekauga.voider.analytics.AnalyticsDatastoreToBigQueryServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>
@@ -16,7 +16,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
 		<servlet-name>Cleanup</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.Cleanup</servlet-class>
+		<servlet-class>com.spiddekauga.voider.CleanupServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Cleanup</servlet-name>
@@ -37,7 +37,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet>
 		<servlet-name>PipelineServlet</servlet-name>
 		<servlet-class>
-			com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet
+			com.google.appengine.tools.com.spiddekauga.appengine.pipeline.impl.servlets.PipelineServlet
 		</servlet-class>
 	</servlet>
 	<servlet-mapping>

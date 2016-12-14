@@ -7,14 +7,14 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
+import com.spiddekauga.servlet.AppServlet;
 import com.spiddekauga.voider.network.resource.UploadTypes;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CHighscore;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResources;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserResourcesDeleted;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.voider.server.util.DatastoreTables;
+import com.spiddekauga.voider.server.util.DatastoreTables.CHighscore;
+import com.spiddekauga.voider.server.util.DatastoreTables.CPublished;
+import com.spiddekauga.voider.server.util.DatastoreTables.CUserResources;
+import com.spiddekauga.voider.server.util.DatastoreTables.CUserResourcesDeleted;
+import com.spiddekauga.voider.server.util.DatastoreTables.CUsers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ import javax.servlet.ServletException;
  * Does an upgrade for the server
  */
 @SuppressWarnings({"serial", "unused"})
-public class Upgrade extends VoiderServlet {
+public class Upgrade extends AppServlet {
 private static final String BLOB_INFO_TABLE = "__BlobInfo__";
 
 @Override
-protected void handleRequest() throws ServletException, IOException {
+protected void onGet() throws ServletException, IOException {
 	List<ResourceWithoutBlob> resourceWithoutBlobs = getResourcesWithoutBlobs();
 	showResourcesWithoutBlobs(resourceWithoutBlobs);
 

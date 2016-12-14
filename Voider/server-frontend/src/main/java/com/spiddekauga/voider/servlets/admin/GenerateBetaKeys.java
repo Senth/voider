@@ -4,12 +4,15 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaGroup;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaKey;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaSignUp;
+import com.spiddekauga.appengine.Email;
+import com.spiddekauga.voider.server.util.DatastoreTables;
+import com.spiddekauga.voider.server.util.DatastoreTables.CBetaGroup;
+import com.spiddekauga.voider.server.util.DatastoreTables.CBetaKey;
+import com.spiddekauga.voider.server.util.DatastoreTables.CBetaSignUp;
+import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderController;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -30,7 +34,12 @@ public class GenerateBetaKeys extends VoiderController {
 final static String EMAIL_LIST_GROUP_NAME = "Email List";
 
 @Override
-protected void onRequest() {
+protected void onPost() throws ServletException, IOException {
+	onGet();
+}
+
+@Override
+protected void onGet() throws ServletException, IOException {
 	if (isParameterSet("group") && isParameterSet("count")) {
 		generateGroupKeys();
 	} else if (isParameterSet("delete")) {
@@ -246,7 +255,7 @@ private void sendBetaKeyToEmail(Key groupKey, String email) {
 		body += betaKey;
 		body += "-----------------------------------------<br /><br />";
 
-		sendEmail(email, "You've received a Voider beta key!", body);
+		Email.sendEmail(ServerConfig.EMAIL_NO_REPLY, email, "You've received a Voider beta key!", body);
 	}
 }
 

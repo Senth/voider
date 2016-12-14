@@ -29,8 +29,6 @@ private ResourceInternalLoader mInternalLoader;
 
 /**
  * Default constructor
- * @param internalLoader
- * @param externalLoader
  */
 ResourceDependencyLoader(ResourceInternalLoader internalLoader, ResourceExternalLoader externalLoader) {
 	mInternalLoader = internalLoader;

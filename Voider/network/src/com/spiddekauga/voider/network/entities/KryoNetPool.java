@@ -3,8 +3,8 @@ package com.spiddekauga.voider.network.entities;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
-import com.spiddekauga.utils.kryo.SerializableTaggedFieldSerializer;
-import com.spiddekauga.utils.kryo.UUIDSerializer;
+import com.spiddekauga.kryo.SerializableTaggedFieldSerializer;
+import com.spiddekauga.kryo.UUIDSerializer;
 import com.spiddekauga.voider.game.actors.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.network.analytics.AnalyticsEventEntity;
@@ -107,7 +107,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Pool for network Kryo instance. When creating a new instance Kryo registers all necessary classes
  * used in the Network.
  */
-public class KryoNetPool {
+class KryoNetPool {
 private BlockingQueue<Kryo> mPool = new LinkedBlockingQueue<>();
 
 /**

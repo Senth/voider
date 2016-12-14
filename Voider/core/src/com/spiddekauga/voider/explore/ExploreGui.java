@@ -840,7 +840,7 @@ void addImageButtonField(DefEntity defEntity, boolean selected, AlignTable table
  * @param table table to add the image button to
  * @param onSelectAction optional listener that's called when an actor has been selected
  */
-void addImageButtonField(DefEntity defEntity, boolean selected, AlignTable table, final OnSelectAction onSelectAction) {
+void addImageButtonField(final DefEntity defEntity, boolean selected, AlignTable table, final OnSelectAction onSelectAction) {
 	// Image button
 	ImageButton.ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
 	ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle(defaultImageStyle);

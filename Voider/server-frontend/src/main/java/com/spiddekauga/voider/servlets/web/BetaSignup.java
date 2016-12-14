@@ -3,12 +3,14 @@ package com.spiddekauga.voider.servlets.web;
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
+import com.spiddekauga.appengine.Email;
+import com.spiddekauga.voider.server.util.Builds;
+import com.spiddekauga.voider.server.util.DatastoreTables;
+import com.spiddekauga.voider.server.util.DatastoreTables.CBetaSignUp;
 import com.spiddekauga.voider.server.util.ServerConfig;
-import com.spiddekauga.voider.server.util.ServerConfig.Builds;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaSignUp;
 import com.spiddekauga.voider.server.util.VoiderController;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
@@ -17,6 +19,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.ServletException;
+
 /**
  * Signup for the beta :)
  */
@@ -24,7 +28,12 @@ import java.util.concurrent.TimeUnit;
 public class BetaSignup extends VoiderController {
 
 @Override
-protected void onRequest() {
+protected void onGet() throws ServletException, IOException {
+	onPost();
+}
+
+@Override
+protected void onPost() throws ServletException, IOException {
 	// Forward to beta server if this is the release server
 	if (Builds.RELEASE.isCurrent()) {
 		String parameters = "";
@@ -216,8 +225,6 @@ private void handleConfirmation() {
 
 /**
  * Resend the beta key
- * @param email
- * @param betaKey
  */
 private void sendBetaKey(String email, String betaKey) {
 	String body = "";
@@ -232,13 +239,12 @@ private void sendBetaKey(String email, String betaKey) {
 	body += "Check out useful beta information tutorials at <a href=\"" + ServerConfig.BETA_INFO_URL + "\">" + ServerConfig.BETA_INFO_URL
 			+ "</a>";
 
-	sendEmail(email, "Voider Beta Key", body);
+	Email.sendEmail(ServerConfig.EMAIL_NO_REPLY, email, "Voider Beta Key", body);
 }
 
 /**
  * Send the confirmation mail
  * @param email the email to send the confirmation mail to
- * @param confirmKey
  */
 private void sendConfirmationMail(String email, String confirmKey) {
 	// Encode confirm key
@@ -260,6 +266,6 @@ private void sendConfirmationMail(String email, String confirmKey) {
 
 	body += "After the confirmation you've been placed in the queue for attaining a beta key";
 
-	sendEmail(email, "Beta Sign-up Confirmation Link", body);
+	Email.sendEmail(ServerConfig.EMAIL_NO_REPLY, email, "Beta Sign-up Confirmation Link", body);
 }
 }

@@ -1,0 +1,157 @@
+package com.spiddekauga.voider.resource.search;
+
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.search.Results;
+import com.google.appengine.api.search.ScoredDocument;
+import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.SearchUtils;
+import com.spiddekauga.utils.ISearchStore;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.resource.DefEntity;
+import com.spiddekauga.voider.network.resource.FetchStatuses;
+import com.spiddekauga.voider.server.util.DatastoreTables.CPublished;
+import com.spiddekauga.voider.server.util.VoiderApiServlet;
+import com.spiddekauga.voider.user.UserRepo;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+
+/**
+ * Common class for getting resources
+ * @param <Method> method type
+ * @param <DefType> definition type
+ * @param <ReturnType> the entity type that is sent back to the server. Can be same as DefType
+ */
+@SuppressWarnings("serial")
+public abstract class ResourceSearchServlet<Method extends IMethodEntity, DefType extends DefEntity, ReturnType> extends VoiderApiServlet<Method> {
+private int mFetchSize;
+
+/**
+ * @param fetchSize number of resources to fetch per search
+ */
+protected ResourceSearchServlet(int fetchSize) {
+	mFetchSize = fetchSize;
+}
+
+/**
+ * Add an array of values into the search builder
+ * @param fieldName name of the field
+ * @param array the array to add
+ * @param maxLength maximum length of the array, if the array is of this size nothing will be added
+ * @param builder the builder to add to
+ */
+protected static void appendSearchEnumArray(String fieldName, ArrayList<? extends ISearchStore> array, int maxLength, SearchUtils.Builder builder) {
+	if (!array.isEmpty() && array.size() != maxLength) {
+		String[] searchFor = new String[array.size()];
+		for (int i = 0; i < searchFor.length; i++) {
+			searchFor[i] = array.get(i).toSearchId();
+		}
+		builder.text(fieldName, searchFor);
+	}
+}
+
+/**
+ * Search and set the defs as a response
+ * @param searchTable name of the table to search in
+ * @param defs the definition to add to
+ * @return fetchStatus of the search
+ */
+protected FetchStatuses searchAndSetFoundDefs(String searchTable, String nextCursor, ArrayList<ReturnType> defs) {
+	String searchString = buildSearchString();
+
+	Results<ScoredDocument> documents = SearchUtils.search(searchTable, searchString, mFetchSize, nextCursor);
+
+	if (documents == null) {
+		return FetchStatuses.SUCCESS_FETCHED_ALL;
+	}
+
+	// Convert all found documents to entities
+	for (ScoredDocument document : documents) {
+		ReturnType networkEntity = newNetworkDef();
+
+		// Datastore
+		Key datastoreKey = KeyFactory.stringToKey(document.getId());
+		Entity datastoreEntity = DatastoreUtils.getEntity(datastoreKey);
+		datastoreToNetworkEntity(datastoreEntity, networkEntity);
+
+		setAdditionalDefInformation(datastoreEntity, networkEntity);
+		defs.add(networkEntity);
+	}
+
+	// Did we fetch all
+	return getSuccessStatus(defs);
+}
+
+/**
+ * Builds a search string to search for
+ * @return search string to use when searching
+ */
+protected abstract String buildSearchString();
+
+/**
+ * @return new empty actor definition
+ */
+protected abstract ReturnType newNetworkDef();
+
+/**
+ * Set a def entity from a datastore entity. If ReturnType isn't an extension of DefEntity overload
+ * this method
+ * @param datastoreEntity in parameter
+ * @param networkEntity out parameter
+ * @return the network entity (same as the second parameter)
+ */
+@SuppressWarnings("unchecked")
+protected ReturnType datastoreToNetworkEntity(Entity datastoreEntity, ReturnType networkEntity) {
+	if (networkEntity instanceof DefEntity) {
+		datastoreToDefEntity(datastoreEntity, (DefType) networkEntity);
+	}
+
+	return networkEntity;
+}
+
+/**
+ * Adds additional information to the def
+ * @param datastoreEntity datastoreEntity
+ * @param networkEntity newly created actor that needs information to be set
+ */
+protected abstract void setAdditionalDefInformation(Entity datastoreEntity, ReturnType networkEntity);
+
+/**
+ * Checks if we fetched all and returns the correct success status
+ * @param list the results from a query
+ * @return SUCCESS_FETCHED_ALL or SUCCESS_MORE_EXISTS depending on the size of the list
+ */
+protected abstract FetchStatuses getSuccessStatus(List<?> list);
+
+/**
+ * Set a def entity from a datastore entity. If ReturnType isn't an extension of DefEntity overload
+ * this method
+ * @param datastoreEntity in parameter
+ * @param networkEntity out parameter
+ * @return the network entity (same as the second parameter)
+ */
+protected DefType datastoreToDefEntity(Entity datastoreEntity, DefType networkEntity) {
+	networkEntity.copyParentId = DatastoreUtils.getPropertyUuid(datastoreEntity, CPublished.COPY_PARENT_ID);
+	networkEntity.date = (Date) datastoreEntity.getProperty(CPublished.DATE);
+	networkEntity.description = (String) datastoreEntity.getProperty(CPublished.DESCRIPTION);
+	networkEntity.name = (String) datastoreEntity.getProperty(CPublished.NAME);
+	networkEntity.resourceId = DatastoreUtils.getPropertyUuid(datastoreEntity, CPublished.RESOURCE_ID);
+	networkEntity.png = DatastoreUtils.getPropertyByteArray(datastoreEntity, CPublished.PNG);
+
+	// Set creators
+	Key creatorKey = datastoreEntity.getParent();
+	Key originalCreatorKey = (Key) datastoreEntity.getProperty(CPublished.ORIGINAL_CREATOR_KEY);
+	networkEntity.revisedByKey = KeyFactory.keyToString(creatorKey);
+	networkEntity.originalCreatorKey = KeyFactory.keyToString(originalCreatorKey);
+	networkEntity.revisedBy = UserRepo.getUsername(creatorKey);
+	networkEntity.originalCreator = UserRepo.getUsername(originalCreatorKey);
+
+	// Skip dependencies, no need for the player to know about them
+
+	return networkEntity;
+}
+}

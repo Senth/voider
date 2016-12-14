@@ -1,12 +1,11 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets.main.java.srcDirs = ["src/"]
 
 dependencies {
     compile project(':common-utils')
-    compile "com.spiddekauga.kryo:kryo-utils:$kryoUtilsVersion"
+    compile project(':kryo-utils')
     compile "com.esotericsoftware:kryo:$kryoVersion"
 }

@@ -3,9 +3,9 @@ package com.spiddekauga.voider.servlets.web;
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaGroup;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CBetaKey;
+import com.spiddekauga.voider.server.util.DatastoreTables;
+import com.spiddekauga.voider.server.util.DatastoreTables.CBetaGroup;
+import com.spiddekauga.voider.server.util.DatastoreTables.CBetaKey;
 import com.spiddekauga.voider.server.util.VoiderController;
 
 import java.io.IOException;
@@ -23,13 +23,13 @@ private ArrayList<String> mBetaKeys = null;
 private String mGroup = null;
 
 @Override
-protected void onInit() {
+protected void onInit() throws ServletException, IOException {
 	mBetaKeys = new ArrayList<>();
 	mGroup = "No group with that hash";
 }
 
 @Override
-protected void onRequest() {
+protected void onGet() throws ServletException, IOException {
 	if (isAllParametersSet()) {
 		displayBetaKeys();
 	}

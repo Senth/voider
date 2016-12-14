@@ -34,9 +34,8 @@ import com.google.appengine.tools.pipeline.Job3;
 import com.google.appengine.tools.pipeline.JobSetting;
 import com.google.appengine.tools.pipeline.Value;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.utils.bigquery.BigQueryLoadGoogleCloudStorageFilesJob;
-import com.spiddekauga.utils.bigquery.BigQueryLoadJobReference;
-import com.spiddekauga.voider.config.AnalyticsConfig;
+import com.spiddekauga.appengine.pipeline.BigQueryLoadGoogleCloudStorageFilesJob;
+import com.spiddekauga.appengine.pipeline.BigQueryLoadJobReference;
 
 /**
  * Converts new analytics in Datastore to Google Cloud Storage. This class has several
@@ -76,7 +75,7 @@ public class AnalyticsToBigQueryJob extends Job0<Void> {
 		// To Big Query
 		FutureValue<List<BigQueryLoadJobReference>> bigQueryFuture = futureCall(new ImportToBigQueryJob(), getJobSettings(waitFor(cloudFuture)));
 
-		// Cleanup
+		// CleanupServlet
 		FutureValue<Void> updateDatastore = futureCall(new CleanupJob(), combinedSessionsFuture, getJobSettings(waitFor(bigQueryFuture)));
 
 		return updateDatastore;

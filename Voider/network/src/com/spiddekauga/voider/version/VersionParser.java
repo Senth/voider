@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
 public class VersionParser {
 private static final Pattern VERSION_PATTERN = Pattern.compile("\\[(.*)\\]");
 private static final Pattern AFTER_EQUAL_PATTERN = Pattern.compile("=(.*)");
-private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 private Version mParsingVersion = null;
 private VersionContainer mContainer = new VersionContainer();
 private BufferedReader mInput;

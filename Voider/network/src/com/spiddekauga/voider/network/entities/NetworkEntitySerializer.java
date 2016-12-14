@@ -43,8 +43,7 @@ public synchronized static byte[] serializeEntity(IEntity entity) {
 		Output output = new Output(byteOutputStream);
 		kryo.writeClassAndObject(output, entity);
 		output.close();
-		byte[] entityBytes = byteOutputStream.toByteArray();
-		return entityBytes;
+		return byteOutputStream.toByteArray();
 
 	} catch (IllegalArgumentException | KryoException e) {
 		mLogger.severe("Failed to serialize entity\n" + Strings.exceptionToString(e));

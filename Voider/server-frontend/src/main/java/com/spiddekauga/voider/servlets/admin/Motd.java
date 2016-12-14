@@ -10,15 +10,19 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.misc.ServerMessage;
 import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CMotd;
+import com.spiddekauga.voider.server.util.DatastoreTables;
+import com.spiddekauga.voider.server.util.DatastoreTables.CMotd;
+import com.spiddekauga.voider.server.util.MessageSender;
 import com.spiddekauga.voider.server.util.VoiderController;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -26,169 +30,15 @@ import javax.servlet.http.HttpServletRequest;
  */
 @SuppressWarnings("serial")
 public class Motd extends VoiderController {
-private static final SimpleDateFormat mDateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+private static final SimpleDateFormat mDateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
 private Date mCurrentDate = null;
 private CreateValuesDefault mCreateValuesDefault = null;
 
 @Override
-protected void onInit() {
+protected void onInit() throws ServletException, IOException {
 	super.onInit();
 	mCurrentDate = new Date();
 	mCreateValuesDefault = new CreateValuesDefault();
-}
-
-@Override
-protected void onRequest() {
-	// Add a new message
-	if (isParameterSet("title")) {
-		if (isAddParamatersOk()) {
-			createMotd();
-		}
-	}
-	// Expire
-	else if (isParameterSet("expire") && isParameterSet("key")) {
-		expireMotd();
-	}
-	// TODO edit
-
-	setDefaultCreateValues();
-	displayExistingMotds();
-	forwardToHtml();
-}
-
-/**
- * Check if all parameters are set and valid for creating a MOTD
- * @return true if all parameters are set and valid for creating a new MOTD
- */
-private boolean isAddParamatersOk() {
-	boolean valid = true;
-
-	// Title
-	String title = getParameter("title");
-	if (title == null) {
-		mCreateValuesDefault.setTitle("", "is null!");
-		valid = false;
-	} else if (title.length() < 3) {
-		mCreateValuesDefault.setTitle(title, "Should be minimum 3 characters");
-		valid = false;
-	}
-
-	// Message
-	String message = getParameter("message");
-	if (message == null) {
-		mCreateValuesDefault.setMessage("", "is null");
-		valid = false;
-	} else if (message.length() < 5) {
-		mCreateValuesDefault.setMessage(message, "Should be minimum 5 characters");
-		valid = false;
-	}
-
-	// Level
-	String level = getParameter("level");
-	if (level == null) {
-		mCreateValuesDefault.setLevel("", "is null");
-		valid = false;
-	} else {
-		MotdTypes motdType = MotdTypes.valueOf(level);
-		if (motdType == null) {
-			mCreateValuesDefault.setLevel(level, "Invalid level");
-			valid = false;
-		}
-	}
-
-	// Expires
-	String expireString = getParameter("expires");
-	if (expireString == null) {
-		mCreateValuesDefault.setExpires("", "is null");
-		valid = false;
-	} else {
-		// Check date format
-		try {
-			mDateTimeFormatter.parse(expireString);
-		} catch (ParseException e) {
-			mCreateValuesDefault.setExpires(expireString, "invalid format. Use: " + mDateTimeFormatter.toPattern());
-			valid = false;
-		}
-	}
-
-	return valid;
-}
-
-/**
- * Create a new MOTD
- */
-private void createMotd() {
-	Entity entity = new Entity(DatastoreTables.MOTD);
-
-	com.spiddekauga.voider.network.misc.Motd motd = new com.spiddekauga.voider.network.misc.Motd();
-	motd.title = getParameter("title");
-	motd.content = getParameter("message");
-	motd.created = new Date();
-	motd.type = MotdTypes.valueOf(getParameter("level"));
-
-	entity.setUnindexedProperty(CMotd.TITLE, motd.title);
-	entity.setUnindexedProperty(CMotd.CONTENT, motd.content);
-	entity.setUnindexedProperty(CMotd.CREATED, motd.created);
-	entity.setUnindexedProperty(CMotd.TYPE, motd.type.toId());
-
-	// Expires
-	try {
-		Date expires = mDateTimeFormatter.parse(getParameter("expires"));
-		entity.setProperty(CMotd.EXPIRES, expires);
-	} catch (ParseException e) {
-		return;
-	}
-
-	DatastoreUtils.put(entity);
-
-
-	// Send message
-	ServerMessage<com.spiddekauga.voider.network.misc.Motd> message = new ServerMessage<>(MessageTypes.MOTD);
-	message.data = motd;
-	sendMessage(ServerMessageReceivers.ALL, message);
-}
-
-/**
- * Expire the MOTD
- */
-private void expireMotd() {
-	String keyString = getParameter("key");
-	try {
-		Key key = KeyFactory.stringToKey(keyString);
-		Entity entity = DatastoreUtils.getEntity(key);
-		if (entity != null) {
-			entity.setProperty(CMotd.EXPIRES, new Date());
-			DatastoreUtils.put(entity);
-		}
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-}
-
-/**
- * Set default values
- */
-private void setDefaultCreateValues() {
-	getRequest().setAttribute("default", mCreateValuesDefault);
-}
-
-/**
- * Display existing MOTDs
- */
-private void displayExistingMotds() {
-	Query query = new Query(DatastoreTables.MOTD);
-	query.addSort(CMotd.EXPIRES, SortDirection.DESCENDING);
-
-	PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
-	Iterable<Entity> entities = preparedQuery.asIterable();
-	ArrayList<Message> messages = new ArrayList<>();
-	HttpServletRequest request = getRequest();
-
-	for (Entity entity : entities) {
-		messages.add(new Message(entity));
-	}
-
-	request.setAttribute("messages", messages);
 }
 
 /**
@@ -387,4 +237,166 @@ public class Message {
 
 
 }
+
+@Override
+protected void onGet() throws ServletException, IOException {
+	onPost();
+}
+
+
+@Override
+protected void onPost() throws ServletException, IOException {
+	// Add a new message
+	if (isParameterSet("title")) {
+		if (isAddParamatersOk()) {
+			createMotd();
+		}
+	}
+	// Expire
+	else if (isParameterSet("expire") && isParameterSet("key")) {
+		expireMotd();
+	}
+	// TODO edit
+
+	setDefaultCreateValues();
+	displayExistingMotds();
+	forwardToHtml();
+}
+
+/**
+ * Check if all parameters are set and valid for creating a MOTD
+ * @return true if all parameters are set and valid for creating a new MOTD
+ */
+private boolean isAddParamatersOk() {
+	boolean valid = true;
+
+	// Title
+	String title = getParameter("title");
+	if (title == null) {
+		mCreateValuesDefault.setTitle("", "is null!");
+		valid = false;
+	} else if (title.length() < 3) {
+		mCreateValuesDefault.setTitle(title, "Should be minimum 3 characters");
+		valid = false;
+	}
+
+	// Message
+	String message = getParameter("message");
+	if (message == null) {
+		mCreateValuesDefault.setMessage("", "is null");
+		valid = false;
+	} else if (message.length() < 5) {
+		mCreateValuesDefault.setMessage(message, "Should be minimum 5 characters");
+		valid = false;
+	}
+
+	// Level
+	String level = getParameter("level");
+	if (level == null) {
+		mCreateValuesDefault.setLevel("", "is null");
+		valid = false;
+	} else {
+		MotdTypes motdType = MotdTypes.valueOf(level);
+		if (motdType == null) {
+			mCreateValuesDefault.setLevel(level, "Invalid level");
+			valid = false;
+		}
+	}
+
+	// Expires
+	String expireString = getParameter("expires");
+	if (expireString == null) {
+		mCreateValuesDefault.setExpires("", "is null");
+		valid = false;
+	} else {
+		// Check date format
+		try {
+			mDateTimeFormatter.parse(expireString);
+		} catch (ParseException e) {
+			mCreateValuesDefault.setExpires(expireString, "invalid format. Use: " + mDateTimeFormatter.toPattern());
+			valid = false;
+		}
+	}
+
+	return valid;
+}
+
+/**
+ * Create a new MOTD
+ */
+private void createMotd() {
+	Entity entity = new Entity(DatastoreTables.MOTD);
+
+	com.spiddekauga.voider.network.misc.Motd motd = new com.spiddekauga.voider.network.misc.Motd();
+	motd.title = getParameter("title");
+	motd.content = getParameter("message");
+	motd.created = new Date();
+	motd.type = MotdTypes.valueOf(getParameter("level"));
+
+	entity.setUnindexedProperty(CMotd.TITLE, motd.title);
+	entity.setUnindexedProperty(CMotd.CONTENT, motd.content);
+	entity.setUnindexedProperty(CMotd.CREATED, motd.created);
+	entity.setUnindexedProperty(CMotd.TYPE, motd.type.toId());
+
+	// Expires
+	try {
+		Date expires = mDateTimeFormatter.parse(getParameter("expires"));
+		entity.setProperty(CMotd.EXPIRES, expires);
+	} catch (ParseException e) {
+		return;
+	}
+
+	DatastoreUtils.put(entity);
+
+
+	// Send message
+	ServerMessage<com.spiddekauga.voider.network.misc.Motd> message = new ServerMessage<>(MessageTypes.MOTD);
+	message.data = motd;
+	MessageSender.sendMessage(MessageSender.Receivers.ALL, null, message);
+}
+
+/**
+ * Expire the MOTD
+ */
+private void expireMotd() {
+	String keyString = getParameter("key");
+	try {
+		Key key = KeyFactory.stringToKey(keyString);
+		Entity entity = DatastoreUtils.getEntity(key);
+		if (entity != null) {
+			entity.setProperty(CMotd.EXPIRES, new Date());
+			DatastoreUtils.put(entity);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+
+/**
+ * Set default values
+ */
+private void setDefaultCreateValues() {
+	getRequest().setAttribute("default", mCreateValuesDefault);
+}
+
+/**
+ * Display existing MOTDs
+ */
+private void displayExistingMotds() {
+	Query query = new Query(DatastoreTables.MOTD);
+	query.addSort(CMotd.EXPIRES, SortDirection.DESCENDING);
+
+	PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
+	Iterable<Entity> entities = preparedQuery.asIterable();
+	ArrayList<Message> messages = new ArrayList<>();
+	HttpServletRequest request = getRequest();
+
+	for (Entity entity : entities) {
+		messages.add(new Message(entity));
+	}
+
+	request.setAttribute("messages", messages);
+}
+
+
 }

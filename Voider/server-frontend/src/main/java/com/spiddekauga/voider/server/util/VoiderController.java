@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.server.util;
 
 import com.google.common.base.CaseFormat;
+import com.spiddekauga.servlet.AppServlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,18 +15,13 @@ import javax.xml.bind.DatatypeConverter;
  * Controller for the all web stuff
  */
 @SuppressWarnings("serial")
-public abstract class VoiderController extends VoiderServlet {
-
+public abstract class VoiderController extends AppServlet {
 private String mRootUrl = null;
-
 private String mServletUri = null;
-
 private PrintWriter mOut = null;
-
 
 /**
  * Convert a UUID to Base64
- * @param uuid
  * @return base64 string
  */
 protected static String toBase64(UUID uuid) {
@@ -44,17 +40,18 @@ protected static String toBase64(UUID uuid) {
 }
 
 @Override
-protected void handleRequest() throws ServletException, IOException {
+protected void onCleanup() throws ServletException, IOException {
+	super.onCleanup();
+	mOut.close();
+}
+
+@Override
+protected void onInit() throws ServletException, IOException {
+	super.onInit();
 	setUrls();
 
 	mOut = getResponse().getWriter();
 	getResponse().setContentType("text/html");
-
-	onInit();
-	onRequest();
-
-
-	mOut.close();
 }
 
 /**
@@ -73,18 +70,6 @@ private void setUrls() {
 }
 
 /**
- * This method is called on init (before onRequest is called)
- */
-protected void onInit() {
-	// Does nothing
-}
-
-/**
- * Handle the request
- */
-protected abstract void onRequest();
-
-/**
  * @param name name of the parameter
  * @return true if a parameter exists
  */
@@ -97,10 +82,7 @@ protected boolean isParameterSet(String name) {
  * @return parameter value or null if it doesn't exist
  */
 protected String getParameter(String name) {
-	// Check regular parameter
-	String value = getRequest().getParameter(name);
-
-	return value;
+	return getRequest().getParameter(name);
 }
 
 /**
@@ -140,7 +122,6 @@ protected String getServletUri() {
 /**
  * Set the status response
  * @param type type of the message
- * @param message
  */
 protected void setResponseMessage(String type, String message) {
 	getRequest().setAttribute("responseStatus", new ResponseMessage(type, message));

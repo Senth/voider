@@ -7,7 +7,7 @@ import com.spiddekauga.voider.server.util.VoiderController;
  */
 public class Download extends VoiderController {
 @Override
-protected void onRequest() {
+protected void onGet() {
 	redirect("download.jsp");
 }
 }

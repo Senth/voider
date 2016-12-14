@@ -4,7 +4,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.server.util.VoiderServlet;
+import com.spiddekauga.servlet.AppServlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import javax.servlet.ServletException;
  * made on the 1st of a month.
  */
 @SuppressWarnings("serial")
-public class BackupCleanup extends VoiderServlet {
+public class BackupCleanup extends AppServlet {
 
 private static final Logger mLogger = Logger.getLogger(BackupCleanup.class.getSimpleName());
 private static final String TABLE = "_AE_Backup_Information Entities";
@@ -28,7 +28,7 @@ private static final String C_START_TIME = "start_time";
 private static final String C_GS_HANDLE = "gs_handle";
 
 @Override
-protected void handleRequest() throws ServletException, IOException {
+protected void onGet() throws ServletException, IOException {
 	List<Entity> entitiesToDelete = getEntitiesToDelete();
 	List<String> backupIds = extractBackupId(entitiesToDelete);
 	deleteBackups(backupIds);
@@ -109,8 +109,7 @@ private static String extractBackupId(Entity entity) {
 		int from = gsHandle.lastIndexOf("/") + 1;
 		int to = gsHandle.lastIndexOf(".");
 
-		String backupId = gsHandle.substring(from, to);
-		return backupId;
+		return gsHandle.substring(from, to);
 	} else {
 		mLogger.warning("Didn't find any gsHandle for backup entity:\n" + entity);
 		return null;

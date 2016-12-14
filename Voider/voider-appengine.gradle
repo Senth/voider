@@ -4,9 +4,9 @@ import java.nio.file.StandardCopyOption
 
 dependencies {
 //    appengineSdk "com.google.appengine:appengine-java-sdk:$appengineVersion"
-    //    providedCompile 'javax.servlet:servlet-api:2.5'
-    providedCompile group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+    providedCompile 'javax.servlet:servlet-api:2.5'
     compile "com.google.appengine:appengine:$appengineVersion"
+    compile project(':server-common')
 }
 
 appengine {
@@ -19,8 +19,6 @@ appengine {
 }
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
 
 ext {
     appengineWebFile = "src/main/webapp/WEB-INF/appengine-web.xml"

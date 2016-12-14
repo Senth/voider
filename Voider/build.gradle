@@ -36,8 +36,6 @@ allprojects {
         aiVersion = '1.5.0'
         appengineVersion = '1.9.46'
         appenginePluginVersion = '+'
-        grettyVersion = '1.4.0'
-        kryoUtilsVersion = '0.1.1'
         httpUrlUtilsVersion = '0.3.0'
         jaccVersion = '0.2.3'
         guavaVersion = '19.0-rc2'
@@ -46,20 +44,24 @@ allprojects {
     repositories {
         maven { url "http://maven.senth.org/snapshots" }
         maven { url "http://maven.senth.org/releases" }
+        maven { url 'https://jitpack.io' }
         jcenter()
         mavenCentral()
         maven {
             url 'https://maven-central.storage.googleapis.com'
         }
+
     }
 
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:deprecation"
-    }
+        sourceCompatibility = JavaVersion.VERSION_1_7
+        targetCompatibility = JavaVersion.VERSION_1_7
 
-    configurations.all {
-        resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        // Set bootClasspath
+        if (project.hasProperty('jdk7home')) {
+            options.bootClasspath = "$jdk7home/jre/lib/rt.jar:$jdk7home/jre/lib/jce.jar"
+        }
     }
 }
 

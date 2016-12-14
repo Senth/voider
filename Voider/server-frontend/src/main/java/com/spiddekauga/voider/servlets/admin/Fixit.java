@@ -6,16 +6,18 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
-import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
+import com.spiddekauga.voider.server.util.DatastoreTables;
+import com.spiddekauga.voider.server.util.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.VoiderController;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -26,7 +28,7 @@ public class Fixit extends VoiderController {
 private static final BlobstoreService mBlobstore = BlobstoreServiceFactory.getBlobstoreService();
 
 @Override
-protected void onRequest() {
+protected void onPost() throws ServletException, IOException {
 	Map<UUID, BlobKey> blobs = getBlobKeysFromUpload(getRequest());
 
 	if (blobs != null && !blobs.isEmpty()) {

@@ -84,7 +84,7 @@ public enum MethodNames {
 	 * Creates the enumeration with the correct URL
 	 */
 	private MethodNames() {
-		mUrl = "api/" + name().toLowerCase().replace('_', '-');
+		mUrl = name().toLowerCase().replace('_', '-');
 	}
 
 	@Override
