@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics;
+package com.spiddekauga.voider.analytics.datastore_bigquery;
 
 import java.util.Date;
 
@@ -7,11 +7,11 @@ import com.google.appengine.tools.mapreduce.MapOnlyMapper;
 import com.spiddekauga.appengine.DatastoreUtils;
 
 /**
- * Maps scenes from a datastore object into an AnalyticsScene object
+ * Maps scenes from a datastore object into an Scene object
 
  */
 @SuppressWarnings("serial")
-public class SceneMapper extends MapOnlyMapper<Entity, AnalyticsScene> {
+public class SceneMapper extends MapOnlyMapper<Entity, Scene> {
 	@Override
 	public void map(Entity value) {
 		Entity sceneEntity = DatastoreUtils.getEntity(value.getKey());
@@ -33,6 +33,6 @@ public class SceneMapper extends MapOnlyMapper<Entity, AnalyticsScene> {
 //				+ "\nDropout: " + dropout);
 		// @formatter:on
 
-		emit(new AnalyticsScene(value.getKey(), value.getParent(), startTime, length, name, loadTime, dropout));
+		emit(new Scene(value.getKey(), value.getParent(), startTime, length, name, loadTime, dropout));
 	}
 }

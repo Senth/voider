@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics;
+package com.spiddekauga.voider.analytics.datastore_bigquery;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,28 +12,28 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * Combines multiple analytics sessions from a mapper to a list
 
  */
-public class SessionOutput extends Output<AnalyticsSession, List<AnalyticsSession>> {
-	private static class SessionOutputWriter extends OutputWriter<AnalyticsSession> {
+public class SessionOutput extends Output<Session, List<Session>> {
+	private static class SessionOutputWriter extends OutputWriter<Session> {
 
 		@Override
-		public void write(AnalyticsSession value) throws IOException {
+		public void write(Session value) throws IOException {
 			mSessions.add(value);
 		}
 
 		/**
 		 * @return list of all analytics sessions (thread-safe)
 		 */
-		List<AnalyticsSession> toList() {
+		List<Session> toList() {
 			return mSessions;
 		}
 
 
-		private List<AnalyticsSession> mSessions = new ArrayList<>();
+		private List<Session> mSessions = new ArrayList<>();
 		private static final long serialVersionUID = 6950115683562076356L;
 	}
 
 	@Override
-	public List<? extends OutputWriter<AnalyticsSession>> createWriters(int numShards) {
+	public List<? extends OutputWriter<Session>> createWriters(int numShards) {
 		List<SessionOutputWriter> writers = new ArrayList<>();
 		for (int i = 0; i < numShards; i++) {
 			writers.add(new SessionOutputWriter());
@@ -42,9 +42,9 @@ public class SessionOutput extends Output<AnalyticsSession, List<AnalyticsSessio
 	}
 
 	@Override
-	public List<AnalyticsSession> finish(Collection<? extends OutputWriter<AnalyticsSession>> writers) throws IOException {
-		ArrayList<AnalyticsSession> sessions = new ArrayList<>();
-		for (OutputWriter<AnalyticsSession> writer : writers) {
+	public List<Session> finish(Collection<? extends OutputWriter<Session>> writers) throws IOException {
+		ArrayList<Session> sessions = new ArrayList<>();
+		for (OutputWriter<Session> writer : writers) {
 			SessionOutputWriter sessionWriter = (SessionOutputWriter) writer;
 			sessions.addAll(sessionWriter.toList());
 		}

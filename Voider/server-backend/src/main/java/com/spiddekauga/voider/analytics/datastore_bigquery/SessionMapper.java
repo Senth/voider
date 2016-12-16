@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics;
+package com.spiddekauga.voider.analytics.datastore_bigquery;
 
 import java.util.Date;
 import java.util.UUID;
@@ -8,11 +8,11 @@ import com.google.appengine.tools.mapreduce.MapOnlyMapper;
 import com.spiddekauga.appengine.DatastoreUtils;
 
 /**
- * Maps sessions from a datastore object into an AnalyticsSession object
+ * Maps sessions from a datastore object into an Session object
 
  */
 @SuppressWarnings("serial")
-public class SessionMapper extends MapOnlyMapper<Entity, AnalyticsSession> {
+public class SessionMapper extends MapOnlyMapper<Entity, Session> {
 	@Override
 	public void map(Entity value) {
 		Entity sessionEntity = DatastoreUtils.getEntity(value.getKey());
@@ -36,7 +36,7 @@ public class SessionMapper extends MapOnlyMapper<Entity, AnalyticsSession> {
 //				+ "Screen Size: " + screenSize);
 		// @formatter:on
 
-		AnalyticsSession session = new AnalyticsSession(value.getKey(), startTime, length, userAnalyticsId, platform, os, screenSize);
+		Session session = new Session(value.getKey(), startTime, length, userAnalyticsId, platform, os, screenSize);
 		emit(session);
 	}
 }

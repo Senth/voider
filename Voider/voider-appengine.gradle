@@ -3,7 +3,6 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 dependencies {
-//    appengineSdk "com.google.appengine:appengine-java-sdk:$appengineVersion"
     providedCompile 'javax.servlet:servlet-api:2.5'
     compile "com.google.appengine:appengine:$appengineVersion"
     compile project(':server-common')
@@ -55,22 +54,22 @@ def updateApplicationId(applicationId) {
 // --------------------
 task setAppengineDev(dependsOn: ['explodeWar']) << {
     prepareAppengine()
-    updateApplicationId('voider-dev')
+    updateApplicationId(VOIDER_DEV_APP)
 }
 
 task setAppengineNightly(dependsOn: ['explodeWar']) << {
     prepareAppengine()
-    updateApplicationId('voider-nightly')
+    updateApplicationId(VOIDER_NIGHTLY_APP)
 }
 
 task setAppengineBeta(dependsOn: ['explodeWar']) << {
     prepareAppengine()
-    updateApplicationId('voider-beta')
+    updateApplicationId(VOIDER_BETA_APP)
 }
 
 task setAppengineRelease(dependsOn: ['explodeWar']) << {
     prepareAppengine()
-    updateApplicationId('voider-thegame')
+    updateApplicationId(VOIDER_RELEASE_APP)
 }
 
 // Ordering

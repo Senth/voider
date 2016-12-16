@@ -2,16 +2,16 @@
 <queue-entries>
 	<queue>
 		<name>default</name>
-		<rate>5/s</rate>
+		<rate>20/s</rate>
 	</queue>
 	<queue>
-		<name>analytics-queue</name>
-		<rate>5/s</rate>
-		<max-concurrent-requests>2</max-concurrent-requests>
+		<name>backend</name>
+		<rate>1/s</rate>
+		<max-concurrent-requests>1</max-concurrent-requests>
 	</queue>
 	<queue>
 		<name>backup</name>
-		<rate>5/s</rate>
-		<max-concurrent-requests>2</max-concurrent-requests>
+		<rate>1/s</rate>
+		<max-concurrent-requests>1</max-concurrent-requests>
 	</queue>
 </queue-entries>

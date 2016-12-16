@@ -39,6 +39,11 @@ allprojects {
         httpUrlUtilsVersion = '0.3.0'
         jaccVersion = '0.2.3'
         guavaVersion = '19.0-rc2'
+
+        VOIDER_DEV_APP = 'voider-dev'
+        VOIDER_NIGHTLY_APP = 'voider-nightly'
+        VOIDER_BETA_APP = 'voider-beta'
+        VOIDER_RELEASE_APP = 'voider-thegame'
     }
 
     repositories {

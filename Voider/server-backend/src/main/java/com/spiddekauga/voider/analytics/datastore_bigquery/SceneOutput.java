@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics;
+package com.spiddekauga.voider.analytics.datastore_bigquery;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,26 +12,26 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * Combines multiple analytics scenes from a mapper to a list
 
  */
-public class SceneOutput extends Output<AnalyticsScene, List<AnalyticsScene>> {
-	private static class SceneOutputWriter extends OutputWriter<AnalyticsScene> {
+public class SceneOutput extends Output<Scene, List<Scene>> {
+	private static class SceneOutputWriter extends OutputWriter<Scene> {
 		@Override
-		public void write(AnalyticsScene value) throws IOException {
+		public void write(Scene value) throws IOException {
 			mScenes.add(value);
 		}
 
 		/**
 		 * @return list of all scenes
 		 */
-		private List<AnalyticsScene> toList() {
+		private List<Scene> toList() {
 			return mScenes;
 		}
 
-		private List<AnalyticsScene> mScenes = new ArrayList<>();
+		private List<Scene> mScenes = new ArrayList<>();
 		private static final long serialVersionUID = 550777081118427573L;
 	}
 
 	@Override
-	public List<? extends OutputWriter<AnalyticsScene>> createWriters(int numShards) {
+	public List<? extends OutputWriter<Scene>> createWriters(int numShards) {
 		List<SceneOutputWriter> writers = new ArrayList<>();
 		for (int i = 0; i < numShards; i++) {
 			writers.add(new SceneOutputWriter());
@@ -40,9 +40,9 @@ public class SceneOutput extends Output<AnalyticsScene, List<AnalyticsScene>> {
 	}
 
 	@Override
-	public List<AnalyticsScene> finish(Collection<? extends OutputWriter<AnalyticsScene>> writers) throws IOException {
-		List<AnalyticsScene> scenes = new ArrayList<>();
-		for (OutputWriter<AnalyticsScene> writer : writers) {
+	public List<Scene> finish(Collection<? extends OutputWriter<Scene>> writers) throws IOException {
+		List<Scene> scenes = new ArrayList<>();
+		for (OutputWriter<Scene> writer : writers) {
 			SceneOutputWriter sceneWriter = (SceneOutputWriter) writer;
 			scenes.addAll(sceneWriter.toList());
 		}

@@ -1,0 +1,6 @@
+cron:
+- description: 'Daily backup'
+  url: /_ah/datastore_admin/backup.create?name=cron-&queue=backup&filesystem=gs&gs_bucket_name=voider-dev/backup_datastore&kind=beta_group&kind=beta_key&kind=beta_signup&kind=dependency&kind=highscore&kind=level_stat&kind=level_tag&kind=motd&kind=published&kind=sync_published&kind=user_level_stat&kind=user_resources&kind=user_resources_deleted&kind=users
+  schedule: every day 03:00
+  timezone: Europe/Stockholm
+  target: ah-builtin-python-bundle

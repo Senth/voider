@@ -7,7 +7,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	
 	<servlet>
 		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>
-		<servlet-class>com.spiddekauga.voider.analytics.AnalyticsDatastoreToBigQueryServlet</servlet-class>
+		<servlet-class>com.spiddekauga.voider.analytics.datastore_bigquery.AnalyticsDatastoreToBigQueryServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>

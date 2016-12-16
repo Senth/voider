@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics;
+package com.spiddekauga.voider.analytics.datastore_bigquery;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,26 +12,26 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
  * Combines multiple analytics events from a mapper to a lilst
 
  */
-public class EventOutput extends Output<AnalyticsEvent, List<AnalyticsEvent>> {
-	private static class EventOutputWriter extends OutputWriter<AnalyticsEvent> {
+public class EventOutput extends Output<Event, List<Event>> {
+	private static class EventOutputWriter extends OutputWriter<Event> {
 		@Override
-		public void write(AnalyticsEvent value) throws IOException {
+		public void write(Event value) throws IOException {
 			mEvents.add(value);
 		}
 
 		/**
 		 * @return list of all events
 		 */
-		private List<AnalyticsEvent> toList() {
+		private List<Event> toList() {
 			return mEvents;
 		}
 
-		private List<AnalyticsEvent> mEvents = new ArrayList<>();
+		private List<Event> mEvents = new ArrayList<>();
 		private static final long serialVersionUID = 2034749618016148725L;
 	}
 
 	@Override
-	public List<? extends OutputWriter<AnalyticsEvent>> createWriters(int numShards) {
+	public List<? extends OutputWriter<Event>> createWriters(int numShards) {
 		List<EventOutputWriter> writers = new ArrayList<>();
 		for (int i = 0; i < numShards; i++) {
 			writers.add(new EventOutputWriter());
@@ -40,9 +40,9 @@ public class EventOutput extends Output<AnalyticsEvent, List<AnalyticsEvent>> {
 	}
 
 	@Override
-	public List<AnalyticsEvent> finish(Collection<? extends OutputWriter<AnalyticsEvent>> writers) throws IOException {
-		List<AnalyticsEvent> events = new ArrayList<>();
-		for (OutputWriter<AnalyticsEvent> writer : writers) {
+	public List<Event> finish(Collection<? extends OutputWriter<Event>> writers) throws IOException {
+		List<Event> events = new ArrayList<>();
+		for (OutputWriter<Event> writer : writers) {
 			EventOutputWriter eventWriter = (EventOutputWriter) writer;
 			events.addAll(eventWriter.toList());
 		}

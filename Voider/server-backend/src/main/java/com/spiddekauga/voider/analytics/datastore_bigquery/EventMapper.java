@@ -1,15 +1,15 @@
-package com.spiddekauga.voider.analytics;
+package com.spiddekauga.voider.analytics.datastore_bigquery;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.mapreduce.MapOnlyMapper;
 import com.spiddekauga.appengine.DatastoreUtils;
 
 /**
- * Maps events from a datastore object into an AnalyticsEvent object
+ * Maps events from a datastore object into an Event object
 
  */
 @SuppressWarnings("serial")
-public class EventMapper extends MapOnlyMapper<Entity, AnalyticsEvent> {
+public class EventMapper extends MapOnlyMapper<Entity, Event> {
 	@Override
 	public void map(Entity value) {
 		Entity eventEntity = DatastoreUtils.getEntity(value.getKey());
@@ -29,6 +29,6 @@ public class EventMapper extends MapOnlyMapper<Entity, AnalyticsEvent> {
 //				+ "\nType: " + type);
 		// @formatter:on
 
-		emit(new AnalyticsEvent(value.getKey(), value.getParent(), time, type, name, data));
+		emit(new Event(value.getKey(), value.getParent(), time, type, name, data));
 	}
 }
