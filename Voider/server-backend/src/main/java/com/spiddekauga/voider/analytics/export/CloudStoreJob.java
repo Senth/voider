@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics.datastore_bigquery;
+package com.spiddekauga.voider.analytics.export;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
@@ -22,7 +22,6 @@ public Value<Void> run(List<Session> sessions) throws Exception {
 	ObjectMapper jackson = new ObjectMapper();
 	GcsService gcsService = GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
 	StringBuilder builder = new StringBuilder();
-	// Logger logger = Logger.getLogger("CloudStoreJob");
 
 	for (Session session : sessions) {
 		String sessionJson = jackson.writeValueAsString(session);

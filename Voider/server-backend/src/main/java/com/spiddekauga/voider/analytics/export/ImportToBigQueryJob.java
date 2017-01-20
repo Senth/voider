@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics.datastore_bigquery;
+package com.spiddekauga.voider.analytics.export;
 
 import com.google.appengine.tools.mapreduce.GoogleCloudStorageFileSet;
 import com.google.appengine.tools.mapreduce.outputs.BigQueryStoreResult;
@@ -6,6 +6,7 @@ import com.google.appengine.tools.pipeline.Job0;
 import com.google.appengine.tools.pipeline.Value;
 import com.spiddekauga.appengine.pipeline.BigQueryLoadGoogleCloudStorageFilesJob;
 import com.spiddekauga.appengine.pipeline.BigQueryLoadJobReference;
+import com.spiddekauga.voider.BackendConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ class ImportToBigQueryJob extends Job0<List<BigQueryLoadJobReference>> {
 public Value<List<BigQueryLoadJobReference>> run() throws Exception {
 
 	BigQueryLoadGoogleCloudStorageFilesJob bigQueryJob = new BigQueryLoadGoogleCloudStorageFilesJob(AnalyticsConfig.BIG_DATASET_NAME,
-			AnalyticsConfig.BIG_TABLE_NAME, AnalyticsConfig.APP_ID);
+			AnalyticsConfig.BIG_TABLE_NAME, BackendConfig.APP_ID);
 
 	List<String> fileNames = new ArrayList<>();
 	fileNames.add(AnalyticsConfig.GCS_FILENAME);
@@ -26,7 +27,7 @@ public Value<List<BigQueryLoadJobReference>> run() throws Exception {
 	BigQueryStoreResult<GoogleCloudStorageFileSet> storeResult = new BigQueryStoreResult<GoogleCloudStorageFileSet>(fileSet,
 			AnalyticsConfig.getClientSchema());
 
-	return futureCall(bigQueryJob, immediate(storeResult), AnalyticsConfig.getJobSettings());
+	return futureCall(bigQueryJob, immediate(storeResult), BackendConfig.getJobSettings());
 }
 
 @Override

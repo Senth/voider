@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics.datastore_bigquery;
+package com.spiddekauga.voider.analytics.export;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.mapreduce.MapOnlyMapper;

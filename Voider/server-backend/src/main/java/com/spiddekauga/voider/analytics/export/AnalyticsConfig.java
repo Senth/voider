@@ -1,32 +1,27 @@
-package com.spiddekauga.voider.analytics.datastore_bigquery;
+package com.spiddekauga.voider.analytics.export;
 
 import com.google.api.services.bigquery.model.TableFieldSchema;
 import com.google.api.services.bigquery.model.TableSchema;
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.mapreduce.MapSettings;
-import com.google.appengine.tools.pipeline.JobSetting;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.spiddekauga.voider.BackendConfig.APP_ID;
 
 
 /**
  * Analytics server configuration
  */
-public class AnalyticsConfig {
-public static final String APP_ID = SystemProperty.applicationId.get();
-/** Number of shards for datastore inputs */
-public static final int SHARDS_PER_QUERY = 5;
+class AnalyticsConfig {
 /** Big Query dataset for analytics */
-public static final String BIG_DATASET_NAME = "analytics";
+static final String BIG_DATASET_NAME = "analytics";
 /** Big Query table for analytics */
-public static final String BIG_TABLE_NAME = "clientEvents";
-public static final String GCS_FILENAME = "analytics.json";
+static final String BIG_TABLE_NAME = "clientEvents";
+static final String GCS_FILENAME = "analytics.json";
 /** Temporary Google Cloud Storage filename */
-public static final String GCS_BUCKET = APP_ID;
-public static final GcsFilename GCS_FILE = new GcsFilename(GCS_BUCKET, GCS_FILENAME);
-private static final String QUEUE_NAME = "analytics-queue";
+static final String GCS_BUCKET = APP_ID;
+static final GcsFilename GCS_FILE = new GcsFilename(GCS_BUCKET, GCS_FILENAME);
 private static TableSchema mClientSchema = new TableSchema();
 
 static {
@@ -60,33 +55,6 @@ static {
 }
 
 /**
- * @param settings optional extra parameters
- * @return job settings
- */
-public static JobSetting[] getJobSettings(JobSetting... settings) {
-	JobSetting[] defaultSettings = new JobSetting[]{new JobSetting.OnQueue(QUEUE_NAME)};
-
-	if (settings.length == 0) {
-		return defaultSettings;
-	} else {
-		JobSetting[] combinedSettings = new JobSetting[settings.length + defaultSettings.length];
-		System.arraycopy(defaultSettings, 0, combinedSettings, 0, defaultSettings.length);
-		int offset = defaultSettings.length;
-		System.arraycopy(settings, 0, combinedSettings, offset, settings.length);
-		return combinedSettings;
-	}
-}
-
-// Initialize table schemas
-
-/**
- * @return map settings
- */
-public static MapSettings getMapSettings() {
-	return new MapSettings.Builder().setWorkerQueueName(QUEUE_NAME).build();
-}
-
-/**
  * Helper method for creating table schema fields with a record
  * @param name name of the field
  * @param fields schema of the fields
@@ -109,7 +77,7 @@ private static TableFieldSchema newFieldSchema(String name, Types type) {
 /**
  * @return BigQuery table schema for client events
  */
-public static TableSchema getClientSchema() {
+static TableSchema getClientSchema() {
 	return mClientSchema;
 }
 

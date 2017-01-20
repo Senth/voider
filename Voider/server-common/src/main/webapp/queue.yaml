@@ -1,9 +1,7 @@
+
 queue:
 - name: default
   rate: 20.0/s
 - name: backend
-  rate: 1.0/s
-  max_concurrent_requests: 1
-- name: backup
-  rate: 1.0/s
-  max_concurrent_requests: 1
+  rate: 50.0/s
+  max_concurrent_requests: 5

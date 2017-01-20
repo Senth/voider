@@ -2,19 +2,25 @@ package com.spiddekauga.voider.servlets.admin;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.ListItem;
+import com.google.appengine.tools.cloudstorage.ListOptions;
+import com.google.appengine.tools.cloudstorage.ListResult;
+import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.utils.Time;
 import com.spiddekauga.voider.network.misc.Motd;
 import com.spiddekauga.voider.network.misc.Motd.MotdTypes;
 import com.spiddekauga.voider.network.misc.ServerMessage;
 import com.spiddekauga.voider.network.misc.ServerMessage.MessageTypes;
 import com.spiddekauga.voider.server.util.DatastoreTables;
-import com.spiddekauga.voider.server.util.DatastoreTables.CBackupInfo;
 import com.spiddekauga.voider.server.util.DatastoreTables.CMaintenance;
 import com.spiddekauga.voider.server.util.DatastoreTables.CMotd;
 import com.spiddekauga.voider.server.util.DatastoreTables.CRestoreDate;
-import com.spiddekauga.voider.server.util.Maintenance;
+import com.spiddekauga.voider.server.util.MaintenanceHelper;
 import com.spiddekauga.voider.server.util.MessageSender;
+import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderController;
 
 import java.io.IOException;
@@ -25,7 +31,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
@@ -36,108 +43,36 @@ import javax.servlet.ServletException;
 public class MaintenanceServlet extends VoiderController {
 private static final String P_MAINTENANCE_MODE = "maintenance_mode";
 private static final String P_MAINTENANCE_REASON = "maintenance_reason";
-private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS z", Locale.ENGLISH);
-private static final String P_BACKUP_ID = "backup_id";
-
-@Override
-protected void onPost() throws ServletException, IOException {
-	// New restore point
-	if (isParameterSet(P_BACKUP_ID)) {
-		createRestorePoint();
-	}
-	// Enable/Disable maintenance
-	else if (isParameterSet(P_MAINTENANCE_MODE)) {
-		changeMaintenanceMode();
-	}
-
-	displayMaintenanceMode();
-	displayBackupPoints();
-	displayRestoredDates();
-	forwardToHtml();
-}
+private static final String P_BACKUP_DATE = "backup_date";
+private static final Pattern BACKUP_DATE_PATTERN = Pattern.compile("/(.*)/");
+private final SimpleDateFormat DATE_FORMAT = Time.createIsoDateFormat();
 
 /**
- * Create a new restore point
+ * Existing restored points
  */
-private void createRestorePoint() {
-	String backupKeyString = getParameter(P_BACKUP_ID);
-	Key backupKey = KeyFactory.stringToKey(backupKeyString);
-	Entity backupEntity = DatastoreUtils.getEntity(backupKey);
-	Date backupDate = (Date) backupEntity.getProperty(CBackupInfo.START_TIME);
+public class RestoredDate {
+	private String from;
+	private String to;
 
-	// Backup from this date
-	Entity entity = new Entity(DatastoreTables.RESTORE_DATE);
-	entity.setProperty(CRestoreDate.FROM_DATE, new Date());
-	entity.setProperty(CRestoreDate.TO_DATE, backupDate);
+	/**
+	 * New Restored date
+	 * @param from which date we restored from
+	 * @param to which date we restored to
+	 */
+	private RestoredDate(Date from, Date to) {
+		this.from = DATE_FORMAT.format(from);
+		this.to = DATE_FORMAT.format(to);
+	}
 
-	DatastoreUtils.put(entity);
-}
+	public String getFrom() {
+		return from;
+	}
 
-/**
- * Change maintenance mode
- */
-private void changeMaintenanceMode() {
-	String modeString = getParameter(P_MAINTENANCE_MODE);
-	Maintenance.Modes mode = Maintenance.Modes.fromString(modeString);
-
-	if (mode != null) {
-		switch (mode) {
-		case UP:
-			disableMaintenance();
-			break;
-
-		case DOWN:
-			enableMaintenance();
-			break;
-		}
+	public String getTo() {
+		return to;
 	}
 }
 
-/**
- * Get and display the current maintenance mode
- */
-private void displayMaintenanceMode() {
-	Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.MAINTENANCE);
-
-	Maintenance.Modes mode = Maintenance.Modes.UP;
-
-	if (entity != null) {
-		String modeString = (String) entity.getProperty(CMaintenance.MODE);
-		if (modeString != null) {
-			mode = Maintenance.Modes.fromString(modeString);
-		}
-	}
-
-	getRequest().setAttribute("maintenance_mode", mode.toString());
-}
-
-/**
- * Get and display all backup points
- */
-private void displayBackupPoints() {
-	Iterable<Entity> entities = DatastoreUtils.getEntities(DatastoreTables.BACKUP_INFO);
-
-	// Create Backup points
-	List<BackupPoint> backupPoints = new ArrayList<>();
-	for (Entity entity : entities) {
-		Date date = (Date) entity.getProperty(CBackupInfo.START_TIME);
-		Key key = entity.getKey();
-
-		BackupPoint backupPoint = new BackupPoint(date, key);
-		backupPoints.add(backupPoint);
-	}
-
-	// Sort
-	Collections.sort(backupPoints, new Comparator<BackupPoint>() {
-		@Override
-		public int compare(BackupPoint o1, BackupPoint o2) {
-			return o1.date.compareTo(o2.date);
-		}
-	});
-	Collections.reverse(backupPoints);
-
-	getRequest().setAttribute("backup_points", backupPoints);
-}
 
 /**
  * Get and display all points the server has restored to
@@ -165,7 +100,104 @@ private void displayRestoredDates() {
 	Collections.reverse(restoredDates);
 
 	getRequest().setAttribute("restored_dates", restoredDates);
+
+	String restoreUrl = "backend-dot-" + getRootUrl() + "/restore";
+	getRequest().setAttribute("restore_url", restoreUrl);
 }
+
+
+@Override
+protected void onPost() throws ServletException, IOException {
+	// Enable/Disable maintenance
+	if (isParameterSet(P_MAINTENANCE_MODE)) {
+		changeMaintenanceMode();
+	}
+
+	displayMaintenanceMode();
+	displayBackupPoints();
+	displayRestoredDates();
+	forwardToHtml();
+}
+
+@Override
+protected void onGet() throws ServletException, IOException {
+	onPost();
+}
+
+/**
+ * Change maintenance mode
+ */
+private void changeMaintenanceMode() {
+	String modeString = getParameter(P_MAINTENANCE_MODE);
+	MaintenanceHelper.Modes mode = MaintenanceHelper.Modes.fromString(modeString);
+
+	if (mode != null) {
+		switch (mode) {
+		case UP:
+			disableMaintenance();
+			break;
+
+		case DOWN:
+			enableMaintenance();
+			break;
+		}
+	}
+}
+
+/**
+ * Get and display the current maintenance mode
+ */
+private void displayMaintenanceMode() {
+	Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.MAINTENANCE);
+
+	MaintenanceHelper.Modes mode = MaintenanceHelper.Modes.UP;
+
+	if (entity != null) {
+		String modeString = (String) entity.getProperty(CMaintenance.MODE);
+		if (modeString != null) {
+			mode = MaintenanceHelper.Modes.fromString(modeString);
+		}
+	}
+
+	getRequest().setAttribute("maintenance_mode", mode.toString());
+}
+
+/**
+ * Get and display all backup points
+ */
+private void displayBackupPoints() {
+	List<String> backupPoints = new ArrayList<>();
+
+	// Get all backup points from GCS
+	GcsService gcsService = GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
+	try {
+		ListOptions listOptions = new ListOptions.Builder()
+				.setPrefix("datastore_backup/")
+				.setRecursive(false)
+				.build();
+		ListResult listResult = gcsService.list(ServerConfig.GCS_BUCKET, listOptions);
+
+		while (listResult.hasNext()) {
+			ListItem listItem = listResult.next();
+			String nameDate = listItem.getName();
+
+			// Extract date from full filename
+			Matcher matcher = BACKUP_DATE_PATTERN.matcher(nameDate);
+			if (matcher.find() && matcher.groupCount() == 1) {
+				backupPoints.add(matcher.group(1));
+			}
+		}
+	} catch (IOException e) {
+		log("Message", e);
+	}
+
+	// Sort
+	Collections.sort(backupPoints);
+	Collections.reverse(backupPoints);
+
+	getRequest().setAttribute("backup_points", backupPoints);
+}
+
 
 /**
  * Turn off maintenance mode
@@ -174,7 +206,7 @@ private void disableMaintenance() {
 	Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.MAINTENANCE);
 
 	if (entity != null) {
-		entity.setProperty(CMaintenance.MODE, Maintenance.Modes.UP.toString());
+		entity.setProperty(CMaintenance.MODE, MaintenanceHelper.Modes.UP.toString());
 		entity.removeProperty(CMaintenance.REASON);
 
 		Key motdKey = (Key) entity.getProperty(CMaintenance.MOTD_KEY);
@@ -211,13 +243,11 @@ private void enableMaintenance() {
 	}
 
 	// Set mode
-	entity.setProperty(CMaintenance.MODE, Maintenance.Modes.DOWN.toString());
+	entity.setProperty(CMaintenance.MODE, MaintenanceHelper.Modes.DOWN.toString());
 	entity.setProperty(CMaintenance.REASON, getParameter(P_MAINTENANCE_REASON));
 	entity.setProperty(CMaintenance.MOTD_KEY, motdKey);
 
 	DatastoreUtils.put(entity);
-
-
 }
 
 /**
@@ -228,7 +258,7 @@ private Key createMotdEntity() {
 	Motd motd = new Motd();
 
 	motd.created = new Date();
-	motd.title = "Server MaintenanceServlet";
+	motd.title = "Server Maintenance";
 	motd.content = "Server is currently undergoing a maintenance. You will not be able to connect to the server during this time.\n\n";
 	motd.content += getParameter(P_MAINTENANCE_REASON);
 	motd.type = MotdTypes.SEVERE;
@@ -259,34 +289,5 @@ private Key createMotdEntity() {
 	return key;
 }
 
-/**
- * Backup point
- */
-private class BackupPoint {
-	private String date;
-	private String id;
 
-	private BackupPoint(Date date, Key key) {
-		this.date = DATE_FORMAT.format(date);
-		this.id = KeyFactory.keyToString(key);
-	}
-}
-
-/**
- * Existing restored points
- */
-private class RestoredDate {
-	private String from;
-	private String to;
-
-	/**
-	 * New Restored date
-	 * @param from which date we restored from
-	 * @param to which date we restored to
-	 */
-	private RestoredDate(Date from, Date to) {
-		this.from = DATE_FORMAT.format(from);
-		this.to = DATE_FORMAT.format(to);
-	}
-}
 }

@@ -71,7 +71,7 @@ protected Object getSessionVariable(SessionVariableNames name) {
 }
 
 private void handleRequest() throws ServletException, IOException {
-	if (Maintenance.getMaintenanceMode() == Maintenance.Modes.UP || mHandlesRequestDuringMaintenance) {
+	if (MaintenanceHelper.getMaintenanceMode() == MaintenanceHelper.Modes.UP || mHandlesRequestDuringMaintenance) {
 		onRequest();
 	}
 

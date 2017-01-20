@@ -35,16 +35,16 @@
 	<div class="row">
 		<div class="col-md-12">
 			<h3 class="text-Left">Backups</h3>
-			<form method="post" action="<%= link("admin/maintenance") %>">
+			<form method="post" action="${restore_url}">
 			<table>
 			<tr>
 				<td></td>
 				<td><strong>Date</strong></td>
 			</tr>
-				<c:forEach items="${backup_points}" var="backup_point">
+				<c:forEach items="${backup_points}" var="backup_date">
 					<tr>
-						<td><input type="radio" name="backup_id" value="${backup_point.id}" /></td>
-						<td>${backup_point.date}</td>
+						<td style="padding-right: 16px;"><input type="radio" name="restore_to" value="${backup_date}" /></td>
+						<td>${backup_date}</td>
 					</tr>
 				</c:forEach>
 			</table>

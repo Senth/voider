@@ -297,10 +297,6 @@ private boolean isAddParamatersOk() {
 		valid = false;
 	} else {
 		MotdTypes motdType = MotdTypes.valueOf(level);
-		if (motdType == null) {
-			mCreateValuesDefault.setLevel(level, "Invalid level");
-			valid = false;
-		}
 	}
 
 	// Expires

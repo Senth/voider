@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Maintenance helper
+ * MaintenanceHelper helper
  */
-public class Maintenance {
+public class MaintenanceHelper {
 /**
  * @return current maintenance mode
  */

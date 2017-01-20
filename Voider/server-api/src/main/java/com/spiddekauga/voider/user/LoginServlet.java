@@ -19,7 +19,7 @@ import com.spiddekauga.voider.server.util.DatastoreTables;
 import com.spiddekauga.voider.server.util.DatastoreTables.CMotd;
 import com.spiddekauga.voider.server.util.DatastoreTables.CRestoreDate;
 import com.spiddekauga.voider.server.util.DatastoreTables.CUsers;
-import com.spiddekauga.voider.server.util.Maintenance;
+import com.spiddekauga.voider.server.util.MaintenanceHelper;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderApiServlet;
 import com.spiddekauga.voider.version.Version;
@@ -74,7 +74,7 @@ protected void onInit() throws ServletException, IOException {
 
 @Override
 protected IEntity onRequest(LoginMethod method) throws ServletException, IOException {
-	switch (Maintenance.getMaintenanceMode()) {
+	switch (MaintenanceHelper.getMaintenanceMode()) {
 	case UP:
 		// Skip if already logged in
 		if (!mUser.isLoggedIn()) {

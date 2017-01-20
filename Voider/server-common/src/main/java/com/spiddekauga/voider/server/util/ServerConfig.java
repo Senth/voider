@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.server.util;
 
+import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
+
 import java.io.UnsupportedEncodingException;
 
 import javax.mail.internet.InternetAddress;
@@ -19,6 +21,7 @@ public static final String BETA_INFO_URL = Builds.RELEASE.getUrl() + "download.j
 public static final String VERSION_FILE = "assets/txt/changelog.txt";
 /** inimum text length when searching for text */
 public static final int SEARCH_TEXT_LENGTH_MIN = 3;
+public static final String GCS_BUCKET = AppIdentityServiceFactory.getAppIdentityService().getDefaultGcsBucketName();
 
 static {
 	InternetAddress adminEmail = null;

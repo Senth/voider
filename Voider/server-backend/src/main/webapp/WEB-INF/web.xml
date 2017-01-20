@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns="http://java.sun.com/xml/ns/javaee"
-xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-	
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+	xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- Cron Jobs -->
 	<servlet>
-		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>
-		<servlet-class>com.spiddekauga.voider.analytics.datastore_bigquery.AnalyticsDatastoreToBigQueryServlet</servlet-class>
+		<servlet-name>AnalyticsExport</servlet-name>
+		<servlet-class>
+			com.spiddekauga.voider.analytics.export.AnalyticsExportServlet
+		</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>AnalyticsDatastoreToBigQuery</servlet-name>
-		<url-pattern>/analytics-datastore-to-big-query</url-pattern>
+		<servlet-name>AnalyticsExport</servlet-name>
+		<url-pattern>/analytics-export</url-pattern>
 	</servlet-mapping>
-	
+
+	<servlet>
+		<servlet-name>Backup</servlet-name>
+		<servlet-class>com.spiddekauga.voider.backup.BackupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Backup</servlet-name>
+		<url-pattern>/backup</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Restore</servlet-name>
+		<servlet-class>com.spiddekauga.voider.backup.RestoreServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Restore</servlet-name>
+		<url-pattern>/restore</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>Cleanup</servlet-name>
 		<servlet-class>com.spiddekauga.voider.CleanupServlet</servlet-class>
@@ -22,9 +41,9 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Cleanup</servlet-name>
 		<url-pattern>/cleanup</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
-	<servlet-name>mapreduce</servlet-name>
+		<servlet-name>mapreduce</servlet-name>
 		<servlet-class>
 			com.google.appengine.tools.mapreduce.MapReduceServlet
 		</servlet-class>
@@ -37,7 +56,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet>
 		<servlet-name>PipelineServlet</servlet-name>
 		<servlet-class>
-			com.google.appengine.tools.com.spiddekauga.appengine.pipeline.impl.servlets.PipelineServlet
+			com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet
 		</servlet-class>
 	</servlet>
 	<servlet-mapping>
@@ -55,7 +74,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 			<role-name>admin</role-name>
 		</auth-constraint>
 	</security-constraint>
-	
+
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

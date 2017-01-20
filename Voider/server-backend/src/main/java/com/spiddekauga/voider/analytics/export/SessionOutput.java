@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics.datastore_bigquery;
+package com.spiddekauga.voider.analytics.export;
 
 import java.io.IOException;
 import java.util.ArrayList;

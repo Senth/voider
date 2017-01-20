@@ -63,9 +63,9 @@ private void setUrls() {
 
 	// Set root url
 	mRootUrl = getRequest().getRequestURL().toString();
-	int serveltPos = mRootUrl.indexOf(mServletUri);
-	if (serveltPos != -1) {
-		mRootUrl = mRootUrl.substring(0, serveltPos);
+	int servletPos = mRootUrl.indexOf(mServletUri);
+	if (servletPos != -1) {
+		mRootUrl = mRootUrl.substring(0, servletPos);
 	}
 }
 
@@ -139,7 +139,8 @@ protected PrintWriter getResponsePrintWriter() {
  */
 protected void forwardToHtml() {
 	try {
-		String jspName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, getClass().getSimpleName()) + ".jsp";
+		// Always remove servlet from the name
+		String jspName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, getServletName()) + ".jsp";
 		getRequest().getRequestDispatcher(jspName).forward(getRequest(), getResponse());
 	} catch (ServletException | IOException e) {
 		e.printStackTrace();

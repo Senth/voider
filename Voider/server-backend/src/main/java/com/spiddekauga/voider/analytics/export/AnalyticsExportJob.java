@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.analytics.datastore_bigquery;
+package com.spiddekauga.voider.analytics.export;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
@@ -14,16 +14,17 @@ import com.google.appengine.tools.pipeline.Job0;
 import com.google.appengine.tools.pipeline.JobSetting;
 import com.google.appengine.tools.pipeline.Value;
 import com.spiddekauga.appengine.pipeline.BigQueryLoadJobReference;
+import com.spiddekauga.voider.BackendConfig;
 
 import java.util.List;
 
 /**
- * Converts new analytics in Datastore to Google Cloud Storage. This class has several child
- * jobs. <ol> <li>Get new analytics session</li> <li>Get scenes for all sessions</li> <li>Get events
- * for all the scenes</li> <li>Save JSON output in Google Cloud Storage</li> </ol>
+ * Converts new analytics in Datastore to Google Cloud Storage. This class has several child jobs.
+ * <ol> <li>Get new analytics session</li> <li>Get scenes for all sessions</li> <li>Get events for
+ * all the scenes</li> <li>Save JSON output in Google Cloud Storage</li> </ol>
  */
 @SuppressWarnings("serial")
-class AnalyticsDatastoreToBigQueryJob extends Job0<Void> {
+class AnalyticsExportJob extends Job0<Void> {
 
 @Override
 public Value<Void> run() throws Exception {
@@ -50,9 +51,7 @@ public Value<Void> run() throws Exception {
 	FutureValue<List<BigQueryLoadJobReference>> bigQueryFuture = futureCall(new ImportToBigQueryJob(), getJobSettings(waitFor(cloudFuture)));
 
 	// CleanupServlet
-	FutureValue<Void> updateDatastore = futureCall(new CleanupDatastoreJob(), combinedSessionsFuture, getJobSettings(waitFor(bigQueryFuture)));
-
-	return updateDatastore;
+	return futureCall(new CleanupDatastoreJob(), combinedSessionsFuture, getJobSettings(waitFor(bigQueryFuture)));
 }
 
 /**
@@ -61,7 +60,7 @@ public Value<Void> run() throws Exception {
 private static MapSpecification<Entity, Session, List<Session>> getSessionJobSpec() {
 	Query query = new Query("analytics_session");
 	query.setFilter(new Query.FilterPredicate("exported", FilterOperator.EQUAL, false));
-	DatastoreInput input = new DatastoreInput(query, AnalyticsConfig.SHARDS_PER_QUERY);
+	DatastoreInput input = new DatastoreInput(query, BackendConfig.SHARDS_PER_QUERY);
 	SessionMapper mapper = new SessionMapper();
 	SessionOutput output = new SessionOutput();
 
@@ -74,15 +73,15 @@ private static MapSpecification<Entity, Session, List<Session>> getSessionJobSpe
  * @return map settings
  */
 private static MapSettings getMapSettings() {
-	return AnalyticsConfig.getMapSettings();
+	return BackendConfig.getMapSettings();
 }
 
 /**
- * @param settings optional extra parameters
- * @return job settings
+ * @param jobSettings additional job settings
+ * @return default job settings
  */
-private static JobSetting[] getJobSettings(JobSetting... settings) {
-	return AnalyticsConfig.getJobSettings(settings);
+private static JobSetting[] getJobSettings(JobSetting... jobSettings) {
+	return BackendConfig.getJobSettings(jobSettings);
 }
 
 /**
@@ -91,7 +90,7 @@ private static JobSetting[] getJobSettings(JobSetting... settings) {
 private static MapSpecification<Entity, Scene, List<Scene>> getSceneJobSpec() {
 	Query query = new Query("analytics_scene");
 	query.setFilter(new Query.FilterPredicate("exported", FilterOperator.EQUAL, false));
-	DatastoreInput input = new DatastoreInput(query, AnalyticsConfig.SHARDS_PER_QUERY);
+	DatastoreInput input = new DatastoreInput(query, BackendConfig.SHARDS_PER_QUERY);
 	SceneMapper mapper = new SceneMapper();
 	SceneOutput output = new SceneOutput();
 
@@ -106,7 +105,7 @@ private static MapSpecification<Entity, Scene, List<Scene>> getSceneJobSpec() {
 private static MapSpecification<Entity, Event, List<Event>> getEventJobSpec() {
 	Query query = new Query("analytics_event");
 	query.setFilter(new Query.FilterPredicate("exported", FilterOperator.EQUAL, false));
-	DatastoreInput input = new DatastoreInput(query, AnalyticsConfig.SHARDS_PER_QUERY);
+	DatastoreInput input = new DatastoreInput(query, BackendConfig.SHARDS_PER_QUERY);
 	EventMapper mapper = new EventMapper();
 	EventOutput output = new EventOutput();
 
