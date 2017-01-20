@@ -15,10 +15,9 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
-import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.kryo.AtomicIntegerSerializer;
-import com.spiddekauga.utils.kryo.SerializableTaggedFieldSerializer;
-import com.spiddekauga.utils.kryo.UUIDSerializer;
+import com.spiddekauga.kryo.AtomicIntegerSerializer;
+import com.spiddekauga.kryo.SerializableTaggedFieldSerializer;
+import com.spiddekauga.kryo.UUIDSerializer;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameSave;
@@ -271,6 +270,7 @@ private enum RegisterClasses {
 			}
 		}
 	}
+
 	/**
 	 * Serializer types
 	 */

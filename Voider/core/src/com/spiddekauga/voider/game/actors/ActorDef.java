@@ -8,11 +8,11 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.kryo.KryoPreWrite;
+import com.spiddekauga.kryo.KryoPreWrite;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.utils.GameTime;
 
 /**
  * Definition of the actor. This include common attribute for a common type of actor. E.g. A
@@ -27,39 +27,19 @@ protected float mBodyChangeTime = 0;
 @Tag(48)
 protected Shape mVisualVars = null;
 @Tag(145)
-private int mClassRevision = 0;/**
- * Sets the starting angle of the actor
- * @param angle the starting angle, in radians
- */
-public void setStartAngleRad(float angle) {
-	getBodyDef().angle = angle;
-	mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
-
-	mVisualVars.setStartAngle(getStartAngleDeg());
-}
+private int mClassRevision = 0;
 /** Maximum life of the actor, usually starting amount of life */
 @Tag(44)
 private float mMaxLife = 0;
 /** The body definition of the actor */
 @Tag(45)
-private BodyDef mBodyDef = new BodyDef();/**
- * Sets the starting angle of the actor
- * @param angle the starting angle, in degrees
- */
-public void setStartAngleDeg(float angle) {
-	setStartAngleRad(angle * MathUtils.degreesToRadians);
-}
+private BodyDef mBodyDef = new BodyDef();
 /** Collision damage (per second) */
 @Tag(46)
 private float mCollisionDamage = 0;
 /** If this actor shall be destroy on collision */
 @Tag(47)
-private boolean mDestroyOnCollide = false;/**
- * @return starting angle of the actor (in radians)
- */
-public float getStartAngleRad() {
-	return getBodyDef().angle;
-}
+private boolean mDestroyOnCollide = false;
 
 /**
  * Sets the visual variable to the specified type
@@ -81,11 +61,6 @@ public void set(Resource resource) {
 	mDestroyOnCollide = def.mDestroyOnCollide;
 	mMaxLife = def.mMaxLife;
 	mVisualVars = def.mVisualVars;
-}/**
- * @return starting angle of the actor (in degrees)
- */
-public float getStartAngleDeg() {
-	return getStartAngleRad() * MathUtils.radiansToDegrees;
 }
 
 @Override
@@ -128,6 +103,7 @@ public float getHealthMax() {
  * @param maxLife the maximum/starting amount of life.
  * @return this for chaining commands
  */
+
 public ActorDef setHealthMax(float maxLife) {
 	mMaxLife = maxLife;
 	return this;
@@ -160,11 +136,6 @@ public BodyDef getBodyDefCopy() {
 	copy.position.set(mBodyDef.position);
 	copy.type = mBodyDef.type;
 	return copy;
-}/**
- * @return body definition of the actor
- */
-public final BodyDef getBodyDef() {
-	return mBodyDef;
 }
 
 /**
@@ -231,10 +202,18 @@ public void setRotationSpeedRad(float rotationSpeed) {
 	mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 }
 
+/**
+ * @return body definition of the actor
+ */
+public final BodyDef getBodyDef() {
+	return mBodyDef;
+}
+
 @Override
 public void preWrite() {
 	mClassRevision = CLASS_REVISION;
 }
+
 
 @Override
 public void write(Kryo kryo, Output output) {
@@ -249,14 +228,36 @@ public void read(Kryo kryo, Input input) {
 }
 
 
+/**
+ * @return starting angle of the actor (in degrees)
+ */
+public float getStartAngleDeg() {
+	return getStartAngleRad() * MathUtils.radiansToDegrees;
+}
 
+/**
+ * @return starting angle of the actor (in radians)
+ */
+public float getStartAngleRad() {
+	return getBodyDef().angle;
+}
 
+/**
+ * Sets the starting angle of the actor
+ * @param angle the starting angle, in radians
+ */
+public void setStartAngleRad(float angle) {
+	getBodyDef().angle = angle;
+	mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 
+	mVisualVars.setStartAngle(getStartAngleDeg());
+}
 
-
-
-
-
-
-
+/**
+ * Sets the starting angle of the actor
+ * @param angle the starting angle, in degrees
+ */
+public void setStartAngleDeg(float angle) {
+	setStartAngleRad(angle * MathUtils.degreesToRadians);
+}
 }
