@@ -43,14 +43,13 @@ import javax.servlet.ServletException;
 public class MaintenanceServlet extends VoiderController {
 private static final String P_MAINTENANCE_MODE = "maintenance_mode";
 private static final String P_MAINTENANCE_REASON = "maintenance_reason";
-private static final String P_BACKUP_DATE = "backup_date";
 private static final Pattern BACKUP_DATE_PATTERN = Pattern.compile("/(.*)/");
 private final SimpleDateFormat DATE_FORMAT = Time.createIsoDateFormat();
 
 /**
  * Existing restored points
  */
-public class RestoredDate {
+private class RestoredDate {
 	private String from;
 	private String to;
 
@@ -101,7 +100,7 @@ private void displayRestoredDates() {
 
 	getRequest().setAttribute("restored_dates", restoredDates);
 
-	String restoreUrl = "backend-dot-" + getRootUrl() + "/restore";
+	String restoreUrl = getServiceRootUrl("backend") + "restore";
 	getRequest().setAttribute("restore_url", restoreUrl);
 }
 

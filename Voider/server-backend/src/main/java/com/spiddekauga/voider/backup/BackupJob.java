@@ -20,7 +20,7 @@ public Value<Void> run() throws Exception {
 }
 
 private FutureValue<Void> exportDatastore() {
-	return futureCall(new DatastoreBackupJob(), immediate(BackupConfig.DATASTORE_BACKUP_CONFIG), BackendConfig.getJobSettings());
+	return futureCall(new DatastoreBackupJob(BackupConfig.DATASTORE_BACKUP_CONFIG), BackendConfig.getJobSettings());
 }
 
 @Override

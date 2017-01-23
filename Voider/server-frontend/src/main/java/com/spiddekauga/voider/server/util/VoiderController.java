@@ -16,8 +16,6 @@ import javax.xml.bind.DatatypeConverter;
  */
 @SuppressWarnings("serial")
 public abstract class VoiderController extends AppServlet {
-private String mRootUrl = null;
-private String mServletUri = null;
 private PrintWriter mOut = null;
 
 /**
@@ -48,25 +46,9 @@ protected void onCleanup() throws ServletException, IOException {
 @Override
 protected void onInit() throws ServletException, IOException {
 	super.onInit();
-	setUrls();
 
 	mOut = getResponse().getWriter();
 	getResponse().setContentType("text/html");
-}
-
-/**
- * Set server and servlet url
- */
-private void setUrls() {
-	// Remove first string;
-	mServletUri = getRequest().getRequestURI().substring(1);
-
-	// Set root url
-	mRootUrl = getRequest().getRequestURL().toString();
-	int servletPos = mRootUrl.indexOf(mServletUri);
-	if (servletPos != -1) {
-		mRootUrl = mRootUrl.substring(0, servletPos);
-	}
 }
 
 /**
@@ -106,20 +88,6 @@ protected Map<String, String[]> getParameters() {
 }
 
 /**
- * @return root URL
- */
-protected String getRootUrl() {
-	return mRootUrl;
-}
-
-/**
- * @return servlet path/URI
- */
-protected String getServletUri() {
-	return mServletUri;
-}
-
-/**
  * Set the status response
  * @param type type of the message
  */
@@ -150,7 +118,7 @@ protected void forwardToHtml() {
 /**
  * For sending success and error messages
  */
-public class ResponseMessage {
+private class ResponseMessage {
 	/** Type of message */
 	private String type;
 	/** Message */
@@ -161,7 +129,7 @@ public class ResponseMessage {
 	 * @param type type of message (usually success or error)
 	 * @param message text message
 	 */
-	public ResponseMessage(String type, String message) {
+	ResponseMessage(String type, String message) {
 		this.type = type;
 		this.message = message;
 	}
